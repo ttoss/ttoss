@@ -1,0 +1,28 @@
+{
+  "name": "ttoss",
+  "version": "1.0.0",
+  "private": true,
+  "license": "GPL-3.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttoss/ttoss.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
+  "homepage": "https://github.com/ttoss/ttoss#readme",
+  "workspaces": [
+    "docs/**/*"
+  ],
+  "contributors": [
+    {
+      "email": "arantespp@gmail.com",
+      "name": "Pedro Arantes",
+      "url": "https://arantespp.com"
+    }
+  ]
+}
