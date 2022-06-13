@@ -116,3 +116,4 @@ github-app/
 .npmrc
 .carlin/
 .vscode
+.turbo

@@ -4,7 +4,7 @@
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "turbo": "turbo"
   },
   "repository": {
     "type": "git",
@@ -15,14 +15,18 @@
     "url": "https://github.com/ttoss/ttoss/issues"
   },
   "homepage": "https://github.com/ttoss/ttoss#readme",
-  "workspaces": [
-    "docs/**/*"
-  ],
   "contributors": [
     {
       "email": "arantespp@gmail.com",
       "name": "Pedro Arantes",
       "url": "https://arantespp.com"
     }
+  ],
+  "devDependencies": {
+    "turbo": "^1.2.16"
+  },
+  "workspaces": [
+    "docs/**/*",
+    "packages/**/*"
   ]
 }
