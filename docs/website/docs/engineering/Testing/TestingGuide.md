@@ -2,7 +2,7 @@
 
 ## Summary
 
-In the development of tests, an aggregated pattern of good practices must be maintained, which must be reflected by the entire target project in which the tests will be implemented. Tests must be clear, direct and masterfully take advantage of all the features of the language to promote good readability and maintainability, as well as being true, that is, not breaking with internal changes in the code that DO NOT BREAK THE CODE.
+In the development of tests, an aggregated pattern of good practices must be maintained, which must be reflected by the entire target project in which the tests will be implemented. Tests must be clear, direct and masterfully take advantage of all the features of the language to promote good readability and maintainability, as well as being true, that is, not breaking with internal changes in the code that DO NOT BREAK THE CODE. This guide is currently based in the [mawkrus JavaScript testing guide](https://github.com/mawrkus/js-unit-testing-guide) and the current default test pipelines used in Triângulos Tecnologia.
 
 ## Folders
 
