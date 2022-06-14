@@ -13,6 +13,10 @@
     "prettier": "^2.6.2"
   },
   "bin": {
-    "ttoss-monorepo": "./scripts/monorepo.js"
-  }
+    "ttoss-monorepo": "./scripts/monorepo.sh"
+  },
+  "files": [
+    "config",
+    "scripts"
+  ]
 }
