@@ -58,7 +58,7 @@ It is responsible for creating the application itself. It handles API requests, 
 
 To handle data fetching, [Relay](https://relay.dev/) is our option if we're using a GraphQL API. If it's a REST API, we choose [React Query](https://react-query.tanstack.com/).
 
-## Testing
+## [Testing](../Testing/TestingGuide.md)
 
 Testing is an indispensable step of our development process because it guarantees lower engineering costs in the future. [This article](https://arantespp.com/planning-models) shows how we evolved our development process and planning over time.
 
