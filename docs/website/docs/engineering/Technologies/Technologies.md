@@ -40,7 +40,7 @@ Backend communicates with clients through APIs. [GraphQL](https://graphql.org/) 
 
 We've chosen [**React**](https://reactjs.org/) to be our main library to build user interfaces. We've decided to use it because it has a big community and we can build web, mobile, desktop, VR applications, and email templates. It's the same idea for choosing Node.js: learn one thing, use it everywhere.
 
-We divide our frontend applications into two parts: *UI* and *App*.
+We divide our frontend applications into two parts: _UI_ and _App_.
 
 ### UI
 
