@@ -1,0 +1,19 @@
+{
+  "version": "0.0.0",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "stream": true,
+  "command": {
+    "publish": {
+      "allowBranch": "main",
+      "conventionalCommits": true,
+      "message": "chore(release): publish %s",
+      "ignoreChanges": [
+        "**/docs/**",
+        "**/__fixtures__/**",
+        "**/__tests__/**",
+        "**/*.md"
+      ]
+    }
+  }
+}
