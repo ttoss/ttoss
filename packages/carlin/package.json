@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint",
+    "lint": "eslint src",
     "test": "jest",
     "build": "tsc"
   },
