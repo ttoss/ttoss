@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.1](https://github.com/ttoss/carlin/compare/v1.16.0...v1.16.1) (2022-06-27)
+
+### Bug Fixes
+
+- carlin eslint command ([e17447e](https://github.com/ttoss/carlin/commit/e17447ea0eb6e8554c76635eba00e95ea4e5f632))
+
 # 1.16.0 (2022-06-27)
 
 ### Features
