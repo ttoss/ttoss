@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.16.0 (2022-06-27)
+
+### Features
+
+- ttoss monorepo ([#3](https://github.com/ttoss/ttoss/issues/3)) ([3a6ea9a](https://github.com/ttoss/ttoss/commit/3a6ea9a02be105eee4f2d74638cff240421201f8))
+
 ## [1.15.2](https://github.com/ttoss/modules/compare/v1.15.1...v1.15.2) (2022-05-06)
 
 **Note:** Version bump only for package @ttoss/eslint-config

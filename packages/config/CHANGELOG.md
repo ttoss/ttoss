@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.16.0 (2022-06-27)
+
+### Features
+
+- ttoss monorepo ([#8](https://github.com/ttoss/ttoss/issues/8)) ([4e0079d](https://github.com/ttoss/ttoss/commit/4e0079d385437aea9e4d488517c433fe5ba6bd17))
+
 ## [1.15.2](https://github.com/ttoss/modules/compare/v1.15.1...v1.15.2) (2022-05-06)
 
 **Note:** Version bump only for package @ttoss/config
