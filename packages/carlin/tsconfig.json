@@ -1,0 +1,16 @@
+{
+  "extends": "@ttoss/config/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false, // Do not create tsconfig.tsbuildinfo
+    "outDir": "dist",
+    "noEmit": false,
+    "declaration": false,
+    "downlevelIteration": true,
+    "sourceMap": false,
+    "target": "es2019",
+    "module": "CommonJS",
+    "allowJs": true
+  },
+  "include": ["src"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+}
