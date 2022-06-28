@@ -1,1 +1,1 @@
-echo yarn run "destroy"
+yarn turbo run deploy -- --destroy
