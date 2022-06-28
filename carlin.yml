@@ -1,0 +1,3 @@
+acm: arn:aws:acm:us-east-1:483684946879:certificate/7223ba1a-9788-4b1c-8f0d-229e865631a5
+awsAccountId: 483684946879
+hostedZoneName: ttoss.dev

@@ -1,0 +1,10 @@
+yarn turbo run build test lint
+
+echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
+
+# --no-verify-access: https://github.com/lerna/lerna/issues/2788
+
+yarn lerna publish --yes --no-verify-access
+
+export CARLIN_ENVIRONMENT=Production
+yarn turbo run deploy
