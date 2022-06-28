@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.4](https://github.com/ttoss/ttoss/compare/v1.16.3...v1.16.4) (2022-06-28)
+
+### Bug Fixes
+
+* add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
+
 ## [1.16.1](https://github.com/ttoss/ttoss/compare/v1.16.0...v1.16.1) (2022-06-27)
 
 **Note:** Version bump only for package @ttoss/config

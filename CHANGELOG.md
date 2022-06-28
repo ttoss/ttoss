@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.4](https://github.com/ttoss/ttoss/compare/v1.16.3...v1.16.4) (2022-06-28)
+
+### Bug Fixes
+
+* add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
+
+### Features
+
+* redirect from landing page to another page ([#7](https://github.com/ttoss/ttoss/issues/7)) ([662d48a](https://github.com/ttoss/ttoss/commit/662d48a8e5dcc58c9118ab2d153854dbd203e7d5))
+
 ## [1.16.3](https://github.com/ttoss/ttoss/compare/v1.16.2...v1.16.3) (2022-06-28)
 
 ### Bug Fixes
