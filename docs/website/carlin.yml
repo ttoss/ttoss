@@ -1,0 +1,6 @@
+environments:
+  Production:
+    aliases:
+      - ttoss.dev
+    cloudfront: true
+    stackName: TtossWebsite

@@ -1,8 +1,6 @@
 import React from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import { Redirect } from '@docusaurus/router';
-
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
@@ -29,8 +27,8 @@ export default function Home() {
             <img src="/img/undraw_around_the_world.svg"></img>
             <h3 class="featureHeading_TLGJ">Carlin</h3>
           </div>
-                </div>
         </div>
+      </div>
     </main>
   </Layout>
   );
