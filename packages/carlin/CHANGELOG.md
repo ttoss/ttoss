@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.3](https://github.com/ttoss/carlin/compare/v1.16.2...v1.16.3) (2022-06-28)
+
+### Bug Fixes
+
+- build carlin ([6996969](https://github.com/ttoss/carlin/commit/6996969e5aa1222a3c6f241ad5094a4045ffc25c))
+
 ## [1.16.2](https://github.com/ttoss/carlin/compare/v1.16.1...v1.16.2) (2022-06-28)
 
 ### Bug Fixes
