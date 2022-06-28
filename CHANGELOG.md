@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.2](https://github.com/ttoss/ttoss/compare/v1.16.1...v1.16.2) (2022-06-28)
+
+### Bug Fixes
+
+- change carlin cicd folder name ([aa42149](https://github.com/ttoss/ttoss/commit/aa421495de4e66c292f100a7c21bc32ed88e1b23))
+- deploy carlin command ([a0f60f6](https://github.com/ttoss/ttoss/commit/a0f60f6beb54f516221926e26041630335130f74))
+
 ## [1.16.1](https://github.com/ttoss/carlin/compare/v1.16.0...v1.16.1) (2022-06-27)
 
 ### Bug Fixes
