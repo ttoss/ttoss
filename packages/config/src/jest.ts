@@ -9,9 +9,6 @@ export const defaultConfig = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
-  moduleNameMapper: {
-    '\\.(css)$': 'identity-obj-proxy',
-  },
   fakeTimers: {
     enableGlobally: true,
   },
