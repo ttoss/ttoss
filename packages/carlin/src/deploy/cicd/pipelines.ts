@@ -1,3 +1,5 @@
+import { CICD_FOLDER } from './config';
+
 export const pipelines = ['pr', 'main', 'tag'] as const;
 
 export type Pipelines = typeof pipelines;
@@ -5,7 +7,7 @@ export type Pipelines = typeof pipelines;
 export type Pipeline = Pipelines[number];
 
 export const getCommandFileDir = (pipeline: Pipeline | 'closed-pr') =>
-  `./cicd/commands/${pipeline}`;
+  `./${CICD_FOLDER}/commands/${pipeline}`;
 
 export const getPrCommands = ({ branch }: { branch: string }) => [
   'set -e',

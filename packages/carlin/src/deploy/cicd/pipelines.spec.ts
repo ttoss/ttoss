@@ -44,7 +44,7 @@ test('set +x', () => {
 
   expect(pipelinesModule.getClosedPrCommands({ branch })).toMatchObject(
     expect.arrayContaining([
-      `[ -f "./cicd/commands/closed-pr" ] && sh ./cicd/commands/closed-pr || echo 'closed-pr command not found'; exit 0`,
+      `[ -f "./.cicd/commands/closed-pr" ] && sh ./.cicd/commands/closed-pr || echo 'closed-pr command not found'; exit 0`,
     ])
   );
 });
