@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.5](https://github.com/ttoss/ttoss/compare/v1.16.4...v1.16.5) (2022-06-29)
+
+### Bug Fixes
+
+* update cicd commands ([9dc1176](https://github.com/ttoss/ttoss/commit/9dc1176a2ac819389a79a414b1cc60e23cbd37ce))
+* update cicd commands ([cd492e5](https://github.com/ttoss/ttoss/commit/cd492e56bb5fa2a67ad8f9752595dca0e7abfa8d))
+
 ## [1.16.4](https://github.com/ttoss/ttoss/compare/v1.16.3...v1.16.4) (2022-06-28)
 
 ### Bug Fixes
