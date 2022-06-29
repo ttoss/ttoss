@@ -1,0 +1,27 @@
+{
+  "name": "@docs/storybook",
+  "version": "0.0.0",
+  "private": true,
+  "author": "ttoss",
+  "scripts": {
+    "storybook": "start-storybook -p 6006",
+    "build": "build-storybook --quiet",
+    "start": "yarn run storybook",
+    "dev": "yarn run storybook",
+    "deploy": "carlin deploy static-app"
+  },
+  "dependencies": {
+    "@ttoss/ui": "^1.16.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.7",
+    "@storybook/addon-actions": "^6.5.9",
+    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-interactions": "^6.5.9",
+    "@storybook/addon-links": "^6.5.9",
+    "@storybook/react": "^6.5.9",
+    "@storybook/testing-library": "^0.0.13",
+    "babel-loader": "^8.2.3",
+    "storybook-addon-locale": "^0.3.6"
+  }
+}

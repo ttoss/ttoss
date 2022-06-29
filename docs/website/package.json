@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "@docs/website",
   "version": "1.16.1",
   "private": true,
   "scripts": {

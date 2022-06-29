@@ -1,0 +1,50 @@
+{
+  "name": "@ttoss/ui",
+  "version": "1.15.2",
+  "description": "Primitive layout, typographic, and other components for styling applications.",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "React",
+    "ui",
+    "user interface"
+  ],
+  "author": "ttoss",
+  "contributors": [
+    {
+      "email": "pedro@arantespp.com",
+      "name": "Pedro Arantes",
+      "url": "https://arantespp.com/contact"
+    }
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest",
+    "dev": "yarn workspace @docs/storybook run dev"
+  },
+  "dependencies": {
+    "@emotion/react": "^11",
+    "@mdx-js/react": "^1",
+    "@theme-ui/match-media": "^0.14.3",
+    "theme-ui": "^0.14.6"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.15.2",
+    "@ttoss/test-utils": "^1.15.2",
+    "@types/jest": "^28.1.3",
+    "jest": "^28.1.1",
+    "tsup": "^6.1.2"
+  }
+}
