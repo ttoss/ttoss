@@ -1,1 +1,1 @@
-turbo run build test lint deploy
+yarn run deploy
