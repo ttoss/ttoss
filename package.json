@@ -4,7 +4,8 @@
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
-    "turbo": "turbo"
+    "turbo": "turbo",
+    "build-graph": "turbo run build --graph=turbo-build-graph.png"
   },
   "repository": {
     "type": "git",
