@@ -9,30 +9,33 @@ test('should return default theme colors', () => {
     initialProps: { theme: {} },
   });
 
-  expect(result.current.theme.colors).toEqual(defaultTheme.colors);
+  expect(result.current.theme.rawColors).toEqual(defaultTheme.colors);
 });
 
 test('should return new theme colors', () => {
   const newColor = '#000';
 
   const { result } = renderHook(() => useTheme(), {
-    wrapper: ThemeProvider,
-    initialProps: {
-      theme: {
-        colors: {
-          background: newColor,
-          text: newColor,
-          primary: newColor,
-          secondary: newColor,
-        },
-      },
-    },
+    wrapper: ({ children }: any) => (
+      <ThemeProvider
+        theme={{
+          colors: {
+            background: newColor,
+            text: newColor,
+            primary: newColor,
+            secondary: newColor,
+          },
+        }}
+      >
+        {children}
+      </ThemeProvider>
+    ),
   });
 
-  expect(result.current.theme.colors?.background).toEqual(newColor);
-  expect(result.current.theme.colors?.text).toEqual(newColor);
-  expect(result.current.theme.colors?.primary).toEqual(newColor);
-  expect(result.current.theme.colors?.secondary).toEqual(newColor);
+  expect(result.current.theme.rawColors?.background).toEqual(newColor);
+  expect(result.current.theme.rawColors?.text).toEqual(newColor);
+  expect(result.current.theme.rawColors?.primary).toEqual(newColor);
+  expect(result.current.theme.rawColors?.secondary).toEqual(newColor);
 });
 
 test('should pass variants', () => {
@@ -54,13 +57,16 @@ test('should pass variants', () => {
   };
 
   const { result } = renderHook(() => useTheme(), {
-    wrapper: ThemeProvider,
-    initialProps: {
-      theme: {
-        colors: {},
-        ...variants,
-      },
-    },
+    wrapper: ({ children }: any) => (
+      <ThemeProvider
+        theme={{
+          colors: {},
+          ...variants,
+        }}
+      >
+        {children}
+      </ThemeProvider>
+    ),
   });
 
   expect(result.current.theme.cards).toEqual(
