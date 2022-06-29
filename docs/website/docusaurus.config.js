@@ -83,6 +83,11 @@ const config = {
           },
           // { to: '/blog', label: 'Blog', position: 'left' },
           {
+            href: 'https://storybook.ttoss.dev/',
+            position: 'left',
+            label: 'Storybook',
+          },
+          {
             href: 'https://github.com/facebook/docusaurus',
             label: 'GitHub',
             position: 'right',

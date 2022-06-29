@@ -1,0 +1,7 @@
+environments:
+  Production:
+    acm: arn:aws:acm:us-east-1:483684946879:certificate/43bc7fe3-7b45-4175-ac84-83cd09e67591
+    aliases:
+      - storybook.ttoss.dev
+    cloudfront: true
+    stackName: TtossStorybook
