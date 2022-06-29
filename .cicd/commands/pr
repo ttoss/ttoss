@@ -1,1 +1,1 @@
-yarn turbo run build test lint deploy
+turbo run build test lint deploy

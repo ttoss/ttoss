@@ -1,1 +1,1 @@
-yarn turbo run deploy -- --destroy
+turbo run deploy --only -- --destroy

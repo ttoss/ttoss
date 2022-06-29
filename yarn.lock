@@ -5697,19 +5697,6 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
-"@ttoss/config@^1.16.4":
-  version "1.16.4"
-  resolved "https://registry.yarnpkg.com/@ttoss/config/-/config-1.16.4.tgz#d77fb93b3d1649bcbdddcdae3157a08733d1145d"
-  integrity sha512-MmIUOn2hDFEU7UjXBvkSnQaW31fVmubx4/DxjHg8WVSIXILUz81S+ea8l002Bm09DQk75kLdljxpNCBTp4q4Kg==
-  dependencies:
-    "@babel/preset-env" "^7.18.6"
-    "@babel/preset-react" "^7.18.6"
-    "@babel/preset-typescript" "^7.18.6"
-    "@commitlint/config-conventional" "^17.0.3"
-    "@formatjs/ts-transformer" "^3.9.8"
-    babel-plugin-formatjs "^10.3.24"
-    deepmerge "^4.2.2"
-
 "@types/adm-zip@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@types/adm-zip/-/adm-zip-0.5.0.tgz#94c90a837ce02e256c7c665a6a1eb295906333c1"
