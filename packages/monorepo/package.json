@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.16.1",
+  "version": "1.16.4",
   "description": "Monorepo setup for ttoss",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -20,7 +20,7 @@
     "deploy": "echo deploy"
   },
   "dependencies": {
-    "@ttoss/config": "^1.16.1",
+    "@ttoss/config": "^1.16.4",
     "@ttoss/eslint-config": "^1.16.1",
     "eslint": "^8.17.0",
     "husky": "^8.0.1",
