@@ -37,9 +37,11 @@ export const getClosedPrCommands = ({ branch }: { branch: string }) => [
   /**
    * Exit without error if `closed-pr` does not exist.
    */
-  `[ -f "${getCommandFileDir('closed-pr')}" ] && sh ${getCommandFileDir(
+  `[ ! -f "${getCommandFileDir(
     'closed-pr'
-  )} || echo 'closed-pr command not found'; exit 0`,
+  )}" ] && echo 'closed-pr command not found' || sh ${getCommandFileDir(
+    'closed-pr'
+  )}`,
 ];
 
 export const getMainCommands = () => [
