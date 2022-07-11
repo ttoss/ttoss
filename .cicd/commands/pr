@@ -1,2 +1,1 @@
-yarn run build
-yarn run deploy
+yarn run deploy --filter=[main]
