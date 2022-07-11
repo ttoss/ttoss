@@ -25,7 +25,7 @@ log.addLevel('event', 10000, { fg: 'yellow' });
 log.addLevel('output', 10000, { fg: 'blue' });
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
-  (extension) => `./cloudformation.${extension}`
+  (extension) => `.src/cloudformation.${extension}`
 );
 
 const findAndReadCloudFormationTemplate = ({

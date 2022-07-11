@@ -1,9 +1,9 @@
-yarn run build
+export CARLIN_ENVIRONMENT=Production
+
+yarn run deploy
 
 echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
 
 yarn run publish
 
-export CARLIN_ENVIRONMENT=Production
 
-yarn run deploy

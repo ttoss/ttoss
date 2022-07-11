@@ -6,8 +6,7 @@
   "scripts": {
     "turbo": "turbo",
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
-    "build": "turbo run build lint test",
-    "deploy": "turbo run deploy --only",
+    "deploy": "turbo run build lint test deploy",
     "publish": "lerna publish --yes --no-verify-access",
     "destroy": "turbo run deploy --only -- --destroy"
   },
