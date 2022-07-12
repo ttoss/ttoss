@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/ttoss/ttoss/compare/v1.16.5...v1.17.0) (2022-07-12)
+
+### Features
+
+* add onboarding apps ([#13](https://github.com/ttoss/ttoss/issues/13)) ([0685034](https://github.com/ttoss/ttoss/commit/068503412ef20395988c613ff8e9867578f04c22))
+
 ## [1.16.5](https://github.com/ttoss/ttoss/compare/v1.16.4...v1.16.5) (2022-06-29)
 
 **Note:** Version bump only for package @docs/website
