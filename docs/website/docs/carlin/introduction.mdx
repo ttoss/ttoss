@@ -1,0 +1,32 @@
+---
+title: Introduction
+sidebar_position: 1
+---
+
+import { Carlin } from "../../src/components/Carlin";
+import { CodeBlock } from "../../src/components/CodeBlock";
+import { testsCoverageThreshold } from "../../.docusaurus/carlin/default/testsCoverageThreshold";
+
+This project has been built since 2018 as helpers scripts that we in our
+engineering processes, from making AWS deployments to handling environment
+variables. We created the first scripts to deploy CloudFormation templates as
+we've started performing numerous deployments along with staging, production and
+development environments.
+
+As the scripts grew, we've decided to put them all in a CLI and to publish as a [NPM package](https://www.npmjs.com/package/carlin) to allow the whole team uses it in all projects. We've decided to name the package as <Carlin />.
+
+We've changed <Carlin /> API at least five times, always trying to provide the best API as possible. Currently, <Carlin /> has a stable API, and, for that reason, we've decided to open-source it, joining as a [ttoss](https://ttoss.dev) project.
+
+## Should you use <Carlin /> in production?
+
+**It depends**. We've been using it for a long time, and it suits us very well in our projects. We recommend using it if you have these two conditions:
+
+1. **You know all <Carlin /> algorithms.**
+
+2. **You know how to fix a deployment manually if some error occurs.**
+
+## Testing coverage
+
+Tests are critical to <Carlin /> because it's present in 100% of our projects. Currently, our [tests coverage](https://en.wikipedia.org/wiki/Code_coverage) threshold is:
+
+<CodeBlock className="json">{testsCoverageThreshold}</CodeBlock>

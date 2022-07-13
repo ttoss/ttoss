@@ -1,6 +1,8 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+const path = require('path');
+
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
@@ -8,7 +10,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'ttoss',
   tagline: 'Dinosaurs are cool',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://ttoss.dev',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -26,6 +28,8 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  plugins: [path.resolve(__dirname, 'lifecycle/carlin')],
 
   presets: [
     [
