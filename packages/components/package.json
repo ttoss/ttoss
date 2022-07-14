@@ -35,12 +35,13 @@
     "react-modal": "^3.15.1"
   },
   "peerDependencies": {
-    "@ttoss/ui": "^1.15.2",
+    "@ttoss/ui": "^1.16.5",
     "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "^1.15.2",
     "@ttoss/test-utils": "^1.15.2",
+    "@ttoss/ui": "^1.16.5",
     "@types/jest": "^28.1.5",
     "jest": "^28.1.3"
   }
