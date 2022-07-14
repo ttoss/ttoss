@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/ttoss/ttoss/compare/v1.17.0...v1.18.0) (2022-07-14)
+
+### Features
+
+* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+
 # [1.17.0](https://github.com/ttoss/ttoss/compare/v1.16.5...v1.17.0) (2022-07-12)
 
 ### Features

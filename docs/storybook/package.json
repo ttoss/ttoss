@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "1.16.5",
+  "version": "1.18.0",
   "private": true,
   "author": "ttoss",
   "scripts": {
@@ -11,8 +11,8 @@
     "deploy": "carlin deploy static-app"
   },
   "dependencies": {
-    "@ttoss/components": "^1.15.2",
-    "@ttoss/ui": "^1.16.5"
+    "@ttoss/components": "^1.18.0",
+    "@ttoss/ui": "^1.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",

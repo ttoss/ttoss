@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "1.16.5",
+  "version": "1.18.0",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "UNLICENSED",
   "publishConfig": {
