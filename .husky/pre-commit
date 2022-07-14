@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+yarn run build-graph
 yarn lint-staged -c node_modules/@ttoss/monorepo/config/lintstagedrc.js
