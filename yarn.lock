@@ -5980,13 +5980,6 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
-"@ttoss/components@^1.16.1":
-  version "1.16.1"
-  resolved "https://registry.yarnpkg.com/@ttoss/components/-/components-1.16.1.tgz#7ce2b100105b4a0535594aa146068c4684d26105"
-  integrity sha512-Ov2StRBEIpSlB8iVMw46ew0hqEC9RqE31jGb4Fo8RaCSf2mW6FvuyjMy3fSBMpFAgq3hjzWpGuz0o2YlJdOYMw==
-  dependencies:
-    "@ttoss/ui" "^1.16.1"
-
 "@types/adm-zip@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@types/adm-zip/-/adm-zip-0.5.0.tgz#94c90a837ce02e256c7c665a6a1eb295906333c1"
