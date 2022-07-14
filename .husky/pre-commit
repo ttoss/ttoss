@@ -2,4 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 yarn run build-graph
+git add turbo-build-graph.png
 yarn lint-staged -c node_modules/@ttoss/monorepo/config/lintstagedrc.js
