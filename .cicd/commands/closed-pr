@@ -1,2 +1,2 @@
-yarn turbo run build --only --filter=carlin
+yarn workspace carlin build
 yarn run destroy

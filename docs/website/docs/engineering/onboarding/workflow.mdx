@@ -3,32 +3,42 @@ title: Workflow
 sidebar_position: 2
 ---
 
+import { ClickUpStatus } from "../../../src/components/ClickUpStatus";
+
+## ClickUp
+
 We use ClickUp to track the progress of our work.
 
-## Statuses
+### Statuses
 
-- [Sorting](#sorting)
-- [Working](#working)
-- [Blocked](#blocked)
-- [Done](#done)
-- [Canceled](#canceled)
+#### <ClickUpStatus status="Sorting" />
 
-### Sorting
+This status represents the stories and tasks that the team should do someday or that the team needs to do more research before starting.
 
-This status represents the stories and tasks that the team should do someday. It includes PM stories she creates because of her research and talks with customers.
+#### <ClickUpStatus status="Ready to Start" />
 
-### Working
+With the cadence of one week, the product team decides which stories and tasks they'll work on next. Once they choose them, the status changes to "Ready to Start."
 
-With the cadence of one week, the product team (PM, engineering, design, marketing) decides which stories or tasks they'll work on. Once they decide on the tasks, they change the status of the tasks to Working. The best practice is every team member gets only one story to work on to limit their WIP.
+#### <ClickUpStatus status="Working" />
 
-### Blocked
+The stories that each member is working on. The best practice is each team member gets only one story to work on to limit their WIP.
+
+#### <ClickUpStatus status="Blocked" />
 
 Something external from the product team is blocking the task.
 
-### Done
+##### Examples of blocked tasks:
 
-The person working on the task (engineer, designer, marketer) should move it to Done once he finishes. Before moving to Done, he should consult every team member to review and approve the task. This way, we won't need a second approval once the task finishes, and we give ownership and responsibility to the task owner.
+- The team is waiting for a decision of a stakeholder.
 
-### Canceled
+##### Example of NOT blocked tasks:
 
-The story or task is canceled, mainly because the market doesn't want that feature.
+- The task owner is waiting for the code review from some team members.
+
+#### <ClickUpStatus status="Canceled" />
+
+The team cancels the story, mainly because the market doesn't want that feature.
+
+#### <ClickUpStatus status="Closed" />
+
+The person working on the task has the ownership and responsibility to move to this status once she finishes. However, before closing the job, she may want to consult every team member to review and approve the implementation.
