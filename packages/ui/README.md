@@ -45,7 +45,6 @@ You can pass fonts URLs to `ThemeProvider` component thought `fonts` prop.
 <ThemeProvider
   fonts={[
     "https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap",
-    ,
     "https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap",
   ]}
 >
