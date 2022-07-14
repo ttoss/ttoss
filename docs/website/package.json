@@ -19,7 +19,7 @@
     "@docusaurus/module-type-aliases": "^2.0.0-beta.22",
     "@docusaurus/preset-classic": "^2.0.0-beta.22",
     "@mdx-js/react": "^1.6.22",
-    "@ttoss/components": "1.15.2",
+    "@ttoss/components": "^1.15.2",
     "@ttoss/ui": "^1.16.5",
     "carlin": "^1.17.0",
     "jsdoc-api": "^7.1.1",
