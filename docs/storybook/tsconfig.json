@@ -1,0 +1,4 @@
+{
+  "extends": "@ttoss/config/tsconfig.json",
+  "include": ["stories/**/*.tsx", ".storybook/**/*.tsx"]
+}

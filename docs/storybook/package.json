@@ -11,6 +11,7 @@
     "deploy": "carlin deploy static-app"
   },
   "dependencies": {
+    "@ttoss/components": "^1.15.2",
     "@ttoss/ui": "^1.16.5"
   },
   "devDependencies": {

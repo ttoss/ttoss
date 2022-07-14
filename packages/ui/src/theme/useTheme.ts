@@ -1,3 +1,3 @@
-import { useThemeUI } from '@theme-ui/core';
+import { useThemeUI } from 'theme-ui';
 
 export const useTheme = useThemeUI;
