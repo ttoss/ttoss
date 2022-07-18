@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0](https://github.com/ttoss/ttoss/compare/v1.18.0...v1.19.0) (2022-07-18)
+
+### Features
+
+* adding google-maps project to ttoss ([#18](https://github.com/ttoss/ttoss/issues/18)) ([3924d9e](https://github.com/ttoss/ttoss/commit/3924d9eaa2e6b538d7deb51a1dc623f3d9af563b))
+
 # [1.18.0](https://github.com/ttoss/ttoss/compare/v1.17.0...v1.18.0) (2022-07-14)
 
 ### Bug Fixes
