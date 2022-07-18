@@ -1,0 +1,39 @@
+{
+  "name": "@ttoss/hooks",
+  "version": "1.16.1",
+  "description": "React hooks.",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "keywords": [
+    "React",
+    "hooks"
+  ],
+  "author": "ttoss",
+  "contributors": [
+    {
+      "email": "pedro@arantespp.com",
+      "name": "Pedro Arantes",
+      "url": "https://arantespp.com/contact"
+    }
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.16.1",
+    "@ttoss/test-utils": "^1.16.1"
+  }
+}
