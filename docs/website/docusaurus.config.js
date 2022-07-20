@@ -12,7 +12,7 @@ const config = {
   tagline: 'Dinosaurs are cool',
   url: 'https://ttoss.dev',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
@@ -92,7 +92,7 @@ const config = {
             label: 'Storybook',
           },
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/ttoss/ttoss',
             label: 'GitHub',
             position: 'right',
           },
