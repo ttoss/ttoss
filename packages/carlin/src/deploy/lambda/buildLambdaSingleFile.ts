@@ -9,10 +9,6 @@ const outFolder = 'dist';
 
 const outFile = 'index.js';
 
-/**
- * Using Webpack because of issue #8.
- * {@link https://github.com/ttoss/carlin/issues/8}
- */
 export const buildLambdaSingleFile = async ({
   lambdaExternals,
   lambdaInput,
@@ -24,7 +20,7 @@ export const buildLambdaSingleFile = async ({
 
   const { errors } = esbuild.buildSync({
     banner: {
-      js: '// Powered by carlin (https://carlin.ttoss.dev)',
+      js: '// Powered by carlin (https://ttoss.dev)',
     },
     bundle: true,
     entryPoints: [path.resolve(process.cwd(), lambdaInput)],

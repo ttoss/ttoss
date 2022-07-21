@@ -25,7 +25,7 @@ log.addLevel('event', 10000, { fg: 'yellow' });
 log.addLevel('output', 10000, { fg: 'blue' });
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
-  (extension) => `.src/cloudformation.${extension}`
+  (extension) => `./src/cloudformation.${extension}`
 );
 
 const findAndReadCloudFormationTemplate = ({
@@ -108,16 +108,6 @@ export const deployCloudFormation = async ({
       Parameters: parameters || [],
     };
 
-    /**
-     * 1. If Lambda code exists, build and upload the code to base stack bucket.
-     *
-     *     1. If `lambdaImage` is `false`, retrieve the `bucket`, `key`, and
-     *     `version` of the uploaded code and pass to CloudFormation template
-     *     as [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html).
-     *
-     *     1. If `lambdaImage` is `true`, a Lambda image will be created and the
-     *     image URI will be passed to CloudFormation as parameter.
-     */
     const deployCloudFormationDeployLambdaCode = async () => {
       const response = await deployLambdaCode({
         lambdaDockerfile,
@@ -147,7 +137,6 @@ export const deployCloudFormation = async ({
           cloudFormationTemplate.Parameters = {
             LambdaS3Bucket: { Type: 'String' },
             LambdaS3Key: { Type: 'String' },
-            LambdaS3Version: { Type: 'String' },
             LambdaS3ObjectVersion: { Type: 'String' },
             ...cloudFormationTemplate.Parameters,
           };
@@ -167,17 +156,11 @@ export const deployCloudFormation = async ({
             /**
              * Used by CloudFormation AWS::Lambda::Function
              * @see {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html}
-             */
-            {
-              ParameterKey: 'LambdaS3ObjectVersion',
-              ParameterValue: versionId,
-            },
-            /**
-             * Used by CloudFormation AWS::Serverless::Function
+             * and by CloudFormation AWS::Serverless::Function
              * @see {@link https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html}
              */
             {
-              ParameterKey: 'LambdaS3Version',
+              ParameterKey: 'LambdaS3ObjectVersion',
               ParameterValue: versionId,
             }
           );
