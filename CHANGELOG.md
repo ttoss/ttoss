@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.1](https://github.com/ttoss/ttoss/compare/v1.19.0...v1.19.1) (2022-07-21)
+
+### Bug Fixes
+
+* carlin template and update docs ([#21](https://github.com/ttoss/ttoss/issues/21)) ([45a31a9](https://github.com/ttoss/ttoss/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
+
 # [1.19.0](https://github.com/ttoss/ttoss/compare/v1.18.0...v1.19.0) (2022-07-18)
 
 ### Features

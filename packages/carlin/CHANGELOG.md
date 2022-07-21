@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.1](https://github.com/ttoss/carlin/compare/v1.19.0...v1.19.1) (2022-07-21)
+
+### Bug Fixes
+
+* carlin template and update docs ([#21](https://github.com/ttoss/carlin/issues/21)) ([45a31a9](https://github.com/ttoss/carlin/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
+
 # [1.17.0](https://github.com/ttoss/carlin/compare/v1.16.5...v1.17.0) (2022-07-12)
 
 **Note:** Version bump only for package carlin
