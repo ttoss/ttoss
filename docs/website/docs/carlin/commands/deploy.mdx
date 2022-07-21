@@ -4,14 +4,16 @@ sidebar_position: 1
 
 import { Algorithm } from "../../../src/components/Algorithm";
 import { Carlin } from "../../../src/components/Carlin";
+import { CodeBlock } from "../../../src/components/CodeBlock";
 import { Examples } from "../../../src/components/Examples";
 import { InnerHTML } from "../../../src/components/InnerHTML";
 import { OptionAliasesInline } from "../../../src/components/OptionAliasesInline";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 import { cliOptions } from "../../../.docusaurus/carlin/default/cliOptions";
 import { defaultTemplatePaths } from "../../../.docusaurus/carlin/default/defaultTemplatePaths";
 import { deployComment } from "../../../.docusaurus/carlin/default/deployComment";
-import { deployCloudFormationDeployLambdaCodeComment } from "../../../.docusaurus/carlin/default/deployCloudFormationDeployLambdaCodeComment";
 import { deployExamples } from "../../../.docusaurus/carlin/default/deployExamples";
 import { deployLambdaCodeComment } from "../../../.docusaurus/carlin/default/deployLambdaCodeComment";
 import { deployOptions } from "../../../.docusaurus/carlin/default/deployOptions";
@@ -75,21 +77,134 @@ update or a delete is performed.
 
 ## Lambda
 
-If <code children={deployOptions['lambda-input'].default} /> or any file defined by <OptionAliasesInline options={deployOptions} option="lambda-input" to="/docs/api-reference/deploy#lambda-input" /> exists, <Carlin /> will deploy with the Lambda algorithm.
-
-:::note Algorithm
-
-<Algorithm algorithm={deployCloudFormationDeployLambdaCodeComment} />
-:::
-
-The build and upload algorithm is:
+If <code children={deployOptions['lambda-input'].default} /> or any file defined by <OptionAliasesInline options={deployOptions} option="lambda-input" to="/docs/api-reference/deploy#lambda-input" /> exists, <Carlin /> will deploy with the Lambda algorithm:
 
 :::note Algorithm
 
 <Algorithm algorithm={deployLambdaCodeComment} />
 :::
 
-### Use Cases:
+Once the algorithm upload the code to S3 and retrieve the bucket, key,
+and version, you can access them adding the following [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html) to
+the CloudFormation template:
+
+<Tabs groupId="cfnTemplate">
+<TabItem value="ts" label="TypeScript" default>
+
+```ts
+export default {
+  // ...
+  Parameters: {
+    LambdaS3Bucket: {
+      Type: "String",
+      Description: "The S3 bucket where the Lambda code is stored.",
+    },
+    LambdaS3Key: {
+      Type: "String",
+      Description: "The S3 key where the Lambda code is stored.",
+    },
+    LambdaS3ObjectVersion: {
+      Type: "String",
+      Description: "The S3 object version of the Lambda code.",
+    },
+  },
+};
+```
+
+</TabItem>
+<TabItem value="yaml" label="Yaml">
+
+```yml
+Parameters:
+  LambdaS3Bucket:
+    Type: String
+    Description: The S3 bucket where the Lambda code is stored.
+  LambdaS3Key:
+    Type: String
+    Description: The S3 key where the Lambda code is stored.
+  LambdaS3ObjectVersion:
+    Type: String
+    Description: The S3 object version of the Lambda code.
+```
+
+</TabItem>
+</Tabs>
+
+With this, you can set the [`Code`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
+property of the [AWS::Lambda::Function resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html)
+or [`CodeUri`](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html) property
+of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html).
+
+After defining the parameters, you can reference them in your template this way:
+
+<Tabs groupId="cfnTemplate">
+<TabItem value="ts" label="TypeScript" default>
+
+```ts
+export default {
+  // ...
+  Resources: {
+    LambdaFunction: {
+      Type: "AWS::Lambda::Function",
+      Properties: {
+        Code: {
+          S3Bucket: {
+            Ref: "LambdaS3Bucket",
+          },
+          S3Key: {
+            Ref: "LambdaS3Key",
+          },
+          S3ObjectVersion: {
+            Ref: "LambdaS3ObjectVersion",
+          },
+        },
+      },
+    },
+    ServerlessFunction: {
+      Type: "AWS::Serverless::Function",
+      Properties: {
+        CodeUri: {
+          Bucket: {
+            Ref: "LambdaS3Bucket",
+          },
+          Key: {
+            Ref: "LambdaS3Key",
+          },
+          Version: {
+            Ref: "LambdaS3ObjectVersion",
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+</TabItem>
+<TabItem value="yaml" label="Yaml">
+
+```yml
+Resources:
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref LambdaS3Bucket
+        S3Key: !Ref LambdaS3Key
+        S3ObjectVersion: !Ref LambdaS3ObjectVersion
+  ServerlessFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaS3Bucket
+        Key: !Ref LambdaS3Key
+        Version: !Ref LambdaS3ObjectVersion
+```
+
+</TabItem>
+</Tabs>
+
+### Use Cases
 
 - _[POC - AWS Serverless REST API](https://github.com/ttoss/poc-aws-serverless-rest-api/tree/112df23a823294a8b29d0c70f1d0127373759ef1)_
 

@@ -8,11 +8,13 @@ import log from 'npmlog';
 const logPrefix = 'lambda';
 
 /**
- * 1. Build Lambda code using Webpack. The build process create a single file.
- *  1. If packages is passed to `lambda-externals` option, Webpack will ignore
- *  them.
+ * 1. Build Lambda code using esbuild. The build process will create a single
+ * file with all your code.
+ *  1. The build will ignore packages on `lambda-externals` option.
  * 1. Zip the output file.
  * 1. Upload the zipped code to base stack bucket.
+ * 1. Add the code bucket, key and version to the CloudFormation template as
+ * parameters.
  */
 export const deployLambdaCode = async ({
   lambdaDockerfile,

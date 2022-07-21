@@ -41,11 +41,11 @@ export const limitStackName = (stackName: string) =>
  *
  * | Case | Package Name | Environment | Branch Name | `--stack-name` | Stack Name |
  * | ---- | ------------ | ----------- | ----------  | -------------- | ---------- |
- * | #1 | @package/name | prod | main | MyStackName | **MyStackName** |
- * | #2 | @package/name | prod | main | | **PackageName-prod** |
+ * | #1 | @package/name | Production | main | MyStackName | **MyStackName** |
+ * | #2 | @package/name | Production | main | | **PackageName-Production** |
  * | #3 | @package/name | | main | | **PackageName-main** |
  * | #4 | @package/name | | | | **PackageName** |
- * | #5 | | prod | main | | **Stack-96820-prod** |
+ * | #5 | | Production | main | | **Stack-96820-Production** |
  * | #6 | | | main | | **Stack-96820-main** |
  * | #7 | | | | | **Stack-96820** |
  *
