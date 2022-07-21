@@ -43,12 +43,18 @@ jest.mock('./stackName', () => ({
   getStackName: jest.fn(),
 }));
 
-import { deployCloudFormation } from './cloudFormation';
+import { defaultTemplatePaths, deployCloudFormation } from './cloudFormation';
 
 const mockStackName = faker.random.word();
 
 beforeAll(() => {
   (getStackName as jest.Mock).mockReturnValue(mockStackName);
+});
+
+test('all templates paths should start with .src', () => {
+  defaultTemplatePaths.forEach((path) => {
+    expect(path.startsWith('./src/cloudformation.')).toBeTruthy();
+  });
 });
 
 describe('testing deployCloudFormation method', () => {
@@ -112,10 +118,6 @@ describe('testing deployCloudFormation method', () => {
             ParameterKey: 'LambdaS3ObjectVersion',
             ParameterValue: deployLambdaCodeResponse.versionId,
           },
-          {
-            ParameterKey: 'LambdaS3Version',
-            ParameterValue: deployLambdaCodeResponse.versionId,
-          },
         ],
         StackName: mockStackName,
       },
@@ -129,9 +131,6 @@ describe('testing deployCloudFormation method', () => {
             Type: 'String',
           },
           LambdaS3ObjectVersion: {
-            Type: 'String',
-          },
-          LambdaS3Version: {
             Type: 'String',
           },
         },

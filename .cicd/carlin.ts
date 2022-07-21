@@ -1,6 +1,8 @@
 import { secrets } from './secrets';
 
 export default {
+  cpu: '4096',
+  memory: '8192',
   pipelines: ['pr', 'main'],
   slackWebhookUrl: secrets.slackWebhookUrl,
   sshKey: './ssh-key',
