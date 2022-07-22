@@ -13,13 +13,9 @@ test('set +x', () => {
 
   expect(pipelinesModule.getPrCommands({ branch })).toMatchObject(
     expect.arrayContaining([
-      `git checkout ${branch} || (echo 'branch not found, probably deleted'; exit 0)`,
-    ])
-  );
-
-  expect(pipelinesModule.getPrCommands({ branch })).toMatchObject(
-    expect.arrayContaining([
       'set -e',
+      `git checkout ${branch} || (echo 'branch not found, probably deleted'; exit 0)`,
+      'yarn install --frozen-lockfile',
       `sh -e ${pipelinesModule.getCommandFileDir('pr')}`,
     ])
   );
@@ -27,6 +23,7 @@ test('set +x', () => {
   expect(pipelinesModule.getMainCommands()).toMatchObject(
     expect.arrayContaining([
       'set -e',
+      'yarn install --frozen-lockfile',
       `sh -e ${pipelinesModule.getCommandFileDir('main')}`,
     ])
   );
@@ -34,6 +31,7 @@ test('set +x', () => {
   expect(pipelinesModule.getTagCommands({ tag })).toMatchObject(
     expect.arrayContaining([
       'set -e',
+      'yarn install --frozen-lockfile',
       `sh -e ${pipelinesModule.getCommandFileDir('tag')}`,
     ])
   );
