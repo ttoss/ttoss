@@ -1,6 +1,6 @@
 {
   "name": "carlin",
-  "version": "1.19.1",
+  "version": "1.19.2",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
