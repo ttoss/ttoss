@@ -1,9 +1,9 @@
 export CARLIN_ENVIRONMENT=Production
 
-yarn run deploy
+LATEST_TAG=$(git describe --tags --abbrev=0)
+
+yarn run deploy --filter=[$LATEST_TAG]
 
 echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
 
 yarn run publish
-
-
