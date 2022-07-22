@@ -21,7 +21,7 @@ export const getPrCommands = ({ branch }: { branch: string }) => [
   `git pull origin ${branch}`,
   'git rev-parse HEAD',
   'git status',
-  'yarn',
+  'yarn install --frozen-lockfile',
   `sh -e ${getCommandFileDir('pr')}`,
 ];
 
@@ -58,7 +58,7 @@ export const getMainCommands = () => [
    * pipeline again.
    */
   'if git describe --exact-match; then echo "Tag found" && carlin cicd-ecs-task-report --status=MainTagFound && exit 0; fi',
-  'yarn',
+  'yarn install --frozen-lockfile',
   `sh -e ${getCommandFileDir('main')}`,
 ];
 
@@ -69,6 +69,6 @@ export const getTagCommands = ({ tag }: { tag: string }) => [
   'git fetch --tags',
   `git checkout tags/${tag} -b ${tag}-branch`,
   'git rev-parse HEAD',
-  'yarn',
+  'yarn install --frozen-lockfile',
   `sh -e ${getCommandFileDir('tag')}`,
 ];
