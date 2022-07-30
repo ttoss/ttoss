@@ -4,6 +4,11 @@ import { Meta, Story } from '@storybook/react';
 import { Modal } from '@ttoss/components';
 import { action } from '@storybook/addon-actions';
 
+export default {
+  title: 'Components/Modal',
+  component: Modal,
+} as Meta;
+
 Modal.setAppElement('#root');
 
 const Template: Story<{
@@ -77,8 +82,3 @@ LargeModal.args = {
   width: 500,
   height: 500,
 };
-
-export default {
-  title: 'Components/Modal',
-  component: Modal,
-} as Meta;
