@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.20.0...@docs/website@1.21.0) (2022-07-30)
+
+### Features
+
+* add accordion ([#25](https://github.com/ttoss/ttoss/issues/25)) ([9ef8732](https://github.com/ttoss/ttoss/commit/9ef8732658749a3232b0dece09e4b4bba63bab0b))
+* add proposals to docs ([#24](https://github.com/ttoss/ttoss/issues/24)) ([5d83f18](https://github.com/ttoss/ttoss/commit/5d83f18f1d3d3693c51ac761b4541f0ee11e033e))
+
 # 1.20.0 (2022-07-22)
 
 ## 1.19.1 (2022-07-21)
