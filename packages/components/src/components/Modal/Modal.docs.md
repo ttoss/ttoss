@@ -4,7 +4,7 @@ This components uses [react-modal package](http://reactcommunity.org/react-modal
 
 ## Storybook
 
-[Modal Stories](https://storybook.ttoss.dev/?path=/story/components-modal)
+[Stories](https://storybook.ttoss.dev/?path=/story/components-modal)
 
 ## Example
 
