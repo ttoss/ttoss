@@ -151,9 +151,19 @@ import * as globalStorybookConfig from "./.storybook/preview";
 setGlobalConfig(globalStorybookConfig);
 ```
 
-#### Storyshoots
+#### Storyshots
 
-... TODO
+To start using `storyshots` you will need to add this key to your `package.json`.
+
+Ref: https://issuehunt.io/r/storybookjs/storybook/issues/17985
+
+```json
+{
+  "resolutions": {
+    "react-test-renderer": "18.1.0"
+  }
+}
+```
 
 ### Relay
 
@@ -180,4 +190,32 @@ import { faker } from "@ttoss/test-utils/faker";
 const randomName = faker.name.findName();
 const randomEmail = faker.internet.email();
 const randomCard = faker.helpers.createCard();
+```
+
+### User Event
+
+To render components it is recommended that you use a structure similar to the one below. If you need more information about this structure, you can consult this [link here.](https://testing-library.com/docs/user-event/setup)
+
+```tsx
+function setup(jsx: any) {
+  return {
+    user: userEvent.setup({
+      // Use this key if you need to make async tests, like having clicks, write, paste, etc...
+      // ref: https://testing-library.com/docs/user-event/options
+      advanceTimers: () => Promise.resolve(),
+    }),
+    ...render(jsx),
+  };
+}
+
+const onOpen = js.fn();
+
+test("Testing something", async () => {
+  const { user } = setup(<Example onOpen={onOpen} />);
+
+  const buttonMenu = screen.getByLabelText("button-menu");
+  await user.click(buttonMenu);
+
+  expect(screen.getByLabelText("menu-container")).toBeTruthy();
+});
 ```
