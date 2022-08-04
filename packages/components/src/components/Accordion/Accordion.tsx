@@ -1,5 +1,4 @@
-/** @jsxImportSource theme-ui */
-
+import * as React from 'react';
 import {
   AccordionItem,
   AccordionItemButton,
@@ -7,7 +6,9 @@ import {
   AccordionItemPanel,
   Accordion as ReactAccessibleAccordion,
 } from 'react-accessible-accordion';
-import { Box, BoxProps } from '@ttoss/ui';
+import { Box, BoxProps, useTheme } from '@ttoss/ui';
+import { css as createClassName } from '@emotion/css';
+import { css as transformStyleObject } from '@theme-ui/css';
 
 export type AccordionProps = BoxProps & {
   // https://github.com/springload/react-accessible-accordion#accordion
@@ -28,25 +29,29 @@ export const Accordion = ({
   onChange,
   ...boxProps
 }: AccordionProps) => {
+  const { theme } = useTheme();
+
+  const className = React.useMemo(() => {
+    const styles = transformStyleObject({
+      '.accordion__item': {
+        marginBottom: 3,
+      },
+      '.accordion__heading': {
+        padding: 2,
+        border: '1px solid',
+        borderColor: 'black',
+      },
+      '.accordion__button': {},
+      '.accordion__panel': {
+        padding: 2,
+      },
+    })(theme);
+
+    return createClassName(styles);
+  }, [theme]);
+
   return (
-    <Box
-      {...boxProps}
-      sx={{
-        '.accordion__item': {
-          marginBottom: 3,
-        },
-        '.accordion__heading': {
-          padding: 2,
-          border: '1px solid',
-          borderColor: 'black',
-        },
-        '.accordion__button': {},
-        '.accordion__panel': {
-          padding: 2,
-        },
-        ...boxProps.sx,
-      }}
-    >
+    <Box variant="accordion" className={className} {...boxProps}>
       <ReactAccessibleAccordion
         {...{
           allowMultipleExpanded,
