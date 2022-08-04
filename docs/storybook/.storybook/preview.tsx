@@ -29,7 +29,9 @@ export const globalTypes = {
 
 export const decorators: DecoratorFn[] = [
   (Story, context) => {
-    const theme = themes[context.globals.theme];
+    const theme = {
+      ...themes[context.globals.theme],
+    };
 
     return (
       <ThemeProvider

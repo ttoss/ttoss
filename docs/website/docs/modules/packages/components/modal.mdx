@@ -1,12 +1,56 @@
 ---
 title: Modal
-hide_title: true
 ---
 
-import Readme, {
-  toc as ReadmeTOC,
-} from "../../../../../../packages/components/src/components/Modal/Modal.docs.md";
+This components uses [react-modal package](http://reactcommunity.org/react-modal) as a base and apply [@ttoss/ui](/docs/modules/packages/ui/) styles.
 
-<Readme />
+## Example
 
-export const toc = ReadmeTOC;
+You can check more examples on [modal stories](https://storybook.ttoss.dev/?path=/story/components-modal)
+
+```jsx
+import { Modal } from "@ttoss/components";
+import { Box, Flex, Text } from "@ttoss/ui";
+
+const Component = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <Box>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <Flex
+          sx={{
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Text>This is a modal.</Text>
+          <Button
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          >
+            Close Modal
+          </Button>
+        </Flex>
+      </Modal>
+      <Button
+        onClick={() => {
+          setIsOpen(true);
+        }}
+      >
+        Open Modal
+      </Button>
+    </Box>
+  );
+};
+```
+
+## API
+
+This components extends the API of [react-modal package](http://reactcommunity.org/react-modal/#usage).
