@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "private": true,
   "author": "ttoss",
   "scripts": {
@@ -11,7 +11,7 @@
     "deploy": "carlin deploy static-app"
   },
   "dependencies": {
-    "@ttoss/components": "^1.19.0",
+    "@ttoss/components": "^1.20.0",
     "@ttoss/ui": "^1.18.0"
   },
   "devDependencies": {

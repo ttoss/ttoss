@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.21.0...@docs/website@1.22.0) (2022-08-04)
+
+### Features
+
+* roadmap ([#27](https://github.com/ttoss/ttoss/issues/27)) ([2df374d](https://github.com/ttoss/ttoss/commit/2df374d8dfff2a9a686a20e14187fb359d837b92))
+
 # [1.21.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.20.0...@docs/website@1.21.0) (2022-07-30)
 
 ### Features
