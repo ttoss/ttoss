@@ -1,5 +1,4 @@
 import { act, renderHook } from '@ttoss/test-utils';
-
 import { useScript } from './useScript';
 
 const loadEvent = new Event('load');
