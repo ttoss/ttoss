@@ -1,0 +1,31 @@
+---
+title: Toast
+---
+
+This components uses [react-toastify package](https://fkhadra.github.io/react-toastify/introduction) as a base and apply [@ttoss/ui](/docs/modules/packages/ui/) styles.
+
+## Example
+
+You can check more examples on [`Toast` stories](https://storybook.ttoss.dev/?path=/story/components-toast)
+
+```jsx
+import { Button } from "@ttoss/ui";
+import { ToastContainer, toast } from "@ttoss/components";
+
+const MyComponent = () => {
+  const notify = () => {
+    toast("Default Notification!");
+    toast.success("Success Notification!");
+    toast.error("Error Notification!");
+    toast.warn("Warning Notification!");
+    toast.info("Info Notification!");
+  };
+
+  return (
+    <>
+      <ToastContainer />
+      <Button onClick={notify}>Notify</Button>
+    </>
+  );
+};
+```

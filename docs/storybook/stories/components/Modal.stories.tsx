@@ -34,7 +34,6 @@ const Template: Story<{
             height: args.height,
             flexDirection: 'column',
             alignItems: 'center',
-            backgroundColor: '#f0f0f0',
           }}
         >
           <Text>This is a modal.</Text>

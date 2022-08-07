@@ -6,7 +6,7 @@ This components uses [react-modal package](http://reactcommunity.org/react-modal
 
 ## Example
 
-You can check more examples on [modal stories](https://storybook.ttoss.dev/?path=/story/components-modal)
+You can check more examples on [`Modal` stories](https://storybook.ttoss.dev/?path=/story/components-modal)
 
 ```jsx
 import { Modal } from "@ttoss/components";
@@ -49,6 +49,26 @@ const Component = () => {
     </Box>
   );
 };
+```
+
+## Styles
+
+It follows the same rules as [react-modal](http://reactcommunity.org/react-modal/styles/). Example:
+
+```jsx
+<Modal
+  style={{
+    overlay: {
+      backgroundColor: "rgba(255, 255, 255, 0.75)",
+    },
+    content: {
+      top: "40px",
+      left: "40px",
+      right: "40px",
+      bottom: "40px",
+    },
+  }}
+/>
 ```
 
 ## API

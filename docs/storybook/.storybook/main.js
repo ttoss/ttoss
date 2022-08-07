@@ -14,13 +14,20 @@ module.exports = {
     'storybook-addon-locale',
   ],
   framework: '@storybook/react',
-  webpackFinal(config) {
+  webpackFinal: async (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/core': resolve('node_modules/@emotion/react'),
       '@emotion/styled': resolve('node_modules/@emotion/styled'),
       'emotion-theming': resolve('node_modules/@emotion/react'),
     };
+
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+
     return config;
   },
 };
