@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useGoogleMaps } from './../GoogleMapsProvider';
-
 import { useCallback, useEffect, useRef, useState } from 'react';
-
+import { useGoogleMaps } from './../GoogleMapsProvider';
 import _debounce from './debounce';
 import useLatest from './useLatest';
 
@@ -166,7 +164,10 @@ export const usePlacesAutocomplete = ({
   );
 
   useEffect(() => {
-    if (!initOnMount) return () => null;
+    if (!initOnMount) {
+      // eslint-disable-next-line react/display-name
+      return () => null;
+    }
 
     if (!googleMapsRef.current && !googleMaps && callbackName) {
       (window as any)[callbackName] = init;
