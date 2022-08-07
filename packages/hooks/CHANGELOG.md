@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.3](https://github.com/ttoss/ttoss/compare/@ttoss/hooks@1.20.1...@ttoss/hooks@1.20.3) (2022-08-07)
+
+### Bug Fixes
+
+* add git push to cicd comamnd ([dde7da2](https://github.com/ttoss/ttoss/commit/dde7da2c29357762fa18686b4a38f4399ea468f8))
+
 ## [1.20.1](https://github.com/ttoss/ttoss/compare/@ttoss/hooks@1.20.0...@ttoss/hooks@1.20.1) (2022-08-07)
 
 ### Bug Fixes

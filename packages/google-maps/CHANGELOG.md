@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.4](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@1.20.2...@ttoss/google-maps@1.20.4) (2022-08-07)
+
+### Bug Fixes
+
+* add git push to cicd comamnd ([dde7da2](https://github.com/ttoss/ttoss/commit/dde7da2c29357762fa18686b4a38f4399ea468f8))
+
 ## [1.20.2](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@1.20.1...@ttoss/google-maps@1.20.2) (2022-08-07)
 
 **Note:** Version bump only for package @ttoss/google-maps
