@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.19.0 (2022-08-07)
+
+### Features
+
+* add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
+
+# 1.18.0 (2022-07-14)
+
+### Features
+
+* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+
+## 1.16.5 (2022-06-29)
+
 # [1.18.0](https://github.com/ttoss/ttoss/compare/v1.17.0...v1.18.0) (2022-07-14)
 
 ### Features

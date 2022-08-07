@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "private": true,
   "author": "ttoss",
   "scripts": {
@@ -12,8 +12,8 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.20.0",
-    "@ttoss/ui": "^1.18.0"
+    "@ttoss/components": "^1.21.0",
+    "@ttoss/ui": "^1.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",

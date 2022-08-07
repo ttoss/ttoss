@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "React components.",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -43,9 +43,9 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.15.2",
-    "@ttoss/test-utils": "^1.15.2",
-    "@ttoss/ui": "^1.18.0",
+    "@ttoss/config": "^1.17.0",
+    "@ttoss/test-utils": "^1.16.6",
+    "@ttoss/ui": "^1.19.0",
     "@types/jest": "^28.1.5",
     "jest": "^28.1.3"
   }

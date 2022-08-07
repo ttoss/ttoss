@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.22.0...@docs/website@1.23.0) (2022-08-07)
+
+### Features
+
+* add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
+
 # [1.22.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.21.0...@docs/website@1.22.0) (2022-08-04)
 
 ### Features
