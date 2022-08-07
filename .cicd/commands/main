@@ -7,10 +7,10 @@ yarn run deploy --filter=[$LATEST_TAG]
 echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
 
 # Version before publish to rebuild all packages that Lerna will publish.
-yarn run version
+yarn lerna version --yes --no-push
 
 # Build all modified packages by Lerna version to not get the error to publish
 # without dist or build folder.
 yarn turbo run build test --filter=[$LATEST_TAG]
 
-yarn run publish
+yarn lerna publish from-git --yes --no-verify-access
