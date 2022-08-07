@@ -36,7 +36,7 @@ export const Modal = (props: ModalProps) => {
       /**
        * Theme
        */
-      background: theme.rawColors?.background?.toString() || '#fff',
+      backgroundColor: theme.rawColors?.background?.toString() || '#fff',
       padding,
       /**
        * General
@@ -48,7 +48,8 @@ export const Modal = (props: ModalProps) => {
       left: '0px',
       right: '0px',
       bottom: '0px',
-      border: '1px solid #ccc',
+      border: '2px solid',
+      borderColor: theme.rawColors?.muted?.toString() || '#fff',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
