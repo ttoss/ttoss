@@ -14,3 +14,5 @@ yarn lerna version --yes --no-push
 yarn turbo run build test --filter=[$LATEST_TAG]
 
 yarn lerna publish from-git --yes --no-verify-access
+
+git push --follow-tags
