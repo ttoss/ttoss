@@ -9,7 +9,6 @@ test('should load script', () => {
   /**
    * Arrange
    */
-
   const { result } = renderHook(() => useScript(src));
 
   /**
@@ -20,7 +19,6 @@ test('should load script', () => {
   /**
    * Act
    */
-
   act(() => {
     document.querySelectorAll('script')[0].dispatchEvent(loadEvent);
   });

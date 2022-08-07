@@ -7,6 +7,7 @@
     "turbo": "turbo",
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
     "deploy": "turbo run build lint test deploy",
+    "version": "lerna version --yes --no-push",
     "publish": "lerna publish --yes --no-verify-access",
     "destroy": "turbo run deploy --only -- --destroy"
   },
