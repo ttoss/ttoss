@@ -2,7 +2,7 @@ export CARLIN_ENVIRONMENT=Production
 
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
-yarn run deploy --filter=[$LATEST_TAG]
+yarn turbo run build test lint --filter=[$LATEST_TAG]
 
 echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
 
@@ -11,7 +11,7 @@ yarn lerna version --yes --no-push
 
 # Build all modified packages by Lerna version to not get the error to publish
 # without dist or build folder.
-yarn turbo run build test --filter=[$LATEST_TAG]
+yarn run deploy --filter=[$LATEST_TAG]
 
 yarn lerna publish from-git --yes --no-verify-access
 
