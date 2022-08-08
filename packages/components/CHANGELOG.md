@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.21.0...@ttoss/components@1.21.1) (2022-08-08)
+
+### Bug Fixes
+
+* remove css import next.js error ([#31](https://github.com/ttoss/ttoss/issues/31)) ([7345f08](https://github.com/ttoss/ttoss/commit/7345f08bd3634092e4887050bb28d9cc3224dd4a))
+
 # [1.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.20.0...@ttoss/components@1.21.0) (2022-08-07)
 
 ### Features

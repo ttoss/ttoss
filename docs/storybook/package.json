@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "private": true,
   "author": "ttoss",
   "scripts": {
@@ -12,7 +12,7 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.21.0",
+    "@ttoss/components": "^1.21.1",
     "@ttoss/ui": "^1.19.0"
   },
   "devDependencies": {
