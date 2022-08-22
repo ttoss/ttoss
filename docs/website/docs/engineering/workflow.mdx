@@ -1,0 +1,39 @@
+---
+title: Workflow
+sidebar_position: 2
+---
+
+import { ClickUpStatus } from "../../src/components/ClickUpStatus";
+
+## Goals
+
+We've created our workflow to achieve some goals to improve our product delivery.
+
+- Gives the team a clear vision of the product.
+- Help the team visualize the progress of the entire chain.
+
+## Fundamentals
+
+- Focus on the team members and not on the managers.
+- The workflow should fit all members of the cross-functional product team—product managers, designers, marketers, and engineers.
+- Each team member has the autonomy to complete, give suggestions, and decide on the tasks.
+
+## Workflow
+
+We use the Kanban framework to track our tasks, backlog items, and user stories.
+ClickUp is our project management platform because it enables the cross-functional team to use the same tool.
+
+The basis of the engineering workflow is the [Trunk Based Development](https://trunkbaseddevelopment.com/) branch model.
+Using [release from trunk](https://trunkbaseddevelopment.com/release-from-trunk/) strategy, we continuously deliver value to customers.
+To achieve this with quality, we follow:
+
+- Every task should have its tests and documentation, if needed.
+- Engineers should release small pieces of code every day as PR on GitHub. It also helps the team to give feedback and perform code reviews.
+  delivery
+
+### CI/CD
+
+Our entire CICD pipeline is automated (powered by [carlin](/docs/carlin/commands/deploy-cicd)), so we don't need to worry about
+the manual release, test validations, and deployment in any environment—Development, Staging, or Production.
+
+## FAQs
