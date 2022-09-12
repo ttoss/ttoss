@@ -1,11 +1,11 @@
 import { DescribeStackResourceCommand } from '@aws-sdk/client-cloudformation';
-import { faker } from '@ttoss/test-utils/faker';
 
-const mockWorkingStackName = faker.random.word();
+const mockWorkingStackName = 'mockWorkingStackName';
 
-const mockWorkingStackBucketName = faker.random.word();
+const mockWorkingStackBucketName = 'mockWorkingStackBucketName';
 
-const mockWorkingStackNameWithoutPhysicalResourceId = faker.random.word();
+const mockWorkingStackNameWithoutPhysicalResourceId =
+  'mockWorkingStackNameWithoutPhysicalResourceId';
 
 const notWorkingStackName = [
   mockWorkingStackName,
