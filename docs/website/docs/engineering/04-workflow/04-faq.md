@@ -1,6 +1,5 @@
 ---
 title: FAQ
-sidebar_position: 99
 ---
 
 ## General
