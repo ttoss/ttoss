@@ -1,6 +1,5 @@
 ---
 title: Principles
-sidebar_position: 1
 ---
 
 - Gives the team a clear vision of the product.

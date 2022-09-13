@@ -3,15 +3,11 @@ hide_title: true
 title: Github to ClickUp
 ---
 
-<h1 align="center">
-    Github ↔️ Clickup
-</h1>
-
-## 🗃 Clickup
+## 🗃 ClickUp
 
 ### 1 - User Story
 
-The project's Task starts in the **User Story** on the _Clickup_ platform.
+The project's Task starts in the **User Story** on the _ClickUp_ platform.
 
 ### 2 - User Feedback
 

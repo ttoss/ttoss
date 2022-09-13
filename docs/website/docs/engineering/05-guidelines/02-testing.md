@@ -1,4 +1,6 @@
-# Testing Guide - Triângulos Tecnologia
+---
+title: Testing
+---
 
 ## Summary
 
@@ -46,6 +48,7 @@ it("should send the profile data to the API and update the profile view properly
   // expect(...)to(...);
 });
 ```
+
 ```js
 //Correct
 
@@ -65,6 +68,7 @@ Organization means efficiency, that's why we use Data-Operation-Assert to organi
 > Note: This section is a direct abstraction of [Arrange-Act-Assert pattern](https://github.com/mawrkus/js-unit-testing-guide#-use-the-arrange-act-assert-pattern)
 
 Example:
+
 ```js
 test("Do anything", () => {
   //=> DATA
