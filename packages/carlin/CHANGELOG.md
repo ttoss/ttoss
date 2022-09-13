@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.4](https://github.com/ttoss/carlin/compare/carlin@1.19.3...carlin@1.19.4) (2022-09-12)
+
+### Bug Fixes
+
+* builds ([968c82b](https://github.com/ttoss/carlin/commit/968c82bbeccb598978c3dfdd34ae78f9deeebcb9))
+* **carlin:** tests random words ([7937ae1](https://github.com/ttoss/carlin/commit/7937ae126a62d7e59c6128d468f1a4590186b71b))
+
 ## [1.19.3](https://github.com/ttoss/carlin/compare/carlin@1.19.2...carlin@1.19.3) (2022-08-07)
 
 **Note:** Version bump only for package carlin
