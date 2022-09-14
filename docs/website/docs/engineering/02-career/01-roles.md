@@ -24,15 +24,15 @@ Working with us **MAY NOT** be good for you if you:
 
 A list of tasks that are common to all positions:
 
+:::note
+
+Don't forget that we'll always provide you with the tools, support, and environment to do your job the best way we can.
+
+:::
+
 - **Write code.** Write code with quality, following our [guidelines](/docs/engineering/guidelines), with tests, and documentation when necessary.
 - **Review Pull Requests.** Review your teammates' code and provide feedback to improve the code quality.
 - **Follow the entire [task cycle](/docs/engineering/workflow/kanban#teams-high-level-routine).** From the moment you receive a task until the moment you deliver it to production, you must follow and guarantee its whole cycle.
-
-:::note
-
-Don't forget that we'll provide you with the tools, support, and the environment to you do your job.
-
-:::
 
 ## Roles
 
