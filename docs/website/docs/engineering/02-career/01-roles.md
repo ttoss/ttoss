@@ -12,7 +12,7 @@ Working with us may be good for you if you:
 
 - **Want to work on our [technologies stack](/docs/engineering/technologies).** We chose our stack considering some market and engineering characteristics and decided to become experts on it. We concluded our stack is the best option for us to build our products and deliver value to our customers.
 - **Know how to manage yourself.** We don't micro-manage our team, except if you're a new team member and are still learning to work with us. We trust you to do your job, and we expect you to be responsible for your work once we provide the project's vision and goals.
-- **Enjoy working with our [workflow](/docs/engineering/workflow).** We created a workflow based on [Flow](https://arantespp.com/books/the-principles-of-product-development-flow), [Agile](/zettel/agile), Lean, and [Kanban](/zettel/kanban) principles.
+- **Enjoy working with our [workflow](/docs/engineering/workflow).** We created a workflow based on [Flow](https://arantespp.com/books/the-principles-of-product-development-flow), [Agile](https://arantespp.com/zettel/agile), Lean, and [Kanban](https://arantespp.com/zettel/kanban) principles.
 
 Working with us **MAY NOT** be good for you if you:
 
@@ -26,7 +26,7 @@ A list of tasks that are common to all positions:
 
 :::note
 
-Don't forget that we'll try hard to always provide you with the tools, support, and environment to do your job.
+Don't forget that we'll always provide you with the tools, support, and environment to do your job.
 
 :::
 
@@ -52,7 +52,7 @@ They assume more straightforward tasks because they're still learning, gaining e
 
 **_Requisites:_** [Junior Full Stack Developer](#junior-full-stack-developer) requisites and experience with [React.js](https://www.reactjs.org/) advanced, GraphQL, TypeScript, and AWS.
 
-They have more experience and higher knowledge and assume more complex tasks, from the backend to the frontend. They also know most of our company's [technologies stack](/docs/engineering/technologies) and take on project responsibilities.
+They have more experience and higher knowledge and assume more complex tasks, from the backend to the frontend. They also know most of our company's [technologies stack](/docs/engineering/technologies) and take responsibility for part of the projects.
 
 Mid-Level Software developers have two directions for career progression: [Senior Full Stack Developer](#senior-full-stack-developer) for a technical (keep coding career) or [Tech Lead](#tech-lead) for management and leadership paths.
 
@@ -60,7 +60,7 @@ Mid-Level Software developers have two directions for career progression: [Senio
 
 **_Requisites:_** [Mid-Level Full Stack Developer](#mid-level-full-stack-developer) requisites and experience implementing and architecting complex solutions.
 
-Senior Software Developers can assume any task and manage and architect any project. They take on higher responsibilities on projects.
+They can assume tasks of any complexity and work on defining the project's architectures. They take full responsibility for projects.
 
 ### Tech Lead
 
