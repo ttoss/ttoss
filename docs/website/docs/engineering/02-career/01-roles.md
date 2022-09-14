@@ -26,7 +26,7 @@ A list of tasks that are common to all positions:
 
 :::note
 
-Don't forget that we'll always provide you with the tools, support, and environment to do your job the best way we can.
+Don't forget that we'll try hard to always provide you with the tools, support, and environment to do your job.
 
 :::
 
