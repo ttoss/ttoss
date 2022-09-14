@@ -28,6 +28,12 @@ A list of tasks that are common to all positions:
 - **Review Pull Requests.** Review your teammates' code and provide feedback to improve the code quality.
 - **Follow the entire [task cycle](/docs/engineering/workflow/kanban#teams-high-level-routine).** From the moment you receive a task until the moment you deliver it to production, you must follow and guarantee its whole cycle.
 
+:::note
+
+Don't forget that we'll provide you with the tools, support, and the environment to you do your job.
+
+:::
+
 ## Roles
 
 ### Intern
