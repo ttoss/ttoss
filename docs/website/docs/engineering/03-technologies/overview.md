@@ -1,6 +1,7 @@
 ---
 id: overview
 title: Overview
+slug: /engineering/technologies
 ---
 
 This document shows a overview of the technologies we use in our projects.
