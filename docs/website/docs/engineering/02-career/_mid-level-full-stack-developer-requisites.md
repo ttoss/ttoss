@@ -1,0 +1,1 @@
+**_Requisites:_** [Junior Full Stack Developer](/docs/engineering/career/roles#junior-full-stack-developer) requisites and experience with [React.js](https://www.reactjs.org/) advanced, GraphQL, TypeScript, and AWS.
