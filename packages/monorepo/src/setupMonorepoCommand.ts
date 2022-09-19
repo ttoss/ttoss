@@ -1,26 +1,25 @@
+import * as eslintTool from './tools/eslint';
+import * as huskyTool from './tools/husky';
+import * as lernaTool from './tools/lerna';
+import * as turboTool from './tools/turbo';
 import { CommandModule } from 'yargs';
 import { spawn } from './spawn';
-import fs from 'fs';
 import log from 'npmlog';
 
 const logPrefix = '@ttoss/monorepo';
 
-const executeCommands = async () => {
-  spawn('rm', ['.husky/pre-commit']);
-  spawn('npx', [
-    'husky',
+const tools = [eslintTool, huskyTool, lernaTool, turboTool];
+
+const installPackages = () => {
+  spawn('yarn', [
     'add',
-    '.husky/pre-commit',
-    'yarn lint-staged -c node_modules/@ttoss/monorepo/config/lintstagedrc.js',
+    '-DW',
+    ...tools.map((tool) => tool.installPackages).flat(),
   ]);
-  spawn('yarn', ['husky', 'install']);
 };
 
-const writeFiles = async () => {
-  const eslintrc = `module.exports = {\n  extends: '@ttoss/eslint-config',\n};`;
-  fs.writeFileSync('.eslintrc.js', eslintrc);
-  // Lerna and Turbo
-  // Eslintrc to editor get the linting rules from the monorepo
+const executeCommands = () => {
+  tools.forEach((tool) => tool.executeCommands());
 };
 
 // const configurePackagesJson = async () => {};
@@ -33,9 +32,8 @@ export const setupMonorepoCommand: CommandModule = {
     if (argv._.length === 0) {
       log.info(logPrefix, 'Setup the monorepo');
 
-      await executeCommands();
-      await writeFiles();
-      // await configurePackagesJson();
+      installPackages();
+      executeCommands();
     }
   },
 };

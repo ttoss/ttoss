@@ -10,7 +10,14 @@ yarn add -DW @ttoss/monorepo
 
 ## Setup
 
-To setup your entire monorepo, you just need to execute the following command:
+First, configure Git and `package.json` if you haven't already done so.
+
+```bash
+git init
+npm init -y
+```
+
+To setup your monorepo, you need to execute the following command (you should have [Yarn v1](https://classic.yarnpkg.com/lang/en/) installed):
 
 ```bash
 yarn ttoss-monorepo
