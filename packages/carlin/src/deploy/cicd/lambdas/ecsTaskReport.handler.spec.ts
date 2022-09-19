@@ -13,9 +13,9 @@ describe('testing getEcsTaskLogsUrl', () => {
 
   const taskId = faker.datatype.uuid();
 
-  const ecsTaskContainerName = faker.random.word();
+  const ecsTaskContainerName = 'ecsTaskContainerName';
 
-  const ecsTaskLogsLogGroup = faker.random.word();
+  const ecsTaskLogsLogGroup = 'ecsTaskLogsLogGroup';
 
   const ecsTaskArn = `arn:aws:ecs:us-east-1:483684946879:task/CarlinCicdCarlinMonorepo-RepositoryTasksECSCluster-1J6saGT91hCr/${taskId}`;
 
