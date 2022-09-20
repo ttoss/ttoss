@@ -3,41 +3,31 @@
   "version": "1.17.0",
   "description": "Monorepo setup for ttoss",
   "license": "UNLICENSED",
-  "publishConfig": {
-    "access": "public"
-  },
   "author": "ttoss",
   "contributors": [
-    {
-      "email": "pedro@arantespp.com",
-      "name": "Pedro Arantes",
-      "url": "https://arantespp.com"
-    }
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
-  "scripts": {
-    "build": "tsup-node",
-    "test": "echo test",
-    "deploy": "echo deploy"
-  },
-  "dependencies": {
-    "@ttoss/config": "^1.17.0",
-    "@ttoss/eslint-config": "^1.16.1",
-    "eslint": "^8.17.0",
-    "husky": "^8.0.1",
-    "npmlog": "^6.0.2",
-    "prettier": "^2.6.2",
-    "yargs": "^17.5.1"
-  },
-  "devDependencies": {
-    "@types/npmlog": "^4.1.4",
-    "tsup": "^6.1.2"
-  },
   "bin": {
     "ttoss-monorepo": "./bin/monorepo"
   },
   "files": [
     "bin",
-    "config",
     "dist"
-  ]
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "test": "echo test"
+  },
+  "dependencies": {
+    "npmlog": "^6.0.2",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.17.0",
+    "@types/npmlog": "^4.1.4",
+    "tsup": "^6.1.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -1,41 +1,61 @@
+import * as eslintTool from './tools/eslint';
+import * as fs from 'fs';
+import * as huskyTool from './tools/husky';
+import * as lernaTool from './tools/lerna';
+import * as path from 'path';
+import * as turboTool from './tools/turbo';
 import { CommandModule } from 'yargs';
 import { spawn } from './spawn';
-import fs from 'fs';
 import log from 'npmlog';
 
 const logPrefix = '@ttoss/monorepo';
 
-const executeCommands = async () => {
-  spawn('rm', ['.husky/pre-commit']);
-  spawn('npx', [
-    'husky',
+const tools = [eslintTool, huskyTool, lernaTool, turboTool];
+
+const installPackages = () => {
+  spawn('yarn', [
     'add',
-    '.husky/pre-commit',
-    'yarn lint-staged -c node_modules/@ttoss/monorepo/config/lintstagedrc.js',
+    '-DW',
+    ...tools.map((tool) => tool.installPackages).flat(),
   ]);
-  spawn('yarn', ['husky', 'install']);
 };
 
-const writeFiles = async () => {
-  const eslintrc = `module.exports = {\n  extends: '@ttoss/eslint-config',\n};`;
-  fs.writeFileSync('.eslintrc.js', eslintrc);
-  // Lerna and Turbo
-  // Eslintrc to editor get the linting rules from the monorepo
+const executeCommands = () => {
+  tools.forEach((tool) => tool.executeCommands());
 };
 
-// const configurePackagesJson = async () => {};
+const configurePackagesJson = () => {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+
+  const packagesJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+  delete packagesJson.dependencies;
+  delete packagesJson.devDependencies;
+  delete packagesJson.peerDependencies;
+
+  /**
+   * To avoid error Workspaces can only be enabled in private projects.
+   */
+  packagesJson.private = true;
+
+  if (!packagesJson.workspaces) {
+    packagesJson.workspaces = ['docs/**/*', 'packages/**/*'];
+  }
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packagesJson, null, 2));
+};
 
 export const setupMonorepoCommand: CommandModule = {
   command: ['setup', '$0'],
-  describe: 'Setup the monorepo',
+  describe: 'Setup monorepo',
   builder: {},
   handler: async (argv) => {
     if (argv._.length === 0) {
-      log.info(logPrefix, 'Setup the monorepo');
+      log.info(logPrefix, 'Setup monorepo');
 
-      await executeCommands();
-      await writeFiles();
-      // await configurePackagesJson();
+      configurePackagesJson();
+      installPackages();
+      executeCommands();
     }
   },
 };
