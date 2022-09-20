@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-export const installPackages = ['@lerna-lite/cli'];
+export const installPackages = ['@lerna-lite/cli', '@lerna-lite/list'];
 
 const lernaJson = `
 {
@@ -27,4 +27,8 @@ const lernaJson = `
 
 export const executeCommands = () => {
   fs.writeFileSync('lerna.json', lernaJson);
+};
+
+export const scripts = {
+  ls: 'lerna ls',
 };
