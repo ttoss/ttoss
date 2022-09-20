@@ -5,7 +5,7 @@
 Each configuration is customizable and you can extend them with your own. For example, you can use the default `.prettierrc.js` file in your monorepo:
 
 ```js title=".prettierrc.js"
-const { prettierConfig } = require("@ttoss/config");
+const { prettierConfig } = require('@ttoss/config');
 
 module.exports = prettierConfig();
 ```
@@ -13,7 +13,7 @@ module.exports = prettierConfig();
 But, if you want to change the `printWidth` [option](https://prettier.io/docs/en/options.html), you can do so:
 
 ```js title=".prettierrc.js"
-const { prettierConfig } = require("@ttoss/config");
+const { prettierConfig } = require('@ttoss/config');
 
 module.exports = prettierConfig({
   printWidth: 120,
@@ -23,24 +23,24 @@ module.exports = prettierConfig({
 You can also pass a second argument to every configuration to handle array's append or overwrite items.
 
 ```js title="babel.config.js"
-const { babelConfig } = require("@ttoss/config");
+const { babelConfig } = require('@ttoss/config');
 
 // Append plugins (default)
 const appendConfig = babelConfig(
   {
-    plugins: ["@babel/plugin-proposal-class-properties"],
+    plugins: ['@babel/plugin-proposal-class-properties'],
   },
   {
-    arrayMerge: "append",
+    arrayMerge: 'append',
   }
 );
 
 const overwriteConfig = babelConfig(
   {
-    plugins: ["@babel/plugin-proposal-class-properties"],
+    plugins: ['@babel/plugin-proposal-class-properties'],
   },
   {
-    arrayMerge: "overwrite",
+    arrayMerge: 'overwrite',
   }
 );
 ```
@@ -67,7 +67,7 @@ Add the configs of this section on the root of your monorepo. For configs for pa
 Create `.prettierrc.js` (`touch .prettierrc.js`) and add the following to it:
 
 ```js title=".prettierrc.js"
-const { prettierConfig } = require("@ttoss/config");
+const { prettierConfig } = require('@ttoss/config');
 
 module.exports = prettierConfig();
 ```
@@ -76,7 +76,7 @@ Create `.eslintrc.js` (`touch .eslintrc.js`) and add the following to it:
 
 ```js title=".eslintrc.js"
 module.exports = {
-  extends: "@ttoss/eslint-config",
+  extends: '@ttoss/eslint-config',
 };
 ```
 
@@ -93,7 +93,7 @@ yarn add -DW husky
 Create `.commitlintrc.js` (`touch .commitlintrc.js`) and add the following to it:
 
 ```js title=".commitlintrc.js"
-const { commitlintConfig } = require("@ttoss/config");
+const { commitlintConfig } = require('@ttoss/config');
 
 module.exports = commitlintConfig();
 ```
@@ -101,7 +101,7 @@ module.exports = commitlintConfig();
 Create `.lintstagedrc.js` (`touch .lintstagedrc.js`) and add the following to it:
 
 ```js title=".lintstagedrc.js"
-const { lintstagedConfig } = require("@ttoss/config");
+const { lintstagedConfig } = require('@ttoss/config');
 
 module.exports = lintstagedConfig();
 ```
@@ -168,23 +168,23 @@ You can use configs below to your packages and applications folders.
 Add `babel.config.js` (`touch babel.config.js`) on the package folder:
 
 ```js title="babel.config.js"
-const { babelConfig } = require("@ttoss/config");
+const { babelConfig } = require('@ttoss/config');
 
 module.exports = babelConfig();
 ```
 
 ### Jest
 
-Install [Jest](https://jestjs.io/) and its types on the root of your monorepo:
+Install [Jest](https://jestjs.io/) and its types on your package:
 
 ```shell
-yarn add -DW jest @types/jest
+yarn add -D jest @types/jest
 ```
 
 Create `jest.config.ts` (`touch jest.config.ts`) on the package folder:
 
 ```ts title="jest.config.ts"
-import { jestConfig } from "@ttoss/config";
+import { jestConfig } from '@ttoss/config';
 
 const config = jestConfig();
 
@@ -212,7 +212,7 @@ yarn add -DW tsup
 Create `tsup.config.ts` (`touch tsup.config.ts`) on the package folder:
 
 ```ts title="tsup.config.ts"
-import { tsupConfig } from "@ttoss/config";
+import { tsupConfig } from '@ttoss/config';
 
 export const tsup = tsupConfig();
 ```

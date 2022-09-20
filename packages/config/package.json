@@ -35,7 +35,8 @@
     "@formatjs/ts-transformer": "^3.9.8",
     "babel-plugin-formatjs": "^10.3.24",
     "deepmerge": "^4.2.2",
-    "identity-obj-proxy": "^3.0.0"
+    "identity-obj-proxy": "^3.0.0",
+    "prettier-package-json": "^2.6.4"
   },
   "devDependencies": {
     "@jest/types": "^27.4.2",

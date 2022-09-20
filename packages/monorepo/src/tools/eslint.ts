@@ -1,6 +1,11 @@
 import * as fs from 'fs';
 
-export const installPackages = ['@ttoss/eslint-config', 'eslint', 'prettier'];
+export const installPackages = [
+  '@ttoss/config',
+  '@ttoss/eslint-config',
+  'eslint',
+  'prettier',
+];
 
 const eslintrc = `
 module.exports = {
@@ -8,6 +13,13 @@ module.exports = {
 };
 `;
 
+const prettierrc = `
+const { prettierConfig } = require('@ttoss/config');
+
+module.exports = prettierConfig();
+`;
+
 export const executeCommands = () => {
   fs.writeFileSync('.eslintrc.js', eslintrc);
+  fs.writeFileSync('.prettierrc.js', prettierrc);
 };
