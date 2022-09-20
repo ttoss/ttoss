@@ -3,41 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.21.1...@ttoss/components@1.21.2) (2022-09-20)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [1.21.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.21.0...@ttoss/components@1.21.1) (2022-08-08)
 
 ### Bug Fixes
 
-* remove css import next.js error ([#31](https://github.com/ttoss/ttoss/issues/31)) ([7345f08](https://github.com/ttoss/ttoss/commit/7345f08bd3634092e4887050bb28d9cc3224dd4a))
+- remove css import next.js error ([#31](https://github.com/ttoss/ttoss/issues/31)) ([7345f08](https://github.com/ttoss/ttoss/commit/7345f08bd3634092e4887050bb28d9cc3224dd4a))
 
 # [1.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.20.0...@ttoss/components@1.21.0) (2022-08-07)
 
 ### Features
 
-* add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
+- add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
 
 # [1.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.19.0...@ttoss/components@1.20.0) (2022-08-04)
 
 ### Features
 
-* roadmap ([#27](https://github.com/ttoss/ttoss/issues/27)) ([2df374d](https://github.com/ttoss/ttoss/commit/2df374d8dfff2a9a686a20e14187fb359d837b92))
+- roadmap ([#27](https://github.com/ttoss/ttoss/issues/27)) ([2df374d](https://github.com/ttoss/ttoss/commit/2df374d8dfff2a9a686a20e14187fb359d837b92))
 
 # 1.19.0 (2022-07-30)
 
 ### Features
 
-* add accordion ([#25](https://github.com/ttoss/ttoss/issues/25)) ([9ef8732](https://github.com/ttoss/ttoss/commit/9ef8732658749a3232b0dece09e4b4bba63bab0b))
+- add accordion ([#25](https://github.com/ttoss/ttoss/issues/25)) ([9ef8732](https://github.com/ttoss/ttoss/commit/9ef8732658749a3232b0dece09e4b4bba63bab0b))
 
 # 1.18.0 (2022-07-14)
 
 ### Features
 
-* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+- create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
 
 # [1.18.0](https://github.com/ttoss/ttoss/compare/v1.17.0...v1.18.0) (2022-07-14)
 
 ### Features
 
-* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+- create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
 
 ## [1.15.2](https://github.com/ttoss/modules/compare/v1.15.1...v1.15.2) (2022-05-06)
 

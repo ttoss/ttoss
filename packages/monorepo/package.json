@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "Monorepo setup for ttoss",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -23,7 +23,7 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.17.0",
+    "@ttoss/config": "^1.18.0",
     "@types/npmlog": "^4.1.4",
     "tsup": "^6.1.2"
   },

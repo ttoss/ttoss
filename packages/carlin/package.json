@@ -1,31 +1,30 @@
 {
   "name": "carlin",
-  "version": "1.19.5",
+  "version": "1.19.6",
   "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "lint": "eslint src",
-    "test": "jest",
-    "build": "tsc"
-  },
+  "license": "GPL-3.0",
+  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
+  "homepage": "https://github.com/ttoss/carlin#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ttoss/carlin.git"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "keywords": [],
-  "author": {
-    "email": "arantespp@gmail.com",
-    "name": "Pedro Arantes",
-    "url": "https://twitter.com/arantespp"
-  },
-  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/ttoss/carlin/issues"
   },
-  "homepage": "https://github.com/ttoss/carlin#readme",
+  "main": "dist/index.js",
+  "bin": {
+    "carlin": "./bin/carlin"
+  },
+  "files": [
+    "bin/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "test": "jest"
+  },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.85.0",
     "@octokit/webhooks": "^9.24.0",
@@ -51,7 +50,7 @@
     "yargs": "^17.4.1"
   },
   "devDependencies": {
-    "@ttoss/test-utils": "^1.16.6",
+    "@ttoss/test-utils": "^1.16.7",
     "@types/adm-zip": "^0.5.0",
     "@types/aws-lambda": "^8.10.95",
     "@types/deep-equal": "^1.0.1",
@@ -65,14 +64,11 @@
     "@types/yargs": "^17.0.10",
     "jest": "^28.1.1"
   },
-  "bin": {
-    "carlin": "./bin/carlin"
-  },
-  "files": [
-    "bin/",
-    "dist/"
-  ],
+  "keywords": [],
   "engines": {
     "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.6](https://github.com/ttoss/carlin/compare/carlin@1.19.5...carlin@1.19.6) (2022-09-20)
+
+**Note:** Version bump only for package carlin
+
 ## [1.19.5](https://github.com/ttoss/carlin/compare/carlin@1.19.4...carlin@1.19.5) (2022-09-19)
 
 **Note:** Version bump only for package carlin
@@ -11,8 +15,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* builds ([968c82b](https://github.com/ttoss/carlin/commit/968c82bbeccb598978c3dfdd34ae78f9deeebcb9))
-* **carlin:** tests random words ([7937ae1](https://github.com/ttoss/carlin/commit/7937ae126a62d7e59c6128d468f1a4590186b71b))
+- builds ([968c82b](https://github.com/ttoss/carlin/commit/968c82bbeccb598978c3dfdd34ae78f9deeebcb9))
+- **carlin:** tests random words ([7937ae1](https://github.com/ttoss/carlin/commit/7937ae126a62d7e59c6128d468f1a4590186b71b))
 
 ## [1.19.3](https://github.com/ttoss/carlin/compare/carlin@1.19.2...carlin@1.19.3) (2022-08-07)
 
@@ -22,13 +26,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* frozen lock file on CI ([#22](https://github.com/ttoss/carlin/issues/22)) ([499fca0](https://github.com/ttoss/carlin/commit/499fca0fd2ae6fcc8a955bf4ce4d0926929e57e6))
+- frozen lock file on CI ([#22](https://github.com/ttoss/carlin/issues/22)) ([499fca0](https://github.com/ttoss/carlin/commit/499fca0fd2ae6fcc8a955bf4ce4d0926929e57e6))
 
 ## 1.19.1 (2022-07-21)
 
 ### Bug Fixes
 
-* carlin template and update docs ([#21](https://github.com/ttoss/carlin/issues/21)) ([45a31a9](https://github.com/ttoss/carlin/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
+- carlin template and update docs ([#21](https://github.com/ttoss/carlin/issues/21)) ([45a31a9](https://github.com/ttoss/carlin/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
 
 # 1.17.0 (2022-07-12)
 
@@ -38,25 +42,25 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* build carlin ([6996969](https://github.com/ttoss/carlin/commit/6996969e5aa1222a3c6f241ad5094a4045ffc25c))
+- build carlin ([6996969](https://github.com/ttoss/carlin/commit/6996969e5aa1222a3c6f241ad5094a4045ffc25c))
 
 ## 1.16.2 (2022-06-28)
 
 ### Bug Fixes
 
-* change carlin cicd folder name ([aa42149](https://github.com/ttoss/carlin/commit/aa421495de4e66c292f100a7c21bc32ed88e1b23))
+- change carlin cicd folder name ([aa42149](https://github.com/ttoss/carlin/commit/aa421495de4e66c292f100a7c21bc32ed88e1b23))
 
 ## 1.16.1 (2022-06-27)
 
 ### Bug Fixes
 
-* carlin eslint command ([e17447e](https://github.com/ttoss/carlin/commit/e17447ea0eb6e8554c76635eba00e95ea4e5f632))
+- carlin eslint command ([e17447e](https://github.com/ttoss/carlin/commit/e17447ea0eb6e8554c76635eba00e95ea4e5f632))
 
 ## [1.19.1](https://github.com/ttoss/carlin/compare/v1.19.0...v1.19.1) (2022-07-21)
 
 ### Bug Fixes
 
-* carlin template and update docs ([#21](https://github.com/ttoss/carlin/issues/21)) ([45a31a9](https://github.com/ttoss/carlin/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
+- carlin template and update docs ([#21](https://github.com/ttoss/carlin/issues/21)) ([45a31a9](https://github.com/ttoss/carlin/commit/45a31a9ce4740a2a3e606c34e83f0641fcac1f50))
 
 # [1.17.0](https://github.com/ttoss/carlin/compare/v1.16.5...v1.17.0) (2022-07-12)
 

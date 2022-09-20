@@ -1,19 +1,19 @@
 {
-  "name": "@docs/storybook",
-  "version": "1.21.1",
   "private": true,
+  "name": "@docs/storybook",
+  "version": "1.21.2",
   "author": "ttoss",
   "scripts": {
-    "storybook": "start-storybook -p 6006",
     "build": "build-storybook --quiet",
-    "start": "yarn run storybook",
-    "dev": "yarn run storybook",
     "deploy": "carlin deploy static-app",
+    "dev": "yarn run storybook",
+    "start": "yarn run storybook",
+    "storybook": "start-storybook -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.21.1",
-    "@ttoss/ui": "^1.19.0"
+    "@ttoss/components": "^1.21.2",
+    "@ttoss/ui": "^1.19.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",

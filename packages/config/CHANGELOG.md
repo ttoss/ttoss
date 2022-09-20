@@ -3,17 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.17.0...@ttoss/config@1.18.0) (2022-09-20)
+
+### Features
+
+- ttoss monorepo ([#39](https://github.com/ttoss/ttoss/issues/39)) ([bdeb756](https://github.com/ttoss/ttoss/commit/bdeb7564798dba029dfebe176ceb41e66f5b3ee5))
+
 # 1.17.0 (2022-08-07)
 
 ### Features
 
-* add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
+- add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
 
 ## 1.16.4 (2022-06-28)
 
 ### Bug Fixes
 
-* add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
+- add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
 
 ## 1.16.1 (2022-06-27)
 
@@ -21,13 +27,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* ttoss monorepo ([#8](https://github.com/ttoss/ttoss/issues/8)) ([4e0079d](https://github.com/ttoss/ttoss/commit/4e0079d385437aea9e4d488517c433fe5ba6bd17))
+- ttoss monorepo ([#8](https://github.com/ttoss/ttoss/issues/8)) ([4e0079d](https://github.com/ttoss/ttoss/commit/4e0079d385437aea9e4d488517c433fe5ba6bd17))
 
 ## [1.16.4](https://github.com/ttoss/ttoss/compare/v1.16.3...v1.16.4) (2022-06-28)
 
 ### Bug Fixes
 
-* add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
+- add config deps ([#11](https://github.com/ttoss/ttoss/issues/11)) ([5098205](https://github.com/ttoss/ttoss/commit/5098205cc1859977cf6554e0698781bc37166f50))
 
 ## [1.16.1](https://github.com/ttoss/ttoss/compare/v1.16.0...v1.16.1) (2022-06-27)
 

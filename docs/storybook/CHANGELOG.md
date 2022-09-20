@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.21.1...@docs/storybook@1.21.2) (2022-09-20)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [1.21.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.21.0...@docs/storybook@1.21.1) (2022-08-08)
 
 **Note:** Version bump only for package @docs/storybook
@@ -11,29 +15,29 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
+- add toast ([#28](https://github.com/ttoss/ttoss/issues/28)) ([da1dfc7](https://github.com/ttoss/ttoss/commit/da1dfc7f0fea3d69b61c82c2ced8612c7be65f8b))
 
 # [1.20.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.19.0...@docs/storybook@1.20.0) (2022-08-04)
 
 ### Features
 
-* roadmap ([#27](https://github.com/ttoss/ttoss/issues/27)) ([2df374d](https://github.com/ttoss/ttoss/commit/2df374d8dfff2a9a686a20e14187fb359d837b92))
+- roadmap ([#27](https://github.com/ttoss/ttoss/issues/27)) ([2df374d](https://github.com/ttoss/ttoss/commit/2df374d8dfff2a9a686a20e14187fb359d837b92))
 
 # 1.19.0 (2022-07-30)
 
 ### Features
 
-* add accordion ([#25](https://github.com/ttoss/ttoss/issues/25)) ([9ef8732](https://github.com/ttoss/ttoss/commit/9ef8732658749a3232b0dece09e4b4bba63bab0b))
+- add accordion ([#25](https://github.com/ttoss/ttoss/issues/25)) ([9ef8732](https://github.com/ttoss/ttoss/commit/9ef8732658749a3232b0dece09e4b4bba63bab0b))
 
 # 1.18.0 (2022-07-14)
 
 ### Bug Fixes
 
-* docs storybook acm arn ([6f8f413](https://github.com/ttoss/ttoss/commit/6f8f413abc3dc55e25b8d757718725fd13cd853a))
+- docs storybook acm arn ([6f8f413](https://github.com/ttoss/ttoss/commit/6f8f413abc3dc55e25b8d757718725fd13cd853a))
 
 ### Features
 
-* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+- create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
 
 ## 1.16.5 (2022-06-29)
 
@@ -41,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
+- create modal component ([#17](https://github.com/ttoss/ttoss/issues/17)) ([b89db3f](https://github.com/ttoss/ttoss/commit/b89db3fb7ae16973667e07ab2dcf0e492cf4043a))
 
 ## [1.16.5](https://github.com/ttoss/ttoss/compare/v1.16.4...v1.16.5) (2022-06-29)
 

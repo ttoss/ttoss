@@ -1,35 +1,24 @@
 {
   "name": "@ttoss/components",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "React components.",
   "license": "UNLICENSED",
-  "publishConfig": {
-    "access": "public"
-  },
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "module": "dist/esm/index.js",
   "files": [
     "dist",
     "src"
   ],
-  "keywords": [
-    "React",
-    "components"
-  ],
-  "author": "ttoss",
-  "contributors": [
-    {
-      "email": "pedro@arantespp.com",
-      "name": "Pedro Arantes",
-      "url": "https://arantespp.com/contact"
-    }
-  ],
   "scripts": {
     "build": "tsup",
-    "test": "jest",
-    "dev": "yarn workspace @docs/storybook run dev"
+    "dev": "yarn workspace @docs/storybook run dev",
+    "test": "jest"
   },
+  "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/css": "^11.10.0",
     "@theme-ui/css": "^0.14.7",
@@ -43,10 +32,17 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.17.0",
-    "@ttoss/test-utils": "^1.16.6",
-    "@ttoss/ui": "^1.19.0",
+    "@ttoss/config": "^1.18.0",
+    "@ttoss/test-utils": "^1.16.7",
+    "@ttoss/ui": "^1.19.1",
     "@types/jest": "^28.1.5",
     "jest": "^28.1.3"
+  },
+  "keywords": [
+    "React",
+    "components"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
