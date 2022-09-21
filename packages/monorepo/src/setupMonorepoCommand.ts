@@ -1,5 +1,6 @@
 import * as eslintTool from './tools/eslint';
 import * as fs from 'fs';
+import * as gitTool from './tools/git';
 import * as huskyTool from './tools/husky';
 import * as lernaTool from './tools/lerna';
 import * as path from 'path';
@@ -10,18 +11,22 @@ import log from 'npmlog';
 
 const logPrefix = '@ttoss/monorepo';
 
-const tools = [eslintTool, huskyTool, lernaTool, turboTool];
+const tools: {
+  installPackages?: string[];
+  executeCommands?: () => void;
+  scripts?: Record<string, string>;
+}[] = [eslintTool, gitTool, huskyTool, lernaTool, turboTool];
 
 const installPackages = () => {
   spawn('yarn', [
     'add',
     '-DW',
-    ...tools.map((tool) => tool.installPackages).flat(),
+    ...tools.map((tool) => tool?.installPackages || []).flat(),
   ]);
 };
 
 const executeCommands = () => {
-  tools.forEach((tool) => tool.executeCommands());
+  tools.forEach((tool) => tool.executeCommands?.());
 };
 
 const configurePackagesJson = () => {
@@ -41,6 +46,11 @@ const configurePackagesJson = () => {
   if (!packagesJson.workspaces) {
     packagesJson.workspaces = ['docs/**/*', 'packages/**/*'];
   }
+
+  packagesJson.scripts = {
+    ...tools.reduce((acc, tool) => ({ ...acc, ...tool.scripts }), {}),
+    ...packagesJson.scripts,
+  };
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packagesJson, null, 2));
 };
