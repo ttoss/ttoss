@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.18.0...@ttoss/monorepo@1.19.0) (2022-09-21)
+
+### Features
+
+- add git to ttoss monorepo ([#40](https://github.com/ttoss/ttoss/issues/40)) ([3540c12](https://github.com/ttoss/ttoss/commit/3540c122209ad702b6b661cf8acfb0a2ed511ffb))
+
 # [1.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.17.0...@ttoss/monorepo@1.18.0) (2022-09-20)
 
 ### Features
