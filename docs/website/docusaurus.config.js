@@ -70,25 +70,31 @@ const config = {
           {
             type: 'docSidebar',
             position: 'left',
+            sidebarId: 'product',
+            label: 'Product',
+          },
+          {
+            type: 'docSidebar',
+            position: 'left',
             sidebarId: 'engineering',
             label: 'Engineering',
           },
           {
             type: 'docSidebar',
-            position: 'left',
+            position: 'right',
             sidebarId: 'carlin',
             label: 'Carlin',
           },
           {
             type: 'docSidebar',
-            position: 'left',
+            position: 'right',
             sidebarId: 'modules',
             label: 'Modules',
           },
           // { to: '/blog', label: 'Blog', position: 'left' },
           {
             href: 'https://storybook.ttoss.dev/',
-            position: 'left',
+            position: 'right',
             label: 'Storybook',
           },
           {
