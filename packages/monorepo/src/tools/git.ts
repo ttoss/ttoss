@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+
+const gitignore = `
 # Logs
 logs
 *.log
@@ -116,3 +119,8 @@ github-app/
 .carlin/
 .vscode
 .turbo
+`;
+
+export const executeCommands = () => {
+  fs.writeFileSync('.gitignore', gitignore);
+};
