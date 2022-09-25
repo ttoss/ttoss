@@ -5,7 +5,6 @@ export const installPackages = ['turbo'];
 const turboJson = `
 {
   "$schema": "https://turborepo.org/schema.json",
-  "baseBranch": "origin/main",
   "pipeline": {
     "build": {
       "dependsOn": ["^build"]
@@ -27,5 +26,7 @@ const turboJson = `
 `;
 
 export const executeCommands = () => {
-  fs.writeFileSync('turbo.json', turboJson);
+  if (!fs.existsSync('turbo.json')) {
+    fs.writeFileSync('turbo.json', turboJson);
+  }
 };

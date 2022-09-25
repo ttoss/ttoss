@@ -17,6 +17,7 @@ export { Grid, type GridProps } from './components/Grid/Grid';
 export { Heading, type HeadingProps } from './components/Heading/Heading';
 export { Image, type ImageProps } from './components/Image/Image';
 export { Input, type InputProps } from './components/Input/Input';
+export { Label, type LabelProps } from './components/Label/Label';
 export { Link, type LinkProps } from './components/Link/Link';
 export {
   LinearProgress,
