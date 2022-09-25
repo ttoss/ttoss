@@ -18,6 +18,7 @@
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
     "deploy": "turbo run build lint test deploy",
     "destroy": "turbo run deploy --only -- --destroy",
+    "ls": "lerna ls",
     "prepare": "husky install",
     "turbo": "turbo"
   },
@@ -26,17 +27,18 @@
     "packages/**/*"
   ],
   "dependencies": {
-    "@ttoss/config": "^1.17.0",
+    "@ttoss/config": "^1.18.0",
     "@ttoss/eslint-config": "^1.16.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@lerna-lite/cli": "^1.11.3",
-    "eslint": "^8.23.1",
+    "@lerna-lite/list": "^1.11.3",
+    "eslint": "^8.24.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
-    "turbo": "^1.4.7"
+    "turbo": "^1.5.3"
   },
   "keywords": []
 }
