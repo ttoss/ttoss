@@ -2,9 +2,10 @@ import { Pipeline, getClosedPrCommands, getPrCommands } from '../pipelines';
 import { ProxyHandler } from 'aws-lambda';
 import { S3 } from 'aws-sdk';
 import { Webhooks } from '@octokit/webhooks';
-import { executeTasks, shConditionalCommands } from './executeTasks';
+import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
 import { getTriggerPipelinesObjectKey } from '../getTriggerPipelineObjectKey';
+import { shConditionalCommands } from './shConditionalCommands';
 import AdmZip from 'adm-zip';
 
 const s3 = new S3();

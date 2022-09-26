@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should compile commands 0 1`] = `"if conditional command 1 && conditional command 2; then echo \\"Success Command\\" && carlin cicd-ecs-task-report --status=Approved; else echo \\"Failure Command\\" && carlin cicd-ecs-task-report --status=Rejected; fi; echo \\"Finally Command\\""`;
+
+exports[`should compile commands 1 1`] = `"if conditional command 1 && conditional command 2; then echo \\"Success Command\\" && success command 1 && success command 2; else echo \\"Failure Command\\" && carlin cicd-ecs-task-report --status=Rejected; fi; echo \\"Finally Command\\""`;
+
+exports[`should compile commands 2 1`] = `"if conditional command 1 && conditional command 2; then echo \\"Success Command\\" && success command 1 && success command 2; else echo \\"Failure Command\\" && failure command 1 && failure command 2; fi; echo \\"Finally Command\\""`;
+
+exports[`should compile commands 3 1`] = `"if conditional command 1 && conditional command 2; then echo \\"Success Command\\" && success command 1 && success command 2; else echo \\"Failure Command\\" && failure command 1 && failure command 2; fi; finally command 1 && finally command 2"`;

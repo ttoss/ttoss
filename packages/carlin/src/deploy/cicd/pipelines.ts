@@ -10,6 +10,9 @@ export const getCommandFileDir = (pipeline: Pipeline | 'closed-pr') =>
   `./${CICD_FOLDER_NAME}/commands/${pipeline}`;
 
 export const getPrCommands = ({ branch }: { branch: string }) => [
+  /**
+   * -e  Exit immediately if a command exits with a non-zero status.
+   */
   'set -e',
   'git status',
   'git fetch',
@@ -45,6 +48,9 @@ export const getClosedPrCommands = ({ branch }: { branch: string }) => [
 ];
 
 export const getMainCommands = () => [
+  /**
+   * -e  Exit immediately if a command exits with a non-zero status.
+   */
   'set -e',
   `export CARLIN_ENVIRONMENT=Staging`,
   'git status',
@@ -63,6 +69,9 @@ export const getMainCommands = () => [
 ];
 
 export const getTagCommands = ({ tag }: { tag: string }) => [
+  /**
+   * -e  Exit immediately if a command exits with a non-zero status.
+   */
   'set -e',
   `export CARLIN_ENVIRONMENT=Production`,
   'git status',

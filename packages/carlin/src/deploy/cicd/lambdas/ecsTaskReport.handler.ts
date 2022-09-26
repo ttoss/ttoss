@@ -84,11 +84,6 @@ export const getEcsTaskTags = async ({
   }
 };
 
-getEcsTaskTags({
-  ecsTaskArn:
-    'arn:aws:ecs:us-east-1:483684946879:task/CarlinCicdCarlinMonorepo-RepositoryTasksECSCluster-1J6saGT91hCr/f70d559c47804d6383df170712d3e455',
-}).then();
-
 /**
  * - MainTagFound: means that the main has a tag, so the main pipeline should
  * be skipped because the push was only to update versions and changelogs.

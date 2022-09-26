@@ -2,8 +2,9 @@ import * as fs from 'fs';
 import { CodePipeline, S3 } from 'aws-sdk';
 import { CodePipelineEvent, CodePipelineHandler } from 'aws-lambda';
 import { Pipeline, getMainCommands, getTagCommands } from '../pipelines';
-import { executeTasks, shConditionalCommands } from './executeTasks';
+import { executeTasks } from './executeTasks';
 import { putApprovalResultManualTask } from './putApprovalResultManualTask';
+import { shConditionalCommands } from './shConditionalCommands';
 import AdmZip from 'adm-zip';
 
 const codepipeline = new CodePipeline();
