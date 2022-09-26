@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.7](https://github.com/ttoss/carlin/compare/carlin@1.19.6...carlin@1.19.7) (2022-09-26)
+
+### Bug Fixes
+
+- automatic update monorepo ([#43](https://github.com/ttoss/carlin/issues/43)) ([252ae2e](https://github.com/ttoss/carlin/commit/252ae2e8a12a4e0086c8cb34686c0d7d2e5c93aa))
+
 ## [1.19.6](https://github.com/ttoss/carlin/compare/carlin@1.19.5...carlin@1.19.6) (2022-09-20)
 
 **Note:** Version bump only for package carlin
