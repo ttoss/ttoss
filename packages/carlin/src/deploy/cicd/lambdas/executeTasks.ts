@@ -1,49 +1,8 @@
 import { ECS } from 'aws-sdk';
+import { compileCommands } from './shConditionalCommands';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
-import type { Status } from './ecsTaskReport.handler';
 
 const ecs = new ECS({ apiVersion: '2014-11-13', maxRetries: 3 });
-
-const compileCommands = (commands: string[]) => {
-  return commands.map((c) => c.replace(/;$/, '')).join(' && ');
-};
-
-const approvedStatus: Status = 'Approved';
-
-const rejectedStatus: Status = 'Rejected';
-
-const successCommands = [
-  `carlin cicd-ecs-task-report --status=${approvedStatus}`,
-];
-
-const failureCommands = [
-  `carlin cicd-ecs-task-report --status=${rejectedStatus}`,
-];
-
-export const shConditionalCommands = ({
-  conditionalCommands,
-}: {
-  conditionalCommands: string[];
-  successCommands?: string[];
-  failureCommands?: string[];
-  finallyCommands?: string[];
-}) => {
-  const conditionalCommand = compileCommands(conditionalCommands);
-
-  const successCommand = compileCommands([
-    'echo "Success Command"',
-    ...successCommands,
-  ]);
-
-  const failureCommand = compileCommands([
-    'echo "Failure Command"',
-    ...failureCommands,
-  ]);
-
-  const finallyCommand = compileCommands(['echo "Finally Command"']);
-
-  return `if ${conditionalCommand}; then ${successCommand}; else ${failureCommand}; fi; ${finallyCommand}`;
-};
 
 export const executeTasks = async ({
   commands = [],
