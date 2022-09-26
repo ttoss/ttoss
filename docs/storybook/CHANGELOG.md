@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.21.2...@docs/storybook@1.22.0) (2022-09-26)
+
+### Features
+
+- forms first implementation ([#42](https://github.com/ttoss/ttoss/issues/42)) ([0c4b37e](https://github.com/ttoss/ttoss/commit/0c4b37ef55dd6c9101589ec40a84ae668d0dd13e))
+
 ## [1.21.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.21.1...@docs/storybook@1.21.2) (2022-09-20)
 
 **Note:** Version bump only for package @docs/storybook
