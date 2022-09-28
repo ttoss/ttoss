@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.1](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.20.0...@ttoss/monorepo@1.20.1) (2022-09-28)
+
+### Bug Fixes
+
+- add out to monorepo creator ([67d8054](https://github.com/ttoss/ttoss/commit/67d80541928a3709579a8b97bb3a670e749943fc))
+
 # [1.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.19.0...@ttoss/monorepo@1.20.0) (2022-09-26)
 
 ### Features
