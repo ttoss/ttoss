@@ -119,6 +119,7 @@ github-app/
 .carlin/
 .vscode
 .turbo
+out/
 `;
 
 export const executeCommands = () => {
