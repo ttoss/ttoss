@@ -1,53 +1,71 @@
 # @ttoss/ui
 
-## 📚 About
+**@ttoss/ui** is a library of React low level components for building user interfaces and defining the design system of your application. It is built on top of [Theme UI: The Design Graph Framework](https://theme-ui.com/), so that you'll be able to consult the [Theme UI documentation](https://theme-ui.com/getting-started) to learn more about the design system and the components.
 
-<strong> @ttoss/ui</strong> is a easiest way to use Ui components in your React application.
-
-## 🚀 Getting Started
-
-### Install @ttoss/ui
+## Installation
 
 ```shell
-$ yarn add @ttoss/ui
-# or
-$ npm install @ttoss/ui
+yarn add @ttoss/ui @emotion/react
 ```
 
-## 📄 Examples of use
+## Quick start
+
+Create a theme object to define the design tokens of your application.
+
+```ts
+import type { Theme } from '@ttoss/ui';
+
+export const theme: Theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#33e',
+  },
+};
+```
+
+Pass your theme to the `ThemeProvider` component at the root of your application.
 
 ```tsx
-import { Flex, Text, Box, Button } from "@ttoss/ui";
+import { Heading, ThemeProvider } from '@ttoss/ui';
+import { theme } from './theme';
 
-const App = () => {
+export const App = () => (
+  <ThemeProvider theme={theme}>
+    <Heading as="h1" sx={{ color: 'primary' }}>
+      Hello
+    </Heading>
+  </ThemeProvider>
+);
+```
+
+Now, you can use the components of the library in your application and access the [design tokens](/docs/design/design-tokens) defined in your theme through the [`sx` prop](https://theme-ui.com/getting-started#sx-prop).
+
+```tsx
+import { Flex, Text, Box, Button } from '@ttoss/ui';
+
+export const Component = () => {
   return (
-    <ThemeProvider>
-      <Flex sx={{ flexDirection: "column" }}>
-        <Text>Text Value</Text>
-        <Box>
-          <Text>Text Value</Text>
-
-          <Button>Button Primary</Button>
-        </Box>
-      </Flex>
-    </ThemeProvider>
+    <Flex sx={{ flexDirection: 'column' }}>
+      <Text>Text Value</Text>
+      <Button
+        sx={{
+          backgroundColor: 'primary',
+        }}
+      >
+        Button Primary
+      </Button>
+    </Flex>
   );
 };
-
-export default App;
 ```
 
-### Loading Fonts
+:::note Note
 
-You can pass fonts URLs to `ThemeProvider` component thought `fonts` prop.
+You don't need to use the custom /\*\* @jsxImportSource theme-ui \*/ pragma if you use the `sx` prop directly on the components of the library.
 
-```tsx
-<ThemeProvider
-  fonts={[
-    "https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap",
-    "https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap",
-  ]}
->
-  <App />
-</ThemeProvider>
-```
+:::
+
+## Components
+
+You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/ui).
