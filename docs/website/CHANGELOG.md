@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.7](https://github.com/ttoss/ttoss/compare/@docs/website@1.23.6...@docs/website@1.23.7) (2022-10-05)
+
+### Bug Fixes
+
+- add out to monorepo creator ([67d8054](https://github.com/ttoss/ttoss/commit/67d80541928a3709579a8b97bb3a670e749943fc))
+
 ## [1.23.6](https://github.com/ttoss/ttoss/compare/@docs/website@1.23.5...@docs/website@1.23.6) (2022-09-26)
 
 **Note:** Version bump only for package @docs/website

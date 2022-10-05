@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.18.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.18.0...@ttoss/config@1.18.1) (2022-10-05)
+
+### Bug Fixes
+
+- add quiet to eslint ([8db7708](https://github.com/ttoss/ttoss/commit/8db7708afb7b853d7f1a1f74c5a5df9051af0251))
+
 # [1.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.17.0...@ttoss/config@1.18.0) (2022-09-20)
 
 ### Features

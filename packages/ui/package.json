@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "1.20.0",
+  "version": "1.20.1",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -29,8 +29,8 @@
     "react": ">=18.0.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.18.0",
-    "@ttoss/test-utils": "^1.16.7",
+    "@ttoss/config": "^1.18.1",
+    "@ttoss/test-utils": "^1.16.8",
     "@types/jest": "^28.1.3",
     "jest": "^28.1.1",
     "tsup": "^6.1.2"
