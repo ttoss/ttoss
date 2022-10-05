@@ -1,6 +1,7 @@
 import * as eslintTool from './tools/eslint';
 import * as fs from 'fs';
 import * as gitTool from './tools/git';
+import * as githubTool from './tools/github';
 import * as huskyTool from './tools/husky';
 import * as lernaTool from './tools/lerna';
 import * as path from 'path';
@@ -15,7 +16,7 @@ const tools: {
   installPackages?: string[];
   executeCommands?: () => void;
   scripts?: Record<string, string>;
-}[] = [eslintTool, gitTool, huskyTool, lernaTool, turboTool];
+}[] = [eslintTool, gitTool, githubTool, huskyTool, lernaTool, turboTool];
 
 const installPackages = () => {
   spawn('yarn', [

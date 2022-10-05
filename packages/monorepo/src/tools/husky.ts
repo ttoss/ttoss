@@ -20,6 +20,10 @@ const { lintstagedConfig } = require('@ttoss/config');
 module.exports = lintstagedConfig();
 `;
 
+export const scripts = {
+  lint: 'lint-staged --since main',
+};
+
 export const executeCommands = () => {
   fs.writeFileSync('.commitlintrc.js', commitlintrc);
   fs.writeFileSync('.lintstagedrc.js', lintstagedrc);

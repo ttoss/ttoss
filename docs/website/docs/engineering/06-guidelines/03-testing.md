@@ -43,7 +43,7 @@ No, this is not **SOLID** in its literal sense, although it implements an intere
 ```js
 //Wrong
 
-it("should send the profile data to the API and update the profile view properly", () => {
+it('should send the profile data to the API and update the profile view properly', () => {
   // expect(...)to(...);
   // expect(...)to(...);
 });
@@ -52,11 +52,11 @@ it("should send the profile data to the API and update the profile view properly
 ```js
 //Correct
 
-it("should send the profile data to the API", () => {
+it('should send the profile data to the API', () => {
   // expect(...)to(...);
 });
 
-it("should update the profile view properly", () => {
+it('should update the profile view properly', () => {
   // expect(...)to(...);
 });
 ```
@@ -70,7 +70,7 @@ Organization means efficiency, that's why we use Data-Operation-Assert to organi
 Example:
 
 ```js
-test("Do anything", () => {
+test('Do anything', () => {
   //=> DATA
   const test = 1;
 

@@ -19,6 +19,7 @@
     "test": "echo test"
   },
   "dependencies": {
+    "js-yaml": "^4.1.0",
     "npmlog": "^6.0.2",
     "yargs": "^17.5.1"
   },

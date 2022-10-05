@@ -120,6 +120,7 @@ github-app/
 .vscode
 .turbo
 out/
+.mysql/
 `;
 
 export const executeCommands = () => {
