@@ -40,7 +40,5 @@ jobs:
       - name: Build carlin
         run: yarn turbo run build --filter=carlin...
 
-      - name: Destroy
-        run: |
-          export CARLIN_DESTROY=true
-          yarn turbo run deploy --only
+      - name: Run closed-pr command
+        run: sh -e ./.cicd/commands/closed-pr.sh
