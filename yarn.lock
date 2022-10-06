@@ -4819,6 +4819,15 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
+"@lerna-lite/changed@^1.11.3":
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/changed/-/changed-1.11.3.tgz#f7e4e7151f62bca1a5b1137112e921d4ddf7c6e6"
+  integrity sha512-OQlZCCapyWmn9nB7u3gJ2E9Ut5hCPB7cRRAUK1SFeNMz9VAH55A6GaRmZeKaAEUEX9IyxAuji/WPrcuKiKrDxQ==
+  dependencies:
+    "@lerna-lite/core" "1.11.3"
+    "@lerna-lite/list" "1.11.3"
+    "@lerna-lite/listable" "1.11.3"
+
 "@lerna-lite/cli@^1.11.3":
   version "1.11.3"
   resolved "https://registry.yarnpkg.com/@lerna-lite/cli/-/cli-1.11.3.tgz#9bc529fa79013b3cf0add16b412c33d182c293e0"
@@ -4918,7 +4927,7 @@
     p-map "^4.0.0"
     write-json-file "^4.3.0"
 
-"@lerna-lite/list@^1.11.3":
+"@lerna-lite/list@1.11.3", "@lerna-lite/list@^1.11.3":
   version "1.11.3"
   resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.11.3.tgz#436395daf189c7c27f30e889af61845d2b0834b4"
   integrity sha512-uZZ6ZFUifR/LBBZ+733T4jI4qgRLTety6RQkBQs2xq6D1nJCyleFUWjSX4JDoji75wWC5XA7CcGqG2vzsnxE6A==
