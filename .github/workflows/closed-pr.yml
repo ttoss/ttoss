@@ -8,7 +8,7 @@ name: closed-pr
       - closed
 
 jobs:
-  configure:
+  closed-pr:
     name: Configure
     runs-on: ubuntu-latest
     steps:

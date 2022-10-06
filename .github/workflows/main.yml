@@ -38,7 +38,7 @@ jobs:
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0)
           if [ "$LATEST_TAG" = "$(git rev-parse HEAD)" ]; then
-            echo "Latest tag is the same as the current commit, skipping build"
+            echo "Latest tag is the same as the current commit, skipping main workflow"
             exit 0
           fi
 
