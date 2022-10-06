@@ -40,7 +40,7 @@ jobs:
       - name: Build carlin
         run: yarn turbo run build --filter=carlin...
 
-      - name: Deploy carlin
+      - name: Destroy
         run: |
           export CARLIN_DESTROY=true
           yarn turbo run deploy --only
