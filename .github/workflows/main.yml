@@ -32,21 +32,19 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
-      - name: Skip if no changed packages
-        run: yarn lerna changed || (echo "No changed packages. Skipping main workflow."; exit 0)
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'yarn'
 
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+
       - name: Publish
         run: |
           # Don't publish if there are no changes
-          if [[ ! $(yarn lerna changed) ]]; then
-            yarn install --frozen-lockfile --prefer-offline
-            
+          if [[ ! $(yarn lerna changed) ]]; then            
             export CARLIN_ENVIRONMENT=Production
             
             LATEST_TAG=$(git describe --tags --abbrev=0)
