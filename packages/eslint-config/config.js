@@ -21,6 +21,7 @@ module.exports = {
     'relay',
     'jsx-a11y',
     'sort-imports-es6-autofix',
+    'prettier',
   ],
   extends: [
     'eslint:recommended',
@@ -30,7 +31,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:relay/recommended',
-    'prettier',
+    'plugin:prettier/recommended',
   ],
   rules: {
     'formatjs/no-offset': 'error',
