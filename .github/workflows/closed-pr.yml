@@ -1,0 +1,46 @@
+name: closed-pr
+
+'on':
+  pull_request:
+    branch:
+      - main
+    types:
+      - closed
+
+jobs:
+  closed-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 50
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Configure git
+        run: |
+          git fetch origin main:main
+          git branch -f main ${{ github.event.pull_request.base.sha }}
+
+      - name: Build carlin
+        run: yarn turbo run build --filter=carlin...
+
+      - name: Deploy carlin
+        run: |
+          export CARLIN_DESTROY=true
+          yarn turbo run deploy --only

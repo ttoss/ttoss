@@ -1,2 +1,0 @@
-yarn workspace carlin build
-yarn run destroy
