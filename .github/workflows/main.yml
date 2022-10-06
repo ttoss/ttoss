@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  configure:
+  main:
     name: Configure
     runs-on: ubuntu-latest
     steps:
@@ -20,16 +20,19 @@ jobs:
           aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 20
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY }}
+
       - name: Setup git user
         # https://github.com/actions/checkout/issues/13#issuecomment-724415212
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+
       - name: Skip if latest tag is the current commit
         run: |
           git fetch --tags
@@ -38,25 +41,16 @@ jobs:
             echo "Latest tag is the same as the current commit, skipping build"
             exit 0
           fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'yarn'
-  install:
-    name: Install
-    runs-on: ubuntu-latest
-    needs:
-      - configure
-    steps:
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile --prefer-offline
-  publish:
-    name: Publish
-    runs-on: ubuntu-latest
-    needs:
-      - install
-    steps:
+
       - name: Configure environment
         run: |
           export CARLIN_ENVIRONMENT=Production
