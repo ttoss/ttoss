@@ -56,7 +56,7 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0)
 
       - name: Setup NPM token
-        run: echo //registry.npmjs.org/:\_authToken=${NPM_TOKEN} > .npmrc
+        run: echo //registry.npmjs.org/:\_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
 
       - name: Build config to run lint-staged for lint and version bump
         run: yarn turbo run build --filter=@ttoss/config...
