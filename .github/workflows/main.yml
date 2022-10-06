@@ -41,31 +41,36 @@ jobs:
           node-version: '16'
           cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --prefer-offline
-
-      - name: Configure environment
+      - name: Publish
         run: |
-          export CARLIN_ENVIRONMENT=Production
-          LATEST_TAG=$(git describe --tags --abbrev=0)
+          # Don't publish if there are no changes
+          if [[ ! $(yarn lerna changed) ]]; then
+            yarn install --frozen-lockfile --prefer-offline
+            
+            export CARLIN_ENVIRONMENT=Production
+            
+            LATEST_TAG=$(git describe --tags --abbrev=0)
 
-      - name: Setup NPM token
-        run: echo //registry.npmjs.org/:\_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
+            # Setup NPM token
+            echo //registry.npmjs.org/:\_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
 
-      - name: Build config to run lint-staged for lint and version bump
-        run: yarn turbo run build --filter=@ttoss/config...
+            # Build config to run lint-staged for lint and version bump
+            yarn turbo run build --filter=@ttoss/config...
 
-      - name: Build modified packages for version bump
-        run: yarn turbo run build test lint --filter=[$LATEST_TAG]
+            # Build modified packages for version bump
+            yarn turbo run build test lint --filter=[$LATEST_TAG]
 
-      - name: Version before publish to rebuild all packages that Lerna will publish
-        run: yarn lerna version --yes --no-push
+            # Version before publish to rebuild all packages that Lerna will publish
+            yarn lerna version --yes --no-push
 
-      - name: Rebuild all packages that Lerna will publish
-        run: yarn turbo run build lint test deploy --filter=[$LATEST_TAG]
+            # Rebuild all packages that Lerna will publish
+            yarn turbo run build lint test deploy --filter=[$LATEST_TAG]
 
-      - name: Publish packages
-        run: yarn lerna publish from-git --yes --no-verify-access
+            # Publish packages
+            yarn lerna publish from-git --yes --no-verify-access
 
-      - name: Push changes
-        run: git push --follow-tags
+            # Push changes
+            git push --follow-tags
+          else
+            echo "No changed packages. Skipping main workflow."
+          fi
