@@ -16,8 +16,7 @@
   },
   "scripts": {
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
-    "deploy": "turbo run build lint test deploy",
-    "destroy": "turbo run deploy --only -- --destroy",
+    "lint": "lint-staged --diff main",
     "ls": "lerna ls",
     "prepare": "husky install",
     "turbo": "turbo"

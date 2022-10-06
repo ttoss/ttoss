@@ -1,0 +1,44 @@
+name: main
+
+'on':
+  push:
+    branches:
+      - main
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 20
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY }}
+      - name: Setup git user
+        # https://github.com/actions/checkout/issues/13#issuecomment-724415212
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+      - name: Skip if latest tag is the current commit
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          if [ "$LATEST_TAG" = "$(git rev-parse HEAD)" ]; then
+            echo "Latest tag is the same as the current commit, skipping build"
+            exit 0
+          fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+      - name: Run main command
+        run: sh -e ./.cicd/commands/main.sh

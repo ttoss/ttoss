@@ -1,0 +1,46 @@
+name: pr
+
+'on':
+  pull_request:
+    branch:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 50
+      - name: Fetch and merge most recent main
+        run: |
+          git fetch origin main:main
+          git merge main --ff-only --no-edit
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+      # Lint and throw errors if there are any file that need to be formatted
+      - name: Lint
+        run: |
+          yarn lint
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Need lint. Please run 'yarn lint' locally and commit the changes"
+            exit 1
+          fi
+      - name: Run pr command
+        run: sh -e ./.cicd/commands/pr.sh

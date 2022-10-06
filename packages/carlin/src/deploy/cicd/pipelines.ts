@@ -7,7 +7,7 @@ export type Pipelines = typeof pipelines;
 export type Pipeline = Pipelines[number];
 
 export const getCommandFileDir = (pipeline: Pipeline | 'closed-pr') =>
-  `./${CICD_FOLDER_NAME}/commands/${pipeline}`;
+  `./${CICD_FOLDER_NAME}/commands/${pipeline}.sh`;
 
 export const getPrCommands = ({ branch }: { branch: string }) => [
   /**
