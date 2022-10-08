@@ -43,3 +43,5 @@ jobs:
 
       - name: Run main command
         run: sh -e ./.cicd/commands/main.sh
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
