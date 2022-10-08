@@ -1,2 +1,5 @@
 label: Packages
 collapsed: false
+link:
+  type: generated-index
+  slug: modules/packages

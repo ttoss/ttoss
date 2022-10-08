@@ -153,9 +153,6 @@ module.exports = () => {
         staticAppCloudFrontTemplate: getStaticAppTemplate({
           cloudfront: true,
         }),
-        carlinCicdConfig: fs
-          .readFileSync('../../.cicd/carlin.ts', 'utf-8')
-          .trim(),
         ...(() => {
           const cicdTemplate = getCicdTemplate({ pipelines: ['main'], s3 });
           return {
