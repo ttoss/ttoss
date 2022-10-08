@@ -1,29 +1,27 @@
-if [ ! $(yarn lerna changed) ]; then            
-  export CARLIN_ENVIRONMENT=Production
-  
-  LATEST_TAG=$(git describe --tags --abbrev=0)
+yarn lerna changed || (echo "No changes detected, exiting main workflow" && exit 0)
 
-  # Setup NPM token
-  echo //registry.npmjs.org/:\_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
+# If we're here, there are changes, so we need to run the main workflow
+export CARLIN_ENVIRONMENT=Production
 
-  # Build config to run lint-staged for lint and version bump
-  yarn turbo run build --filter=@ttoss/config...
+LATEST_TAG=$(git describe --tags --abbrev=0)
 
-  # Build modified packages for version bump
-  yarn turbo run build test lint --filter=[$LATEST_TAG]
+# Setup NPM token
+echo //registry.npmjs.org/:\_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
 
-  # Version before publish to rebuild all packages that Lerna will publish
-  yarn lerna version --yes --no-push
+# Build config to run lint-staged for lint and version bump
+yarn turbo run build --filter=@ttoss/config...
 
-  # Rebuild all packages that Lerna will publish
-  yarn turbo run build lint test deploy --filter=[$LATEST_TAG]
+# Build modified packages for version bump
+yarn turbo run build test lint --filter=[$LATEST_TAG]
 
-  # Publish packages
-  yarn lerna publish from-git --yes --no-verify-access
+# Version before publish to rebuild all packages that Lerna will publish
+yarn lerna version --yes --no-push
 
-  # Push changes
-  git push --follow-tags
-else
-  # Don't publish if there are no changes
-  echo "No changed packages. Skipping main workflow."
-fi
+# Rebuild all packages that Lerna will publish
+yarn turbo run build lint test deploy --filter=[$LATEST_TAG]
+
+# Publish packages
+yarn lerna publish from-git --yes --no-verify-access
+
+# Push changes
+git push --follow-tags

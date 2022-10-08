@@ -36,4 +36,4 @@ jobs:
       - name: Run closed-pr command
         run: sh -e ./.cicd/commands/closed-pr.sh
         env:
-          BRANCH: ${{ github.base_ref }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
