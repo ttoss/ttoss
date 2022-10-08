@@ -15,6 +15,9 @@ export const defaultConfig: Options = {
    * Becomes difficult to debug if code is minified.
    */
   minify: false,
+  banner: {
+    js: `/** Powered by @ttoss/config. https://ttoss.dev/docs/modules/packages/config/ */`,
+  },
 };
 
 export const tsupConfig = configCreator(defaultConfig);
