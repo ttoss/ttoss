@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.9](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.16.8...@ttoss/test-utils@1.16.9) (2022-10-08)
+
+**Note:** Version bump only for package @ttoss/test-utils
+
 ## [1.16.8](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.16.7...@ttoss/test-utils@1.16.8) (2022-10-05)
 
 **Note:** Version bump only for package @ttoss/test-utils
