@@ -56,3 +56,5 @@ jobs:
 
       - name: Run pr command
         run: sh -e ./.cicd/commands/pr.sh
+        env:
+          CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
