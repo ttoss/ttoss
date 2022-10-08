@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.11](https://github.com/ttoss/carlin/compare/carlin@1.19.9...carlin@1.19.11) (2022-10-08)
+
+**Note:** Version bump only for package carlin
+
 ## [1.19.10](https://github.com/ttoss/carlin/compare/carlin@1.19.9...carlin@1.19.10) (2022-10-08)
 
 **Note:** Version bump only for package carlin
