@@ -37,6 +37,8 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
+        env:
+          FORCE_COLOR: 0
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile --prefer-offline
