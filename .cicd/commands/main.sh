@@ -1,4 +1,4 @@
-if [[ ! $(yarn lerna changed) ]]; then            
+if [ ! $(yarn lerna changed) ]; then            
   export CARLIN_ENVIRONMENT=Production
   
   LATEST_TAG=$(git describe --tags --abbrev=0)

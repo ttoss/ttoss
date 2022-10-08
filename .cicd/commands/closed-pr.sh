@@ -1,2 +1,2 @@
 export CARLIN_DESTROY=true
-yarn turbo run deploy --only --filter=[main]
+yarn turbo run deploy --only
