@@ -39,6 +39,7 @@ jobs:
 
       # https://github.com/actions/setup-node/issues/488
       - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
 
       - name: Restore yarn cache
