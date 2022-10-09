@@ -2,9 +2,9 @@
 title: Backend Apps
 ---
 
-## Build
+## Configuration
 
-- Use [@ttoss/config](/docs/modules/packages/config/#tsup) to configure the build. Example:
+- **Build**: Use [@ttoss/config](/docs/modules/packages/config/#tsup) to configure the build. Example:
 
   ```ts title="tsup.config.ts"
   import { Options } from 'tsup';
@@ -14,6 +14,4 @@ title: Backend Apps
   };
   ```
 
-## Configuration
-
-- Use [@ttoss/config](/docs/modules/packages/config/#typescript) to extend `tsconfig.json` on the package folder.
+- **TypeScript**: use [@ttoss/config](/docs/modules/packages/config/#typescript) to extend `tsconfig.json` on the package folder.
