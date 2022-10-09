@@ -25,9 +25,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
-        env:
-          FORCE_COLOR: 0
+
+      # https://github.com/actions/setup-node/issues/488
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Restore yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: yarn-cache-folder-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-cache-folder-
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile --prefer-offline
