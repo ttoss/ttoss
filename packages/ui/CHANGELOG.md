@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.20.4...@ttoss/ui@1.21.0) (2022-10-10)
+
+### Features
+
+- **@ttoss/ui:** add radio ([#53](https://github.com/ttoss/ttoss/issues/53)) ([431017b](https://github.com/ttoss/ttoss/commit/431017b3dd22703d4fb395c7a1d2522011e4cbb0))
+
 ## [1.20.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.20.2...@ttoss/ui@1.20.4) (2022-10-08)
 
 **Note:** Version bump only for package @ttoss/ui

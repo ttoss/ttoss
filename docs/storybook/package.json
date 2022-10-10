@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.22.4",
+  "version": "1.22.5",
   "author": "ttoss",
   "scripts": {
     "build": "build-storybook --quiet",
@@ -12,9 +12,9 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.21.7",
-    "@ttoss/forms": "^0.5.4",
-    "@ttoss/ui": "^1.20.4"
+    "@ttoss/components": "^1.21.8",
+    "@ttoss/forms": "^0.5.5",
+    "@ttoss/ui": "^1.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",
