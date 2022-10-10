@@ -3,11 +3,12 @@ export CARLIN_ENVIRONMENT=Production
 # Fetch tags
 git fetch --tags
 
-yarn lerna changed || (echo "No changes detected, exiting main workflow" && exit 0)
+# https://stackoverflow.com/a/25742085/8786986
+yarn lerna changed || { echo "No changes detected, exiting main workflow" && exit 0; }
 
-###
-# If we're here, there are changes, so we need to run the main workflow
-###
+####
+## If we're here, there are changes, so we need to run the main workflow
+####
 
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
