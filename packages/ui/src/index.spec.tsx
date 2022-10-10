@@ -6,4 +6,5 @@ test('should export methods', () => {
   expect(uiModule.useTheme).toBeDefined();
 
   expect(uiModule.Divider).toBeDefined();
+  expect(uiModule.Radio).toBeDefined();
 });
