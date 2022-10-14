@@ -86,6 +86,11 @@ const config = {
             label: 'Engineering',
           },
           {
+            to: '/blog',
+            label: 'Blog',
+            position: 'left',
+          },
+          {
             type: 'docSidebar',
             position: 'right',
             sidebarId: 'carlin',
@@ -97,7 +102,6 @@ const config = {
             sidebarId: 'modules',
             label: 'Modules',
           },
-          // { to: '/blog', label: 'Blog', position: 'left' },
           {
             href: 'https://storybook.ttoss.dev/',
             position: 'right',

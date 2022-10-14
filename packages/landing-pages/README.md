@@ -14,4 +14,4 @@ TODO
 
 ## Components
 
-You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/landing-pages).
+You can check all the components of the library `@ttoss/landing-pages` on the [Storybook](https://storybook.ttoss.dev/?path=/story/landing-pages).
