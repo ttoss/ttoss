@@ -19,6 +19,9 @@
     "test": "echo jest"
   },
   "typings": "dist/index.d.ts",
+  "dependencies": {
+    "@iconify/react": "^4.0.0"
+  },
   "peerDependencies": {
     "@ttoss/ui": "^1.21.0",
     "react": ">=18.0.0"
