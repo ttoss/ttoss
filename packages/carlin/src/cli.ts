@@ -255,7 +255,7 @@ const cli = () => {
       .command(ecsTaskReportCommand)
       .command(generateEnvCommand)
       .epilogue(
-        'For more information, find our manual at https://carlin.ttoss.dev'
+        'For more information, read our docs at https://ttoss.dev/docs/carlin/'
       )
       .help()
   );

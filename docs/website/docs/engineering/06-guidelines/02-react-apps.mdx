@@ -2,10 +2,17 @@
 title: React Apps
 ---
 
-## React Components
+## Components
 
 - Component name should be in PascalCase.
 - Use named export to export the component (`export const MyComponent = () => ...`).
 - Components should have a folder with the same name.
   - Component file should have the same name (`MyComponent/MyComponent.tsx`).
   - Don't use `index` files.
+
+## Relay
+
+Relay is our default choice for data fetching when we use GraphQL API.
+
+- Prefer using `useFragment` to access data on components instead of passing it as props.
+-
