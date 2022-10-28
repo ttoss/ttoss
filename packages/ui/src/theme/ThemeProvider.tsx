@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Global, css } from '@emotion/react';
 import { Theme, ThemeProvider as ThemeUiProvider, merge } from 'theme-ui';
-import { defaultFonts } from './defaultFonts';
-import { defaultTheme } from './defaultTheme';
+import { defaultFonts } from '@ttoss/theme';
+import { defaultTheme } from '@ttoss/theme';
 
 export type ThemeProviderProps = {
   children?: React.ReactNode;

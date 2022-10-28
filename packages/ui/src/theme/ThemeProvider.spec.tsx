@@ -1,4 +1,4 @@
-import { defaultTheme } from './defaultTheme';
+import { defaultTheme } from '@ttoss/theme';
 import { renderHook } from '@ttoss/test-utils';
 import { useTheme } from './useTheme';
 import ThemeProvider from './ThemeProvider';
