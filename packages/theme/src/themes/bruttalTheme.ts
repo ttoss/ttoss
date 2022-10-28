@@ -10,6 +10,8 @@ export const bruttalTheme: Theme = {
     gray: '#555',
     muted: '#f6f6f6',
     danger: 'red',
+    accent: '#0000FF',
+    textOnSurface: '#FFFFFF',
   },
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
   fonts: {
