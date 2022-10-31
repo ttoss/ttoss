@@ -1,8 +1,8 @@
 import * as allConfigs from '.';
 
 it('themes and fonts should be exported', () => {
-  expect(allConfigs.bruttalFonts).toBeDefined();
-  expect(allConfigs.bruttalTheme).toBeDefined();
-  expect(allConfigs.defaultFonts).toBeDefined();
-  expect(allConfigs.defaultTheme).toBeDefined();
+  expect(allConfigs.BruttalFonts).toBeDefined();
+  expect(allConfigs.BruttalTheme).toBeDefined();
+  expect(allConfigs.DefaultFonts).toBeDefined();
+  expect(allConfigs.DefaultTheme).toBeDefined();
 });
