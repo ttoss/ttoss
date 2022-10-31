@@ -1,8 +1,7 @@
 import * as React from 'react';
+import { DefaultFonts, DefaultTheme } from '@ttoss/theme';
 import { Global, css } from '@emotion/react';
 import { Theme, ThemeProvider as ThemeUiProvider, merge } from 'theme-ui';
-import { defaultFonts } from '@ttoss/theme';
-import { defaultTheme } from '@ttoss/theme';
 
 export type ThemeProviderProps = {
   children?: React.ReactNode;
@@ -16,14 +15,14 @@ export type ThemeProviderProps = {
 const ThemeProvider = ({
   children,
   theme = {},
-  fonts = defaultFonts,
+  fonts = DefaultFonts,
 }: ThemeProviderProps) => {
   const mergedTheme = React.useMemo(() => {
     if (typeof theme === 'function') {
       return theme;
     }
 
-    return merge(defaultTheme, theme);
+    return merge(DefaultTheme, theme);
   }, [theme]);
 
   return (

@@ -1,4 +1,4 @@
-import { defaultTheme } from '@ttoss/theme';
+import { DefaultTheme } from '@ttoss/theme';
 import { renderHook } from '@ttoss/test-utils';
 import { useTheme } from './useTheme';
 import ThemeProvider from './ThemeProvider';
@@ -9,7 +9,7 @@ test('should return default theme colors', () => {
     initialProps: { theme: {} },
   });
 
-  expect(result.current.theme.rawColors).toEqual(defaultTheme.colors);
+  expect(result.current.theme.rawColors).toEqual(DefaultTheme.colors);
 });
 
 test('should return new theme colors', () => {

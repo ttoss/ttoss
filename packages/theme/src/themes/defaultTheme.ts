@@ -1,6 +1,6 @@
 import { Theme } from 'theme-ui';
 
-export const defaultTheme: Theme = {
+export const DefaultTheme: Theme = {
   colors: {
     text: '#000',
     background: '#fff',

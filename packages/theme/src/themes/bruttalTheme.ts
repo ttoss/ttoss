@@ -1,6 +1,6 @@
 import { Theme } from 'theme-ui';
 
-export const bruttalTheme: Theme = {
+export const BruttalTheme: Theme = {
   colors: {
     text: '#0D0D0D',
     background: '#fff',

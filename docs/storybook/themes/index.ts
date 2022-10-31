@@ -1,4 +1,4 @@
-import { bruttalTheme as Bruttal } from '@ttoss/theme';
+import { BruttalTheme as Bruttal } from '@ttoss/theme';
 import { theme as Siflor } from './siflor';
 import { theme as Triangulos } from './triangulos';
 

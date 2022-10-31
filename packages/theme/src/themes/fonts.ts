@@ -1,2 +1,2 @@
-export { bruttalFonts } from './bruttalFonts';
-export { defaultFonts } from './defaultFonts';
+export { BruttalFonts } from './bruttalFonts';
+export { DefaultFonts } from './defaultFonts';
