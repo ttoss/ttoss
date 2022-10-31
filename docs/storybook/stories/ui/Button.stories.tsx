@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui';
+import { Button, Flex } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 
 export default {
@@ -9,7 +9,20 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => <Button {...args}>Click Me!</Button>;
+const Template: Story = (args) => (
+  <Flex
+    sx={{
+      gap: 3,
+      flexDirection: 'column',
+      alignItems: 'start',
+    }}
+  >
+    <Button {...args}>Click Me!</Button>
+    <Button {...args} disabled>
+      Click Me! (disabled)
+    </Button>
+  </Flex>
+);
 
 export const Primary = Template.bind({});
 Primary.args = {

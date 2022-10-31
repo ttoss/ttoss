@@ -1,4 +1,4 @@
-export const defaultFonts = [
+export const DefaultFonts = [
   'https://fonts.googleapis.com/css?family=Asap',
   'https://fonts.googleapis.com/css?family=Overpass',
   'https://fonts.googleapis.com/css?family=Overpass+Mono',

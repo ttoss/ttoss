@@ -1,0 +1,29 @@
+{
+  "name": "@ttoss/theme",
+  "version": "1.0.0",
+  "description": "Theme for packages.",
+  "license": "UNLICENSED",
+  "author": "ttoss",
+  "contributors": [
+    "Rayza Oliveira <rayza.ocr@gmail.com>"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "test": "jest"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "theme-ui": "^0.15.3"
+  },
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  }
+}

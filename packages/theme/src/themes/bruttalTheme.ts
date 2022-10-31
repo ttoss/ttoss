@@ -1,20 +1,23 @@
 import { Theme } from 'theme-ui';
 
-export const defaultTheme: Theme = {
+export const BruttalTheme: Theme = {
   colors: {
-    text: '#000',
+    text: '#0D0D0D',
     background: '#fff',
-    primary: '#07c',
+    backgroundBrand: '#C2C2C2',
+    primary: '#0D0D0D',
     secondary: '#639',
     gray: '#555',
     muted: '#f6f6f6',
     danger: 'red',
+    accent: '#0000FF',
+    textOnSurface: '#FFFFFF',
   },
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
   fonts: {
-    body: '"Asap", sans-serif',
-    heading: '"Overpass", sans-serif',
-    monospace: '"Overpass Mono", sans-serif',
+    body: '"Inconsolata", sans-serif',
+    heading: '"Work Sans", sans-serif',
+    monospace: '"Inconsolata", sans-serif',
   },
   styles: {
     root: {
@@ -44,6 +47,23 @@ export const defaultTheme: Theme = {
     danger: {
       color: 'white',
       backgroundColor: 'danger',
+    },
+    primary: {
+      ':disabled': {
+        backgroundColor: 'backgroundBrand',
+        cursor: 'default',
+      },
+    },
+    secondary: {
+      color: 'text',
+      backgroundColor: 'white',
+      borderColor: 'text',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      ':disabled': {
+        opacity: 0.5,
+        cursor: 'default',
+      },
     },
   },
   cards: {
