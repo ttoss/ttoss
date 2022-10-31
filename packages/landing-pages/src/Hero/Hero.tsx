@@ -1,4 +1,4 @@
-import { Button, Flex, Grid, Heading, Image, Text } from '@ttoss/ui';
+import { Button, Flex, Heading, Image, Text } from '@ttoss/ui';
 
 export type HeroProps = {
   headerText: string;
@@ -20,76 +20,64 @@ export const Hero = ({
   const isCentered = alignment === 'center';
 
   return (
-    <Flex sx={{ justifyContent: 'center' }}>
-      <Grid
+    <Flex
+      sx={{
+        justifyContent: 'space-between',
+        paddingY: '10vh',
+        paddingX: '186px',
+      }}
+    >
+      <Flex
         sx={{
-          position: 'relative',
-          width: '100%',
-          gridTemplateAreas: !isCentered
-            ? "'headers image' 'cta image' 'cta image'"
-            : "'headers' 'cta'",
+          flexDirection: 'column',
+          alignItems: isCentered ? 'center' : 'start',
           backgroundImage: isCentered ? `url(${imageSrc})` : undefined,
-          height: '90vh',
+          width: isCentered ? '100%' : undefined,
+          minHeight: isCentered ? '80vh' : undefined,
+          justifyContent: isCentered ? 'center' : undefined,
         }}
       >
-        <Flex
+        <Heading
+          sx={{ fontSize: '48px', color: isCentered ? 'white' : undefined }}
+          as="h1"
+        >
+          {headerText}
+        </Heading>
+        <Text
           sx={{
-            flexDirection: 'column',
-            gridArea: 'headers',
-            justifyContent: 'end',
-            alignItems: isCentered ? 'center' : undefined,
-            marginRight: !isCentered ? 6 : undefined,
-            marginBottom: isCentered ? 5 : '71px',
+            fontSize: '24px',
+            color: isCentered ? 'white' : undefined,
+            marginTop: '54px',
+            marginBottom: '71px',
+          }}
+          as="h2"
+        >
+          {subHeaderText}
+        </Text>
+        <Button
+          sx={{
+            background: isCentered ? 'white' : 'black',
+            color: isCentered ? 'black' : undefined,
+            borderRadius: '10px',
+            fontSize: '16px',
           }}
         >
-          <Heading
-            sx={{ fontSize: '48px', color: isCentered ? 'white' : undefined }}
-            as="h1"
-          >
-            {headerText}
-          </Heading>
-          <Text
-            sx={{
-              fontSize: '24px',
-              color: isCentered ? 'white' : undefined,
-              marginTop: isCentered ? '55px' : '54px',
-            }}
-            as="h2"
-          >
-            {subHeaderText}
-          </Text>
-        </Flex>
+          {ctaLabel}
+        </Button>
+      </Flex>
 
-        {!isCentered && (
+      {!isCentered && (
+        <Flex>
           <Image
             sx={{
-              gridArea: 'image',
-              maxWidth: '50vw',
+              maxWidth: '60vw',
+              maxHeight: '623px',
             }}
             src={imageSrc}
             alt={imageAlt}
           />
-        )}
-
-        <Flex
-          sx={{
-            gridArea: 'cta',
-            alignItems: 'start',
-            justifyContent: isCentered ? 'center' : undefined,
-          }}
-        >
-          <Button
-            sx={{
-              background: isCentered ? 'white' : 'black',
-              color: isCentered ? 'black' : undefined,
-              borderRadius: '10px',
-              fontSize: '16px',
-            }}
-          >
-            {ctaLabel}
-          </Button>
         </Flex>
-      </Grid>
+      )}
     </Flex>
   );
 };
