@@ -20,6 +20,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "@iconify/react": "^4.0.0",
     "@theme-ui/match-media": "^0.15.1",
     "theme-ui": "^0.15.1"
   },
