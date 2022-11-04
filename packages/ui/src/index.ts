@@ -27,3 +27,4 @@ export { Text, type TextProps } from './components/Text/Text';
 export { Select, type SelectProps } from './components/Select/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner/Spinner';
 export { Radio, type RadioProps } from './components/Radio/Radio';
+export { Icon, type IconProps } from './components/Icon/Icon';
