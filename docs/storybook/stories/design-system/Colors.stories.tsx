@@ -30,7 +30,7 @@ const Color = ({ hex, name }: ColorProps) => {
 };
 
 export default {
-  title: 'UI/Colors',
+  title: 'Design System/Colors',
   component: Color,
 } as Meta;
 
