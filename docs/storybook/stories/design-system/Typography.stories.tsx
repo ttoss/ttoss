@@ -46,7 +46,7 @@ const Template: Story = (args) => {
     <Flex sx={{ flexDirection: 'column', gap: 2 }}>
       {examples.map((example) => {
         return (
-          <Typography key={`typograthy-tag-${example.tag}`} {...example} />
+          <Typography key={`typography-tag-${example.tag}`} {...example} />
         );
       })}
     </Flex>
