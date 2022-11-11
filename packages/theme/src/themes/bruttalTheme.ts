@@ -133,5 +133,29 @@ export const BruttalTheme: Theme = {
       fontWeight: 'bold',
       letterSpacing: 'normal',
     },
+    h2: {
+      fontFamily: 'heading',
+      fontSize: '5xl',
+      fontWeight: 'bold',
+      letterSpacing: 'normal',
+    },
+    h3: {
+      fontFamily: 'heading',
+      fontSize: '4xl',
+      fontWeight: 'bold',
+      letterSpacing: 'normal',
+    },
+    h4: {
+      fontFamily: 'heading',
+      fontSize: '2xl',
+      fontWeight: 'bold',
+      letterSpacing: 'normal',
+    },
+    h5: {
+      fontFamily: 'heading',
+      fontSize: 'xl',
+      fontWeight: 'bold',
+      letterSpacing: 'normal',
+    },
   },
 };
