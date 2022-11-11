@@ -1,4 +1,4 @@
-import { BruttalTheme as Bruttal } from '@ttoss/theme';
+import { BruttalTheme as Bruttal, DefaultTheme } from '@ttoss/theme';
 import { theme as Siflor } from './siflor';
 import { theme as Triangulos } from './triangulos';
 
@@ -11,4 +11,5 @@ export const themes: { [key: string]: Theme } = {
   Siflor,
   Triangulos,
   Bruttal,
+  Dynamic: Bruttal,
 };
