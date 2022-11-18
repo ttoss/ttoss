@@ -16,7 +16,8 @@
     "@ttoss/forms": "^0.5.9",
     "@ttoss/landing-pages": "^0.1.5",
     "@ttoss/theme": "^1.0.3",
-    "@ttoss/ui": "^1.22.0"
+    "@ttoss/ui": "^1.22.0",
+    "react-json-view": "^1.21.3"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",

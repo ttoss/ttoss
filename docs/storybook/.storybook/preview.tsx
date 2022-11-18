@@ -11,6 +11,13 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  options: {
+    storySort: {
+      method: 'alphabetical',
+      order: ['@Docs', 'Theme', 'Design System', 'UI'],
+      locales: 'en-US',
+    },
+  },
   defaultLocale: 'en',
   locales: ['en'],
 };
