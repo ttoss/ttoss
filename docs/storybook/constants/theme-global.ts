@@ -1,0 +1,1 @@
+export const THEME_GLOBAL_KEY = 'THEME_GLOBAL_KEY_SB';
