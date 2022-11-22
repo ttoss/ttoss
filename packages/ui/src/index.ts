@@ -29,3 +29,4 @@ export { Spinner, type SpinnerProps } from './components/Spinner/Spinner';
 export { Radio, type RadioProps } from './components/Radio/Radio';
 export { Icon, type IconProps } from './components/Icon/Icon';
 export { Slider, type SliderProps } from './components/Slider/Slider';
+export { Checkbox, type CheckboxProps } from './components/Checkbox/Checkbox';
