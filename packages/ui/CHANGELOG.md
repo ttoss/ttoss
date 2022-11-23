@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.22.0...@ttoss/ui@1.23.0) (2022-11-23)
+
+### Features
+
+- exporting Checkbox component ([#65](https://github.com/ttoss/ttoss/issues/65)) ([a7b0eb6](https://github.com/ttoss/ttoss/commit/a7b0eb6358d90b465fbce65dd4c4dd53badd54af))
+
 # [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.21.3...@ttoss/ui@1.22.0) (2022-11-16)
 
 ### Features
