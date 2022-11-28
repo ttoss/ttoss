@@ -21,6 +21,7 @@ module.exports = {
     'relay',
     'jsx-a11y',
     'sort-imports-es6-autofix',
+    'prefer-arrow-functions',
     'prettier',
   ],
   extends: [
@@ -34,8 +35,20 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
+    '@typescript-eslint/no-non-null-assertion': 'error',
     'formatjs/no-offset': 'error',
     'no-console': 'error',
+    'no-use-before-define': ['error'],
+    'prefer-arrow-callback': 'error',
+    /**
+     * https://github.com/JamieMason/eslint-plugin-prefer-arrow-functions
+     */
+    'prefer-arrow-functions/prefer-arrow-functions': [
+      'error',
+      {
+        returnStyle: 'explicit',
+      },
+    ],
     'relay/generated-flow-types': 'off',
     'sort-imports-es6-autofix/sort-imports-es6': [
       2,
