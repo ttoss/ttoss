@@ -1,4 +1,6 @@
 import { FormFieldInput } from './FormFieldInput';
+import { FormFieldRadio } from './FormFieldRadio';
+import { FormFieldSelect } from './FormFieldSelect';
 
 const FormField = () => {
   // to be implemented
@@ -6,5 +8,7 @@ const FormField = () => {
 };
 
 FormField.Input = FormFieldInput;
+FormField.Radio = FormFieldRadio;
+FormField.Select = FormFieldSelect;
 
 export { FormField };
