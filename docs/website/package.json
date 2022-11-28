@@ -21,6 +21,7 @@
     "@mdx-js/react": "^1.6.22",
     "@ttoss/components": "^1.21.13",
     "@ttoss/config": "^1.18.3",
+    "@ttoss/forms": "^0.5.10",
     "@ttoss/ui": "^1.23.0",
     "carlin": "^1.19.12",
     "jsdoc-api": "^7.1.1",

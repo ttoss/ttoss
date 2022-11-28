@@ -1,3 +1,4 @@
+import { FormFieldCheckbox } from './FormFieldCheckbox';
 import { FormFieldInput } from './FormFieldInput';
 
 const FormField = () => {
@@ -6,5 +7,7 @@ const FormField = () => {
 };
 
 FormField.Input = FormFieldInput;
+
+FormField.Checkbox = FormFieldCheckbox;
 
 export { FormField };
