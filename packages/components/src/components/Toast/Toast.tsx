@@ -7,7 +7,9 @@ import {
 } from 'react-toastify';
 import { injectStyle } from 'react-toastify/dist/inject-style';
 
-export { toast, ToastContainerProps };
+export { toast };
+
+export { type ToastContainerProps };
 
 export const ToastContainer = (props: ToastContainerProps) => {
   React.useEffect(() => {
