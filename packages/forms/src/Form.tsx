@@ -17,7 +17,9 @@ export const Form = <TFieldValues extends FieldValues = FieldValues>({
       <Box
         as="form"
         variant="forms.form"
-        onSubmit={formMethods.handleSubmit((data) => onSubmit(data))}
+        onSubmit={formMethods.handleSubmit((data) => {
+          return onSubmit(data);
+        })}
         sx={sx}
       >
         {children}

@@ -33,15 +33,17 @@ let options_: {
 
 export type { RenderOptions };
 
-const customRender = (ui: React.ReactElement, options?: RenderOptions) =>
-  render(ui, { ...options_, ...options });
+const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
+  return render(ui, { ...options_, ...options });
+};
 
 export * from '@testing-library/react';
 
 export { customRender as render };
 
-const customRenderHook: typeof renderHook = (callback, options) =>
-  renderHook(callback, { ...options_, ...options });
+const customRenderHook: typeof renderHook = (callback, options) => {
+  return renderHook(callback, { ...options_, ...options });
+};
 
 export { customRenderHook as renderHook };
 

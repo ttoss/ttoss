@@ -1,10 +1,17 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form } from './Form';
-import { FormFieldInput } from './FormFieldInput';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { Form } from '../src/Form';
+import { FormFieldSelect } from '../src/FormFieldSelect';
+import { act, render, screen, userEvent } from '@ttoss/test-utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+const RADIO_OPTIONS = [
+  { value: '', label: 'Select a car' },
+  { value: 'Ferrari', label: 'Ferrari' },
+  { value: 'Mercedes', label: 'Mercedes' },
+  { value: 'BMW', label: 'BMW' },
+];
 
 test('call onSubmit with correct data', async () => {
   const user = userEvent.setup({ delay: null });
@@ -16,8 +23,7 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldInput name="input1" label="Input 1" />
-        <FormFieldInput name="input2" label="Input 2" />
+        <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -25,13 +31,16 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.type(screen.getByLabelText('Input 1'), 'input1');
+  await act(async () => {
+    await user.selectOptions(
+      screen.getByRole('combobox'),
+      screen.getByText('BMW')
+    );
 
-  await user.type(screen.getByLabelText('Input 2'), 'input2');
+    await user.click(screen.getByText('Submit'));
+  });
 
-  await user.click(screen.getByText('Submit'));
-
-  expect(onSubmit).toHaveBeenCalledWith({ input1: 'input1', input2: 'input2' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
 });
 
 test('should display error messages', async () => {
@@ -40,23 +49,18 @@ test('should display error messages', async () => {
   const onSubmit = jest.fn();
 
   const schema = yup.object({
-    firstName: yup.string().required('First name is required'),
-    age: yup.number().required('Age is required'),
+    car: yup.string().required('Car is required'),
   });
 
   const RenderForm = () => {
     const formMethods = useForm({
-      defaultValues: {
-        age: 0,
-      },
       mode: 'all',
       resolver: yupResolver(schema),
     });
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldInput name="firstName" label="First Name" />
-        <FormFieldInput name="age" label="Age" />
+        <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -64,7 +68,9 @@ test('should display error messages', async () => {
 
   render(<RenderForm />);
 
-  await user.click(screen.getByText('Submit'));
+  await act(async () => {
+    await user.click(screen.getByText('Submit'));
+  });
 
-  expect(await screen.findByText('First name is required')).toBeInTheDocument();
+  expect(await screen.findByText('Car is required')).toBeInTheDocument();
 });
