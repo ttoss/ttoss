@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.24.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.23.4...@docs/storybook@1.24.0) (2022-11-29)
+
+### Features
+
+- add form field checkbox ([#69](https://github.com/ttoss/ttoss/issues/69)) ([cdbc694](https://github.com/ttoss/ttoss/commit/cdbc694ed1bf54442950f55f403f685f0ee876de))
+
 ## [1.23.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.23.3...@docs/storybook@1.23.4) (2022-11-29)
 
 **Note:** Version bump only for package @docs/storybook

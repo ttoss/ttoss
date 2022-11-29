@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.25.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.24.7...@docs/website@1.25.0) (2022-11-29)
+
+### Features
+
+- add form field checkbox ([#69](https://github.com/ttoss/ttoss/issues/69)) ([cdbc694](https://github.com/ttoss/ttoss/commit/cdbc694ed1bf54442950f55f403f685f0ee876de))
+
 ## [1.24.7](https://github.com/ttoss/ttoss/compare/@docs/website@1.24.6...@docs/website@1.24.7) (2022-11-29)
 
 **Note:** Version bump only for package @docs/website
