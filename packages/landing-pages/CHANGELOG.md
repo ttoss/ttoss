@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.1.7...@ttoss/landing-pages@0.2.0) (2022-11-29)
+
+### Features
+
+- add new eslint rules ([#68](https://github.com/ttoss/ttoss/issues/68)) ([0a8c213](https://github.com/ttoss/ttoss/commit/0a8c213c1eae99a063448983e7fba83ebca4a609))
+
 ## [0.1.7](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.1.6...@ttoss/landing-pages@0.1.7) (2022-11-29)
 
 **Note:** Version bump only for package @ttoss/landing-pages

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.16.10...@ttoss/test-utils@1.17.0) (2022-11-29)
+
+### Features
+
+- add form field checkbox ([#69](https://github.com/ttoss/ttoss/issues/69)) ([cdbc694](https://github.com/ttoss/ttoss/commit/cdbc694ed1bf54442950f55f403f685f0ee876de))
+
 ## [1.16.10](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.16.8...@ttoss/test-utils@1.16.10) (2022-10-08)
 
 **Note:** Version bump only for package @ttoss/test-utils
