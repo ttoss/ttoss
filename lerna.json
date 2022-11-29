@@ -3,16 +3,12 @@
   "npmClient": "yarn",
   "useWorkspaces": true,
   "stream": true,
+  "all": true,
   "command": {
     "publish": {
       "allowBranch": "main",
       "conventionalCommits": true,
-      "ignoreChanges": [
-        "**/docs/**",
-        "**/__fixtures__/**",
-        "**/__tests__/**",
-        "**/*.md"
-      ],
+      "ignoreChanges": ["**/*.md"],
       "message": "chore(release): publish packages",
       "noPrivate": true
     }
