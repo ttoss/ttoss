@@ -31,7 +31,10 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.selectOptions(screen.getByText('Select a car'), ['BMW']);
+  await user.selectOptions(
+    screen.getByRole('combobox'),
+    screen.getByText('BMW')
+  );
 
   await user.click(screen.getByText('Submit'));
 
