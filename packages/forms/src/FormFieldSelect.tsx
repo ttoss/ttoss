@@ -39,17 +39,16 @@ export const FormFieldSelect = <
         onBlur={onBlur}
         value={value}
         arrow={arrow}
-        variant="form.select"
+        id={id}
       >
         {options.map((option) => {
           return (
-            <option key={id} value={option.value} id={id}>
+            <option key={option.label} value={option.value}>
               {option.label}
             </option>
           );
         })}
       </Select>
-
       <ErrorMessage name={name} />
     </Box>
   );

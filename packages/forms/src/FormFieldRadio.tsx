@@ -26,7 +26,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   return (
     <Box>
       {label && <Label>{label}</Label>}
-      <Box variant="form.radios">
+      <Box>
         {options.map((option) => {
           const id = `form-field-radio-${name}-${option.value}`;
 

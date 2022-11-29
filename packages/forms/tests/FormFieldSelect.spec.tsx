@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
 import { Form } from '../src/Form';
 import { FormFieldSelect } from '../src/FormFieldSelect';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { act, render, screen, userEvent } from '@ttoss/test-utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -31,12 +31,14 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.selectOptions(
-    screen.getByRole('combobox'),
-    screen.getByText('BMW')
-  );
+  await act(async () => {
+    await user.selectOptions(
+      screen.getByRole('combobox'),
+      screen.getByText('BMW')
+    );
 
-  await user.click(screen.getByText('Submit'));
+    await user.click(screen.getByText('Submit'));
+  });
 
   expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
 });
@@ -59,7 +61,6 @@ test('should display error messages', async () => {
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
         <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
-
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -67,7 +68,9 @@ test('should display error messages', async () => {
 
   render(<RenderForm />);
 
-  await user.click(screen.getByText('Submit'));
+  await act(async () => {
+    await user.click(screen.getByText('Submit'));
+  });
 
   expect(await screen.findByText('Car is required')).toBeInTheDocument();
 });
