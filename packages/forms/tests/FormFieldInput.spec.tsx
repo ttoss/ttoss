@@ -1,8 +1,7 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form } from './Form';
-import { FormFieldInput } from './FormFieldInput';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { Form, FormField } from '../src';
+import { act, render, screen, userEvent } from '@ttoss/test-utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -16,8 +15,8 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldInput name="input1" label="Input 1" />
-        <FormFieldInput name="input2" label="Input 2" />
+        <FormField.Input name="input1" label="Input 1" />
+        <FormField.Input name="input2" label="Input 2" />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -25,11 +24,13 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.type(screen.getByLabelText('Input 1'), 'input1');
+  await act(async () => {
+    await user.type(screen.getByLabelText('Input 1'), 'input1');
 
-  await user.type(screen.getByLabelText('Input 2'), 'input2');
+    await user.type(screen.getByLabelText('Input 2'), 'input2');
 
-  await user.click(screen.getByText('Submit'));
+    await user.click(screen.getByText('Submit'));
+  });
 
   expect(onSubmit).toHaveBeenCalledWith({ input1: 'input1', input2: 'input2' });
 });
@@ -55,8 +56,8 @@ test('should display error messages', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldInput name="firstName" label="First Name" />
-        <FormFieldInput name="age" label="Age" />
+        <FormField.Input name="firstName" label="First Name" />
+        <FormField.Input name="age" label="Age" />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -64,7 +65,9 @@ test('should display error messages', async () => {
 
   render(<RenderForm />);
 
-  await user.click(screen.getByText('Submit'));
+  await act(async () => {
+    await user.click(screen.getByText('Submit'));
+  });
 
   expect(await screen.findByText('First name is required')).toBeInTheDocument();
 });

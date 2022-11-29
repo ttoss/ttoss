@@ -7,13 +7,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 export default {
-  title: 'Forms/FormField.Input',
-  component: FormField.Input,
+  title: 'Forms/FormField.Radio',
+  component: FormField.Radio,
 } as Meta;
 
 const schema = yup.object({
-  firstName: yup.string().required('First name is required'),
-  age: yup.number().required('Age is required'),
+  car: yup.string().required('Car is required'),
 });
 
 const Template: Story = () => {
@@ -24,8 +23,16 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormField.Input name="firstName" label="First Name" />
-      <FormField.Input name="age" label="Age" />
+      <FormField.Radio
+        name="car"
+        label="What car do you prefer?"
+        options={[
+          { value: 'Ferrari', label: 'Ferrari' },
+          { value: 'Mercedes', label: 'Mercedes' },
+          { value: 'BMW', label: 'BMW' },
+        ]}
+      />
+
       <Button type="submit">Submit</Button>
     </Form>
   );
