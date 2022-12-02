@@ -1,4 +1,11 @@
-import { Box, Label, Select, type SelectProps } from '@ttoss/ui';
+import {
+  Box,
+  BoxProps,
+  Label,
+  LabelProps,
+  Select,
+  type SelectProps,
+} from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldValues, Path, useController } from 'react-hook-form';
 
@@ -13,12 +20,16 @@ export const FormFieldSelect = <
   label,
   name,
   options,
-  arrow,
+  containerProps,
+  labelProps,
+  selectProps,
 }: {
   label?: string;
   name: Path<TFieldValues>;
   options: FormRadioOption[];
-  arrow?: SelectProps['arrow'];
+  containerProps?: BoxProps;
+  labelProps?: LabelProps;
+  selectProps?: SelectProps;
 }) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -30,15 +41,19 @@ export const FormFieldSelect = <
   const id = `form-field-select-${name}`;
 
   return (
-    <Box>
-      {label && <Label htmlFor={id}>{label}</Label>}
+    <Box {...containerProps}>
+      {label && (
+        <Label {...labelProps} htmlFor={id}>
+          {label}
+        </Label>
+      )}
       <Select
+        {...selectProps}
         ref={ref}
         name={name}
         onChange={onChange}
         onBlur={onBlur}
         value={value}
-        arrow={arrow}
         id={id}
       >
         {options.map((option) => {
