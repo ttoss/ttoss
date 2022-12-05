@@ -1,4 +1,4 @@
-import { Box, BoxProps, Label, LabelProps, Radio, RadioProps } from '@ttoss/ui';
+import { Box, Label, Radio } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldValues, Path, useController } from 'react-hook-form';
 
@@ -11,20 +11,10 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
   options,
-  containerProps,
-  containerOptionsProps,
-  labelProps,
-  radioLabelProps,
-  radioProps,
 }: {
   label?: string;
   name: Path<TFieldValues>;
   options: FormRadioOption[];
-  containerProps?: BoxProps;
-  containerOptionsProps?: BoxProps;
-  labelProps?: LabelProps;
-  radioLabelProps?: LabelProps;
-  radioProps?: RadioProps;
 }) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -34,16 +24,15 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   });
 
   return (
-    <Box {...containerProps}>
-      {label && <Label {...labelProps}>{label}</Label>}
-      <Box {...containerOptionsProps}>
+    <Box>
+      {label && <Label>{label}</Label>}
+      <Box>
         {options.map((option) => {
           const id = `form-field-radio-${name}-${option.value}`;
 
           return (
-            <Label {...radioLabelProps} key={id} htmlFor={id}>
+            <Label key={id} htmlFor={id}>
               <Radio
-                {...radioProps}
                 ref={ref}
                 onChange={onChange}
                 onBlur={onBlur}
