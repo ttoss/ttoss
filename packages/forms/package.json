@@ -19,13 +19,13 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
-    "@hookform/resolvers": "^2.9.10"
+    "@hookform/resolvers": "^2.9.10",
+    "react-hook-form": "^7.39.7",
+    "yup": "^0.32.11"
   },
   "peerDependencies": {
     "@ttoss/ui": "^1.23.0",
-    "react": "^18.2.0",
-    "react-hook-form": "^7.39.7",
-    "yup": "^0.32.11"
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@ttoss/config": "^1.20.0",
