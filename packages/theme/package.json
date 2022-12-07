@@ -22,9 +22,6 @@
   "dependencies": {
     "theme-ui": "^0.15.3"
   },
-  "devDependencies": {
-    "@ttoss/config": "^1.19.0"
-  },
   "keywords": [],
   "publishConfig": {
     "access": "public"

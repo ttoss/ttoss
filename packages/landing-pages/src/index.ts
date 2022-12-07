@@ -5,4 +5,3 @@ export {
 } from './HeroCarousel/HeroCarousel';
 export { Footer, type FooterProps } from './Footer/Footer';
 export { Navbar, type NavbarProps } from './Navbar/Navbar';
-export { NextDocument } from './NextDocument/NextDocument';

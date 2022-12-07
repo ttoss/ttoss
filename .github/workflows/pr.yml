@@ -55,6 +55,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile --prefer-offline
 
+      # Lint and throw errors if there are any file that need to be formatted
+      - name: Lint
+        # Build config to run lint-staged for lint and version bump.
+        run: |
+          yarn turbo run build --filter=@ttoss/config...
+          yarn lint
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Need lint. Please run 'yarn lint' locally and commit the changes"
+            exit 1
+          fi
+
       - name: Run pr command
         run: sh -e ./.cicd/commands/pr.sh
         env:
