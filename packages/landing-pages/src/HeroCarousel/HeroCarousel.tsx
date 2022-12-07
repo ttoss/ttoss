@@ -14,7 +14,9 @@ export const HeroCarousel = ({ images = [] }: HeroCarouselProps) => {
   const [selectedImage, setSelectedImage] = React.useState(images[0].id);
 
   const handleRight = () => {
-    const currentIndex = images.findIndex((item) => item.id === selectedImage);
+    const currentIndex = images.findIndex((item) => {
+      return item.id === selectedImage;
+    });
     const isLast = currentIndex === images.length - 1;
 
     if (isLast) {
@@ -25,7 +27,9 @@ export const HeroCarousel = ({ images = [] }: HeroCarouselProps) => {
   };
 
   const handleLeft = () => {
-    const currentIndex = images.findIndex((item) => item.id === selectedImage);
+    const currentIndex = images.findIndex((item) => {
+      return item.id === selectedImage;
+    });
     const isFirst = currentIndex === 0;
 
     if (isFirst) {
@@ -36,7 +40,9 @@ export const HeroCarousel = ({ images = [] }: HeroCarouselProps) => {
   };
 
   const image = React.useMemo(() => {
-    const result = images.find((item) => item.id === selectedImage);
+    const result = images.find((item) => {
+      return item.id === selectedImage;
+    });
 
     return result;
   }, [selectedImage, images]);
@@ -93,7 +99,9 @@ export const HeroCarousel = ({ images = [] }: HeroCarouselProps) => {
               <Box
                 key={image.id}
                 role="button"
-                onClick={() => setSelectedImage(image.id)}
+                onClick={() => {
+                  return setSelectedImage(image.id);
+                }}
                 sx={{
                   background: image.id === selectedImage ? 'gray' : 'black',
                   width: 10,
