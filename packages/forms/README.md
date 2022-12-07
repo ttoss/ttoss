@@ -5,16 +5,14 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/forms react-hook-form yup
+yarn add @ttoss/forms
 ```
 
 ## Quick Start
 
 ```tsx
-import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form, FormField, yupResolver } from '@ttoss/forms';
-import { useForm } from 'react-hook-form';
+import { Form, FormField, yupResolver, useForm, yup } from '@ttoss/forms';
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
@@ -38,3 +36,5 @@ export const FormComponent = () => {
   );
 };
 ```
+
+> NOTE: You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`

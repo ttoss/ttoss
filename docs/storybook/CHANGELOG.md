@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.26.0...@docs/storybook@1.26.1) (2022-12-05)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [1.26.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.23.4...@docs/storybook@1.26.0) (2022-11-29)
+
+### Bug Fixes
+
+- storybook version ([ae610e1](https://github.com/ttoss/ttoss/commit/ae610e10fa74e85df366e343c17ad4641afdde8e))
+
+### Features
+
+- add form field checkbox ([#69](https://github.com/ttoss/ttoss/issues/69)) ([cdbc694](https://github.com/ttoss/ttoss/commit/cdbc694ed1bf54442950f55f403f685f0ee876de))
+
 # [1.25.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.23.4...@docs/storybook@1.25.0) (2022-11-29)
 
 ### Bug Fixes

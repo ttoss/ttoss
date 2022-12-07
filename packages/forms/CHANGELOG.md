@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.7.0...@ttoss/forms@0.8.0) (2022-12-05)
+
+### Features
+
+- added props to FormFields ([#71](https://github.com/ttoss/ttoss/issues/71)) ([aa23d7b](https://github.com/ttoss/ttoss/commit/aa23d7b0cc7f9d7b6ce4452c1dff6d92a0ef5805))
+
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.5.12...@ttoss/forms@0.7.0) (2022-11-29)
+
+### Features
+
+- add form field checkbox ([#69](https://github.com/ttoss/ttoss/issues/69)) ([cdbc694](https://github.com/ttoss/ttoss/commit/cdbc694ed1bf54442950f55f403f685f0ee876de))
+- add new eslint rules ([#68](https://github.com/ttoss/ttoss/issues/68)) ([0a8c213](https://github.com/ttoss/ttoss/commit/0a8c213c1eae99a063448983e7fba83ebca4a609))
+
 # [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.5.12...@ttoss/forms@0.6.0) (2022-11-29)
 
 ### Features
