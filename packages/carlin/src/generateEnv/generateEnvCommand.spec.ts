@@ -3,9 +3,10 @@ import * as fs from 'fs';
 import { faker } from '@ttoss/test-utils/faker';
 import { parseCli } from '../../testUtils';
 
-jest.mock('find-up', () => {
+jest.mock('findup-sync', () => {
   return {
-    findUpSync: jest
+    __esModule: true,
+    default: jest
       .fn()
       .mockReturnValueOnce('./some-dir')
       .mockReturnValueOnce(undefined),

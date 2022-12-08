@@ -10,11 +10,11 @@ import {
 import { constantCase, paramCase } from 'change-case';
 import { deployCommand } from './deploy/command';
 import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
-import { findUpSync } from 'find-up';
 import { generateEnvCommand } from './generateEnv/generateEnvCommand';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
+import findUpSync from 'findup-sync';
 import path from 'path';
 
 const coerceSetEnvVar = (env: EnvironmentVariables) => {
@@ -132,7 +132,7 @@ const cli = () => {
     });
     const paths = [];
     let currentPath = process.cwd();
-    let findUpPath: string | undefined;
+    let findUpPath: string | null;
 
     do {
       findUpPath = findUpSync(names, { cwd: currentPath });

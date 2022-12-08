@@ -1,6 +1,7 @@
-jest.mock('find-up', () => {
+jest.mock('findup-sync', () => {
   return {
-    findUpSync: jest.fn().mockReturnValue('some/path'),
+    __esModule: true,
+    default: jest.fn().mockReturnValue('some/path'),
   };
 });
 

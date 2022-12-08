@@ -2,9 +2,10 @@
  * Avoid the error: 'TypeError [ERR_INVALID_ARG_TYPE]: The "original"
  * argument must be of type function. Received undefined.'
  */
-jest.mock('find-up', () => {
+jest.mock('findup-sync', () => {
   return {
-    findUpSync: jest.fn().mockReturnValue('./some-dir'),
+    __esModule: true,
+    default: jest.fn().mockReturnValue('./some-dir'),
   };
 });
 

@@ -1,8 +1,8 @@
-import * as findUp from 'find-up';
+import findUpSync from 'findup-sync';
 import fs from 'fs';
 
 const readPackageJson = () => {
-  const packageJsonDir = findUp.findUpSync('package.json');
+  const packageJsonDir = findUpSync('package.json');
 
   if (!packageJsonDir) {
     return {};
