@@ -1,10 +1,14 @@
-jest.mock('find-up', () => ({
-  sync: jest.fn().mockReturnValue('some/path'),
-}));
+jest.mock('find-up', () => {
+  return {
+    findUpSync: jest.fn().mockReturnValue('some/path'),
+  };
+});
 
-jest.mock('fs', () => ({
-  readFileSync: jest.fn(),
-}));
+jest.mock('fs', () => {
+  return {
+    readFileSync: jest.fn(),
+  };
+});
 
 import { faker } from '@ttoss/test-utils/faker';
 import { getPackageName } from './packageJson';

@@ -4,7 +4,7 @@
  */
 jest.mock('find-up', () => {
   return {
-    sync: jest.fn().mockReturnValue('./some-dir'),
+    findUpSync: jest.fn().mockReturnValue('./some-dir'),
   };
 });
 

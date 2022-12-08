@@ -1,8 +1,8 @@
-import findUp from 'find-up';
+import * as findUp from 'find-up';
 import fs from 'fs';
 
 const readPackageJson = () => {
-  const packageJsonDir = findUp.sync('package.json');
+  const packageJsonDir = findUp.findUpSync('package.json');
 
   if (!packageJsonDir) {
     return {};
@@ -19,8 +19,10 @@ const getPackageJsonProperty = ({ property }: { property: string }) => {
   }
 };
 
-export const getPackageName = (): string =>
-  getPackageJsonProperty({ property: 'name' });
+export const getPackageName = (): string => {
+  return getPackageJsonProperty({ property: 'name' });
+};
 
-export const getPackageVersion = (): string =>
-  getPackageJsonProperty({ property: 'version' });
+export const getPackageVersion = (): string => {
+  return getPackageJsonProperty({ property: 'version' });
+};

@@ -3,12 +3,23 @@ import * as fs from 'fs';
 import { faker } from '@ttoss/test-utils/faker';
 import { parseCli } from '../../testUtils';
 
-jest.mock('fs', () => ({
-  promises: {
-    readFile: jest.fn(),
-    writeFile: jest.fn(),
-  },
-}));
+jest.mock('find-up', () => {
+  return {
+    findUpSync: jest
+      .fn()
+      .mockReturnValueOnce('./some-dir')
+      .mockReturnValueOnce(undefined),
+  };
+});
+
+jest.mock('fs', () => {
+  return {
+    promises: {
+      readFile: jest.fn(),
+      writeFile: jest.fn(),
+    },
+  };
+});
 
 beforeEach(() => {
   jest.clearAllMocks();

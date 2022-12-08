@@ -20,7 +20,7 @@ export const buildLambdaSingleFile = async ({
 
   const { errors } = esbuild.buildSync({
     banner: {
-      js: '// Powered by carlin (https://ttoss.dev)',
+      js: '// Powered by carlin (https://ttoss.dev/docs/carlin/)',
     },
     bundle: true,
     entryPoints: [path.resolve(process.cwd(), lambdaInput)],
