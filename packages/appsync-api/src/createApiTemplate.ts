@@ -186,6 +186,13 @@ export const createApiTemplate = ({
         },
       },
     },
+    Outputs: {
+      [AppSyncGraphQLApiLogicalId]: {
+        Value: {
+          'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'GraphQLUrl'],
+        },
+      },
+    },
   };
 
   resolveMethodsEntries.forEach(({ fieldName, typeName }) => {
