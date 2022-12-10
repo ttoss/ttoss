@@ -15,33 +15,39 @@ const mockWorkingCloudFormationTemplate: CloudFormationTemplate = {
   },
 };
 
-jest.mock('./cloudFormation.core', () => ({
-  deploy: jest.fn(),
-  cloudFormationV2: jest.fn().mockReturnValue({
-    validateTemplate: jest.fn(({ TemplateBody }: any) => {
-      return {
-        promise: () => {
-          if (
-            TemplateBody ===
-            JSON.stringify(mockWorkingCloudFormationTemplate, null, 2)
-          ) {
-            return Promise.resolve();
-          }
+jest.mock('./cloudFormation.core', () => {
+  return {
+    deploy: jest.fn(),
+    cloudFormationV2: jest.fn().mockReturnValue({
+      validateTemplate: jest.fn(({ TemplateBody }: any) => {
+        return {
+          promise: () => {
+            if (
+              TemplateBody ===
+              JSON.stringify(mockWorkingCloudFormationTemplate, null, 2)
+            ) {
+              return Promise.resolve();
+            }
 
-          return Promise.reject();
-        },
-      };
+            return Promise.reject();
+          },
+        };
+      }),
     }),
-  }),
-}));
+  };
+});
 
-jest.mock('./lambda/deployLambdaCode', () => ({
-  deployLambdaCode: jest.fn(),
-}));
+jest.mock('./lambda/deployLambdaCode', () => {
+  return {
+    deployLambdaCode: jest.fn(),
+  };
+});
 
-jest.mock('./stackName', () => ({
-  getStackName: jest.fn(),
-}));
+jest.mock('./stackName', () => {
+  return {
+    getStackName: jest.fn(),
+  };
+});
 
 import { defaultTemplatePaths, deployCloudFormation } from './cloudFormation';
 
@@ -60,7 +66,9 @@ test('all templates paths should start with .src', () => {
 describe('testing deployCloudFormation method', () => {
   const lambdaInput = faker.random.word();
 
-  const lambdaExternals = [...new Array(5)].map(() => faker.random.word());
+  const lambdaExternals = [...new Array(5)].map(() => {
+    return faker.random.word();
+  });
 
   test('return working cloudformation template if passed via template', async () => {
     (deployLambdaCode as jest.Mock).mockResolvedValueOnce(undefined);

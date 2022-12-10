@@ -5,7 +5,9 @@ import { paramCase, pascalCase } from 'change-case';
 
 const mockMath = Object.create(global.Math);
 const randomNumber = 0.12345;
-mockMath.random = () => randomNumber;
+mockMath.random = () => {
+  return randomNumber;
+};
 global.Math = mockMath;
 
 const branchName = [
@@ -19,12 +21,14 @@ const environment = faker.random.word();
 
 const packageName = `@${faker.random.word()}/${faker.random.word()}`;
 
-jest.mock('../utils', () => ({
-  ...(jest.requireActual('../utils') as any),
-  getCurrentBranch: jest.fn(),
-  getEnvironment: jest.fn(),
-  getPackageName: jest.fn(),
-}));
+jest.mock('../utils', () => {
+  return {
+    ...(jest.requireActual('../utils') as any),
+    getCurrentBranch: jest.fn(),
+    getEnvironment: jest.fn(),
+    getPackageName: jest.fn(),
+  };
+});
 
 describe('testing getStackName', () => {
   test('documentation case #1', async () => {

@@ -14,14 +14,16 @@ import { generateEnvCommand } from './generateEnv/generateEnvCommand';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
-import findUp from 'find-up';
+import findUpSync from 'findup-sync';
 import path from 'path';
 
-const coerceSetEnvVar = (env: EnvironmentVariables) => (value: any) => {
-  if (value) {
-    setEnvVar(env, value);
-  }
-  return value;
+const coerceSetEnvVar = (env: EnvironmentVariables) => {
+  return (value: any) => {
+    if (value) {
+      setEnvVar(env, value);
+    }
+    return value;
+  };
 };
 
 export const options = {
@@ -61,7 +63,9 @@ export const options = {
  * You can also provide the options creating a property name `carlin`
  * inside your `package.json`. [See Yargs reference](https://yargs.js.org/docs/#api-reference-pkgconfkey-cwd).
  */
-const getPkgConfig = () => NAME;
+const getPkgConfig = () => {
+  return NAME;
+};
 
 /**
  * All options can be passed as environment variables matching the prefix
@@ -123,22 +127,24 @@ const cli = () => {
    * ```
    */
   const getConfig = () => {
-    const names = ['js', 'yml', 'yaml', 'json', 'ts'].map(
-      (ext) => `${NAME}.${ext}`
-    );
+    const names = ['js', 'yml', 'yaml', 'json', 'ts'].map((ext) => {
+      return `${NAME}.${ext}`;
+    });
     const paths = [];
     let currentPath = process.cwd();
-    let findUpPath: string | undefined;
+    let findUpPath: string | null;
 
     do {
-      findUpPath = findUp.sync(names, { cwd: currentPath });
+      findUpPath = findUpSync(names, { cwd: currentPath });
       if (findUpPath) {
         currentPath = path.resolve(findUpPath, '../..');
         paths.push(findUpPath);
       }
     } while (findUpPath);
 
-    const configs = paths.map((p) => readObjectFile({ path: p }) || {});
+    const configs = paths.map((p) => {
+      return readObjectFile({ path: p }) || {};
+    });
 
     /**
      * Using configs.reverser() to get the most far config first. This way the
@@ -242,14 +248,16 @@ const cli = () => {
       })
       .pkgConf(getPkgConfig())
       .config(getConfig())
-      .config('config', (configPath: string) =>
-        readObjectFile({ path: configPath })
-      )
+      .config('config', (configPath: string) => {
+        return readObjectFile({ path: configPath });
+      })
       .command({
         command: 'print-args',
         describe: false,
-        // eslint-disable-next-line no-console
-        handler: (argv) => console.log(JSON.stringify(argv, null, 2)),
+        handler: (argv) => {
+          // eslint-disable-next-line no-console
+          return console.log(JSON.stringify(argv, null, 2));
+        },
       })
       .command(deployCommand)
       .command(ecsTaskReportCommand)

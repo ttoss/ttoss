@@ -20,14 +20,14 @@ export const buildLambdaSingleFile = async ({
 
   const { errors } = esbuild.buildSync({
     banner: {
-      js: '// Powered by carlin (https://ttoss.dev)',
+      js: '// Powered by carlin (https://ttoss.dev/docs/carlin/)',
     },
     bundle: true,
     entryPoints: [path.resolve(process.cwd(), lambdaInput)],
     external: ['aws-sdk', ...builtins, ...lambdaExternals],
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
-    target: 'node12',
+    target: 'node18',
     treeShaking: true,
   });
 

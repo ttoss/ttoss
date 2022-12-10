@@ -2,9 +2,11 @@ import { faker } from '@ttoss/test-utils/faker';
 import { getProjectName } from './../../utils/getProjectName';
 import { pascalCase } from 'change-case';
 
-jest.mock('../../utils/getProjectName', () => ({
-  getProjectName: jest.fn(),
-}));
+jest.mock('../../utils/getProjectName', () => {
+  return {
+    getProjectName: jest.fn(),
+  };
+});
 
 import { getCicdStackName } from './getCicdStackName';
 

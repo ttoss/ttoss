@@ -12,7 +12,7 @@ export interface Resource {
   Type: string;
   DeletionPolicy?: 'Delete' | 'Retain';
   Description?: string;
-  DependsOn?: string[];
+  DependsOn?: string[] | string;
   Condition?: string;
   Properties: any;
 }
@@ -142,17 +142,21 @@ const cloudFormationTypes: TagAndType[] = [
   },
 ];
 
-const getYamlTypes = (tagAndTypeArr: TagAndType[]) =>
-  tagAndTypeArr.map(({ tag, options }) => new yaml.Type(tag, options));
+const getYamlTypes = (tagAndTypeArr: TagAndType[]) => {
+  return tagAndTypeArr.map(({ tag, options }) => {
+    return new yaml.Type(tag, options);
+  });
+};
 
 /**
  * Transform CloudFormation directives in objects. For example, transform
  * !Ref Something in { Ref: Something }.
  */
-export const getSchema = (tagAndTypeArr: TagAndType[] = []) =>
-  yaml.DEFAULT_SCHEMA.extend(
-    getYamlTypes([...tagAndTypeArr, ...cloudFormationTypes]),
+export const getSchema = (tagAndTypeArr: TagAndType[] = []) => {
+  return yaml.DEFAULT_SCHEMA.extend(
+    getYamlTypes([...tagAndTypeArr, ...cloudFormationTypes])
   );
+};
 
 /**
  * Transform a JSON in a YAML string.
@@ -161,8 +165,10 @@ export const getSchema = (tagAndTypeArr: TagAndType[] = []) =>
  * @returns YAML as string
  */
 export const dumpToYamlCloudFormationTemplate = (
-  cloudFormationTemplate: CloudFormationTemplate,
-) => yaml.dump(cloudFormationTemplate, { schema: getSchema() });
+  cloudFormationTemplate: CloudFormationTemplate
+) => {
+  return yaml.dump(cloudFormationTemplate, { schema: getSchema() });
+};
 
 /**
  * Transform YAML string in JSON object.
@@ -173,7 +179,7 @@ export const dumpToYamlCloudFormationTemplate = (
  */
 export const loadCloudFormationTemplate = (
   template: string,
-  tagAndTypeArr: TagAndType[] = [],
+  tagAndTypeArr: TagAndType[] = []
 ) => {
   return yaml.load(template, { schema: getSchema(tagAndTypeArr) });
 };

@@ -51,7 +51,9 @@ export const options = {
     type: 'boolean',
   },
   'lambda-dockerfile': {
-    coerce: (arg: string) => readDockerfile(arg),
+    coerce: (arg: string) => {
+      return readDockerfile(arg);
+    },
     default: 'Dockerfile',
     describe: 'Instructions to create the Lambda image.',
     type: 'string',
@@ -187,14 +189,16 @@ export const deployCommand: CommandModule<
     ];
 
     yargsBuilder.positional('deploy', {
-      choices: commands.map(({ command }) => command as string),
+      choices: commands.map(({ command }) => {
+        return command as string;
+      }),
       describe: 'Type of deployment.',
       type: 'string',
     });
 
-    commands.forEach((command) =>
-      yargsBuilder.command(command as CommandModule)
-    );
+    commands.forEach((command) => {
+      return yargsBuilder.command(command as CommandModule);
+    });
 
     return yargsBuilder;
   },

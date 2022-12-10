@@ -25,7 +25,9 @@ log.addLevel('event', 10000, { fg: 'yellow' });
 log.addLevel('output', 10000, { fg: 'blue' });
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
-  (extension) => `./src/cloudformation.${extension}`
+  (extension) => {
+    return `./src/cloudformation.${extension}`;
+  }
 );
 
 const findAndReadCloudFormationTemplate = ({
@@ -184,14 +186,17 @@ export const deployCloudFormation = async ({
 const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
   const buckets: string[] = [];
 
-  await (async function getBuckets({ nextToken }: { nextToken?: string }) {
-    const { NextToken, StackResourceSummaries } = await cloudFormationV2()
+  await (async ({ nextToken }: { nextToken?: string }) => {
+    const {
+      // NextToken,
+      StackResourceSummaries,
+    } = await cloudFormationV2()
       .listStackResources({ StackName: stackName, NextToken: nextToken })
       .promise();
 
-    if (NextToken) {
-      await getBuckets({ nextToken: NextToken });
-    }
+    // if (NextToken) {
+    //   await getBuckets({ nextToken: NextToken });
+    // }
 
     (StackResourceSummaries || []).forEach(
       ({ ResourceType, PhysicalResourceId }) => {
@@ -202,7 +207,11 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
     );
   })({});
 
-  return Promise.all(buckets.map((bucket) => emptyS3Directory({ bucket })));
+  return Promise.all(
+    buckets.map((bucket) => {
+      return emptyS3Directory({ bucket });
+    })
+  );
 };
 
 /**

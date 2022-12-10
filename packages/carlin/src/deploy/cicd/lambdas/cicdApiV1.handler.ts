@@ -1,6 +1,5 @@
 import { CodeBuild } from 'aws-sdk';
 import { ProxyHandler } from 'aws-lambda';
-
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
 
@@ -93,7 +92,7 @@ export const cicdApiV1Handler: ProxyHandler = async (event) => {
       response = await codebuild
         .startBuild({
           projectName: getProcessEnvVariable(
-            'PROCESS_ENV_REPOSITORY_IMAGE_CODE_BUILD_PROJECT_NAME',
+            'PROCESS_ENV_REPOSITORY_IMAGE_CODE_BUILD_PROJECT_NAME'
           ),
         })
         .promise();

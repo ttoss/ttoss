@@ -1,10 +1,28 @@
 /* eslint-disable no-var */
 import { optionsFromConfigFiles, parseCli } from '../testUtils';
 
-jest.mock('./deploy/baseStack/deployBaseStack', () => ({
-  ...(jest.requireActual('./deploy/baseStack/deployBaseStack') as any),
-  deployBaseStack: jest.fn(),
-}));
+jest.mock('./deploy/baseStack/deployBaseStack', () => {
+  return {
+    ...(jest.requireActual('./deploy/baseStack/deployBaseStack') as any),
+    deployBaseStack: jest.fn(),
+  };
+});
+
+jest.mock('deepmerge', () => {
+  return {
+    all: jest.fn(),
+  };
+});
+
+jest.mock('findup-sync', () => {
+  return {
+    __esModule: true,
+    default: jest
+      .fn()
+      .mockReturnValueOnce('./some-dir')
+      .mockReturnValueOnce(undefined),
+  };
+});
 
 import * as deepmerge from 'deepmerge';
 import { AWS_DEFAULT_REGION } from './config';
@@ -55,19 +73,19 @@ describe('environment type', () => {
   });
 
   test('throw error if it is an object', () => {
-    return expect(() =>
-      parseCli(`print-args`, {
+    return expect(() => {
+      return parseCli(`print-args`, {
         environment: { obj: faker.random.word() },
-      })
-    ).rejects.toThrow();
+      });
+    }).rejects.toThrow();
   });
 
   test('throw error if it is an array', () => {
-    return expect(() =>
-      parseCli(`print-args`, {
+    return expect(() => {
+      return parseCli(`print-args`, {
         environment: [faker.random.word()],
-      })
-    ).rejects.toThrow();
+      });
+    }).rejects.toThrow();
   });
 
   test("don't throw error if it is a string", async () => {
@@ -89,11 +107,13 @@ describe('validating environment variables', () => {
     delete process.env.CARLIN_PROJECT;
   });
 
-  const generateRandomVariables = () => ({
-    branch: faker.random.word(),
-    environment: faker.random.word(),
-    project: faker.random.word(),
-  });
+  const generateRandomVariables = () => {
+    return {
+      branch: faker.random.word(),
+      environment: faker.random.word(),
+      project: faker.random.word(),
+    };
+  };
 
   const testExpects = async ({ argv, branch, environment, project }: any) => {
     expect(await getCurrentBranch()).toEqual(branch);

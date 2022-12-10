@@ -28,17 +28,6 @@ export const optionsFromConfigFiles = {
   },
 };
 
-jest.mock('deepmerge', () => ({
-  all: jest.fn(),
-}));
-
-jest.mock('find-up', () => ({
-  sync: jest
-    .fn()
-    .mockReturnValueOnce('./some-dir')
-    .mockReturnValueOnce(undefined),
-}));
-
 import cli from './src/cli';
 
 export const parseCli = async (arg: any, context: any) => {

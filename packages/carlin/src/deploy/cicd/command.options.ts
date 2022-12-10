@@ -11,7 +11,11 @@ export const options = {
   },
   pipelines: {
     choices: pipelines,
-    coerce: (values: string[]) => values.map((value) => camelCase(value)),
+    coerce: (values: string[]) => {
+      return values.map((value) => {
+        return camelCase(value);
+      });
+    },
     default: [],
     description: 'Pipelines that will be implemented with the CICD stack.',
     type: 'array',

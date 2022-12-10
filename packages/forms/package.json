@@ -37,9 +37,6 @@
     "react-hook-form": "^7.39.7",
     "yup": "^0.32.11"
   },
-  "engines": {
-    "node": ">=16"
-  },
   "publishConfig": {
     "access": "public"
   },

@@ -30,8 +30,12 @@ const TEMPLATE_BODY_MAX_SIZE = 51200;
 
 const isTemplateBodyGreaterThanMaxSize = (
   template: CloudFormationTemplate
-): boolean =>
-  Buffer.byteLength(JSON.stringify(template), 'utf8') >= TEMPLATE_BODY_MAX_SIZE;
+): boolean => {
+  return (
+    Buffer.byteLength(JSON.stringify(template), 'utf8') >=
+    TEMPLATE_BODY_MAX_SIZE
+  );
+};
 
 /**
  * Update CloudFormation template to base stack bucket.
@@ -113,16 +117,20 @@ export const describeStackEvents = async ({
   );
 
   const events = (StackEvents || [])
-    .filter(({ Timestamp }) => Date.now() - Number(Timestamp) < 10 * 60 * 1000)
-    .filter(({ ResourceStatusReason }) => ResourceStatusReason)
+    .filter(({ Timestamp }) => {
+      return Date.now() - Number(Timestamp) < 10 * 60 * 1000;
+    })
+    .filter(({ ResourceStatusReason }) => {
+      return ResourceStatusReason;
+    })
     /**
      * Show newer events last.
      */
     .reverse();
 
-  events.forEach(({ LogicalResourceId, ResourceStatusReason }) =>
-    log.event(LogicalResourceId, ResourceStatusReason)
-  );
+  events.forEach(({ LogicalResourceId, ResourceStatusReason }) => {
+    return log.event(LogicalResourceId, ResourceStatusReason);
+  });
 
   return events;
 };
@@ -146,7 +154,9 @@ export const getStackOutput = async ({
 }) => {
   const { Outputs = [] } = await describeStack({ stackName });
 
-  const output = Outputs?.find(({ OutputKey }) => OutputKey === outputKey);
+  const output = Outputs?.find(({ OutputKey }) => {
+    return OutputKey === outputKey;
+  });
 
   if (!output) {
     throw new Error(`Output ${outputKey} doesn't exist on ${stackName} stack`);
@@ -290,7 +300,9 @@ export const enableTerminationProtection = async ({
 };
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
-  (extension) => `src/cloudformation.${extension}`
+  (extension) => {
+    return `src/cloudformation.${extension}`;
+  }
 );
 
 /**
@@ -366,7 +378,7 @@ export const canDestroyStack = async ({ stackName }: { stackName: string }) => {
 const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
   const buckets: string[] = [];
 
-  await (async function getBuckets({ nextToken }: { nextToken?: string }) {
+  await (async ({ nextToken }: { nextToken?: string }) => {
     const { NextToken, StackResourceSummaries } = await cloudFormation().send(
       new ListStackResourcesCommand({
         StackName: stackName,
@@ -375,7 +387,7 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
     );
 
     if (NextToken) {
-      await getBuckets({ nextToken: NextToken });
+      // await getBuckets({ nextToken: NextToken });
     }
 
     (StackResourceSummaries || []).forEach(
@@ -387,7 +399,11 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
     );
   })({});
 
-  return Promise.all(buckets.map((bucket) => emptyS3Directory({ bucket })));
+  return Promise.all(
+    buckets.map((bucket) => {
+      return emptyS3Directory({ bucket });
+    })
+  );
 };
 
 /**

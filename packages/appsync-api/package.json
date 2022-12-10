@@ -1,0 +1,32 @@
+{
+  "name": "@ttoss/appsync-api",
+  "version": "0.1.0",
+  "description": "",
+  "license": "UNLICENSED",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.109"
+  },
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  }
+}
