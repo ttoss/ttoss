@@ -387,7 +387,7 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
     );
 
     if (NextToken) {
-      await getBuckets({ nextToken: NextToken });
+      // await getBuckets({ nextToken: NextToken });
     }
 
     (StackResourceSummaries || []).forEach(
