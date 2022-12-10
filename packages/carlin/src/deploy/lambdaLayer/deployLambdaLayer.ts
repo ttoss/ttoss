@@ -1,10 +1,10 @@
 import { CloudFormationTemplate, waitCodeBuildFinish } from '../../utils';
 import { CodeBuild } from 'aws-sdk';
-import { NAME, NODE_RUNTIME } from '../../config';
+import { NODE_RUNTIME } from '../../config';
 import { deploy, doesStackExist } from '../cloudFormation.core';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
+import { getPackageLambdaLayerStackName } from './getPackageLambdaLayerStackName';
 import { handleDeployError } from '../utils';
-import { pascalCase } from 'change-case';
 import log from 'npmlog';
 
 const logPrefix = 'lambda-layer';
@@ -104,20 +104,6 @@ export const getLambdaLayerTemplate = ({
       },
     },
   };
-};
-
-export const lambdaLayerStackNamePrefix = `LambdaLayer`;
-
-export const getPackageLambdaLayerStackName = (packageName: string) => {
-  const [scopedName, version] = packageName.split('@').filter((part) => {
-    return part !== '';
-  });
-
-  return [
-    lambdaLayerStackNamePrefix,
-    pascalCase(scopedName),
-    version.replace(/\./g, '-'),
-  ].join('-');
 };
 
 const getPackagesThatAreNotDeployed = async ({

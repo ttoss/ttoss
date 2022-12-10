@@ -1,7 +1,7 @@
 import findUpSync from 'findup-sync';
 import fs from 'fs';
 
-const readPackageJson = () => {
+export const readPackageJson = () => {
   const packageJsonDir = findUpSync('package.json');
 
   if (!packageJsonDir) {
