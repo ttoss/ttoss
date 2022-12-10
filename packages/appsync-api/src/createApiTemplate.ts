@@ -1,3 +1,6 @@
+import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
+import { readPackageJson } from 'carlin/src/utils/packageJson';
+import packageJson from '../package.json';
 import type { CloudFormationTemplate } from 'carlin/src/utils/cloudFormationTemplate';
 import type { SchemaComposer } from 'graphql-compose';
 
@@ -7,7 +10,7 @@ const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
 const AppSyncLambdaFunctionIAMRoleLogicalId = 'AppSyncLambdaFunctionIAMRole';
 
-const AppSyncLambdaFunctionLogicalId = 'AppSyncLambdaFunction';
+export const AppSyncLambdaFunctionLogicalId = 'AppSyncLambdaFunction';
 
 const AppSyncLambdaFunctionAppSyncDataSourceIAMRoleLogicalId =
   'AppSyncLambdaFunctionAppSyncDataSourceIAMRole';
@@ -41,6 +44,22 @@ export const createApiTemplate = ({
         };
       });
     }
+  );
+
+  const { name } = packageJson;
+
+  const { dependencies } = readPackageJson();
+
+  const dependencyVersion = dependencies[name];
+
+  if (!dependencyVersion) {
+    throw new Error(
+      `The package ${name} is not installed in the project. Please install it with "yarn add ${name}".`
+    );
+  }
+
+  const lambdaLayerStackName = getPackageLambdaLayerStackName(
+    [name, dependencyVersion].join('@')
   );
 
   const template: CloudFormationTemplate = {
@@ -113,7 +132,7 @@ export const createApiTemplate = ({
           Handler: 'index.handler',
           Layers: [
             {
-              'Fn::ImportValue': 'LambdaLayer-Graphql-16-6-0',
+              'Fn::ImportValue': lambdaLayerStackName,
             },
           ],
           MemorySize: 512,

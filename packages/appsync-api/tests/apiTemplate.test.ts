@@ -1,4 +1,35 @@
+import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
+
+jest.mock('carlin/src/utils/packageJson', () => {
+  return {
+    readPackageJson: () => {
+      return {
+        dependencies: {
+          '@ttoss/appsync-api': '^1.2.3',
+        },
+      };
+    },
+  };
+});
+
+import { AppSyncLambdaFunctionLogicalId } from '../src/createApiTemplate';
 import { createApiTemplate, schemaComposer } from '../src';
+
+test('should import @ttoss/appsync-api lambda layer', () => {
+  const template = createApiTemplate({ schemaComposer });
+
+  const layers =
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
+
+  const layer = layers.find((l: any) => {
+    return (
+      l['Fn::ImportValue'] ===
+      getPackageLambdaLayerStackName('@ttoss/appsync-api@^1.2.3')
+    );
+  });
+
+  expect(layer).toBeDefined();
+});
 
 test('should add resolvers to template', () => {
   const idResolver = schemaComposer.createResolver({
