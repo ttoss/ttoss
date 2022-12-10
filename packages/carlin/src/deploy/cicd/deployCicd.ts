@@ -14,8 +14,9 @@ import type { Pipeline } from './pipelines';
 
 const logPrefix = 'cicd';
 
-export const getLambdaInput = (extension: 'js' | 'ts') =>
-  path.resolve(__dirname, `lambdas/index.${extension}`);
+export const getLambdaInput = (extension: 'js' | 'ts') => {
+  return path.resolve(__dirname, `lambdas/index.${extension}`);
+};
 
 const deployCicdLambdas = async ({ stackName }: { stackName: string }) => {
   const lambdaInput = (() => {

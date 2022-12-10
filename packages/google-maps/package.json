@@ -31,9 +31,6 @@
     "@ttoss/config": "^1.20.0",
     "@ttoss/test-utils": "^1.18.0"
   },
-  "engines": {
-    "node": ">=12"
-  },
   "publishConfig": {
     "access": "public"
   },

@@ -2,11 +2,16 @@ import type { Pipeline } from './pipelines';
 
 const projectName = 'my-project';
 
-jest.mock('../../utils', () => ({
-  ...(jest.requireActual('../../utils') as any),
-  getProjectName: jest.fn(() => projectName),
-}));
+jest.mock('../../utils', () => {
+  return {
+    ...(jest.requireActual('../../utils') as any),
+    getProjectName: jest.fn(() => {
+      return projectName;
+    }),
+  };
+});
 
+import * as configModule from '../../config';
 import {
   API_LOGICAL_ID,
   IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID,
@@ -16,6 +21,7 @@ import {
   PIPELINES_ROLE_LOGICAL_ID,
   PIPELINES_TAG_LOGICAL_ID,
   getCicdTemplate,
+  getRepositoryImageBuilder,
 } from './cicd.template';
 
 const s3 = {
@@ -119,4 +125,23 @@ test.each<[Pipeline[]]>([
   });
 
   expect(template.Resources[PIPELINES_TAG_LOGICAL_ID]).toBeDefined();
+});
+
+test('should install compatible node version on image builder', () => {
+  const versions = [12, 14, 16, 18];
+
+  versions.forEach((version) => {
+    (configModule as any).NODE_RUNTIME = `nodejs${version}.x`;
+
+    const dockerfile =
+      getRepositoryImageBuilder().Properties.Environment?.EnvironmentVariables?.find(
+        (v) => {
+          return v.Name === 'DOCKERFILE';
+        }
+      )?.Value['Fn::Sub'];
+
+    expect(dockerfile).toContain(
+      `RUN curl -fsSL https://deb.nodesource.com/setup_${version}.x | bash -`
+    );
+  });
 });

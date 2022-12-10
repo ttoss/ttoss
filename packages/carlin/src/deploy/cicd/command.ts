@@ -14,8 +14,9 @@ export const deployCicdCommand: CommandModule<
 > = {
   command: 'cicd',
   describe: 'Deploy CICD.',
-  builder: (yargs) =>
-    yargs.options(addGroupToOptions(options, 'Deploy CICD Options')),
+  builder: (yargs) => {
+    return yargs.options(addGroupToOptions(options, 'Deploy CICD Options'));
+  },
   handler: ({ destroy, ...rest }) => {
     if (destroy) {
       log.info(logPrefix, `${NAME} doesn't destroy CICD stack.`);

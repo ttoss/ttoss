@@ -12,7 +12,7 @@ export interface Resource {
   Type: string;
   DeletionPolicy?: 'Delete' | 'Retain';
   Description?: string;
-  DependsOn?: string[];
+  DependsOn?: string[] | string;
   Condition?: string;
   Properties: any;
 }

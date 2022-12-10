@@ -6,19 +6,21 @@ import {
   loadCloudFormationTemplate,
 } from './cloudFormationTemplate';
 
-const getTypes = (): TagAndType[] => [
-  {
-    tag: `!SubString`,
-    options: {
-      kind: 'scalar',
-      construct: (filePath: string) => {
-        return fs
-          .readFileSync(path.resolve(process.cwd(), filePath))
-          .toString();
+const getTypes = (): TagAndType[] => {
+  return [
+    {
+      tag: `!SubString`,
+      options: {
+        kind: 'scalar',
+        construct: (filePath: string) => {
+          return fs
+            .readFileSync(path.resolve(process.cwd(), filePath))
+            .toString();
+        },
       },
     },
-  },
-];
+  ];
+};
 
 /**
  * CloudFormation

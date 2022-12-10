@@ -10,8 +10,8 @@ import yargs from 'yargs';
 
 const cli = yargs.command(commandModule.deployCicdCommand);
 
-const parse = (command: string, options: any = {}) =>
-  new Promise<any>((resolve, reject) => {
+const parse = (command: string, options: any = {}) => {
+  return new Promise<any>((resolve, reject) => {
     cli.parse(command, options, (err, argv) => {
       if (err) {
         reject(err);
@@ -20,6 +20,7 @@ const parse = (command: string, options: any = {}) =>
       }
     });
   });
+};
 
 test('should call deployCicd with ssh args', async () => {
   const sshKey = faker.random.word();

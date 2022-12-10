@@ -56,7 +56,9 @@ export const ecsTaskReportCommand: CommandModule<
 > = {
   command: 'cicd-ecs-task-report',
   describe: false,
-  builder: (yargs) => yargs.options(options),
+  builder: (yargs) => {
+    return yargs.options(options);
+  },
   handler: async (args) => {
     return sendEcsTaskReport(args as any);
   },

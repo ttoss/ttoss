@@ -27,7 +27,7 @@ export const buildLambdaSingleFile = async ({
     external: ['aws-sdk', ...builtins, ...lambdaExternals],
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
-    target: 'node12',
+    target: 'node18',
     treeShaking: true,
   });
 

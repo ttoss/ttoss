@@ -18,11 +18,11 @@ import {
   PIPELINE_ECS_TASK_EXECUTION_MANUAL_APPROVAL_ACTION_NAME,
   PIPELINE_ECS_TASK_EXECUTION_STAGE_NAME,
 } from './config';
+import { NODE_RUNTIME } from '../../config';
+import { getTriggerPipelinesObjectKey } from './getTriggerPipelineObjectKey';
 import { pascalCase } from 'change-case';
 import yaml from 'js-yaml';
 import type { Pipeline } from './pipelines';
-
-import { getTriggerPipelinesObjectKey } from './getTriggerPipelineObjectKey';
 
 export const API_LOGICAL_ID = 'ApiV1ServerlessApi';
 
@@ -84,168 +84,179 @@ export const IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID =
  * [BUILD\_GENERAL1\_SMALL environment compute type](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html)
  * with Linux as operational system to build the image.
  */
-export const getRepositoryImageBuilder = () => ({
-  Type: 'AWS::CodeBuild::Project',
-  Properties: {
-    Artifacts: {
-      Type: 'NO_ARTIFACTS',
-    },
-    Cache: {
-      Location: 'LOCAL',
-      Modes: ['LOCAL_DOCKER_LAYER_CACHE'],
-      Type: 'LOCAL',
-    },
-    Description: 'Create repository image.',
-    Environment: {
-      ComputeType: 'BUILD_GENERAL1_SMALL',
-      EnvironmentVariables: [
-        {
-          Name: 'AWS_ACCOUNT_ID',
-          Value: { Ref: 'AWS::AccountId' },
-        },
-        {
-          Name: 'AWS_REGION',
-          Value: { Ref: 'AWS::Region' },
-        },
-        {
-          Name: 'DOCKERFILE',
-          Value: {
-            'Fn::Sub': [
-              'FROM public.ecr.aws/ubuntu/ubuntu:20.04_stable',
+export const getRepositoryImageBuilder = () => {
+  /**
+   * Get only the number of NODE_RUNTIME. For example, if NODE_RUNTIME is
+   * `nodejs14.x`, then `nodeRuntimeNumber` will be `14`.
+   */
+  const nodeRuntimeNumber = NODE_RUNTIME.replace('nodejs', '').replace(
+    '.x',
+    ''
+  );
 
-              // https://stackoverflow.com/a/59693182/8786986
-              'ENV DEBIAN_FRONTEND noninteractive',
-
-              // Make sure apt is up to date
-              'RUN apt-get update --fix-missing',
-
-              'RUN apt-get install -y curl',
-              'RUN apt-get install -y git',
-              'RUN apt-get install -y jq',
-
-              // Install Node.js
-              'RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -',
-              'RUN apt-get install -y nodejs',
-
-              // Clean cache
-              'RUN apt-get clean',
-
-              // Install Yarn
-              'RUN npm install -g yarn',
-
-              // Install carlin CLI
-              'RUN yarn global add carlin',
-
-              // Configure git
-              'RUN git config --global user.name carlin',
-              'RUN git config --global user.email carlin@ttoss.dev',
-
-              'RUN mkdir /root/.ssh/',
-              'COPY ./id_rsa /root/.ssh/id_rsa',
-              'RUN chmod 600 /root/.ssh/id_rsa',
-
-              // Make sure your domain is accepted
-              'RUN touch /root/.ssh/known_hosts',
-              'RUN ssh-keyscan github.com >> /root/.ssh/known_hosts',
-
-              // Copy repository
-              'COPY . /home',
-
-              // Go to repository directory
-              'WORKDIR /home/repository',
-
-              // Set Yarn cache
-              'RUN mkdir -p /home/yarn-cache',
-              'RUN yarn config set cache-folder /home/yarn-cache',
-
-              'RUN yarn install',
-
-              // Used in case of yarn.lock is modified.
-              'RUN git checkout -- yarn.lock',
-            ].join('\n'),
-          },
-        },
-        {
-          Name: 'IMAGE_TAG',
-          Value: 'latest',
-        },
-        {
-          Name: 'REPOSITORY_ECR_REPOSITORY',
-          Value: { Ref: ECR_REPOSITORY_LOGICAL_ID },
-        },
-        {
-          Name: 'SSH_KEY',
-          Value: { Ref: 'SSHKey' },
-        },
-        {
-          Name: 'SSH_URL',
-          Value: { Ref: 'SSHUrl' },
-        },
-      ],
-      Image: 'aws/codebuild/standard:3.0',
-      ImagePullCredentialsType: 'CODEBUILD',
-      /**
-       * Enables running the Docker daemon inside a Docker container. Set to
-       * true only if the build project is used to build Docker images.
-       * Otherwise, a build that attempts to interact with the Docker daemon
-       * fails. The default setting is false."
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html#cfn-codebuild-project-environment-privilegedmode
-       */
-      PrivilegedMode: true,
-      Type: 'LINUX_CONTAINER',
-    },
-    LogsConfig: {
-      CloudWatchLogs: {
-        Status: 'ENABLED',
-        GroupName: { Ref: CODE_BUILD_PROJECT_LOGS_LOGICAL_ID },
+  return {
+    Type: 'AWS::CodeBuild::Project',
+    Properties: {
+      Artifacts: {
+        Type: 'NO_ARTIFACTS',
       },
-    },
-    ServiceRole: {
-      'Fn::GetAtt': [CODE_BUILD_PROJECT_SERVICE_ROLE_LOGICAL_ID, 'Arn'],
-    },
-    Source: {
-      BuildSpec: yaml.dump({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: [
-              'echo install started on `date`',
-              `echo "$SSH_KEY" > ~/.ssh/id_rsa`,
-              'chmod 600 ~/.ssh/id_rsa',
-              'rm -rf repository',
-              'git clone $SSH_URL repository',
-              'cd repository',
-              'ls',
-            ],
+      Cache: {
+        Location: 'LOCAL',
+        Modes: ['LOCAL_DOCKER_LAYER_CACHE'],
+        Type: 'LOCAL',
+      },
+      Description: 'Create repository image.',
+      Environment: {
+        ComputeType: 'BUILD_GENERAL1_SMALL',
+        EnvironmentVariables: [
+          {
+            Name: 'AWS_ACCOUNT_ID',
+            Value: { Ref: 'AWS::AccountId' },
           },
-          pre_build: {
-            commands: ['echo pre_build started on `date`'],
+          {
+            Name: 'AWS_REGION',
+            Value: { Ref: 'AWS::Region' },
           },
-          build: {
-            commands: [
-              'echo build started on `date`',
-              '$(aws ecr get-login --no-include-email --region $AWS_REGION)',
-              'echo Building the repository image...',
-              'cd ../',
-              'cp ~/.ssh/id_rsa .',
-              'echo "$DOCKERFILE" > Dockerfile',
-              'cat Dockerfile',
-              'docker build -t $REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .',
-              'docker tag $REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG',
-              'echo Pushing the repository image...',
-              'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG',
-            ],
+          {
+            Name: 'DOCKERFILE',
+            Value: {
+              'Fn::Sub': [
+                'FROM public.ecr.aws/ubuntu/ubuntu:20.04_stable',
+
+                // https://stackoverflow.com/a/59693182/8786986
+                'ENV DEBIAN_FRONTEND noninteractive',
+
+                // Make sure apt is up to date
+                'RUN apt-get update --fix-missing',
+
+                'RUN apt-get install -y curl',
+                'RUN apt-get install -y git',
+                'RUN apt-get install -y jq',
+
+                // Install Node.js
+                `RUN curl -fsSL https://deb.nodesource.com/setup_${nodeRuntimeNumber}.x | bash -`,
+                'RUN apt-get install -y nodejs',
+
+                // Clean cache
+                'RUN apt-get clean',
+
+                // Install Yarn
+                'RUN npm install -g yarn',
+
+                // Install carlin CLI
+                'RUN yarn global add carlin',
+
+                // Configure git
+                'RUN git config --global user.name carlin',
+                'RUN git config --global user.email carlin@ttoss.dev',
+
+                'RUN mkdir /root/.ssh/',
+                'COPY ./id_rsa /root/.ssh/id_rsa',
+                'RUN chmod 600 /root/.ssh/id_rsa',
+
+                // Make sure your domain is accepted
+                'RUN touch /root/.ssh/known_hosts',
+                'RUN ssh-keyscan github.com >> /root/.ssh/known_hosts',
+
+                // Copy repository
+                'COPY . /home',
+
+                // Go to repository directory
+                'WORKDIR /home/repository',
+
+                // Set Yarn cache
+                'RUN mkdir -p /home/yarn-cache',
+                'RUN yarn config set cache-folder /home/yarn-cache',
+
+                'RUN yarn install',
+
+                // Used in case of yarn.lock is modified.
+                'RUN git checkout -- yarn.lock',
+              ].join('\n'),
+            },
           },
-          post_build: {
-            commands: ['echo post_build completed on `date`'],
+          {
+            Name: 'IMAGE_TAG',
+            Value: 'latest',
           },
+          {
+            Name: 'REPOSITORY_ECR_REPOSITORY',
+            Value: { Ref: ECR_REPOSITORY_LOGICAL_ID },
+          },
+          {
+            Name: 'SSH_KEY',
+            Value: { Ref: 'SSHKey' },
+          },
+          {
+            Name: 'SSH_URL',
+            Value: { Ref: 'SSHUrl' },
+          },
+        ],
+        Image: 'aws/codebuild/standard:3.0',
+        ImagePullCredentialsType: 'CODEBUILD',
+        /**
+         * Enables running the Docker daemon inside a Docker container. Set to
+         * true only if the build project is used to build Docker images.
+         * Otherwise, a build that attempts to interact with the Docker daemon
+         * fails. The default setting is false."
+         * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-environment.html#cfn-codebuild-project-environment-privilegedmode
+         */
+        PrivilegedMode: true,
+        Type: 'LINUX_CONTAINER',
+      },
+      LogsConfig: {
+        CloudWatchLogs: {
+          Status: 'ENABLED',
+          GroupName: { Ref: CODE_BUILD_PROJECT_LOGS_LOGICAL_ID },
         },
-      }),
-      Type: 'NO_SOURCE',
+      },
+      ServiceRole: {
+        'Fn::GetAtt': [CODE_BUILD_PROJECT_SERVICE_ROLE_LOGICAL_ID, 'Arn'],
+      },
+      Source: {
+        BuildSpec: yaml.dump({
+          version: '0.2',
+          phases: {
+            install: {
+              commands: [
+                'echo install started on `date`',
+                `echo "$SSH_KEY" > ~/.ssh/id_rsa`,
+                'chmod 600 ~/.ssh/id_rsa',
+                'rm -rf repository',
+                'git clone $SSH_URL repository',
+                'cd repository',
+                'ls',
+              ],
+            },
+            pre_build: {
+              commands: ['echo pre_build started on `date`'],
+            },
+            build: {
+              commands: [
+                'echo build started on `date`',
+                '$(aws ecr get-login --no-include-email --region $AWS_REGION)',
+                'echo Building the repository image...',
+                'cd ../',
+                'cp ~/.ssh/id_rsa .',
+                'echo "$DOCKERFILE" > Dockerfile',
+                'cat Dockerfile',
+                'docker build -t $REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .',
+                'docker tag $REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG',
+                'echo Pushing the repository image...',
+                'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_ECR_REPOSITORY:$IMAGE_TAG',
+              ],
+            },
+            post_build: {
+              commands: ['echo post_build completed on `date`'],
+            },
+          },
+        }),
+        Type: 'NO_SOURCE',
+      },
+      TimeoutInMinutes: 15,
     },
-    TimeoutInMinutes: 15,
-  },
-});
+  };
+};
 
 /**
  * This variable is used inside GitHub webhooks to identify the object key
@@ -312,33 +323,35 @@ export const getCicdTemplate = ({
    * with a defined expiration rule is also defined. The registry only keeps
    * the latest image.
    */
-  const getEcrRepositoryResource = () => ({
-    Type: 'AWS::ECR::Repository',
-    Properties: {
-      LifecyclePolicy: {
-        LifecyclePolicyText: JSON.stringify(
-          {
-            rules: [
-              {
-                rulePriority: 1,
-                description: 'Only keep the latest image',
-                selection: {
-                  tagStatus: 'any',
-                  countType: 'imageCountMoreThan',
-                  countNumber: 1,
+  const getEcrRepositoryResource = () => {
+    return {
+      Type: 'AWS::ECR::Repository',
+      Properties: {
+        LifecyclePolicy: {
+          LifecyclePolicyText: JSON.stringify(
+            {
+              rules: [
+                {
+                  rulePriority: 1,
+                  description: 'Only keep the latest image',
+                  selection: {
+                    tagStatus: 'any',
+                    countType: 'imageCountMoreThan',
+                    countNumber: 1,
+                  },
+                  action: {
+                    type: 'expire',
+                  },
                 },
-                action: {
-                  type: 'expire',
-                },
-              },
-            ],
-          },
-          null,
-          2
-        ),
+              ],
+            },
+            null,
+            2
+          ),
+        },
       },
-    },
-  });
+    };
+  };
 
   resources[ECR_REPOSITORY_LOGICAL_ID] = getEcrRepositoryResource();
 
@@ -351,7 +364,7 @@ export const getCicdTemplate = ({
     Role: {
       'Fn::GetAtt': [FUNCTION_IAM_ROLE_LOGICAL_ID, 'Arn'],
     },
-    Runtime: 'nodejs14.x',
+    Runtime: NODE_RUNTIME,
     Timeout: 60,
   };
 
@@ -742,10 +755,12 @@ export const getCicdTemplate = ({
                 Name: 'CI',
                 Value: 'true',
               },
-              ...taskEnvironment.map((te) => ({
-                Name: te.name,
-                Value: te.value,
-              })),
+              ...taskEnvironment.map((te) => {
+                return {
+                  Name: te.name,
+                  Value: te.value,
+                };
+              }),
             ],
             Image: {
               'Fn::Sub': [
@@ -828,7 +843,7 @@ export const getCicdTemplate = ({
         Role: {
           'Fn::GetAtt': [FUNCTION_IAM_ROLE_LOGICAL_ID, 'Arn'],
         },
-        Runtime: 'nodejs14.x',
+        Runtime: NODE_RUNTIME,
         Timeout: 60,
       },
     };
@@ -978,7 +993,9 @@ export const getCicdTemplate = ({
                     FunctionName: {
                       Ref: PIPELINES_HANDLER_LAMBDA_FUNCTION_LOGICAL_ID,
                     },
-                    UserParameters: ((): Pipeline => pipeline)(),
+                    UserParameters: ((): Pipeline => {
+                      return pipeline;
+                    })(),
                   },
                   InputArtifacts: [
                     {

@@ -1,6 +1,6 @@
 import { CloudFormationTemplate, waitCodeBuildFinish } from '../../utils';
 import { CodeBuild } from 'aws-sdk';
-import { NAME } from '../../config';
+import { NAME, NODE_RUNTIME } from '../../config';
 import { deploy, doesStackExist } from '../cloudFormation.core';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { handleDeployError } from '../utils';
@@ -84,7 +84,7 @@ export const getLambdaLayerTemplate = ({
       LambdaLayer: {
         Type: 'AWS::Lambda::LayerVersion',
         Properties: {
-          CompatibleRuntimes: ['nodejs12.x', 'nodejs14.x'],
+          CompatibleRuntimes: [NODE_RUNTIME],
           Content: {
             S3Bucket: bucket,
             S3Key: key,
@@ -106,14 +106,18 @@ export const getLambdaLayerTemplate = ({
   };
 };
 
-/**
- * The stack name is given by `CarlinLambdaLayer` prefix and the package name with
- * `@` and `/` removed and `.` replace by the word `dot`.
- */
+export const lambdaLayerStackNamePrefix = `LambdaLayer`;
+
 export const getPackageLambdaLayerStackName = (packageName: string) => {
-  return pascalCase(
-    `${NAME} LambdaLayer ${packageName.replace(/\./g, 'dot')}`
-  ).replace(/_/g, '');
+  const [scopedName, version] = packageName.split('@').filter((part) => {
+    return part !== '';
+  });
+
+  return [
+    lambdaLayerStackNamePrefix,
+    pascalCase(scopedName),
+    version.replace(/\./g, '-'),
+  ].join('-');
 };
 
 const getPackagesThatAreNotDeployed = async ({
@@ -128,7 +132,9 @@ const getPackagesThatAreNotDeployed = async ({
         return (await doesStackExist({ stackName })) ? '' : packageName;
       })
     )
-  ).filter((packageName) => !!packageName);
+  ).filter((packageName) => {
+    return !!packageName;
+  });
 };
 
 export const deployLambdaLayer = async ({
@@ -181,9 +187,9 @@ export const deployLambdaLayer = async ({
     };
 
     await Promise.all(
-      packagesToBeDeployed.map((packageName) =>
-        deployLambdaLayerSinglePackage(packageName)
-      )
+      packagesToBeDeployed.map((packageName) => {
+        return deployLambdaLayerSinglePackage(packageName);
+      })
     );
   } catch (error: any) {
     handleDeployError({ error, logPrefix });

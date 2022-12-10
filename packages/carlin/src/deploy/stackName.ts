@@ -1,5 +1,3 @@
-import { paramCase, pascalCase } from 'change-case';
-
 import {
   getCurrentBranch,
   getEnvVar,
@@ -7,6 +5,7 @@ import {
   getPackageName,
   setEnvVar,
 } from '../utils';
+import { paramCase, pascalCase } from 'change-case';
 
 /**
  * Used by CLI set stack name when it is defined.
@@ -20,8 +19,9 @@ export const setPreDefinedStackName = (stackName: string) => {
  */
 export const STACK_NAME_MAX_LENGTH = 128;
 
-export const limitStackName = (stackName: string) =>
-  `${stackName}`.substring(0, STACK_NAME_MAX_LENGTH);
+export const limitStackName = (stackName: string) => {
+  return `${stackName}`.substring(0, STACK_NAME_MAX_LENGTH);
+};
 
 /**
  * If stack name isn't previously defined, the name will be created accordingly
@@ -85,7 +85,11 @@ export const getStackName = async () => {
     return undefined;
   })();
 
-  const name = [firstName, secondName].filter((word) => !!word).join('-');
+  const name = [firstName, secondName]
+    .filter((word) => {
+      return !!word;
+    })
+    .join('-');
 
   return limitStackName(name);
 };

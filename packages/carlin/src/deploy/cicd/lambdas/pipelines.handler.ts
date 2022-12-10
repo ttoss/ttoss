@@ -18,7 +18,9 @@ const getUserParameters = (event: CodePipelineEvent) => {
   return { pipeline: pipeline as Pipeline, stage };
 };
 
-export const getJobDetailsFilename = (jobId: string) => `/tmp/${jobId}.zip`;
+export const getJobDetailsFilename = (jobId: string) => {
+  return `/tmp/${jobId}.zip`;
+};
 
 export const getJobDetails = async (event: CodePipelineEvent) => {
   const jobId = event['CodePipeline.job'].id;

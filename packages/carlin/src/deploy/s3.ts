@@ -79,14 +79,16 @@ export const getAllFilesInsideADirectory = async ({
       glob(`${directory}/**/*`, (err, matches) => {
         return err ? reject(err) : resolve(matches);
       });
-    },
+    }
   );
 
   const allFiles = allFilesAndDirectories
     /**
      * Remove directories.
      */
-    .filter((item) => fs.lstatSync(item).isFile());
+    .filter((item) => {
+      return fs.lstatSync(item).isFile();
+    });
 
   return allFiles;
 };
@@ -102,7 +104,7 @@ export const uploadDirectoryToS3 = async ({
 }) => {
   log.info(
     logPrefix,
-    `Uploading directory ${directory}/ to ${bucket}/${bucketKey}...`,
+    `Uploading directory ${directory}/ to ${bucket}/${bucketKey}...`
   );
 
   const allFiles = await getAllFilesInsideADirectory({ directory });
@@ -135,13 +137,13 @@ export const uploadDirectoryToS3 = async ({
   for (const [index, groupOfFiles] of aoaOfFiles.entries()) {
     log.info(logPrefix, `Uploading group ${index + 1}/${aoaOfFiles.length}...`);
     await Promise.all(
-      groupOfFiles.map((file) =>
-        uploadFileToS3({
+      groupOfFiles.map((file) => {
+        return uploadFileToS3({
           bucket,
           key: path.join(bucketKey, path.relative(directory, file)),
           filePath: file,
-        }),
-      ),
+        });
+      })
     );
   }
 };
@@ -166,20 +168,22 @@ export const emptyS3Directory = async ({
       /**
        * Get object versions
        */
-      const objectsPromises = Contents.filter(({ Key }) => !!Key).map(
-        async ({ Key }) => {
-          const { Versions = [] } = await s3
-            .listObjectVersions({
-              Bucket: bucket,
-              Prefix: Key,
-            })
-            .promise();
-          return {
-            Key: Key as string,
-            Versions: Versions.map(({ VersionId }) => VersionId || undefined),
-          };
-        },
-      );
+      const objectsPromises = Contents.filter(({ Key }) => {
+        return !!Key;
+      }).map(async ({ Key }) => {
+        const { Versions = [] } = await s3
+          .listObjectVersions({
+            Bucket: bucket,
+            Prefix: Key,
+          })
+          .promise();
+        return {
+          Key: Key as string,
+          Versions: Versions.map(({ VersionId }) => {
+            return VersionId || undefined;
+          }),
+        };
+      });
 
       const objects = await Promise.all(objectsPromises);
 
@@ -189,10 +193,12 @@ export const emptyS3Directory = async ({
           VersionId?: string;
         }>
       >((acc, { Key, Versions }) => {
-        const objectWithVersionsIds = Versions.map((VersionId) => ({
-          Key,
-          VersionId,
-        }));
+        const objectWithVersionsIds = Versions.map((VersionId) => {
+          return {
+            Key,
+            VersionId,
+          };
+        });
         return [...acc, ...objectWithVersionsIds];
       }, []);
 
