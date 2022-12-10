@@ -19,13 +19,12 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@types/aws-lambda": "^8.10.109",
+    "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"
   },
-  "peerDependencies": {
-    "graphql": "^16.6.0"
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.109"
   },
-  "devDependencies": {},
   "keywords": [],
   "publishConfig": {
     "access": "public"

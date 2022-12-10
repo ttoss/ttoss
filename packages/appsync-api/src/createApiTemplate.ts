@@ -21,6 +21,12 @@ export const createApiTemplate = ({
   schemaComposer: SchemaComposer<any>;
 }): CloudFormationTemplate => {
   /**
+   * It should be on top of the file, otherwise it will have empty Mutation
+   * or Subscription if there are no resolvers for them.
+   */
+  const sdl = schemaComposer.toSDL();
+
+  /**
    * Get FieldName and TypeName. `resolveMethods` is a Map of
    * `typeName: { fieldName: resolverFn }`
    */
@@ -72,7 +78,7 @@ export const createApiTemplate = ({
         Type: 'AWS::AppSync::GraphQLSchema',
         Properties: {
           ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
-          Definition: schemaComposer.toSDL(),
+          Definition: sdl,
         },
       },
       [AppSyncLambdaFunctionIAMRoleLogicalId]: {
