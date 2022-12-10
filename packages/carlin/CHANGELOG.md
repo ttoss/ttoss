@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/ttoss/carlin/compare/carlin@1.19.14...carlin@1.20.0) (2022-12-10)
+
+### Features
+
+- appsync-api ([#75](https://github.com/ttoss/carlin/issues/75)) ([1248b34](https://github.com/ttoss/carlin/commit/1248b345dc2014942bda34b412c46e2a00d078e2))
+
 ## 1.19.14 (2022-11-29)
 
 **Note:** Version bump only for package carlin
