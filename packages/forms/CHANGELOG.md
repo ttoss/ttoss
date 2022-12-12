@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.9.0...@ttoss/forms@0.9.1) (2022-12-12)
+
+### Bug Fixes
+
+- export all form fields ([#77](https://github.com/ttoss/ttoss/issues/77)) ([a7d74cc](https://github.com/ttoss/ttoss/commit/a7d74cce5f875502e5314d1adfc80d729e5608ff))
+
 # [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.8.0...@ttoss/forms@0.9.0) (2022-12-10)
 
 ### Features
