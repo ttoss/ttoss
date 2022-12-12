@@ -1,5 +1,5 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormField } from '../src/';
+import { Form, FormFieldCheckbox } from '../src';
 import { act, render, screen, userEvent } from '@ttoss/test-utils';
 import { useForm } from 'react-hook-form';
 
@@ -13,8 +13,8 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormField.Checkbox name="checkbox1" label="Checkbox 1" />
-        <FormField.Checkbox name="checkbox2" label="Checkbox 2" />
+        <FormFieldCheckbox name="checkbox1" label="Checkbox 1" />
+        <FormFieldCheckbox name="checkbox2" label="Checkbox 2" />
         <Button type="submit">Submit</Button>
       </Form>
     );

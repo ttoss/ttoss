@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form, FormField } from '../src';
+import { Form, FormFieldInput } from '../src';
 import { act, render, screen, userEvent } from '@ttoss/test-utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,8 +15,8 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormField.Input name="input1" label="Input 1" />
-        <FormField.Input name="input2" label="Input 2" />
+        <FormFieldInput name="input1" label="Input 1" />
+        <FormFieldInput name="input2" label="Input 2" />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -56,8 +56,8 @@ test('should display error messages', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormField.Input name="firstName" label="First Name" />
-        <FormField.Input name="age" label="Age" />
+        <FormFieldInput name="firstName" label="First Name" />
+        <FormFieldInput name="age" label="Age" />
         <Button type="submit">Submit</Button>
       </Form>
     );
