@@ -73,16 +73,24 @@ const TemplateDynamic: Story = (args) => {
         <Slider
           defaultValue={50}
           max={200}
-          onChange={(e) => setFontSize(e.target.value as any)}
+          onChange={(e) => {
+            return setFontSize(e.target.value as any);
+          }}
         />
 
         <Label>Color</Label>
-        <Select onChange={(e) => setColor(e.target.value)}>
-          {colors.map(({ key, value }) => (
-            <option key={key} value={key as string}>
-              {`${key}: ${value}`}
-            </option>
-          ))}
+        <Select
+          onChange={(e) => {
+            return setColor(e.target.value);
+          }}
+        >
+          {colors.map(({ key, value }) => {
+            return (
+              <option key={key} value={key as string}>
+                {`${key}: ${value}`}
+              </option>
+            );
+          })}
         </Select>
       </Flex>
       <Icon

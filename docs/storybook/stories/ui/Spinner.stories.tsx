@@ -6,7 +6,9 @@ export default {
   component: Spinner,
 } as Meta;
 
-const Template: Story = (args) => <Spinner sx={{ color: args.color }} />;
+const Template: Story = (args) => {
+  return <Spinner sx={{ color: args.color }} />;
+};
 
 export const Primary = Template.bind({});
 Primary.args = {

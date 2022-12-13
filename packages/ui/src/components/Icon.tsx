@@ -1,5 +1,5 @@
 import { IconProps as IconPropsUI, Icon as IconUI } from '@iconify/react';
-import { Text, TextProps } from '../Text/Text';
+import { Text, TextProps } from './Text';
 
 export type IconProps = TextProps & {
   icon: IconPropsUI['icon'];
