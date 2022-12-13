@@ -7,9 +7,11 @@ export const FormFieldCheckbox = <
 >({
   label,
   name,
+  disabled,
 }: {
   label?: string;
   name: Path<TFieldValues>;
+  disabled?: boolean;
 }) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -26,11 +28,16 @@ export const FormFieldCheckbox = <
         <Checkbox
           id={id}
           ref={ref}
+          disabled={disabled}
           checked={value}
           onChange={onChange}
           onBlur={onBlur}
         />
-        {label && <Label htmlFor={id}>{label}</Label>}
+        {label && (
+          <Label aria-disabled={disabled} htmlFor={id}>
+            {label}
+          </Label>
+        )}
       </Flex>
       <ErrorMessage name={name} />
     </Box>

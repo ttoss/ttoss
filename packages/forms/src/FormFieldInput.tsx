@@ -5,9 +5,13 @@ import { FieldValues, Path, useController } from 'react-hook-form';
 export const FormFieldInput = <TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
+  disabled,
+  placeholder,
 }: {
   label?: string;
   name: Path<TFieldValues>;
+  disabled?: boolean;
+  placeholder?: string;
 }) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -20,13 +24,19 @@ export const FormFieldInput = <TFieldValues extends FieldValues = FieldValues>({
 
   return (
     <Box>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && (
+        <Label aria-disabled={disabled} htmlFor={id}>
+          {label}
+        </Label>
+      )}
       <Input
         ref={ref}
         onChange={onChange}
         onBlur={onBlur}
         value={value}
         name={name}
+        disabled={disabled}
+        placeholder={placeholder}
         id={id}
       />
       <ErrorMessage name={name} />

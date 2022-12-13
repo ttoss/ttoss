@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.9.1...@ttoss/forms@0.10.0) (2022-12-13)
+
+### Features
+
+- added disabled prop ([#78](https://github.com/ttoss/ttoss/issues/78)) ([8f185fc](https://github.com/ttoss/ttoss/commit/8f185fc07de6f81769eee63cec4c8c69c8c91374))
+
 ## [0.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.9.0...@ttoss/forms@0.9.1) (2022-12-12)
 
 ### Bug Fixes
