@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.26.3",
+  "version": "1.26.4",
   "author": "ttoss",
   "scripts": {
     "build": "build-storybook --quiet",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@ttoss/components": "^1.23.1",
-    "@ttoss/forms": "^0.9.1",
+    "@ttoss/forms": "^0.10.0",
     "@ttoss/landing-pages": "^0.3.1",
     "@ttoss/theme": "^1.0.3",
     "@ttoss/ui": "^1.25.1",
