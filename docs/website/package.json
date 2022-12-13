@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.27.1",
+  "version": "1.27.2",
   "scripts": {
     "build": "docusaurus build",
     "clear": "docusaurus clear",
@@ -19,9 +19,9 @@
     "@docusaurus/module-type-aliases": "^2.1.0",
     "@docusaurus/preset-classic": "^2.1.0",
     "@mdx-js/react": "^1.6.22",
-    "@ttoss/components": "^1.23.1",
+    "@ttoss/components": "^1.24.0",
     "@ttoss/config": "^1.21.0",
-    "@ttoss/ui": "^1.25.1",
+    "@ttoss/ui": "^1.26.0",
     "carlin": "^1.20.1",
     "jsdoc-api": "^7.1.1",
     "markdown-to-jsx": "^7.1.7",

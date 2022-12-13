@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.3.1...@ttoss/landing-pages@0.4.0) (2022-12-13)
+
+### Features
+
+- ui infinite linear progress ([#79](https://github.com/ttoss/ttoss/issues/79)) ([5a9d0a5](https://github.com/ttoss/ttoss/commit/5a9d0a5f6ea2475590ea46f57571bc9208f9c2c5))
+
 ## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.3.0...@ttoss/landing-pages@0.3.1) (2022-12-10)
 
 **Note:** Version bump only for package @ttoss/landing-pages
