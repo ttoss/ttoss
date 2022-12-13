@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.27.2",
+  "version": "1.28.0",
   "scripts": {
     "build": "docusaurus build",
     "clear": "docusaurus clear",
@@ -21,7 +21,7 @@
     "@mdx-js/react": "^1.6.22",
     "@ttoss/components": "^1.24.0",
     "@ttoss/config": "^1.21.0",
-    "@ttoss/notifications": "^1.17.0",
+    "@ttoss/notifications": "^1.18.0",
     "@ttoss/ui": "^1.26.0",
     "carlin": "^1.20.1",
     "jsdoc-api": "^7.1.1",

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.27.2...@docs/website@1.28.0) (2022-12-13)
+
+### Bug Fixes
+
+- package.json deps version ([02e5cf5](https://github.com/ttoss/ttoss/commit/02e5cf528a6b0f4eda702b2ef906b11df13e3fb7))
+
+### Features
+
+- add ttoss notifications ([#80](https://github.com/ttoss/ttoss/issues/80)) ([af26183](https://github.com/ttoss/ttoss/commit/af261835e1ea1f69680e221c5a4413513971c605))
+
 ## [1.27.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.27.1...@docs/website@1.27.2) (2022-12-13)
 
 **Note:** Version bump only for package @docs/website
