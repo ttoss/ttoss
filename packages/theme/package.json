@@ -20,7 +20,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "theme-ui": "^0.15.3"
+    "theme-ui": "^0.15.4"
   },
   "keywords": [],
   "publishConfig": {

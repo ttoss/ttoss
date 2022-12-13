@@ -9,20 +9,22 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => (
-  <Flex
-    sx={{
-      gap: 3,
-      flexDirection: 'column',
-      alignItems: 'start',
-    }}
-  >
-    <Button {...args}>Click Me!</Button>
-    <Button {...args} disabled>
-      Click Me! (disabled)
-    </Button>
-  </Flex>
-);
+const Template: Story = (args) => {
+  return (
+    <Flex
+      sx={{
+        gap: 3,
+        flexDirection: 'column',
+        alignItems: 'start',
+      }}
+    >
+      <Button {...args}>Click Me!</Button>
+      <Button {...args} disabled>
+        Click Me! (disabled)
+      </Button>
+    </Flex>
+  );
+};
 
 export const Primary = Template.bind({});
 Primary.args = {

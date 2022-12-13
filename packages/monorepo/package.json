@@ -20,13 +20,13 @@
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "npmlog": "^6.0.2",
-    "yargs": "^17.5.1"
+    "npmlog": "^7.0.1",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
     "@ttoss/config": "^1.21.0",
     "@types/npmlog": "^4.1.4",
-    "tsup": "^6.1.2"
+    "tsup": "^6.5.0"
   },
   "publishConfig": {
     "access": "public"

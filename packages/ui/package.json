@@ -20,7 +20,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@iconify/react": "^4.0.0",
+    "@iconify/react": "^4.0.1",
     "@theme-ui/match-media": "^0.15.4",
     "theme-ui": "^0.15.4"
   },
@@ -33,7 +33,7 @@
     "@ttoss/config": "^1.21.0",
     "@ttoss/test-utils": "^1.18.1",
     "@ttoss/theme": "^1.0.3",
-    "@types/jest": "^29.2.3",
+    "@types/jest": "^29.2.4",
     "jest": "^29.3.1",
     "tsup": "^6.5.0"
   },

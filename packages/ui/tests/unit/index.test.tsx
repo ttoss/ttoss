@@ -1,4 +1,4 @@
-import * as uiModule from './';
+import * as uiModule from '../../src';
 
 test('should export methods', () => {
   expect(uiModule.useBreakpointIndex).toBeDefined();

@@ -17,11 +17,13 @@ const as = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 const Template: Story = (args) => {
   return (
     <Flex sx={{ flexDirection: 'column', gap: 2 }}>
-      {as.map((tag) => (
-        <Heading as={tag} variant={tag} key={tag}>
-          {args.text} {tag}
-        </Heading>
-      ))}
+      {as.map((tag) => {
+        return (
+          <Heading as={tag} variant={tag} key={tag}>
+            {args.text} {tag}
+          </Heading>
+        );
+      })}
     </Flex>
   );
 };

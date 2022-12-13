@@ -28,14 +28,16 @@ const ThemeProvider = ({
   return (
     <>
       <ThemeUiProvider theme={mergedTheme}>
-        {fonts.map((url) => (
-          <Global
-            key={url}
-            styles={css`
-              @import url('${url}');
-            `}
-          />
-        ))}
+        {fonts.map((url) => {
+          return (
+            <Global
+              key={url}
+              styles={css`
+                @import url('${url}');
+              `}
+            />
+          );
+        })}
         {children}
       </ThemeUiProvider>
     </>
