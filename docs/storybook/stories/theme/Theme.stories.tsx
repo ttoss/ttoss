@@ -1,11 +1,9 @@
 import { Button, Flex, Text } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
+import { THEME_GLOBAL_KEY } from '../../constants/theme-global';
+import { action } from '@storybook/addon-actions';
 import React from 'react';
 import ReactJson from 'react-json-view';
-
-import { action } from '@storybook/addon-actions';
-
-import { THEME_GLOBAL_KEY } from '../../constants/theme-global';
 
 export default {
   title: 'Theme/Theme Global',
@@ -15,7 +13,9 @@ const Template: Story = (args) => {
   const initialTheme = JSON.parse(localStorage.getItem(THEME_GLOBAL_KEY) || '');
   const [result, setResult] = React.useState<any>(initialTheme);
 
-  const reloadPage = () => location.reload();
+  const reloadPage = () => {
+    return location.reload();
+  };
 
   const handleUpdate = () => {
     localStorage.setItem(THEME_GLOBAL_KEY, JSON.stringify(result));
@@ -47,9 +47,15 @@ const Template: Story = (args) => {
       <ReactJson
         name="dynamicTheme"
         src={result}
-        onEdit={(e) => setResult(e.updated_src)}
-        onAdd={(e) => action('adding key')(e)}
-        onDelete={(e) => setResult(e.updated_src)}
+        onEdit={(e) => {
+          return setResult(e.updated_src);
+        }}
+        onAdd={(e) => {
+          return action('adding key')(e);
+        }}
+        onDelete={(e) => {
+          return setResult(e.updated_src);
+        }}
         enableClipboard
       />
     </Flex>
