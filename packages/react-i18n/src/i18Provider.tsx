@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlConfig, IntlProvider } from 'react-intl';
 
 export type MessagesType = any;
 
@@ -10,7 +10,7 @@ export type I18nProviderProps = {
   locale?: string;
   loadLocaleData?: LoadLocaleData;
   children?: React.ReactNode;
-};
+} & Omit<IntlConfig, 'defaultLocale' | 'locale' | 'messages'>;
 
 /**
  * `DEFAULT_LOCALE` must be `en` because is the default of the other modules.
@@ -34,6 +34,7 @@ export const I18nProvider = ({
   children,
   locale: initialLocale,
   loadLocaleData,
+  ...intlConfig
 }: I18nProviderProps) => {
   const [locale, setLocale] = React.useState(initialLocale || DEFAULT_LOCALE);
 
@@ -49,12 +50,18 @@ export const I18nProvider = ({
 
   return (
     <I18nConfigContext.Provider
-      value={{ defaultLocale: DEFAULT_LOCALE, locale, setLocale }}
+      value={{
+        defaultLocale: DEFAULT_LOCALE,
+        locale,
+        setLocale,
+        ...intlConfig,
+      }}
     >
       <IntlProvider
         defaultLocale={DEFAULT_LOCALE}
         locale={locale}
         messages={messages}
+        {...intlConfig}
       >
         <>{children}</>
       </IntlProvider>

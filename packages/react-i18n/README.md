@@ -2,14 +2,14 @@
 
 ## About
 
-<strong> @ttoss/i18n</strong> is a easiest way to use translations in your React application.
+**@ttoss/react-i18n** is a library that provides a simple way to internationalize your React application using ttoss ecosystem.
 
 ## Get Started
 
 ### Install @ttoss/i18n
 
 ```shell
-yarn add @ttoss/i18n
+yarn add @ttoss/react-i18n
 ```
 
 ## Examples of use
@@ -19,7 +19,7 @@ yarn add @ttoss/i18n
 Import the I18nProvider and wrap your application with it. Add to it a function called `loadLocaleData` to load all the translation data.
 
 ```tsx title="src/index.tsx"
-import { I18nProvider, LoadLocaleData } from '@ttoss/i18n';
+import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 
 const loadLocaleData: LoadLocaleData = (locale) => {
   switch (locale) {
@@ -46,7 +46,7 @@ ReactDOM.render(
 Then import the useI18n hook and extract the intl, to get access to the `formatMessage` function and many others (using `defineMessages` is optional).
 
 ```tsx title="src/App.tsx"
-import { useI18n, defineMessages } from '@ttoss/i18n';
+import { useI18n, defineMessages } from '@ttoss/react-i18n';
 
 const messages = defineMessages({
   myNameIs: {
