@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.17.0 (2022-12-14)
+
+### Features
+
+- add react-i18n ([#81](https://github.com/ttoss/ttoss/issues/81)) ([21c76a5](https://github.com/ttoss/ttoss/commit/21c76a558537a0c83b169e2623d3ccdb1d9c9632))
+
 ## [1.15.2](https://github.com/ttoss/modules/compare/v1.15.1...v1.15.2) (2022-05-06)
 
 **Note:** Version bump only for package @ttoss/i18n
