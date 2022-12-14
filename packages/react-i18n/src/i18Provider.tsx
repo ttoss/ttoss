@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IntlConfig, IntlProvider } from 'react-intl';
+import { IntlProvider } from 'react-intl';
 
 export type MessagesType = any;
 
@@ -10,14 +10,17 @@ export type I18nProviderProps = {
   locale?: string;
   loadLocaleData?: LoadLocaleData;
   children?: React.ReactNode;
-} & Omit<IntlConfig, 'defaultLocale' | 'locale' | 'messages'>;
+};
 
 /**
  * `DEFAULT_LOCALE` must be `en` because is the default of the other modules.
  */
 export const DEFAULT_LOCALE = 'en';
 
-type I18nConfigContextProps = Omit<I18nProviderProps, 'LoadLocaleData'> & {
+export type I18nConfigContextProps = Omit<
+  I18nProviderProps,
+  'LoadLocaleData'
+> & {
   defaultLocale: string;
   // eslint-disable-next-line no-unused-vars
   setLocale: (language: string) => void;
