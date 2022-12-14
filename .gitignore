@@ -117,3 +117,4 @@ github-app/
 .carlin/
 .vscode
 .turbo
+compiled-lang/

@@ -1,0 +1,51 @@
+{
+  "name": "@ttoss/react-i18n",
+  "version": "1.16.1",
+  "license": "UNLICENSED",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
+    "Rayza Oliveira Costa <rayza.ocr@gmail.com> (https://bio.link/rayza)"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "bin": {
+    "ttoss-i18n": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "yarn workspace @ttoss/storybook run dev",
+    "pretest": "yarn run pretest:extract && yarn run pretest:compile",
+    "test": "jest",
+    "pretest:compile": "yarn run pretest:compile:en && yarn run pretest:compile:ptBR",
+    "pretest:compile:en": "formatjs compile i18n/lang/en.json --ast --out-file i18n/compiled-lang/en.json",
+    "pretest:compile:ptBR": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled-lang/pt-BR.json",
+    "pretest:extract": "formatjs extract 'tests/**/*.ts*' --out-file i18n/lang/en.json"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "glob": "^8.0.3",
+    "react-intl": "^6.2.5"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@formatjs/cli": "^5.1.7",
+    "@ttoss/config": "^1.21.0",
+    "@ttoss/test-utils": "^1.18.1"
+  },
+  "keywords": [
+    "React",
+    "ui",
+    "user interface"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
