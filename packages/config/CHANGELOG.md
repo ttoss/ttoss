@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.21.0...@ttoss/config@1.22.0) (2022-12-16)
+
+### Features
+
+- add turbo on eslint ([#85](https://github.com/ttoss/ttoss/issues/85)) ([3541131](https://github.com/ttoss/ttoss/commit/35411311fb42171ae5a8f2e163dbaba18fd46d14))
+
 # [1.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.20.0...@ttoss/config@1.21.0) (2022-12-10)
 
 ### Features

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.19.0 (2022-12-16)
+
+### Features
+
+- add turbo on eslint ([#85](https://github.com/ttoss/ttoss/issues/85)) ([3541131](https://github.com/ttoss/ttoss/commit/35411311fb42171ae5a8f2e163dbaba18fd46d14))
+- added props to FormFields ([#71](https://github.com/ttoss/ttoss/issues/71)) ([aa23d7b](https://github.com/ttoss/ttoss/commit/aa23d7b0cc7f9d7b6ce4452c1dff6d92a0ef5805))
+
 # 1.18.0 (2022-11-29)
 
 ### Features
