@@ -15,6 +15,9 @@ LATEST_TAG=$(git describe --tags --abbrev=0)
 # Setup NPM token
 echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
 
+# Build config to run lint-staged for lint and version bump
+yarn turbo run build --filter=@ttoss/config...
+
 # Version before publish to rebuild all packages that Lerna will publish
 yarn lerna version --yes --no-push
 
