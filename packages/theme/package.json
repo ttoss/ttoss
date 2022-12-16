@@ -22,6 +22,10 @@
   "dependencies": {
     "theme-ui": "^0.15.4"
   },
+  "devDependencies": {
+    "@ttoss/config": "^1.22.0",
+    "@ttoss/test-utils": "^1.18.2"
+  },
   "keywords": [],
   "publishConfig": {
     "access": "public"
