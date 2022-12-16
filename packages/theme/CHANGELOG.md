@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.1.0...@ttoss/theme@1.1.1) (2022-12-16)
+
+### Bug Fixes
+
+- theme deps ([c28e313](https://github.com/ttoss/ttoss/commit/c28e31382369b7ac74c5a262dec6c6a664cf4051))
+
 # 1.1.0 (2022-12-13)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/notifications",
-  "version": "1.18.1",
+  "version": "1.18.2",
   "description": "ttoss notifications module.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -19,7 +19,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/components": "^1.24.1"
+    "@ttoss/components": "^1.24.2"
   },
   "peerDependencies": {
     "@ttoss/ui": "^1.25.1",

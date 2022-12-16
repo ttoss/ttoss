@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.28.1",
+  "version": "1.28.2",
   "author": "ttoss",
   "scripts": {
     "build": "build-storybook --quiet",
@@ -12,12 +12,12 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.24.1",
-    "@ttoss/forms": "^0.11.1",
-    "@ttoss/landing-pages": "^0.4.1",
-    "@ttoss/notifications": "^1.18.1",
-    "@ttoss/theme": "^1.1.0",
-    "@ttoss/ui": "^1.26.1",
+    "@ttoss/components": "^1.24.2",
+    "@ttoss/forms": "^0.11.2",
+    "@ttoss/landing-pages": "^0.4.2",
+    "@ttoss/notifications": "^1.18.2",
+    "@ttoss/theme": "^1.1.1",
+    "@ttoss/ui": "^1.26.2",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
