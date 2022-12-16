@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.2](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.19.1...@ttoss/eslint-config@1.19.2) (2022-12-16)
+
+### Bug Fixes
+
+- add config.js to files ([d5132cc](https://github.com/ttoss/ttoss/commit/d5132cc3285fcf60d2a634ac34b7041c5ce7a9ec))
+
 ## [1.19.1](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.19.0...@ttoss/eslint-config@1.19.1) (2022-12-16)
 
 ### Bug Fixes
