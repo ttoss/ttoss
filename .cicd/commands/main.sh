@@ -1,7 +1,7 @@
 export CARLIN_ENVIRONMENT=Production
 
 # Fetch tags
-git fetch --tags
+git fetch --tags --quiet
 
 # https://stackoverflow.com/a/25742085/8786986
 yarn lerna changed || { echo "No changes detected, exiting main workflow" && exit 0; }
