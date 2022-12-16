@@ -1,6 +1,5 @@
-import type { Options } from 'tsup';
-
 import { configCreator } from './configCreator';
+import type { Options } from 'tsup';
 
 export const defaultConfig: Options = {
   clean: true,
