@@ -8,7 +8,9 @@
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "main": "index.js",
-  "files": [],
+  "files": [
+    "config.js"
+  ],
   "dependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
