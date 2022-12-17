@@ -12,10 +12,19 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "jest"
   },
   "dependencies": {
+    "@aws-crypto/sha256-js": "^2.0.2",
+    "@aws-sdk/credential-provider-node": "^3.231.0",
+    "@aws-sdk/protocol-http": "^3.226.0",
+    "@aws-sdk/signature-v4": "^3.226.0",
     "node-fetch": "2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "jest": "^29.3.1"
   },
   "keywords": [],
   "publishConfig": {

@@ -2,12 +2,17 @@
  * Implementation of the AppSync client for NodeJS, based on the AWS Amplify
  * documentation: https://docs.amplify.aws/lib/graphqlapi/graphql-from-nodejs/q/platform/js/
  */
+import { AwsCredentialIdentity } from '@aws-sdk/types';
+import { HttpRequest } from '@aws-sdk/protocol-http';
 import { Request, RequestInit, default as fetch } from 'node-fetch';
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { SignatureV4 } from '@aws-sdk/signature-v4';
+import { defaultProvider } from '@aws-sdk/credential-provider-node';
 
 export type Config = {
   apiEndpoint: string;
   apiKey?: string;
-  awsCredentials?: any;
+  awsCredentials?: AwsCredentialIdentity;
 };
 
 let _config: Config;
@@ -52,16 +57,58 @@ const queryWithApiKey: Query = async (query, variables) => {
   return body;
 };
 
+const getRegionFromEndpoint = (endpoint: string): string => {
+  const matcher = /\.[a-z]+-[a-z]+-[0-9]\./;
+  const regexResponse = endpoint.match(matcher);
+  let region = '';
+  if (regexResponse) {
+    region = regexResponse[0].replace(/\./g, '');
+  }
+  return region;
+};
+
+const queryWithCredentials: Query = async (query, variables) => {
+  const { apiEndpoint, awsCredentials } = _config;
+
+  const endpoint = new URL(apiEndpoint);
+
+  const region = getRegionFromEndpoint(apiEndpoint);
+
+  const signer = new SignatureV4({
+    credentials: awsCredentials || defaultProvider(),
+    region,
+    service: 'appsync',
+    sha256: Sha256,
+  });
+
+  const requestToBeSigned = new HttpRequest({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      host: endpoint.host,
+    },
+    hostname: endpoint.host,
+    body: JSON.stringify({ query, variables }),
+    path: endpoint.pathname,
+  });
+
+  const signed = await signer.sign(requestToBeSigned);
+
+  const request = new Request(endpoint, signed);
+
+  const response = await fetch(request);
+
+  const body = await response.json();
+
+  return body;
+};
+
 const query: Query = async (query, variables) => {
   if (_config.apiKey) {
     return queryWithApiKey(query, variables);
   }
 
-  if (_config.awsCredentials) {
-    return { data: null };
-  }
-
-  throw new Error('No API key or credentials set');
+  return queryWithCredentials(query, variables);
 };
 
 export const appSyncClient = {
