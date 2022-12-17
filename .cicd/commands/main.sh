@@ -21,9 +21,9 @@ yarn turbo run build --filter=@ttoss/config...
 # Version before publish to rebuild all packages that Lerna will publish
 yarn lerna version --yes --no-push
 
-# Lint, test, build, and deploy all packages since $LATEST_TAG and their dependent packages.
+# Lint, test, and build all packages since $LATEST_TAG and their dependent packages.
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-yarn turbo run lint build test deploy --filter=...[$LATEST_TAG]
+yarn turbo run lint build test --filter=...[$LATEST_TAG]
 
 # Publish packages
 yarn lerna publish from-git --yes
@@ -33,3 +33,9 @@ git push --tags
 
 # Push changes
 git push --follow-tags
+
+# Deploy after publish because there are cases in which a package is versioned
+# and it should be on NPM registry to Lambda Layer create the new version when
+# carlin deploy starts.
+yarn turbo run deploy --filter=...[$LATEST_TAG]
+
