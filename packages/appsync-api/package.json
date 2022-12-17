@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -23,7 +23,7 @@
     "graphql-compose": "^9.0.10"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.24.1",
+    "@ttoss/config": "^1.25.0",
     "@types/aws-lambda": "^8.10.109"
   },
   "keywords": [],

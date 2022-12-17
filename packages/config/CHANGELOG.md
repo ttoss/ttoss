@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.25.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.22.0...@ttoss/config@1.25.0) (2022-12-17)
+
+### Bug Fixes
+
+- make terezinha farm config private ([5a35424](https://github.com/ttoss/ttoss/commit/5a354243dc236a17e865500ea8ac0ba09d5b2cd2))
+- manually update published packages ([8f891be](https://github.com/ttoss/ttoss/commit/8f891bee55997a9455c45299a6eee58811a556f2))
+
+### Features
+
+- add aws appsync nodejs ([#90](https://github.com/ttoss/ttoss/issues/90)) ([49f3c5a](https://github.com/ttoss/ttoss/commit/49f3c5a9fc063de16471602b9bf322aa554719ed))
+
 # [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.21.0...@ttoss/config@1.22.0) (2022-12-16)
 
 ### Features

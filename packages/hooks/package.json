@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/hooks",
-  "version": "1.20.11",
+  "version": "1.20.12",
   "description": "React hooks.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -22,8 +22,8 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.24.1",
-    "@ttoss/test-utils": "^1.18.2"
+    "@ttoss/config": "^1.25.0",
+    "@ttoss/test-utils": "^1.18.3"
   },
   "keywords": [
     "React",

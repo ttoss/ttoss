@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.3](https://github.com/ttoss/carlin/compare/carlin@1.20.2...carlin@1.20.3) (2022-12-17)
+
+### Bug Fixes
+
+- access public ([0f75b43](https://github.com/ttoss/carlin/commit/0f75b43397129880f362a9fa237a3bcf079ef943))
+
 ## [1.20.2](https://github.com/ttoss/carlin/compare/carlin@1.20.1...carlin@1.20.2) (2022-12-16)
 
 **Note:** Version bump only for package carlin

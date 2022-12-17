@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/aws-appsync-nodejs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "license": "MIT",
   "author": "ttoss",
@@ -17,7 +17,6 @@
   "dependencies": {
     "node-fetch": "2"
   },
-  "devDependencies": {},
   "keywords": [],
   "publishConfig": {
     "access": "public"
