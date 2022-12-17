@@ -12,8 +12,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsup",
-    "test": "jest"
+    "build": "tsup"
   },
   "dependencies": {
     "node-fetch": "2"

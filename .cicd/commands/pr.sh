@@ -2,12 +2,12 @@
 yarn turbo run build --filter=@ttoss/config...
 
 # Lint
-turbo run lint
+yarn turbo run lint
 
 # Build all packages since main and their dependencies
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependencies-of-matched-workspaces
-turbo run build --filter=[main]...
+yarn turbo run build --filter=[main]...
 
 # Test and deploy all packages since main and their dependent packages
-# https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependencies-of-matched-workspaces
+# https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
 yarn turbo test deploy --filter=...[main]
