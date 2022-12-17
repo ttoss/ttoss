@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.2.0...@ttoss/aws-appsync-nodejs@1.3.0) (2022-12-17)
+
+### Features
+
+- add iam to aws-appsync-nodejs ([#92](https://github.com/ttoss/ttoss/issues/92)) ([256d5c5](https://github.com/ttoss/ttoss/commit/256d5c55d5be1ef0e228274b1bce29fea9ee8783))
+
 # 1.2.0 (2022-12-17)
 
 ### Bug Fixes
