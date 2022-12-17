@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "@terezinha-farm/api",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "echo build",
+    "deploy": "carlin deploy"
+  },
+  "dependencies": {
+    "@terezinha-farm/config": "^0.1.0",
+    "@ttoss/appsync-api": "^0.2.1"
+  },
+  "devDependencies": {
+    "@ttoss/aws-appsync-nodejs": "1.0.0",
+    "@ttoss/config": "^1.22.0",
+    "carlin": "^1.20.2"
+  }
+}

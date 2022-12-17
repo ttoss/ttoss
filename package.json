@@ -24,7 +24,8 @@
   },
   "workspaces": [
     "docs/**/*",
-    "packages/**/*"
+    "packages/**/*",
+    "terezinha-farm/**/*"
   ],
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",

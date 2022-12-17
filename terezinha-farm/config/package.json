@@ -1,0 +1,17 @@
+{
+  "name": "@terezinha-farm/config",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "build": "tsup"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "find-yarn-workspace-root": "^2.0.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.22.0"
+  }
+}

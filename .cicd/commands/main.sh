@@ -21,8 +21,9 @@ yarn turbo run build --filter=@ttoss/config...
 # Version before publish to rebuild all packages that Lerna will publish
 yarn lerna version --yes --no-push
 
-# Rebuild all packages that Lerna will publish
-yarn turbo run build lint test deploy --filter=[$LATEST_TAG]
+# Lint, test, build, and deploy all packages since $LATEST_TAG and their dependent packages.
+# https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
+yarn turbo run lint build test deploy --filter=...[$LATEST_TAG]
 
 # Publish packages
 yarn lerna publish from-git --yes

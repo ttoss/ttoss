@@ -9,8 +9,9 @@
         "ast": true
       }
     ],
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "ES2021"],
+    "module": "commonjs",
+    "target": "ES2021",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
