@@ -29,7 +29,20 @@ const config = {
     locales: ['en'],
   },
 
-  plugins: [path.resolve(__dirname, 'lifecycle/carlin')],
+  plugins: [
+    path.resolve(__dirname, 'lifecycle/carlin'),
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        entryPoints: ['../../packages/aws-appsync-nodejs/src/index.ts'],
+        tsconfig: '../../packages/aws-appsync-nodejs/tsconfig.json',
+        out: 'modules/packages/aws-appsync-nodejs',
+        sidebar: {
+          categoryLabel: '@aws-appsync-nodejs',
+        },
+      },
+    ],
+  ],
 
   presets: [
     [
