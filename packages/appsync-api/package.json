@@ -23,7 +23,7 @@
     "graphql-compose": "^9.0.10"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.23.0",
+    "@ttoss/config": "^1.24.1",
     "@types/aws-lambda": "^8.10.109"
   },
   "keywords": [],
