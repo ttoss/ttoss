@@ -24,7 +24,7 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.22.0",
+    "@ttoss/config": "^1.23.0",
     "@types/npmlog": "^4.1.4",
     "tsup": "^6.5.0"
   },

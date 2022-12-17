@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@ttoss/aws-appsync-nodejs": "1.0.0",
-    "@ttoss/config": "^1.22.0",
+    "@ttoss/config": "^1.23.0",
     "carlin": "^1.20.2"
   }
 }

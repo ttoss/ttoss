@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@emotion/react": "^11.10.4",
-    "@ttoss/config": "^1.22.0",
+    "@ttoss/config": "^1.23.0",
     "@ttoss/test-utils": "^1.18.2",
     "@ttoss/theme": "^1.1.1",
     "@types/jest": "^29.2.4",

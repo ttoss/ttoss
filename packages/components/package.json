@@ -32,7 +32,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.22.0",
+    "@ttoss/config": "^1.23.0",
     "@ttoss/test-utils": "^1.18.2",
     "@ttoss/ui": "^1.26.2",
     "@types/jest": "^29.2.4",
