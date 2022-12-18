@@ -1,13 +1,12 @@
 {
   "name": "@ttoss/cloud-auth",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "./dist/index.js",
   "module": "./dist/esm/index.js",
   "scripts": {
     "build": "tsup"
   },
   "typings": "./dist/index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@ttoss/config": "^1.25.0",
     "@types/jest": "^29.2.4",
