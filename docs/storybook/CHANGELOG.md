@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.29.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.28.3...@docs/storybook@1.29.0) (2022-12-18)
+
+### Features
+
+- update ui, notifications and i18n packages ([#94](https://github.com/ttoss/ttoss/issues/94)) ([928862d](https://github.com/ttoss/ttoss/commit/928862d01c276d645e1aac67e086d7b06939bf27))
+
 ## [1.28.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.28.2...@docs/storybook@1.28.3) (2022-12-17)
 
 **Note:** Version bump only for package @docs/storybook
