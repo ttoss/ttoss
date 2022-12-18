@@ -1,9 +1,12 @@
 import { Button } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
-import { NotificationsProvider, useNotifications } from '@ttoss/notifications';
+import {
+  NotificationsProvider,
+  useNotifications,
+} from '@ttoss/react-notifications';
 
 export default {
-  title: 'Notifications/Loading',
+  title: 'React Notifications/Loading',
   decorators: [
     (Story) => {
       return (

@@ -16,11 +16,7 @@ This package implements a AWS AppSync client for Node.js. We've followed the [AW
 yarn add @ttoss/aws-appsync-nodejs
 ```
 
-## Getting Started
-
-Example of how to use the package.
-
-### With API Key
+## Quickstart
 
 ```typescript
 import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
@@ -40,7 +36,40 @@ const query = /* GraphQL */ `
 `;
 
 appSyncClient.query(query, { id: '1' }).then((result) => {
-  // eslint-disable-next-line no-console
   console.log(result);
+});
+```
+
+## Config
+
+You need to configure the client with `apiEndpoint` (required), `apiKey` (optional) and `awsCredentials` (optional).
+
+1. If you don't provide `apiKey` or `awsCredentials`, the client will try to use the AWS credentials from the environment variables of your system—local computer, AWS Lambda, EC2.
+
+```typescript
+appSyncClient.setConfig({
+  apiEndpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+});
+```
+
+2. If you provide `apiKey`, the client will use the API key to authenticate.
+
+```typescript
+appSyncClient.setConfig({
+  apiEndpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+  apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
+});
+```
+
+3. If you provide `awsCredentials`, the client will use the credentials to authenticate.
+
+```typescript
+appSyncClient.setConfig({
+  apiEndpoint,
+  awsCredentials: {
+    accessKeyId: // access key id,
+    secretAccessKey: // secret access key,
+    sessionToken: // optional session token,
+  },
 });
 ```

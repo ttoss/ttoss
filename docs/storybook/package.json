@@ -15,7 +15,7 @@
     "@ttoss/components": "^1.24.3",
     "@ttoss/forms": "^0.11.3",
     "@ttoss/landing-pages": "^0.4.3",
-    "@ttoss/notifications": "^1.18.3",
+    "@ttoss/react-notifications": "^1.18.3",
     "@ttoss/theme": "^1.1.2",
     "@ttoss/ui": "^1.26.3",
     "react-json-view": "^1.21.3"

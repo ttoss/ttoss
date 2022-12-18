@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
-const { compile, extract } = require('@formatjs/cli');
-const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
+import * as fs from 'fs';
+import * as glob from 'glob';
+import * as path from 'path';
+import { compile, extract } from '@formatjs/cli-lib';
 
 const DEFAULT_DIR = 'i18n';
 
@@ -48,9 +46,11 @@ const args = process.argv.slice(2);
       ast: true,
     });
 
-    await fs.promises.writeFile(
-      path.join(COMPILE_DIR, filename),
-      compiledDataAsString
-    );
+    if (filename) {
+      await fs.promises.writeFile(
+        path.join(COMPILE_DIR, filename),
+        compiledDataAsString
+      );
+    }
   }
 })();
