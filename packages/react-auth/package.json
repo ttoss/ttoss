@@ -1,0 +1,52 @@
+{
+  "name": "@ttoss/react-auth",
+  "version": "1.0.0",
+  "description": "ttoss authentication module for React apps.",
+  "license": "UNLICENSED",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/esm/index.js",
+  "files": [
+    "dist",
+    "i18n",
+    "src"
+  ],
+  "scripts": {
+    "prebuild": "ttoss-i18n --no-compile",
+    "build": "tsup",
+    "test": "jest"
+  },
+  "typings": "./dist/index.d.ts",
+  "dependencies": {
+    "@ttoss/cloud-auth": "^0.1.0",
+    "@ttoss/forms": "^0.11.4",
+    "@xstate/react": "^3.0.1",
+    "xstate": "^4.35.0"
+  },
+  "peerDependencies": {
+    "@ttoss/react-i18n": "^1.17.2",
+    "@ttoss/react-notifications": "^1.18.3",
+    "@ttoss/ui": "^1.26.3",
+    "aws-amplify": "5.x.x",
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.25.0",
+    "@ttoss/i18n-cli": "^0.2.0",
+    "@ttoss/react-i18n": "^1.17.2",
+    "@ttoss/react-notifications": "^1.19.0",
+    "@ttoss/test-utils": "^1.18.3",
+    "@ttoss/ui": "^1.27.0",
+    "aws-amplify": "^5.0.7"
+  },
+  "keywords": [
+    "React",
+    "authentication"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "0XOzcH": {
+    "defaultMessage": "Required field",
+    "description": "Required field."
+  },
+  "0cVgsc": {
+    "defaultMessage": "Login",
+    "description": "Button label."
+  },
+  "5E12mO": {
+    "defaultMessage": "Email",
+    "description": "Email label."
+  },
+  "EXZxA0": {
+    "defaultMessage": "Register",
+    "description": "Title on sign up."
+  },
+  "KY2T6J": {
+    "defaultMessage": "Code",
+    "description": "Sign up confirmation code"
+  },
+  "LU2ddR": {
+    "defaultMessage": "Do you already have an account? Sign in",
+    "description": "Link to sign in on sign up."
+  },
+  "OhDL0i": {
+    "defaultMessage": "Invalid email",
+    "description": "Invalid email."
+  },
+  "Pdio77": {
+    "defaultMessage": "Create account",
+    "description": "Create account."
+  },
+  "PylVqx": {
+    "defaultMessage": "Password",
+    "description": "Password label."
+  },
+  "R1rFNQ": {
+    "defaultMessage": "Login",
+    "description": "Sign in title."
+  },
+  "S3pjKw": {
+    "defaultMessage": "Minimum {value} characters",
+    "description": "Minimum {value} characters."
+  },
+  "TZ4WUk": {
+    "defaultMessage": "Password requires {value} characters",
+    "description": "Password must be at least {value} characters long."
+  },
+  "UNttd+": {
+    "defaultMessage": "Confirm",
+    "description": "Confirm"
+  },
+  "XC1w2U": {
+    "defaultMessage": "Don't have an account? Sign up",
+    "description": "Link to sign up."
+  },
+  "cGR2eI": {
+    "defaultMessage": "Confirmation",
+    "description": "Confirmation"
+  },
+  "kdFYba": {
+    "defaultMessage": "Password field is required",
+    "description": "Password is required."
+  },
+  "r+QgO+": {
+    "defaultMessage": "Email field is required",
+    "description": "Email is a required field."
+  },
+  "z5s0vm": {
+    "defaultMessage": "Do you forgot your password?",
+    "description": "Link to retrieve password."
+  }
+}
