@@ -14,15 +14,15 @@ custom_edit_url: null
 
 #### Type declaration
 
-| Name              | Type     |
-| :---------------- | :------- |
-| `apiEndpoint`     | `string` |
-| `apiKey?`         | `string` |
-| `awsCredentials?` | `any`    |
+| Name              | Type                    |
+| :---------------- | :---------------------- |
+| `apiEndpoint`     | `string`                |
+| `apiKey?`         | `string`                |
+| `awsCredentials?` | `AwsCredentialIdentity` |
 
 #### Defined in
 
-[index.ts:7](https://github.com/ttoss/ttoss/blob/88b9894/packages/aws-appsync-nodejs/src/index.ts#L7)
+[index.ts:12](https://github.com/ttoss/ttoss/blob/8f56268/packages/aws-appsync-nodejs/src/index.ts#L12)
 
 ---
 
@@ -47,7 +47,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[index.ts:19](https://github.com/ttoss/ttoss/blob/88b9894/packages/aws-appsync-nodejs/src/index.ts#L19)
+[index.ts:24](https://github.com/ttoss/ttoss/blob/8f56268/packages/aws-appsync-nodejs/src/index.ts#L24)
 
 ## Variables
 
@@ -65,4 +65,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[index.ts:67](https://github.com/ttoss/ttoss/blob/88b9894/packages/aws-appsync-nodejs/src/index.ts#L67)
+[index.ts:114](https://github.com/ttoss/ttoss/blob/8f56268/packages/aws-appsync-nodejs/src/index.ts#L114)

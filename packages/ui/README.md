@@ -5,7 +5,7 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/ui @emotion/react
+yarn add @ttoss/ui
 ```
 
 ## Quick start
