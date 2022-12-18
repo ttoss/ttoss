@@ -18,7 +18,6 @@ module.exports = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/core': resolve('node_modules/@emotion/react'),
-      '@emotion/styled': resolve('node_modules/@emotion/styled'),
       'emotion-theming': resolve('node_modules/@emotion/react'),
     };
 
