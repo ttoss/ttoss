@@ -25,6 +25,12 @@ yarn lerna version --yes --no-push
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
 yarn turbo run lint build test --filter=...[$LATEST_TAG]
 
+# Undo all files that were changed by the build command—this happens because
+# the build can change files with different linting rules, or modify some
+# auto-generated docs. We don't want these changes becaues it will cause
+# turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+git checkout -- .
+
 # Publish packages
 yarn lerna publish from-git --yes
 
