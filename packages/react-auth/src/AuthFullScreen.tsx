@@ -1,21 +1,25 @@
-import { Flex, FlexProps } from '@ttoss/ui';
+import { Flex } from '@ttoss/ui';
 
-export type AuthContainerProps = FlexProps & { backgroundImageUrl?: string };
+export type AuthFullScreenProps = {
+  backgroundImageUrl?: string;
+  children: React.ReactNode;
+};
 
-export const AuthContainer = ({ sx, ...props }: AuthContainerProps) => {
+export const AuthFullScreen = ({ children }: AuthFullScreenProps) => {
   return (
     <Flex
-      {...props}
       sx={{
         height: '100vh',
+        width: '100vw',
         justifyContent: 'center',
         alignItems: 'center',
         margin: 0,
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
-        ...sx,
       }}
-    />
+    >
+      {children}
+    </Flex>
   );
 };

@@ -3,7 +3,24 @@ import { getAllFilesInsideADirectory } from '../s3';
 /**
  * Fixes #20 https://github.com/ttoss/carlin/issues/20
  */
-export const defaultBuildFolders = ['build', 'out', 'storybook-static'];
+export const defaultBuildFolders = [
+  /**
+   * Create React App default build folder
+   */
+  'build',
+  /**
+   * Next.js default output folder
+   */
+  'out',
+  /**
+   * Storybook default output folder
+   */
+  'storybook-static',
+  /**
+   * Vite.js default build folder
+   */
+  'dist',
+];
 
 export const findDefaultBuildFolder = async () => {
   /**
