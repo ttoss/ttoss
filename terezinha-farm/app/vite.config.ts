@@ -1,6 +1,7 @@
 import { babelConfig } from '@ttoss/config';
 import { config } from '@terezinha-farm/config';
 import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
 import babel from 'vite-plugin-babel';
 import react from '@vitejs/plugin-react-swc';
 
@@ -30,6 +31,9 @@ export default defineConfig(async () => {
           configFile: false,
           plugins: babelConfig().plugins,
         },
+      }),
+      visualizer({
+        filename: 'stats/index.html',
       }),
     ],
     resolve: {
