@@ -19,6 +19,7 @@
     "build": "tsup",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "./dist/index.d.ts",
   "dependencies": {
     "@ttoss/forms": "^0.11.4",

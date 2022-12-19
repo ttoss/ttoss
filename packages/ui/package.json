@@ -18,6 +18,7 @@
     "dev": "yarn workspace @docs/storybook run dev",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/react": "^11.10.5",

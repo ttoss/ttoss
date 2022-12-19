@@ -23,6 +23,7 @@
     "pretest:compile:ptBR": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled-lang/pt-BR.json",
     "pretest:extract": "formatjs extract 'tests/**/*.ts*' --out-file i18n/lang/en.json"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
     "react-intl": "^6.2.5"
