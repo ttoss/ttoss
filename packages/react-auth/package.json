@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "ttoss authentication module for React apps.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -22,7 +22,7 @@
   "sideEffects": false,
   "typings": "./dist/index.d.ts",
   "dependencies": {
-    "@ttoss/forms": "^0.11.4",
+    "@ttoss/forms": "^0.11.5",
     "@xstate/react": "^3.0.1",
     "xstate": "^4.35.0"
   },
@@ -37,10 +37,10 @@
     "@ttoss/cloud-auth": "^0.3.0",
     "@ttoss/config": "^1.25.0",
     "@ttoss/i18n-cli": "^0.2.0",
-    "@ttoss/react-i18n": "^1.18.0",
-    "@ttoss/react-notifications": "^1.19.0",
+    "@ttoss/react-i18n": "^1.18.1",
+    "@ttoss/react-notifications": "^1.19.1",
     "@ttoss/test-utils": "^1.18.3",
-    "@ttoss/ui": "^1.27.0",
+    "@ttoss/ui": "^1.27.1",
     "aws-amplify": "^5.0.7"
   },
   "keywords": [

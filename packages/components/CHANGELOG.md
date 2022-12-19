@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.24.4...@ttoss/components@1.24.5) (2022-12-19)
+
+### Bug Fixes
+
+- add side effects to false ([#108](https://github.com/ttoss/ttoss/issues/108)) ([859e083](https://github.com/ttoss/ttoss/commit/859e083c2dbdb6ede32f449df9341343c6de995e))
+
 ## [1.24.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.24.3...@ttoss/components@1.24.4) (2022-12-18)
 
 **Note:** Version bump only for package @ttoss/components

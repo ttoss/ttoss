@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.19.0...@ttoss/react-notifications@1.19.1) (2022-12-19)
+
+### Bug Fixes
+
+- add side effects to false ([#108](https://github.com/ttoss/ttoss/issues/108)) ([859e083](https://github.com/ttoss/ttoss/commit/859e083c2dbdb6ede32f449df9341343c6de995e))
+
 # 1.19.0 (2022-12-18)
 
 ### Features
