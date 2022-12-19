@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Auth as AmplifyAuth } from 'aws-amplify';
 import { AuthConfirmSignUp } from './AuthConfirmSignUp';
+import { AuthFullScreen } from './AuthFullScreen';
 import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp } from './AuthSignUp';
 import { LogoContextProps, LogoProvider } from './AuthCard';
@@ -81,7 +82,7 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
   }
 );
 
-const AuthWithoutLogo = () => {
+const AuthLogic = () => {
   const { isAuthenticated } = useAuth();
 
   const [state, send] = useMachine(authMachine);
@@ -180,20 +181,22 @@ const AuthWithoutLogo = () => {
   );
 };
 
-const withLogo = <T extends Record<string, unknown>>(
-  Component: React.ComponentType<T>
-) => {
-  const WithLogo = ({ logo, ...componentProps }: T & LogoContextProps) => {
-    return (
-      <LogoProvider logo={logo}>
-        <Component {...(componentProps as T)} />
-      </LogoProvider>
-    );
-  };
-
-  WithLogo.displayName = 'WithLogo';
-
-  return WithLogo;
+type AuthProps = LogoContextProps & {
+  fullScreen?: boolean;
 };
 
-export const Auth = withLogo(AuthWithoutLogo);
+export const Auth = ({ logo, fullScreen = true }: AuthProps) => {
+  const withLogoNode = React.useMemo(() => {
+    return (
+      <LogoProvider logo={logo}>
+        <AuthLogic />
+      </LogoProvider>
+    );
+  }, [logo]);
+
+  if (fullScreen) {
+    return <AuthFullScreen>{withLogoNode}</AuthFullScreen>;
+  }
+
+  return withLogoNode;
+};

@@ -1,4 +1,4 @@
-import { Config, appSyncClient } from '@ttoss/aws-appsync-nodejs';
+import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
 import { config } from '@terezinha-farm/config';
 
 const query = /* GraphQL */ `
@@ -13,7 +13,10 @@ const query = /* GraphQL */ `
 /**
  * Using API Key
  */
-appSyncClient.setConfig(config as Config);
+appSyncClient.setConfig({
+  apiEndpoint: config.API_ENDPOINT as string,
+  apiKey: config.API_KEY as string,
+});
 
 appSyncClient.query(query, { id: '1' }).then((result) => {
   // eslint-disable-next-line no-console
@@ -24,7 +27,7 @@ appSyncClient.query(query, { id: '1' }).then((result) => {
  * Using IAM
  */
 appSyncClient.setConfig({
-  apiEndpoint: config.apiEndpoint as string,
+  apiEndpoint: config.API_ENDPOINT as string,
 });
 
 appSyncClient.query(query, { id: '1' }).then((result) => {
