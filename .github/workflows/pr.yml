@@ -11,7 +11,7 @@ name: pr
 
 concurrency:
   group: pr-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   pr:
