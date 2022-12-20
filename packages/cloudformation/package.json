@@ -1,7 +1,7 @@
 {
-  "name": "@ttoss/appsync-api",
-  "version": "0.2.2",
-  "description": "",
+  "name": "@ttoss/cloudformation",
+  "version": "0.1.0",
+  "description": "CloudFormation utils.",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -9,9 +9,6 @@
   ],
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
-  "bin": {
-    "ttoss-appsync-api": "./bin/cli.js"
-  },
   "files": [
     "dist",
     "src"
@@ -22,14 +19,11 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "^0.1.0",
-    "graphql": "^16.6.0",
-    "graphql-compose": "^9.0.10",
-    "minimist": "^1.2.7"
+    "js-yaml": "^4.1.0",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.25.0",
-    "@types/aws-lambda": "^8.10.109"
+    "@ttoss/config": "^1.25.0"
   },
   "keywords": [],
   "publishConfig": {
