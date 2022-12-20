@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.3.1...@ttoss/appsync-api@0.4.0) (2022-12-20)
+
+### Features
+
+- add schema validation on appsync api ([#115](https://github.com/ttoss/ttoss/issues/115)) ([6d441d0](https://github.com/ttoss/ttoss/commit/6d441d09ac40e31532f232c3af816c7bc3a27371))
+
 ## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.3.0...@ttoss/appsync-api@0.3.1) (2022-12-20)
 
 ### Bug Fixes
