@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@ttoss/config": "^1.25.0",
-    "@types/aws-lambda": "^8.10.109"
+    "@types/aws-lambda": "^8.10.109",
+    "carlin": "^1.21.0"
   },
   "keywords": [],
   "publishConfig": {
