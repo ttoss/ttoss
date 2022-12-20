@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.4.0...@terezinha-farm/api@0.5.0) (2022-12-20)
+
+### Features
+
+- add build schema to appsync-api ([#111](https://github.com/ttoss/ttoss/issues/111)) ([c6cad94](https://github.com/ttoss/ttoss/commit/c6cad945a415045177708bd98fe1bc3d07761c46))
+
 # [0.4.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.3.0...@terezinha-farm/api@0.4.0) (2022-12-19)
 
 ### Features

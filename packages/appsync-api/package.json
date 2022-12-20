@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -22,7 +22,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "^0.1.0",
+    "@ttoss/cloudformation": "^0.2.0",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10",
     "minimist": "^1.2.7"
