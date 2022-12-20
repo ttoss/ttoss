@@ -11,6 +11,9 @@ if (argv._.includes('build-schema')) {
   const sdl =
     template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition;
 
+  // eslint-disable-next-line no-console
+  console.log(sdl);
+
   /**
    * Save to schema/schema.graphql. schema folder might not exist.
    */
