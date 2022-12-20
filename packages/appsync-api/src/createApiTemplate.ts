@@ -1,8 +1,8 @@
+import { type SchemaComposer, graphql } from 'graphql-compose';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
 import { readPackageJson } from 'carlin/src/utils/packageJson';
 import packageJson from '../package.json';
 import type { CloudFormationTemplate } from 'carlin/src/utils/cloudFormationTemplate';
-import type { SchemaComposer } from 'graphql-compose';
 
 const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
@@ -28,6 +28,8 @@ export const createApiTemplate = ({
    * or Subscription if there are no resolvers for them.
    */
   const sdl = schemaComposer.toSDL();
+
+  graphql.validateSchema(schemaComposer.buildSchema());
 
   /**
    * Get FieldName and TypeName. `resolveMethods` is a Map of
