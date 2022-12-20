@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.3.0...@ttoss/appsync-api@0.3.1) (2022-12-20)
+
+### Bug Fixes
+
+- add carlin as no externals ([#113](https://github.com/ttoss/ttoss/issues/113)) ([9b2a690](https://github.com/ttoss/ttoss/commit/9b2a690f86f4d48d3741032fa00a969cc1850fd7))
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.2.2...@ttoss/appsync-api@0.3.0) (2022-12-20)
 
 ### Features
