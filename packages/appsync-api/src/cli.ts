@@ -1,16 +1,9 @@
-// import { AppSyncGraphQLSchemaLogicalId } from './createApiTemplate';
 import * as fs from 'fs';
+import { AppSyncGraphQLSchemaLogicalId } from './createApiTemplate';
 import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
 import minimist from 'minimist';
 
 const argv = minimist(process.argv.slice(2));
-
-/**
- * TODO: fix Error: Cannot find module 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName'
- * passing all carlin cloudformation methods to @ttoss/cloudformation and
- * import AppSyncGraphQLSchemaLogicalId from './createApiTemplate';
- */
-const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
 if (argv._.includes('build-schema')) {
   const template = findAndReadCloudFormationTemplate({});

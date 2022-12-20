@@ -6,7 +6,7 @@ import type { SchemaComposer } from 'graphql-compose';
 
 const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
-const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
+export const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
 const AppSyncLambdaFunctionIAMRoleLogicalId = 'AppSyncLambdaFunctionIAMRole';
 
