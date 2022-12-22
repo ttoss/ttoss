@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultFonts, DefaultTheme } from '@ttoss/theme';
+import { BruttalFonts, BruttalTheme } from '@ttoss/theme';
 import { Global, css } from '@emotion/react';
 import { Theme, ThemeProvider as ThemeUiProvider, merge } from 'theme-ui';
 
@@ -15,14 +15,14 @@ export type ThemeProviderProps = {
 const ThemeProvider = ({
   children,
   theme = {},
-  fonts = DefaultFonts,
+  fonts = BruttalFonts,
 }: ThemeProviderProps) => {
   const mergedTheme = React.useMemo(() => {
     if (typeof theme === 'function') {
       return theme;
     }
 
-    return merge(DefaultTheme, theme);
+    return merge(BruttalTheme, theme);
   }, [theme]);
 
   return (
