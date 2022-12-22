@@ -1,4 +1,4 @@
-import { DefaultTheme } from '@ttoss/theme';
+import { BruttalTheme } from '@ttoss/theme';
 import { renderHook } from '@ttoss/test-utils';
 import { useTheme } from '../../src/theme/useTheme';
 import ThemeProvider from '../../src/theme/ThemeProvider';
@@ -14,7 +14,7 @@ test('should return default theme colors', () => {
     }
   );
 
-  expect(result.current.theme.rawColors).toEqual(DefaultTheme.colors);
+  expect(result.current.theme.rawColors).toEqual(BruttalTheme.colors);
 });
 
 test('should return new theme colors', () => {
