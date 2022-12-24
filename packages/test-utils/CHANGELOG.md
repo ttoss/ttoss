@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.19.0 (2022-12-24)
+
+### Features
+
+- add react-auth ([#97](https://github.com/ttoss/ttoss/issues/97)) ([6686ef6](https://github.com/ttoss/ttoss/commit/6686ef6f31f2125dff3fed45aaf8b8250b4ff32c))
+- relay amplify ([#125](https://github.com/ttoss/ttoss/issues/125)) ([63c7d56](https://github.com/ttoss/ttoss/commit/63c7d56477ecf8c2285f079a9f3cc9764f9ecc92))
+
 ## [1.18.3](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.18.2...@ttoss/test-utils@1.18.3) (2022-12-17)
 
 ### Bug Fixes
