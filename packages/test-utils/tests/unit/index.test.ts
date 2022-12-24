@@ -1,4 +1,4 @@
-import { render, renderHook, setOptions, userEvent } from './';
+import { render, renderHook, setOptions, userEvent } from '../../src';
 
 test('methods should exist', () => {
   expect(render).toBeDefined();

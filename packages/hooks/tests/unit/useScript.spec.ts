@@ -1,5 +1,5 @@
 import { act, renderHook } from '@ttoss/test-utils';
-import { useScript } from './useScript';
+import { useScript } from '../../src';
 
 const loadEvent = new Event('load');
 
@@ -9,7 +9,9 @@ test('should load script', () => {
   /**
    * Arrange
    */
-  const { result } = renderHook(() => useScript(src));
+  const { result } = renderHook(() => {
+    return useScript(src);
+  });
 
   /**
    * Assert

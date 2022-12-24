@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest --selectProjects unit"
+    "test": "jest"
   },
   "typings": "dist/index.d.ts",
   "dependencies": {},
