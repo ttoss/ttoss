@@ -3882,7 +3882,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.18.6"
     "@babel/helper-plugin-utils" "^7.18.6"
 
-"@babel/preset-env@^7.12.11", "@babel/preset-env@^7.18.6", "@babel/preset-env@^7.19.4":
+"@babel/preset-env@^7.12.11", "@babel/preset-env@^7.18.6", "@babel/preset-env@^7.19.4", "@babel/preset-env@^7.20.2":
   version "7.20.2"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.20.2.tgz#9b1642aa47bb9f43a86f9630011780dab7f86506"
   integrity sha512-1G0efQEWR1EHkKvKHqbG+IN/QdgwfByUpM5V5QroDzGV2t3S/WXNQd693cHiHTlCFMpr9B6FkPFXDA2lQcKoDg==
@@ -4117,7 +4117,7 @@
     resolve-global "1.0.0"
     yargs "^17.0.0"
 
-"@commitlint/config-conventional@^17.0.3":
+"@commitlint/config-conventional@^17.3.0":
   version "17.3.0"
   resolved "https://registry.yarnpkg.com/@commitlint/config-conventional/-/config-conventional-17.3.0.tgz#77bcfabfed932bc80e97f31f2201ba05f504e145"
   integrity sha512-hgI+fN5xF8nhS9uG/V06xyT0nlcyvHHMkq0kwRSr96vl5BFlRGaL2C0/YY4kQagfU087tmj01bJkG9Ek98Wllw==
@@ -5175,7 +5175,7 @@
     intl-messageformat "10.2.5"
     tslib "^2.4.0"
 
-"@formatjs/ts-transformer@3.11.5", "@formatjs/ts-transformer@^3.9.8":
+"@formatjs/ts-transformer@3.11.5", "@formatjs/ts-transformer@^3.11.5":
   version "3.11.5"
   resolved "https://registry.yarnpkg.com/@formatjs/ts-transformer/-/ts-transformer-3.11.5.tgz#0502c0c38d4ad628efbef61f1c2e35b7ea37959e"
   integrity sha512-cAmvKzgPqdetAr/RsxoXYhfNhMf5tERlXzJTsQw+j6tddPwIAbihACQx6KaajyJJ4aNssiziWNmcaHtjTqrrVw==
@@ -5484,7 +5484,7 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@jest/types@^27.4.2", "@jest/types@^27.5.1":
+"@jest/types@^27.5.1":
   version "27.5.1"
   resolved "https://registry.yarnpkg.com/@jest/types/-/types-27.5.1.tgz#3c79ec4a8ba61c170bf937bcf9e98a9df175ec80"
   integrity sha512-Cx46iJ9QpwQTjIdq5VJu2QTMMs3QlEjI0x1QbBP5W1+nMzyc2XmimiRR/CbX9TO0cPTeUlxWMOu8mslYsJ8DEw==
@@ -9495,7 +9495,7 @@ babel-plugin-extract-import-names@1.6.22:
   dependencies:
     "@babel/helper-plugin-utils" "7.10.4"
 
-babel-plugin-formatjs@^10.3.24:
+babel-plugin-formatjs@^10.3.35:
   version "10.3.35"
   resolved "https://registry.yarnpkg.com/babel-plugin-formatjs/-/babel-plugin-formatjs-10.3.35.tgz#50fb522188d9a06ee7c8bf82e2206fb05c8b8967"
   integrity sha512-AGPsA9jOH68CBk2kKRlC8pFkjR9F1fFQ5+BEYc3y2+8E4j188sSlooYy8l//sO5mLISfIVuo7C0PZT61MlifKA==
@@ -18678,10 +18678,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier-package-json@^2.6.4:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/prettier-package-json/-/prettier-package-json-2.7.0.tgz#98438c7d36fae0a229a323a598de1603ccfb936d"
-  integrity sha512-51I3/fYpBTLDXQDQK7+dfNlJzh5wdKhK8QteSZTZMppQd6aGpr1wqpwlKKZF1KdWA+91rwfpHUBrKwd2PXdXag==
+prettier-package-json@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/prettier-package-json/-/prettier-package-json-2.8.0.tgz#70aba2b4f7aeb4e294ae2191fb64b7d8fdea0398"
+  integrity sha512-WxtodH/wWavfw3MR7yK/GrS4pASEQ+iSTkdtSxPJWvqzG55ir5nvbLt9rw5AOiEcqqPCRM92WCtR1rk3TG3JSQ==
   dependencies:
     "@types/parse-author" "^2.0.0"
     commander "^4.0.1"
@@ -19669,7 +19669,7 @@ relateurl@^0.2.7:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==
 
-relay-runtime@14.1.0:
+relay-runtime@14.1.0, relay-runtime@^14.1.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-14.1.0.tgz#44b317101f560a16caea2eef8a52e254b03908fa"
   integrity sha512-t2DR2hZviHrdEQrOvFqwmvRWvZ0SjI/r4bS5f3qvMyXt4g1kw3RTb2RNVmbKGg6zEQhf7Na/brdqE4roApmclQ==
