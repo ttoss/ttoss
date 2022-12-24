@@ -1,0 +1,35 @@
+{
+  "name": "@ttoss/relay-amplify",
+  "version": "0.1.0",
+  "description": "",
+  "license": "UNLICENSED",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {},
+  "peerDependencies": {
+    "aws-amplify": "^5.0.7",
+    "relay-runtime": "^14.1.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "^1.25.0",
+    "aws-amplify": "^5.0.7",
+    "relay-runtime": "^14.1.0"
+  },
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  }
+}
