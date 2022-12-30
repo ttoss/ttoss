@@ -1,6 +1,6 @@
-import { Box, Label, Radio } from '@ttoss/ui';
+import { Box, Label, Radio, type RadioProps } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
-import { FieldValues, Path, useController } from 'react-hook-form';
+import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
 type FormRadioOption = {
   value: string | number;
@@ -11,11 +11,12 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
   options,
+  ...radioProps
 }: {
   label?: string;
-  name: Path<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   options: FormRadioOption[];
-}) => {
+} & RadioProps) => {
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
@@ -40,6 +41,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
                 defaultChecked={value === option.value}
                 name={name}
                 id={id}
+                {...radioProps}
               />
               {option.label}
             </Label>

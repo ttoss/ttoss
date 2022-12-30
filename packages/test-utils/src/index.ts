@@ -31,22 +31,20 @@ let options_: {
   wrapper?: any;
 } = {};
 
+export const setOptions = (options: RenderOptions) => {
+  options_ = options;
+};
+
 export type { RenderOptions };
+
+export * from '@testing-library/react';
 
 const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
   return render(ui, { ...options_, ...options });
 };
 
-export * from '@testing-library/react';
-
-export { customRender as render };
-
 const customRenderHook: typeof renderHook = (callback, options) => {
   return renderHook(callback, { ...options_, ...options });
 };
 
-export { customRenderHook as renderHook };
-
-export const setOptions = (options: RenderOptions) => {
-  options_ = options;
-};
+export { customRender as render, customRenderHook as renderHook };

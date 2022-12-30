@@ -31,3 +31,4 @@ export { Icon, type IconProps } from './components/Icon';
 export { Slider, type SliderProps } from './components/Slider';
 export { Checkbox, type CheckboxProps } from './components/Checkbox';
 export { InfiniteLinearProgress } from './components/InfiniteLinearProgress';
+export { Textarea, type TextareaProps } from './components/Textarea';

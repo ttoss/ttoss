@@ -1,7 +1,6 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldCheckbox } from '../src';
-import { act, render, screen, userEvent } from '@ttoss/test-utils';
-import { useForm } from 'react-hook-form';
+import { Form, FormFieldCheckbox, useForm } from '../../src';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 
 test('call onSubmit with correct data', async () => {
   const user = userEvent.setup({ delay: null });
@@ -22,10 +21,8 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await act(async () => {
-    await user.click(screen.getByLabelText('Checkbox 1'));
-    await user.click(screen.getByText('Submit'));
-  });
+  await user.click(screen.getByLabelText('Checkbox 1'));
+  await user.click(screen.getByText('Submit'));
 
   expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true, checkbox2: false });
 });

@@ -1,18 +1,18 @@
-import { Box, Input, Label } from '@ttoss/ui';
+import { Box, Input, type InputProps, Label } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
-import { FieldValues, Path, useController } from 'react-hook-form';
+import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
-export const FormFieldInput = <TFieldValues extends FieldValues = FieldValues>({
+export const FormFieldInput = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
   label,
   name,
-  disabled,
-  placeholder,
+  ...inputProps
 }: {
   label?: string;
-  name: Path<TFieldValues>;
-  disabled?: boolean;
-  placeholder?: string;
-}) => {
+  name: TName;
+} & InputProps) => {
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
@@ -25,7 +25,7 @@ export const FormFieldInput = <TFieldValues extends FieldValues = FieldValues>({
   return (
     <Box>
       {label && (
-        <Label aria-disabled={disabled} htmlFor={id}>
+        <Label aria-disabled={inputProps.disabled} htmlFor={id}>
           {label}
         </Label>
       )}
@@ -35,9 +35,8 @@ export const FormFieldInput = <TFieldValues extends FieldValues = FieldValues>({
         onBlur={onBlur}
         value={value}
         name={name}
-        disabled={disabled}
-        placeholder={placeholder}
         id={id}
+        {...inputProps}
       />
       <ErrorMessage name={name} />
     </Box>
