@@ -1,6 +1,6 @@
 import { Box, Label, Select, type SelectProps } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
-import { FieldValues, Path, useController } from 'react-hook-form';
+import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
 type FormRadioOption = {
   value: string | number;
@@ -13,13 +13,12 @@ export const FormFieldSelect = <
   label,
   name,
   options,
-  arrow,
+  ...selectProps
 }: {
   label?: string;
-  name: Path<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   options: FormRadioOption[];
-  arrow?: SelectProps['arrow'];
-}) => {
+} & SelectProps) => {
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
@@ -38,8 +37,8 @@ export const FormFieldSelect = <
         onChange={onChange}
         onBlur={onBlur}
         value={value}
-        arrow={arrow}
         id={id}
+        {...selectProps}
       >
         {options.map((option) => {
           return (

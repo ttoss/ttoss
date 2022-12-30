@@ -1,18 +1,17 @@
-import { Box, Checkbox, Flex, Label } from '@ttoss/ui';
+import { Box, Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
-import { FieldValues, Path, useController } from 'react-hook-form';
+import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
 export const FormFieldCheckbox = <
   TFieldValues extends FieldValues = FieldValues
 >({
   label,
   name,
-  disabled,
+  ...checkboxProps
 }: {
   label?: string;
-  name: Path<TFieldValues>;
-  disabled?: boolean;
-}) => {
+  name: FieldPath<TFieldValues>;
+} & CheckboxProps) => {
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
@@ -28,13 +27,14 @@ export const FormFieldCheckbox = <
         <Checkbox
           id={id}
           ref={ref}
-          disabled={disabled}
           checked={value}
           onChange={onChange}
           onBlur={onBlur}
+          name={name}
+          {...checkboxProps}
         />
         {label && (
-          <Label aria-disabled={disabled} htmlFor={id}>
+          <Label aria-disabled={checkboxProps.disabled} htmlFor={id}>
             {label}
           </Label>
         )}

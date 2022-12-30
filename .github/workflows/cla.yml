@@ -24,4 +24,6 @@ jobs:
           path-to-signatures: 'signatures/version1/cla.json'
           path-to-document: 'https://github.com/ttoss/ttoss/blob/main/CLA.md'
           branch: 'main'
-          allowlist: bot*
+          allowlist: arantespp,bot*
+          remote-organization-name: 'ttoss'
+          remote-repository-name: 'ttoss-signatures'
