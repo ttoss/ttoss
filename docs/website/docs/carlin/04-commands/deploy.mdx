@@ -17,7 +17,6 @@ import { deployExamples } from '../../../.docusaurus/carlin/default/deployExampl
 import { deployLambdaCodeComment } from '../../../.docusaurus/carlin/default/deployLambdaCodeComment';
 import { deployOptions } from '../../../.docusaurus/carlin/default/deployOptions';
 import { destroyComment } from '../../../.docusaurus/carlin/default/destroyComment';
-import { readObjectFileComment } from '../../../.docusaurus/carlin/default/readObjectFileComment';
 import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
 import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
 
@@ -51,9 +50,7 @@ and deploy accordingly to the following algorithm:
 
 :::
 
-The files listed above must provide an object containing the [CloudFormation template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
-
-<InnerHTML html={readObjectFileComment} />
+The files listed above must provide an object containing the [CloudFormation template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html). If your file is `.ts`, you must you must export the final object `export default { ... }`. If your file is `.js`, you must you must export the final object `module.exports = { ... }`. `.json` and `.yml/yaml` must define the resources in [JSON](https://www.json.org/json-en.html) and [YAML](https://yaml.org/) format respectively.
 
 ### Stack Name
 
