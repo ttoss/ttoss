@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "^1.26.0",
     "@types/aws-lambda": "^8.10.109",
-    "carlin": "^1.21.1"
+    "carlin": "^1.21.2"
   },
   "keywords": [],
   "publishConfig": {

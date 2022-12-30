@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.19.0...@ttoss/test-utils@1.20.0) (2022-12-30)
+
+### Features
+
+- add textarea ([#130](https://github.com/ttoss/ttoss/issues/130)) ([d3886ca](https://github.com/ttoss/ttoss/commit/d3886cac27bdd84383d52660310682fe20dc2f84))
+
 # 1.19.0 (2022-12-24)
 
 ### Features

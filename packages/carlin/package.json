@@ -1,6 +1,6 @@
 {
   "name": "carlin",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "",
   "license": "GPL-3.0",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
@@ -50,7 +50,7 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@ttoss/test-utils": "^1.19.0",
+    "@ttoss/test-utils": "^1.20.0",
     "@types/adm-zip": "^0.5.0",
     "@types/aws-lambda": "^8.10.109",
     "@types/deep-equal": "^1.0.1",

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.1](https://github.com/ttoss/ttoss/compare/@ttoss/hooks@1.21.0...@ttoss/hooks@1.21.1) (2022-12-30)
+
+**Note:** Version bump only for package @ttoss/hooks
+
 # 1.21.0 (2022-12-24)
 
 ### Features
