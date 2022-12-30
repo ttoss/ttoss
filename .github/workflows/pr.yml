@@ -8,6 +8,7 @@ name: pr
       - opened
       - synchronize
       - reopened
+      - closed
 
 concurrency:
   group: pr-${{ github.head_ref || github.ref_name }}
@@ -15,6 +16,7 @@ concurrency:
 
 jobs:
   pr:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
