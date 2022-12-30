@@ -1,14 +1,14 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldSelect } from '@ttoss/forms';
+import { Form, FormField } from '@ttoss/forms';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 export default {
-  title: 'Forms/FormFieldSelect',
-  component: FormFieldSelect,
+  title: 'Forms/FormField.Select',
+  component: FormField.Select,
 } as Meta;
 
 const schema = yup.object({
@@ -23,7 +23,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormFieldSelect
+      <FormField.Select
         name="car"
         label="What car do you prefer?"
         options={[

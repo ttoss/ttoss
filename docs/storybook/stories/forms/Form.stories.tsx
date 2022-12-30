@@ -1,11 +1,6 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import {
-  Form,
-  FormFieldCheckbox,
-  FormFieldInput,
-  yupResolver,
-} from '@ttoss/forms';
+import { Form, FormField, yupResolver } from '@ttoss/forms';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
@@ -19,24 +14,19 @@ const schema = yup.object({
   firstName: yup.string().required('First name is required'),
   age: yup.number().required('Age is required'),
   receiveEmails: yup.boolean(),
-  version: yup.string().required('Version is required'),
 });
 
 const Template: Story = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
-    defaultValues: {
-      version: 'v15',
-    },
   });
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormFieldInput name="firstName" label="First Name" />
-      <FormFieldInput name="age" label="Age" type="number" />
-      <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
-      <FormFieldInput name="version" label="Version (disabled)" disabled />
+      <FormField.Input name="firstName" label="First Name" />
+      <FormField.Input name="age" label="Age" />
+      <FormField.Checkbox name="receiveEmails" label="Receive Emails" />
       <Button type="submit">Submit</Button>
     </Form>
   );
