@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.3](https://github.com/ttoss/carlin/compare/carlin@1.21.2...carlin@1.21.3) (2022-12-30)
+
+### Bug Fixes
+
+- deploy package type module error ([#135](https://github.com/ttoss/carlin/issues/135)) ([11608f7](https://github.com/ttoss/carlin/commit/11608f7a79a6cdd62732d2a3f73e09c83033fe03))
+
 ## [1.21.2](https://github.com/ttoss/carlin/compare/carlin@1.21.1...carlin@1.21.2) (2022-12-30)
 
 **Note:** Version bump only for package carlin
