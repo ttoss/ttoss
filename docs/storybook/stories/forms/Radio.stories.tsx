@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form, FormField } from '@ttoss/forms';
+import { Form, FormFieldRadio } from '@ttoss/forms';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 export default {
   title: 'Forms/FormField.Radio',
-  component: FormField.Radio,
+  component: FormFieldRadio,
 } as Meta;
 
 const schema = yup.object({
@@ -23,7 +23,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormField.Radio
+      <FormFieldRadio
         name="car"
         label="What car do you prefer?"
         options={[
