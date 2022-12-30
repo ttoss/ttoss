@@ -24,6 +24,9 @@ export const readObjectFile = ({ path }: { path: string }) => {
   if (extension === 'ts') {
     require('ts-node').register({
       compilerOptions: { module: 'commonjs' },
+      moduleTypes: {
+        'carlin.*': 'cjs',
+      },
       transpileOnly: true,
     });
     const tsObj = require(path);

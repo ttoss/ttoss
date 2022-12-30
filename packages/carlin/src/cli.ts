@@ -1,16 +1,12 @@
 /* eslint-disable no-param-reassign */
 import * as yargs from 'yargs';
 import { AWS_DEFAULT_REGION, NAME } from './config';
-import {
-  EnvironmentVariables,
-  addGroupToOptions,
-  readObjectFile,
-  setEnvVar,
-} from './utils';
+import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
 import { constantCase, paramCase } from 'change-case';
 import { deployCommand } from './deploy/command';
 import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
 import { generateEnvCommand } from './generateEnv/generateEnvCommand';
+import { unstable_readObjectFile } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
@@ -143,7 +139,7 @@ const cli = () => {
     } while (findUpPath);
 
     const configs = paths.map((p) => {
-      return readObjectFile({ path: p }) || {};
+      return unstable_readObjectFile({ path: p }) || {};
     });
 
     /**
@@ -249,7 +245,7 @@ const cli = () => {
       .pkgConf(getPkgConfig())
       .config(getConfig())
       .config('config', (configPath: string) => {
-        return readObjectFile({ path: configPath });
+        return unstable_readObjectFile({ path: configPath });
       })
       .command({
         command: 'print-args',
