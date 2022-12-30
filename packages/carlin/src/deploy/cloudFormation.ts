@@ -1,10 +1,5 @@
 import { CloudFormation } from 'aws-sdk';
-import {
-  CloudFormationTemplate,
-  getEnvironment,
-  readCloudFormationYamlTemplate,
-  readObjectFile,
-} from '../utils';
+import { CloudFormationTemplate, getEnvironment } from '../utils';
 import {
   canDestroyStack,
   cloudFormationV2,
@@ -14,11 +9,10 @@ import {
 } from './cloudFormation.core';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { emptyS3Directory } from './s3';
+import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
 import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
-import fs from 'fs';
 import log from 'npmlog';
-import path from 'path';
 
 const logPrefix = 'cloudformation';
 log.addLevel('event', 10000, { fg: 'yellow' });
@@ -29,47 +23,6 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
     return `./src/cloudformation.${extension}`;
   }
 );
-
-const findAndReadCloudFormationTemplate = ({
-  templatePath: defaultTemplatePath,
-}: {
-  templatePath?: string;
-}): CloudFormationTemplate => {
-  const templatePath =
-    defaultTemplatePath ||
-    defaultTemplatePaths
-      /**
-       * Iterate over extensions. If the template of the current extension is
-       * found, we save it on the accumulator and return it every time until
-       * the loop ends.
-       */
-      .reduce((acc, cur) => {
-        if (acc) {
-          return acc;
-        }
-
-        return fs.existsSync(path.resolve(process.cwd(), cur)) ? cur : acc;
-      }, '');
-
-  if (!templatePath) {
-    throw new Error('Cannot find a CloudFormation template.');
-  }
-
-  const extension = templatePath?.split('.').pop() as string;
-
-  const fullPath = path.resolve(process.cwd(), templatePath);
-
-  /**
-   * We need to read Yaml first because CloudFormation specific tags aren't
-   * recognized when parsing a simple Yaml file. I.e., a possible error:
-   * "Error message: "unknown tag !<!Ref> at line 21, column 34:\n"
-   */
-  if (['yaml', 'yml'].includes(extension)) {
-    return readCloudFormationYamlTemplate({ templatePath });
-  }
-
-  return readObjectFile({ path: fullPath });
-};
 
 export const deployCloudFormation = async ({
   lambdaDockerfile,

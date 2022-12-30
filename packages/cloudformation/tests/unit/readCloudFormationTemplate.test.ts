@@ -1,10 +1,12 @@
-jest.mock('fs', () => ({
-  readFileSync: jest.fn(),
-}));
+jest.mock('fs', () => {
+  return {
+    readFileSync: jest.fn(),
+  };
+});
 
 import * as fs from 'fs';
 import { faker } from '@ttoss/test-utils/faker';
-import { readCloudFormationYamlTemplate } from './readCloudFormationTemplate';
+import { readCloudFormationYamlTemplate } from '../../src/readCloudFormationYamlTemplate';
 
 const subStringPath = 'some-path';
 
@@ -82,15 +84,15 @@ test('should read cloudformation template file', () => {
 });
 
 test('cannot parse because template', () => {
-  expect(() =>
-    readCloudFormationYamlTemplate({
+  expect(() => {
+    return readCloudFormationYamlTemplate({
       templatePath: templatePathToReturnUndefined,
-    })
-  ).toThrow();
+    });
+  }).toThrow();
 
-  expect(() =>
-    readCloudFormationYamlTemplate({
+  expect(() => {
+    return readCloudFormationYamlTemplate({
       templatePath: `${defaultStringReturned}string`,
-    })
-  ).toThrow();
+    });
+  }).toThrow();
 });

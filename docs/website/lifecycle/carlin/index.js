@@ -36,12 +36,13 @@ const {
   global: testsCoverageThreshold,
 } = require('carlin/jest.coverageThreshold');
 
-const cliApi = async (cmd) =>
-  new Promise((resolve) => {
+const cliApi = async (cmd) => {
+  return new Promise((resolve) => {
     cli().parse(cmd, { help: true }, (_, __, output) => {
       resolve(output);
     });
   });
+};
 
 module.exports = () => {
   return {
@@ -84,7 +85,6 @@ module.exports = () => {
             'removeOldVersions',
           ],
           destroyComment: ['deploy/cloudFormation.js', 'destroy'],
-          readObjectFileComment: ['utils/readObjectFile.js', 'readObjectFile'],
           assignSecurityHeadersComment: [
             'deploy/staticApp/staticApp.template.js',
             'assignSecurityHeaders',
@@ -165,7 +165,9 @@ module.exports = () => {
           getRepositoryImageBuilder().Properties.Source.BuildSpec,
         carlinCicdRepositoryImageBuilderDockerfile:
           getRepositoryImageBuilder().Properties.Environment.EnvironmentVariables.find(
-            ({ Name }) => Name === 'DOCKERFILE'
+            ({ Name }) => {
+              return Name === 'DOCKERFILE';
+            }
           ).Value['Fn::Sub'],
         carlinCicdRepositoryEcsTaskDefinition: getCicdTemplate({ s3 })
           .Resources[REPOSITORY_ECS_TASK_DEFINITION_LOGICAL_ID].Properties,

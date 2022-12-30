@@ -7,13 +7,6 @@ export const readYaml = ({ path }: { path: string }) => {
   return yaml.load(template);
 };
 
-/**
- * If your file is `.ts`, you must you must export the final object
- * `export default { ... }`. If your file is `.js`, you must you must export
- * the final object `module.exports =  { ... }`. `.json` and `.yml/yaml` must
- * define the resources in [JSON](https://www.json.org/json-en.html) and
- * [YAML](https://yaml.org/) format respectively.
- */
 export const readObjectFile = ({ path }: { path: string }) => {
   if (!fs.existsSync(path)) {
     return {};
@@ -24,6 +17,9 @@ export const readObjectFile = ({ path }: { path: string }) => {
   if (extension === 'ts') {
     require('ts-node').register({
       compilerOptions: { module: 'commonjs' },
+      moduleTypes: {
+        'carlin.*': 'cjs',
+      },
       transpileOnly: true,
     });
     const tsObj = require(path);
