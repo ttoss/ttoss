@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.12.0...@ttoss/forms@0.12.1) (2022-12-30)
+
+### Reverts
+
+- Revert "test: add test for input type" ([0dc8a13](https://github.com/ttoss/ttoss/commit/0dc8a13c810eefbc8e2b1b5fb3120abbc2f4cb20))
+
 # [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.11.7...@ttoss/forms@0.12.0) (2022-12-30)
 
 ### Features

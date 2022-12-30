@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.31.4...@docs/storybook@1.31.5) (2022-12-30)
+
+### Reverts
+
+- Revert "test: add test for input type" ([0dc8a13](https://github.com/ttoss/ttoss/commit/0dc8a13c810eefbc8e2b1b5fb3120abbc2f4cb20))
+
 ## [1.31.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.31.3...@docs/storybook@1.31.4) (2022-12-30)
 
 **Note:** Version bump only for package @docs/storybook
