@@ -1,39 +1,5 @@
+import { CloudFormationTemplate } from './CloudFormationTemplate';
 import yaml from 'js-yaml';
-
-interface Parameter {
-  AllowedValues?: string[];
-  Default?: string | number;
-  Description?: string;
-  Type: string;
-  NoEcho?: boolean;
-}
-
-export interface Resource {
-  Type: string;
-  DeletionPolicy?: 'Delete' | 'Retain';
-  Description?: string;
-  DependsOn?: string[] | string;
-  Condition?: string;
-  Properties: any;
-}
-
-export type Output = {
-  Description?: string;
-  Value: string | any;
-  Export?: {
-    Name: string | any;
-  };
-};
-
-export interface CloudFormationTemplate {
-  AWSTemplateFormatVersion: '2010-09-09';
-  Transform?: 'AWS::Serverless-2016-10-31';
-  Mappings?: any;
-  Conditions?: any;
-  Parameters?: { [key: string]: Parameter };
-  Resources: { [key: string]: Resource };
-  Outputs?: { [key: string]: Output };
-}
 
 export interface TagAndType {
   tag: string;
