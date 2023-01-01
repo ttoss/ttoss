@@ -1,1 +1,1 @@
-export { createRolesTemplate } from './createRolesTemplate';
+export { createRolesTemplate, IAM_PATH } from './createRolesTemplate';
