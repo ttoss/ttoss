@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { CloudFormationTemplate } from './CloudFormationTemplate';
 import {
-  CloudFormationTemplate,
   TagAndType,
   loadCloudFormationTemplate,
-} from './cloudFormationTemplate';
+} from './cloudFormationYamlTemplate';
 
 const getTypes = (): TagAndType[] => {
   return [

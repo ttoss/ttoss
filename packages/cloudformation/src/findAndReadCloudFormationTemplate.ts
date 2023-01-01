@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CloudFormationTemplate } from './cloudFormationTemplate';
+import { CloudFormationTemplate } from './CloudFormationTemplate';
 import { readCloudFormationYamlTemplate } from './readCloudFormationYamlTemplate';
 import { readObjectFile } from './readObjectFile';
 

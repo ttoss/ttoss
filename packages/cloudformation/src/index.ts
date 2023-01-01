@@ -1,4 +1,5 @@
 export { findAndReadCloudFormationTemplate } from './findAndReadCloudFormationTemplate';
+export * from './CloudFormationTemplate';
 
 /**
  * Unstable API.
