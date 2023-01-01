@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.3.1 (2023-01-01)
+
+### Bug Fixes
+
+- add @ttoss/config as dev dep ([3d4ac1e](https://github.com/ttoss/ttoss/commit/3d4ac1e840d15e45762645a2f9c94fa68b4bf145))
+
 # [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.2.0...@ttoss/aws-appsync-nodejs@1.3.0) (2022-12-17)
 
 ### Features

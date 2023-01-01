@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.2.2...@ttoss/cloudformation@0.3.0) (2023-01-01)
+
+### Features
+
+- add cloud-roles ([#136](https://github.com/ttoss/ttoss/issues/136)) ([14d9db1](https://github.com/ttoss/ttoss/commit/14d9db1e2ec2f559e9ac30cafe0927893443adf3))
+
 ## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.2.1...@ttoss/cloudformation@0.2.2) (2022-12-30)
 
 ### Bug Fixes
