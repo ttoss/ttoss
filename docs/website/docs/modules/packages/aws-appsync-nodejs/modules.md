@@ -22,7 +22,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[index.ts:12](https://github.com/ttoss/ttoss/blob/6c81f67/packages/aws-appsync-nodejs/src/index.ts#L12)
+[index.ts:12](https://github.com/ttoss/ttoss/blob/88632f1/packages/aws-appsync-nodejs/src/index.ts#L12)
 
 ---
 
@@ -47,7 +47,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[index.ts:24](https://github.com/ttoss/ttoss/blob/6c81f67/packages/aws-appsync-nodejs/src/index.ts#L24)
+[index.ts:24](https://github.com/ttoss/ttoss/blob/88632f1/packages/aws-appsync-nodejs/src/index.ts#L24)
 
 ## Variables
 
@@ -65,4 +65,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[index.ts:114](https://github.com/ttoss/ttoss/blob/6c81f67/packages/aws-appsync-nodejs/src/index.ts#L114)
+[index.ts:114](https://github.com/ttoss/ttoss/blob/88632f1/packages/aws-appsync-nodejs/src/index.ts#L114)

@@ -1,7 +1,13 @@
-import type { AppSyncResolverHandler } from 'aws-lambda';
+import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
 import type { SchemaComposer } from 'graphql-compose';
 
-export const appSyncResolverHandler = ({
+export type AppSyncResolverHandler<
+  TArguments,
+  TResult,
+  TSource = Record<string, any> | null
+> = AwsAppSyncResolverHandler<TArguments, TResult, TSource>;
+
+export const createAppSyncResolverHandler = ({
   schemaComposer,
 }: {
   schemaComposer: SchemaComposer<any>;

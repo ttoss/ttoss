@@ -15,8 +15,21 @@ jest.mock('carlin/src/utils/packageJson', () => {
 import { AppSyncLambdaFunctionLogicalId } from '../src/createApiTemplate';
 import { createApiTemplate, schemaComposer } from '../src';
 
+const createApiTemplateInput = {
+  schemaComposer,
+  dataSource: {
+    roleArn: 'arn:aws:iam::123456789012:role/role',
+  },
+  lambdaFunction: {
+    roleArn: 'arn:aws:iam::123456789012:role/role',
+  },
+};
+
 test('should import @ttoss/appsync-api lambda layer', () => {
-  const template = createApiTemplate({ schemaComposer });
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    schemaComposer,
+  });
 
   const layers =
     template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
@@ -73,7 +86,10 @@ test('should add resolvers to template', () => {
     ['Subscription', 'idSubscription'],
   ];
 
-  const template = createApiTemplate({ schemaComposer });
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    schemaComposer,
+  });
 
   const resources = Object.values(template.Resources);
 
