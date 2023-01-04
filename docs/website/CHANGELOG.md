@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.32.3...@docs/website@1.33.0) (2023-01-04)
+
+### Features
+
+- add appsync api server ([#139](https://github.com/ttoss/ttoss/issues/139)) ([3fadee2](https://github.com/ttoss/ttoss/commit/3fadee2d7260cfa948f6d1156792f8d01bcdc77b))
+
 ## [1.32.3](https://github.com/ttoss/ttoss/compare/@docs/website@1.32.2...@docs/website@1.32.3) (2023-01-01)
 
 **Note:** Version bump only for package @docs/website
