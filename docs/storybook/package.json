@@ -4,7 +4,7 @@
   "version": "1.31.5",
   "author": "ttoss",
   "scripts": {
-    "build": "build-storybook --quiet",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "yarn run storybook",
     "start": "yarn run storybook",

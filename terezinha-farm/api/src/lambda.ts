@@ -1,4 +1,4 @@
-import { appSyncResolverHandler } from '@ttoss/appsync-api';
+import { createAppSyncResolverHandler } from '@ttoss/appsync-api';
 import { schemaComposer } from './schemaComposer';
 
-export const handler = appSyncResolverHandler({ schemaComposer });
+export const handler = createAppSyncResolverHandler({ schemaComposer });

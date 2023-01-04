@@ -5,7 +5,8 @@ jest.mock('carlin/src/utils/packageJson', () => {
     readPackageJson: () => {
       return {
         dependencies: {
-          '@ttoss/appsync-api': '^1.2.3',
+          graphql: '^16.6.0',
+          'graphql-compose': '^9.0.10',
         },
       };
     },
@@ -15,20 +16,33 @@ jest.mock('carlin/src/utils/packageJson', () => {
 import { AppSyncLambdaFunctionLogicalId } from '../src/createApiTemplate';
 import { createApiTemplate, schemaComposer } from '../src';
 
+const createApiTemplateInput = {
+  schemaComposer,
+  dataSource: {
+    roleArn: 'arn:aws:iam::123456789012:role/role',
+  },
+  lambdaFunction: {
+    roleArn: 'arn:aws:iam::123456789012:role/role',
+  },
+};
+
 test('should import @ttoss/appsync-api lambda layer', () => {
-  const template = createApiTemplate({ schemaComposer });
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    schemaComposer,
+  });
 
   const layers =
     template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
 
-  const layer = layers.find((l: any) => {
-    return (
-      l['Fn::ImportValue'] ===
-      getPackageLambdaLayerStackName('@ttoss/appsync-api@^1.2.3')
-    );
-  });
-
-  expect(layer).toBeDefined();
+  expect(layers).toMatchObject([
+    {
+      'Fn::ImportValue': 'LambdaLayer-Graphql-16-6-0',
+    },
+    {
+      'Fn::ImportValue': 'LambdaLayer-GraphqlCompose-9-0-10',
+    },
+  ]);
 });
 
 test('should add resolvers to template', () => {
@@ -73,7 +87,10 @@ test('should add resolvers to template', () => {
     ['Subscription', 'idSubscription'],
   ];
 
-  const template = createApiTemplate({ schemaComposer });
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    schemaComposer,
+  });
 
   const resources = Object.values(template.Resources);
 

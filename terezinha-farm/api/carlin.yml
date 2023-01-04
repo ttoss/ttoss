@@ -1,2 +1,3 @@
 lambdaExternals:
-  - '@ttoss/appsync-api'
+  - graphql
+  - graphql-compose

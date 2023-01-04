@@ -42,7 +42,7 @@ test('should add Resource and Output to template', () => {
       Name: {
         'Fn::Join': [
           ':',
-          [{ Ref: 'AWS::StackName' }, 'AppSyncLambdaFunctionIAMRole'],
+          [{ Ref: 'AWS::StackName' }, 'AppSyncLambdaFunctionIAMRoleArn'],
         ],
       },
     },

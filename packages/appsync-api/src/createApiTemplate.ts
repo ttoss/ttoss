@@ -1,27 +1,35 @@
 import { type SchemaComposer, graphql } from 'graphql-compose';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
-import { readPackageJson } from 'carlin/src/utils/packageJson';
 import packageJson from '../package.json';
-import type { CloudFormationTemplate } from 'carlin/src/utils/cloudFormationTemplate';
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
 const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
 export const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
-const AppSyncLambdaFunctionIAMRoleLogicalId = 'AppSyncLambdaFunctionIAMRole';
-
 export const AppSyncLambdaFunctionLogicalId = 'AppSyncLambdaFunction';
-
-const AppSyncLambdaFunctionAppSyncDataSourceIAMRoleLogicalId =
-  'AppSyncLambdaFunctionAppSyncDataSourceIAMRole';
 
 const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
   'AppSyncLambdaFunctionAppSyncDataSource';
 
+type Role =
+  | string
+  | {
+      'Fn::ImportValue': string;
+    };
+
 export const createApiTemplate = ({
   schemaComposer,
+  dataSource,
+  lambdaFunction,
 }: {
   schemaComposer: SchemaComposer<any>;
+  dataSource: {
+    roleArn: Role;
+  };
+  lambdaFunction: {
+    roleArn: Role;
+  };
 }): CloudFormationTemplate => {
   /**
    * It should be on top of the file, otherwise it will have empty Mutation
@@ -48,21 +56,23 @@ export const createApiTemplate = ({
     }
   );
 
-  const { name } = packageJson;
+  const getGraphQLComposeDependenciesLambdaLayers = () => {
+    const { peerDependencies } = packageJson;
 
-  const { dependencies } = readPackageJson();
-
-  const dependencyVersion = dependencies[name];
-
-  if (!dependencyVersion) {
-    throw new Error(
-      `The package ${name} is not installed in the project. Please install it with "yarn add ${name}".`
+    const lambdaLayerStackNames = Object.entries(peerDependencies).map(
+      ([dependencyName, dependencyVersion]) => {
+        return getPackageLambdaLayerStackName(
+          [dependencyName, dependencyVersion].join('@')
+        );
+      }
     );
-  }
 
-  const lambdaLayerStackName = getPackageLambdaLayerStackName(
-    [name, dependencyVersion].join('@')
-  );
+    return lambdaLayerStackNames.map((lambdaLayerStackName) => {
+      return {
+        'Fn::ImportValue': lambdaLayerStackName,
+      };
+    });
+  };
 
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
@@ -102,27 +112,6 @@ export const createApiTemplate = ({
           Definition: sdl,
         },
       },
-      [AppSyncLambdaFunctionIAMRoleLogicalId]: {
-        Type: 'AWS::IAM::Role',
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: 'sts:AssumeRole',
-                Principal: {
-                  Service: 'lambda.amazonaws.com',
-                },
-              },
-            ],
-          },
-          ManagedPolicyArns: [
-            'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-          ],
-          Path: '/custom-iam/',
-        },
-      },
       [AppSyncLambdaFunctionLogicalId]: {
         Type: 'AWS::Lambda::Function',
         Properties: {
@@ -132,59 +121,15 @@ export const createApiTemplate = ({
             S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
           },
           Handler: 'index.handler',
-          Layers: [
-            {
-              'Fn::ImportValue': lambdaLayerStackName,
-            },
-          ],
+          Layers: getGraphQLComposeDependenciesLambdaLayers(),
           MemorySize: 512,
-          Role: {
-            'Fn::GetAtt': [AppSyncLambdaFunctionIAMRoleLogicalId, 'Arn'],
-          },
+          Role: lambdaFunction.roleArn,
           Runtime: 'nodejs18.x',
           /**
            * https://docs.aws.amazon.com/general/latest/gr/appsync.html
            * Request execution time for mutations, queries, and subscriptions: 30 seconds
            */
           Timeout: 29,
-        },
-      },
-      [AppSyncLambdaFunctionAppSyncDataSourceIAMRoleLogicalId]: {
-        Type: 'AWS::IAM::Role',
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: 'sts:AssumeRole',
-                Principal: {
-                  Service: 'appsync.amazonaws.com',
-                },
-              },
-            ],
-          },
-          ManagedPolicyArns: [
-            'arn:aws:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs',
-          ],
-          Path: '/custom-iam/',
-          Policies: [
-            {
-              PolicyName: 'AppSyncGraphQLApiIAMRolePolicyName',
-              PolicyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                  {
-                    Effect: 'Allow',
-                    Action: ['lambda:InvokeFunction'],
-                    Resource: [
-                      { 'Fn::GetAtt': [AppSyncLambdaFunctionLogicalId, 'Arn'] },
-                    ],
-                  },
-                ],
-              },
-            },
-          ],
         },
       },
       [AppSyncLambdaFunctionAppSyncDataSourceLogicalId]: {
@@ -197,12 +142,7 @@ export const createApiTemplate = ({
             },
           },
           Name: 'AppSyncLambdaFunctionAppSyncDataSource',
-          ServiceRoleArn: {
-            'Fn::GetAtt': [
-              AppSyncLambdaFunctionAppSyncDataSourceIAMRoleLogicalId,
-              'Arn',
-            ],
-          },
+          ServiceRoleArn: dataSource.roleArn,
           Type: 'AWS_LAMBDA',
         },
       },
