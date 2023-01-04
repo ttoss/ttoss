@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.31.5",
+  "version": "1.32.0",
   "author": "ttoss",
   "scripts": {
     "build": "NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",

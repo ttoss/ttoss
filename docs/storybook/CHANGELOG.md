@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.32.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.31.5...@docs/storybook@1.32.0) (2023-01-04)
+
+### Features
+
+- add appsync api server ([#139](https://github.com/ttoss/ttoss/issues/139)) ([3fadee2](https://github.com/ttoss/ttoss/commit/3fadee2d7260cfa948f6d1156792f8d01bcdc77b))
+
 ## [1.31.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.31.4...@docs/storybook@1.31.5) (2022-12-30)
 
 ### Reverts
