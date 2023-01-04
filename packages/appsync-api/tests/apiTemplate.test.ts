@@ -5,7 +5,8 @@ jest.mock('carlin/src/utils/packageJson', () => {
     readPackageJson: () => {
       return {
         dependencies: {
-          '@ttoss/appsync-api': '^1.2.3',
+          graphql: '^16.6.0',
+          'graphql-compose': '^9.0.10',
         },
       };
     },
@@ -34,14 +35,14 @@ test('should import @ttoss/appsync-api lambda layer', () => {
   const layers =
     template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
 
-  const layer = layers.find((l: any) => {
-    return (
-      l['Fn::ImportValue'] ===
-      getPackageLambdaLayerStackName('@ttoss/appsync-api@^1.2.3')
-    );
-  });
-
-  expect(layer).toBeDefined();
+  expect(layers).toMatchObject([
+    {
+      'Fn::ImportValue': 'LambdaLayer-Graphql-16-6-0',
+    },
+    {
+      'Fn::ImportValue': 'LambdaLayer-GraphqlCompose-9-0-10',
+    },
+  ]);
 });
 
 test('should add resolvers to template', () => {
