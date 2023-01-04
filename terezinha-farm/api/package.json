@@ -5,7 +5,7 @@
   "scripts": {
     "build": "ttoss-appsync-api build-schema",
     "deploy": "carlin deploy",
-    "dev": "node -r ts-node/register src/index.ts"
+    "dev": "node -r ts-node/register --watch server/server.ts"
   },
   "dependencies": {
     "@terezinha-farm/config": "^0.3.1",
