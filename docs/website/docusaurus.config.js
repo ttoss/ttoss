@@ -34,11 +34,24 @@ const config = {
     [
       'docusaurus-plugin-typedoc',
       {
+        id: 'aws-appsync-nodejs',
         entryPoints: ['../../packages/aws-appsync-nodejs/src/index.ts'],
         tsconfig: '../../packages/aws-appsync-nodejs/tsconfig.json',
         out: 'modules/packages/aws-appsync-nodejs',
         sidebar: {
-          categoryLabel: '@aws-appsync-nodejs',
+          categoryLabel: '@ttoss/aws-appsync-nodejs',
+        },
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'cloud-auth',
+        entryPoints: ['../../packages/cloud-auth/src/index.ts'],
+        tsconfig: '../../packages/cloud-auth/tsconfig.json',
+        out: 'modules/packages/cloud-auth',
+        sidebar: {
+          categoryLabel: '@ttoss/cloud-auth',
         },
       },
     ],
