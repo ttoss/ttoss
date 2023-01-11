@@ -18,3 +18,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/docs/modules/packages/appsync-api
+/docs/modules/packages/aws-appsync-nodejs
+/docs/modules/packages/cloud-auth

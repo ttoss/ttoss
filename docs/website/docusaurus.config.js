@@ -31,17 +31,20 @@ const config = {
 
   plugins: [
     path.resolve(__dirname, 'lifecycle/carlin'),
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        entryPoints: ['../../packages/aws-appsync-nodejs/src/index.ts'],
-        tsconfig: '../../packages/aws-appsync-nodejs/tsconfig.json',
-        out: 'modules/packages/aws-appsync-nodejs',
-        sidebar: {
-          categoryLabel: '@aws-appsync-nodejs',
+    ...['appsync-api', 'aws-appsync-nodejs', 'cloud-auth'].map((package) => {
+      return [
+        'docusaurus-plugin-typedoc',
+        {
+          id: package,
+          entryPoints: [`../../packages/${package}/src/index.ts`],
+          tsconfig: `../../packages/${package}/tsconfig.json`,
+          out: `modules/packages/${package}`,
+          sidebar: {
+            categoryLabel: `@ttoss/${package}`,
+          },
         },
-      },
-    ],
+      ];
+    }),
   ],
 
   presets: [
