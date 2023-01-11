@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.1 (2023-01-11)
+
+**Note:** Version bump only for package @ttoss/relay-amplify
+
 # 0.2.0 (2022-12-24)
 
 ### Features

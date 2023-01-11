@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Theme for packages.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -23,8 +23,8 @@
     "theme-ui": "^0.15.4"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.26.0",
-    "@ttoss/test-utils": "^1.20.0"
+    "@ttoss/config": "^1.27.0",
+    "@ttoss/test-utils": "^1.20.1"
   },
   "keywords": [],
   "publishConfig": {

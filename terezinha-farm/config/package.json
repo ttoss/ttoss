@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/config",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "scripts": {
@@ -13,6 +13,6 @@
     "find-yarn-workspace-root": "^2.0.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.26.0"
+    "@ttoss/config": "^1.27.0"
   }
 }

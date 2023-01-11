@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.5.0 (2023-01-11)
+
+### Features
+
+- task 445/improve cloud auth pedro arantes ([#148](https://github.com/ttoss/ttoss/issues/148)) ([e019266](https://github.com/ttoss/ttoss/commit/e0192663adf6b5a2a82eb0743827dba5ac72f85f))
+
 ## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.4.7...@ttoss/landing-pages@0.4.8) (2022-12-30)
 
 **Note:** Version bump only for package @ttoss/landing-pages
