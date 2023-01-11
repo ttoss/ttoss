@@ -31,30 +31,20 @@ const config = {
 
   plugins: [
     path.resolve(__dirname, 'lifecycle/carlin'),
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'aws-appsync-nodejs',
-        entryPoints: ['../../packages/aws-appsync-nodejs/src/index.ts'],
-        tsconfig: '../../packages/aws-appsync-nodejs/tsconfig.json',
-        out: 'modules/packages/aws-appsync-nodejs',
-        sidebar: {
-          categoryLabel: '@ttoss/aws-appsync-nodejs',
+    ...['appsync-api', 'aws-appsync-nodejs', 'cloud-auth'].map((package) => {
+      return [
+        'docusaurus-plugin-typedoc',
+        {
+          id: package,
+          entryPoints: [`../../packages/${package}/src/index.ts`],
+          tsconfig: `../../packages/${package}/tsconfig.json`,
+          out: `modules/packages/${package}`,
+          sidebar: {
+            categoryLabel: `@ttoss/${package}`,
+          },
         },
-      },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'cloud-auth',
-        entryPoints: ['../../packages/cloud-auth/src/index.ts'],
-        tsconfig: '../../packages/cloud-auth/tsconfig.json',
-        out: 'modules/packages/cloud-auth',
-        sidebar: {
-          categoryLabel: '@ttoss/cloud-auth',
-        },
-      },
-    ],
+      ];
+    }),
   ],
 
   presets: [

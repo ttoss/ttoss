@@ -13,10 +13,7 @@ Create a `clouformation.ts` file in your project and export the template:
 ```typescript src/cloudformation.ts
 import { createAuthTemplate } from '@ttoss/cloud-auth';
 
-const template = createAuthTemplate({
-  autoVerifiedAttributes: false,
-  identityPool: false,
-});
+const template = createAuthTemplate();
 
 export default template;
 ```
