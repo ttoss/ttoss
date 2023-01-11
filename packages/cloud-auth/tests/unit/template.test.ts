@@ -56,7 +56,7 @@ test('should not have identity pool if false', () => {
   expect(template.Outputs?.IdentityPoolId).toBeUndefined();
 });
 
-test('should have identity pool with roles', () => {
+test('should have identity pool role attachment with roles', () => {
   const roles = {
     authenticated: 'arn:aws:iam::123456789012:role/authenticated',
     unauthenticated: 'arn:aws:iam::123456789012:role/unauthenticated',
@@ -65,4 +65,9 @@ test('should have identity pool with roles', () => {
   expect(
     template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
   ).toEqual(roles);
+});
+
+test('should not have identity pool role attachment without roles', () => {
+  const template = createAuthTemplate();
+  expect(template.Resources.CognitoIdentityPoolRoleAttachment).toBeUndefined();
 });

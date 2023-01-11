@@ -145,18 +145,20 @@ export const createAuthTemplate = ({
       },
     };
 
-    /**
-     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
-     */
-    template.Resources.CognitoIdentityPoolRoleAttachment = {
-      Type: 'AWS::Cognito::IdentityPoolRoleAttachment',
-      Properties: {
-        IdentityPoolId: {
-          Ref: CognitoIdentityPoolLogicalId,
+    if (roles) {
+      /**
+       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
+       */
+      template.Resources.CognitoIdentityPoolRoleAttachment = {
+        Type: 'AWS::Cognito::IdentityPoolRoleAttachment',
+        Properties: {
+          IdentityPoolId: {
+            Ref: CognitoIdentityPoolLogicalId,
+          },
+          Roles: roles,
         },
-        Roles: roles,
-      },
-    };
+      };
+    }
 
     if (!template.Outputs) {
       template.Outputs = {};
