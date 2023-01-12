@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.6...@ttoss/react-auth@1.2.7) (2023-01-12)
+
+### Bug Fixes
+
+- render nothing when is authenticated is undefined ([#149](https://github.com/ttoss/ttoss/issues/149)) ([086b0c4](https://github.com/ttoss/ttoss/commit/086b0c484a71a41aa8d2a58c3f0c9e1aa9a55969))
+
 ## [1.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.5...@ttoss/react-auth@1.2.6) (2023-01-11)
 
 **Note:** Version bump only for package @ttoss/react-auth
