@@ -19,40 +19,51 @@ const signOut = () => {
 
 const AuthContext = React.createContext<{
   signOut: () => Promise<any>;
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | undefined;
   user: User;
   tokens: Tokens;
 }>({
   signOut,
-  isAuthenticated: false,
+  isAuthenticated: undefined,
   user: null,
   tokens: null,
 });
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = React.useState<User>(null);
-
-  const [tokens, setTokens] = React.useState<Tokens>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [{ user, tokens, isAuthenticated }, setAuthState] = React.useState<{
+    user: User;
+    tokens: Tokens;
+    isAuthenticated: boolean | undefined;
+  }>({
+    user: null,
+    tokens: null,
+    isAuthenticated: undefined,
+  });
 
   React.useEffect(() => {
     const updateUser = () => {
       Auth.currentAuthenticatedUser()
         .then(({ attributes, signInUserSession }) => {
-          setUser({
-            id: attributes.sub,
-            email: attributes.email,
-            emailVerified: attributes['email_verified'],
-          });
-
-          setTokens({
-            idToken: signInUserSession.idToken.jwtToken,
-            accessToken: signInUserSession.accessToken.jwtToken,
-            refreshToken: signInUserSession.refreshToken.token,
+          setAuthState({
+            user: {
+              id: attributes.sub,
+              email: attributes.email,
+              emailVerified: attributes['email_verified'],
+            },
+            tokens: {
+              idToken: signInUserSession.idToken.jwtToken,
+              accessToken: signInUserSession.accessToken.jwtToken,
+              refreshToken: signInUserSession.refreshToken.token,
+            },
+            isAuthenticated: true,
           });
         })
         .catch(() => {
-          setUser(null);
-          setTokens(null);
+          setAuthState({
+            user: null,
+            tokens: null,
+            isAuthenticated: false,
+          });
         });
     };
 
@@ -68,7 +79,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const isAuthenticated = !!user;
+  if (isAuthenticated === undefined) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ signOut, isAuthenticated, user, tokens }}>
@@ -80,5 +93,3 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   return React.useContext(AuthContext);
 };
-
-export default AuthProvider;
