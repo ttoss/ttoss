@@ -19,12 +19,12 @@ const signOut = () => {
 
 const AuthContext = React.createContext<{
   signOut: () => Promise<any>;
-  isAuthenticated: boolean | undefined;
+  isAuthenticated: boolean;
   user: User;
   tokens: Tokens;
 }>({
   signOut,
-  isAuthenticated: undefined,
+  isAuthenticated: false,
   user: null,
   tokens: null,
 });
