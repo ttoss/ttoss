@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.5.1...@ttoss/appsync-api@0.6.0) (2023-01-14)
+
+### Features
+
+- add iam auth to appsync-api ([#151](https://github.com/ttoss/ttoss/issues/151)) ([c634cdf](https://github.com/ttoss/ttoss/commit/c634cdfc211ba30802907fd864c8db50a9e8c322))
+
 ## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.5.0...@ttoss/appsync-api@0.5.1) (2023-01-11)
 
 **Note:** Version bump only for package @ttoss/appsync-api

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "ttoss authentication module for React apps.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -34,7 +34,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/cloud-auth": "^0.4.0",
+    "@ttoss/cloud-auth": "^0.5.0",
     "@ttoss/config": "^1.27.0",
     "@ttoss/i18n-cli": "^0.3.1",
     "@ttoss/react-i18n": "^1.18.4",
