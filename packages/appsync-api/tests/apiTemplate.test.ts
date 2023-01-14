@@ -1,5 +1,3 @@
-import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
-
 jest.mock('carlin/src/utils/packageJson', () => {
   return {
     readPackageJson: () => {
@@ -13,7 +11,11 @@ jest.mock('carlin/src/utils/packageJson', () => {
   };
 });
 
-import { AppSyncLambdaFunctionLogicalId } from '../src/createApiTemplate';
+import {
+  AppSyncGraphQLApiKeyLogicalId,
+  AppSyncGraphQLApiLogicalId,
+  AppSyncLambdaFunctionLogicalId,
+} from '../src/createApiTemplate';
 import { createApiTemplate, schemaComposer } from '../src';
 
 const createApiTemplateInput = {
@@ -25,6 +27,37 @@ const createApiTemplateInput = {
     roleArn: 'arn:aws:iam::123456789012:role/role',
   },
 };
+
+test('create api key', () => {
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    apiKey: true,
+  });
+
+  /**
+   * Default AuthenticationType to AWS_IAM.
+   */
+  expect(
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+      'AuthenticationType'
+    ]
+  ).toEqual('AWS_IAM');
+
+  expect(
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+      'AdditionalAuthenticationProvider'
+    ]
+  ).toContainEqual({
+    AuthenticationType: 'API_KEY',
+  });
+
+  expect(template.Resources[AppSyncGraphQLApiKeyLogicalId]).toEqual({
+    Type: 'AWS::AppSync::ApiKey',
+    Properties: {
+      ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+    },
+  });
+});
 
 test('should import @ttoss/appsync-api lambda layer', () => {
   const template = createApiTemplate({
