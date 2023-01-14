@@ -37,7 +37,7 @@ test.each([[], null, false])(
     const template = createAuthTemplate({ autoVerifiedAttributes });
     expect(
       template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
-    ).toBeUndefined();
+    ).toEqual([]);
   }
 );
 
@@ -70,4 +70,11 @@ test('should have identity pool role attachment with roles', () => {
 test('should not have identity pool role attachment without roles', () => {
   const template = createAuthTemplate();
   expect(template.Resources.CognitoIdentityPoolRoleAttachment).toBeUndefined();
+});
+
+test('default usernameAttributes should be email', () => {
+  const template = createAuthTemplate();
+  expect(
+    template.Resources.CognitoUserPool.Properties.UsernameAttributes
+  ).toEqual(['email']);
 });

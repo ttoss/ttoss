@@ -3,7 +3,7 @@ import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/ge
 import packageJson from '../package.json';
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
-const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
+export const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
 export const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
@@ -12,6 +12,8 @@ export const AppSyncLambdaFunctionLogicalId = 'AppSyncLambdaFunction';
 const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
   'AppSyncLambdaFunctionAppSyncDataSource';
 
+export const AppSyncGraphQLApiKeyLogicalId = 'AppSyncGraphQLApiKey';
+
 type Role =
   | string
   | {
@@ -19,10 +21,12 @@ type Role =
     };
 
 export const createApiTemplate = ({
+  apiKey,
   schemaComposer,
   dataSource,
   lambdaFunction,
 }: {
+  apiKey?: boolean;
   schemaComposer: SchemaComposer<any>;
   dataSource: {
     roleArn: Role;
@@ -96,7 +100,7 @@ export const createApiTemplate = ({
       [AppSyncGraphQLApiLogicalId]: {
         Type: 'AWS::AppSync::GraphQLApi',
         Properties: {
-          AuthenticationType: 'API_KEY',
+          AuthenticationType: 'AWS_IAM',
           Name: {
             'Fn::Join': [
               ':',
@@ -173,6 +177,33 @@ export const createApiTemplate = ({
       },
     };
   });
+
+  if (apiKey) {
+    template.Resources[
+      AppSyncGraphQLApiLogicalId
+    ].Properties.AdditionalAuthenticationProvider = [
+      {
+        AuthenticationType: 'API_KEY',
+      },
+    ];
+
+    template.Resources[AppSyncGraphQLApiKeyLogicalId] = {
+      Type: 'AWS::AppSync::ApiKey',
+      Properties: {
+        ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+      },
+    };
+
+    if (!template.Outputs) {
+      template.Outputs = {};
+    }
+
+    template.Outputs[AppSyncGraphQLApiKeyLogicalId] = {
+      Value: {
+        'Fn::GetAtt': [AppSyncGraphQLApiKeyLogicalId, 'ApiKey'],
+      },
+    };
+  }
 
   return template;
 };

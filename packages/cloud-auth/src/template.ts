@@ -18,6 +18,7 @@ export const createAuthTemplate = ({
   identityPool = true,
   roles,
   schema,
+  usernameAttributes = ['email'],
 }: {
   autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
   identityPool?: boolean;
@@ -43,11 +44,12 @@ export const createAuthTemplate = ({
       MinLength: string;
     };
   }[];
+  usernameAttributes?: Array<'email' | 'phone_number'> | null;
 } = {}) => {
   const AutoVerifiedAttributes =
     Array.isArray(autoVerifiedAttributes) && autoVerifiedAttributes.length > 0
       ? autoVerifiedAttributes
-      : undefined;
+      : [];
 
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
@@ -67,7 +69,7 @@ export const createAuthTemplate = ({
             },
           },
           Schema: schema,
-          UsernameAttributes: ['email'],
+          UsernameAttributes: usernameAttributes,
           UsernameConfiguration: {
             CaseSensitive: false,
           },
