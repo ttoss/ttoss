@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.6.0...@ttoss/appsync-api@0.7.0) (2023-01-19)
+
+### Features
+
+- add environments to appsync api template ([#159](https://github.com/ttoss/ttoss/issues/159)) ([8168e11](https://github.com/ttoss/ttoss/commit/8168e11bd81347b0266d91e839d9ead41e1021de))
+
 # [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.5.1...@ttoss/appsync-api@0.6.0) (2023-01-14)
 
 ### Features

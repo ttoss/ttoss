@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/api",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "scripts": {
     "build": "ttoss-appsync-api build-schema",
     "deploy": "carlin deploy",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@terezinha-farm/config": "^0.3.2",
-    "@ttoss/appsync-api": "^0.6.0",
+    "@ttoss/appsync-api": "^0.7.0",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"
   },

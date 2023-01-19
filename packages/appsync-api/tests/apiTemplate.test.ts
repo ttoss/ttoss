@@ -28,6 +28,42 @@ const createApiTemplateInput = {
   },
 };
 
+test('export graphql api arn', () => {
+  const template = createApiTemplate(createApiTemplateInput);
+
+  expect(template?.Outputs?.AppSyncApiArn).toEqual({
+    Export: {
+      Name: {
+        'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'AppSyncApiArn']],
+      },
+    },
+    Value: {
+      'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'Arn'],
+    },
+  });
+});
+
+test('add environment variables to lambda function', () => {
+  const variables = {
+    VARIABLE_1: 'value1',
+    VARIABLE_2: 'value2',
+    VARIABLE_3: 'value3',
+  };
+
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    lambdaFunction: {
+      ...createApiTemplateInput.lambdaFunction,
+      environment: { variables },
+    },
+  });
+
+  expect(
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Environment
+      .Variables
+  ).toEqual(variables);
+});
+
 test('create api key', () => {
   const template = createApiTemplate({
     ...createApiTemplateInput,
