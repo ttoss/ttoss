@@ -32,6 +32,9 @@ export const createApiTemplate = ({
     roleArn: Role;
   };
   lambdaFunction: {
+    environment?: {
+      variables: Record<string, string>;
+    };
     roleArn: Role;
   };
 }): CloudFormationTemplate => {
@@ -152,9 +155,27 @@ export const createApiTemplate = ({
       },
     },
     Outputs: {
-      [AppSyncGraphQLApiLogicalId]: {
+      AppSyncApiGraphQLUrl: {
+        Export: {
+          Name: {
+            'Fn::Join': [
+              ':',
+              [{ Ref: 'AWS::StackName' }, 'AppSyncApiGraphQLUrl'],
+            ],
+          },
+        },
         Value: {
           'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'GraphQLUrl'],
+        },
+      },
+      AppSyncApiArn: {
+        Export: {
+          Name: {
+            'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'AppSyncApiArn']],
+          },
+        },
+        Value: {
+          'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'Arn'],
         },
       },
     },
@@ -203,6 +224,13 @@ export const createApiTemplate = ({
         'Fn::GetAtt': [AppSyncGraphQLApiKeyLogicalId, 'ApiKey'],
       },
     };
+  }
+
+  if (lambdaFunction.environment?.variables) {
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Environment =
+      {
+        Variables: lambdaFunction.environment.variables,
+      };
   }
 
   return template;
