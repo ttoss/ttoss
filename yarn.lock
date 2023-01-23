@@ -5607,13 +5607,13 @@
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
 "@lerna-lite/changed@^1.13.0":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/changed/-/changed-1.14.1.tgz#f29af52df1e1912db68ced38429d0ff06dee7bf1"
-  integrity sha512-Ou6z2I16RtP/uQEItYyP37L+rX6nwWq1y0I4i6Y0/7xfCgIlKDvx/qbHqTQOOyIWpig7axjJ6lId6Jke5XcZXg==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/changed/-/changed-1.14.2.tgz#1bd53e4ae8e8198a522f1f6abf53b8f0741523b5"
+  integrity sha512-Da8nbUmltKKtldUFbd+ykKF8Q8Ksh6KiOlRegYhTG9o/fgUROrEPFTgJqEgnZeKuuGngbJuDg9x4Mpcd1/4g7Q==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
-    "@lerna-lite/list" "1.14.1"
-    "@lerna-lite/listable" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
+    "@lerna-lite/list" "1.14.2"
+    "@lerna-lite/listable" "1.14.2"
 
 "@lerna-lite/cli@^1.13.0":
   version "1.14.2"
@@ -5749,16 +5749,7 @@
     path "^0.12.7"
     write-json-file "^4.3.0"
 
-"@lerna-lite/list@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.14.1.tgz#dd9fcb4b6acddf7ca3ef2041088e57d8f1d68a09"
-  integrity sha512-giXzkZkwlcbZCESAQb3GjHTS7rNcqrqfa4t6Q5AA++DCKrBVkb/XDtUOvnKIBoI365kjGRy57SZdI4/N9svmAw==
-  dependencies:
-    "@lerna-lite/core" "1.14.1"
-    "@lerna-lite/listable" "1.14.1"
-    "@lerna-lite/optional-cmd-common" "1.14.1"
-
-"@lerna-lite/list@^1.13.0":
+"@lerna-lite/list@1.14.2", "@lerna-lite/list@^1.13.0":
   version "1.14.2"
   resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.14.2.tgz#bba35d6ec4173f5cb8e304aa001ecd373fb7be78"
   integrity sha512-TgP9JGR/AxhRFuYcYFQt3iuCxj1aeiorPw902WZodzFkRj0g08jKz3Q/rNFGYxzL0bKHOZ+HJCZ68P3OUGU7sQ==
@@ -5784,17 +5775,6 @@
     "@lerna-lite/core" "1.14.2"
     chalk "^4.1.2"
     columnify "^1.6.0"
-
-"@lerna-lite/optional-cmd-common@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/optional-cmd-common/-/optional-cmd-common-1.14.1.tgz#6384e483a88b3b47d3d9096c13f21837209a0725"
-  integrity sha512-rZNljHT1axINI3iNAis8HbWC+U39S60sRVJYBjrX6byb64YVLtBgqxox9xtw3JgS5a2S+ScGhkvMQoHT0gGjsw==
-  dependencies:
-    "@lerna-lite/core" "1.14.1"
-    fs-extra "^11.1.0"
-    multimatch "^5.0.0"
-    npmlog "^7.0.1"
-    upath "^2.0.1"
 
 "@lerna-lite/optional-cmd-common@1.14.2":
   version "1.14.2"
