@@ -5682,6 +5682,54 @@
     write-json-file "^4.3.0"
     write-pkg "^4.0.0"
 
+"@lerna-lite/core@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/core/-/core-1.14.2.tgz#dc0993dff7b7032ed13422ca059168e24dac5eaf"
+  integrity sha512-KRYpNOO85QQ7lav/nQcLuTIgqO0jxZSUS8JKnrE5WCmrlT78aoQoYy17nK/SDy1A98Pmutg6Y9AvZK18vBkCOA==
+  dependencies:
+    "@npmcli/run-script" "^6.0.0"
+    "@octokit/plugin-enterprise-rest" "^6.0.1"
+    "@octokit/rest" "^19.0.5"
+    chalk "^4.1.2"
+    clone-deep "^4.0.1"
+    config-chain "^1.1.13"
+    conventional-changelog-angular "^5.0.13"
+    conventional-changelog-core "^4.2.4"
+    conventional-changelog-writer "^5.0.1"
+    conventional-commits-parser "^3.2.4"
+    conventional-recommended-bump "^6.1.0"
+    cosmiconfig "^8.0.0"
+    dedent "^0.7.0"
+    execa "^5.1.1"
+    fs-extra "^11.1.0"
+    get-stream "^6.0.1"
+    git-url-parse "^13.1.0"
+    glob-parent "^6.0.2"
+    globby "^11.1.0"
+    graceful-fs "^4.2.10"
+    inquirer "^8.2.4"
+    is-ci "^3.0.1"
+    is-stream "^2.0.1"
+    load-json-file "^6.2.0"
+    make-dir "^3.1.0"
+    minimatch "^5.1.6"
+    node-fetch "^2.6.7"
+    npm-package-arg "^10.1.0"
+    npmlog "^7.0.1"
+    p-map "^4.0.0"
+    p-queue "^6.6.2"
+    path "^0.12.7"
+    pify "^5.0.0"
+    resolve-from "^5.0.0"
+    semver "^7.3.8"
+    slash "^3.0.0"
+    strong-log-transformer "^2.1.0"
+    temp-dir "^1.0.0"
+    uuid "^9.0.0"
+    write-file-atomic "^5.0.0"
+    write-json-file "^4.3.0"
+    write-pkg "^4.0.0"
+
 "@lerna-lite/info@1.14.1":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/info/-/info-1.14.1.tgz#63667c0f717ef166a66b8a90a9da12c1ba8ecf91"
@@ -5701,7 +5749,7 @@
     path "^0.12.7"
     write-json-file "^4.3.0"
 
-"@lerna-lite/list@1.14.1", "@lerna-lite/list@^1.13.0":
+"@lerna-lite/list@1.14.1":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.14.1.tgz#dd9fcb4b6acddf7ca3ef2041088e57d8f1d68a09"
   integrity sha512-giXzkZkwlcbZCESAQb3GjHTS7rNcqrqfa4t6Q5AA++DCKrBVkb/XDtUOvnKIBoI365kjGRy57SZdI4/N9svmAw==
@@ -5709,6 +5757,15 @@
     "@lerna-lite/core" "1.14.1"
     "@lerna-lite/listable" "1.14.1"
     "@lerna-lite/optional-cmd-common" "1.14.1"
+
+"@lerna-lite/list@^1.13.0":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.14.2.tgz#bba35d6ec4173f5cb8e304aa001ecd373fb7be78"
+  integrity sha512-TgP9JGR/AxhRFuYcYFQt3iuCxj1aeiorPw902WZodzFkRj0g08jKz3Q/rNFGYxzL0bKHOZ+HJCZ68P3OUGU7sQ==
+  dependencies:
+    "@lerna-lite/core" "1.14.2"
+    "@lerna-lite/listable" "1.14.2"
+    "@lerna-lite/optional-cmd-common" "1.14.2"
 
 "@lerna-lite/listable@1.14.1":
   version "1.14.1"
@@ -5719,12 +5776,32 @@
     chalk "^4.1.2"
     columnify "^1.6.0"
 
+"@lerna-lite/listable@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/listable/-/listable-1.14.2.tgz#962733e2240be8eaf53f6d52ba1b4c2827b9352f"
+  integrity sha512-Ojt7VoQ8fq7em06IfJiTTrBH74B88D+1fteH1zuFvtjLHKRrVPf+es0+ottMGJAs6lAJv1L2MAbTgYl4IlLc+w==
+  dependencies:
+    "@lerna-lite/core" "1.14.2"
+    chalk "^4.1.2"
+    columnify "^1.6.0"
+
 "@lerna-lite/optional-cmd-common@1.14.1":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/optional-cmd-common/-/optional-cmd-common-1.14.1.tgz#6384e483a88b3b47d3d9096c13f21837209a0725"
   integrity sha512-rZNljHT1axINI3iNAis8HbWC+U39S60sRVJYBjrX6byb64YVLtBgqxox9xtw3JgS5a2S+ScGhkvMQoHT0gGjsw==
   dependencies:
     "@lerna-lite/core" "1.14.1"
+    fs-extra "^11.1.0"
+    multimatch "^5.0.0"
+    npmlog "^7.0.1"
+    upath "^2.0.1"
+
+"@lerna-lite/optional-cmd-common@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/optional-cmd-common/-/optional-cmd-common-1.14.2.tgz#c75f62932df55581f3b15b443035ed45ebf297b7"
+  integrity sha512-fArrjNNZ9+9mj+OZcZDHUYsvy9xVklYOK8g3CW4AEWdsMO7hlmiVMOPvDmOxkKnvuAo/urlRRcdteAPH8tvlUw==
+  dependencies:
+    "@lerna-lite/core" "1.14.2"
     fs-extra "^11.1.0"
     multimatch "^5.0.0"
     npmlog "^7.0.1"
