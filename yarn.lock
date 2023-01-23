@@ -5616,16 +5616,16 @@
     "@lerna-lite/listable" "1.14.1"
 
 "@lerna-lite/cli@^1.13.0":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/cli/-/cli-1.14.1.tgz#4eb1f45624898c3cad633f66345eff0118438d64"
-  integrity sha512-wzDW+EO6fAXy87k40NVX9Tb8cqi36CTVQ8pGfJW3HgTzA6bh4sjMnIidcj6BZdYq1ulKHLyIdS4DYB5o0UkY0Q==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/cli/-/cli-1.14.2.tgz#8e17b9ddd01f73be71e6ae37001972eed0e21f5f"
+  integrity sha512-ovvcL85bktZa8w1BEEYSoPfaF2teN1UP/pYun+WXJweSdTU6iCwgsSzHXOb2Z6unlTqNEQINvAiH0uce0/uk1A==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
-    "@lerna-lite/info" "1.14.1"
-    "@lerna-lite/init" "1.14.1"
-    "@lerna-lite/listable" "1.14.1"
-    "@lerna-lite/publish" "1.14.1"
-    "@lerna-lite/version" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
+    "@lerna-lite/info" "1.14.2"
+    "@lerna-lite/init" "1.14.2"
+    "@lerna-lite/listable" "1.14.2"
+    "@lerna-lite/publish" "1.14.2"
+    "@lerna-lite/version" "1.14.2"
     dedent "^0.7.0"
     dotenv "^16.0.3"
     import-local "^3.1.0"
@@ -5730,20 +5730,20 @@
     write-json-file "^4.3.0"
     write-pkg "^4.0.0"
 
-"@lerna-lite/info@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/info/-/info-1.14.1.tgz#63667c0f717ef166a66b8a90a9da12c1ba8ecf91"
-  integrity sha512-oSWqkLghMiewfLVYcRyMXIwi4JljCsSQjOGAB7cDvX05ts7wOBoYNUh92p4oDs0CGwdataJyEQU96wHj9NkTPg==
+"@lerna-lite/info@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/info/-/info-1.14.2.tgz#e2183a815a0f50a39faff6deb09d12506693498f"
+  integrity sha512-Cu0Cc1fpJVYPZW9WKYjMU9rijJQKkuSr26xbwOFIUM+jm8qvytChJXqeZhmfP5K+PwLIiRx8eCYJ0A0xpHKcDQ==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
     envinfo "^7.8.1"
 
-"@lerna-lite/init@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/init/-/init-1.14.1.tgz#377418f73c9ddd608695a2903c9877c1ec44e2a2"
-  integrity sha512-TT8/bwfI6S2z3PSyypH8nCmuWu3cUqWqPZHYQWB3G2ktx22EQSm8i5IpPSCkVI9HD1Cndm4CoMrS7uRXaSentw==
+"@lerna-lite/init@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/init/-/init-1.14.2.tgz#f62ea37d30fb7f5fb41c2a1944a28c32ada2e41e"
+  integrity sha512-QJYJCOkRoISrYa8dRvRTFTIbe7M9+yhs+xKykDlnJ3GLUlUsPIeJEStvU47lQmykikP55KnM6alHRIlmXSV1pQ==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
     fs-extra "^11.1.0"
     p-map "^4.0.0"
     path "^0.12.7"
@@ -5807,13 +5807,13 @@
     npmlog "^7.0.1"
     upath "^2.0.1"
 
-"@lerna-lite/publish@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/publish/-/publish-1.14.1.tgz#19d3e24bb4cf4e3ad9637cbe10b09d88b3922edc"
-  integrity sha512-aSQhE6r6QdKhTsPpBpxPnI0poxe2TkmoUNQWf/eOoNlkLe7bnmlrTqAUcW90pFZrCMz37LkfLQdphT68WvtlgA==
+"@lerna-lite/publish@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/publish/-/publish-1.14.2.tgz#b430216d026fc0105fafe5c4bd62111ba2283ad7"
+  integrity sha512-5/24ZpqW7oK4sV0RokTO0Q5ZCbKX93Qt7kjqpfaotjWRi9RI/N+H9Mgr4iMzs2xlZoH8JkrUREZRA/CsA5jgBg==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
-    "@lerna-lite/version" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
+    "@lerna-lite/version" "1.14.2"
     "@npmcli/arborist" "^6.1.6"
     byte-size "^7.0.1"
     chalk "^4.1.2"
@@ -5836,12 +5836,12 @@
     ssri "^10.0.1"
     tar "^6.1.13"
 
-"@lerna-lite/version@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/version/-/version-1.14.1.tgz#396d54cfcb282de0d2a31e625fc8756e426b9bde"
-  integrity sha512-FICkguaaOcXUqDb/KsdkAe7HqiPwpwMCe+u5XvvpfHUOGwI3Z25zIDP2Fg4ZTi7NbReuMch2JWClyMj5rqQAsA==
+"@lerna-lite/version@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/version/-/version-1.14.2.tgz#54340f0a45d2676ac8a178ac538b1ec7f11c1aca"
+  integrity sha512-W56tkMARMuBPYSbLbd9/2GxHsdSjO6JbxgGkTAvgYwaGP11WG6fcZVNjOYfML8Um+9zY9cNtWdJIhAxKmInaGA==
   dependencies:
-    "@lerna-lite/core" "1.14.1"
+    "@lerna-lite/core" "1.14.2"
     chalk "^4.1.2"
     dedent "^0.7.0"
     load-json-file "^6.2.0"
