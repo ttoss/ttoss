@@ -16,7 +16,8 @@ import {
   AppSyncGraphQLApiLogicalId,
   AppSyncLambdaFunctionLogicalId,
 } from '../src/createApiTemplate';
-import { createApiTemplate, schemaComposer } from '../src';
+import { createApiTemplate } from '../src';
+import { schemaComposer } from 'graphql-compose';
 
 const createApiTemplateInput = {
   schemaComposer,
@@ -26,7 +27,27 @@ const createApiTemplateInput = {
   lambdaFunction: {
     roleArn: 'arn:aws:iam::123456789012:role/role',
   },
+  userPoolConfig: {
+    appIdClientRegex:
+      'arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_123456789',
+    awsRegion: 'us-east-1',
+    defaultAction: 'ALLOW' as const,
+    userPoolId: 'us-east-1_123456789',
+  },
 };
+
+test('should contain UserPoolConfig', () => {
+  const template = createApiTemplate(createApiTemplateInput);
+
+  expect(
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties['UserPoolConfig']
+  ).toEqual({
+    AppIdClientRegex: createApiTemplateInput.userPoolConfig.appIdClientRegex,
+    AwsRegion: createApiTemplateInput.userPoolConfig.awsRegion,
+    DefaultAction: createApiTemplateInput.userPoolConfig.defaultAction,
+    UserPoolId: createApiTemplateInput.userPoolConfig.userPoolId,
+  });
+});
 
 test('export graphql api arn', () => {
   const template = createApiTemplate(createApiTemplateInput);
@@ -67,21 +88,21 @@ test('add environment variables to lambda function', () => {
 test('create api key', () => {
   const template = createApiTemplate({
     ...createApiTemplateInput,
-    apiKey: true,
+    additionalAuthenticationProviders: ['API_KEY'],
   });
 
   /**
-   * Default AuthenticationType to AWS_IAM.
+   * Default AuthenticationType to AMAZON_COGNITO_USER_POOLS.
    */
   expect(
     template.Resources[AppSyncGraphQLApiLogicalId].Properties[
       'AuthenticationType'
     ]
-  ).toEqual('AWS_IAM');
+  ).toEqual('AMAZON_COGNITO_USER_POOLS');
 
   expect(
     template.Resources[AppSyncGraphQLApiLogicalId].Properties[
-      'AdditionalAuthenticationProvider'
+      'AdditionalAuthenticationProviders'
     ]
   ).toContainEqual({
     AuthenticationType: 'API_KEY',

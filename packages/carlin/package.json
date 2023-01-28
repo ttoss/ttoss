@@ -53,7 +53,7 @@
   "devDependencies": {
     "@ttoss/test-utils": "^1.20.1",
     "@types/adm-zip": "^0.5.0",
-    "@types/aws-lambda": "^8.10.109",
+    "@types/aws-lambda": "^8.10.110",
     "@types/deep-equal": "^1.0.1",
     "@types/findup-sync": "^4.0.2",
     "@types/glob": "^8.0.0",

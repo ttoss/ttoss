@@ -1,4 +1,4 @@
-import { ResolverResolveParams, schemaComposer } from '../src';
+import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
 
 test('SDL should not contain empty Mutation or Subscription', () => {
   const AuthorTC = schemaComposer.createObjectTC({
