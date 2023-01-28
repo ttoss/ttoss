@@ -15,6 +15,18 @@ const template = createApiTemplate({
         'TerezinhaFarmIam-Production:AppSyncLambdaFunctionIAMRoleArn',
     },
   },
+  userPoolConfig: {
+    appIdClientRegex: {
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:AppClientId',
+    },
+    awsRegion: {
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:Region',
+    },
+    defaultAction: 'ALLOW',
+    userPoolId: {
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:UserPoolId',
+    },
+  },
 });
 
 export default template;
