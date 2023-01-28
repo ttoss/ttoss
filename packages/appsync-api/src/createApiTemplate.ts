@@ -14,28 +14,39 @@ const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
 
 export const AppSyncGraphQLApiKeyLogicalId = 'AppSyncGraphQLApiKey';
 
-type Role =
+type StringOrImport =
   | string
   | {
       'Fn::ImportValue': string;
     };
 
+type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS' | 'API_KEY';
+
 export const createApiTemplate = ({
-  apiKey,
+  additionalAuthenticationProviders,
+  authenticationType = 'AMAZON_COGNITO_USER_POOLS',
   schemaComposer,
   dataSource,
   lambdaFunction,
+  userPoolConfig,
 }: {
-  apiKey?: boolean;
+  additionalAuthenticationProviders?: AuthenticationType[];
+  authenticationType?: AuthenticationType;
   schemaComposer: SchemaComposer<any>;
   dataSource: {
-    roleArn: Role;
+    roleArn: StringOrImport;
   };
   lambdaFunction: {
     environment?: {
       variables: Record<string, string>;
     };
-    roleArn: Role;
+    roleArn: StringOrImport;
+  };
+  userPoolConfig?: {
+    appIdClientRegex: StringOrImport;
+    awsRegion: StringOrImport;
+    defaultAction: 'ALLOW' | 'DENY';
+    userPoolId: StringOrImport;
   };
 }): CloudFormationTemplate => {
   /**
@@ -103,7 +114,7 @@ export const createApiTemplate = ({
       [AppSyncGraphQLApiLogicalId]: {
         Type: 'AWS::AppSync::GraphQLApi',
         Properties: {
-          AuthenticationType: 'AWS_IAM',
+          AuthenticationType: authenticationType,
           Name: {
             'Fn::Join': [
               ':',
@@ -199,15 +210,26 @@ export const createApiTemplate = ({
     };
   });
 
-  if (apiKey) {
+  const apiKey =
+    additionalAuthenticationProviders?.includes('API_KEY') ||
+    authenticationType === 'API_KEY';
+
+  const cognitoUserPoolAuth =
+    additionalAuthenticationProviders?.includes('AMAZON_COGNITO_USER_POOLS') ||
+    authenticationType === 'AMAZON_COGNITO_USER_POOLS';
+
+  if (additionalAuthenticationProviders) {
     template.Resources[
       AppSyncGraphQLApiLogicalId
-    ].Properties.AdditionalAuthenticationProvider = [
-      {
-        AuthenticationType: 'API_KEY',
-      },
-    ];
+    ].Properties.AdditionalAuthenticationProviders =
+      additionalAuthenticationProviders?.map((provider) => {
+        return {
+          AuthenticationType: provider,
+        };
+      });
+  }
 
+  if (apiKey) {
     template.Resources[AppSyncGraphQLApiKeyLogicalId] = {
       Type: 'AWS::AppSync::ApiKey',
       Properties: {
@@ -223,6 +245,21 @@ export const createApiTemplate = ({
       Value: {
         'Fn::GetAtt': [AppSyncGraphQLApiKeyLogicalId, 'ApiKey'],
       },
+    };
+  }
+
+  if (cognitoUserPoolAuth) {
+    if (!userPoolConfig) {
+      throw new Error(
+        'userPoolConfig is required when using AMAZON_COGNITO_USER_POOLS authentication.'
+      );
+    }
+
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties.UserPoolConfig = {
+      AppIdClientRegex: userPoolConfig.appIdClientRegex,
+      AwsRegion: userPoolConfig.awsRegion,
+      DefaultAction: userPoolConfig.defaultAction,
+      UserPoolId: userPoolConfig.userPoolId,
     };
   }
 

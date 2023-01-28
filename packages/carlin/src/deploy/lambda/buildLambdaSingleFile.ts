@@ -24,7 +24,7 @@ export const buildLambdaSingleFile = async ({
     },
     bundle: true,
     entryPoints: [path.resolve(process.cwd(), lambdaInput)],
-    external: ['aws-sdk', ...builtins, ...lambdaExternals],
+    external: ['aws-sdk', '@aws-sdk/*', ...builtins, ...lambdaExternals],
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
     target: 'node18',

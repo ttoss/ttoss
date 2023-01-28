@@ -1,4 +1,4 @@
-import { ResolverResolveParams, schemaComposer } from '../src';
+import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
 
 const AuthorTC = schemaComposer.createObjectTC({
   name: 'Author',
