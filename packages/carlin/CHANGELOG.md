@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.1](https://github.com/ttoss/carlin/compare/carlin@1.22.0...carlin@1.22.1) (2023-01-28)
+
+### Bug Fixes
+
+- add user pool config ([#168](https://github.com/ttoss/carlin/issues/168)) ([edb0911](https://github.com/ttoss/carlin/commit/edb0911817d2362a7f9f120f8eccf021427cda73))
+
 # [1.22.0](https://github.com/ttoss/carlin/compare/carlin@1.21.4...carlin@1.22.0) (2023-01-11)
 
 ### Features

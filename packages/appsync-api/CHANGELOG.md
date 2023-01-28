@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.7.0...@ttoss/appsync-api@0.7.1) (2023-01-28)
+
+### Bug Fixes
+
+- add user pool config ([#168](https://github.com/ttoss/ttoss/issues/168)) ([edb0911](https://github.com/ttoss/ttoss/commit/edb0911817d2362a7f9f120f8eccf021427cda73))
+
 # [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.6.0...@ttoss/appsync-api@0.7.0) (2023-01-19)
 
 ### Features
