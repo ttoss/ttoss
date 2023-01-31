@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.7.1...@ttoss/appsync-api@0.7.2) (2023-01-31)
+
+### Bug Fixes
+
+- add identity to a specific property ([#171](https://github.com/ttoss/ttoss/issues/171)) ([c3ff771](https://github.com/ttoss/ttoss/commit/c3ff771c7249325529e7cafd42859b00fc34e499))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.7.0...@ttoss/appsync-api@0.7.1) (2023-01-28)
 
 ### Bug Fixes
