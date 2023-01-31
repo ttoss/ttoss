@@ -18,6 +18,11 @@ export const createAppSyncResolverHandler = ({
     const resolver = (
       schemaComposer.getResolveMethods()[parentTypeName] as any
     )[fieldName];
-    return resolver(source, args, { ...context, ...event.identity }, info);
+    return resolver(
+      source,
+      args,
+      { ...context, identity: event.identity },
+      info
+    );
   };
 };
