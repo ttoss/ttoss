@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.20.0 (2023-02-02)
+
+### Features
+
+- container ([#175](https://github.com/ttoss/ttoss/issues/175)) ([6ce60e7](https://github.com/ttoss/ttoss/commit/6ce60e7618818ca479d70ee1ee42cb2f02ca57b4))
+
 ## 1.19.5 (2023-01-11)
 
 **Note:** Version bump only for package @ttoss/react-notifications

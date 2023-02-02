@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/ttoss/carlin/compare/carlin@1.22.1...carlin@1.23.0) (2023-02-02)
+
+### Features
+
+- container ([#175](https://github.com/ttoss/carlin/issues/175)) ([6ce60e7](https://github.com/ttoss/carlin/commit/6ce60e7618818ca479d70ee1ee42cb2f02ca57b4))
+
 ## [1.22.1](https://github.com/ttoss/carlin/compare/carlin@1.22.0...carlin@1.22.1) (2023-01-28)
 
 ### Bug Fixes

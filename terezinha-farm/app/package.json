@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
@@ -11,11 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@terezinha-farm/config": "^0.3.2",
-    "@ttoss/react-auth": "^1.2.8",
-    "@ttoss/react-i18n": "^1.18.4",
-    "@ttoss/react-notifications": "^1.19.5",
-    "@ttoss/ui": "^1.29.0",
+    "@terezinha-farm/config": "^0.3.3",
+    "@ttoss/react-auth": "^1.2.9",
+    "@ttoss/react-i18n": "^1.18.5",
+    "@ttoss/react-notifications": "^1.20.0",
+    "@ttoss/ui": "^1.30.0",
     "aws-amplify": "^5.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
