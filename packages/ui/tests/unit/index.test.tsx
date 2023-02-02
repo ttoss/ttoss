@@ -26,4 +26,5 @@ test('should export methods', () => {
   expect(uiModule.Checkbox).toBeDefined();
   expect(uiModule.InfiniteLinearProgress).toBeDefined();
   expect(uiModule.Textarea).toBeDefined();
+  expect(uiModule.Container).toBeDefined();
 });
