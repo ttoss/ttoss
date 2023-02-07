@@ -33,7 +33,9 @@ const Template: Story = (args) => {
             key={icon}
             sx={{ flexDirection: 'column', alignItems: 'center' }}
           >
-            <Icon icon={icon} sx={{ fontSize: '40px' }} />
+            <Text sx={{ fontSize: '40px' }}>
+              <Icon icon={icon} />
+            </Text>
             <Text sx={{ fontSize: '12px' }}>{icon}</Text>
           </Flex>
         );
@@ -93,10 +95,9 @@ const TemplateDynamic: Story = (args) => {
           })}
         </Select>
       </Flex>
-      <Icon
-        sx={{ fontSize: `${fontSize}px`, color, marginTop: 5 }}
-        icon={args.icon}
-      />
+      <Text sx={{ fontSize: `${fontSize}px`, color, marginTop: 5 }}>
+        <Icon icon={args.icon} />
+      </Text>
     </Flex>
   );
 };

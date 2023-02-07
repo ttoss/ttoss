@@ -1,5 +1,5 @@
 import { Collapse } from 'react-collapse';
-import { Flex, Grid, Icon, Image, Link } from '@ttoss/ui';
+import { Flex, Grid, Icon, Image, Link, Text } from '@ttoss/ui';
 import React from 'react';
 
 type NavbarLink = {
@@ -55,11 +55,18 @@ export const Navbar = ({ links, logo, cta, type = '1' }: NavbarProps) => {
             gridTemplateColumns: '1fr 1fr 1fr',
           }}
         >
-          <Icon
+          <Text
             sx={{ cursor: 'pointer', justifySelf: 'start', fontSize: '3xl' }}
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            icon={isMenuOpen ? 'ic:outline-menu-open' : 'ic:outline-menu'}
-          />
+          >
+            <Icon
+              onClick={() => {
+                setIsMenuOpen((prev) => {
+                  return !prev;
+                });
+              }}
+              icon={isMenuOpen ? 'ic:outline-menu-open' : 'ic:outline-menu'}
+            />
+          </Text>
 
           <Image src={logo} sx={{ maxWidth: '112px' }} />
 
