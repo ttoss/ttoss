@@ -5258,6 +5258,13 @@
   resolved "https://registry.yarnpkg.com/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz#98c23c950a3d9b6c8f0daed06da6c3af06981340"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
+"@iconify-icon/react@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@iconify-icon/react/-/react-1.0.3.tgz#cedb75cc291526c7cbf06eb5130ce0df559df270"
+  integrity sha512-8EmXx1UDoxPYgDyBjEHsz9KcPnIogYnNUJPe6biyKXfxwqoKLXI0DiHkYjSPdP1lzWQgDLgFxZuDqGNNJrvqHg==
+  dependencies:
+    iconify-icon "^1.0.3"
+
 "@iconify/react@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@iconify/react/-/react-4.1.0.tgz#5ea86acae6e209a2f5b1b52922ab85d0d22f9b45"
@@ -14703,6 +14710,13 @@ hyphenate-style-name@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
   integrity sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
+
+iconify-icon@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/iconify-icon/-/iconify-icon-1.0.3.tgz#b0d73016994d23542711147d8c68c669ef48b7d2"
+  integrity sha512-pyWLbx8IBfD2G3M0hULuvUBwoowrZtXEKyeAXhD2AlbNYTSDPmWGhgPYaRAnVIuBjMAZ4dCyEHmaYgnlDZc0XQ==
+  dependencies:
+    "@iconify/types" "^2.0.0"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
