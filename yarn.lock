@@ -5654,16 +5654,16 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@lerna-lite/changed@^1.14.2":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/changed/-/changed-1.15.0.tgz#3ead64d3949ed2e1d985f02372866d8b0bb883c2"
-  integrity sha512-70xDVJ7XoizEy6PtUwsdcx75+WwBA6YuqWhdNfQq7JLPozAfR7ISTjDdy0fXcy2yU1eckWw1AN79OnhQ3ZWYpQ==
+"@lerna-lite/changed@^1.15.1":
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/changed/-/changed-1.15.1.tgz#f41c4072672eed0a4c94bddc260808504c84f653"
+  integrity sha512-gRV0HUnNdk7LFNtG0v+8GwcFbNg7ruQAmwDZ8TGvJJvs0cw+yhpkligecpgsw8Wid/LA6JbCuywmn+qOZH7Znw==
   dependencies:
-    "@lerna-lite/core" "1.15.0"
-    "@lerna-lite/list" "1.15.0"
-    "@lerna-lite/listable" "1.15.0"
+    "@lerna-lite/core" "1.15.1"
+    "@lerna-lite/list" "1.15.1"
+    "@lerna-lite/listable" "1.15.1"
 
-"@lerna-lite/cli@^1.14.2":
+"@lerna-lite/cli@^1.15.1":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/cli/-/cli-1.15.1.tgz#c99c8ff907f321f541ce53ccb7fffa715cef0901"
   integrity sha512-tpR/NPdX65AzprU6F1IH3hsAullmnYaO4MJOk3f6HCEfxcqUchbTLtzBonSYFNTgEc005Bt8EfejLz+o4zlKyQ==
@@ -5680,38 +5680,6 @@
     npmlog "^7.0.1"
     path "^0.12.7"
     yargs "^17.6.2"
-
-"@lerna-lite/core@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/core/-/core-1.15.0.tgz#aec07d0d04f2f4912cec43ccf0d9faf884d95092"
-  integrity sha512-NpG5rJtGr2d5bSitdIBpXDMp19gK7CmB48U+Q3WHnWbBbzNJ3nCOZhQWTQ2OFOQ8fgtQ8idyCKREBZ+vnB0XzQ==
-  dependencies:
-    "@npmcli/run-script" "^6.0.0"
-    chalk "^4.1.2"
-    clone-deep "^4.0.1"
-    config-chain "^1.1.13"
-    cosmiconfig "^8.0.0"
-    dedent "^0.7.0"
-    execa "^5.1.1"
-    fs-extra "^11.1.0"
-    glob-parent "^6.0.2"
-    globby "^11.1.0"
-    inquirer "^8.2.4"
-    is-ci "^3.0.1"
-    load-json-file "^6.2.0"
-    minimatch "^5.1.6"
-    npm-package-arg "^10.1.0"
-    npmlog "^7.0.1"
-    p-map "^4.0.0"
-    p-queue "^6.6.2"
-    path "^0.12.7"
-    resolve-from "^5.0.0"
-    semver "^7.3.8"
-    slash "^3.0.0"
-    strong-log-transformer "^2.1.0"
-    write-file-atomic "^5.0.0"
-    write-json-file "^4.3.0"
-    write-pkg "^4.0.0"
 
 "@lerna-lite/core@1.15.1":
   version "1.15.1"
@@ -5745,15 +5713,6 @@
     write-json-file "^4.3.0"
     write-pkg "^4.0.0"
 
-"@lerna-lite/filter-packages@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/filter-packages/-/filter-packages-1.15.0.tgz#77868198063d4c90af89bdb84b08c720f60e0b1c"
-  integrity sha512-R2ilxu5MMIOpYJlBolGgTSRAKVmUgotqt+Ep3huCrnLOus2xNZBWOnDxzXH/LKDL3fyWxNvo+wUiT3LXfrU3Vw==
-  dependencies:
-    "@lerna-lite/core" "1.15.0"
-    multimatch "^5.0.0"
-    npmlog "^7.0.1"
-
 "@lerna-lite/filter-packages@1.15.1":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/filter-packages/-/filter-packages-1.15.1.tgz#266426ee8e5251405d141f05c78a50e6ad0326e6"
@@ -5774,16 +5733,7 @@
     path "^0.12.7"
     write-json-file "^4.3.0"
 
-"@lerna-lite/list@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.15.0.tgz#403c6ebdecde576672c73eda087d1957b5635358"
-  integrity sha512-2epZeTre7qdycttmWyRdssSsiQep6Jnc6mpAmwOLIYNCEymKownhSbM240CEeyMpa8epijqWAaEcmGZ3UhhMDg==
-  dependencies:
-    "@lerna-lite/core" "1.15.0"
-    "@lerna-lite/filter-packages" "1.15.0"
-    "@lerna-lite/listable" "1.15.0"
-
-"@lerna-lite/list@^1.14.2":
+"@lerna-lite/list@1.15.1", "@lerna-lite/list@^1.15.1":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.15.1.tgz#d4d1e127bb99ba07c9097f432a9153292bedc4ad"
   integrity sha512-knRq3a44TOu8c/PiLbheVoO5xflfxYsY3M4AvmyxYCc+aOOoH5eEgn0R3pDz/vfC9E845pgbE7T96K8PAXvvFQ==
@@ -5791,15 +5741,6 @@
     "@lerna-lite/core" "1.15.1"
     "@lerna-lite/filter-packages" "1.15.1"
     "@lerna-lite/listable" "1.15.1"
-
-"@lerna-lite/listable@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@lerna-lite/listable/-/listable-1.15.0.tgz#066f9fabbcff157fe6891894f3dabfcdd6809902"
-  integrity sha512-oMQ7CRa3iOSG+2b+H1ozKi5JHixnkf/LfWu2oKMT8AXlxiJWV0xRayhFAflJY4SkZAFiDJjg2a8eppS7xSycwA==
-  dependencies:
-    "@lerna-lite/core" "1.15.0"
-    chalk "^4.1.2"
-    columnify "^1.6.0"
 
 "@lerna-lite/listable@1.15.1":
   version "1.15.1"
@@ -16695,7 +16636,7 @@ linkify-it@^3.0.1:
   dependencies:
     uc.micro "^1.0.1"
 
-lint-staged@^13.1.0:
+lint-staged@^13.1.1:
   version "13.1.1"
   resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-13.1.1.tgz#db61636850660e291a6885da65d8e79850bd8307"
   integrity sha512-LLJLO0Kdbcv2a+CvSF4p1M7jBZOajKSMpBUvyR8+bXccsqPER0/NxTFQSpNHjqwV9kM3tkHczYerTB5wI+bksQ==
@@ -17429,7 +17370,7 @@ minimatch@3.1.2, minimatch@^3.0.2, minimatch@^3.0.4, minimatch@^3.0.5, minimatch
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@^5.0.1, minimatch@^5.1.1, minimatch@^5.1.6:
+minimatch@^5.0.1, minimatch@^5.1.1:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
   integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
@@ -19240,10 +19181,10 @@ prettier-package-json@^2.8.0:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.0.tgz#b6a5bf1284026ae640f17f7ff5658a7567fc0d18"
   integrity sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==
 
-prettier@^2.8.3:
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.3.tgz#ab697b1d3dd46fb4626fbe2f543afe0cc98d8632"
-  integrity sha512-tJ/oJ4amDihPoufT5sM0Z1SKEuKay8LfVAMlbbhnnkvt6BUserZylqo2PN+p9KeljLr0OHa2rXHU1T8reeoTrw==
+prettier@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 pretty-error@^2.1.1:
   version "2.1.2"
