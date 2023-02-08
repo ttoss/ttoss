@@ -16636,7 +16636,7 @@ linkify-it@^3.0.1:
   dependencies:
     uc.micro "^1.0.1"
 
-lint-staged@^13.1.1:
+lint-staged@^13.1.0:
   version "13.1.1"
   resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-13.1.1.tgz#db61636850660e291a6885da65d8e79850bd8307"
   integrity sha512-LLJLO0Kdbcv2a+CvSF4p1M7jBZOajKSMpBUvyR8+bXccsqPER0/NxTFQSpNHjqwV9kM3tkHczYerTB5wI+bksQ==
@@ -22242,7 +22242,7 @@ turbo-windows-arm64@1.7.4:
   resolved "https://registry.yarnpkg.com/turbo-windows-arm64/-/turbo-windows-arm64-1.7.4.tgz#7b18118aebf595283787c5c269ced64b0d5f947f"
   integrity sha512-h8sxdKPvHTnWUPtwnYszFMmSO0P/iUUwmYY9n7iYThA71zSao28UeZ0H0Gw75cY3MPjvkjn2C4EBAUGPjuZJLw==
 
-turbo@^1.7.2:
+turbo@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.7.4.tgz#7a8cc107737dd1740732ff17d8133cb1313a4576"
   integrity sha512-8RLedDoUL0kkVKWEZ/RMM70BvKLyDFen06QuKKhYC2XNOfNKqFDqzIdcY/vGick869bNIWalChoy4O07k0HLsA==
