@@ -1,6 +1,6 @@
 {
   "name": "carlin",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "description": "",
   "license": "GPL-3.0",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
@@ -43,7 +43,7 @@
     "js-yaml": "^4.1.0",
     "mime-types": "^2.1.35",
     "npmlog": "^7.0.1",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.4",
     "semver": "^7.3.8",
     "simple-git": "^3.15.1",
     "ts-node": "^10.9.1",
