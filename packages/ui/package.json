@@ -22,7 +22,6 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/react": "^11.10.5",
-    "@iconify/react": "^4.1.0",
     "@theme-ui/match-media": "^0.15.4",
     "theme-ui": "^0.15.4"
   },
@@ -30,6 +29,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@iconify-icon/react": "^1.0.3",
     "@ttoss/config": "^1.28.0",
     "@ttoss/test-utils": "^1.20.2",
     "@ttoss/theme": "^1.2.3",
