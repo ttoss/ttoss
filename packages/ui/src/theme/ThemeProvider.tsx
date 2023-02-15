@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BruttalFonts, BruttalTheme } from '@ttoss/theme';
 import { Global, css } from '@emotion/react';
-import { Theme, ThemeProvider as ThemeUiProvider, merge } from 'theme-ui';
+import { Theme, ThemeProvider as ThemeUiProvider } from 'theme-ui';
 
 export type ThemeProviderProps = {
   children?: React.ReactNode;
@@ -12,36 +12,25 @@ export type ThemeProviderProps = {
   fonts?: string[];
 };
 
-const ThemeProvider = ({
+export const ThemeProvider = ({
   children,
-  theme = {},
+  theme = BruttalTheme,
   fonts = BruttalFonts,
 }: ThemeProviderProps) => {
-  const mergedTheme = React.useMemo(() => {
-    if (typeof theme === 'function') {
-      return theme;
-    }
-
-    return merge(BruttalTheme, theme);
-  }, [theme]);
-
   return (
     <>
-      <ThemeUiProvider theme={mergedTheme}>
-        {fonts.map((url) => {
-          return (
-            <Global
-              key={url}
-              styles={css`
-                @import url('${url}');
-              `}
-            />
-          );
-        })}
+      <ThemeUiProvider theme={theme}>
+        <Global
+          styles={css`
+            ${fonts
+              .map((url) => {
+                return `@import url('${url}');`;
+              })
+              .join('\n')}
+          `}
+        />
         {children}
       </ThemeUiProvider>
     </>
   );
 };
-
-export default ThemeProvider;

@@ -1,0 +1,15 @@
+export const space = {
+  none: 0,
+  '2xs': '2px',
+  xs: '3px',
+  sm: '5px',
+  md: '8px',
+  lg: '13px',
+  xl: '21px',
+  '2xl': '34px',
+  '3xl': '55px',
+  '4xl': '89px',
+  '5xl': '144px',
+  '6xl': '233px',
+  '7xl': '377px',
+};

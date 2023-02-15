@@ -4,11 +4,11 @@
   "version": "1.32.3",
   "author": "ttoss",
   "scripts": {
-    "build": "NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "yarn run storybook",
     "start": "yarn run storybook",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "cross-env NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "@storybook/react": "^6.5.14",
     "@storybook/testing-library": "^0.0.13",
     "babel-loader": "^8.2.3",
+    "cross-env": "^7.0.3",
     "storybook-addon-locale": "^0.3.6"
   }
 }

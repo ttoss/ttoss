@@ -18,9 +18,10 @@
     "build": "tsup-node",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "theme-ui": "^0.15.4"
+    "theme-ui": "^0.15.5"
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.0",
