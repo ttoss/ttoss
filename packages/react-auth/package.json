@@ -41,7 +41,7 @@
     "@ttoss/react-notifications": "^1.20.1",
     "@ttoss/test-utils": "^1.20.2",
     "@ttoss/ui": "^1.30.1",
-    "aws-amplify": "^5.0.7"
+    "aws-amplify": "^5.0.14"
   },
   "keywords": [
     "React",

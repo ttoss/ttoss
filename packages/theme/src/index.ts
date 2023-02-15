@@ -1,2 +1,4 @@
-export * from './themes/themes';
-export * from './themes/fonts';
+export { createTheme } from './createTheme';
+
+export { BruttalTheme } from './themes/Bruttal/BruttalTheme';
+export { BruttalFonts } from './themes/Bruttal/BruttalFonts';

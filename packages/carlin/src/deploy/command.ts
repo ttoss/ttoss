@@ -146,8 +146,9 @@ export const deployCommand: CommandModule<
        */
       .middleware((argv) => {
         if (argv.lambdaDockerfile) {
-          // eslint-disable-next-line no-param-reassign
-          argv.lambdaImage = true;
+          Object.assign(argv, {
+            lambdaImage: true,
+          });
         }
       })
       /**
@@ -165,8 +166,12 @@ export const deployCommand: CommandModule<
               : undefined;
           })();
 
-          if (defaultAwsAccountId || envAwsAccountId) {
-            await checkAwsAccountId(defaultAwsAccountId || envAwsAccountId);
+          if (envAwsAccountId) {
+            await checkAwsAccountId(envAwsAccountId);
+          }
+
+          if (defaultAwsAccountId) {
+            await checkAwsAccountId(defaultAwsAccountId);
           }
         }
       )

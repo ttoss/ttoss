@@ -1,6 +1,6 @@
 # @ttoss/theme
 
-**@ttoss/theme** is an theme package
+**@ttoss/theme** is an theme package.
 
 ## Install
 

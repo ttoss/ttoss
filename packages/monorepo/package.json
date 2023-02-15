@@ -26,7 +26,7 @@
   "devDependencies": {
     "@ttoss/config": "^1.28.0",
     "@types/npmlog": "^4.1.4",
-    "tsup": "^6.5.0"
+    "tsup": "^6.6.3"
   },
   "publishConfig": {
     "access": "public"

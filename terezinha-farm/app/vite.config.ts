@@ -18,7 +18,6 @@ const configVite = Object.entries(config).reduce((acc, [key, value]) => {
 export default defineConfig(async () => {
   return {
     define: {
-      global: {},
       'process.env': {
         ...configVite,
       },

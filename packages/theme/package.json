@@ -15,13 +15,15 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsup",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "theme-ui": "^0.15.4"
+    "deepmerge": "^4.3.0"
   },
+  "peerDependencies": {},
   "devDependencies": {
     "@ttoss/config": "^1.28.0",
     "@ttoss/test-utils": "^1.20.2"
