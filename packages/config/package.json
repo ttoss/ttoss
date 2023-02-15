@@ -26,7 +26,7 @@
     "@commitlint/config-conventional": "^17.3.0",
     "@formatjs/ts-transformer": "^3.11.5",
     "babel-plugin-formatjs": "^10.3.35",
-    "deepmerge": "^4.2.2",
+    "deepmerge": "^4.3.0",
     "identity-obj-proxy": "^3.0.0",
     "prettier-package-json": "^2.8.0"
   },

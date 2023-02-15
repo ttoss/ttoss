@@ -35,7 +35,7 @@
     "builtin-modules": "^3.3.0",
     "change-case": "^4.1.2",
     "deep-equal": "^2.1.0",
-    "deepmerge": "^4.2.2",
+    "deepmerge": "^4.3.0",
     "dotenv": "^16.0.3",
     "esbuild": "^0.16.2",
     "findup-sync": "^5.0.0",
