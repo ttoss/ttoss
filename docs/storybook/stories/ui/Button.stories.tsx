@@ -1,4 +1,4 @@
-import { Button, Flex } from '@ttoss/ui';
+import { Button, ButtonProps, Flex } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 
 export default {
@@ -9,7 +9,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => {
+const Template: Story<ButtonProps> = (args) => {
   return (
     <Flex
       sx={{

@@ -21,7 +21,7 @@ const initialDynamicTheme = {
 // Documentation to know what the variant to use
 // https://theme-ui.com/components/variants/
 
-function getDynamicTheme() {
+const getDynamicTheme = () => {
   const sDynamicTheme = localStorage.getItem(THEME_GLOBAL_KEY);
 
   if (!sDynamicTheme) {
@@ -31,7 +31,7 @@ function getDynamicTheme() {
   }
 
   return JSON.parse(sDynamicTheme);
-}
+};
 
 export const themes: { [key: string]: Theme } = {
   Siflor,
