@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.30.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.1...@ttoss/ui@1.30.2) (2023-02-15)
+
+### Bug Fixes
+
+- storybook build ([#198](https://github.com/ttoss/ttoss/issues/198)) ([2b683c9](https://github.com/ttoss/ttoss/commit/2b683c912492be3f708a700605193200b8f6d458))
+
 ## [1.30.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.0...@ttoss/ui@1.30.1) (2023-02-09)
 
 **Note:** Version bump only for package @ttoss/ui

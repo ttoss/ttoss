@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.32.3",
+  "version": "1.32.4",
   "author": "ttoss",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
@@ -12,12 +12,12 @@
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
-    "@ttoss/components": "^1.26.1",
-    "@ttoss/forms": "^0.14.1",
-    "@ttoss/landing-pages": "^0.6.1",
-    "@ttoss/react-notifications": "^1.20.1",
-    "@ttoss/theme": "^1.2.3",
-    "@ttoss/ui": "^1.30.1",
+    "@ttoss/components": "^1.26.2",
+    "@ttoss/forms": "^0.14.2",
+    "@ttoss/landing-pages": "^0.6.2",
+    "@ttoss/react-notifications": "^1.20.2",
+    "@ttoss/theme": "^1.2.4",
+    "@ttoss/ui": "^1.30.2",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {

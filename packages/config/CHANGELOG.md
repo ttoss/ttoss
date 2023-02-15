@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.0...@ttoss/config@1.28.1) (2023-02-15)
+
+**Note:** Version bump only for package @ttoss/config
+
 # 1.28.0 (2023-02-02)
 
 ### Features

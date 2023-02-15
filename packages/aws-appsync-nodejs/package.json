@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/aws-appsync-nodejs",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "",
   "license": "MIT",
   "author": "ttoss",
@@ -23,7 +23,7 @@
     "node-fetch": "2"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.28.0",
+    "@ttoss/config": "^1.28.1",
     "@types/jest": "^29.4.0",
     "jest": "^29.4.2"
   },
