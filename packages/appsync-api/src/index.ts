@@ -4,3 +4,4 @@ export {
   createAppSyncResolverHandler,
 } from './createAppSyncResolverHandler';
 export type { AppSyncIdentityCognito } from 'aws-lambda';
+export { composeWithRelay } from './composeWithRelay';
