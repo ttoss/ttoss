@@ -15,8 +15,8 @@ import {
   AppSyncGraphQLApiKeyLogicalId,
   AppSyncGraphQLApiLogicalId,
   AppSyncLambdaFunctionLogicalId,
-} from '../src/createApiTemplate';
-import { createApiTemplate } from '../src';
+} from '../../src/createApiTemplate';
+import { createApiTemplate } from '../../src';
 import { schemaComposer } from 'graphql-compose';
 
 const createApiTemplateInput = {

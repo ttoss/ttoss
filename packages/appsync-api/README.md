@@ -77,3 +77,36 @@ server.listen(4000, () => {
   );
 });
 ```
+
+## Schema Composer
+
+The `schemaComposer` object is a [`graphql-compose`](https://graphql-compose.github.io/docs/intro/quick-start.html) object that defines your API's schema and handle resolvers. You can use `schemaComposer` to create types, queries, mutations, and subscriptions.
+
+### Connections
+
+This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
+
+```typescript
+import { composeWithConnection } from '@ttoss/appsync-api';
+
+composeWithConnection(AuthorTC, {
+  findManyResolver: AuthorTC.getResolver('findMany'),
+  countResolver: AuthorTC.getResolver('count'),
+  sort: {
+    ASC: {
+      value: {
+        scanIndexForward: true,
+      },
+      cursorFields: ['id'],
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$lt = cursorData.id;
+      },
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$gt = cursorData.id;
+      },
+    },
+  },
+});
+```

@@ -14215,6 +14215,11 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
+graphql-compose-connection@^8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/graphql-compose-connection/-/graphql-compose-connection-8.2.1.tgz#ca78363f4f94a209e31d9dc8905de2e26bcb8b81"
+  integrity sha512-75QOx1HusfkLzDlF+RMGoC0UowbZ2R7/xFRIMfbQf1gc6eeRqiGmTWFxHaUYk2WjTAB4dGO7p/gllfwqO0W/TA==
+
 graphql-compose@^9.0.10:
   version "9.0.10"
   resolved "https://registry.yarnpkg.com/graphql-compose/-/graphql-compose-9.0.10.tgz#1e870166deb1785761865fe742dea0601d2c77f2"
@@ -17389,7 +17394,7 @@ minimist-options@4.1.0:
     is-plain-obj "^1.1.0"
     kind-of "^6.0.3"
 
-minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6, minimist@^1.2.7:
+minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6, minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
