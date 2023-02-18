@@ -1,33 +1,240 @@
 import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
-import { composeWithRelay } from '../src';
+import {
+  composeWithConnection,
+  composeWithRelay,
+  fromGlobalId,
+  toGlobalId,
+} from '../src';
+
+type Book = {
+  id: string;
+  title: string;
+  authorId?: string;
+};
+
+type Author = {
+  pk: string;
+  sk: string;
+  name: string;
+  books: Book[];
+};
+
+type BookWithAuthor = Book & {
+  author: Author;
+};
+
+export const AUTHORS: Author[] = [
+  {
+    pk: 'author',
+    sk: 'Amanda',
+    name: 'Amanda',
+    books: [
+      {
+        id: 'book#Amanda#1',
+        title: 'The Book Amanda 1',
+      },
+      {
+        id: 'book#Amanda#2',
+        title: 'The Book Amanda 2',
+      },
+    ],
+  },
+  {
+    pk: 'author',
+    sk: 'Bob',
+    name: 'Bob',
+    books: [
+      {
+        id: 'book#Bob#1',
+        title: 'The Book Bob 1',
+      },
+    ],
+  },
+  {
+    pk: 'author',
+    sk: 'Charlie',
+    name: 'Charlie',
+    books: [
+      {
+        id: 'book#Charlie#1',
+        title: 'The Book Charlie 1',
+      },
+      {
+        id: 'book#Charlie#2',
+        title: 'The Book Charlie 2',
+      },
+      {
+        id: 'book#Charlie#3',
+        title: 'The Book Charlie 3',
+      },
+    ],
+  },
+  {
+    pk: 'author',
+    sk: 'David',
+    name: 'David',
+    books: [
+      {
+        id: 'book#David#1',
+        title: 'The Book David 1',
+      },
+      {
+        id: 'book#David#2',
+        title: 'The Book David 2',
+      },
+      {
+        id: 'book#David#3',
+        title: 'The Book David 3',
+      },
+    ],
+  },
+  {
+    pk: 'author',
+    sk: 'Eve',
+    name: 'Eve',
+    books: [
+      {
+        id: 'book#Eve#1',
+        title: 'The Book Eve 1',
+      },
+      {
+        id: 'book#Eve#2',
+        title: 'The Book Eve 2',
+      },
+      {
+        id: 'book#Eve#3',
+        title: 'The Book Eve 3',
+      },
+      {
+        id: 'book#Eve#4',
+        title: 'The Book Eve 4',
+      },
+      {
+        id: 'book#Eve#5',
+        title: 'The Book Eve 5',
+      },
+    ],
+  },
+];
+
+export const BOOKS = AUTHORS.reduce<Book[]>((acc, author) => {
+  const booksWithAuthor = author.books.map((book) => {
+    return {
+      ...book,
+      authorId: [author.pk, author.sk].join('##'),
+    };
+  });
+  return acc.concat(booksWithAuthor);
+}, []);
 
 const AuthorTC = schemaComposer.createObjectTC({
   name: 'Author',
   fields: {
     id: 'ID!',
-    firstName: 'String',
-    lastName: 'String',
+    name: 'String!',
   },
 });
 
 AuthorTC.addResolver({
-  name: 'findById',
-  args: { id: 'ID!' },
-  type: AuthorTC.NonNull,
-  resolve: async ({ args }: ResolverResolveParams<any, any, any>) => {
-    return {
-      id: args.id,
-      firstName: 'John',
-      lastName: 'Doe',
-    };
+  name: 'findMany',
+  type: [AuthorTC.NonNull],
+  args: {
+    first: 'Int',
+    after: 'String',
+    last: 'Int',
+    before: 'String',
   },
+  resolve: async () => {
+    return AUTHORS;
+  },
+});
+
+AuthorTC.addResolver({
+  name: 'count',
+  type: 'Int',
+  resolve: async () => {
+    return AUTHORS.length;
+  },
+});
+
+AuthorTC.setRecordIdFn((source) => {
+  return [source.pk, source.sk].join('##');
+});
+
+AuthorTC.addResolver({
+  name: 'findById',
+  description: 'Find a author by global ID. Used by node interface.',
+  args: { id: 'ID!' },
+  type: AuthorTC,
+  resolve: async ({ args }: ResolverResolveParams<any, any, any>) => {
+    const { id } = fromGlobalId(args.id);
+
+    const [pk, sk] = id.split('##');
+
+    return AUTHORS.find((author) => {
+      return author.pk === pk && author.sk === sk;
+    });
+  },
+});
+
+composeWithRelay(AuthorTC);
+
+composeWithConnection(AuthorTC, {
+  findManyResolver: AuthorTC.getResolver('findMany'),
+  countResolver: AuthorTC.getResolver('count'),
+  sort: {
+    ASC: {
+      value: {
+        scanIndexForward: true,
+      },
+      cursorFields: ['id'],
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$lt = cursorData.id;
+      },
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$gt = cursorData.id;
+      },
+    },
+  },
+});
+
+schemaComposer.Query.addFields({
+  author: AuthorTC.getResolver('findById'),
+  authors: AuthorTC.getResolver('connection'),
 });
 
 const BookTC = schemaComposer.createObjectTC({
   name: 'Book',
   fields: {
     id: 'ID!',
-    title: 'String',
+    title: 'String!',
+    authorId: 'String!',
+  },
+});
+
+BookTC.addResolver({
+  name: 'findMany',
+  type: [BookTC.NonNull],
+  args: {
+    first: 'Int',
+    after: 'String',
+    last: 'Int',
+    before: 'String',
+  },
+  resolve: async () => {
+    return BOOKS.map((book) => {
+      return book;
+    });
+  },
+});
+
+BookTC.addResolver({
+  name: 'count',
+  type: 'Int',
+  resolve: async () => {
+    return BOOKS.length;
   },
 });
 
@@ -37,42 +244,54 @@ BookTC.setRecordIdFn((source) => {
 
 BookTC.addResolver({
   name: 'findById',
-  description: 'Find a book by its ID. Used by node interface.',
+  description: 'Find a book by global ID. Used by node interface.',
   args: { id: 'ID!' },
-  type: BookTC.NonNull,
+  type: BookTC,
   resolve: async ({ args }: ResolverResolveParams<any, any, any>) => {
-    const recordId = args.id;
+    const { id } = fromGlobalId(args.id);
 
-    return {
-      id: recordId,
-      __typename: 'Book',
-      title: `The Book ${recordId}`,
-    };
-  },
-});
-
-BookTC.addResolver({
-  name: 'getBook',
-  args: { id: 'ID!' },
-  type: BookTC.NonNull,
-  resolve: async ({ args, ...rest }: ResolverResolveParams<any, any, any>) => {
-    const [, recordId] = Buffer.from(args.id, 'base64').toString().split(':');
-
-    return BookTC.getResolver('findById').resolve({
-      ...rest,
-      args: {
-        ...args,
-        id: recordId,
-      },
+    return BOOKS.find((book) => {
+      return book.id === id;
     });
   },
 });
 
+BookTC.addRelation('author', {
+  resolver: () => {
+    return AuthorTC.getResolver('findById');
+  },
+  prepareArgs: {
+    id: (source) => {
+      return toGlobalId(AuthorTC.getTypeName(), source.authorId);
+    },
+  },
+  projection: { authorId: true },
+});
+
 composeWithRelay(BookTC);
 
+composeWithConnection(BookTC, {
+  findManyResolver: BookTC.getResolver('findMany'),
+  countResolver: BookTC.getResolver('count'),
+  sort: {
+    ASC: {
+      value: {},
+      cursorFields: ['id'],
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$lt = cursorData.id;
+      },
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$gt = cursorData.id;
+      },
+    },
+  },
+});
+
 schemaComposer.Query.addFields({
-  authorById: AuthorTC.getResolver('findById'),
-  book: BookTC.getResolver('getBook'),
+  book: BookTC.getResolver('findById'),
+  books: BookTC.getResolver('connection'),
 });
 
 export { schemaComposer };

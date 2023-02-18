@@ -1,16 +1,18 @@
-import { createAppSyncResolverHandler } from '../../src';
-import { schemaComposer } from '../schemaComposer';
+import { AUTHORS, schemaComposer } from '../schemaComposer';
+import { createAppSyncResolverHandler, toGlobalId } from '../../src';
 
-test('lambda handler should call resolver correctly', async () => {
+test('lambda handler should call author resolver correctly', async () => {
   const handler = createAppSyncResolverHandler({ schemaComposer });
+
+  const author = AUTHORS[0];
 
   const event = {
     info: {
       parentTypeName: 'Query',
-      fieldName: 'authorById',
+      fieldName: 'author',
     },
     arguments: {
-      id: '1234',
+      id: toGlobalId('Author', [author.pk, author.sk].join('##')),
     },
     source: {},
   } as any;
@@ -21,9 +23,5 @@ test('lambda handler should call resolver correctly', async () => {
 
   const response = await handler(event, context, callback);
 
-  expect(response).toEqual({
-    id: '1234',
-    firstName: 'John',
-    lastName: 'Doe',
-  });
+  expect(response).toEqual(author);
 });
