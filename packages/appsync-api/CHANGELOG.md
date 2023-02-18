@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.7.5...@ttoss/appsync-api@0.8.0) (2023-02-18)
+
+### Features
+
+- add appsync api relay ([#199](https://github.com/ttoss/ttoss/issues/199)) ([1f742ea](https://github.com/ttoss/ttoss/commit/1f742ea24fa6b1caa826f815a91a4c2a0c7b1c5a))
+
 ## [0.7.5](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.7.4...@ttoss/appsync-api@0.7.5) (2023-02-15)
 
 **Note:** Version bump only for package @ttoss/appsync-api
