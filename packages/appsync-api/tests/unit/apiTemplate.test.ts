@@ -14,6 +14,7 @@ jest.mock('carlin/src/utils/packageJson', () => {
 import {
   AppSyncGraphQLApiKeyLogicalId,
   AppSyncGraphQLApiLogicalId,
+  AppSyncGraphQLSchemaLogicalId,
   AppSyncLambdaFunctionLogicalId,
 } from '../../src/createApiTemplate';
 import { createApiTemplate } from '../../src';
@@ -35,6 +36,17 @@ const createApiTemplateInput = {
     userPoolId: 'us-east-1_123456789',
   },
 };
+
+/**
+ * See https://github.com/aws/aws-appsync-community/issues/38
+ */
+test('schema should not contain """ comments', () => {
+  const template = createApiTemplate(createApiTemplateInput);
+
+  expect(
+    template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
+  ).not.toContain('"""');
+});
 
 test('should contain UserPoolConfig', () => {
   const template = createApiTemplate(createApiTemplateInput);

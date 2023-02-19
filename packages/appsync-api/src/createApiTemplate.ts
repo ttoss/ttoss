@@ -1,7 +1,13 @@
 import { type SchemaComposer, graphql } from 'graphql-compose';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
 import packageJson from '../package.json';
-import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+/**
+ * Absolute path to avoid:
+ * The inferred type of 'template' cannot be named without a reference to
+ * '@ttoss/appsync-api/node_modules/@ttoss/cloudformation'. This is likely not
+ * portable. A type annotation is necessary.ts(2742)
+ */
+import type { CloudFormationTemplate } from '../../cloudformation/src';
 
 export const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
@@ -53,7 +59,11 @@ export const createApiTemplate = ({
    * It should be on top of the file, otherwise it will have empty Mutation
    * or Subscription if there are no resolvers for them.
    */
-  const sdl = schemaComposer.toSDL();
+  const sdl = schemaComposer.toSDL({
+    commentDescriptions: false,
+    omitDescriptions: true,
+    omitScalars: true,
+  });
 
   graphql.validateSchema(schemaComposer.buildSchema());
 
