@@ -15,9 +15,8 @@ export const createAppSyncResolverHandler = ({
   return async (event, context) => {
     const { info, arguments: args, source } = event;
     const { parentTypeName, fieldName } = info;
-    const resolver = (
-      schemaComposer.getResolveMethods()[parentTypeName] as any
-    )[fieldName];
+    const resolveMethods = schemaComposer.getResolveMethods();
+    const resolver = (resolveMethods[parentTypeName] as any)[fieldName];
     return resolver(
       source,
       args,

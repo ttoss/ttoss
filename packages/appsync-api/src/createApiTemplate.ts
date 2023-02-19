@@ -1,13 +1,14 @@
 import { type SchemaComposer, graphql } from 'graphql-compose';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
 import packageJson from '../package.json';
+
 /**
  * Absolute path to avoid:
  * The inferred type of 'template' cannot be named without a reference to
  * '@ttoss/appsync-api/node_modules/@ttoss/cloudformation'. This is likely not
  * portable. A type annotation is necessary.ts(2742)
  */
-import type { CloudFormationTemplate } from '../../cloudformation/src';
+import type { CloudFormationTemplate } from '../../cloudformation/src/';
 
 export const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
@@ -59,9 +60,13 @@ export const createApiTemplate = ({
    * It should be on top of the file, otherwise it will have empty Mutation
    * or Subscription if there are no resolvers for them.
    */
-  const sdl = schemaComposer.toSDL({
+  const sdlWithoutComments = schemaComposer.toSDL({
     commentDescriptions: false,
     omitDescriptions: true,
+    omitScalars: true,
+  });
+
+  const sdlWithComments = schemaComposer.toSDL({
     omitScalars: true,
   });
 
@@ -73,16 +78,24 @@ export const createApiTemplate = ({
    */
   const resolveMethods = schemaComposer.getResolveMethods();
 
-  const resolveMethodsEntries = Object.entries(resolveMethods).flatMap(
-    ([typeName, fieldResolvers]) => {
-      return Object.entries(fieldResolvers).map(([fieldName]) => {
+  const resolveMethodsEntries = Object.entries(resolveMethods)
+    .flatMap(([typeName, fieldResolvers]) => {
+      return Object.entries(fieldResolvers).map(([fieldName, resolver]) => {
+        if (typeof resolver !== 'function') {
+          return undefined;
+        }
+
+        if (typeName.toLowerCase().includes('enum')) {
+          return undefined;
+        }
+
         return {
           fieldName,
           typeName,
         };
       });
-    }
-  );
+    })
+    .filter(Boolean) as Array<{ fieldName: string; typeName: string }>;
 
   const getGraphQLComposeDependenciesLambdaLayers = () => {
     const { peerDependencies } = packageJson;
@@ -104,6 +117,14 @@ export const createApiTemplate = ({
 
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
+    /**
+     * This is a workaround to use with build script.
+     */
+    Metadata: {
+      Schema: {
+        Definition: sdlWithComments,
+      },
+    },
     Parameters: {
       Environment: {
         Default: 'Staging',
@@ -137,7 +158,7 @@ export const createApiTemplate = ({
         Type: 'AWS::AppSync::GraphQLSchema',
         Properties: {
           ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
-          Definition: sdl,
+          Definition: sdlWithoutComments,
         },
       },
       [AppSyncLambdaFunctionLogicalId]: {

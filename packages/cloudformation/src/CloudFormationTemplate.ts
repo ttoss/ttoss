@@ -1,23 +1,23 @@
-export interface Parameter {
+export type Parameter = {
   AllowedValues?: string[];
   Default?: string | number;
   Description?: string;
   Type: string;
   NoEcho?: boolean;
-}
+};
 
 export type Parameters = { [key: string]: Parameter };
 
-export interface Resource {
+export type Resource = {
   Type: string;
   DeletionPolicy?: 'Delete' | 'Retain';
   Description?: string;
   DependsOn?: string[] | string;
   Condition?: string;
   Properties: any;
-}
+};
 
-export interface IAMRoleResource extends Resource {
+export type IAMRoleResource = Resource & {
   Type: 'AWS::IAM::Role';
   Properties: {
     AssumeRolePolicyDocument: {
@@ -46,7 +46,7 @@ export interface IAMRoleResource extends Resource {
       };
     }[];
   };
-}
+};
 
 export type Resources = { [key: string]: IAMRoleResource | Resource };
 
@@ -62,6 +62,7 @@ export type Outputs = { [key: string]: Output };
 
 export type CloudFormationTemplate = {
   AWSTemplateFormatVersion: '2010-09-09';
+  Metadata?: any;
   Description?: string;
   Transform?: 'AWS::Serverless-2016-10-31';
   Mappings?: any;
