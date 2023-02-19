@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.8.1...@ttoss/appsync-api@0.8.2) (2023-02-19)
+
+### Bug Fixes
+
+- remove enum resolvers ([#203](https://github.com/ttoss/ttoss/issues/203)) ([c8b9556](https://github.com/ttoss/ttoss/commit/c8b955606a8205b9c191d326b3a48634d9e24aaa))
+
 ## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.8.0...@ttoss/appsync-api@0.8.1) (2023-02-19)
 
 ### Bug Fixes
