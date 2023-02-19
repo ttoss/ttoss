@@ -37,42 +37,46 @@ const createApiTemplateInput = {
   },
 };
 
-/**
- * See https://github.com/aws/aws-appsync-community/issues/38
- */
-test('schema should not contain """ comments', () => {
+describe('tests with default template', () => {
   const template = createApiTemplate(createApiTemplateInput);
 
-  expect(
-    template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
-  ).not.toContain('"""');
-});
-
-test('should contain UserPoolConfig', () => {
-  const template = createApiTemplate(createApiTemplateInput);
-
-  expect(
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties['UserPoolConfig']
-  ).toEqual({
-    AppIdClientRegex: createApiTemplateInput.userPoolConfig.appIdClientRegex,
-    AwsRegion: createApiTemplateInput.userPoolConfig.awsRegion,
-    DefaultAction: createApiTemplateInput.userPoolConfig.defaultAction,
-    UserPoolId: createApiTemplateInput.userPoolConfig.userPoolId,
+  /**
+   * See https://github.com/aws/aws-appsync-community/issues/38
+   */
+  test('schema should not contain """ comments', () => {
+    expect(
+      template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
+    ).not.toContain('"""');
   });
-});
 
-test('export graphql api arn', () => {
-  const template = createApiTemplate(createApiTemplateInput);
+  test('should have schema with descriptions', () => {
+    expect(template.Metadata.Schema.Definition).toContain('"""');
+  });
 
-  expect(template?.Outputs?.AppSyncApiArn).toEqual({
-    Export: {
-      Name: {
-        'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'AppSyncApiArn']],
+  test('should contain UserPoolConfig', () => {
+    expect(
+      template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+        'UserPoolConfig'
+      ]
+    ).toEqual({
+      AppIdClientRegex: createApiTemplateInput.userPoolConfig.appIdClientRegex,
+      AwsRegion: createApiTemplateInput.userPoolConfig.awsRegion,
+      DefaultAction: createApiTemplateInput.userPoolConfig.defaultAction,
+      UserPoolId: createApiTemplateInput.userPoolConfig.userPoolId,
+    });
+  });
+
+  test('export graphql api arn', () => {
+    expect(template?.Outputs?.AppSyncApiArn).toEqual({
+      Export: {
+        Name: {
+          'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'AppSyncApiArn']],
+        },
       },
-    },
-    Value: {
-      'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'Arn'],
-    },
+      Value: {
+        'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'Arn'],
+      },
+    });
   });
 });
 
