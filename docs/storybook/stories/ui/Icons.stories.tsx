@@ -75,14 +75,14 @@ const TemplateDynamic: Story = (args) => {
         <Slider
           defaultValue={50}
           max={200}
-          onChange={(e) => {
-            return setFontSize(e.target.value as any);
+          onChange={(e: any) => {
+            return setFontSize(e.target.value);
           }}
         />
 
         <Label>Color</Label>
         <Select
-          onChange={(e) => {
+          onChange={(e: any) => {
             return setColor(e.target.value);
           }}
         >
