@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.30.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.3...@ttoss/ui@1.30.4) (2023-02-23)
+
+### Bug Fixes
+
+- **ui:** icon props ([#213](https://github.com/ttoss/ttoss/issues/213)) ([e2ea09a](https://github.com/ttoss/ttoss/commit/e2ea09a4258c73f3922663780f083bfdca5cd9ea))
+
 ## [1.30.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.2...@ttoss/ui@1.30.3) (2023-02-23)
 
 ### Bug Fixes
