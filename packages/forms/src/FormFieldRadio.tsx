@@ -38,7 +38,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
                 onChange={onChange}
                 onBlur={onBlur}
                 value={option.value}
-                defaultChecked={value === option.value}
+                checked={value === option.value}
                 name={name}
                 id={id}
                 {...radioProps}
