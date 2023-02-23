@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.4](https://github.com/ttoss/carlin/compare/carlin@1.23.3...carlin@1.23.4) (2023-02-23)
+
+### Bug Fixes
+
+- radio reset checked ([#210](https://github.com/ttoss/carlin/issues/210)) ([7ccfaa1](https://github.com/ttoss/carlin/commit/7ccfaa12cbcd0ed9a666348a5faaa79629c727fd))
+
 ## [1.23.3](https://github.com/ttoss/carlin/compare/carlin@1.23.2...carlin@1.23.3) (2023-02-19)
 
 **Note:** Version bump only for package carlin

@@ -1,14 +1,14 @@
 {
   "private": true,
   "name": "@terezinha-farm/iam",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "scripts": {
     "deploy": "carlin deploy"
   },
   "dependencies": {
-    "@ttoss/cloud-roles": "^0.5.2"
+    "@ttoss/cloud-roles": "^0.5.3"
   },
   "devDependencies": {
-    "carlin": "^1.23.3"
+    "carlin": "^1.23.4"
   }
 }

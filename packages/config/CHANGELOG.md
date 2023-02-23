@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.1...@ttoss/config@1.28.2) (2023-02-23)
+
+### Bug Fixes
+
+- radio reset checked ([#210](https://github.com/ttoss/ttoss/issues/210)) ([7ccfaa1](https://github.com/ttoss/ttoss/commit/7ccfaa12cbcd0ed9a666348a5faaa79629c727fd))
+
 ## [1.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.0...@ttoss/config@1.28.1) (2023-02-15)
 
 **Note:** Version bump only for package @ttoss/config
