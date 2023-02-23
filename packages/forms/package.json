@@ -20,12 +20,12 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
-    "@hookform/resolvers": "^2.9.10",
-    "react-hook-form": "^7.41.2",
-    "yup": "^0.32.11"
+    "@hookform/resolvers": "^2.9.11",
+    "react-hook-form": "^7.43.2",
+    "yup": "^1.0.0"
   },
   "peerDependencies": {
-    "@ttoss/ui": "^1.27.3",
+    "@ttoss/ui": "^1.30.2",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -33,10 +33,10 @@
     "@ttoss/test-utils": "^1.20.3",
     "@ttoss/ui": "^1.30.2",
     "@types/jest": "^29.4.0",
-    "jest": "^29.4.2",
+    "jest": "^29.4.3",
     "react": "^18.2.0",
-    "react-hook-form": "^7.41.2",
-    "yup": "^0.32.11"
+    "react-hook-form": "^7.43.2",
+    "yup": "^1.0.0"
   },
   "publishConfig": {
     "access": "public"
