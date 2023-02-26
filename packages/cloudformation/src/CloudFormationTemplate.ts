@@ -26,6 +26,7 @@ export type IAMRoleResource = Resource & {
         Effect: 'Allow' | 'Deny';
         Action: string;
         Principal: any;
+        Condition?: { [key: string]: any };
       }[];
     };
     ManagedPolicyArns?: string[];
@@ -40,8 +41,8 @@ export type IAMRoleResource = Resource & {
           Resource:
             | string
             | string[]
-            | { [key: string]: string }
-            | { [key: string]: string }[];
+            | { [key: string]: any }
+            | { [key: string]: any }[];
         }[];
       };
     }[];

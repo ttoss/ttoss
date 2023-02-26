@@ -167,12 +167,23 @@ export const getStackOutput = async ({
 
 const saveEnvironmentOutput = async ({
   outputs,
+  stackName,
 }: {
   outputs: AWS.CloudFormation.Output[];
+  stackName: string;
 }) => {
-  const stackName = await getStackName();
+  const envFile: any = { stackName };
 
-  const envFile: any = { stackName, outputs };
+  envFile.outputs = outputs.reduce((acc, output) => {
+    if (!output.OutputKey || !output) {
+      return acc;
+    }
+
+    return {
+      ...acc,
+      [output.OutputKey]: output,
+    };
+  }, {});
 
   const dotCarlinFolderPath = path.join(process.cwd(), '.carlin');
 
@@ -196,7 +207,7 @@ export const printStackOutputsAfterDeploy = async ({
     Outputs = [],
   } = await describeStack({ stackName });
 
-  await saveEnvironmentOutput({ outputs: Outputs });
+  await saveEnvironmentOutput({ stackName, outputs: Outputs });
 
   log.output('Describe Stack');
   log.output('StackName', StackName);

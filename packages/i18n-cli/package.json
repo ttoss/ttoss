@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@formatjs/cli-lib": "^5.1.10",
-    "glob": "^8.0.3"
+    "glob": "^8.1.0"
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.2"

@@ -1,9 +1,12 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 /* eslint-disable no-var */
-import { optionsFromConfigFiles, parseCli } from '../testUtils';
+import { optionsFromConfigFiles, parseCli } from '../../testUtils';
 
-jest.mock('./deploy/baseStack/deployBaseStack', () => {
+jest.mock('../../src/deploy/baseStack/deployBaseStack', () => {
   return {
-    ...(jest.requireActual('./deploy/baseStack/deployBaseStack') as any),
+    ...(jest.requireActual(
+      '../../src/deploy/baseStack/deployBaseStack'
+    ) as any),
     deployBaseStack: jest.fn(),
   };
 });
@@ -25,16 +28,16 @@ jest.mock('findup-sync', () => {
 });
 
 import * as deepmerge from 'deepmerge';
-import { AWS_DEFAULT_REGION } from './config';
-import { cloudFormation } from './deploy/cloudFormation.core';
-import { deployBaseStack } from './deploy/baseStack/deployBaseStack';
+import { AWS_DEFAULT_REGION } from '../../src/config';
+import { cloudFormation } from '../../src/deploy/cloudFormation.core';
+import { deployBaseStack } from '../../src/deploy/baseStack/deployBaseStack';
 import { faker } from '@ttoss/test-utils/faker';
 import {
   getCurrentBranch,
   getEnvVar,
   getEnvironment,
   getProjectName,
-} from './utils';
+} from '../../src/utils';
 import AWS from 'aws-sdk';
 
 beforeAll(() => {

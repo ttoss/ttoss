@@ -4,7 +4,7 @@ import coverageThreshold from './jest.coverageThreshold';
 const config = jestConfig({
   collectCoverage: true,
   coverageThreshold,
-  setupFiles: ['<rootDir>/setupTests.ts'],
+  setupFiles: ['<rootDir>/tests/setupTests.ts'],
   silent: true,
 });
 
