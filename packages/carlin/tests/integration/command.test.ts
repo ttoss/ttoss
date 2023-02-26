@@ -1,24 +1,32 @@
-jest.mock('./cloudFormation', () => ({
-  deployCloudFormation: jest.fn(),
-  destroyCloudFormation: jest.fn(),
-}));
+jest.mock('./../../src/deploy/cloudFormation', () => {
+  return {
+    deployCloudFormation: jest.fn(),
+    destroyCloudFormation: jest.fn(),
+  };
+});
 
-jest.mock('./readDockerfile');
+jest.mock('./../../src/deploy/readDockerfile');
 
-import * as commandModule from './command';
-import * as deployLambdaLayerModule from './lambdaLayer/deployLambdaLayer';
-import * as deployStaticAppModule from './staticApp/deployStaticApp';
-import { deployCloudFormation, destroyCloudFormation } from './cloudFormation';
+import * as commandModule from '../../src/deploy/command';
+import * as deployLambdaLayerModule from '../../src/deploy/lambdaLayer/deployLambdaLayer';
+import * as deployStaticAppModule from '../../src/deploy/staticApp/deployStaticApp';
+import {
+  deployCloudFormation,
+  destroyCloudFormation,
+} from '../../src/deploy/cloudFormation';
 import { faker } from '@ttoss/test-utils/faker';
-import { getEnvVar } from '../utils/environmentVariables';
-import { getStackName, setPreDefinedStackName } from './stackName';
-import { readDockerfile } from './readDockerfile';
+import { getEnvVar } from '../../src/utils/environmentVariables';
+import {
+  getStackName,
+  setPreDefinedStackName,
+} from '../../src/deploy/stackName';
+import { readDockerfile } from '../../src/deploy/readDockerfile';
 import yargs from 'yargs';
 
 const cli = yargs.command(commandModule.deployCommand);
 
-const parse = (command: string, options: any = {}) =>
-  new Promise<any>((resolve, reject) => {
+const parse = (command: string, options: any = {}) => {
+  return new Promise<any>((resolve, reject) => {
     cli.parse(command, options, (err, argv) => {
       if (err) {
         reject(err);
@@ -27,26 +35,36 @@ const parse = (command: string, options: any = {}) =>
       resolve(argv);
     });
   });
+};
 
 beforeEach(() => {
   jest.resetAllMocks();
 });
 
 describe('testing skip-deploy flag', () => {
-  const mockExit = jest
-    .spyOn(process, 'exit')
-    .mockImplementation(() => null as never);
+  // const mockExit = jest.spyOn(process, 'exit').mockImplementation((number) => {
+  //   throw new Error('process.exit: ' + number);
+  // });
 
-  afterAll(() => {
-    mockExit.mockRestore();
-  });
+  const realProcess = process;
+  const mockExit = jest.fn();
+
+  /**
+   * https://stackoverflow.com/a/49290777/8786986
+   */
+  global.process = { ...realProcess, exit: mockExit as any };
 
   beforeEach(() => {
     mockExit.mockReset();
   });
 
+  afterAll(() => {
+    mockExit.mockRestore();
+  });
+
   test('should skip deploy', async () => {
     await parse('deploy', { skipDeploy: true });
+
     expect(mockExit).toHaveBeenCalledWith(0);
   });
 
@@ -59,6 +77,7 @@ describe('testing skip-deploy flag', () => {
         },
       },
     });
+
     expect(mockExit).not.toHaveBeenCalled();
   });
 });
@@ -130,9 +149,9 @@ describe('handlers', () => {
       command: 'deploy static-app',
     },
   ])('should call $method', async ({ module, method, command }) => {
-    const mock = jest
-      .spyOn(module as any, method)
-      .mockImplementation(() => Promise.resolve());
+    const mock = jest.spyOn(module as any, method).mockImplementation(() => {
+      return Promise.resolve();
+    });
 
     await parse(command);
 

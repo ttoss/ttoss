@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.2",
-    "@types/aws-lambda": "^8.10.110",
+    "@types/aws-lambda": "^8.10.111",
     "carlin": "^1.23.4",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"

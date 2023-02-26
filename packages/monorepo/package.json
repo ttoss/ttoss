@@ -21,7 +21,7 @@
   "dependencies": {
     "js-yaml": "^4.1.0",
     "npmlog": "^7.0.1",
-    "yargs": "^17.6.2"
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.2",
