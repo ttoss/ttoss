@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.5.3...@ttoss/cloudformation@0.5.4) (2023-02-26)
+
+### Bug Fixes
+
+- update carlin output ([#215](https://github.com/ttoss/ttoss/issues/215)) ([f7a9c24](https://github.com/ttoss/ttoss/commit/f7a9c248042e680120dd3c01efe984b59adcf947))
+
 ## [0.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.5.2...@ttoss/cloudformation@0.5.3) (2023-02-23)
 
 ### Bug Fixes

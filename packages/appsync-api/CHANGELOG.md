@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.8.3...@ttoss/appsync-api@0.8.4) (2023-02-26)
+
+### Bug Fixes
+
+- update carlin output ([#215](https://github.com/ttoss/ttoss/issues/215)) ([f7a9c24](https://github.com/ttoss/ttoss/commit/f7a9c248042e680120dd3c01efe984b59adcf947))
+
 ## [0.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.8.2...@ttoss/appsync-api@0.8.3) (2023-02-23)
 
 **Note:** Version bump only for package @ttoss/appsync-api

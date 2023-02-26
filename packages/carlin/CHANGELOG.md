@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.5](https://github.com/ttoss/carlin/compare/carlin@1.23.4...carlin@1.23.5) (2023-02-26)
+
+### Bug Fixes
+
+- update carlin output ([#215](https://github.com/ttoss/carlin/issues/215)) ([f7a9c24](https://github.com/ttoss/carlin/commit/f7a9c248042e680120dd3c01efe984b59adcf947))
+
 ## [1.23.4](https://github.com/ttoss/carlin/compare/carlin@1.23.3...carlin@1.23.4) (2023-02-23)
 
 ### Bug Fixes
