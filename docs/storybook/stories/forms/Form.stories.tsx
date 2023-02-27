@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { Button } from '@ttoss/ui';
+import { Button, Icon } from '@ttoss/ui';
 import {
   Form,
   FormFieldCheckbox,
@@ -33,7 +33,15 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormFieldInput name="firstName" label="First Name" />
+      <FormFieldInput
+        name="firstName"
+        label="First Name"
+        tooltipIcon={<Icon icon="mdi:user-circle" />}
+        trailingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
+        leadingIcon={<Icon icon="ic:baseline-supervised-user-circle" />}
+        placeholder="Type your First Name"
+        showCharacterCounter
+      />
       <FormFieldInput name="age" label="Age" type="number" />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
       <FormFieldInput name="version" label="Version (disabled)" disabled />
