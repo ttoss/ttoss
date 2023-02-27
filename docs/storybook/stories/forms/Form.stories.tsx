@@ -6,6 +6,7 @@ import {
   FormFieldInput,
   yupResolver,
 } from '@ttoss/forms';
+import { Icon } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
@@ -33,7 +34,12 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormFieldInput name="firstName" label="First Name" />
+      <FormFieldInput
+        name="firstName"
+        label="First Name"
+        trailingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
+        leadingIcon="ic:baseline-supervised-user-circle"
+      />
       <FormFieldInput name="age" label="Age" type="number" />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
       <FormFieldInput name="version" label="Version (disabled)" disabled />
