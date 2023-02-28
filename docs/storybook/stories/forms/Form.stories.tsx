@@ -10,6 +10,7 @@ import { Icon } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
+import alertIcon from '@iconify-icons/mdi-light/alert';
 
 export default {
   title: 'Forms/Form',
@@ -37,10 +38,15 @@ const Template: Story = () => {
       <FormFieldInput
         name="firstName"
         label="First Name"
-        trailingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
+        trailingIcon={alertIcon}
         leadingIcon="ic:baseline-supervised-user-circle"
       />
-      <FormFieldInput name="age" label="Age" type="number" />
+      <FormFieldInput
+        leadingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
+        name="age"
+        label="Age"
+        type="number"
+      />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
       <FormFieldInput name="version" label="Version (disabled)" disabled />
       <Button type="submit">Submit</Button>
