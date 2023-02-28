@@ -1,7 +1,7 @@
 import { Icon, Input } from '../../src';
 import { render, screen } from '@ttoss/test-utils';
 
-// import alertIcon from '@iconify-icons/mdi-light/alert';
+import alertIcon from '@iconify-icons/mdi-light/alert';
 
 test('should render Input component without icon', () => {
   render(<Input placeholder="My Input" />);
@@ -47,17 +47,17 @@ test('should render Input component with trailingIcon and leadingIcon as Compone
   expect(leadingIconEl).toBeInTheDocument();
 });
 
-// test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
-//   render(
-//     <Input
-//       placeholder="My Input"
-//       trailingIcon={alertIcon}
-//       leadingIcon={alertIcon}
-//     />
-//   );
+test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
+  render(
+    <Input
+      placeholder="My Input"
+      trailingIcon={alertIcon}
+      leadingIcon={alertIcon}
+    />
+  );
 
-//   const [trailingIconEl, leadingIconEl] = screen.getAllByTestId('iconify-icon');
+  const [trailingIconEl, leadingIconEl] = screen.getAllByTestId('iconify-icon');
 
-//   expect(trailingIconEl).toBeInTheDocument();
-//   expect(leadingIconEl).toBeInTheDocument();
-// });
+  expect(trailingIconEl).toBeInTheDocument();
+  expect(leadingIconEl).toBeInTheDocument();
+});
