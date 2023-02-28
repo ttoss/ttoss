@@ -6014,6 +6014,13 @@
   dependencies:
     iconify-icon "^1.0.5"
 
+"@iconify-icons/mdi-light@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@iconify-icons/mdi-light/-/mdi-light-1.2.5.tgz#5d173ebd74aaac0e33620452fdaf32c3209d772c"
+  integrity sha512-HL71Y9ap0xyIAETgzrPAKg9mBP2uqr/QCAIykngk61LiwVXaazl0dLVW5ghnRh8zEtq3kb2jovZlwPtujoYDnQ==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/react@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@iconify/react/-/react-4.1.0.tgz#5ea86acae6e209a2f5b1b52922ab85d0d22f9b45"
@@ -6021,7 +6028,7 @@
   dependencies:
     "@iconify/types" "^2.0.0"
 
-"@iconify/types@^2.0.0":
+"@iconify/types@*", "@iconify/types@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@iconify/types/-/types-2.0.0.tgz#ab0e9ea681d6c8a1214f30cd741fe3a20cc57f57"
   integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==
