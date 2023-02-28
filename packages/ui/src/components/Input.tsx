@@ -1,11 +1,25 @@
 import { Flex, Icon, Text } from '..';
 import React from 'react';
+import type { IconifyIcon } from '@iconify/types';
 
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
 
+type IconType = string | React.ReactNode | IconifyIcon;
+
 export type InputProps = InputPropsUI & {
-  leadingIcon: string | React.ReactNode;
-  trailingIcon: string | React.ReactNode;
+  leadingIcon?: IconType;
+  trailingIcon?: IconType;
+};
+
+const renderIcon = (icon: IconType) => {
+  if (
+    typeof icon === 'string' ||
+    (typeof icon === 'object' && !!(icon as IconifyIcon)?.body)
+  ) {
+    return <Icon icon={icon as string | IconifyIcon} />;
+  }
+
+  return <>{icon}</>;
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -23,11 +37,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }}
             variant="leading-icon"
           >
-            {typeof leadingIcon === 'string' ? (
-              <Icon icon={leadingIcon} />
-            ) : (
-              leadingIcon
-            )}
+            {renderIcon(leadingIcon)}
           </Text>
         )}
         <InputUI
@@ -51,11 +61,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }}
             variant="trailing-icon"
           >
-            {typeof trailingIcon === 'string' ? (
-              <Icon icon={trailingIcon} />
-            ) : (
-              trailingIcon
-            )}
+            {renderIcon(trailingIcon)}
           </Text>
         )}
       </Flex>
