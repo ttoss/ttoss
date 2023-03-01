@@ -1,7 +1,21 @@
-import { Box, Flex, Input, type InputProps, Label, Text } from '@ttoss/ui';
+import { Box, Icon, Input, type InputProps, Label, Text } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 import React from 'react';
+import type { IconifyIcon } from '@iconify/types';
+
+type IconType = string | React.ReactNode | IconifyIcon;
+
+const renderIcon = (icon: IconType) => {
+  if (
+    typeof icon === 'string' ||
+    (typeof icon === 'object' && !!(icon as IconifyIcon)?.body)
+  ) {
+    return <Icon icon={icon as string | IconifyIcon} />;
+  }
+
+  return <>{icon}</>;
+};
 
 export const FormFieldInput = <
   TFieldValues extends FieldValues = FieldValues,
@@ -10,22 +24,16 @@ export const FormFieldInput = <
   label,
   name,
   tooltipIcon,
-  trailingIcon,
-  leadingIcon,
   showCharacterCounter,
-  sx,
   ...inputProps
 }: {
   label?: string;
   name: TName;
-  leadingIcon?: React.ReactNode;
-  tooltipIcon?: React.ReactNode;
-  trailingIcon?: React.ReactNode;
+  tooltipIcon?: IconType;
   showCharacterCounter?: boolean;
 } & InputProps) => {
   const {
     field: { onChange, onBlur, value, ref },
-    formState: { errors },
   } = useController<any>({
     name,
     defaultValue: '',
@@ -39,7 +47,13 @@ export const FormFieldInput = <
     return value.length;
   }, [value]);
 
-  const hasError = !!errors[name]?.message;
+  const tooltipIconElement = React.useMemo(() => {
+    if (!tooltipIcon) {
+      return null;
+    }
+
+    return renderIcon(tooltipIcon);
+  }, [tooltipIcon]);
 
   const id = `form-field-input-${name}`;
 
@@ -52,12 +66,12 @@ export const FormFieldInput = <
           htmlFor={id}
         >
           {label}
-          {tooltipIcon && (
+          {tooltipIconElement && (
             <Text
               sx={{ marginLeft: '9px', fontSize: '12px', lineHeight: 0 }}
               variant="tooltip-icon"
             >
-              {tooltipIcon}
+              {tooltipIconElement}
             </Text>
           )}
 
@@ -71,54 +85,17 @@ export const FormFieldInput = <
           )}
         </Label>
       )}
-      <Flex sx={{ position: 'relative' }}>
-        {leadingIcon && (
-          <Text
-            sx={{
-              position: 'absolute',
-              alignSelf: 'center',
-              fontSize: '18px',
-              left: '16px',
-              lineHeight: 0,
-            }}
-            variant="leading-icon"
-          >
-            {leadingIcon}
-          </Text>
-        )}
-        <Input
-          ref={ref}
-          onChange={onChange}
-          onBlur={onBlur}
-          value={value}
-          name={name}
-          id={id}
-          sx={{
-            paddingLeft: leadingIcon ? '50px' : undefined,
-            paddingRight: trailingIcon ? '50px' : undefined,
-            borderColor: hasError ? 'danger' : undefined,
-            borderWidth: '2px',
-            ...sx,
-          }}
-          {...inputProps}
-        />
 
-        {trailingIcon && (
-          <Text
-            sx={{
-              position: 'absolute',
-              right: '16px',
-              alignSelf: 'center',
-              fontSize: '18px',
-              lineHeight: 0,
-              color: hasError ? 'danger' : undefined,
-            }}
-            variant="trailing-icon"
-          >
-            {trailingIcon}
-          </Text>
-        )}
-      </Flex>
+      <Input
+        ref={ref}
+        onChange={onChange}
+        onBlur={onBlur}
+        value={value}
+        name={name}
+        id={id}
+        {...inputProps}
+      />
+
       <ErrorMessage name={name} />
     </Box>
   );
