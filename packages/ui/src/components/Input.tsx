@@ -48,7 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               alignSelf: 'center',
               fontSize: 'lg',
-              left: 'lg',
+              left: '1rem',
               lineHeight: 0,
             }}
             variant="leading-icon"
@@ -70,7 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <Text
             sx={{
               position: 'absolute',
-              right: 'lg',
+              right: '1rem',
               alignSelf: 'center',
               fontSize: 'lg',
               lineHeight: 0,
