@@ -4,11 +4,12 @@ import type { IconifyIcon } from '@iconify/types';
 
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
 
-type IconType = string | React.ReactNode | IconifyIcon;
+export type IconType = string | React.ReactNode | IconifyIcon;
 
 export type InputProps = InputPropsUI & {
   leadingIcon?: IconType;
   trailingIcon?: IconType;
+  showCharacterCounter?: boolean;
 };
 
 const renderIcon = (icon: IconType) => {
@@ -23,7 +24,10 @@ const renderIcon = (icon: IconType) => {
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
+  (
+    { leadingIcon, trailingIcon, sx, showCharacterCounter, ...inputProps },
+    ref
+  ) => {
     const leadingIconElement = React.useMemo(() => {
       if (!leadingIcon) {
         return null;
@@ -40,8 +44,32 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return renderIcon(trailingIcon);
     }, [trailingIcon]);
 
+    const characterCounter = React.useMemo(() => {
+      if (!inputProps.value) {
+        return 0;
+      }
+
+      return String(inputProps.value).length;
+    }, [inputProps.value]);
+
     return (
       <Flex sx={{ position: 'relative' }}>
+        {showCharacterCounter && (
+          <Text
+            sx={{
+              marginLeft: 'auto',
+              fontSize: 'xs',
+              lineHeight: 0,
+              position: 'absolute',
+              right: 0,
+              top: '-md',
+            }}
+            variant="character-counter"
+          >
+            {characterCounter}
+          </Text>
+        )}
+
         {leadingIcon && (
           <Text
             sx={{

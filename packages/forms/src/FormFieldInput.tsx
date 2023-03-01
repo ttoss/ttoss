@@ -1,10 +1,16 @@
-import { Box, Icon, Input, type InputProps, Label, Text } from '@ttoss/ui';
+import {
+  Box,
+  Icon,
+  type IconType,
+  Input,
+  type InputProps,
+  Label,
+  Text,
+} from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 import React from 'react';
 import type { IconifyIcon } from '@iconify/types';
-
-type IconType = string | React.ReactNode | IconifyIcon;
 
 const renderIcon = (icon: IconType) => {
   if (
@@ -24,13 +30,11 @@ export const FormFieldInput = <
   label,
   name,
   tooltipIcon,
-  showCharacterCounter,
   ...inputProps
 }: {
   label?: string;
   name: TName;
   tooltipIcon?: IconType;
-  showCharacterCounter?: boolean;
 } & InputProps) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -38,14 +42,6 @@ export const FormFieldInput = <
     name,
     defaultValue: '',
   });
-
-  const characterCounter = React.useMemo(() => {
-    if (!value) {
-      return 0;
-    }
-
-    return value.length;
-  }, [value]);
 
   const tooltipIconElement = React.useMemo(() => {
     if (!tooltipIcon) {
@@ -68,19 +64,10 @@ export const FormFieldInput = <
           {label}
           {tooltipIconElement && (
             <Text
-              sx={{ marginLeft: '9px', fontSize: '12px', lineHeight: 0 }}
+              sx={{ marginLeft: 'md', fontSize: 'xs', lineHeight: 0 }}
               variant="tooltip-icon"
             >
               {tooltipIconElement}
-            </Text>
-          )}
-
-          {showCharacterCounter && (
-            <Text
-              sx={{ marginLeft: 'auto', fontSize: '12px', lineHeight: 0 }}
-              variant="character-counter"
-            >
-              {characterCounter}
             </Text>
           )}
         </Label>

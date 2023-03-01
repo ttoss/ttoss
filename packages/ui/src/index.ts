@@ -13,7 +13,7 @@ export { Flex, type FlexProps } from './components/Flex';
 export { Grid, type GridProps } from './components/Grid';
 export { Heading, type HeadingProps } from './components/Heading';
 export { Image, type ImageProps } from './components/Image';
-export { Input, type InputProps } from './components/Input';
+export { Input, type InputProps, type IconType } from './components/Input';
 export { Label, type LabelProps } from './components/Label';
 export { Link, type LinkProps } from './components/Link';
 export {
