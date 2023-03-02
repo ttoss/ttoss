@@ -62,3 +62,26 @@ test('should display error messages', async () => {
 
   expect(await screen.findByText('First name is required')).toBeInTheDocument();
 });
+
+test('should render the tooltip icon passed by param', () => {
+  const tooltipIcon = 'ic:baseline-supervised-user-circle';
+  const RenderForm = () => {
+    const formMethods = useForm({});
+
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldInput
+          name="firstName"
+          label="First Name"
+          tooltipIcon={tooltipIcon}
+        />
+      </Form>
+    );
+  };
+  render(<RenderForm />);
+
+  const iconElement = screen.getByTestId('iconify-icon');
+
+  expect(iconElement).toBeInTheDocument();
+  expect(iconElement.getAttribute('icon')).toEqual(tooltipIcon);
+});
