@@ -1,4 +1,4 @@
-import { Icon, Input } from '../../src';
+import { Input } from '../../src';
 import { render, screen } from '@ttoss/test-utils';
 
 import alertIcon from '@iconify-icons/mdi-light/alert';
@@ -29,24 +29,6 @@ test('should render Input component with trailingIcon and leadingIcon as string'
   expect(leadingIconEl).toBeInTheDocument();
 });
 
-test('should render Input component with trailingIcon and leadingIcon as Component', () => {
-  const trailingIconAsComponent = <Icon icon="ant-design:down-square-filled" />;
-  const leadingIconAsComponent = <Icon icon="ant-design:down-square-filled" />;
-
-  render(
-    <Input
-      placeholder="My Input"
-      trailingIcon={trailingIconAsComponent}
-      leadingIcon={leadingIconAsComponent}
-    />
-  );
-
-  const [trailingIconEl, leadingIconEl] = screen.getAllByTestId('iconify-icon');
-
-  expect(trailingIconEl).toBeInTheDocument();
-  expect(leadingIconEl).toBeInTheDocument();
-});
-
 test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
   render(
     <Input
@@ -60,13 +42,4 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
-});
-
-test('should render Input component with character counter when pass showCharacterCounter param', () => {
-  const value = 'This text is to check the showCharacterCounter param';
-  render(<Input value={value} showCharacterCounter />);
-
-  const characterCounter = screen.getByText(value.length);
-
-  expect(characterCounter).toBeInTheDocument();
 });

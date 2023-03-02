@@ -1,75 +1,21 @@
-import { Flex, Icon, Text } from '..';
+import { Flex, type IconTypeProp, Text } from '..';
 import React from 'react';
-import type { IconifyIcon } from '@iconify/types';
 
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
-
-export type IconType = string | React.ReactNode | IconifyIcon;
+import { useIconElement } from '../hooks/useIconElement';
 
 export type InputProps = InputPropsUI & {
-  leadingIcon?: IconType;
-  trailingIcon?: IconType;
-  showCharacterCounter?: boolean;
-};
-
-const renderIcon = (icon: IconType) => {
-  if (
-    typeof icon === 'string' ||
-    (typeof icon === 'object' && !!(icon as IconifyIcon)?.body)
-  ) {
-    return <Icon icon={icon as string | IconifyIcon} />;
-  }
-
-  return <>{icon}</>;
+  leadingIcon?: IconTypeProp;
+  trailingIcon?: IconTypeProp;
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    { leadingIcon, trailingIcon, sx, showCharacterCounter, ...inputProps },
-    ref
-  ) => {
-    const leadingIconElement = React.useMemo(() => {
-      if (!leadingIcon) {
-        return null;
-      }
-
-      return renderIcon(leadingIcon);
-    }, [leadingIcon]);
-
-    const trailingIconElement = React.useMemo(() => {
-      if (!trailingIcon) {
-        return null;
-      }
-
-      return renderIcon(trailingIcon);
-    }, [trailingIcon]);
-
-    const characterCounter = React.useMemo(() => {
-      if (!inputProps.value) {
-        return 0;
-      }
-
-      return String(inputProps.value).length;
-    }, [inputProps.value]);
+  ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
+    const leadingIconElement = useIconElement(leadingIcon);
+    const trailingIconElement = useIconElement(trailingIcon);
 
     return (
       <Flex sx={{ position: 'relative' }}>
-        {showCharacterCounter && (
-          <Text
-            sx={{
-              marginLeft: 'auto',
-              fontSize: 'xs',
-              lineHeight: 0,
-              position: 'absolute',
-              right: 0,
-              top: '-md',
-            }}
-            variant="character-counter"
-          >
-            {characterCounter}
-          </Text>
-        )}
-
         {leadingIcon && (
           <Text
             sx={{
