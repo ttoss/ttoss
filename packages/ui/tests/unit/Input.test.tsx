@@ -61,3 +61,12 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
 });
+
+test('should render Input component with character counter when pass showCharacterCounter param', () => {
+  const value = 'This text is to check the showCharacterCounter param';
+  render(<Input value={value} showCharacterCounter />);
+
+  const characterCounter = screen.getByText(value.length);
+
+  expect(characterCounter).toBeInTheDocument();
+});
