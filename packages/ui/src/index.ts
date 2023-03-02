@@ -4,6 +4,7 @@ export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 
 export { useTheme } from './theme/useTheme';
+export { useIconElement, type IconTypeProp } from './hooks/useIconElement';
 
 export { Box, type BoxProps } from './components/Box';
 export { Button, type ButtonProps } from './components/Button';
@@ -13,7 +14,7 @@ export { Flex, type FlexProps } from './components/Flex';
 export { Grid, type GridProps } from './components/Grid';
 export { Heading, type HeadingProps } from './components/Heading';
 export { Image, type ImageProps } from './components/Image';
-export { Input, type InputProps, type IconType } from './components/Input';
+export { Input, type InputProps } from './components/Input';
 export { Label, type LabelProps } from './components/Label';
 export { Link, type LinkProps } from './components/Link';
 export {
