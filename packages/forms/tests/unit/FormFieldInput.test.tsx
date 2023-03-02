@@ -85,3 +85,29 @@ test('should render the tooltip icon passed by param', () => {
   expect(iconElement).toBeInTheDocument();
   expect(iconElement.getAttribute('icon')).toEqual(tooltipIcon);
 });
+
+test('should render FormFieldInput with character counter when pass showCharacterCounter param', () => {
+  const firstName = 'This text is to check the showCharacterCounter param';
+
+  const RenderForm = () => {
+    const formMethods = useForm({
+      defaultValues: { firstName },
+    });
+
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldInput
+          name="firstName"
+          label="First Name"
+          placeholder="First Name"
+          showCharacterCounter
+        />
+      </Form>
+    );
+  };
+  render(<RenderForm />);
+
+  const characterCounter = screen.getByText(firstName.length);
+
+  expect(characterCounter).toBeInTheDocument();
+});

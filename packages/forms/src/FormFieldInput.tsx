@@ -1,27 +1,15 @@
 import {
   Box,
-  Icon,
-  type IconType,
+  type IconTypeProp,
   Input,
   type InputProps,
   Label,
   Text,
+  useIconElement,
 } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 import React from 'react';
-import type { IconifyIcon } from '@iconify/types';
-
-const renderIcon = (icon: IconType) => {
-  if (
-    typeof icon === 'string' ||
-    (typeof icon === 'object' && !!(icon as IconifyIcon)?.body)
-  ) {
-    return <Icon icon={icon as string | IconifyIcon} />;
-  }
-
-  return <>{icon}</>;
-};
 
 export const FormFieldInput = <
   TFieldValues extends FieldValues = FieldValues,
@@ -30,11 +18,13 @@ export const FormFieldInput = <
   label,
   name,
   tooltipIcon,
+  showCharacterCounter,
   ...inputProps
 }: {
   label?: string;
   name: TName;
-  tooltipIcon?: IconType;
+  tooltipIcon?: IconTypeProp;
+  showCharacterCounter?: boolean;
 } & InputProps) => {
   const {
     field: { onChange, onBlur, value, ref },
@@ -43,13 +33,15 @@ export const FormFieldInput = <
     defaultValue: '',
   });
 
-  const tooltipIconElement = React.useMemo(() => {
-    if (!tooltipIcon) {
-      return null;
+  const tooltipIconElement = useIconElement(tooltipIcon);
+
+  const characterCounter = React.useMemo(() => {
+    if (!value) {
+      return 0;
     }
 
-    return renderIcon(tooltipIcon);
-  }, [tooltipIcon]);
+    return String(value).length;
+  }, [value]);
 
   const id = `form-field-input-${name}`;
 
@@ -68,6 +60,19 @@ export const FormFieldInput = <
               variant="tooltip-icon"
             >
               {tooltipIconElement}
+            </Text>
+          )}
+
+          {showCharacterCounter && (
+            <Text
+              sx={{
+                marginLeft: 'auto',
+                fontSize: 'xs',
+                lineHeight: 0,
+              }}
+              variant="character-counter"
+            >
+              {characterCounter}
             </Text>
           )}
         </Label>
