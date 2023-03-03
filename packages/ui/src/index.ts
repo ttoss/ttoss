@@ -4,7 +4,6 @@ export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 
 export { useTheme } from './theme/useTheme';
-export { useIconElement, type IconTypeProp } from './hooks/useIconElement';
 
 export { Box, type BoxProps } from './components/Box';
 export { Button, type ButtonProps } from './components/Button';
@@ -25,7 +24,7 @@ export { Text, type TextProps } from './components/Text';
 export { Select, type SelectProps } from './components/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Radio, type RadioProps } from './components/Radio';
-export { Icon, type IconProps } from './components/Icon';
+export { Icon, type IconProps, type IconType } from './components/Icon';
 export { Slider, type SliderProps } from './components/Slider';
 export { Checkbox, type CheckboxProps } from './components/Checkbox';
 export { InfiniteLinearProgress } from './components/InfiniteLinearProgress';

@@ -1,19 +1,15 @@
-import { Flex, type IconTypeProp, Text } from '..';
+import { Flex, Icon, type IconType, Text } from '..';
 import React from 'react';
 
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
-import { useIconElement } from '../hooks/useIconElement';
 
 export type InputProps = InputPropsUI & {
-  leadingIcon?: IconTypeProp;
-  trailingIcon?: IconTypeProp;
+  leadingIcon?: IconType;
+  trailingIcon?: IconType;
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
-    const leadingIconElement = useIconElement(leadingIcon);
-    const trailingIconElement = useIconElement(trailingIcon);
-
     return (
       <Flex sx={{ position: 'relative' }}>
         {leadingIcon && (
@@ -27,7 +23,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }}
             variant="leading-icon"
           >
-            {leadingIconElement}
+            <Icon icon={leadingIcon} />
           </Text>
         )}
         <InputUI
@@ -51,7 +47,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }}
             variant="trailing-icon"
           >
-            {trailingIconElement}
+            <Icon icon={trailingIcon} />
           </Text>
         )}
       </Flex>
