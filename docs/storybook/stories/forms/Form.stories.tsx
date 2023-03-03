@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { Button, Icon } from '@ttoss/ui';
+import { Button } from '@ttoss/ui';
 import {
   Form,
   FormFieldCheckbox,
@@ -43,7 +43,6 @@ const Template: Story = () => {
         showCharacterCounter
       />
       <FormFieldInput
-        leadingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
         tooltipIcon={alertIcon}
         name="age"
         label="Age"
