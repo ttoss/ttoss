@@ -1,45 +1,15 @@
-import { Flex, Icon, Text } from '..';
+import { Flex, Icon, type IconType, Text } from '..';
 import React from 'react';
-import type { IconifyIcon } from '@iconify/types';
 
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
-
-type IconType = string | React.ReactNode | IconifyIcon;
 
 export type InputProps = InputPropsUI & {
   leadingIcon?: IconType;
   trailingIcon?: IconType;
 };
 
-const renderIcon = (icon: IconType) => {
-  if (
-    typeof icon === 'string' ||
-    (typeof icon === 'object' && !!(icon as IconifyIcon)?.body)
-  ) {
-    return <Icon icon={icon as string | IconifyIcon} />;
-  }
-
-  return <>{icon}</>;
-};
-
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
-    const leadingIconElement = React.useMemo(() => {
-      if (!leadingIcon) {
-        return null;
-      }
-
-      return renderIcon(leadingIcon);
-    }, [leadingIcon]);
-
-    const trailingIconElement = React.useMemo(() => {
-      if (!trailingIcon) {
-        return null;
-      }
-
-      return renderIcon(trailingIcon);
-    }, [trailingIcon]);
-
     return (
       <Flex sx={{ position: 'relative' }}>
         {leadingIcon && (
@@ -48,12 +18,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               alignSelf: 'center',
               fontSize: 'lg',
-              left: 'lg',
+              left: '1rem',
               lineHeight: 0,
             }}
             variant="leading-icon"
           >
-            {leadingIconElement}
+            <Icon icon={leadingIcon} />
           </Text>
         )}
         <InputUI
@@ -70,14 +40,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <Text
             sx={{
               position: 'absolute',
-              right: 'lg',
+              right: '1rem',
               alignSelf: 'center',
               fontSize: 'lg',
               lineHeight: 0,
             }}
             variant="trailing-icon"
           >
-            {trailingIconElement}
+            <Icon icon={trailingIcon} />
           </Text>
         )}
       </Flex>

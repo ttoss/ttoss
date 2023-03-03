@@ -6,7 +6,6 @@ import {
   FormFieldInput,
   yupResolver,
 } from '@ttoss/forms';
-import { Icon } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
@@ -40,9 +39,11 @@ const Template: Story = () => {
         label="First Name"
         trailingIcon={alertIcon}
         leadingIcon="ic:baseline-supervised-user-circle"
+        tooltipIcon="ic:baseline-supervised-user-circle"
+        showCharacterCounter
       />
       <FormFieldInput
-        leadingIcon={<Icon icon="material-symbols:verified-user-rounded" />}
+        tooltipIcon={alertIcon}
         name="age"
         label="Age"
         type="number"

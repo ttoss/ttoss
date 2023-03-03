@@ -4,6 +4,9 @@ import {
   IconifyIconHTMLElement,
   IconifyIconProps,
 } from '@iconify-icon/react';
+import type { IconifyIcon as IconifyIconType } from '@iconify/types';
+
+export type IconType = string | IconifyIconType;
 
 export type IconProps = Omit<IconifyIconProps, 'ref'>;
 
