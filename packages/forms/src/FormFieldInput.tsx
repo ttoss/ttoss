@@ -1,11 +1,11 @@
 import {
   Box,
-  type IconTypeProp,
+  Icon,
+  type IconType,
   Input,
   type InputProps,
   Label,
   Text,
-  useIconElement,
 } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
@@ -23,7 +23,7 @@ export const FormFieldInput = <
 }: {
   label?: string;
   name: TName;
-  tooltipIcon?: IconTypeProp;
+  tooltipIcon?: IconType;
   showCharacterCounter?: boolean;
 } & InputProps) => {
   const {
@@ -32,8 +32,6 @@ export const FormFieldInput = <
     name,
     defaultValue: '',
   });
-
-  const tooltipIconElement = useIconElement(tooltipIcon);
 
   const characterCounter = React.useMemo(() => {
     if (!value) {
@@ -54,12 +52,12 @@ export const FormFieldInput = <
           htmlFor={id}
         >
           {label}
-          {tooltipIconElement && (
+          {tooltipIcon && (
             <Text
               sx={{ marginLeft: 'md', fontSize: 'xs', lineHeight: 0 }}
               variant="tooltip-icon"
             >
-              {tooltipIconElement}
+              <Icon icon={tooltipIcon} />
             </Text>
           )}
 
