@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.2",
+    "@ttoss/relay-amplify": "0.2.4",
     "@types/aws-lambda": "^8.10.111",
     "carlin": "^1.23.5",
     "graphql": "^16.6.0",

@@ -42,10 +42,6 @@ beforeEach(() => {
 });
 
 describe('testing skip-deploy flag', () => {
-  // const mockExit = jest.spyOn(process, 'exit').mockImplementation((number) => {
-  //   throw new Error('process.exit: ' + number);
-  // });
-
   const realProcess = process;
   const mockExit = jest.fn();
 

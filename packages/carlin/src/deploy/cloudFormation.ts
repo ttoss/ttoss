@@ -37,7 +37,12 @@ export const deployCloudFormation = async ({
   lambdaInput: string;
   lambdaImage?: boolean;
   lambdaExternals?: string[];
-  parameters?: CloudFormation.Parameters;
+  parameters?: {
+    key: string;
+    value: any;
+    usePreviousValue?: true | false;
+    resolvedValue?: string;
+  }[];
   templatePath?: string;
   template?: CloudFormationTemplate;
 }) => {
@@ -52,6 +57,38 @@ export const deployCloudFormation = async ({
       return findAndReadCloudFormationTemplate({ templatePath });
     })();
 
+    /**
+     * Add Parameters passed on CLI to CloudFormation template if they don't exist.
+     * Also, automatically add the Type of the parameter.
+     */
+    parameters?.forEach((parameter) => {
+      if (cloudFormationTemplate.Parameters?.[parameter.key]) {
+        return;
+      }
+
+      if (!cloudFormationTemplate.Parameters) {
+        cloudFormationTemplate.Parameters = {};
+      }
+
+      const type = (() => {
+        if (typeof parameter.value === 'string') {
+          return 'String';
+        }
+
+        if (typeof parameter.value === 'number') {
+          return 'Number';
+        }
+
+        throw new Error(
+          `Parameter assertion failed. Parameter ${parameter.key} value ${parameter.value} is not mapped.`
+        );
+      })();
+
+      cloudFormationTemplate.Parameters[parameter.key] = {
+        Type: type,
+      };
+    });
+
     await cloudFormationV2()
       .validateTemplate({
         TemplateBody: JSON.stringify(cloudFormationTemplate, null, 2),
@@ -60,7 +97,15 @@ export const deployCloudFormation = async ({
 
     const params = {
       StackName: stackName,
-      Parameters: parameters || [],
+      Parameters:
+        parameters?.map<CloudFormation.Parameter>((parameter) => {
+          return {
+            ParameterKey: parameter.key,
+            ParameterValue: parameter.value,
+            UsePreviousValue: parameter.usePreviousValue,
+            ResolvedValue: parameter.resolvedValue,
+          };
+        }) || [],
     };
 
     const deployCloudFormationDeployLambdaCode = async () => {

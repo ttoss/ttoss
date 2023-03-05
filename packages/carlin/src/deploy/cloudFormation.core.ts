@@ -15,7 +15,6 @@ import {
 import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
 import { addDefaults } from './addDefaults.cloudFormation';
 import { emptyS3Directory } from './s3';
-import { getStackName } from './stackName';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
 

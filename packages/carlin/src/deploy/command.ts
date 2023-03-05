@@ -78,19 +78,19 @@ export const options = {
    * This option has the format:
    *
    * ```ts
-   * Array<{
-   *  ParameterKey: string,
-   *  ParameterValue: string,
-   *  UsePreviousValue: true | false,
-   *  ResolvedValue: string
-   * }>
+   * {
+   *  key: string,
+   *  value: string,
+   *  usePreviousValue: boolean,
+   *  resolvedValue: string
+   * }[]
    * ```
    */
   parameters: {
     alias: 'p',
     default: [],
     describe:
-      'A list of parameters that will be passed to CloudFormation Parameters when deploying. The format is the same as parameters from cloudformation create-stack CLI command.',
+      'A list of parameters that will be passed to CloudFormation Parameters when deploying.',
     type: 'array',
   },
   'skip-deploy': {

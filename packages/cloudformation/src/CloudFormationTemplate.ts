@@ -17,6 +17,23 @@ export type Resource = {
   Properties: any;
 };
 
+export type Policy = {
+  PolicyName: string;
+  PolicyDocument: {
+    Version: '2012-10-17';
+    Statement: {
+      Sid?: string;
+      Effect: 'Allow' | 'Deny';
+      Action: string | string[];
+      Resource:
+        | string
+        | string[]
+        | { [key: string]: any }
+        | { [key: string]: any }[];
+    }[];
+  };
+};
+
 export type IAMRoleResource = Resource & {
   Type: 'AWS::IAM::Role';
   Properties: {
@@ -31,21 +48,7 @@ export type IAMRoleResource = Resource & {
     };
     ManagedPolicyArns?: string[];
     Path?: string;
-    Policies?: {
-      PolicyName: string;
-      PolicyDocument: {
-        Version: '2012-10-17';
-        Statement: {
-          Effect: 'Allow' | 'Deny';
-          Action: string | string[];
-          Resource:
-            | string
-            | string[]
-            | { [key: string]: any }
-            | { [key: string]: any }[];
-        }[];
-      };
-    }[];
+    Policies?: Policy[];
   };
 };
 

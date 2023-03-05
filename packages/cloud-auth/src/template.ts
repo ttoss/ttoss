@@ -1,5 +1,5 @@
-import { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { PASSWORD_MINIMUM_LENGTH } from './config';
+import type { CloudFormationTemplate, Policy } from '@ttoss/cloudformation';
 
 const CognitoUserPoolLogicalId = 'CognitoUserPool';
 
@@ -7,41 +7,46 @@ const CognitoUserPoolClientLogicalId = 'CognitoUserPoolClient';
 
 const CognitoIdentityPoolLogicalId = 'CognitoIdentityPool';
 
-type Role =
-  | string
-  | {
-      'Fn::ImportValue': string;
-    };
+const IdentityPoolAuthenticatedIAMRoleLogicalId =
+  'IdentityPoolAuthenticatedIAMRole';
+
+const IdentityPoolUnauthenticatedIAMRoleLogicalId =
+  'IdentityPoolUnauthenticatedIAMRole';
+
+export const DenyStatement = {
+  Effect: 'Deny' as const,
+  Action: ['*'],
+  Resource: ['*'],
+};
 
 export const createAuthTemplate = ({
   autoVerifiedAttributes = ['email'],
-  identityPool = true,
-  roles,
+  identityPool,
   schema,
   usernameAttributes = ['email'],
 }: {
   autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
-  identityPool?: boolean;
-  roles?: {
-    authenticated?: Role;
-    unauthenticated?: Role;
+  identityPool?: {
+    enabled?: boolean;
+    authenticatedPolicies?: Policy[];
+    unauthenticatedPolicies?: Policy[];
   };
   /**
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-schemaattribute.html
    */
   schema?: {
-    AttributeDataType?: 'Boolean' | 'DateTime' | 'Number' | 'String';
-    DeveloperOnlyAttribute?: boolean;
-    Mutable?: boolean;
-    Name?: string;
-    NumberAttributeConstraints?: {
-      MaxValue?: string;
-      MinValue?: string;
+    attributeDataType?: 'Boolean' | 'DateTime' | 'Number' | 'String';
+    developerOnlyAttribute?: boolean;
+    mutable?: boolean;
+    name?: string;
+    numberAttributeConstraints?: {
+      maxValue?: string;
+      minValue?: string;
     };
-    Required?: boolean;
-    StringAttributeConstraints?: {
-      MaxLength: string;
-      MinLength: string;
+    required?: boolean;
+    stringAttributeConstraints?: {
+      maxLength: string;
+      minLength: string;
     };
   }[];
   usernameAttributes?: Array<'email' | 'phone_number'> | null;
@@ -68,7 +73,6 @@ export const createAuthTemplate = ({
               TemporaryPasswordValidityDays: 30,
             },
           },
-          Schema: schema,
           UsernameAttributes: usernameAttributes,
           UsernameConfiguration: {
             CaseSensitive: false,
@@ -126,7 +130,41 @@ export const createAuthTemplate = ({
     },
   };
 
-  if (identityPool) {
+  if (schema) {
+    const Schema = schema.map((attribute) => {
+      let NumberAttributeConstraints = undefined;
+
+      if (attribute.numberAttributeConstraints) {
+        NumberAttributeConstraints = {
+          MaxValue: attribute.numberAttributeConstraints?.maxValue,
+          MinValue: attribute.numberAttributeConstraints?.minValue,
+        };
+      }
+
+      let StringAttributeConstraints = undefined;
+
+      if (attribute.stringAttributeConstraints) {
+        StringAttributeConstraints = {
+          MaxLength: attribute.stringAttributeConstraints?.maxLength,
+          MinLength: attribute.stringAttributeConstraints?.minLength,
+        };
+      }
+
+      return {
+        AttributeDataType: attribute.attributeDataType,
+        DeveloperOnlyAttribute: attribute.developerOnlyAttribute,
+        Mutable: attribute.mutable,
+        Name: attribute.name,
+        NumberAttributeConstraints,
+        Required: attribute.required,
+        StringAttributeConstraints,
+      };
+    });
+
+    template.Resources[CognitoUserPoolLogicalId].Properties.Schema = Schema;
+  }
+
+  if (identityPool?.enabled) {
     /**
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypool.html
      */
@@ -147,20 +185,99 @@ export const createAuthTemplate = ({
       },
     };
 
-    if (roles) {
-      /**
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
-       */
-      template.Resources.CognitoIdentityPoolRoleAttachment = {
-        Type: 'AWS::Cognito::IdentityPoolRoleAttachment',
-        Properties: {
-          IdentityPoolId: {
-            Ref: CognitoIdentityPoolLogicalId,
-          },
-          Roles: roles,
+    template.Resources[IdentityPoolAuthenticatedIAMRoleLogicalId] = {
+      Type: 'AWS::IAM::Role',
+      Properties: {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17' as const,
+          Statement: [
+            {
+              Effect: 'Allow' as const,
+              Principal: {
+                Federated: 'cognito-identity.amazonaws.com',
+              },
+              Action: ['sts:AssumeRoleWithWebIdentity', 'sts:TagSession'],
+              Condition: {
+                StringEquals: {
+                  'cognito-identity.amazonaws.com:aud': {
+                    Ref: CognitoIdentityPoolLogicalId,
+                  },
+                },
+                'ForAnyValue:StringLike': {
+                  'cognito-identity.amazonaws.com:amr': 'authenticated',
+                },
+              },
+            },
+          ],
         },
-      };
-    }
+        Policies: identityPool.authenticatedPolicies || [
+          {
+            PolicyName: 'IdentityPoolAuthenticatedIAMRolePolicyName',
+            PolicyDocument: {
+              Version: '2012-10-17' as const,
+              Statement: [DenyStatement],
+            },
+          },
+        ],
+      },
+    };
+
+    template.Resources[IdentityPoolUnauthenticatedIAMRoleLogicalId] = {
+      Type: 'AWS::IAM::Role',
+      Properties: {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17' as const,
+          Statement: [
+            {
+              Effect: 'Allow' as const,
+              Principal: {
+                Federated: 'cognito-identity.amazonaws.com',
+              },
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Condition: {
+                StringEquals: {
+                  'cognito-identity.amazonaws.com:aud': {
+                    Ref: CognitoIdentityPoolLogicalId,
+                  },
+                },
+                'ForAnyValue:StringLike': {
+                  'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+                },
+              },
+            },
+          ],
+        },
+        Policies: identityPool.authenticatedPolicies || [
+          {
+            PolicyName: 'IdentityPoolUnauthenticatedIAMRolePolicyName',
+            PolicyDocument: {
+              Version: '2012-10-17' as const,
+              Statement: [DenyStatement],
+            },
+          },
+        ],
+      },
+    };
+
+    /**
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
+     */
+    template.Resources.CognitoIdentityPoolRoleAttachment = {
+      Type: 'AWS::Cognito::IdentityPoolRoleAttachment',
+      Properties: {
+        IdentityPoolId: {
+          Ref: CognitoIdentityPoolLogicalId,
+        },
+        Roles: {
+          authenticated: {
+            'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+          unauthenticated: {
+            'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+        },
+      },
+    };
 
     if (!template.Outputs) {
       template.Outputs = {};
