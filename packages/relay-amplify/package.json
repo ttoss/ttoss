@@ -17,6 +17,7 @@
     "build": "tsup",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "peerDependencies": {
     "aws-amplify": "^5.0.7",

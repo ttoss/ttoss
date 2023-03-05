@@ -9,7 +9,7 @@ export const deployErrorLogs = ({
   logPrefix: string;
 }) => {
   log.error(logPrefix, `An error occurred. Cannot deploy ${logPrefix}.`);
-  log.error(logPrefix, 'Error message: %j', error.message);
+  log.error(logPrefix, 'Error message: %j', error?.message);
 };
 
 export const handleDeployError = ({

@@ -1,3 +1,4 @@
+import { decodeCredentials } from '@ttoss/relay-amplify/src/encodeCredentials';
 import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
 import type { SchemaComposer } from 'graphql-compose';
 
@@ -13,14 +14,28 @@ export const createAppSyncResolverHandler = ({
   schemaComposer: SchemaComposer<any>;
 }): AppSyncResolverHandler<any, any, any> => {
   return async (event, context) => {
-    const { info, arguments: args, source } = event;
+    const { info, arguments: args, source, request } = event;
+
     const { parentTypeName, fieldName } = info;
+
+    const credentials = (() => {
+      const headersCredentials = request?.headers?.['x-credentials'];
+
+      if (!headersCredentials) {
+        return null;
+      }
+
+      return decodeCredentials(headersCredentials);
+    })();
+
     const resolveMethods = schemaComposer.getResolveMethods();
+
     const resolver = (resolveMethods[parentTypeName] as any)[fieldName];
+
     return resolver(
       source,
       args,
-      { ...context, identity: event.identity },
+      { ...context, identity: event.identity, credentials },
       info
     );
   };
