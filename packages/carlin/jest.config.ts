@@ -5,7 +5,7 @@ const config = jestConfig({
   collectCoverage: true,
   coverageThreshold,
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
-  silent: false,
+  silent: true,
 });
 
 export default config;
