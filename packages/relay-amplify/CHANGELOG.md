@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.2.4...@ttoss/relay-amplify@0.3.0) (2023-03-05)
+
+### Features
+
+- improve appsync api ([#225](https://github.com/ttoss/ttoss/issues/225)) ([ded9624](https://github.com/ttoss/ttoss/commit/ded96245b181e546e1bb66a612d1e6cb0768b1e3))
+
 ## [0.2.4](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.2.3...@ttoss/relay-amplify@0.2.4) (2023-02-23)
 
 **Note:** Version bump only for package @ttoss/relay-amplify

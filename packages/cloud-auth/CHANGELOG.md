@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.6.4...@ttoss/cloud-auth@0.7.0) (2023-03-05)
+
+### Features
+
+- improve appsync api ([#225](https://github.com/ttoss/ttoss/issues/225)) ([ded9624](https://github.com/ttoss/ttoss/commit/ded96245b181e546e1bb66a612d1e6cb0768b1e3))
+
 ## [0.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.6.3...@ttoss/cloud-auth@0.6.4) (2023-02-26)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

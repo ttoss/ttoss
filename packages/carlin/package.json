@@ -1,6 +1,6 @@
 {
   "name": "carlin",
-  "version": "1.23.5",
+  "version": "1.24.0",
   "description": "",
   "license": "GPL-3.0",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
@@ -29,7 +29,7 @@
     "@aws-sdk/client-cloudformation": "^3.279.0",
     "@octokit/webhooks": "^10.7.0",
     "@slack/webhook": "^6.1.0",
-    "@ttoss/cloudformation": "^0.5.4",
+    "@ttoss/cloudformation": "^0.6.0",
     "adm-zip": "^0.5.10",
     "aws-sdk": "^2.1323.0",
     "builtin-modules": "^3.3.0",

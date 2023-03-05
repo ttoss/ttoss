@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.24.0](https://github.com/ttoss/carlin/compare/carlin@1.23.5...carlin@1.24.0) (2023-03-05)
+
+### Features
+
+- improve appsync api ([#225](https://github.com/ttoss/carlin/issues/225)) ([ded9624](https://github.com/ttoss/carlin/commit/ded96245b181e546e1bb66a612d1e6cb0768b1e3))
+
 ## [1.23.5](https://github.com/ttoss/carlin/compare/carlin@1.23.4...carlin@1.23.5) (2023-02-26)
 
 ### Bug Fixes
