@@ -61,6 +61,7 @@ export const createAuthTemplate = ({
     Resources: {
       [CognitoUserPoolLogicalId]: {
         Type: 'AWS::Cognito::UserPool',
+        DeletionPolicy: 'Retain',
         Properties: {
           AutoVerifiedAttributes,
           Policies: {

@@ -1,64 +1,73 @@
 import { createAuthTemplate } from '../../src';
 
-test('do not add schema if not provided', () => {
-  const template = createAuthTemplate();
-  expect(template.Resources.CognitoUserPool.Properties.Schema).toBeUndefined();
-});
+describe('user pool', () => {
+  test('do not add schema if not provided', () => {
+    const template = createAuthTemplate();
+    expect(
+      template.Resources.CognitoUserPool.Properties.Schema
+    ).toBeUndefined();
+  });
 
-test('add schema if provided', () => {
-  const schema = [
-    {
-      attributeDataType: 'String' as const,
-      developerOnlyAttribute: false,
-      mutable: true,
-      name: 'email',
-      required: true,
-      stringAttributeConstraints: {
-        maxLength: '2048',
-        minLength: '0',
+  test('add schema if provided', () => {
+    const schema = [
+      {
+        attributeDataType: 'String' as const,
+        developerOnlyAttribute: false,
+        mutable: true,
+        name: 'email',
+        required: true,
+        stringAttributeConstraints: {
+          maxLength: '2048',
+          minLength: '0',
+        },
       },
-    },
-  ];
+    ];
 
-  const template = createAuthTemplate({ schema });
-  expect(template.Resources.CognitoUserPool.Properties.Schema).toEqual([
-    {
-      AttributeDataType: 'String',
-      DeveloperOnlyAttribute: false,
-      Mutable: true,
-      Name: 'email',
-      Required: true,
-      StringAttributeConstraints: {
-        MaxLength: '2048',
-        MinLength: '0',
+    const template = createAuthTemplate({ schema });
+    expect(template.Resources.CognitoUserPool.Properties.Schema).toEqual([
+      {
+        AttributeDataType: 'String',
+        DeveloperOnlyAttribute: false,
+        Mutable: true,
+        Name: 'email',
+        Required: true,
+        StringAttributeConstraints: {
+          MaxLength: '2048',
+          MinLength: '0',
+        },
       },
-    },
-  ]);
-});
+    ]);
+  });
 
-test('should have autoVerifiedAttributes equal email by default', () => {
-  const template = createAuthTemplate();
-  expect(
-    template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
-  ).toEqual(['email']);
-});
-
-test('default usernameAttributes should be email', () => {
-  const template = createAuthTemplate();
-  expect(
-    template.Resources.CognitoUserPool.Properties.UsernameAttributes
-  ).toEqual(['email']);
-});
-
-test.each([[], null, false])(
-  'should have autoVerifiedAttributes undefined: %p',
-  (autoVerifiedAttributes: any) => {
-    const template = createAuthTemplate({ autoVerifiedAttributes });
+  test('should have autoVerifiedAttributes equal email by default', () => {
+    const template = createAuthTemplate();
     expect(
       template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
-    ).toEqual([]);
-  }
-);
+    ).toEqual(['email']);
+  });
+
+  test('default usernameAttributes should be email', () => {
+    const template = createAuthTemplate();
+    expect(
+      template.Resources.CognitoUserPool.Properties.UsernameAttributes
+    ).toEqual(['email']);
+  });
+
+  test.each([[], null, false])(
+    'should have autoVerifiedAttributes undefined: %p',
+    (autoVerifiedAttributes: any) => {
+      const template = createAuthTemplate({ autoVerifiedAttributes });
+      expect(
+        template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
+      ).toEqual([]);
+    }
+  );
+
+  test('should retain user pool', () => {
+    const template = createAuthTemplate();
+    expect(template.Resources.CognitoUserPool.DeletionPolicy).toEqual('Retain');
+  });
+});
 
 describe('identity pool', () => {
   test.each([false, undefined])(
