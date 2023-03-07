@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/ttoss/carlin/compare/carlin@1.24.0...carlin@1.24.1) (2023-03-07)
+
+### Bug Fixes
+
+- **@ttoss/cloud-auth:** retain user pool ([#229](https://github.com/ttoss/carlin/issues/229)) ([82c454c](https://github.com/ttoss/carlin/commit/82c454c75baffea045b2a9d26e713e93d8da12f6))
+
 # [1.24.0](https://github.com/ttoss/carlin/compare/carlin@1.23.5...carlin@1.24.0) (2023-03-05)
 
 ### Features

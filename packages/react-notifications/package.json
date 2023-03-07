@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-notifications",
-  "version": "1.20.6",
+  "version": "1.20.7",
   "description": "ttoss notifications module for React apps.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -20,14 +20,14 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/components": "^1.26.6"
+    "@ttoss/components": "^1.26.7"
   },
   "peerDependencies": {
     "@ttoss/ui": "^1.25.1",
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.28.2",
+    "@ttoss/config": "^1.28.3",
     "jest": "^29.5.0",
     "react": "^18.2.0"
   },

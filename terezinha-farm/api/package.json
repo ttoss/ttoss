@@ -1,22 +1,22 @@
 {
   "private": true,
   "name": "@terezinha-farm/api",
-  "version": "0.6.14",
+  "version": "0.6.15",
   "scripts": {
     "build": "ttoss-appsync-api build-schema",
     "deploy": "carlin deploy",
     "dev": "node -r ts-node/register --watch server/server.ts"
   },
   "dependencies": {
-    "@terezinha-farm/config": "^0.3.5",
-    "@ttoss/appsync-api": "^0.9.0",
+    "@terezinha-farm/config": "^0.3.6",
+    "@ttoss/appsync-api": "^0.9.1",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"
   },
   "devDependencies": {
-    "@ttoss/aws-appsync-nodejs": "^1.5.2",
-    "@ttoss/config": "^1.28.2",
-    "carlin": "^1.24.0",
+    "@ttoss/aws-appsync-nodejs": "^1.5.3",
+    "@ttoss/config": "^1.28.3",
+    "carlin": "^1.24.1",
     "ts-node": "^10.9.1"
   },
   "engines": {

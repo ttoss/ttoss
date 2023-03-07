@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.6...@ttoss/components@1.26.7) (2023-03-07)
+
+### Bug Fixes
+
+- **@ttoss/cloud-auth:** retain user pool ([#229](https://github.com/ttoss/ttoss/issues/229)) ([82c454c](https://github.com/ttoss/ttoss/commit/82c454c75baffea045b2a9d26e713e93d8da12f6))
+
 ## [1.26.6](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.5...@ttoss/components@1.26.6) (2023-03-03)
 
 **Note:** Version bump only for package @ttoss/components

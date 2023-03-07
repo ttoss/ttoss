@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "1.18.8",
+  "version": "1.18.9",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -33,9 +33,9 @@
   },
   "devDependencies": {
     "@formatjs/cli": "^5.1.10",
-    "@ttoss/config": "^1.28.2",
-    "@ttoss/i18n-cli": "^0.3.5",
-    "@ttoss/test-utils": "^1.20.4"
+    "@ttoss/config": "^1.28.3",
+    "@ttoss/i18n-cli": "^0.3.6",
+    "@ttoss/test-utils": "^1.20.5"
   },
   "keywords": [
     "React",

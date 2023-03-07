@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.7.0...@ttoss/cloud-auth@0.7.1) (2023-03-07)
+
+### Bug Fixes
+
+- **@ttoss/cloud-auth:** retain user pool ([#229](https://github.com/ttoss/ttoss/issues/229)) ([82c454c](https://github.com/ttoss/ttoss/commit/82c454c75baffea045b2a9d26e713e93d8da12f6))
+
 # [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.6.4...@ttoss/cloud-auth@0.7.0) (2023-03-05)
 
 ### Features

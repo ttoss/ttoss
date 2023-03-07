@@ -1,6 +1,6 @@
 {
   "name": "carlin",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "description": "",
   "license": "GPL-3.0",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
@@ -29,7 +29,7 @@
     "@aws-sdk/client-cloudformation": "^3.279.0",
     "@octokit/webhooks": "^10.7.0",
     "@slack/webhook": "^6.1.0",
-    "@ttoss/cloudformation": "^0.6.0",
+    "@ttoss/cloudformation": "^0.6.1",
     "adm-zip": "^0.5.10",
     "aws-sdk": "^2.1323.0",
     "builtin-modules": "^3.3.0",
@@ -51,7 +51,7 @@
     "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "@ttoss/test-utils": "^1.20.4",
+    "@ttoss/test-utils": "^1.20.5",
     "@types/adm-zip": "^0.5.0",
     "@types/aws-lambda": "^8.10.111",
     "@types/deep-equal": "^1.0.1",
