@@ -18,8 +18,10 @@ export const createAppSyncResolverHandler = ({
 
     const { parentTypeName, fieldName } = info;
 
+    const headers = request?.headers || {};
+
     const credentials = (() => {
-      const headersCredentials = request?.headers?.['x-credentials'];
+      const headersCredentials = headers?.['x-credentials'];
 
       if (!headersCredentials) {
         return null;
@@ -35,7 +37,7 @@ export const createAppSyncResolverHandler = ({
     return resolver(
       source,
       args,
-      { ...context, identity: event.identity, credentials },
+      { ...context, identity: event.identity, credentials, headers },
       info
     );
   };

@@ -27,7 +27,7 @@ test('lambda handler should call author resolver correctly', async () => {
   expect(response).toEqual(author);
 });
 
-test('should add credentials to context', async () => {
+describe('testing headers', () => {
   const newSchemaComposer = schemaComposer.clone();
 
   const queryAuthorResolver = jest.fn();
@@ -49,6 +49,12 @@ test('should add credentials to context', async () => {
     sessionToken: 'sessionToken',
   };
 
+  const headers = {
+    header1: 'header1',
+    header2: 'header2',
+    header3: 'header3',
+  };
+
   const event = {
     info: {
       parentTypeName: 'Query',
@@ -56,6 +62,7 @@ test('should add credentials to context', async () => {
     },
     request: {
       headers: {
+        ...headers,
         'x-credentials': encodeCredentials(mockCredentials as any),
       },
     },
@@ -66,13 +73,27 @@ test('should add credentials to context', async () => {
 
   const callback = jest.fn();
 
-  await handler(event, context, callback);
+  test('should add credentials to context', async () => {
+    await handler(event, context, callback);
 
-  expect(queryAuthorResolver).toHaveBeenCalledWith(
-    expect.objectContaining({
-      context: expect.objectContaining({
-        credentials: mockCredentials,
-      }),
-    })
-  );
+    expect(queryAuthorResolver).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          credentials: mockCredentials,
+        }),
+      })
+    );
+  });
+
+  test('should add headers to context', async () => {
+    await handler(event, context, callback);
+
+    expect(queryAuthorResolver).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          headers: expect.objectContaining(headers),
+        }),
+      })
+    );
+  });
 });

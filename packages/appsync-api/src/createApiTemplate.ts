@@ -27,7 +27,15 @@ type StringOrImport =
       'Fn::ImportValue': string;
     };
 
-type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS' | 'API_KEY';
+/**
+ * https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html
+ */
+type AuthenticationType =
+  | 'API_KEY'
+  | 'AWS_LAMBDA'
+  | 'AWS_IAM'
+  | 'OPENID_CONNECT'
+  | 'AMAZON_COGNITO_USER_POOLS';
 
 export const createApiTemplate = ({
   additionalAuthenticationProviders,
