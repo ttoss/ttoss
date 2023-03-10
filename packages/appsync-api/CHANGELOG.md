@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.9.1...@ttoss/appsync-api@0.10.0) (2023-03-10)
+
+### Features
+
+- add headers to context ([#232](https://github.com/ttoss/ttoss/issues/232)) ([c9a135c](https://github.com/ttoss/ttoss/commit/c9a135ce3d666482878bf0c5acd999657c66f6c4))
+
 ## [0.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.9.0...@ttoss/appsync-api@0.9.1) (2023-03-07)
 
 **Note:** Version bump only for package @ttoss/appsync-api
