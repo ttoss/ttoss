@@ -15,6 +15,9 @@ LATEST_TAG=$(git describe --tags --abbrev=0)
 # Setup NPM token
 echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
 
+# Print "NPM whoami" to check if the token is valid
+echo NPM whoami: $(npm whoami)
+
 # Build config to run lint-staged for lint and version bump
 yarn turbo run build --filter=@ttoss/config...
 
