@@ -11,24 +11,24 @@ const coreFonts = {
 };
 
 const brandColors = {
-  complimentary: '#f5f5f5',
-  main: '#292c2a',
-  darkNeutral: '#515389',
-  accent: '#0000ff',
-  lightNeutral: '#e3e3e3',
+  complimentary: '#f4f3f3',
+  main: '#292C2a',
+  darkNeutral: '#325C82',
+  accent: '#0469E3',
+  lightNeutral: '#F8F8F8',
 };
 
 const coreColors = {
   ...brandColors,
-  gray100: '#f0f1f3',
-  gray200: '#ced1d7',
-  gray300: '#acb1ba',
-  gray400: '#8b919e',
-  gray500: '#6b7280',
-  gray600: '#535863',
-  gray700: '#3b3f46',
-  gray800: '#23252a',
-  gray900: '#0b0b0d',
+  gray100: '#f9f9f9',
+  gray200: '#dedede',
+  gray300: '#c4c4c4',
+  gray400: '#ababab',
+  gray500: '#929292',
+  gray600: '#7a7a7a',
+  gray700: '#626262',
+  gray800: '#4c4c4c',
+  gray900: '#323232',
   black: '#000000',
   red100: '#ffebeb',
   red200: '#fdbfbf',
@@ -38,6 +38,8 @@ const coreColors = {
   red600: '#e42828',
   red700: '#c62121',
   white: '#ffffff',
+  amber600: '#d97706',
+  teal600: '#0d9488',
 };
 
 const coreBorders = {
@@ -68,20 +70,30 @@ export const BruttalTheme: Theme = {
   letterSpacings,
   space,
   colors: {
-    background: coreColors.lightNeutral,
-    text: coreColors.gray900,
+    background: coreColors.white,
+    text: coreColors.black,
     muted: coreColors.gray200,
-    outline: coreColors.gray200,
+    onMuted: coreColors.gray500,
+    mutedOutline: coreColors.gray300,
+    danger: coreColors.red700,
+    onDanger: coreColors.white,
+    notice: coreColors.amber600,
+    positive: coreColors.teal600,
+    surface: coreColors.white,
+    contentHeader: coreColors.gray200,
+    onContentHeader: coreColors.black,
+    outline: coreColors.gray500,
     primary: coreColors.main,
     onPrimary: coreColors.white,
     secondary: coreColors.gray500,
-    onSecondary: coreColors.white,
+    onSecondary: coreColors.complimentary,
     highlight: coreColors.darkNeutral,
-    onHighlight: coreColors.white,
+    onHighlight: coreColors.complimentary,
     accent: coreColors.accent,
     onAccent: coreColors.white,
-    neutral: coreColors.white,
-    onNeutral: coreColors.gray900,
+    neutral: coreColors.darkNeutral,
+    onNeutral: coreColors.lightNeutral,
+    underemphasize: coreColors.gray300,
   },
   fonts: {
     h1: coreFonts.contrast,
@@ -208,8 +220,34 @@ export const BruttalTheme: Theme = {
     },
   },
   forms: {
+    label: {
+      '&:has(+ div > input:invalid)': {
+        'span > iconify-icon': {
+          color: 'danger',
+        },
+      },
+    },
     input: {
       fontFamily: 'body',
+      color: 'text',
+      paddingY: 'md',
+      paddingX: 'lg',
+      '::placeholder': {
+        color: 'underemphasize',
+      },
+      ':focus-within': {
+        outlineColor: 'neutral',
+      },
+      ':disabled': {
+        backgroundColor: 'onMuted',
+        borderColor: 'muted',
+      },
+      ':invalid': {
+        borderColor: 'danger',
+      },
+      ':invalid+span>iconify-icon': {
+        color: 'danger',
+      },
     },
   },
   text: {
@@ -221,6 +259,11 @@ export const BruttalTheme: Theme = {
       fontFamily: 'heading',
       fontSize: 4,
       lineSpace: '3.5',
+    },
+    error: {
+      '&[role="alert"]': {
+        color: 'danger',
+      },
     },
     h1: {
       fontFamily: 'heading',
