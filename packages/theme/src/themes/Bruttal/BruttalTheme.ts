@@ -242,10 +242,10 @@ export const BruttalTheme: Theme = {
         backgroundColor: 'onMuted',
         borderColor: 'muted',
       },
-      ':invalid': {
+      '&.error': {
         borderColor: 'danger',
       },
-      ':invalid+span>iconify-icon': {
+      '&.error+span>iconify-icon': {
         color: 'danger',
       },
     },

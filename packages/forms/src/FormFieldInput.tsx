@@ -83,11 +83,11 @@ export const FormFieldInput = <
       <Input
         ref={ref}
         onChange={onChange}
+        className={hasError ? 'error' : ''}
         onBlur={onBlur}
         value={value}
         name={name}
         id={id}
-        required={hasError}
         {...inputProps}
       />
 
