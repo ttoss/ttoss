@@ -15,7 +15,13 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
     <HookFormErrorMessage
       errors={errors}
       name={name as any}
-      as={<Text variant="text.error" role="alert" />}
+      as={
+        <Text
+          variant="text.error"
+          role="alert"
+          sx={{ fontFamily: 'caption', fontSize: 'xs' }}
+        />
+      }
     />
   );
 };

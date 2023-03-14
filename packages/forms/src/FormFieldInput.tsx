@@ -28,6 +28,7 @@ export const FormFieldInput = <
 } & InputProps) => {
   const {
     field: { onChange, onBlur, value, ref },
+    formState: { errors },
   } = useController<any>({
     name,
     defaultValue: '',
@@ -42,6 +43,8 @@ export const FormFieldInput = <
   }, [value]);
 
   const id = `form-field-input-${name}`;
+
+  const hasError = !!errors[name]?.message;
 
   return (
     <Box>
@@ -67,6 +70,7 @@ export const FormFieldInput = <
                 marginLeft: 'auto',
                 fontSize: 'xs',
                 lineHeight: 0,
+                color: 'underemphasize',
               }}
               variant="character-counter"
             >
@@ -79,6 +83,7 @@ export const FormFieldInput = <
       <Input
         ref={ref}
         onChange={onChange}
+        className={hasError ? 'error' : ''}
         onBlur={onBlur}
         value={value}
         name={name}

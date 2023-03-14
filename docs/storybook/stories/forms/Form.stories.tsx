@@ -37,6 +37,7 @@ const Template: Story = () => {
       <FormFieldInput
         name="firstName"
         label="First Name"
+        placeholder="First Name"
         trailingIcon={alertIcon}
         leadingIcon="ic:baseline-supervised-user-circle"
         tooltipIcon="ic:baseline-supervised-user-circle"
@@ -46,6 +47,7 @@ const Template: Story = () => {
         tooltipIcon={alertIcon}
         name="age"
         label="Age"
+        placeholder="Age"
         type="number"
       />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
