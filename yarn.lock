@@ -6481,12 +6481,53 @@
     write-json-file "^4.3.0"
     write-pkg "^4.0.0"
 
+"@lerna-lite/core@1.16.2":
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/core/-/core-1.16.2.tgz#7487f43a5d637102f249ae01738b15aefdd643d8"
+  integrity sha512-DSLZhdE86uX8e4XQZCabTyxN4zv3RYchvpwv2rajlrDkw7vaPHgyrfziwE4TILYu/ciSvnzRtXzWTeNOpjKcTw==
+  dependencies:
+    "@npmcli/run-script" "^6.0.0"
+    chalk "^4.1.2"
+    clone-deep "^4.0.1"
+    config-chain "^1.1.13"
+    cosmiconfig "8.0.0"
+    dedent "^0.7.0"
+    execa "^5.1.1"
+    fs-extra "^11.1.0"
+    glob-parent "^6.0.2"
+    globby "^11.1.0"
+    inquirer "^8.2.4"
+    is-ci "^3.0.1"
+    load-json-file "^6.2.0"
+    minimatch "^7.4.2"
+    npm-package-arg "^10.1.0"
+    npmlog "^7.0.1"
+    p-map "^4.0.0"
+    p-queue "^6.6.2"
+    path "^0.12.7"
+    resolve-from "^5.0.0"
+    semver "^7.3.8"
+    slash "^3.0.0"
+    strong-log-transformer "^2.1.0"
+    write-file-atomic "^5.0.0"
+    write-json-file "^4.3.0"
+    write-pkg "^4.0.0"
+
 "@lerna-lite/filter-packages@1.16.1":
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/filter-packages/-/filter-packages-1.16.1.tgz#9780999bd9bec84ffaed293165592a60be4f4e59"
   integrity sha512-Oix+38GpNKwiOWxrZvCxZAe23/vFiRJab86HIYRwtLdaIgnJ2rUqIQ6vw9P+hmc8D5Wf9DgqFqbIvfQUFdwFyQ==
   dependencies:
     "@lerna-lite/core" "1.16.1"
+    multimatch "^5.0.0"
+    npmlog "^7.0.1"
+
+"@lerna-lite/filter-packages@1.16.2":
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/filter-packages/-/filter-packages-1.16.2.tgz#4776805f7c5ca28754757dca4b04f4a83a1b0e5b"
+  integrity sha512-zmeWQJnSGJQMXb3dnCOn5nl6KIF85cYPOjMX+30oa5o0S8CX4cIFFV/OnWIxK0GENRPAPp4eW1YvMEd0zG8xUQ==
+  dependencies:
+    "@lerna-lite/core" "1.16.2"
     multimatch "^5.0.0"
     npmlog "^7.0.1"
 
@@ -6501,7 +6542,7 @@
     path "^0.12.7"
     write-json-file "^4.3.0"
 
-"@lerna-lite/list@1.16.1", "@lerna-lite/list@^1.16.0":
+"@lerna-lite/list@1.16.1":
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.16.1.tgz#11f4bfe7c2af2a3bb8edba06035909d24c933288"
   integrity sha512-7WJlXLTFRu/rJqJoxUA1MIdYXCZF4GyWYPZz5W382T5tGTszaAWobdp72nrqVYoWqiUHmyhOeA5P/sYGcVLxyw==
@@ -6510,12 +6551,30 @@
     "@lerna-lite/filter-packages" "1.16.1"
     "@lerna-lite/listable" "1.16.1"
 
+"@lerna-lite/list@^1.16.0":
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/list/-/list-1.16.2.tgz#3793e67e8340c9e341aeb7decb0d761008c5a02f"
+  integrity sha512-KhmhAAIrdME93IXXIacno9yBywB8J9XktV4wRZIpNIa9AkMXF64/+XP6X9kC3Br8RoxpTgtrGiQbvx0bCIOfoQ==
+  dependencies:
+    "@lerna-lite/core" "1.16.2"
+    "@lerna-lite/filter-packages" "1.16.2"
+    "@lerna-lite/listable" "1.16.2"
+
 "@lerna-lite/listable@1.16.1":
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/@lerna-lite/listable/-/listable-1.16.1.tgz#1d6e46bec86e551ed88cca995ae80469a4905352"
   integrity sha512-0sYlvzkYEr5NBB2mZo5J4YCW4gDInWqNdNC7LwacpHkKTKztpGCUl5pG7B2iLiLly9VjJORLJR9xikrkr4BHtA==
   dependencies:
     "@lerna-lite/core" "1.16.1"
+    chalk "^4.1.2"
+    columnify "^1.6.0"
+
+"@lerna-lite/listable@1.16.2":
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/@lerna-lite/listable/-/listable-1.16.2.tgz#322bce8def4cdb53bdc814895607d577efdd63b4"
+  integrity sha512-IHmUW4F8TJ5RF+rP3n6cOQRucoQXck+URdj7O+fYBhqUqCStyB4pVm4Us8yh2rIuEuLE26YjdFUoaRt9XKbWQg==
+  dependencies:
+    "@lerna-lite/core" "1.16.2"
     chalk "^4.1.2"
     columnify "^1.6.0"
 
