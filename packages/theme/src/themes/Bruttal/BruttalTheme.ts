@@ -221,10 +221,24 @@ export const BruttalTheme: Theme = {
   },
   forms: {
     label: {
-      '&:has(+ div > input:invalid)': {
+      '&:has(+ div > input.error)': {
         'span > iconify-icon': {
           color: 'danger',
         },
+      },
+      '&:has(input[type="checkbox"]:disabled)': {
+        color: 'onMuted',
+      },
+    },
+    checkbox: {
+      'input:not(:checked) ~ &': {
+        color: 'primary',
+      },
+      'input:disabled ~ &': {
+        color: 'muted',
+      },
+      'input:disabled ~ & path': {
+        backgroundColor: 'onMuted',
       },
     },
     input: {
