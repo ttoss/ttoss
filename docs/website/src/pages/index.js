@@ -6,7 +6,7 @@ import React from 'react';
 const Home = () => {
   // const { siteConfig } = useDocusaurusContext();
 
-  return <Redirect to="/docs/engineering" />;
+  return <Redirect to="/docs/product" />;
 
   // return (
   //   <Layout
