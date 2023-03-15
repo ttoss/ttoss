@@ -16,7 +16,7 @@ At the end of the meeting, everyone can answer the questions:
 
 ### Duration
 
-Maximum of 15 minutes. We don’t need more than this time to align the vision and the weekly work priorities.
+Maximum of 25 minutes. We don’t need more than this time to align the vision and the weekly work priorities.
 
 ### Don’ts
 

@@ -1,0 +1,60 @@
+---
+title: Kanban
+---
+
+We use the [Kanban](https://arantespp.com/zettel/kanban) framework to manage our workflow and ensure that we deliver high-quality products to our customers on time and on budget. Kanban is a visual and flexible approach to task management that enables us to optimize our workflow, reduce waste, and increase efficiency.
+
+By using Kanban, we can break down complex projects into smaller, more manageable tasks and track their progress from start to finish. This helps us identify bottlenecks, prioritize tasks, and allocate resources more effectively, so that we can deliver value to our customers as quickly and efficiently as possible.
+
+In this document, we'll provide an overview of the Kanban framework and explain how we use it to manage our workflow. We'll also describe our [Workflow Phases](#workflow-phases) and the different [Statuses](#statuses) that tasks can go through, as well as provide tips and best practices for using Kanban effectively.
+
+## Workflow Phases
+
+As a team, we have organized our workflow into different high-level phases, which we call Workflow Phases. These phases represent the different stages that a task can go through, from ideation to completion. We use these phases to track progress, identify bottlenecks, and optimize our processes for efficiency and quality.
+
+Our Workflow Phases consist of [Discovery](#discovery), [Preparation](#preparation), [Execution](#execution), [Transition](#transition), and [Closure](#closure). By organizing our workflow into these different phases, we can more easily track the progress of tasks and ensure that everyone on the team is on the same page. We can also identify areas for improvement and make changes to our processes to increase efficiency and quality.
+
+### Discovery
+
+This group focuses on capturing new ideas and requirements, documenting them in the backlog, and prioritizing them for further consideration.
+
+### Preparation
+
+This group focuses on planning and preparing tasks for execution, including defining requirements, assigning tasks, and developing timelines. This group also includes tasks that are ready to start, but may require some final preparation before execution.
+
+### Execution
+
+This group focuses on executing tasks, monitoring progress, and addressing any issues that arise during the execution phase. This group also includes tasks that require additional input or support from external stakeholders, which are tracked in the BLOCKED status.
+
+### Transition
+
+This group focuses on preparing tasks for handoff, coordinating with external stakeholders as necessary, and collecting feedback and metrics to inform future planning. This group also includes tasks that are in the process of being handed off to another team or individual.
+
+### Closure
+
+This group focuses on closing out completed tasks, analyzing the outcomes and results, and identifying areas for improvement in future iterations of the workflow. This group also includes tasks that have been canceled, which may require additional analysis or documentation to understand the reasons for cancellation.
+
+## Statuses
+
+In this section, we'll provide an overview of the different Kanban statuses and their descriptions. Each status represents a different stage of the Workflow Phases and indicates the progress of the task towards completion.
+
+_Please note that the specific tasks and workflows associated with each Kanban status will vary depending on the department and its specific processes. The descriptions provided in the previous section serve as a general guide for how each status is typically used in a Kanban workflow. However, each department may define their own specific tasks and workflows for each status based on their unique needs and objectives._
+
+| Status            | Workflow Phase              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BACKLOG           | [Discovery](#discovery)     | This status represents a list of tasks or items that need to be completed in the future. These items are typically prioritized based on their importance and urgency, and they are added to the backlog as they are identified.                                                                                                                                                                                                                                        |
+| PLANNING          | [Preparation](#preparation) | In this stage, team members analyze and prioritize the items in the backlog, estimate the effort required to complete them, and plan how to approach the work. They may also break down larger tasks into smaller, more manageable pieces.                                                                                                                                                                                                                             |
+| READY TO START    | [Preparation](#preparation) | This status indicates that the team has completed the PLANNING stage and is ready to begin working on the tasks. The tasks in this status are typically ordered by priority or urgency.                                                                                                                                                                                                                                                                                |
+| WORKING           | [Execution](#execution)     | This status represents tasks that are currently being worked on by team members. Work in progress (WIP) limits may be used to ensure that the team does not take on too many tasks at once and can focus on completing them.                                                                                                                                                                                                                                           |
+| ACCEPTANCE        | [Execution](#execution)     | When a task is completed, it moves to the ACCEPTANCE stage, where it is reviewed and tested to ensure that it meets the acceptance criteria and is ready for release or deployment.                                                                                                                                                                                                                                                                                    |
+| BLOCKED           | [Execution](#execution)     | If a task in the WORKING status encounters an issue or requires external help that the product team cannot resolve, the team moves the task to BLOCKED status. While in the BLOCKED status, the team seeks help or input from external stakeholders, such as subject matter experts or the customer, to address the issue or complete the task. Once the product team receives the external help and they can resume the task, it is moved back to the WORKING status. |
+| PREPARING HANDOFF | [Transition](#transition)   | This status is used to prepare a completed task for handoff to the next stage of the workflow or to the customer. This may involve packaging, documentation, or other necessary steps.                                                                                                                                                                                                                                                                                 |
+| HANDOFF           | [Transition](#transition)   | This status represents the completed handoff of a task to the next stage of the workflow or to the customer. The task is considered complete at this point.                                                                                                                                                                                                                                                                                                            |
+| CANCELED          | [Closure](#closure)         | This status is used to indicate that a task has been canceled or abandoned for some reason. The reason for the cancellation may be recorded for future reference.                                                                                                                                                                                                                                                                                                      |
+| COMPLETED         | [Closure](#closure)         | This status represents tasks that have been successfully completed and delivered to the customer or end-user. These tasks may be reviewed to inform future planning and process improvement.                                                                                                                                                                                                                                                                           |
+
+## Rules
+
+### WIP Limits
+
+The first rule of our Kanban system is the use of work in process (WIP) limits for each [Workflow Phase](#workflow-phases), if necessary. WIP limits serve two essential purposes. Firstly, they restrict the amount of work that can be impacted by changes in priorities, requirements, or design, which is crucial for [business agility](https://arantespp.com/zettel/business-agility). Secondly, WIP limits control the flow of work to match the pace of the slowest step, also known as the constraint—generally the [Execution](#execution). By pacing the other steps to match the constraint, we can achieve high efficiency and productivity since we can't complete work faster than the constraint. It's important to note that specific WIP limits for each routine will be defined by each department according to their specific processes and needs.
