@@ -24,20 +24,18 @@ export const FormFieldCheckbox = <
   return (
     <Box>
       <Flex sx={{ alignItems: 'center' }}>
-        <Checkbox
-          id={id}
-          ref={ref}
-          checked={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          name={name}
-          {...checkboxProps}
-        />
-        {label && (
-          <Label aria-disabled={checkboxProps.disabled} htmlFor={id}>
-            {label}
-          </Label>
-        )}
+        <Label aria-disabled={checkboxProps.disabled} htmlFor={id}>
+          <Checkbox
+            id={id}
+            ref={ref}
+            checked={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            name={name}
+            {...checkboxProps}
+          />
+          {label}
+        </Label>
       </Flex>
       <ErrorMessage name={name} />
     </Box>
