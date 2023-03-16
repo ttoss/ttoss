@@ -5,6 +5,7 @@ export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 
 export { useTheme } from './theme/useTheme';
 
+export { Badge, type BadgeProps } from './components/Badge';
 export { Box, type BoxProps } from './components/Box';
 export { Button, type ButtonProps } from './components/Button';
 export { Card, type CardProps } from './components/Card';

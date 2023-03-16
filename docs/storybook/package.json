@@ -22,14 +22,14 @@
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.7",
-    "@storybook/addon-actions": "^6.5.14",
-    "@storybook/addon-essentials": "^6.5.14",
-    "@storybook/addon-interactions": "^6.5.14",
-    "@storybook/addon-links": "^6.5.14",
-    "@storybook/react": "^6.5.14",
+    "@babel/core": "^7.21.3",
+    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-essentials": "^6.5.16",
+    "@storybook/addon-interactions": "^6.5.16",
+    "@storybook/addon-links": "^6.5.16",
+    "@storybook/react": "^6.5.16",
     "@storybook/testing-library": "^0.0.13",
-    "babel-loader": "^8.2.3",
+    "babel-loader": "^9.1.2",
     "cross-env": "^7.0.3",
     "storybook-addon-locale": "^0.3.6"
   }
