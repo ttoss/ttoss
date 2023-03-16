@@ -1,6 +1,5 @@
-import { Meta, Story } from '@storybook/react';
-
 import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
+import { Meta, Story } from '@storybook/react';
 
 const Template: Story<CheckboxProps> = (args) => {
   return (
@@ -21,6 +20,6 @@ ExampleDisabled.args = {
 };
 
 export default {
-  title: 'Components/Checkbox',
+  title: 'UI/Checkbox',
   component: Checkbox,
 } as Meta;

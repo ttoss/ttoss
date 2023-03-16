@@ -124,6 +124,15 @@ export const BruttalTheme: Theme = {
   /**
    * Components
    */
+  badges: {
+    primary: {
+      color: 'onPrimary',
+      bg: 'primary',
+      fontSize: 'sm',
+      paddingX: 'sm',
+      borderRadius: 'default',
+    },
+  },
   buttons: {
     accent: {
       backgroundColor: 'accent',
