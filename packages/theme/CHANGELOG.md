@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.2.10...@ttoss/theme@1.3.0) (2023-03-17)
+
+### Features
+
+- add root styles ([#247](https://github.com/ttoss/ttoss/issues/247)) ([d6381e5](https://github.com/ttoss/ttoss/commit/d6381e51f74cabae4b5b8b49568fa1c3622a955b))
+
 ## [1.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.2.9...@ttoss/theme@1.2.10) (2023-03-16)
 
 **Note:** Version bump only for package @ttoss/theme
