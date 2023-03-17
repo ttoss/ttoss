@@ -119,6 +119,9 @@ export const BruttalTheme: Theme = {
     root: {
       fontFamily: 'body',
       fontWeight: 'normal',
+      fontSize: 'base',
+      margin: 0,
+      padding: 0,
     },
   },
   /**
