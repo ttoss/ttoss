@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.4",
-    "aws-amplify": "^5.0.14",
+    "aws-amplify": "^5.0.20",
     "relay-runtime": "^14.1.0"
   },
   "keywords": [],

@@ -15,8 +15,9 @@
     "src"
   ],
   "scripts": {
-    "prebuild": "ttoss-i18n --no-compile",
+    "prebuild": "yarn i18n",
     "build": "tsup",
+    "i18n": "ttoss-i18n --no-compile",
     "test": "jest"
   },
   "sideEffects": false,
@@ -41,7 +42,7 @@
     "@ttoss/react-notifications": "^1.20.12",
     "@ttoss/test-utils": "^1.20.6",
     "@ttoss/ui": "^1.30.12",
-    "aws-amplify": "^5.0.14"
+    "aws-amplify": "^5.0.20"
   },
   "keywords": [
     "React",

@@ -15,7 +15,9 @@ jest.mock('findup-sync', () => {
 
 jest.mock('fs', () => {
   return {
+    ...jest.requireActual('fs'),
     promises: {
+      ...jest.requireActual('fs').promises,
       readFile: jest.fn(),
       writeFile: jest.fn(),
     },
