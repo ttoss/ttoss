@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.24...@ttoss/react-auth@1.3.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/ttoss/issues/248)) ([ac8629d](https://github.com/ttoss/ttoss/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
 ## [1.2.24](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.23...@ttoss/react-auth@1.2.24) (2023-03-17)
 
 **Note:** Version bump only for package @ttoss/react-auth

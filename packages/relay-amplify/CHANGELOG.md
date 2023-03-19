@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.3.2...@ttoss/relay-amplify@0.4.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/ttoss/issues/248)) ([ac8629d](https://github.com/ttoss/ttoss/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
 ## [0.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.3.1...@ttoss/relay-amplify@0.3.2) (2023-03-16)
 
 **Note:** Version bump only for package @ttoss/relay-amplify
