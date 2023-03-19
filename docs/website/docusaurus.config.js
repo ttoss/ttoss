@@ -52,6 +52,7 @@ const config = {
           sidebar: {
             categoryLabel: `@ttoss/${package}`,
           },
+          excludeExternals: true,
         },
       ];
     }),

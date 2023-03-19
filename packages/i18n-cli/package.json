@@ -17,8 +17,8 @@
     "build": "tsup-node"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^5.1.10",
-    "glob": "^8.1.0"
+    "@formatjs/cli-lib": "^6.0.3",
+    "glob": "^9.3.0"
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.4"

@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import { S3 } from 'aws-sdk';
+import { glob } from 'glob';
 import fs from 'fs';
-import glob from 'glob';
 import log from 'npmlog';
 import mime from 'mime-types';
 import path from 'path';
@@ -74,13 +74,7 @@ export const getAllFilesInsideADirectory = async ({
 }: {
   directory: string;
 }) => {
-  const allFilesAndDirectories = await new Promise<string[]>(
-    (resolve, reject) => {
-      glob(`${directory}/**/*`, (err, matches) => {
-        return err ? reject(err) : resolve(matches);
-      });
-    }
-  );
+  const allFilesAndDirectories = await glob(`${directory}/**/*`);
 
   const allFiles = allFilesAndDirectories
     /**

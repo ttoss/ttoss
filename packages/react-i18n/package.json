@@ -26,13 +26,13 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "react-intl": "^6.2.5"
+    "react-intl": "^6.3.1"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@formatjs/cli": "^5.1.10",
+    "@formatjs/cli": "^6.0.4",
     "@ttoss/config": "^1.28.4",
     "@ttoss/i18n-cli": "^0.3.7",
     "@ttoss/test-utils": "^1.20.6"

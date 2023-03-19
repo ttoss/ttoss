@@ -39,7 +39,7 @@
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.10",
     "findup-sync": "^5.0.0",
-    "glob": "^8.1.0",
+    "glob": "^9.3.0",
     "js-yaml": "^4.1.0",
     "mime-types": "^2.1.35",
     "npmlog": "^7.0.1",

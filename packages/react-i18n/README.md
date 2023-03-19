@@ -1,16 +1,20 @@
-# @ttoss/i18n
+# @ttoss/react-i18n
 
-## About
+**@ttoss/react-i18n** is a library that provides a way to internationalize your React application using ttoss ecosystem.
 
-**@ttoss/react-i18n** is a library that provides a simple way to internationalize your React application using ttoss ecosystem.
+:::note
+You should declare your messages as describe in the [FormatJS](https://formatjs.io/docs/getting-started/message-declaration) documentation.
+:::
 
 ## Get Started
 
-### Install @ttoss/i18n
+### Install @ttoss/react-i18n
 
 ```shell
-yarn add @ttoss/react-i18n
+yarn add @ttoss/react-i18n @ttoss/i18n-cli
 ```
+
+To extract and compile your translations, check the [ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/) documentation.
 
 ## Examples of use
 
