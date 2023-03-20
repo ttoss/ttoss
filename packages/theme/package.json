@@ -7,8 +7,16 @@
   "contributors": [
     "Rayza Oliveira <rayza.ocr@gmail.com>"
   ],
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/index.js"
+    },
+    "./Bruttal": {
+      "import": "./dist/esm/themes/Bruttal/Bruttal.js",
+      "require": "./dist/themes/Bruttal/Bruttal.js"
+    }
+  },
   "files": [
     "dist",
     "src",
@@ -18,10 +26,11 @@
     "build": "tsup",
     "test": "jest"
   },
-  "sideEffects": false,
-  "typings": "dist/index.d.ts",
+  "sideEffects": true,
   "dependencies": {
-    "deepmerge": "^4.3.0"
+    "@iconify-icon/react": "^1.0.7",
+    "@iconify/icons-carbon": "^1.2.16",
+    "deepmerge": "^4.3.1"
   },
   "devDependencies": {
     "@ttoss/config": "^1.28.4",
@@ -30,5 +39,15 @@
   "keywords": [],
   "publishConfig": {
     "access": "public"
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "Bruttal": [
+        "./dist/themes/Bruttal/Bruttal.d.ts"
+      ]
+    }
   }
 }

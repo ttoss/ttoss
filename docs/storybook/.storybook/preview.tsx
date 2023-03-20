@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@ttoss/ui';
 import { DecoratorFn } from '@storybook/react';
 import { themes } from '../themes';
-import { BruttalFonts } from '@ttoss/theme';
+import { BruttalFonts } from '@ttoss/theme/Bruttal';
 import { I18nProvider } from '@ttoss/react-i18n';
 
 export const parameters = {

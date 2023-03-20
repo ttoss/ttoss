@@ -26,6 +26,7 @@ export { Select, type SelectProps } from './components/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Radio, type RadioProps } from './components/Radio';
 export { Icon, type IconProps, type IconType } from './components/Icon';
+export { IconButton, type IconButtonProps } from './components/IconButton';
 export { Slider, type SliderProps } from './components/Slider';
 export { Checkbox, type CheckboxProps } from './components/Checkbox';
 export { InfiniteLinearProgress } from './components/InfiniteLinearProgress';

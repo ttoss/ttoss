@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BruttalFonts, BruttalTheme } from '@ttoss/theme';
+import { BruttalFonts, BruttalTheme } from '@ttoss/theme/Bruttal';
 import { Global, css } from '@emotion/react';
 import { Theme, ThemeProvider as ThemeUiProvider } from 'theme-ui';
 

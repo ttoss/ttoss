@@ -1,21 +1,11 @@
-import { BruttalTheme as Bruttal } from '@ttoss/theme';
+import { BruttalTheme } from '@ttoss/theme/Bruttal';
 import { theme as Siflor } from './siflor';
 import { THEME_GLOBAL_KEY } from './../constants/theme-global';
 import { theme as Triangulos } from './triangulos';
-
 import type { Theme } from '@ttoss/ui';
 
 const initialDynamicTheme = {
-  ...Bruttal,
-  colors: {
-    text: Bruttal.colors?.text,
-    primary: Bruttal.colors?.primary,
-    background: Bruttal.colors?.background,
-    secondary: Bruttal.colors?.secondary,
-    gray: Bruttal.colors?.gray,
-    danger: Bruttal.colors?.danger,
-    muted: Bruttal.colors?.muted,
-  },
+  ...BruttalTheme,
 };
 
 // Documentation to know what the variant to use
@@ -36,6 +26,6 @@ const getDynamicTheme = () => {
 export const themes: { [key: string]: Theme } = {
   Siflor,
   Triangulos,
-  Bruttal,
+  Bruttal: BruttalTheme,
   Dynamic: getDynamicTheme(),
 };
