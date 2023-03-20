@@ -14,6 +14,9 @@ module.exports = {
     'storybook-addon-locale',
   ],
   framework: '@storybook/react',
+  core: {
+    builder: 'webpack5',
+  },
   webpackFinal: async (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

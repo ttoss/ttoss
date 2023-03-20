@@ -1,4 +1,4 @@
-import { BruttalTheme } from './themes/Bruttal/BruttalTheme';
+import { BruttalTheme } from './themes/Bruttal/Bruttal';
 import deepmerge from 'deepmerge';
 import type { Theme } from 'theme-ui';
 
