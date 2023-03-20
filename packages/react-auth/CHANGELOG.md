@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.0...@ttoss/react-auth@1.3.1) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 # [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.24...@ttoss/react-auth@1.3.0) (2023-03-19)
 
 ### Features

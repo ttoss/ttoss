@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.3.0...@ttoss/theme@1.4.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/ttoss/issues/249)) ([df3d245](https://github.com/ttoss/ttoss/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
 # [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.2.10...@ttoss/theme@1.3.0) (2023-03-17)
 
 ### Features

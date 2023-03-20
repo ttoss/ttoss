@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.26.0](https://github.com/ttoss/carlin/compare/carlin@1.25.0...carlin@1.26.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/carlin/issues/249)) ([df3d245](https://github.com/ttoss/carlin/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
 # [1.25.0](https://github.com/ttoss/carlin/compare/carlin@1.24.2...carlin@1.25.0) (2023-03-19)
 
 ### Features
