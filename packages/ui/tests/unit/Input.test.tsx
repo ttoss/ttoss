@@ -1,6 +1,5 @@
 import { Input } from '../../src';
 import { render, screen } from '@ttoss/test-utils';
-
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
 test('should render Input component without icon', () => {
