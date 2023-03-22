@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.9](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.5.8...@ttoss/cloud-roles@0.5.9) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
 ## [0.5.8](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.5.7...@ttoss/cloud-roles@0.5.8) (2023-03-20)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

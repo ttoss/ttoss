@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.0...@ttoss/ui@1.31.1) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
 # [1.31.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.12...@ttoss/ui@1.31.0) (2023-03-20)
 
 ### Features

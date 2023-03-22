@@ -1,14 +1,14 @@
 {
   "private": true,
   "name": "@terezinha-farm/auth",
-  "version": "0.2.19",
+  "version": "0.2.20",
   "scripts": {
     "deploy": "carlin deploy"
   },
   "dependencies": {
-    "@ttoss/cloud-auth": "^0.8.1"
+    "@ttoss/cloud-auth": "^0.8.2"
   },
   "devDependencies": {
-    "carlin": "^1.26.1"
+    "carlin": "^1.26.2"
   }
 }
