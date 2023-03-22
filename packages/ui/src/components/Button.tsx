@@ -3,30 +3,12 @@ import {
   type ButtonProps as ButtonPropsUi,
   Button as ButtonUi,
 } from 'theme-ui';
-import { Icon } from './Icon';
+import { Icon, IconType } from './Icon';
 
 export type ButtonProps = ButtonPropsUi & {
-  leftIcon?: React.ReactNode | string;
-  rightIcon?: React.ReactNode | string;
+  leftIcon?: IconType;
+  rightIcon?: IconType;
 };
-
-const RenderIcon = ({ icon }: { icon: React.ReactNode | string }) => {
-  if (!icon) {
-    return null;
-  }
-
-  if (typeof icon === 'string') {
-    return (
-      <>
-        <Icon icon={icon} />
-      </>
-    );
-  }
-
-  return <>{icon}</>;
-};
-
-const MemoizedRenderIcon = React.memo(RenderIcon);
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
@@ -35,6 +17,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <ButtonUi
         ref={ref}
+        type="button"
         {...restProps}
         sx={{
           cursor: 'pointer',
@@ -46,9 +29,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ...restProps.sx,
         }}
       >
-        <MemoizedRenderIcon icon={leftIcon} />
+        {leftIcon && <Icon inline icon={leftIcon} />}
         {children}
-        <MemoizedRenderIcon icon={rightIcon} />
+        {rightIcon && <Icon inline icon={rightIcon} />}
       </ButtonUi>
     );
   }
