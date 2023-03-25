@@ -37,7 +37,18 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-non-null-assertion': 'error',
+    /**
+     * https://formatjs.io/docs/tooling/linter
+     */
+    'formatjs/enforce-default-message': ['error', 'literal'],
+    'formatjs/enforce-placeholders': ['error'],
+    'formatjs/no-camel-case': ['error'],
+    'formatjs/no-emoji': ['error'],
+    'formatjs/no-multiple-whitespaces': ['error'],
+    'formatjs/no-multiple-plurals': 'error',
     'formatjs/no-offset': 'error',
+    'formatjs/no-id': 'error',
+    'formatjs/no-complex-selectors': 'error',
     'no-console': 'error',
     'no-use-before-define': ['error'],
     'prefer-arrow-callback': 'error',
