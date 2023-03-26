@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "description": "Package for creating landing pages.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "^1.29.2",
     "@ttoss/test-utils": "^1.20.9",
-    "@ttoss/ui": "^1.31.2",
+    "@ttoss/ui": "^1.31.3",
     "@types/jest": "^29.5.0",
     "@types/react-collapse": "^5.0.1",
     "jest": "^29.5.0",

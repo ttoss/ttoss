@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.4.2...@ttoss/theme@1.4.3) (2023-03-26)
+
+### Bug Fixes
+
+- @ttoss/theme exports ([3fd2243](https://github.com/ttoss/ttoss/commit/3fd2243d8dbb2735ba8126d5da7604a0629ef9cd))
+
 ## [1.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.4.1...@ttoss/theme@1.4.2) (2023-03-26)
 
 **Note:** Version bump only for package @ttoss/theme
