@@ -44,6 +44,7 @@ module.exports = {
     'formatjs/enforce-placeholders': ['error'],
     'formatjs/no-camel-case': ['error'],
     'formatjs/no-emoji': ['error'],
+    'formatjs/no-literal-string-in-jsx': 'warn',
     'formatjs/no-multiple-whitespaces': ['error'],
     'formatjs/no-multiple-plurals': 'error',
     'formatjs/no-offset': 'error',
