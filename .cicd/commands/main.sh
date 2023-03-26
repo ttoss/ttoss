@@ -18,6 +18,9 @@ echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
 # Print "NPM whoami" to check if the token is valid
 echo NPM whoami: $(npm whoami)
 
+# Lint
+yarn turbo run lint
+
 # Build config to run lint-staged for lint and version bump
 yarn turbo run build --filter=@ttoss/config...
 
@@ -26,7 +29,7 @@ yarn lerna version --yes --no-push
 
 # Lint, test, and build all packages since $LATEST_TAG and their dependent packages.
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-yarn turbo run lint build test --filter=...[$LATEST_TAG]
+yarn turbo run build test --filter=...[$LATEST_TAG]
 
 # Undo all files that were changed by the build command—this happens because
 # the build can change files with different linting rules, or modify some
