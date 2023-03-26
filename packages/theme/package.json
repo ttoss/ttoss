@@ -17,6 +17,8 @@
       "require": "./dist/themes/Bruttal/Bruttal.js"
     }
   },
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
   "files": [
     "dist",
     "src",
@@ -27,6 +29,7 @@
     "test": "jest"
   },
   "sideEffects": true,
+  "typings": "dist/index.d.ts",
   "dependencies": {
     "@iconify-icon/react": "^1.0.7",
     "@iconify/icons-carbon": "^1.2.16",
