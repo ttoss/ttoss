@@ -18,6 +18,10 @@ const formatjsPlugin: Plugin = {
           }
 
           const transformedFile = await transformAsync(outputFile.text, {
+            caller: {
+              name: 'formatjs-transformer',
+              supportsStaticESM: true,
+            },
             filename: outputFile.path,
             plugins: [
               [
