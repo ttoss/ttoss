@@ -5,9 +5,9 @@ import { setOptions } from '@ttoss/test-utils';
 const loadLocaleData: LoadLocaleData = (locale) => {
   switch (locale) {
     case 'pt-BR':
-      return import('../i18n/compiled-lang/pt-BR.json');
+      return import('../i18n/compiled/pt-BR.json');
     default:
-      return import('../i18n/compiled-lang/en.json');
+      return import('../i18n/compiled/en.json');
   }
 };
 
