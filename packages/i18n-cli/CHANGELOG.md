@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.4.2...@ttoss/i18n-cli@0.4.3) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
 ## [0.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.4.1...@ttoss/i18n-cli@0.4.2) (2023-03-22)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

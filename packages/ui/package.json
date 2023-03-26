@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "1.31.1",
+  "version": "1.31.2",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -24,15 +24,15 @@
     "@emotion/react": "^11.10.6",
     "@iconify-icon/react": "^1.0.7",
     "@theme-ui/match-media": "^0.15.5",
-    "@ttoss/theme": "^1.4.1",
+    "@ttoss/theme": "^1.4.2",
     "theme-ui": "^0.15.5"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.29.1",
-    "@ttoss/test-utils": "^1.20.8",
+    "@ttoss/config": "^1.29.2",
+    "@ttoss/test-utils": "^1.20.9",
     "@types/jest": "^29.5.0",
     "jest": "^29.5.0",
     "react": "^18.2.0",
