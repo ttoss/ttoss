@@ -22,12 +22,18 @@ const installPackages = () => {
   spawn('yarn', [
     'add',
     '-DW',
-    ...tools.map((tool) => tool?.installPackages || []).flat(),
+    ...tools
+      .map((tool) => {
+        return tool?.installPackages || [];
+      })
+      .flat(),
   ]);
 };
 
 const executeCommands = () => {
-  tools.forEach((tool) => tool.executeCommands?.());
+  tools.forEach((tool) => {
+    return tool.executeCommands?.();
+  });
 };
 
 const configurePackagesJson = () => {
@@ -49,7 +55,9 @@ const configurePackagesJson = () => {
   }
 
   packagesJson.scripts = {
-    ...tools.reduce((acc, tool) => ({ ...acc, ...tool.scripts }), {}),
+    ...tools.reduce((acc, tool) => {
+      return { ...acc, ...tool.scripts };
+    }, {}),
     ...packagesJson.scripts,
   };
 

@@ -9,7 +9,9 @@ const EXTRACT_DIR = path.join(DEFAULT_DIR, 'lang');
 
 const EXTRACT_FILE = path.join(EXTRACT_DIR, 'en.json');
 
-const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled-lang');
+const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled');
+
+const MISSING_DIR = path.join(DEFAULT_DIR, 'missing');
 
 const args = process.argv.slice(2);
 
@@ -131,11 +133,11 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Compile
    */
+  const translations = glob.sync(EXTRACT_DIR + '/*.json');
+
   await fs.promises.mkdir(COMPILE_DIR, {
     recursive: true,
   });
-
-  const translations = glob.sync(EXTRACT_DIR + '/*.json');
 
   for (const translation of translations) {
     const filename = translation.split('/').pop();
@@ -148,6 +150,49 @@ const getTtossExtractedTranslations = async () => {
       await fs.promises.writeFile(
         path.join(COMPILE_DIR, filename),
         compiledDataAsString
+      );
+    }
+  }
+
+  /**
+   * Missing
+   */
+  await fs.promises.mkdir(MISSING_DIR, {
+    recursive: true,
+  });
+
+  for (const translation of translations) {
+    const filename = translation.split('/').pop();
+
+    /**
+     * Ignore en.json
+     */
+    if (filename === 'en.json') {
+      continue;
+    }
+
+    const extractedTranslations = JSON.parse(finalExtractedData);
+
+    const obj = JSON.parse(fs.readFileSync(translation, { encoding: 'utf-8' }));
+
+    /**
+     * List all missing translations that exist in en.json but not in the current translation.
+     */
+    const missingTranslations = Object.keys(extractedTranslations).reduce(
+      (acc, key) => {
+        if (!obj[key]) {
+          acc[key] = extractedTranslations[key];
+        }
+
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+
+    if (filename) {
+      await fs.promises.writeFile(
+        path.join(MISSING_DIR, filename),
+        JSON.stringify(missingTranslations, null, 2)
       );
     }
   }

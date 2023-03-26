@@ -1,5 +1,47 @@
+import { Plugin, PluginBuild } from 'esbuild';
 import { configCreator } from './configCreator';
+import { transformAsync } from '@babel/core';
 import type { Options } from 'tsup';
+
+const formatjsPlugin: Plugin = {
+  name: 'formatjs',
+  setup: (build: PluginBuild) => {
+    build.onEnd(async (result) => {
+      await Promise.all(
+        (result.outputFiles || []).map(async (outputFile) => {
+          if (
+            !outputFile.path.endsWith('.js') &&
+            !outputFile.path.endsWith('.mjs') &&
+            !outputFile.path.endsWith('.cjs')
+          ) {
+            return;
+          }
+
+          const transformedFile = await transformAsync(outputFile.text, {
+            caller: {
+              name: 'formatjs-transformer',
+              supportsStaticESM: true,
+            },
+            filename: outputFile.path,
+            plugins: [
+              [
+                'formatjs',
+                {
+                  idInterpolationPattern: '[sha512:contenthash:base64:6]',
+                  ast: true,
+                },
+              ],
+            ],
+          });
+
+          if (transformedFile?.code) {
+            outputFile.contents = Buffer.from(transformedFile.code);
+          }
+        })
+      );
+    });
+  },
+};
 
 export const defaultConfig: Options = {
   clean: true,
@@ -17,6 +59,7 @@ export const defaultConfig: Options = {
   banner: {
     js: `/** Powered by @ttoss/config. https://ttoss.dev/docs/modules/packages/config/ */`,
   },
+  esbuildPlugins: [formatjsPlugin],
 };
 
 export const tsupConfig = configCreator(defaultConfig);
