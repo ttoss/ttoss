@@ -54,3 +54,8 @@ export const Neutral = Template.bind({});
 Neutral.args = {
   variant: 'neutral',
 };
+
+export const Danger = Template.bind({});
+Danger.args = {
+  variant: 'danger',
+};
