@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.2...@ttoss/ui@1.31.3) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [1.31.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.1...@ttoss/ui@1.31.2) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [1.31.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.0...@ttoss/ui@1.31.1) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+# [1.31.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.12...@ttoss/ui@1.31.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/ttoss/issues/249)) ([df3d245](https://github.com/ttoss/ttoss/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
+## [1.30.12](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.11...@ttoss/ui@1.30.12) (2023-03-17)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [1.30.11](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.10...@ttoss/ui@1.30.11) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## [1.30.10](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.30.9...@ttoss/ui@1.30.10) (2023-03-15)
 
 **Note:** Version bump only for package @ttoss/ui

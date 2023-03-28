@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.22](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.21...@terezinha-farm/api@0.6.22) (2023-03-26)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.6.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.20...@terezinha-farm/api@0.6.21) (2023-03-22)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.6.20](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.19...@terezinha-farm/api@0.6.20) (2023-03-21)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.6.19](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.18...@terezinha-farm/api@0.6.19) (2023-03-20)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.6.18](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.17...@terezinha-farm/api@0.6.18) (2023-03-19)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.6.17](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.16...@terezinha-farm/api@0.6.17) (2023-03-16)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## [0.6.16](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.6.15...@terezinha-farm/api@0.6.16) (2023-03-10)
 
 **Note:** Version bump only for package @terezinha-farm/api

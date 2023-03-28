@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.2...@ttoss/react-i18n@1.19.3) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
+## [1.19.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.1...@ttoss/react-i18n@1.19.2) (2023-03-22)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [1.19.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.0...@ttoss/react-i18n@1.19.1) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+# [1.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.18.10...@ttoss/react-i18n@1.19.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/ttoss/issues/248)) ([ac8629d](https://github.com/ttoss/ttoss/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
+## [1.18.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.18.9...@ttoss/react-i18n@1.18.10) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## [1.18.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.18.8...@ttoss/react-i18n@1.18.9) (2023-03-07)
 
 **Note:** Version bump only for package @ttoss/react-i18n

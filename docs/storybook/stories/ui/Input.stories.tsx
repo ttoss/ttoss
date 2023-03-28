@@ -1,4 +1,4 @@
-import { Icon, Input, InputProps } from '@ttoss/ui';
+import { Input, InputProps } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
@@ -16,13 +16,6 @@ IconsAsString.args = {
   trailingIcon: 'mdi-light:home',
   leadingIcon: 'mdi-light:home',
   placeholder: 'Icon as string',
-};
-
-export const IconsAsComponent = Template.bind({});
-IconsAsComponent.args = {
-  trailingIcon: <Icon icon="mdi-light:home" />,
-  leadingIcon: <Icon icon="mdi-light:home" />,
-  placeholder: 'Icon as component',
 };
 
 export const IconsAsSvgIcon = Template.bind({});

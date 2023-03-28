@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.3](https://github.com/ttoss/carlin/compare/carlin@1.26.2...carlin@1.26.3) (2023-03-26)
+
+**Note:** Version bump only for package carlin
+
+## [1.26.2](https://github.com/ttoss/carlin/compare/carlin@1.26.1...carlin@1.26.2) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/carlin/issues/252)) ([6429e7c](https://github.com/ttoss/carlin/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+## [1.26.1](https://github.com/ttoss/carlin/compare/carlin@1.26.0...carlin@1.26.1) (2023-03-21)
+
+**Note:** Version bump only for package carlin
+
+# [1.26.0](https://github.com/ttoss/carlin/compare/carlin@1.25.0...carlin@1.26.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/carlin/issues/249)) ([df3d245](https://github.com/ttoss/carlin/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
+# [1.25.0](https://github.com/ttoss/carlin/compare/carlin@1.24.2...carlin@1.25.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/carlin/issues/248)) ([ac8629d](https://github.com/ttoss/carlin/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
+## [1.24.2](https://github.com/ttoss/carlin/compare/carlin@1.24.1...carlin@1.24.2) (2023-03-16)
+
+**Note:** Version bump only for package carlin
+
 ## [1.24.1](https://github.com/ttoss/carlin/compare/carlin@1.24.0...carlin@1.24.1) (2023-03-07)
 
 ### Bug Fixes

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.32.12",
+  "version": "1.33.3",
   "author": "ttoss",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
@@ -13,23 +13,25 @@
   },
   "dependencies": {
     "@iconify-icons/mdi-light": "^1.2.5",
-    "@ttoss/components": "^1.26.10",
-    "@ttoss/forms": "^0.14.10",
-    "@ttoss/landing-pages": "^0.6.10",
-    "@ttoss/react-notifications": "^1.20.10",
-    "@ttoss/theme": "^1.2.9",
-    "@ttoss/ui": "^1.30.10",
+    "@ttoss/components": "^1.26.16",
+    "@ttoss/forms": "^0.14.16",
+    "@ttoss/landing-pages": "^0.6.16",
+    "@ttoss/react-notifications": "^1.20.16",
+    "@ttoss/theme": "^1.4.3",
+    "@ttoss/ui": "^1.31.3",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.7",
-    "@storybook/addon-actions": "^6.5.14",
-    "@storybook/addon-essentials": "^6.5.14",
-    "@storybook/addon-interactions": "^6.5.14",
-    "@storybook/addon-links": "^6.5.14",
-    "@storybook/react": "^6.5.14",
+    "@babel/core": "^7.21.3",
+    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-essentials": "^6.5.16",
+    "@storybook/addon-interactions": "^6.5.16",
+    "@storybook/addon-links": "^6.5.16",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
+    "@storybook/react": "^6.5.16",
     "@storybook/testing-library": "^0.0.13",
-    "babel-loader": "^8.2.3",
+    "babel-loader": "^9.1.2",
     "cross-env": "^7.0.3",
     "storybook-addon-locale": "^0.3.6"
   }

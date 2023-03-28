@@ -5,6 +5,7 @@ export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 
 export { useTheme } from './theme/useTheme';
 
+export { Badge, type BadgeProps } from './components/Badge';
 export { Box, type BoxProps } from './components/Box';
 export { Button, type ButtonProps } from './components/Button';
 export { Card, type CardProps } from './components/Card';
@@ -25,6 +26,7 @@ export { Select, type SelectProps } from './components/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Radio, type RadioProps } from './components/Radio';
 export { Icon, type IconProps, type IconType } from './components/Icon';
+export { IconButton, type IconButtonProps } from './components/IconButton';
 export { Slider, type SliderProps } from './components/Slider';
 export { Checkbox, type CheckboxProps } from './components/Checkbox';
 export { InfiniteLinearProgress } from './components/InfiniteLinearProgress';

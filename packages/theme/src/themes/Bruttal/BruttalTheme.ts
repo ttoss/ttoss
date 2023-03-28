@@ -120,11 +120,23 @@ export const BruttalTheme: Theme = {
     root: {
       fontFamily: 'body',
       fontWeight: 'normal',
+      fontSize: 'base',
+      margin: 0,
+      padding: 0,
     },
   },
   /**
    * Components
    */
+  badges: {
+    primary: {
+      color: 'onPrimary',
+      bg: 'primary',
+      fontSize: 'sm',
+      paddingX: 'sm',
+      borderRadius: 'default',
+    },
+  },
   buttons: {
     accent: {
       backgroundColor: 'accent',

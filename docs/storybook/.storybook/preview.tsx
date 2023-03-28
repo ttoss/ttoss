@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@ttoss/ui';
 import { DecoratorFn } from '@storybook/react';
 import { themes } from '../themes';
-import { BruttalFonts } from '@ttoss/theme';
+import { BruttalFonts } from '@ttoss/theme/Bruttal';
 import { I18nProvider } from '@ttoss/react-i18n';
 
 export const parameters = {
@@ -27,7 +27,7 @@ export const globalTypes = {
   theme: {
     name: 'Theme',
     description: 'Global theme for components',
-    defaultValue: 'Triangulos',
+    defaultValue: 'Bruttal',
     toolbar: {
       icon: 'circlehollow',
       items: Object.keys(themes),

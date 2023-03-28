@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.33.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.33.2...@docs/storybook@1.33.3) (2023-03-26)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [1.33.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.33.1...@docs/storybook@1.33.2) (2023-03-26)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [1.33.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.33.0...@docs/storybook@1.33.1) (2023-03-22)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [1.33.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.32.14...@docs/storybook@1.33.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/ttoss/issues/249)) ([df3d245](https://github.com/ttoss/ttoss/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
+## [1.32.14](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.32.13...@docs/storybook@1.32.14) (2023-03-17)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [1.32.13](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.32.12...@docs/storybook@1.32.13) (2023-03-16)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [1.32.12](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.32.11...@docs/storybook@1.32.12) (2023-03-15)
 
 **Note:** Version bump only for package @docs/storybook

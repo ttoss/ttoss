@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.10](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.22.9...@ttoss/monorepo@1.22.10) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
+## [1.22.9](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.22.8...@ttoss/monorepo@1.22.9) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+## [1.22.8](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.22.7...@ttoss/monorepo@1.22.8) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
+## [1.22.7](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.22.6...@ttoss/monorepo@1.22.7) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
 ## [1.22.6](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.22.5...@ttoss/monorepo@1.22.6) (2023-03-07)
 
 **Note:** Version bump only for package @ttoss/monorepo

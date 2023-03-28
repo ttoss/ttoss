@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.5.6...@ttoss/aws-appsync-nodejs@1.5.7) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
+## [1.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.5.5...@ttoss/aws-appsync-nodejs@1.5.6) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+## [1.5.5](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.5.4...@ttoss/aws-appsync-nodejs@1.5.5) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
+## [1.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.5.3...@ttoss/aws-appsync-nodejs@1.5.4) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
 ## [1.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.5.2...@ttoss/aws-appsync-nodejs@1.5.3) (2023-03-07)
 
 ### Bug Fixes

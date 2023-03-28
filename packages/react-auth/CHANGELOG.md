@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.3...@ttoss/react-auth@1.3.4) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.2...@ttoss/react-auth@1.3.3) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
+## [1.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.1...@ttoss/react-auth@1.3.2) (2023-03-22)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.0...@ttoss/react-auth@1.3.1) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+# [1.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.24...@ttoss/react-auth@1.3.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/ttoss/issues/248)) ([ac8629d](https://github.com/ttoss/ttoss/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
+## [1.2.24](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.23...@ttoss/react-auth@1.2.24) (2023-03-17)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.2.23](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.22...@ttoss/react-auth@1.2.23) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.2.22](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.2.21...@ttoss/react-auth@1.2.22) (2023-03-15)
 
 **Note:** Version bump only for package @ttoss/react-auth

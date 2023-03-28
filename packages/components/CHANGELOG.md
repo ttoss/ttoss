@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.16](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.15...@ttoss/components@1.26.16) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [1.26.15](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.14...@ttoss/components@1.26.15) (2023-03-26)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [1.26.14](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.13...@ttoss/components@1.26.14) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+## [1.26.13](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.12...@ttoss/components@1.26.13) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [1.26.12](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.11...@ttoss/components@1.26.12) (2023-03-17)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [1.26.11](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.10...@ttoss/components@1.26.11) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [1.26.10](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.26.9...@ttoss/components@1.26.10) (2023-03-15)
 
 **Note:** Version bump only for package @ttoss/components

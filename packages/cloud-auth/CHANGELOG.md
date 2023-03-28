@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.8.2...@ttoss/cloud-auth@0.8.3) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.8.1...@ttoss/cloud-auth@0.8.2) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.8.0...@ttoss/cloud-auth@0.8.1) (2023-03-20)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.7.2...@ttoss/cloud-auth@0.8.0) (2023-03-19)
+
+### Features
+
+- improve i18n ([#248](https://github.com/ttoss/ttoss/issues/248)) ([ac8629d](https://github.com/ttoss/ttoss/commit/ac8629d24c83076aa39f8bff5188ee74e1a4de9d))
+
+## [0.7.2](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.7.1...@ttoss/cloud-auth@0.7.2) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.7.0...@ttoss/cloud-auth@0.7.1) (2023-03-07)
 
 ### Bug Fixes

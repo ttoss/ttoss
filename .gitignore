@@ -117,4 +117,5 @@ github-app/
 .carlin/
 .vscode
 .turbo
-compiled-lang/
+**/i18n/compiled/
+**/i18n/missing/

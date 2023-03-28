@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.29.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.29.1...@ttoss/config@1.29.2) (2023-03-26)
+
+### Bug Fixes
+
+- add i18n id to builds ([#253](https://github.com/ttoss/ttoss/issues/253)) ([a50d288](https://github.com/ttoss/ttoss/commit/a50d288250a5a8d71aee4027f6d41f6e1f0f374d))
+
+## [1.29.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.29.0...@ttoss/config@1.29.1) (2023-03-22)
+
+### Bug Fixes
+
+- add type button as default ([#252](https://github.com/ttoss/ttoss/issues/252)) ([6429e7c](https://github.com/ttoss/ttoss/commit/6429e7c30e286a98316de9b109129c1b094f6680))
+
+# [1.29.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.4...@ttoss/config@1.29.0) (2023-03-20)
+
+### Features
+
+- add bruttal theme icons ([#249](https://github.com/ttoss/ttoss/issues/249)) ([df3d245](https://github.com/ttoss/ttoss/commit/df3d245901ea806b847bcce4af627c2c94fa12b3))
+
+## [1.28.4](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.3...@ttoss/config@1.28.4) (2023-03-16)
+
+**Note:** Version bump only for package @ttoss/config
+
 ## [1.28.3](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.28.2...@ttoss/config@1.28.3) (2023-03-07)
 
 ### Bug Fixes
