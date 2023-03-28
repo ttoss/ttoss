@@ -38,8 +38,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...restProps}
         sx={{
           cursor: 'pointer',
-          paddingX: 'lg',
-          paddingY: 'md',
+          paddingX: 'xl',
+          paddingY: 'lg',
+          fontFamily: 'body',
           display: 'inline-flex',
           alignItems: 'center',
           gap: 'lg',
