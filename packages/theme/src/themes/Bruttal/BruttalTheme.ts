@@ -141,7 +141,7 @@ export const BruttalTheme: Theme = {
     accent: {
       backgroundColor: 'accent',
       color: 'onAccent',
-      border: 'action',
+      borderRadius: 'action',
       borderColor: 'accent',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
@@ -157,7 +157,7 @@ export const BruttalTheme: Theme = {
     primary: {
       backgroundColor: 'primary',
       color: 'onPrimary',
-      border: 'action',
+      borderRadius: 'action',
       borderColor: 'primary',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
@@ -178,7 +178,7 @@ export const BruttalTheme: Theme = {
     secondary: {
       backgroundColor: 'secondary',
       color: 'onSecondary',
-      border: 'action',
+      borderRadius: 'action',
       borderColor: 'secondary',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
@@ -194,7 +194,7 @@ export const BruttalTheme: Theme = {
     neutral: {
       backgroundColor: 'muted',
       color: 'onMuted',
-      border: 'action',
+      borderRadius: 'action',
       borderColor: 'muted',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
