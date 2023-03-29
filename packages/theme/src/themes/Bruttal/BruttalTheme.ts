@@ -111,6 +111,7 @@ export const BruttalTheme: Theme = {
   },
   radii: {
     default: coreRadii.sm,
+    action: coreRadii.sm,
   },
   /**
    * Global styles
@@ -140,10 +141,7 @@ export const BruttalTheme: Theme = {
     accent: {
       backgroundColor: 'accent',
       color: 'onAccent',
-      fontFamily: 'highlight',
-      fontWeight: 'bold',
-      border: 'default',
-      borderRadius: 'default',
+      borderRadius: 'action',
       borderColor: 'accent',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
@@ -159,10 +157,8 @@ export const BruttalTheme: Theme = {
     primary: {
       backgroundColor: 'primary',
       color: 'onPrimary',
-      fontFamily: 'body',
-      border: 'default',
-      borderRadius: 'default',
-      borderColor: 'outline',
+      borderRadius: 'action',
+      borderColor: 'primary',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
         color: 'onHighlight',
@@ -182,10 +178,8 @@ export const BruttalTheme: Theme = {
     secondary: {
       backgroundColor: 'secondary',
       color: 'onSecondary',
-      fontFamily: 'body',
-      border: 'default',
-      borderRadius: 'default',
-      borderColor: 'outline',
+      borderRadius: 'action',
+      borderColor: 'secondary',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
         color: 'onHighlight',
@@ -198,12 +192,10 @@ export const BruttalTheme: Theme = {
       },
     },
     neutral: {
-      backgroundColor: 'neutral',
-      color: 'onNeutral',
-      fontFamily: 'body',
-      border: 'default',
-      borderRadius: 'default',
-      borderColor: 'outline',
+      backgroundColor: 'muted',
+      color: 'onMuted',
+      borderRadius: 'action',
+      borderColor: 'muted',
       ':hover:not(:active,[disabled])': {
         backgroundColor: 'highlight',
         color: 'onHighlight',
@@ -216,7 +208,7 @@ export const BruttalTheme: Theme = {
       },
     },
     danger: {
-      color: 'white',
+      color: 'onDanger',
       backgroundColor: 'danger',
     },
   },
