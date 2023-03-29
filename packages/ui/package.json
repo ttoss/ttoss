@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "1.31.3",
+  "version": "1.31.4",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -24,7 +24,7 @@
     "@emotion/react": "^11.10.6",
     "@iconify-icon/react": "^1.0.7",
     "@theme-ui/match-media": "^0.15.5",
-    "@ttoss/theme": "^1.4.3",
+    "@ttoss/theme": "^1.4.4",
     "theme-ui": "^0.15.5"
   },
   "peerDependencies": {
