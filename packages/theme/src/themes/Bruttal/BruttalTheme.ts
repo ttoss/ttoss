@@ -278,9 +278,29 @@ export const BruttalTheme: Theme = {
       fontSize: 4,
       lineSpace: '3.5',
     },
-    error: {
-      '&[role="alert"]': {
+    help: {
+      fontFamily: 'caption',
+      color: 'text',
+      fontSize: 'xs',
+      '&[aria-disabled="true"]': {
+        color: 'onMuted',
+        fontSize: 'xs',
+      },
+      negative: {
         color: 'danger',
+        fontFamily: 'caption',
+        fontSize: 'xs',
+        '&[aria-disabled="true"]': {
+          color: 'onMuted',
+        },
+      },
+      neutral: {
+        color: 'text',
+        fontFamily: 'caption',
+        fontSize: 'xs',
+        '&[aria-disabled="true"]': {
+          color: 'onMuted',
+        },
       },
     },
     h1: {
