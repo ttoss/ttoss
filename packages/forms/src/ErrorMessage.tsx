@@ -17,7 +17,7 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
       name={name as any}
       as={
         <Text
-          variant="text.error"
+          variant="text.help.negative"
           role="alert"
           sx={{ fontFamily: 'caption', fontSize: 'xs' }}
         />
