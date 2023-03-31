@@ -35,7 +35,7 @@ export const FormFieldCheckbox = <
             onChange={onChange}
             onBlur={onBlur}
             name={name}
-            error={error}
+            aria-invalid={error ? 'true' : 'false'}
             {...checkboxProps}
           />
           {label}

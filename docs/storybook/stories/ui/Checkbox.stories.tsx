@@ -22,8 +22,8 @@ ExampleDisabled.args = {
 export const ExampleError = Template.bind({});
 
 ExampleError.args = {
-  error: true,
-  checked: true,
+  'aria-invalid': 'true',
+  checked: false,
 };
 
 export default {
