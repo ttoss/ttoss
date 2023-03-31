@@ -19,6 +19,13 @@ ExampleDisabled.args = {
   checked: true,
 };
 
+export const ExampleError = Template.bind({});
+
+ExampleError.args = {
+  error: true,
+  checked: true,
+};
+
 export default {
   title: 'UI/Checkbox',
   component: Checkbox,
