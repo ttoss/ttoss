@@ -323,18 +323,9 @@ export const BruttalTheme: Theme = {
       fontSize: 'xs',
       '&[aria-disabled="true"]': {
         color: 'onMuted',
-        fontSize: 'xs',
       },
       negative: {
         color: 'danger',
-        fontFamily: 'caption',
-        fontSize: 'xs',
-        '&[aria-disabled="true"]': {
-          color: 'onMuted',
-        },
-      },
-      neutral: {
-        color: 'text',
         fontFamily: 'caption',
         fontSize: 'xs',
         '&[aria-disabled="true"]': {
