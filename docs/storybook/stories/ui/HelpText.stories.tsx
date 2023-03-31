@@ -1,14 +1,12 @@
 import { ComponentMeta, Story } from '@storybook/react';
-import { Flex, Text, TextProps } from '@ttoss/ui';
+import { Flex, HelpText, HelpTextProps } from '@ttoss/ui';
 
 export default {
   title: 'UI/HelpText',
-  component: Text,
-} as ComponentMeta<typeof Text>;
+  component: HelpText,
+} as ComponentMeta<typeof HelpText>;
 
-const Template: Story<TextProps> = (args) => {
-  const variant = args.variant;
-
+const Template: Story<HelpTextProps> = (args) => {
   return (
     <Flex
       sx={{
@@ -16,34 +14,18 @@ const Template: Story<TextProps> = (args) => {
         flexDirection: 'column',
       }}
     >
-      <Text {...args}>
-        variant:{'['}
-        {variant}
-        {']'}
-      </Text>
-      <Text {...args} aria-disabled="true">
-        variant:{'['}
-        {variant}
-        {']'} Disabled
-      </Text>
+      <HelpText {...args}>HelpText content</HelpText>
+      <HelpText {...args} disabled>
+        HelpText content Disabled
+      </HelpText>
     </Flex>
   );
 };
 
-export const Neutral = Template.bind({});
-
-Neutral.args = {
-  variant: 'text.help.neutral',
-};
+export const Default = Template.bind({});
 
 export const Negative = Template.bind({});
 
 Negative.args = {
-  variant: 'text.help.negative',
-};
-
-export const Disabled = Template.bind({});
-
-Disabled.args = {
-  variant: 'text.help',
+  negative: true,
 };
