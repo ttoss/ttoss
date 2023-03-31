@@ -14,12 +14,15 @@ export const FormFieldCheckbox = <
 } & CheckboxProps) => {
   const {
     field: { onChange, onBlur, value, ref },
+    formState: { errors },
   } = useController<any>({
     name,
     defaultValue: false,
   });
 
   const id = `form-field-checkbox-${name}`;
+
+  const error = !!errors[name]?.message;
 
   return (
     <Box>
@@ -32,6 +35,7 @@ export const FormFieldCheckbox = <
             onChange={onChange}
             onBlur={onBlur}
             name={name}
+            error={error}
             {...checkboxProps}
           />
           {label}
