@@ -1,6 +1,6 @@
 import { FieldName, FieldValues, useFormContext } from 'react-hook-form';
+import { HelpText } from '@ttoss/ui';
 import { ErrorMessage as HookFormErrorMessage } from '@hookform/error-message';
-import { Text } from '@ttoss/ui';
 
 export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
   name,
@@ -15,13 +15,7 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
     <HookFormErrorMessage
       errors={errors}
       name={name as any}
-      as={
-        <Text
-          variant="text.error"
-          role="alert"
-          sx={{ fontFamily: 'caption', fontSize: 'xs' }}
-        />
-      }
+      as={<HelpText negative />}
     />
   );
 };
