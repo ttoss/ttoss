@@ -1,1 +1,1 @@
-export { Checkbox, type CheckboxProps } from 'theme-ui';
+export { type CheckboxProps, Checkbox } from 'theme-ui';

@@ -19,6 +19,13 @@ ExampleDisabled.args = {
   checked: true,
 };
 
+export const ExampleError = Template.bind({});
+
+ExampleError.args = {
+  'aria-invalid': 'true',
+  checked: false,
+};
+
 export default {
   title: 'UI/Checkbox',
   component: Checkbox,

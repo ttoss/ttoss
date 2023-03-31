@@ -283,6 +283,9 @@ export const BruttalTheme: Theme = {
       'input:disabled ~ & path': {
         backgroundColor: 'onMuted',
       },
+      'input[aria-invalid="true"] ~ &': {
+        color: 'danger',
+      },
     },
     input: {
       fontFamily: 'body',

@@ -19,7 +19,10 @@ export default {
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
   age: yup.number().required('Age is required'),
-  receiveEmails: yup.boolean(),
+  receiveEmails: yup
+    .boolean()
+    .oneOf([true], 'It needs to be checked')
+    .required(),
   version: yup.string().required('Version is required'),
 });
 
@@ -29,6 +32,7 @@ const Template: Story = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       version: 'v15',
+      receiveEmails: false,
     },
   });
 
