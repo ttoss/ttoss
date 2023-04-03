@@ -17,7 +17,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             sx={{
               position: 'absolute',
               alignSelf: 'center',
-              fontSize: 'lg',
+              fontSize: 'base',
               left: '1rem',
               lineHeight: 0,
             }}
