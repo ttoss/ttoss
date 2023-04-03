@@ -11,7 +11,7 @@ export type InputProps = InputPropsUI & {
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
     return (
-      <Flex sx={{ position: 'relative' }}>
+      <Flex sx={{ position: 'relative', width: '100%' }}>
         {leadingIcon && (
           <Text
             sx={{
@@ -42,7 +42,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
-              fontSize: 'lg',
+              fontSize: 'base',
               lineHeight: 0,
             }}
             variant="trailing-icon"
