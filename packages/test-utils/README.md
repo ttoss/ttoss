@@ -27,7 +27,7 @@ yarn add --DW @ttoss/config
 Add `babel.config.js` (`touch babel.config.js`) on the package folder:
 
 ```js title="babel.config.js"
-const { babelConfig } = require("@ttoss/config");
+const { babelConfig } = require('@ttoss/config');
 
 module.exports = babelConfig();
 ```
@@ -52,9 +52,9 @@ If you use `jsdom`, you don't need to [install `jest-environment-jsdom`](https:/
 If you want to set options to every test, you can use `setOptions` on Jest setup function. This way, all `render` calls will use the same default options, unless you override them.
 
 ```tsx title=jest.setup.ts
-import { setOptions } from "@ttoss/test-utils";
+import { setOptions } from '@ttoss/test-utils';
 
-import AllProviders from "./paht/to/AllProviders";
+import AllProviders from './paht/to/AllProviders';
 
 /**
  * Add global wrapper to React Testing Library `customRender`.
@@ -69,16 +69,16 @@ setOptions({ wrapper: AllProviders });
 For example, you write your tests like this:
 
 ```tsx
-import { render, screen, userEvent } from "@ttoss/test-utils";
+import { render, screen, userEvent } from '@ttoss/test-utils';
 
-import Component from "./Component";
+import Component from './Component';
 
-test("test with render", async () => {
+test('test with render', async () => {
   const user = await userEvent.setup();
 
   render(<Component />);
 
-  await user.click(screen.getByText("Increment"));
+  await user.click(screen.getByText('Increment'));
 
   expect(screen.getByText(1)).toBeInTheDocument();
 });
@@ -91,79 +91,18 @@ test("test with render", async () => {
 Example:
 
 ```tsx
-import { renderHook } from "@ttoss/test-utils";
-import useCounter from "./useCounter";
+import { renderHook } from '@ttoss/test-utils';
+import useCounter from './useCounter';
 
-test("should use counter", () => {
+test('should use counter', () => {
   const { result } = renderHook(() => useCounter());
 
   expect(result.current.count).toBe(0);
-  expect(typeof result.current.increment).toBe("function");
+  expect(typeof result.current.increment).toBe('function');
 });
 ```
 
 The `setOptions` also works for [`renderHook` options](https://react-hooks-testing-library.com/reference/api#renderhook-options).
-
-### Storybook
-
-You can use your Storybook stories in your unit tests or create Storyshoots testing.
-
-#### Storybook Stories
-
-You can reuse the Storybook stories that you've already created in your unit tests. To do so, this packages uses the package [@storybook/testing-react](https://github.com/storybookjs/testing-react), that you can use this way:
-
-```tsx
-import { render, screen, userEvent } from "@ttoss/test-utils";
-import { composeStories } from "@ttoss/test-utils/storybook";
-
-import * as stories from "./my.stories";
-
-const { Example } = composeStories(stories);
-
-test("check if Storybook Example story is working", async () => {
-  const user = userEvent.setup();
-
-  render(<Example />);
-
-  expect(screen.getByText("oi")).toBeInTheDocument();
-  expect(screen.getByText(0)).toBeInTheDocument();
-  expect(screen.getByText("Increment")).toBeInTheDocument();
-  expect(screen.getByText("StorybookDecorator")).toBeInTheDocument();
-  expect(screen.getByText("JestSetupProvider")).toBeInTheDocument();
-
-  await user.click(screen.getByText("Increment"));
-
-  expect(screen.getByText(1)).toBeInTheDocument();
-});
-```
-
-If your Storybook configuration has global decorators/parameters/etc and you want to use them in your tests, you can use the `setGlobalConfig` function to pass them to your stories. In your `jest.setup.ts` file, you can use the `setGlobalConfig` this way:
-
-```tsx title=jest.setup.ts
-import { setGlobalConfig } from "@ttoss/test-utils/storybook";
-
-/**
- * Add global config to Storybook.
- * https://storybook.js.org/addons/@storybook/testing-react
- */
-import * as globalStorybookConfig from "./.storybook/preview";
-
-setGlobalConfig(globalStorybookConfig);
-```
-
-#### Storyshots
-
-To start using `storyshots` you will need to add this key to your `package.json`.
-
-Ref: https://issuehunt.io/r/storybookjs/storybook/issues/17985
-
-```json
-{
-  "resolutions": {
-    "react-test-renderer": "18.1.0"
-  }
-}
-```
 
 ### Relay
 
@@ -175,7 +114,7 @@ Example:
 import {
   createMockEnvironment,
   MockPayloadGenerator,
-} from "@ttoss/test-utils/relay";
+} from '@ttoss/test-utils/relay';
 
 // ...
 ```
@@ -185,7 +124,7 @@ import {
 It exports `faker` functions from [faker](https://fakerjs.dev/). Example:
 
 ```ts
-import { faker } from "@ttoss/test-utils/faker";
+import { faker } from '@ttoss/test-utils/faker';
 
 const randomName = faker.name.findName();
 const randomEmail = faker.internet.email();
@@ -210,12 +149,12 @@ function setup(jsx: any) {
 
 const onOpen = js.fn();
 
-test("Testing something", async () => {
+test('Testing something', async () => {
   const { user } = setup(<Example onOpen={onOpen} />);
 
-  const buttonMenu = screen.getByLabelText("button-menu");
+  const buttonMenu = screen.getByLabelText('button-menu');
   await user.click(buttonMenu);
 
-  expect(screen.getByLabelText("menu-container")).toBeTruthy();
+  expect(screen.getByLabelText('menu-container')).toBeTruthy();
 });
 ```

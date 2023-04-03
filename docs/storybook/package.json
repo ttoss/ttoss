@@ -4,11 +4,11 @@
   "version": "1.33.7",
   "author": "ttoss",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
+    "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "yarn run storybook",
     "start": "yarn run storybook",
-    "storybook": "cross-env NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
+    "storybook": "storybook dev -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
@@ -23,16 +23,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
-    "@storybook/addon-actions": "^6.5.16",
-    "@storybook/addon-essentials": "^6.5.16",
-    "@storybook/addon-interactions": "^6.5.16",
-    "@storybook/addon-links": "^6.5.16",
-    "@storybook/builder-webpack5": "^6.5.16",
-    "@storybook/manager-webpack5": "^6.5.16",
-    "@storybook/react": "^6.5.16",
-    "@storybook/testing-library": "^0.0.13",
+    "@storybook/addon-actions": "^7.0.0",
+    "@storybook/addon-essentials": "^7.0.0",
+    "@storybook/addon-interactions": "^7.0.0",
+    "@storybook/addon-links": "^7.0.0",
+    "@storybook/addon-mdx-gfm": "^7.0.0",
+    "@storybook/react": "^7.0.0",
+    "@storybook/react-webpack5": "^7.0.0",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "babel-loader": "^9.1.2",
-    "cross-env": "^7.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "^7.0.0",
     "storybook-addon-locale": "^0.3.6"
   }
 }
