@@ -111,6 +111,7 @@ export const BruttalTheme: Theme = {
   borders: {
     default: coreBorders.medium,
     muted: coreBorders.thin,
+    interaction: coreBorders.medium,
   },
   radii: {
     informative: coreRadii.xs,
@@ -290,17 +291,25 @@ export const BruttalTheme: Theme = {
     input: {
       fontFamily: 'body',
       color: 'text',
-      paddingY: 'md',
-      paddingX: 'lg',
+      border: 'interaction',
+      borderColor: 'onMuted',
+      borderRadius: 'action',
+      paddingY: 'lg',
+      paddingX: 'xl',
+      backgroundColor: 'surface',
       '::placeholder': {
-        color: 'underemphasize',
+        color: 'text',
       },
       ':focus-within': {
         outlineColor: 'neutral',
       },
+      ':disabled::placeholder': {
+        color: 'onMuted',
+      },
       ':disabled': {
-        backgroundColor: 'onMuted',
-        borderColor: 'muted',
+        backgroundColor: 'muted',
+        borderColor: 'onMuted',
+        border: 'muted',
       },
       '&.error': {
         borderColor: 'danger',

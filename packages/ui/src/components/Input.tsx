@@ -11,13 +11,13 @@ export type InputProps = InputPropsUI & {
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
     return (
-      <Flex sx={{ position: 'relative' }}>
+      <Flex sx={{ position: 'relative', width: '100%', ...sx }}>
         {leadingIcon && (
           <Text
             sx={{
               position: 'absolute',
               alignSelf: 'center',
-              fontSize: 'lg',
+              fontSize: 'base',
               left: '1rem',
               lineHeight: 0,
             }}
@@ -31,7 +31,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           sx={{
             paddingLeft: leadingIcon ? '3xl' : undefined,
             paddingRight: trailingIcon ? '3xl' : undefined,
-            ...sx,
           }}
           {...inputProps}
         />
@@ -42,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
-              fontSize: 'lg',
+              fontSize: 'base',
               lineHeight: 0,
             }}
             variant="trailing-icon"
