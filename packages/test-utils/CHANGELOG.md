@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.20.9...@ttoss/test-utils@1.21.0) (2023-04-03)
+
+### Features
+
+- update storybook 7 ([#258](https://github.com/ttoss/ttoss/issues/258)) ([6dcbb3c](https://github.com/ttoss/ttoss/commit/6dcbb3ceb14d648e07537db42607bd7af1e3ac6e))
+
 ## [1.20.9](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.20.8...@ttoss/test-utils@1.20.9) (2023-03-26)
 
 **Note:** Version bump only for package @ttoss/test-utils
