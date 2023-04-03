@@ -1,4 +1,4 @@
-import { Flex, Input, InputProps } from '@ttoss/ui';
+import { Flex, Input, InputProps } from '@ttoss/ui/src';
 import { Meta, Story } from '@storybook/react';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
@@ -56,7 +56,14 @@ export const InsideFlex = () => {
         padding: 'lg',
       }}
     >
-      <Input placeholder="Input inside container with padding" />
+      <Input
+        sx={{ height: '100%', flex: 1 }}
+        placeholder="Input inside container with padding"
+      />
+      <Input
+        sx={{ height: '100%', flex: 2 }}
+        placeholder="Input inside container with padding"
+      />
     </Flex>
   );
 };
