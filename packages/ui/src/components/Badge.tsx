@@ -3,7 +3,7 @@ import { type BadgeProps as BadgePropsUi, Badge as BadgeUi } from 'theme-ui';
 import { Icon, IconType } from './Icon';
 
 export type BadgeProps = BadgePropsUi & {
-  icon: IconType;
+  icon?: IconType;
 };
 
 export const Badge = ({ icon, children, sx, ...props }: BadgeProps) => {
