@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.10](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.9...@ttoss/ui@1.31.10) (2023-04-04)
+
+### Bug Fixes
+
+- removed required icon property ([#261](https://github.com/ttoss/ttoss/issues/261)) ([fe19b7c](https://github.com/ttoss/ttoss/commit/fe19b7c4aeb103b25b5091320c9e64c01e741e30))
+
 ## [1.31.9](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.8...@ttoss/ui@1.31.9) (2023-04-03)
 
 **Note:** Version bump only for package @ttoss/ui
