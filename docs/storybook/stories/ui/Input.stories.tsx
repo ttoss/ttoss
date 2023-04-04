@@ -61,8 +61,15 @@ export const InsideFlex = () => {
         placeholder="Input inside container with padding"
       />
       <Input
-        sx={{ height: '100%', flex: 2 }}
-        placeholder="Input inside container with padding"
+        sx={{
+          height: '100%',
+          flex: 2,
+          margin: '3xl',
+          border: 'default',
+          padding: 'lg',
+        }}
+        trailingIcon="carbon:error-filled"
+        placeholder="Input with padding and margin inside container with padding"
       />
     </Flex>
   );
