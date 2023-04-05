@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/relay-amplify",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -24,7 +24,7 @@
     "relay-runtime": "^14.1.0"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.29.2",
+    "@ttoss/config": "^1.29.3",
     "aws-amplify": "^5.0.20",
     "relay-runtime": "^14.1.0"
   },
