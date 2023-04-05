@@ -41,7 +41,8 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/relay-test-utils": "^14.1.0",
     "jest-environment-jsdom": "^29.5.0",
-    "relay-test-utils": "^15.0.0"
+    "relay-test-utils": "^15.0.0",
+    "resize-observer-polyfill": "^1.5.1"
   },
   "peerDependencies": {
     "jest": ">=29.0.0",

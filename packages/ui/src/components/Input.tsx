@@ -1,7 +1,6 @@
 import { Flex, Icon, type IconType, Text } from '..';
-import React from 'react';
-
 import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
+import React from 'react';
 
 export type InputProps = InputPropsUI & {
   leadingIcon?: IconType;
@@ -9,29 +8,33 @@ export type InputProps = InputPropsUI & {
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ leadingIcon, trailingIcon, sx, ...inputProps }, ref) => {
+  ({ leadingIcon, trailingIcon, className, sx, ...inputProps }, ref) => {
     return (
-      <Flex sx={{ position: 'relative', width: '100%', ...sx }}>
+      <Flex
+        className={className}
+        sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
+      >
         {leadingIcon && (
           <Text
             sx={{
               position: 'absolute',
               alignSelf: 'center',
-              fontSize: 'base',
               left: '1rem',
-              lineHeight: 0,
             }}
             variant="leading-icon"
           >
-            <Icon icon={leadingIcon} />
+            <Icon inline icon={leadingIcon} />
           </Text>
         )}
         <InputUI
           ref={ref}
           sx={{
+            ...sx,
             paddingLeft: leadingIcon ? '3xl' : undefined,
             paddingRight: trailingIcon ? '3xl' : undefined,
+            margin: 0,
           }}
+          className={className}
           {...inputProps}
         />
 
@@ -41,12 +44,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
-              fontSize: 'base',
-              lineHeight: 0,
             }}
             variant="trailing-icon"
           >
-            <Icon icon={trailingIcon} />
+            <Icon inline icon={trailingIcon} />
           </Text>
         )}
       </Flex>
