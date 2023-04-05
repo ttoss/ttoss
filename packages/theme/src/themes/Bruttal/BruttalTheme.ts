@@ -266,10 +266,14 @@ export const BruttalTheme: Theme = {
   },
   forms: {
     label: {
-      '&:has(+ div > input.error)': {
-        'span > iconify-icon': {
-          color: 'danger',
-        },
+      color: 'text',
+      fontFamily: 'body',
+      '&:is([aria-disabled="true"])': {
+        color: 'onMuted',
+      },
+      '& > span[aria-label="tooltip"]': {
+        fontSize: 'xs',
+        marginLeft: '2xs',
       },
       '&:has(input[type="checkbox"]:disabled)': {
         color: 'onMuted',
