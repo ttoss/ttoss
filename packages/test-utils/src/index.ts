@@ -1,8 +1,14 @@
 import * as React from 'react';
 import { RenderOptions, render, renderHook } from '@testing-library/react';
 import { createSerializer, matchers } from '@emotion/jest';
+import ResizeObserver from 'resize-observer-polyfill';
 import './assignWindowProperties';
 import '@testing-library/jest-dom';
+
+/**
+ * https://github.com/ZeeCoder/use-resize-observer/issues/40#issuecomment-991256805
+ */
+global.ResizeObserver = ResizeObserver;
 
 /**
  * Export all the matchers for Jest to avoid the error:
