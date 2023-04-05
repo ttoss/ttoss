@@ -1,1 +1,57 @@
-export { Select, type SelectProps } from 'theme-ui';
+import { Icon, Text } from '..';
+import {
+  type SelectProps as SelectPropsUi,
+  Select as SelectUi,
+} from 'theme-ui';
+import React from 'react';
+
+export type SelectProps = SelectPropsUi;
+
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  ({ arrow, ...props }, ref) => {
+    return (
+      <SelectUi
+        // https://theme-ui.com/components/select#custom-arrow-icon
+        arrow={
+          <>
+            {arrow ?? (
+              <Text
+                sx={{
+                  marginLeft: ({ space }: any) => {
+                    return space?.['2xl'] ? '-2xl' : '-28px';
+                  },
+                  alignSelf: 'center',
+                  pointerEvents: 'none',
+                  lineHeight: 0,
+                }}
+              >
+                <Icon icon="picker-down" />
+              </Text>
+            )}
+
+            {props['aria-invalid'] === 'true' && (
+              <Text
+                className="error-icon"
+                sx={{
+                  marginLeft: ({ space }: any) => {
+                    return space?.['2xl']
+                      ? `calc(-${space['2xl']} - 10px)`
+                      : '-44px';
+                  },
+                  alignSelf: 'center',
+                  pointerEvents: 'none',
+                  lineHeight: 0,
+                }}
+              >
+                <Icon icon="error" />
+              </Text>
+            )}
+          </>
+        }
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+Select.displayName = 'Select';

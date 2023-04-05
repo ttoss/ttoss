@@ -112,6 +112,7 @@ export const BruttalTheme: Theme = {
     default: coreBorders.medium,
     muted: coreBorders.thin,
     interaction: coreBorders.medium,
+    danger: coreBorders.medium,
   },
   radii: {
     informative: coreRadii.xs,
@@ -312,6 +313,34 @@ export const BruttalTheme: Theme = {
         borderColor: 'danger',
       },
       '&.error+span>iconify-icon': {
+        color: 'danger',
+      },
+    },
+    select: {
+      color: 'text',
+      fontFamily: 'body',
+      backgroundColor: 'surface',
+      border: 'interaction',
+      borderColor: 'onMuted',
+      width: '100%',
+      paddingY: 'lg',
+      paddingX: 'xl',
+      borderRadius: 'action',
+      ':disabled': {
+        border: 'muted',
+        borderColor: 'onMuted',
+        backgroundColor: 'muted',
+        color: 'onMuted',
+      },
+      ':disabled ~ span:has(iconify-icon)': {
+        color: 'onMuted',
+      },
+      '&[aria-invalid="true"]': {
+        border: 'danger',
+        borderColor: 'danger',
+        outlineColor: 'danger',
+      },
+      '&[aria-invalid="true"] ~ span.error-icon': {
         color: 'danger',
       },
     },
