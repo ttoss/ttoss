@@ -298,13 +298,10 @@ export const BruttalTheme: Theme = {
       paddingX: 'xl',
       backgroundColor: 'surface',
       '::placeholder': {
-        color: 'text',
+        color: 'onMuted',
       },
       ':focus-within': {
         outlineColor: 'neutral',
-      },
-      ':disabled::placeholder': {
-        color: 'onMuted',
       },
       ':disabled': {
         backgroundColor: 'muted',
