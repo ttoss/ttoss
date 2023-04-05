@@ -46,6 +46,16 @@ WithError.args = {
   className: 'error',
 };
 
+export const GreaterFontSize = Template.bind({});
+GreaterFontSize.args = {
+  trailingIcon: 'mdi-light:home',
+  leadingIcon: 'mdi-light:home',
+  placeholder: 'Icon as string',
+  sx: {
+    fontSize: '2xl',
+  },
+};
+
 export const InsideFlex = () => {
   return (
     <Flex
