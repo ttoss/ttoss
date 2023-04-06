@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "type": "module",
   "scripts": {
     "prebuild": "yarn i18n",
@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "@terezinha-farm/config": "^0.3.11",
-    "@ttoss/react-auth": "^1.3.14",
+    "@ttoss/react-auth": "^1.3.15",
     "@ttoss/react-i18n": "^1.19.6",
-    "@ttoss/react-notifications": "^1.20.26",
-    "@ttoss/ui": "^1.31.13",
+    "@ttoss/react-notifications": "^1.20.27",
+    "@ttoss/ui": "^1.31.14",
     "aws-amplify": "^5.0.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
