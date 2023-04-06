@@ -1,11 +1,11 @@
 import * as yup from 'yup';
-import { Button } from '@ttoss/ui';
+import { Button } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
   yupResolver,
-} from '@ttoss/forms';
+} from '@ttoss/forms/src';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { useForm } from 'react-hook-form';
@@ -44,19 +44,21 @@ const Template: Story = () => {
         placeholder="First Name"
         trailingIcon={alertIcon}
         leadingIcon="ic:baseline-supervised-user-circle"
-        tooltipIcon="ic:baseline-supervised-user-circle"
-        showCharacterCounter
+        onTooltipClick={action('onTooltipClick')}
+        tooltip
       />
       <FormFieldInput
-        tooltipIcon={alertIcon}
         name="age"
         label="Age"
         placeholder="Age"
         type="number"
+        tooltip
       />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
       <FormFieldInput name="version" label="Version (disabled)" disabled />
-      <Button type="submit">Submit</Button>
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
     </Form>
   );
 };

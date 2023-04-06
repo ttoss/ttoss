@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui';
+import { Button } from '@ttoss/ui/src';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
@@ -61,53 +61,4 @@ test('should display error messages', async () => {
   await user.click(screen.getByText('Submit'));
 
   expect(await screen.findByText('First name is required')).toBeInTheDocument();
-});
-
-test('should render the tooltip icon passed by param', () => {
-  const tooltipIcon = 'ic:baseline-supervised-user-circle';
-  const RenderForm = () => {
-    const formMethods = useForm({});
-
-    return (
-      <Form {...formMethods} onSubmit={jest.fn()}>
-        <FormFieldInput
-          name="firstName"
-          label="First Name"
-          tooltipIcon={tooltipIcon}
-        />
-      </Form>
-    );
-  };
-  render(<RenderForm />);
-
-  const iconElement = screen.getByTestId('iconify-icon');
-
-  expect(iconElement).toBeInTheDocument();
-  expect(iconElement.getAttribute('icon')).toEqual(tooltipIcon);
-});
-
-test('should render FormFieldInput with character counter when pass showCharacterCounter param', () => {
-  const firstName = 'This text is to check the showCharacterCounter param';
-
-  const RenderForm = () => {
-    const formMethods = useForm({
-      defaultValues: { firstName },
-    });
-
-    return (
-      <Form {...formMethods} onSubmit={jest.fn()}>
-        <FormFieldInput
-          name="firstName"
-          label="First Name"
-          placeholder="First Name"
-          showCharacterCounter
-        />
-      </Form>
-    );
-  };
-  render(<RenderForm />);
-
-  const characterCounter = screen.getByText(firstName.length);
-
-  expect(characterCounter).toBeInTheDocument();
 });
