@@ -20,7 +20,10 @@ export const Label = ({
 
       {tooltip && (
         <Text
-          sx={{ color: 'currentcolor' }}
+          sx={{
+            color: 'currentcolor',
+            cursor: onTooltipClick ? 'pointer' : undefined,
+          }}
           onClick={onTooltipClick}
           aria-label={TOOLTIP_LABEL}
         >
