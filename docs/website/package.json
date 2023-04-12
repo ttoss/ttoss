@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.35.17",
+  "version": "1.35.18",
   "scripts": {
     "build": "docusaurus build",
     "clear": "docusaurus clear",
@@ -23,10 +23,10 @@
     "@ttoss/appsync-api": "^0.10.9",
     "@ttoss/aws-appsync-nodejs": "^1.5.8",
     "@ttoss/cloud-auth": "^0.8.6",
-    "@ttoss/components": "^1.26.28",
+    "@ttoss/components": "^1.26.29",
     "@ttoss/config": "^1.29.3",
-    "@ttoss/react-notifications": "^1.20.28",
-    "@ttoss/ui": "^1.31.15",
+    "@ttoss/react-notifications": "^1.20.29",
+    "@ttoss/ui": "^1.31.16",
     "carlin": "^1.26.6",
     "jsdoc-api": "^8.0.0",
     "markdown-to-jsx": "^7.2.0",

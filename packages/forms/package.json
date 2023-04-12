@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/forms",
-  "version": "0.14.29",
+  "version": "0.14.30",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@ttoss/config": "^1.29.3",
     "@ttoss/test-utils": "^1.21.2",
-    "@ttoss/ui": "^1.31.15",
+    "@ttoss/ui": "^1.31.16",
     "@types/jest": "^29.5.0",
     "jest": "^29.5.0",
     "react": "^18.2.0",

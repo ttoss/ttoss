@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.16](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.15...@ttoss/ui@1.31.16) (2023-04-12)
+
+### Bug Fixes
+
+- set icon button type as button by default ([#268](https://github.com/ttoss/ttoss/issues/268)) ([cb5a926](https://github.com/ttoss/ttoss/commit/cb5a926bfdf66fbbe924e03f62153aabae8891c7))
+
 ## [1.31.15](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.14...@ttoss/ui@1.31.15) (2023-04-06)
 
 **Note:** Version bump only for package @ttoss/ui
