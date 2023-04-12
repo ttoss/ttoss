@@ -7458,7 +7458,7 @@
     "@theme-ui/core" "^0.15.7"
     "@theme-ui/css" "^0.15.7"
 
-"@theme-ui/match-media@^0.15.5":
+"@theme-ui/match-media@^0.15.7":
   version "0.15.7"
   resolved "https://registry.yarnpkg.com/@theme-ui/match-media/-/match-media-0.15.7.tgz#a6cf39dd16de85e75c85d1de96e25db08239ad52"
   integrity sha512-mCv2pvAR+7zgEno0xiH7Bj39XRv0TzxV8rLhn3klsZ0w/uljzV2wr4H54S4a3mEgUZeL3obTwcldbSuNdE+ygw==
@@ -20069,7 +20069,7 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-theme-ui@^0.15.5:
+theme-ui@^0.15.7:
   version "0.15.7"
   resolved "https://registry.yarnpkg.com/theme-ui/-/theme-ui-0.15.7.tgz#991ac262fe117b9bbbbfd72faf44bc26b031c5d1"
   integrity sha512-STwxHsv3oMLm+00eg0KeKEzX/k7qsBWGqvOhD4bF401+JFxKV/pQvDu4CGdHRpY3X3gLVWVSIfGquZuBY7SkKA==
