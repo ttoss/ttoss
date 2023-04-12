@@ -260,7 +260,7 @@ export const BruttalTheme: Theme = {
       alignItems: 'center',
       cursor: 'pointer',
       ':disabled': {
-        color: 'onMuted',
+        color: 'muted',
         cursor: 'not-allowed',
       },
       ':is(:focus-within, :hover):not(:disabled)': {
