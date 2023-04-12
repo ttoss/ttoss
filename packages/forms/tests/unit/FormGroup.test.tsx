@@ -170,6 +170,17 @@ test.each(
 )(
   'render form groups with their correct level and maxLevel n = %i',
   (maxLevel) => {
+    /**
+     * This function will create a form group that nest maxLevel of FormGroup.
+     * For example, if maxLevel = 3, the form group will be:
+     * <FormGroup>
+     *  <FormGroup>
+     *   <FormGroup>
+     *    <FormGroupItem name="singleGroup" />
+     *   </FormGroup>
+     *  </FormGroup>
+     * </FormGroup>
+     */
     const FormGroups = () => {
       return Array.from({ length: maxLevel }, (_, i) => {
         return i;
