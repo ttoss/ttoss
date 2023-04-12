@@ -265,6 +265,7 @@ export const BruttalTheme: Theme = {
       },
       ':is(:focus-within, :hover):not(:disabled)': {
         color: 'accent',
+        outlineColor: 'transparent',
       },
     },
   },
