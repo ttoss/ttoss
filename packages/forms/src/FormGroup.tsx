@@ -19,11 +19,15 @@ const FormGroupLevelsManager = ({
   children: React.ReactNode;
 }) => {
   const [maxLevel, setMaxLevel] = React.useState(0);
-  const registerChild = (level: number) => {
-    if (level > maxLevel) {
-      setMaxLevel(level);
-    }
-  };
+
+  const registerChild = React.useCallback(
+    (level: number) => {
+      if (level + 1 > maxLevel) {
+        setMaxLevel(level + 1);
+      }
+    },
+    [maxLevel]
+  );
 
   return (
     <FormGroupLevelsManagerContext.Provider value={{ maxLevel, registerChild }}>
@@ -38,16 +42,13 @@ type FormGroupContextType = {
 
 const FormGroupContext = React.createContext<FormGroupContextType>({});
 
-const useFormGroup = () => {
+export const useFormGroup = () => {
   const { parentLevel } = React.useContext(FormGroupContext);
-  const { maxLevel, registerChild } = React.useContext(
-    FormGroupLevelsManagerContext
-  );
+  const { maxLevel } = React.useContext(FormGroupLevelsManagerContext);
 
   return {
     level: parentLevel,
     maxLevel,
-    registerChild,
   };
 };
 
@@ -56,10 +57,16 @@ type FormGroupProps = {
 };
 
 const FormGroupWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { level, maxLevel, registerChild } = useFormGroup();
+  const { level, maxLevel } = useFormGroup();
+
+  const { registerChild } = React.useContext(FormGroupLevelsManagerContext);
 
   React.useEffect(() => {
-    if (level) {
+    /**
+     * We can't use if(level) because level can be 0 and we want to register
+     * it anyway.
+     */
+    if (typeof level === 'number') {
       registerChild(level);
     }
   }, [level, registerChild]);

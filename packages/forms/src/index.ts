@@ -9,4 +9,4 @@ export { FormFieldInput } from './FormFieldInput';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldTextarea } from './FormFieldTextarea';
-export { FormGroup } from './FormGroup';
+export { FormGroup, useFormGroup } from './FormGroup';
