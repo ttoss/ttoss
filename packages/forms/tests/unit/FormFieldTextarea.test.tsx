@@ -28,9 +28,7 @@ test('render input and call onSubmit with correct data', async () => {
 
   await user.type(screen.getByLabelText('First Name'), 'pedro');
 
-  await act(() => {
-    return user.click(screen.getByText('Submit'));
-  });
+  await user.click(screen.getByText('Submit'));
 
   expect(onSubmit).toHaveBeenCalledWith({ firstName: 'pedro' });
 });
@@ -40,9 +38,7 @@ test('should display error message', async () => {
 
   render(<RenderForm />);
 
-  await act(() => {
-    return user.click(screen.getByText('Submit'));
-  });
+  await user.click(screen.getByText('Submit'));
 
   expect(screen.getByText('First name is required')).toBeInTheDocument();
 });
