@@ -16,9 +16,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <ButtonUi
-        ref={ref}
         type="button"
         {...restProps}
+        ref={ref}
         sx={{
           cursor: 'pointer',
           paddingX: 'xl',

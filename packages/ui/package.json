@@ -23,9 +23,9 @@
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@iconify-icon/react": "^1.0.7",
-    "@theme-ui/match-media": "^0.15.5",
+    "@theme-ui/match-media": "^0.15.7",
     "@ttoss/theme": "^1.4.13",
-    "theme-ui": "^0.15.5"
+    "theme-ui": "^0.15.7"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
