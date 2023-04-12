@@ -80,14 +80,14 @@ test('render FormGroups with their level groups correctly', () => {
 });
 
 const FormGroupItem = ({ name }: { name: string }) => {
-  const { level, maxLevel } = useFormGroup();
+  const { level, levelsLength } = useFormGroup();
 
-  const text = [name, 'level', level, 'maxLevel', maxLevel].join('-');
+  const text = [name, 'level', level, 'levelsLength', levelsLength].join('-');
 
   return <Text>{text}</Text>;
 };
 
-test('render form groups with their correct level and maxLevel = 1', () => {
+test('render form groups with their correct level and levelsLength = 1', () => {
   const Form = () => {
     return (
       <FormGroup>
@@ -100,12 +100,12 @@ test('render form groups with their correct level and maxLevel = 1', () => {
 
   render(<Form />);
 
-  expect(screen.getByText('group1-level-0-maxLevel-1')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-0-maxLevel-1')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-0-maxLevel-1')).toBeInTheDocument();
+  expect(screen.getByText('group1-level-0-levelsLength-1')).toBeInTheDocument();
+  expect(screen.getByText('group2-level-0-levelsLength-1')).toBeInTheDocument();
+  expect(screen.getByText('group3-level-0-levelsLength-1')).toBeInTheDocument();
 });
 
-test('render form groups with their correct level and maxLevel = 2', () => {
+test('render form groups with their correct level and levelsLength = 2', () => {
   const Form = () => {
     return (
       <FormGroup>
@@ -125,13 +125,13 @@ test('render form groups with their correct level and maxLevel = 2', () => {
 
   render(<Form />);
 
-  expect(screen.getByText('group1-level-0-maxLevel-2')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-1-maxLevel-2')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-1-maxLevel-2')).toBeInTheDocument();
-  expect(screen.getByText('group4-level-1-maxLevel-2')).toBeInTheDocument();
+  expect(screen.getByText('group1-level-0-levelsLength-2')).toBeInTheDocument();
+  expect(screen.getByText('group2-level-1-levelsLength-2')).toBeInTheDocument();
+  expect(screen.getByText('group3-level-1-levelsLength-2')).toBeInTheDocument();
+  expect(screen.getByText('group4-level-1-levelsLength-2')).toBeInTheDocument();
 });
 
-test('render form groups with their correct level and maxLevel = 3', () => {
+test('render form groups with their correct level and levelsLength = 3', () => {
   const Form = () => {
     return (
       <FormGroup>
@@ -155,12 +155,12 @@ test('render form groups with their correct level and maxLevel = 3', () => {
 
   render(<Form />);
 
-  expect(screen.getByText('group1-level-0-maxLevel-3')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-1-maxLevel-3')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-1-maxLevel-3')).toBeInTheDocument();
-  expect(screen.getByText('group4-level-1-maxLevel-3')).toBeInTheDocument();
-  expect(screen.getByText('group5-level-2-maxLevel-3')).toBeInTheDocument();
-  expect(screen.getByText('group6-level-2-maxLevel-3')).toBeInTheDocument();
+  expect(screen.getByText('group1-level-0-levelsLength-3')).toBeInTheDocument();
+  expect(screen.getByText('group2-level-1-levelsLength-3')).toBeInTheDocument();
+  expect(screen.getByText('group3-level-1-levelsLength-3')).toBeInTheDocument();
+  expect(screen.getByText('group4-level-1-levelsLength-3')).toBeInTheDocument();
+  expect(screen.getByText('group5-level-2-levelsLength-3')).toBeInTheDocument();
+  expect(screen.getByText('group6-level-2-levelsLength-3')).toBeInTheDocument();
 });
 
 test.each(
@@ -168,11 +168,11 @@ test.each(
     return i + 1;
   })
 )(
-  'render form groups with their correct level and maxLevel n = %i',
-  (maxLevel) => {
+  'render form groups with their correct level and levelsLength n = %i',
+  (levelsLength) => {
     /**
-     * This function will create a form group that nest maxLevel of FormGroup.
-     * For example, if maxLevel = 3, the form group will be:
+     * This function will create a form group that nest levelsLength of FormGroup.
+     * For example, if levelsLength = 3, the form group will be:
      * <FormGroup>
      *  <FormGroup>
      *   <FormGroup>
@@ -182,7 +182,7 @@ test.each(
      * </FormGroup>
      */
     const FormGroups = () => {
-      return Array.from({ length: maxLevel }, (_, i) => {
+      return Array.from({ length: levelsLength }, (_, i) => {
         return i;
       }).reduce(
         (acc) => {
@@ -197,7 +197,9 @@ test.each(
     render(<FormGroups />);
 
     expect(
-      screen.getByText(`singleGroup-level-${maxLevel - 1}-maxLevel-${maxLevel}`)
+      screen.getByText(
+        `singleGroup-level-${levelsLength - 1}-levelsLength-${levelsLength}`
+      )
     ).toBeInTheDocument();
   }
 );

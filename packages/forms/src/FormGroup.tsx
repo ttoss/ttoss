@@ -2,7 +2,7 @@ import { Flex, FlexProps } from '@ttoss/ui';
 import React from 'react';
 
 type FormGroupLevelsManagerContextType = {
-  maxLevel?: number;
+  levelsLength?: number;
   registerChild: (level: number) => void;
 };
 
@@ -18,19 +18,21 @@ const FormGroupLevelsManager = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [maxLevel, setMaxLevel] = React.useState(0);
+  const [levelsLength, setLevelsLength] = React.useState(0);
 
   const registerChild = React.useCallback(
     (level: number) => {
-      if (level + 1 > maxLevel) {
-        setMaxLevel(level + 1);
+      if (level + 1 > levelsLength) {
+        setLevelsLength(level + 1);
       }
     },
-    [maxLevel]
+    [levelsLength]
   );
 
   return (
-    <FormGroupLevelsManagerContext.Provider value={{ maxLevel, registerChild }}>
+    <FormGroupLevelsManagerContext.Provider
+      value={{ levelsLength, registerChild }}
+    >
       {children}
     </FormGroupLevelsManagerContext.Provider>
   );
@@ -44,11 +46,11 @@ const FormGroupContext = React.createContext<FormGroupContextType>({});
 
 export const useFormGroup = () => {
   const { parentLevel } = React.useContext(FormGroupContext);
-  const { maxLevel } = React.useContext(FormGroupLevelsManagerContext);
+  const { levelsLength } = React.useContext(FormGroupLevelsManagerContext);
 
   return {
     level: parentLevel,
-    maxLevel,
+    levelsLength,
   };
 };
 
@@ -57,7 +59,7 @@ type FormGroupProps = {
 };
 
 const FormGroupWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { level, maxLevel } = useFormGroup();
+  const { level, levelsLength } = useFormGroup();
 
   const { registerChild } = React.useContext(FormGroupLevelsManagerContext);
 
@@ -77,16 +79,16 @@ const FormGroupWrapper = ({ children }: { children: React.ReactNode }) => {
       width: '100%',
       gap: 'md',
       paddingLeft: ({ space }: any) => {
-        if (!level || !maxLevel) {
+        if (!level || !levelsLength) {
           return 0;
         }
 
-        const value = maxLevel / level;
+        const value = levelsLength / level;
 
         return `calc(${space['lg']} / ${value})`;
       },
     };
-  }, [level, maxLevel]);
+  }, [level, levelsLength]);
 
   return (
     <Flex aria-level={level} sx={sx}>
