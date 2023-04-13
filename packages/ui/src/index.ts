@@ -33,3 +33,4 @@ export { InfiniteLinearProgress } from './components/InfiniteLinearProgress';
 export { Textarea, type TextareaProps } from './components/Textarea';
 export { Container, type ContainerProps } from './components/Container';
 export { HelpText, type HelpTextProps } from './components/HelpText';
+export { CloseButton, type CloseButtonProps } from './components/CloseButton';
