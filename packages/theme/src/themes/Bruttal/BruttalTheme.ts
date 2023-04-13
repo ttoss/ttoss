@@ -252,6 +252,22 @@ export const BruttalTheme: Theme = {
       color: 'onDanger',
       backgroundColor: 'danger',
     },
+    closeButton: {
+      backgroundColor: 'transparent',
+      color: 'text',
+      fontSize: 'xs',
+      display: 'inline-flex',
+      alignItems: 'center',
+      cursor: 'pointer',
+      ':disabled': {
+        color: 'muted',
+        cursor: 'not-allowed',
+      },
+      ':is(:focus-within, :hover):not(:disabled)': {
+        color: 'accent',
+        outlineColor: 'transparent',
+      },
+    },
   },
   cards: {
     primary: {
