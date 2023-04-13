@@ -364,6 +364,42 @@ export const BruttalTheme: Theme = {
         color: 'danger',
       },
     },
+    textarea: {
+      fontFamily: 'body',
+      color: 'text',
+      border: 'interaction',
+      borderColor: 'onMuted',
+      backgroundColor: 'surface',
+      paddingY: 'lg',
+      paddingX: 'xl',
+      borderRadius: 'action',
+      ':focus-within': {
+        outlineColor: 'primary',
+      },
+      ':disabled::placeholder': {
+        color: 'muted',
+      },
+      ':disabled': {
+        borderColor: 'onMuted',
+        border: 'muted',
+        color: 'muted',
+      },
+      ':disabled+span>iconify-icon': {
+        color: 'muted',
+      },
+      '&[aria-invalid="true"]': {
+        borderColor: 'danger',
+      },
+      '&.success+span>iconify-icon': {
+        color: 'positive',
+      },
+      '&[aria-invalid="true"]+span>iconify-icon': {
+        color: 'danger',
+      },
+      '&[aria-invalid="true"]::placeholder': {
+        color: 'danger',
+      },
+    },
   },
   text: {
     default: {
