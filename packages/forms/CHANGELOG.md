@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.14.32...@ttoss/forms@0.15.0) (2023-04-14)
+
+### Features
+
+- add stack component ([#271](https://github.com/ttoss/ttoss/issues/271)) ([275c559](https://github.com/ttoss/ttoss/commit/275c5593edaa5f3b29e40d7f349c6a1bd8e886e1))
+
 ## [0.14.32](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.14.31...@ttoss/forms@0.14.32) (2023-04-13)
 
 **Note:** Version bump only for package @ttoss/forms

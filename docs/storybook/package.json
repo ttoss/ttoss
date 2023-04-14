@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.34.11",
+  "version": "1.35.0",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@iconify-icons/mdi-light": "^1.2.5",
-    "@ttoss/components": "^1.26.31",
-    "@ttoss/forms": "^0.14.32",
-    "@ttoss/landing-pages": "^0.6.31",
-    "@ttoss/react-notifications": "^1.20.31",
+    "@ttoss/components": "^1.26.32",
+    "@ttoss/forms": "^0.15.0",
+    "@ttoss/landing-pages": "^0.6.32",
+    "@ttoss/react-notifications": "^1.20.32",
     "@ttoss/theme": "^1.4.15",
-    "@ttoss/ui": "^1.31.18",
+    "@ttoss/ui": "^1.32.0",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
