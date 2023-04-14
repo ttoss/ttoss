@@ -24,7 +24,7 @@
     "@emotion/react": "^11.10.6",
     "@iconify-icon/react": "^1.0.7",
     "@theme-ui/match-media": "^0.15.7",
-    "@ttoss/theme": "^1.4.15",
+    "@ttoss/theme": "1.4.15",
     "theme-ui": "^0.15.7"
   },
   "peerDependencies": {
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "^1.29.3",
-    "@ttoss/test-utils": "^1.21.2",
+    "@ttoss/test-utils": "1.21.2",
     "@types/jest": "^29.5.0",
     "jest": "^29.5.0",
     "react": "^18.2.0",

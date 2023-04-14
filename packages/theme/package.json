@@ -36,8 +36,11 @@
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
+    "@iconify/types": "^2.0.0",
     "@ttoss/config": "^1.29.3",
-    "@ttoss/test-utils": "^1.21.2"
+    "@ttoss/test-utils": "1.21.2",
+    "theme-ui": "^0.15.7",
+    "tsup": "^6.7.0"
   },
   "keywords": [],
   "publishConfig": {

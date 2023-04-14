@@ -4,7 +4,6 @@
  */
 import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { HttpRequest } from '@aws-sdk/protocol-http';
-import { Request, RequestInit, default as fetch } from 'node-fetch';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';

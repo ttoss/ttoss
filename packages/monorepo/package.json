@@ -26,6 +26,7 @@
   "devDependencies": {
     "@ttoss/config": "^1.29.3",
     "@types/npmlog": "^4.1.4",
+    "@types/yargs": "^17.0.22",
     "tsup": "^6.7.0"
   },
   "publishConfig": {

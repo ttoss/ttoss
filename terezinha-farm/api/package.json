@@ -8,15 +8,15 @@
     "dev": "node -r ts-node/register --watch server/server.ts"
   },
   "dependencies": {
-    "@terezinha-farm/config": "^0.3.11",
-    "@ttoss/appsync-api": "^0.10.9",
+    "@terezinha-farm/config": "0.3.11",
+    "@ttoss/appsync-api": "0.10.9",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"
   },
   "devDependencies": {
-    "@ttoss/aws-appsync-nodejs": "^1.5.8",
+    "@ttoss/aws-appsync-nodejs": "1.5.8",
     "@ttoss/config": "^1.29.3",
-    "carlin": "^1.26.6",
+    "carlin": "1.26.6",
     "ts-node": "^10.9.1"
   },
   "engines": {

@@ -6,9 +6,9 @@
     "deploy": "carlin deploy"
   },
   "dependencies": {
-    "@ttoss/cloud-auth": "^0.8.6"
+    "@ttoss/cloud-auth": "0.8.6"
   },
   "devDependencies": {
-    "carlin": "^1.26.6"
+    "carlin": "1.26.6"
   }
 }

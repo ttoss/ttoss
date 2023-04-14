@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "ttoss-monorepo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "GPL-3.0",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
@@ -15,32 +15,33 @@
     "url": "https://github.com/ttoss/ttoss/issues"
   },
   "scripts": {
+    "build": "turbo run build",
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
-    "cdvc": "check-dependency-version-consistency .",
+    "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet",
     "ls": "lerna ls",
     "prepare": "husky install",
+    "syncpack:fix": "syncpack fix-mismatches",
+    "syncpack:list": "echo syncpack list-mismatches",
+    "test": "turbo run test",
     "turbo": "turbo"
   },
-  "workspaces": [
-    "docs/**/*",
-    "packages/**/*",
-    "terezinha-farm/**/*"
-  ],
   "devDependencies": {
-    "@commitlint/cli": "^17.5.1",
-    "@lerna-lite/changed": "^1.17.0",
-    "@lerna-lite/cli": "^1.17.0",
-    "@lerna-lite/list": "^1.17.0",
-    "check-dependency-version-consistency": "^3.0.3",
-    "eslint": "^8.37.0",
+    "@commitlint/cli": "^17.6.1",
+    "@lerna-lite/changed": "^2.0.0",
+    "@lerna-lite/cli": "^2.0.0",
+    "@lerna-lite/list": "^2.0.0",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/eslint-config": "workspace:^",
+    "eslint": "^8.38.0",
     "husky": "^8.0.3",
     "lint-staged": "13.1.0",
-    "prettier": "^2.8.6",
-    "turbo": "^1.8.8"
+    "prettier": "^2.8.7",
+    "syncpack": "^9.8.4",
+    "turbo": "^1.9.1"
   },
   "keywords": [],
   "engines": {
-    "node": "^16.0.0 || ^18.0.0"
+    "node": "^18.0.0"
   }
 }

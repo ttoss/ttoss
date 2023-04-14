@@ -10,7 +10,7 @@
   "sideEffects": false,
   "typings": "./dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "^0.6.8"
+    "@ttoss/cloudformation": "0.6.8"
   },
   "devDependencies": {
     "@ttoss/config": "^1.29.3",

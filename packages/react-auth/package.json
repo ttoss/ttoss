@@ -23,25 +23,25 @@
   "sideEffects": false,
   "typings": "./dist/index.d.ts",
   "dependencies": {
-    "@ttoss/forms": "^0.14.32",
+    "@ttoss/forms": "0.14.32",
     "@xstate/react": "^3.0.1",
     "xstate": "^4.35.0"
   },
   "peerDependencies": {
-    "@ttoss/react-i18n": "^1.17.2",
-    "@ttoss/react-notifications": "^1.18.3",
-    "@ttoss/ui": "^1.26.3",
-    "aws-amplify": "5.x.x",
-    "react": ">=16.8.0"
+    "@ttoss/react-i18n": "1.19.6",
+    "@ttoss/react-notifications": "1.20.31",
+    "@ttoss/ui": "1.31.18",
+    "aws-amplify": "^5.0.20",
+    "react": "^18.2.0"
   },
   "devDependencies": {
-    "@ttoss/cloud-auth": "^0.8.6",
+    "@ttoss/cloud-auth": "0.8.6",
     "@ttoss/config": "^1.29.3",
-    "@ttoss/i18n-cli": "^0.4.4",
-    "@ttoss/react-i18n": "^1.19.6",
-    "@ttoss/react-notifications": "^1.20.31",
-    "@ttoss/test-utils": "^1.21.2",
-    "@ttoss/ui": "^1.31.18",
+    "@ttoss/i18n-cli": "0.4.4",
+    "@ttoss/react-i18n": "1.19.6",
+    "@ttoss/react-notifications": "1.20.31",
+    "@ttoss/test-utils": "1.21.2",
+    "@ttoss/ui": "1.31.18",
     "aws-amplify": "^5.0.20"
   },
   "keywords": [
