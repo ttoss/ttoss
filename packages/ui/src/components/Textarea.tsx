@@ -5,9 +5,9 @@ import {
 } from 'theme-ui';
 import React from 'react';
 
-export type TextareaProps = TextareaPropsUI & {
+export interface TextareaProps extends TextareaPropsUI {
   trailingIcon?: IconType;
-};
+}
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ trailingIcon, className, sx, ...textareaProps }, ref) => {
