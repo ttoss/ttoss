@@ -10,6 +10,9 @@ pnpm lerna changed || { echo "No changes detected, exiting main workflow" && exi
 
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
+# Used because of https://github.com/vercel/turbo/issues/4559 issue.
+LATEST_TAG_SHA=$(git rev-list -n 1 $LATEST_TAG)
+
 # Setup NPM token
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
 # the token to .npmrc will cause git uncommitted changes error.
@@ -27,10 +30,10 @@ pnpm turbo run build:config
 # Version before publish to rebuild all packages that Lerna will publish
 pnpm lerna version --yes --no-push
 
-# Test and build all packages since $LATEST_TAG
+# Test and build all packages since $LATEST_TAG_SHA
 # and all the workspaces that depends on them
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-pnpm turbo run build test --filter=...[$LATEST_TAG]
+pnpm turbo run build test --filter=...[$LATEST_TAG_SHA]
 
 # Undo all files that were changed by the build command—this happens because
 # the build can change files with different linting rules, or modify some
@@ -50,5 +53,5 @@ git push --follow-tags
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
-pnpm turbo run deploy --filter=...[$LATEST_TAG]
+pnpm turbo run deploy --filter=...[$LATEST_TAG_SHA]
 
