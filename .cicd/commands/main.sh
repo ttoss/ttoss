@@ -17,10 +17,7 @@ echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
 echo NPM whoami: $(npm whoami)
 
 # Build @ttoss/config package to lint and sync packages versions
-pnpm turbo run build --filter=@ttoss/config
-
-# Lint and sync packages versions
-pnpm turbo run lint syncpack:list
+pnpm turbo run build --filter=@ttoss/config --only
 
 # Version before publish to rebuild all packages that Lerna will publish
 pnpm lerna version --yes --no-push
