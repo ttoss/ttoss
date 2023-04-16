@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.8](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.8.7...@ttoss/cloud-auth@0.8.8) (2023-04-16)
+
+### Bug Fixes
+
+- add files to cloud-auth package.json ([558aaa9](https://github.com/ttoss/ttoss/commit/558aaa935a977b1e8225b7c8be8ad4485d3b75eb))
+
 ## 0.8.7 (2023-04-16)
 
 **Note:** Version bump only for package @ttoss/cloud-auth
