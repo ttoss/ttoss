@@ -18,6 +18,12 @@ echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > ~/.npmrc
 # Print "NPM whoami" to check if the token is valid
 echo NPM whoami: $(npm whoami)
 
+# Build @ttoss/config package to lerna version command works properly
+# when commiting changes. If we don't build this package, commit will fail
+# because pre-commit hook will run syncpack:list with default config, that
+# not works because of package version and "workspace:^" mismatch.
+pnpm turbo run build:config
+
 # Version before publish to rebuild all packages that Lerna will publish
 pnpm lerna version --yes --no-push
 
