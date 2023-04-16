@@ -6,7 +6,7 @@
     "build": "docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "carlin deploy static-app",
-    "dev": "yarn start",
+    "dev": "pnpm start",
     "docusaurus": "docusaurus",
     "serve": "docusaurus serve",
     "start": "docusaurus start",
@@ -40,7 +40,7 @@
     "docusaurus-plugin-typedoc": "^0.18.0",
     "typedoc": "^0.23.28",
     "typedoc-plugin-markdown": "^3.14.0",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.4"
   },
   "browserslist": {
     "production": [

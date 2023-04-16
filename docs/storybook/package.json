@@ -6,8 +6,8 @@
   "scripts": {
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
-    "dev": "yarn run storybook",
-    "start": "yarn run storybook",
+    "dev": "pnpm run storybook",
+    "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },

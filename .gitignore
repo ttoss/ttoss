@@ -114,9 +114,9 @@ storybook-static/
 package-lock.json
 yarn.lock
 github-app/
-.npmrc
 .carlin/
 .vscode
 .turbo
 **/i18n/compiled/
 **/i18n/missing/
+tsup.config.bundled*.mjs
