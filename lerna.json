@@ -1,7 +1,7 @@
 {
+  "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
   "version": "independent",
   "npmClient": "pnpm",
-  "useWorkspaces": true,
   "stream": true,
   "all": true,
   "command": {
