@@ -11,7 +11,9 @@ pnpm lerna changed || { echo "No changes detected, exiting main workflow" && exi
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
 # Setup NPM token
-echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
+# Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
+# the token to .npmrc will cause git uncommitted changes error.
+echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > ~/.npmrc
 
 # Print "NPM whoami" to check if the token is valid
 echo NPM whoami: $(npm whoami)
