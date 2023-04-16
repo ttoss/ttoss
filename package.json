@@ -22,7 +22,7 @@
     "ls": "lerna ls",
     "prepare": "husky install",
     "syncpack:fix": "syncpack fix-mismatches",
-    "syncpack:list": "echo syncpack list-mismatches",
+    "syncpack:list": "syncpack list-mismatches",
     "test": "turbo run test",
     "turbo": "turbo"
   },

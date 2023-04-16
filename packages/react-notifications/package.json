@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "@ttoss/ui": "workspace:^",
-    "react": "^18.2.0"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

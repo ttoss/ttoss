@@ -16,7 +16,6 @@ export const defaultConfig: any = {
     'pnpmOverrides',
     'prod',
     'resolutions',
-    'workspace',
   ],
   filter: '.',
   indent: '  ',

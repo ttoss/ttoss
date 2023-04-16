@@ -20,7 +20,7 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "peerDependencies": {
-    "aws-amplify": "^5.0.20",
+    "aws-amplify": "^5.0.0",
     "relay-runtime": "^14.1.0"
   },
   "devDependencies": {

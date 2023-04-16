@@ -19,7 +19,7 @@
   },
   "typings": "dist/index.d.ts",
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
