@@ -1,9 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { babelConfig } from '@ttoss/config';
 import { config } from '@terezinha-farm/config';
 import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
-import babel from 'vite-plugin-babel';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 
 /**
  * Create an object with the same values as the config object, but with the
@@ -23,11 +24,8 @@ export default defineConfig(async () => {
       },
     },
     plugins: [
-      react(),
-      babel({
-        babelConfig: {
-          babelrc: false,
-          configFile: false,
+      react({
+        babel: {
           plugins: babelConfig().plugins,
         },
       }),

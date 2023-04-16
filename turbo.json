@@ -1,19 +1,24 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
-    "//#cdvc": {
+    "//#build:config": {
+      "dependsOn": [],
       "outputs": []
     },
     "//#lint": {
-      "dependsOn": ["@ttoss/config#build"],
+      "dependsOn": ["//#build:config"],
+      "outputs": []
+    },
+    "//#syncpack:list": {
+      "dependsOn": ["//#build:config"],
       "outputs": []
     },
     "build": {
-      "dependsOn": ["//#cdvc", "^build"],
+      "dependsOn": ["//#lint", "//#syncpack:list", "^build"],
       "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["//#cdvc", "build"],
+      "dependsOn": ["^build"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -23,14 +28,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": [
-        "//#lint",
-        "carlin#build",
-        "carlin#test",
-        "build",
-        "test",
-        "^deploy"
-      ],
+      "dependsOn": ["build", "test"],
       "outputs": [".carlin/**"]
     }
   }

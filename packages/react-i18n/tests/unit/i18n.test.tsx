@@ -110,7 +110,5 @@ test('FormattedMessage component', async () => {
   /**
    * https://testing-library.com/docs/dom-testing-library/api-async/#findby-queries
    */
-  await act(async () => {
-    expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
-  });
+  expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
 });

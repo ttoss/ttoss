@@ -12,7 +12,6 @@
     "lib": ["dom", "ES2021"],
     "module": "commonjs",
     "target": "ES2021",
-    "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
     "strict": true,
@@ -24,6 +23,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    /**
+     * Set `preserveSymlinks` to `false` else change-case package and @aws-sdk/*
+     * packages will not be able to resolve their dependencies.
+     */
+    "preserveSymlinks": false
   }
 }

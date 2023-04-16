@@ -23,6 +23,7 @@ module.exports = {
     'sort-imports-es6-autofix',
     'prefer-arrow-functions',
     'prettier',
+    'jest-dom',
   ],
   extends: [
     'eslint:recommended',
@@ -34,6 +35,7 @@ module.exports = {
     'plugin:jsx-a11y/recommended',
     'plugin:relay/recommended',
     'plugin:prettier/recommended',
+    'plugin:jest-dom/recommended',
   ],
   rules: {
     '@typescript-eslint/no-non-null-assertion': 'error',

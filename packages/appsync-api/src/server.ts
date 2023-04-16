@@ -6,13 +6,13 @@ import {
   sendResult,
   shouldRenderGraphiQL,
 } from 'graphql-helix';
-import express from 'express';
+import express, { Express } from 'express';
 
 export const createServer = ({
   schemaComposer,
 }: {
   schemaComposer: SchemaComposer<any>;
-}) => {
+}): Express => {
   const server = express();
 
   server.use(express.json());

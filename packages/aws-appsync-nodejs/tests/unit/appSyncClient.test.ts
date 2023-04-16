@@ -1,13 +1,3 @@
-jest.mock('node-fetch', () => {
-  return {
-    ...jest.requireActual('node-fetch'),
-    __esModule: true,
-    default: jest.fn(),
-    Request: jest.fn(),
-  };
-});
-
-import * as nodeFetchModule from 'node-fetch';
 import { Config, appSyncClient } from '../../src';
 
 test.each<Config>([
@@ -24,18 +14,6 @@ test.each<Config>([
 });
 
 test('query with API key', async () => {
-  (nodeFetchModule.default as unknown as jest.Mock).mockImplementation(() => {
-    return Promise.resolve({
-      json: () => {
-        return Promise.resolve({
-          data: {
-            hello: 'world',
-          },
-        });
-      },
-    });
-  });
-
   const config: Config = {
     apiEndpoint: 'https://api.example.com/graphql',
     apiKey: 'da2-1234567890abcdef1234567890abcdef',
@@ -47,23 +25,31 @@ test('query with API key', async () => {
 
   const variables = { v: 1 };
 
-  /**
-   * Spy on the Request constructor
-   */
-  const RequestSpy = jest.spyOn(nodeFetchModule, 'Request');
+  global.fetch = jest.fn().mockImplementation(async (req: Request) => {
+    const body = await req.text();
+    const url = req.url;
+    const xApiKey = req.headers.get('x-api-key');
+
+    if (
+      body === JSON.stringify({ query, variables }) &&
+      url === config.apiEndpoint &&
+      xApiKey === config.apiKey
+    ) {
+      return {
+        json: () => {
+          return Promise.resolve({
+            data: {
+              hello: 'world',
+            },
+          });
+        },
+      };
+    }
+
+    throw new Error('Wrong request');
+  });
 
   const response = await appSyncClient.query(query, variables);
-
-  expect(RequestSpy).toHaveBeenCalledWith(
-    config.apiEndpoint,
-    expect.objectContaining({
-      body: JSON.stringify({ query, variables }),
-      headers: {
-        'x-api-key': config.apiKey,
-      },
-      method: 'POST',
-    })
-  );
 
   expect(response).toEqual({
     data: {
