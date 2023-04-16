@@ -32,6 +32,7 @@
     "@lerna-lite/changed": "^2.0.0",
     "@lerna-lite/cli": "^2.0.0",
     "@lerna-lite/list": "^2.0.0",
+    "@lerna-lite/version": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "eslint": "^8.38.0",
