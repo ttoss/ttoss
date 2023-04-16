@@ -16,9 +16,6 @@ echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > .npmrc
 # Print "NPM whoami" to check if the token is valid
 echo NPM whoami: $(npm whoami)
 
-# Build @ttoss/config package to lint and sync packages versions
-pnpm turbo run build --filter=@ttoss/config --only
-
 # Version before publish to rebuild all packages that Lerna will publish
 pnpm lerna version --yes --no-push
 

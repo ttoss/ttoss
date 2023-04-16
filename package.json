@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "build:config": "pnpm run --filter=@ttoss/config build",
     "build-graph": "turbo run build --graph=turbo-build-graph.png",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet",

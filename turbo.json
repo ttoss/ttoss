@@ -1,11 +1,16 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
-    "//#lint": {
+    "//#build:config": {
       "dependsOn": [],
       "outputs": []
     },
+    "//#lint": {
+      "dependsOn": ["//#build:config"],
+      "outputs": []
+    },
     "//#syncpack:list": {
+      "dependsOn": ["//#build:config"],
       "outputs": []
     },
     "build": {
