@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScriptStatus, useScript } from '@ttoss/hooks';
+import { ScriptStatus, useScript } from '@ttoss/react-hooks';
 
 type Extends<T, U extends T> = U;
 
@@ -89,4 +89,6 @@ export const GoogleMapsProvider = ({
  * @returns param.googleMaps: GoogleMaps - returns the google maps object which
  * provides access to the [Google Maps API](https://developers.google.com/maps/documentation/javascript/overview).
  */
-export const useGoogleMaps = () => React.useContext(GoogleMapsContext);
+export const useGoogleMaps = () => {
+  return React.useContext(GoogleMapsContext);
+};

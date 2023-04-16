@@ -23,14 +23,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": [
-        "//#lint",
-        "carlin#build",
-        "carlin#test",
-        "build",
-        "test",
-        "^deploy"
-      ],
+      "dependsOn": ["//#lint", "carlin#build", "build", "test"],
       "outputs": [".carlin/**"]
     }
   }

@@ -46,22 +46,28 @@ importers:
         specifier: ^1.2.5
         version: 1.2.5
       '@ttoss/components':
-        specifier: 1.26.31
+        specifier: workspace:^
         version: link:../../packages/components
       '@ttoss/forms':
-        specifier: 0.14.32
+        specifier: workspace:^
         version: link:../../packages/forms
       '@ttoss/landing-pages':
-        specifier: 0.6.31
+        specifier: workspace:^
         version: link:../../packages/landing-pages
+      '@ttoss/react-auth':
+        specifier: workspace:^
+        version: link:../../packages/react-auth
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../../packages/react-i18n
       '@ttoss/react-notifications':
-        specifier: 1.20.31
+        specifier: workspace:^
         version: link:../../packages/react-notifications
       '@ttoss/theme':
-        specifier: 1.4.15
+        specifier: workspace:^
         version: link:../../packages/theme
       '@ttoss/ui':
-        specifier: 1.31.18
+        specifier: workspace:^
         version: link:../../packages/ui
       react-json-view:
         specifier: ^1.21.3
@@ -225,6 +231,9 @@ importers:
       graphql-compose:
         specifier: ^9.0.10
         version: 9.0.10(graphql@16.6.0)
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
@@ -577,6 +586,9 @@ importers:
       eslint-plugin-jest:
         specifier: ^27.2.1
         version: 27.2.1(@typescript-eslint/eslint-plugin@5.58.0)(eslint@8.38.0)(typescript@5.0.4)
+      eslint-plugin-jest-dom:
+        specifier: ^4.0.3
+        version: 4.0.3(eslint@8.38.0)
       eslint-plugin-jsx-a11y:
         specifier: ^6.7.1
         version: 6.7.1(eslint@8.38.0)
@@ -644,9 +656,9 @@ importers:
 
   packages/google-maps:
     dependencies:
-      '@ttoss/hooks':
-        specifier: 1.21.13
-        version: link:../hooks
+      '@ttoss/react-hooks':
+        specifier: workspace:^
+        version: link:../react-hooks
       '@types/google.maps':
         specifier: ^3.49.2
         version: 3.49.2
@@ -661,33 +673,17 @@ importers:
         version: 1.3.0(@types/react@18.0.28)(react@18.2.0)
     devDependencies:
       '@ttoss/config':
-        specifier: ^1.29.3
+        specifier: workspace:^
         version: link:../config
       '@ttoss/test-utils':
-        specifier: 1.21.2
+        specifier: workspace:^
         version: link:../test-utils
       '@types/react':
         specifier: ^18.0.28
         version: 18.0.28
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
-
-  packages/hooks:
-    dependencies:
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-    devDependencies:
-      '@ttoss/config':
-        specifier: ^1.29.3
-        version: link:../config
-      '@ttoss/test-utils':
-        specifier: 1.21.2
-        version: link:../test-utils
-      '@types/react':
-        specifier: ^18.0.28
-        version: 18.0.28
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
@@ -812,6 +808,31 @@ importers:
       aws-amplify:
         specifier: ^5.0.20
         version: 5.0.20(react-native@0.71.6)
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+
+  packages/react-hooks:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
+      '@types/react':
+        specifier: ^18.0.28
+        version: 18.0.28
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
@@ -829,17 +850,20 @@ importers:
         specifier: ^6.0.4
         version: 6.0.4
       '@ttoss/config':
-        specifier: ^1.29.3
+        specifier: workspace:^
         version: link:../config
       '@ttoss/i18n-cli':
-        specifier: 0.4.4
+        specifier: workspace:^
         version: link:../i18n-cli
       '@ttoss/test-utils':
-        specifier: 1.21.2
+        specifier: workspace:^
         version: link:../test-utils
       '@types/react':
         specifier: ^18.0.28
         version: 18.0.28
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
@@ -847,15 +871,18 @@ importers:
   packages/react-notifications:
     dependencies:
       '@ttoss/components':
-        specifier: 1.26.31
+        specifier: workspace:^
         version: link:../components
       '@ttoss/ui':
-        specifier: 1.31.18
+        specifier: workspace:^
         version: link:../ui
     devDependencies:
       '@ttoss/config':
-        specifier: ^1.29.3
+        specifier: workspace:^
         version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/react':
         specifier: ^18.0.28
         version: 18.0.35
@@ -880,6 +907,9 @@ importers:
       aws-amplify:
         specifier: ^5.0.20
         version: 5.0.20(react-native@0.71.6)
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       relay-runtime:
         specifier: ^14.1.0
         version: 14.1.0
@@ -969,6 +999,9 @@ importers:
       '@ttoss/test-utils':
         specifier: 1.21.2
         version: link:../test-utils
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       theme-ui:
         specifier: ^0.15.7
         version: 0.15.7(@emotion/react@11.10.6)(react@18.2.0)
@@ -988,20 +1021,23 @@ importers:
         specifier: ^0.15.7
         version: 0.15.7(@theme-ui/core@0.15.7)(@theme-ui/css@0.15.7)(react@18.2.0)
       '@ttoss/theme':
-        specifier: 1.4.15
+        specifier: workspace:^
         version: link:../theme
       theme-ui:
         specifier: ^0.15.7
         version: 0.15.7(@emotion/react@11.10.6)(react@18.2.0)
     devDependencies:
+      '@iconify-icons/mdi-light':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@iconify/types':
         specifier: ^2.0.0
         version: 2.0.0
       '@ttoss/config':
-        specifier: ^1.29.3
+        specifier: workspace:^
         version: link:../config
       '@ttoss/test-utils':
-        specifier: 1.21.2
+        specifier: workspace:^
         version: link:../test-utils
       '@types/jest':
         specifier: ^29.5.0
@@ -9599,7 +9635,6 @@ packages:
       }
     dependencies:
       '@iconify/types': 2.0.0
-    dev: false
 
   /@iconify/icons-carbon@1.2.16:
     resolution:
@@ -12788,7 +12823,6 @@ packages:
       dom-accessibility-api: 0.5.16
       lz-string: 1.5.0
       pretty-format: 27.5.1
-    dev: true
 
   /@testing-library/dom@9.2.0:
     resolution:
@@ -19216,6 +19250,21 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - ts-jest
+    dev: false
+
+  /eslint-plugin-jest-dom@4.0.3(eslint@8.38.0):
+    resolution:
+      {
+        integrity: sha512-9j+n8uj0+V0tmsoS7bYC7fLhQmIvjRqRYEcbDSi+TKPsTThLLXCyj5swMSSf/hTleeMktACnn+HFqXBr5gbcbA==,
+      }
+    engines: { node: ^12.22.0 || ^14.17.0 || >=16.0.0, npm: '>=6', yarn: '>=1' }
+    peerDependencies:
+      eslint: ^6.8.0 || ^7.0.0 || ^8.0.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@testing-library/dom': 8.20.0
+      eslint: 8.38.0
+      requireindex: 1.2.0
     dev: false
 
   /eslint-plugin-jest@27.2.1(@typescript-eslint/eslint-plugin@5.58.0)(eslint@8.38.0)(typescript@5.0.4):
@@ -29569,6 +29618,14 @@ packages:
       {
         integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==,
       }
+
+  /requireindex@1.2.0:
+    resolution:
+      {
+        integrity: sha512-L9jEkOi3ASd9PYit2cwRfyppc9NoABujTP8/5gFcbERmo5jUoAKovIC3fsF17pkTnGsrByysqX+Kxd2OTNI1ww==,
+      }
+    engines: { node: '>=0.10.5' }
+    dev: false
 
   /requires-port@1.0.0:
     resolution:

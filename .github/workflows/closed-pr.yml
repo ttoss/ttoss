@@ -49,9 +49,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build carlin
-        run: pnpm turbo run build --filter=carlin...
-
       - name: Run closed-pr command
         run: sh -e ./.cicd/commands/closed-pr.sh
         env:

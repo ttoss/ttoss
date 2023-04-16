@@ -23,6 +23,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+    /**
+     * Set `preserveSymlinks` to `false` else change-case package and @aws-sdk/*
+     * packages will not be able to resolve their dependencies.
+     */
+    "preserveSymlinks": false
+  },
+  "include": ["src/**/*"]
 }

@@ -6,9 +6,7 @@ git fetch --tags --quiet
 # https://stackoverflow.com/a/25742085/8786986
 pnpm lerna changed || { echo "No changes detected, exiting main workflow" && exit 0; }
 
-####
-## If we're here, there are changes, so we need to run the main workflow
-####
+# If we're here, there are changes, so we need to run the main workflow
 
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
@@ -21,13 +19,11 @@ echo NPM whoami: $(npm whoami)
 # Lint
 pnpm turbo run lint
 
-# Build config to run lint-staged for lint and version bump
-pnpm turbo run build --filter=@ttoss/config...
-
 # Version before publish to rebuild all packages that Lerna will publish
 pnpm lerna version --yes --no-push
 
-# Lint, test, and build all packages since $LATEST_TAG and their dependent packages.
+# Test and build all packages since $LATEST_TAG
+# and all the workspaces that depends on them
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
 pnpm turbo run build test --filter=...[$LATEST_TAG]
 

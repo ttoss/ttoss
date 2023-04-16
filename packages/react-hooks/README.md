@@ -17,23 +17,23 @@ $ npm install @ttoss/hooks
 ## 📄 Examples of use
 
 ```tsx
-import React from "react";
+import React from 'react';
 
-import { useScript } from "@ttoss/hooks";
+import { useScript } from '@ttoss/hooks';
 
 export const Component = () => {
-  const url = "https://your-domain.com/bundle-api.js";
+  const url = 'https://your-domain.com/bundle-api.js';
 
   const { status } = useScript(url);
 
-  return <div>{status === "ready" ? "Ok" : "Loading"}</div>;
+  return <div>{status === 'ready' ? 'Ok' : 'Loading'}</div>;
 };
 ```
 
 ## 📘 Types
 
 ```ts
-type ScriptStatus = "idle" | "loading" | "ready" | "error";
+type ScriptStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 const useScript: (src: string) => {
   status: ScriptStatus;

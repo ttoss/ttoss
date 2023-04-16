@@ -28,7 +28,7 @@ test('should load script', () => {
   /**
    * Assert
    */
-  expect(document.querySelectorAll('script')[0].getAttribute('src')).toBe(src);
+  expect(document.querySelectorAll('script')[0]).toHaveAttribute('src', src);
   expect(result.current.status).toBe('ready');
 
   /**
