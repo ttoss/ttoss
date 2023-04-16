@@ -34,6 +34,7 @@
     "@storybook/react-webpack5": "^7.0.4",
     "@storybook/testing-library": "^0.1.0",
     "babel-loader": "^9.1.2",
+    "carlin": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "storybook": "^7.0.4",
