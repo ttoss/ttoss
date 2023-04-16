@@ -3,6 +3,10 @@
   "version": "0.8.7",
   "main": "./dist/index.js",
   "module": "./dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "jest"
