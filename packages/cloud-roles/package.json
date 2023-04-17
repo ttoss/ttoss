@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-roles",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "Create CloudFormation templates for roles with TypeScript.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -19,13 +19,14 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "^0.6.8"
+    "@ttoss/cloudformation": "workspace:^"
   },
   "devDependencies": {
-    "@ttoss/config": "^1.29.3",
-    "@ttoss/test-utils": "^1.21.2",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^29.5.0",
-    "jest": "^29.5.0"
+    "jest": "^29.5.0",
+    "tsup": "^6.7.0"
   },
   "keywords": [],
   "publishConfig": {

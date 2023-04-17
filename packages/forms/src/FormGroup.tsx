@@ -2,12 +2,13 @@ import { Flex, FlexProps } from '@ttoss/ui';
 import React from 'react';
 
 type FormGroupLevelsManagerContextType = {
-  levelsLength?: number;
+  levelsLength: number;
   registerChild: (level: number) => void;
 };
 
 const FormGroupLevelsManagerContext =
   React.createContext<FormGroupLevelsManagerContextType>({
+    levelsLength: 1,
     registerChild: () => {
       return null;
     },
@@ -55,10 +56,10 @@ export const useFormGroup = () => {
 };
 
 type FormGroupProps = {
-  children: React.ReactNode;
-};
+  direction?: 'column' | 'row';
+} & FlexProps;
 
-const FormGroupWrapper = ({ children }: { children: React.ReactNode }) => {
+const FormGroupWrapper = (props: FormGroupProps) => {
   const { level, levelsLength } = useFormGroup();
 
   const { registerChild } = React.useContext(FormGroupLevelsManagerContext);
@@ -73,31 +74,22 @@ const FormGroupWrapper = ({ children }: { children: React.ReactNode }) => {
     }
   }, [level, registerChild]);
 
-  const sx: FlexProps['sx'] = React.useMemo(() => {
-    return {
-      flexDirection: 'column',
-      width: '100%',
-      gap: 'md',
-      paddingLeft: ({ space }: any) => {
-        if (!level || !levelsLength) {
-          return 0;
-        }
-
-        const value = levelsLength / level;
-
-        return `calc(${space['lg']} / ${value})`;
-      },
-    };
-  }, [level, levelsLength]);
+  const sx: FlexProps['sx'] = {
+    flexDirection: props.direction || 'column',
+    width: '100%',
+    gap: 3 * (levelsLength - (level || 0)),
+    paddingX: level ? 'md' : 'none',
+    ...props.sx,
+  };
 
   return (
-    <Flex aria-level={level} sx={sx}>
-      {children}
+    <Flex aria-level={level} {...props} sx={sx}>
+      {props.children}
     </Flex>
   );
 };
 
-export const FormGroup = ({ children }: FormGroupProps) => {
+export const FormGroup = (props: FormGroupProps) => {
   const { level } = useFormGroup();
 
   const currentLevel = level === undefined ? 0 : level + 1;
@@ -106,10 +98,10 @@ export const FormGroup = ({ children }: FormGroupProps) => {
     <FormGroupContext.Provider value={{ parentLevel: currentLevel }}>
       {currentLevel === 0 ? (
         <FormGroupLevelsManager>
-          <FormGroupWrapper>{children}</FormGroupWrapper>
+          <FormGroupWrapper {...props} />
         </FormGroupLevelsManager>
       ) : (
-        <FormGroupWrapper>{children}</FormGroupWrapper>
+        <FormGroupWrapper {...props} />
       )}
     </FormGroupContext.Provider>
   );

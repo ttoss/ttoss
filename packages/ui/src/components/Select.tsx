@@ -1,11 +1,8 @@
 import { Icon, Text } from '..';
-import {
-  type SelectProps as SelectPropsUi,
-  Select as SelectUi,
-} from 'theme-ui';
+import { SelectProps, Select as SelectUi } from 'theme-ui';
 import React from 'react';
 
-export type SelectProps = SelectPropsUi;
+export { type SelectProps };
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ arrow, ...props }, ref) => {

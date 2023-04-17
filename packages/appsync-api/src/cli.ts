@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
-import minimist from 'minimist';
+import yargs from 'yargs';
 
-const argv = minimist(process.argv.slice(2));
+const argv: any = yargs(process.argv.slice(2)).argv;
 
 if (argv._.includes('build-schema')) {
   const template = findAndReadCloudFormationTemplate({});

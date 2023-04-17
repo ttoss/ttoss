@@ -32,12 +32,12 @@ After running this command, we saw that `jest`, `react-hook-form` and `yup` was 
 Among the updated packages above, `jest` was the only that is used by other packages in the monorepo. So, we ran the following command on the monorepo root to update the other packages to use the same version of `jest`:
 
 ```bash
-# Script for "check-dependency-version-consistency .",
+# Script for "syncpack fix-mismatches",
 # Check https://github.com/ttoss/ttoss/blob/main/package.json for more details
-yarn cdvc --fix
+pnpm syncpack:fix
 ```
 
-The aforementioned command executes the [`check-dependency-version-consistency`](https://github.com/bmish/check-dependency-version-consistency) script, which is responsible for verifying the version consistency of dependencies across all packages in the monorepo. In the event of any inconsistencies, the script will update the affected packages to use the same version of the dependency. As an example, the script updated all packages to use the same version of `jest`, which you can review via [this link](https://github.com/ttoss/ttoss/pull/210/files). We subsequently ran tests across all packages, and everything functioned as intended.
+The aforementioned command executes the [`syncpack fix-mismatches`](https://jamiemason.github.io/syncpack/) script, which is responsible for verifying the version consistency of dependencies across all packages in the monorepo. In the event of any inconsistencies, the script will update the affected packages to use the same version of the dependency. As an example, the script updated all packages to use the same version of `jest`, which you can review via [this link](https://github.com/ttoss/ttoss/pull/210/files). We subsequently ran tests across all packages, and everything functioned as intended.
 
 ## Batch Updates
 
@@ -45,7 +45,7 @@ This workflow is highly effective in updating breaking changes since we only nee
 
 # Automation
 
-To automate this workflow, we have incorporated a Git hook that runs the `check-dependency-version-consistency` script on the `pre-commit` hook. You can view the code for this hook [here](https://github.com/ttoss/ttoss/blob/main/.husky/pre-commit).
+To automate this workflow, we have incorporated a Git hook that runs the `syncpack list-mismatches` script on the `pre-commit` hook. You can view the code for this hook [here](https://github.com/ttoss/ttoss/blob/main/.husky/pre-commit).
 
 ## Conclusion
 

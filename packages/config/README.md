@@ -5,7 +5,7 @@
 ## Install
 
 ```shell
-yarn add -DW @ttoss/config
+pnpm add -Dw @ttoss/config
 ```
 
 ## Monorepo
@@ -17,7 +17,7 @@ Use the configs of this section on the root of your monorepo.
 Install the following packages:
 
 ```shell
-yarn add -DW eslint prettier @ttoss/eslint-config
+pnpm add -Dw eslint prettier @ttoss/eslint-config
 
 ```
 
@@ -44,7 +44,7 @@ This group of packages will only work if you have already installed [ESLint and 
 Install the following packages on the root of your monorepo:
 
 ```shell
-yarn add -DW husky @commitlint/cli lint-staged
+pnpm add -Dw husky @commitlint/cli lint-staged
 ```
 
 Create the `.commitlintrc.js` file and add the following configuration:
@@ -67,9 +67,9 @@ Finally, configure Husky:
 
 ```shell
 npm set-script prepare "husky install"
-yarn run prepare
-yarn husky add .husky/commit-msg "yarn commitlint --edit"
-yarn husky add .husky/pre-commit "yarn lint-staged"
+pnpm run prepare
+pnpm husky add .husky/commit-msg "pnpm commitlint --edit"
+pnpm husky add .husky/pre-commit "pnpm lint-staged"
 ```
 
 ## Packages
@@ -91,7 +91,7 @@ module.exports = babelConfig();
 Install [Jest](https://jestjs.io/) and its types on your package:
 
 ```shell
-yarn add -D jest @types/jest
+pnpm add -D jest @types/jest
 ```
 
 Create the `jest.config.ts` file on the package folder:
@@ -119,7 +119,7 @@ Use [tsup](https://tsup.egoist.sh/) to bundle your TypeScript packages.
 Install [tsup](https://tsup.egoist.sh/) on your package.
 
 ```shell
-yarn add -D tsup
+pnpm add -D tsup
 ```
 
 Create the `tsup.config.ts` file on the package folder:
@@ -143,7 +143,7 @@ Configure the `build` script on `package.json`:
 Install [TypeScript](https://www.npmjs.com/package/typescript) on your package:
 
 ```shell
-yarn add -D typescript
+pnpm add -D typescript
 ```
 
 Extend default configuration for each `tsconfig.json` (`touch tsconfig.json`) on the package folder:

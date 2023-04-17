@@ -1,11 +1,11 @@
 import { Flex, Icon, type IconType, Text } from '..';
-import { type InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
+import { InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
 import React from 'react';
 
-export type InputProps = InputPropsUI & {
+export interface InputProps extends InputPropsUI {
   leadingIcon?: IconType;
   trailingIcon?: IconType;
-};
+}
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, className, sx, ...inputProps }, ref) => {

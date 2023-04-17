@@ -1,10 +1,10 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 import { config as dotenv } from 'dotenv';
-import workspaceRoot from 'find-yarn-workspace-root';
 
-const rootDirectory = workspaceRoot();
+// Remove string after /config, but keep the /config
+const packageRootDir = __dirname.replace(/\/config.*/, '/config');
 
-dotenv({ path: `${rootDirectory}/terezinha-farm/config/.env` });
+dotenv({ path: `${packageRootDir}/.env` });
 
 export const config = {
   API_ENDPOINT: process.env.API_ENDPOINT,

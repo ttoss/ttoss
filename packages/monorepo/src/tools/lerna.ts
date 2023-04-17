@@ -5,7 +5,7 @@ export const installPackages = ['@lerna-lite/cli', '@lerna-lite/list'];
 const lernaJson = `
 {
   "version": "independent",
-  "npmClient": "yarn",
+  "npmClient": "pnpm",
   "useWorkspaces": true,
   "stream": true,
   "command": {

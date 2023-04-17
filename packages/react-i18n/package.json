@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "1.19.6",
+  "version": "1.19.7",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -15,12 +15,12 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "yarn workspace @ttoss/storybook run dev",
-    "pretest:compile": "yarn run pretest:compile:en && yarn run pretest:compile:ptBR",
+    "dev": "pnpm workspace @ttoss/storybook run dev",
+    "pretest:compile": "pnpm run pretest:compile:en && pnpm run pretest:compile:ptBR",
     "pretest:compile:en": "formatjs compile i18n/lang/en.json --ast --out-file i18n/compiled/en.json",
     "pretest:compile:ptBR": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled/pt-BR.json",
     "pretest:extract": "formatjs extract 'tests/**/*.ts*' --out-file i18n/lang/en.json",
-    "pretest": "yarn run pretest:extract && yarn run pretest:compile",
+    "pretest": "pnpm run pretest:extract && pnpm run pretest:compile",
     "test": "jest"
   },
   "sideEffects": false,
@@ -33,9 +33,12 @@
   },
   "devDependencies": {
     "@formatjs/cli": "^6.0.4",
-    "@ttoss/config": "^1.29.3",
-    "@ttoss/i18n-cli": "^0.4.4",
-    "@ttoss/test-utils": "^1.21.2"
+    "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@types/react": "^18.0.35",
+    "jest": "^29.5.0",
+    "tsup": "^6.7.0"
   },
   "keywords": [
     "React",

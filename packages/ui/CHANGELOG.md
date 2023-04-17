@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.32.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.0...@ttoss/ui@1.32.1) (2023-04-16)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# [1.32.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.18...@ttoss/ui@1.32.0) (2023-04-14)
+
+### Features
+
+- add stack component ([#271](https://github.com/ttoss/ttoss/issues/271)) ([275c559](https://github.com/ttoss/ttoss/commit/275c5593edaa5f3b29e40d7f349c6a1bd8e886e1))
+
 ## [1.31.18](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.31.17...@ttoss/ui@1.31.18) (2023-04-13)
 
 **Note:** Version bump only for package @ttoss/ui

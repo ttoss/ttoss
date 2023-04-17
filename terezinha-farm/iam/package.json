@@ -6,9 +6,9 @@
     "deploy": "carlin deploy"
   },
   "dependencies": {
-    "@ttoss/cloud-roles": "^0.5.13"
+    "@ttoss/cloud-roles": "workspace:^"
   },
   "devDependencies": {
-    "carlin": "^1.26.6"
+    "carlin": "workspace:^"
   }
 }
