@@ -1,14 +1,14 @@
-import * as yup from 'yup';
 import { Button } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
+  useForm,
+  yup,
   yupResolver,
 } from '@ttoss/forms/src';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { useForm } from 'react-hook-form';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
 export default {
@@ -26,7 +26,7 @@ const schema = yup.object({
   version: yup.string().required('Version is required'),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
