@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^18.0.35",
+    "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
     "carlin": "workspace:^",

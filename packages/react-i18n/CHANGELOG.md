@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.7...@ttoss/react-i18n@1.19.8) (2023-04-18)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## 1.19.7 (2023-04-16)
 
 **Note:** Version bump only for package @ttoss/react-i18n

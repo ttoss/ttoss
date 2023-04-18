@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "1.19.7",
+  "version": "1.19.8",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -36,7 +36,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.0.35",
+    "@types/react": "^18.0.37",
     "jest": "^29.5.0",
     "tsup": "^6.7.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/google-maps",
-  "version": "1.22.14",
+  "version": "1.22.15",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.0.35",
+    "@types/react": "^18.0.37",
     "jest": "^29.5.0",
     "tsup": "^6.7.0"
   },
