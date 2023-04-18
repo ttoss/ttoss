@@ -130,6 +130,16 @@ export const BruttalTheme: Theme = {
       margin: 0,
       padding: 0,
     },
+    a: {
+      color: 'text',
+      fontFamily: 'body',
+      '&.quiet:not(:hover)': {
+        textDecorationLine: 'none',
+      },
+      ':visited': {
+        color: 'highlight',
+      },
+    },
   },
   /**
    * Components
