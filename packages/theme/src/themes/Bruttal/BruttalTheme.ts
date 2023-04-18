@@ -336,6 +336,45 @@ export const BruttalTheme: Theme = {
         color: 'danger',
       },
     },
+    inputNumber: {
+      fontFamily: 'body',
+      color: 'text',
+      border: 'interaction',
+      borderColor: 'onMuted',
+      borderRadius: 'action',
+      paddingY: 'lg',
+      paddingX: 'xl',
+      ':disabled': {
+        borderColor: 'onMuted',
+        border: 'muted',
+        color: 'muted',
+      },
+      ':disabled ~ span > iconify-icon': {
+        color: 'muted',
+        cursor: 'default',
+      },
+      ':focus-within': {
+        outlineColor: 'highlight',
+      },
+      ':not(:disabled, [aria-invalid="true"]):hover': {
+        borderColor: 'highlight',
+      },
+      ':not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover': {
+        color: 'highlight',
+      },
+      '& ~ span:has(iconify-icon)': {
+        fontSize: 'base',
+      },
+      '&[aria-invalid="true"]': {
+        border: 'danger',
+        borderColor: 'danger',
+        color: 'danger',
+        outlineColor: 'danger',
+      },
+      '&[aria-invalid="true"] ~ span>iconify-icon': {
+        color: 'danger',
+      },
+    },
     select: {
       color: 'text',
       fontFamily: 'body',
