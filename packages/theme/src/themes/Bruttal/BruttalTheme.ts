@@ -304,6 +304,23 @@ export const BruttalTheme: Theme = {
       '&:has(input[type="checkbox"]:disabled)': {
         color: 'onMuted',
       },
+      '&:has(div > input[type="radio"])': {
+        alignItems: 'center',
+      },
+      '&:has(div > input[type="radio"]:disabled)': {
+        color: 'muted',
+      },
+    },
+    radio: {
+      color: 'text',
+      fontFamily: 'body',
+      fontSize: 'lg',
+      'input:disabled ~ &': {
+        color: 'muted',
+      },
+      'input[aria-invalid="true"] ~ &': {
+        color: 'danger',
+      },
     },
     checkbox: {
       'input:not(:checked) ~ &': {
