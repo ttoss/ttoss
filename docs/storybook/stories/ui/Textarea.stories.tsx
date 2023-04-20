@@ -25,14 +25,6 @@ export const Error: Story = {
   },
 };
 
-export const Success: Story = {
-  args: {
-    ...Default.args,
-    className: 'success',
-    trailingIcon: 'error',
-  },
-};
-
 export const Disabled: Story = {
   args: {
     ...Default.args,
