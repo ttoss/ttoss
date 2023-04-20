@@ -443,27 +443,22 @@ export const BruttalTheme: Theme = {
         outlineColor: 'primary',
       },
       ':disabled::placeholder': {
-        color: 'muted',
+        color: 'onMuted',
       },
       ':disabled': {
         borderColor: 'onMuted',
+        backgroundColor: 'muted',
         border: 'muted',
-        color: 'muted',
+        color: 'onMuted',
       },
-      ':disabled+span>iconify-icon': {
-        color: 'muted',
-      },
+
       '&[aria-invalid="true"]': {
         borderColor: 'danger',
-      },
-      '&.success+span>iconify-icon': {
-        color: 'positive',
+        outlineColor: 'danger',
       },
       '&[aria-invalid="true"]+span>iconify-icon': {
         color: 'danger',
-      },
-      '&[aria-invalid="true"]::placeholder': {
-        color: 'danger',
+        fontSize: 'base',
       },
     },
   },
