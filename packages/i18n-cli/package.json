@@ -17,7 +17,7 @@
     "build": "tsup-node"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^6.0.3",
+    "@formatjs/cli-lib": "^6.1.0",
     "glob": "^10.1.0"
   },
   "devDependencies": {
