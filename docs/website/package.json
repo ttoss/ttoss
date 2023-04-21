@@ -25,6 +25,8 @@
     "@ttoss/cloud-auth": "workspace:^",
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "carlin": "workspace:^",
@@ -37,9 +39,9 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^2.4.0",
     "@tsconfig/docusaurus": "^1.0.7",
-    "docusaurus-plugin-typedoc": "^0.18.0",
-    "typedoc": "^0.23.28",
-    "typedoc-plugin-markdown": "^3.14.0",
+    "docusaurus-plugin-typedoc": "^0.19.1",
+    "typedoc": "^0.24.4",
+    "typedoc-plugin-markdown": "^3.15.2",
     "typescript": "^5.0.4"
   },
   "browserslist": {
