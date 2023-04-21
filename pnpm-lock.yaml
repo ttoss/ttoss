@@ -158,6 +158,12 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../../packages/i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../../packages/react-i18n
       '@ttoss/react-notifications':
         specifier: workspace:^
         version: link:../../packages/react-notifications

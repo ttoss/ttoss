@@ -32,15 +32,11 @@ const config = {
   plugins: [
     path.resolve(__dirname, 'lifecycle/carlin'),
     ...[
-      'appsync-api',
-      'aws-appsync-nodejs',
-      'cloud-auth',
       'config',
       'forms',
       'i18n-cli',
       'react-i18n',
-      'test-utils',
-      'ui',
+      // 'ui'
     ].map((package) => {
       return [
         'docusaurus-plugin-typedoc',

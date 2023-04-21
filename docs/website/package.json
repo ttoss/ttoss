@@ -25,6 +25,8 @@
     "@ttoss/cloud-auth": "workspace:^",
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "carlin": "workspace:^",
