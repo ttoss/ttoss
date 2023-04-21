@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "1.21.4",
+  "version": "1.21.5",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "license": "UNLICENSED",
   "author": "ttoss",
