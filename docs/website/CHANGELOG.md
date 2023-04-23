@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.35.22 (2023-04-23)
+
+### Bug Fixes
+
+- i18n compile ([#279](https://github.com/ttoss/ttoss/issues/279)) ([d7a08c3](https://github.com/ttoss/ttoss/commit/d7a08c3e3f7cfc3eddeb81bd5ee93dadea09e6a0))
+- use tag sha because of turbo error ([3d9239b](https://github.com/ttoss/ttoss/commit/3d9239bbf0cafa09f417988625e72894122fd743))
+
 ## [1.35.21](https://github.com/ttoss/ttoss/compare/@docs/website@1.35.20...@docs/website@1.35.21) (2023-04-14)
 
 **Note:** Version bump only for package @docs/website
