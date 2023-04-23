@@ -12,6 +12,13 @@ module.exports = {
     react: {
       version: 'detect',
     },
+    import: {
+      ignore: ['node_modules'],
+    },
+    'import/resolver': {
+      typescript: true,
+      node: true,
+    },
   },
   plugins: [
     '@typescript-eslint',
@@ -24,6 +31,7 @@ module.exports = {
     'prefer-arrow-functions',
     'prettier',
     'jest-dom',
+    'import',
   ],
   extends: [
     'eslint:recommended',
@@ -36,6 +44,7 @@ module.exports = {
     'plugin:relay/recommended',
     'plugin:prettier/recommended',
     'plugin:jest-dom/recommended',
+    'plugin:import/typescript',
   ],
   rules: {
     '@typescript-eslint/no-non-null-assertion': 'error',
@@ -73,6 +82,7 @@ module.exports = {
         memberSyntaxSortOrder: ['all', 'multiple', 'single', 'none'],
       },
     ],
+    'import/no-default-export': 'error',
   },
   overrides: [
     {
