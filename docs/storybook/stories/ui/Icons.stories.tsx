@@ -114,6 +114,8 @@ const CORE_ICONS = [
   'arrow-right',
   'attachment',
   'avatar',
+  'caret-down',
+  'caret-up',
   'calendar',
   'checkbox-checked',
   'checkbox-indeterminate',
