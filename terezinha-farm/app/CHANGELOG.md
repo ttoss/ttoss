@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.22 (2023-04-24)
+
+### Bug Fixes
+
+- i18n compile ([#279](https://github.com/ttoss/ttoss/issues/279)) ([d7a08c3](https://github.com/ttoss/ttoss/commit/d7a08c3e3f7cfc3eddeb81bd5ee93dadea09e6a0))
+
 ## [0.2.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.20...@terezinha-farm/app@0.2.21) (2023-04-14)
 
 **Note:** Version bump only for package @terezinha-farm/app
