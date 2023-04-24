@@ -65,7 +65,7 @@ const TemplateDynamic: Story = (args) => {
   });
 
   const [fontSize, setFontSize] = React.useState(50);
-  const [color, setColor] = React.useState(colors[0].value);
+  const [color, setColor] = React.useState(colors[1].value);
 
   return (
     <Flex sx={{ flexDirection: 'column' }}>
@@ -82,6 +82,7 @@ const TemplateDynamic: Story = (args) => {
 
         <Label>Color</Label>
         <Select
+          defaultValue={color}
           onChange={(e: any) => {
             return setColor(e.target.value);
           }}
@@ -106,4 +107,66 @@ export const Dynamic = TemplateDynamic.bind({});
 
 Dynamic.args = {
   icon: 'mdi-light:home',
+};
+
+const CORE_ICONS = [
+  'add',
+  'arrow-right',
+  'attachment',
+  'avatar',
+  'calendar',
+  'checkbox-checked',
+  'checkbox-indeterminate',
+  'checkbox-unchecked',
+  'check',
+  'check-mark',
+  'close',
+  'copy',
+  'delete',
+  'error',
+  'info',
+  'loading',
+  'paste',
+  'picker-down',
+  'picker-up',
+  'picker-left',
+  'picker-right',
+  'radio-not-selected',
+  'radio-selected',
+  'refresh',
+  'replicate',
+  'subtract',
+  'success-circle',
+  'small-close',
+  'time',
+  'upload',
+  'view-off',
+  'view-on',
+  'warning',
+];
+
+export const CoreIcons = () => {
+  return (
+    <Flex sx={{ gap: 'lg', flexWrap: 'wrap' }}>
+      {CORE_ICONS.map((icon) => {
+        return (
+          <Flex
+            sx={{
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '120px',
+              gap: 'md',
+            }}
+            key={icon}
+          >
+            <Text sx={{ fontSize: '2xl' }}>
+              <Icon icon={icon} />
+            </Text>
+
+            <Text sx={{ textAlign: 'center' }}>{icon}</Text>
+          </Flex>
+        );
+      })}
+    </Flex>
+  );
 };
