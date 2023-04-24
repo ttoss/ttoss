@@ -33,6 +33,8 @@ jobs:
 
       - name: Fetch and merge most recent main
         run: |
+          git log
+          git status
           git fetch origin main:main
           git merge main --ff-only --no-edit
 
