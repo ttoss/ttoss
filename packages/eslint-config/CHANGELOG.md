@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.19.5 (2023-04-24)
+
+### Bug Fixes
+
+- install lerna publish ([3624883](https://github.com/ttoss/ttoss/commit/36248833c4def72f07b80c3de0f094e1a175d144))
+
 ## 1.19.4 (2023-04-16)
 
 **Note:** Version bump only for package @ttoss/eslint-config
