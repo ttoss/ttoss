@@ -81,3 +81,27 @@ const App = () => {
 
 export default App;
 ```
+
+### Configuring Vite
+
+In order to inject the i18n id's properly on the code, configure the `plugins` section of `vite.config.ts` according to this:
+
+```ts
+import { babelConfig } from '@ttoss/config';
+
+export default defineConfig(async () => {
+  return {
+    // ...
+
+    plugins: [
+      react({
+        babel: {
+          plugins: babelConfig().plugins,
+        },
+      }),
+    ],
+  };
+
+  // ...
+});
+```

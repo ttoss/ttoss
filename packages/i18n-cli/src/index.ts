@@ -57,11 +57,42 @@ const getTtossExtractedTranslations = async () => {
 
   for (const dependency of ttossDependencies) {
     try {
+      const dependencyPathFromCwd = path.join(
+        process.cwd(),
+        'node_modules',
+        dependency
+      );
+
+      const checkIfDependencyIsSymlink = await fs.promises.readlink(
+        dependencyPathFromCwd
+      );
+
+      const requirePath = (() => {
+        if (checkIfDependencyIsSymlink) {
+          return path.join(
+            dependencyPathFromCwd,
+            /**
+             * We need to go up one level because the symlink is pointing to
+             * the folder that lists dependencies, not the actual dependency.
+             * For example, `dependencyPathFromCwd` is
+             * /ttoss/terezinha-farm/app/node_modules/@ttoss/react-auth and
+             * `checkIfDependencyIsSymlink` is ../../../../packages/react-auth.
+             * If we don't go up one level, we will get:
+             * /ttoss/terezinha-farm/packages/react-auth/i18n/lang/en.json
+             * instead of:
+             * /ttoss/packages/react-auth/i18n/lang/en.json
+             */
+            '..',
+            checkIfDependencyIsSymlink,
+            EXTRACT_FILE
+          );
+        }
+
+        return path.join(dependency, EXTRACT_FILE);
+      })();
+
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const extractedTranslations = require(path.join(
-        dependency,
-        EXTRACT_FILE
-      ));
+      const extractedTranslations = require(requirePath);
 
       /**
        * Add "module: dependency" to the extracted translations
@@ -82,7 +113,7 @@ const getTtossExtractedTranslations = async () => {
         ttossExtractedTranslations,
         extractedTranslationsWithModule
       );
-    } catch (error) {
+    } catch (error: any) {
       continue;
     }
   }

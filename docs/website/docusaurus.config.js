@@ -39,7 +39,6 @@ const config = {
       'forms',
       'i18n-cli',
       'react-i18n',
-      'test-utils',
       'ui',
     ].map((package) => {
       return [
