@@ -1018,6 +1018,12 @@ importers:
         specifier: ^4.3.1
         version: 4.3.1
     devDependencies:
+      '@iconify/icons-eos-icons':
+        specifier: ^1.2.6
+        version: 1.2.6
+      '@iconify/icons-mdi':
+        specifier: ^1.2.44
+        version: 1.2.44
       '@iconify/types':
         specifier: ^2.0.0
         version: 2.0.0
@@ -7912,6 +7918,18 @@ packages:
     dependencies:
       '@iconify/types': 2.0.0
     dev: false
+
+  /@iconify/icons-eos-icons@1.2.6:
+    resolution: {integrity: sha512-8Nk3/q2SN1qwi36w0S/CeAD55yoLfVix+85iwwVgyqz2VkILBAYUjVusfQXKIHW9KD8Vtymwz/512TXQ1GfM8Q==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify/icons-mdi@1.2.44:
+    resolution: {integrity: sha512-j1hw1Ar1EMz74Ehg1BwQ5h69gO++9GZqJYye2huvl9jPgvXqlNmwAFWOVZQ3EoLTfoAwcp8awfQh3FcMvaqyuA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
 
   /@iconify/react@4.1.0(react@18.2.0):
     resolution: {integrity: sha512-Mf72i3TNNKpKCKxmo7kzqyrUdCgaoljpqtWmtqpqwyxoV4ukhnDsSRNLhf2yBnqGr3cVZsdj/i0FMpXIY0Qk0g==}

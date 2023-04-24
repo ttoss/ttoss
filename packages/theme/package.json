@@ -36,6 +36,8 @@
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
+    "@iconify/icons-eos-icons": "^1.2.6",
+    "@iconify/icons-mdi": "^1.2.44",
     "@iconify/types": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

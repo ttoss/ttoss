@@ -94,6 +94,12 @@ module.exports = {
       },
     },
     {
+      files: ['**/*.stories.tsx', '**/*.stories.jsx'],
+      rules: {
+        'import/no-default-export': 'off',
+      },
+    },
+    {
       files: ['*.spec.ts', '*.test.ts', '*.spec.tsx', '*.test.tsx'],
       plugins: ['jest'],
       env: {
