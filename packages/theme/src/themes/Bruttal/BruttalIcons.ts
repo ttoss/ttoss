@@ -1,6 +1,10 @@
 import { addIcon } from '@iconify-icon/react';
 import addFilledIcon from '@iconify/icons-carbon/add-filled';
+import arrowRightIcon from '@iconify/icons-carbon/arrow-right';
+import attachmentIcon from '@iconify/icons-carbon/attachment';
 import calendarIcon from '@iconify/icons-carbon/calendar';
+import checkMarkIcon from '@iconify/icons-carbon/checkmark';
+import checkMarkOutlineIcon from '@iconify/icons-carbon/checkmark-outline';
 import checkboxCheckedFilled from '@iconify/icons-carbon/checkbox-checked-filled';
 import checkboxIcon from '@iconify/icons-carbon/checkbox';
 import checkboxIndeterminateFilledIcon from '@iconify/icons-carbon/checkbox-indeterminate-filled';
@@ -13,12 +17,15 @@ import closeIcon from '@iconify/icons-carbon/close';
 import copyIcon from '@iconify/icons-carbon/copy';
 import errorFilledIcon from '@iconify/icons-carbon/error-filled';
 import informationFilledIcon from '@iconify/icons-carbon/information-filled';
+import loadingIcon from '@iconify/icons-eos-icons/loading';
 import pasteIcon from '@iconify/icons-carbon/paste';
 import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked';
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
 import renewIcon from '@iconify/icons-carbon/renew';
+import successCircleIcon from '@iconify/icons-mdi/success-circle';
 import timeIcon from '@iconify/icons-carbon/time';
 import trashCanIcon from '@iconify/icons-carbon/trash-can';
+import uploadIcon from '@iconify/icons-carbon/upload';
 import userAvatarFilledAltIcon from '@iconify/icons-carbon/user-avatar-filled-alt';
 import viewFilledIcon from '@iconify/icons-carbon/view-filled';
 import viewOffFilledIcon from '@iconify/icons-carbon/view-off-filled';
@@ -34,17 +41,31 @@ const replicateIcon: IconifyIcon = {
   height: 48,
 };
 
+const subtractIcon: IconifyIcon = {
+  body: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14 26H34V22H14V26ZM24 44C21.2333 44 18.6333 43.4747 16.2 42.424C13.7667 41.3733 11.65 39.9487 9.85 38.15C8.05 36.35 6.62533 34.2333 5.576 31.8C4.52667 29.3667 4.00133 26.7667 4 24C4 21.2333 4.52533 18.6333 5.576 16.2C6.62667 13.7667 8.05133 11.65 9.85 9.85C11.65 8.05 13.7667 6.62533 16.2 5.576C18.6333 4.52667 21.2333 4.00133 24 4C26.7667 4 29.3667 4.52533 31.8 5.576C34.2333 6.62667 36.35 8.05133 38.15 9.85C39.95 11.65 41.3753 13.7667 42.426 16.2C43.4767 18.6333 44.0013 21.2333 44 24C44 26.7667 43.4747 29.3667 42.424 31.8C41.3733 34.2333 39.9487 36.35 38.15 38.15C36.35 39.95 34.2333 41.3753 31.8 42.426C29.3667 43.4767 26.7667 44.0013 24 44Z" fill="black"/>
+  </svg>
+  `,
+  width: 48,
+  height: 48,
+};
+
 addIcon('add', addFilledIcon);
+addIcon('arrow-right', arrowRightIcon);
+addIcon('attachment', attachmentIcon);
 addIcon('avatar', userAvatarFilledAltIcon);
 addIcon('calendar', calendarIcon);
 addIcon('checkbox-checked', checkboxCheckedFilled);
 addIcon('checkbox-indeterminate', checkboxIndeterminateFilledIcon);
 addIcon('checkbox-unchecked', checkboxIcon);
+addIcon('check', checkMarkIcon);
+addIcon('check-mark', checkMarkOutlineIcon);
 addIcon('close', closeIcon);
 addIcon('copy', copyIcon);
 addIcon('delete', trashCanIcon);
 addIcon('error', errorFilledIcon);
 addIcon('info', informationFilledIcon);
+addIcon('loading', loadingIcon);
 addIcon('paste', pasteIcon);
 addIcon('picker-down', chevronDownIcon);
 addIcon('picker-up', chevronUpIcon);
@@ -54,8 +75,11 @@ addIcon('radio-not-selected', radioButtonIcon);
 addIcon('radio-selected', radioButtonCheckedIcon);
 addIcon('refresh', renewIcon);
 addIcon('replicate', replicateIcon);
+addIcon('subtract', subtractIcon);
+addIcon('success-circle', successCircleIcon);
 addIcon('small-close', closeFilledIcon);
 addIcon('time', timeIcon);
+addIcon('upload', uploadIcon);
 addIcon('view-off', viewOffFilledIcon);
 addIcon('view-on', viewFilledIcon);
 addIcon('warning', warningFilledIcon);
