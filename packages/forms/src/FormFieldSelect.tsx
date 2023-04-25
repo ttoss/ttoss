@@ -40,7 +40,7 @@ export const FormFieldSelect = <
         onBlur={onBlur}
         value={value}
         id={id}
-        {...selectProps}
+        {...{ ...selectProps, defaultValue: undefined }}
       >
         {options.map((option) => {
           return (
