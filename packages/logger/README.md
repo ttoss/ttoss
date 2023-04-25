@@ -22,12 +22,21 @@ These package solves this, providing some levels of log that are emitted based o
 
 ## How to use
 
-Just instantiate the logger, provide a context name and start to use:
+Just instantiate the logger, providing the `isDev` value configuration and start to use:
 
 ```ts
-import { Logger } from '@ttoss/logger';
+// createLogger.ts
 
-const logger = Logger('createContext');
+import { Logger } from '@ttoss/logger';
+import { config } from 'dotenv';
+
+config();
+
+export const createLogger = Logger(process.env.DEV === 'true');
+
+// randomFile.ts
+
+const logger = createLogger('randomFile');
 
 logger.warn('This will emit an warn on console');
 
@@ -35,3 +44,19 @@ logger.error('This will emit a log of type error on console');
 
 loggger.info('This will emit a simple log on console');
 ```
+
+Optionally, for backend development, you can rely on `NODE_ENV` to inform if the environment is dev or not:
+
+```ts
+// createLogger.ts
+
+import { Logger } from '@ttoss/logger';
+import { config } from 'dotenv';
+
+config();
+
+// will detect if NODE_ENV env var is equals to 'production'
+export const createLogger = Logger();
+```
+
+For frontend development, instantiating this way will lead the logger to log everything, so this practice **it's discouraged**.
