@@ -1,5 +1,5 @@
 const { log, warn, error } = console;
-const isDev: boolean = (import.meta as any).env.DEV;
+const isDev: boolean = (import.meta as any).env.DEV || (process.env as any).DEV;
 
 export const logger = {
   warn: (value: string) => {
