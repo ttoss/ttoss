@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.8...@ttoss/ui@1.33.0) (2023-04-25)
+
+### Features
+
+- add Global to @ttoss/ui ([#303](https://github.com/ttoss/ttoss/issues/303)) ([b323f29](https://github.com/ttoss/ttoss/commit/b323f2957ae90af0af910d377bbbd46512e22a5a))
+
 ## [1.32.8](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.7...@ttoss/ui@1.32.8) (2023-04-24)
 
 **Note:** Version bump only for package @ttoss/ui
