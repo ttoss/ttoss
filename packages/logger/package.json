@@ -1,8 +1,8 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple environment agnostic logger",
-  "license": "ISC",
+  "license": "MIT",
   "contributors": [
     "Eron Alves <eron.alves@rocketmail.com>"
   ],
@@ -10,5 +10,8 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^"
   },
-  "keywords": []
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  }
 }
