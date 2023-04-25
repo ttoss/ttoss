@@ -2,7 +2,7 @@ export {
   defineMessages,
   defineMessage,
   FormattedMessage,
-  IntlShape,
+  type IntlShape,
 } from 'react-intl';
 export {
   I18nProvider,
