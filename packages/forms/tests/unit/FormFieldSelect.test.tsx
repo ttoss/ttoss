@@ -1,6 +1,6 @@
 import { Button } from '@ttoss/ui';
 import { Form, FormFieldSelect, useForm, yup, yupResolver } from '../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { act, render, screen, userEvent } from '@ttoss/test-utils';
 
 const RADIO_OPTIONS = [
   { value: '', label: 'Select a car' },
@@ -65,4 +65,64 @@ test('should display error messages', async () => {
   await user.click(screen.getByText('Submit'));
 
   expect(await screen.findByText('Car is required')).toBeInTheDocument();
+});
+
+test('should set a default value', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldSelect
+          name="car"
+          label="Cars"
+          options={RADIO_OPTIONS}
+          defaultValue="Ferrari"
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  await user.click(screen.getByText('Submit'));
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'Ferrari' });
+});
+
+test('should have a default a value and change correctly', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldSelect
+          name="car"
+          label="Cars"
+          options={RADIO_OPTIONS}
+          defaultValue="Ferrari"
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  await user.selectOptions(
+    screen.getByRole('combobox'),
+    screen.getByText('BMW')
+  );
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
 });
