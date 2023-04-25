@@ -911,7 +911,7 @@ importers:
         specifier: workspace:^
         version: link:../components
       '@ttoss/ui':
-        specifier: workspace:^
+        specifier: ^1.0.0
         version: link:../ui
     devDependencies:
       '@ttoss/config':
