@@ -1,6 +1,9 @@
 const { log, warn, error } = console;
-const isDev: boolean =
-  (import.meta as any)?.env?.DEV || (process.env as any)?.DEV === 'true';
+
+const nodeEnv = process?.env as any;
+const browserEnv = (import.meta as any)?.env;
+
+const isDev: boolean = browserEnv?.DEV === 'true' || nodeEnv?.DEV === 'true';
 
 export const Logger = (prefix: string) => {
   return {
