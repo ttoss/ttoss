@@ -1,10 +1,13 @@
-import * as yup from 'yup';
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldSelect } from '@ttoss/forms';
+import {
+  Form,
+  FormFieldSelect,
+  useForm,
+  yup,
+  yupResolver,
+} from '@ttoss/forms/src';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 export default {
   title: 'Forms/FormFieldSelect',

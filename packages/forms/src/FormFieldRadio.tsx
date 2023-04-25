@@ -1,4 +1,4 @@
-import { Box, Label, Radio, type RadioProps } from '@ttoss/ui';
+import { Box, Flex, Label, Radio, type RadioProps } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
@@ -11,6 +11,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
   options,
+  sx,
   ...radioProps
 }: {
   label?: string;
@@ -25,7 +26,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
   });
 
   return (
-    <Box>
+    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
       {label && <Label>{label}</Label>}
       <Box>
         {options.map((option) => {
@@ -50,6 +51,6 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
       </Box>
 
       <ErrorMessage name={name} />
-    </Box>
+    </Flex>
   );
 };

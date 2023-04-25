@@ -8,6 +8,7 @@ export const FormFieldTextarea = <
 >({
   label,
   name,
+  sx,
   ...textareaProps
 }: {
   label?: string;
@@ -20,6 +21,7 @@ export const FormFieldTextarea = <
       label={label}
       name={name}
       id={id}
+      sx={sx}
       render={({ field }) => {
         return <Textarea {...field} {...textareaProps} />;
       }}

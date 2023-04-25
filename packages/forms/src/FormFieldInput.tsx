@@ -1,6 +1,12 @@
-import { Box, Input, type InputProps, Label, type LabelProps } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
+import {
+  Flex,
+  Input,
+  type InputProps,
+  Label,
+  type LabelProps,
+} from '@ttoss/ui';
 
 export const FormFieldInput = <
   TFieldValues extends FieldValues = FieldValues,
@@ -10,6 +16,7 @@ export const FormFieldInput = <
   name,
   tooltip,
   onTooltipClick,
+  sx,
   ...inputProps
 }: {
   label?: string;
@@ -29,7 +36,7 @@ export const FormFieldInput = <
   const hasError = !!errors[name]?.message;
 
   return (
-    <Box>
+    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
       {label && (
         <Label
           aria-disabled={inputProps.disabled}
@@ -53,6 +60,6 @@ export const FormFieldInput = <
       />
 
       <ErrorMessage name={name} />
-    </Box>
+    </Flex>
   );
 };
