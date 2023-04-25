@@ -771,9 +771,9 @@ importers:
 
   packages/logger:
     devDependencies:
-      typescript:
-        specifier: ^5.0.4
-        version: 5.0.4
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
 
   packages/monorepo:
     dependencies:
