@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0](https://github.com/ttoss/carlin/compare/carlin@1.26.9...carlin@1.27.0) (2023-04-25)
+
+### Features
+
+- migrate from OAI to OAC ([#297](https://github.com/ttoss/carlin/issues/297)) ([f3bba2e](https://github.com/ttoss/carlin/commit/f3bba2ece3c8219ea1bab5c845c929ca3a7aaa23))
+
 ## [1.26.9](https://github.com/ttoss/carlin/compare/carlin@1.26.8...carlin@1.26.9) (2023-04-21)
 
 **Note:** Version bump only for package carlin

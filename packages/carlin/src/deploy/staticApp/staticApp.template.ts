@@ -4,15 +4,15 @@ import {
   Resource,
   getPackageVersion,
 } from '../../utils';
-import { getOriginShieldRegion } from './getOriginShieldRegion';
 
 const PACKAGE_VERSION = getPackageVersion();
 
-const STATIC_APP_BUCKET_LOGICAL_ID = 'StaticBucket';
-
-const CLOUDFRONT_DISTRIBUTION_ID = 'CloudFrontDistributionId';
+export const STATIC_APP_BUCKET_LOGICAL_ID = 'StaticBucket';
 
 export const CLOUDFRONT_DISTRIBUTION_LOGICAL_ID = 'CloudFrontDistribution';
+
+export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
+  'OriginAccessControl';
 
 export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 
@@ -37,10 +37,9 @@ const ORIGIN_REQUEST_POLICY_ID = '88a5eaf4-2fd4-4709-b370-b4c650ea3fcf';
  */
 const ORIGIN_RESPONSE_POLICY_ID = 'eaab4381-ed33-4a86-88ca-d9558dc6cd63';
 
-const getBaseTemplate = ({
+const getBucketStaticWebsiteTemplate = ({
   spa,
 }: {
-  cloudfront?: boolean;
   spa?: boolean;
 }): CloudFormationTemplate => {
   return {
@@ -59,6 +58,9 @@ const getBaseTemplate = ({
                 MaxAge: 600,
               },
             ],
+          },
+          PublicAccessBlockConfiguration: {
+            BlockPublicPolicy: false,
           },
           WebsiteConfiguration: {
             IndexDocument: `index.html`,
@@ -106,19 +108,77 @@ const getBaseTemplate = ({
 const getCloudFrontTemplate = ({
   acm,
   aliases = [],
-  cloudfront,
   spa,
   hostedZoneName,
-  region,
 }: {
   acm?: string;
   aliases?: string[];
-  cloudfront: boolean;
+  cloudfront: true;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
 }): CloudFormationTemplate => {
-  const template = { ...getBaseTemplate({ cloudfront, spa }) };
+  const template: CloudFormationTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Resources: {
+      [STATIC_APP_BUCKET_LOGICAL_ID]: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicPolicy: false,
+          },
+        },
+      },
+      [`${STATIC_APP_BUCKET_LOGICAL_ID}S3BucketPolicy`]: {
+        Type: 'AWS::S3::BucketPolicy',
+        Properties: {
+          Bucket: { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
+          PolicyDocument: {
+            Statement: [
+              /**
+               * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+               */
+              {
+                Sid: 'AllowCloudFrontServicePrincipalReadOnly',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'cloudfront.amazonaws.com',
+                },
+                Action: 's3:GetObject',
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
+                      '/*',
+                    ],
+                  ],
+                },
+                Condition: {
+                  StringEquals: {
+                    'AWS:SourceArn':
+                      // 'arn:aws:cloudfront::<AWS account ID>:distribution/<CloudFront distribution ID>',
+                      {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:aws:cloudfront::',
+                            { Ref: 'AWS::AccountId' },
+                            ':distribution/',
+                            { Ref: CLOUDFRONT_DISTRIBUTION_LOGICAL_ID },
+                          ],
+                        ],
+                      },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
 
   const cloudFrontResources: { [key: string]: Resource } = {
     [CLOUDFRONT_DISTRIBUTION_LOGICAL_ID]: {
@@ -171,40 +231,43 @@ const getCloudFrontTemplate = ({
           HttpVersion: 'http2',
           Origins: [
             {
-              CustomOriginConfig: {
-                OriginProtocolPolicy: 'http-only',
-              },
-              /**
-               * https://github.com/aws/aws-cdk/issues/1882#issuecomment-629141467
-               */
               DomainName: {
-                'Fn::Select': [
-                  1,
-                  {
-                    'Fn::Split': [
-                      '//',
-                      {
-                        'Fn::GetAtt': [
-                          STATIC_APP_BUCKET_LOGICAL_ID,
-                          'WebsiteURL',
-                        ],
-                      },
-                    ],
-                  },
-                ],
+                'Fn::GetAtt': [STATIC_APP_BUCKET_LOGICAL_ID, 'DomainName'],
               },
               Id: { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
+              OriginAccessControlId: {
+                'Fn::GetAtt': [
+                  CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
+                  'Id',
+                ],
+              },
               /**
-               * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html#choose-origin-shield-region
+               * Note: As of September 2022, an empty OriginAccessIdentity must be specified in S3OriginConfig.
                */
-              ...(region && {
-                OriginShield: {
-                  Enabled: true,
-                  OriginShieldRegion: getOriginShieldRegion(region),
-                },
-              }),
+              S3OriginConfig: {
+                OriginAccessIdentity: '',
+              },
             },
           ],
+        },
+      },
+    },
+    [CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID]: {
+      Type: 'AWS::CloudFront::OriginAccessControl',
+      Properties: {
+        OriginAccessControlConfig: {
+          Description: {
+            'Fn::Sub': [
+              'Default Origin Access Control for ${Project} project.',
+              { Project: { Ref: 'Project' } },
+            ],
+          },
+          Name: {
+            Ref: 'AWS::StackName',
+          },
+          OriginAccessControlOriginType: 's3',
+          SigningBehavior: 'always',
+          SigningProtocol: 'sigv4',
         },
       },
     },
@@ -296,12 +359,14 @@ const getCloudFrontTemplate = ({
    * Add aliases output to template.
    */
   const aliasesOutput = (aliases || []).reduce<{ [key: string]: Output }>(
-    (acc, alias, index) => ({
-      ...acc,
-      [`Alias${index}URL`]: {
-        Value: `https://${alias}`,
-      },
-    }),
+    (acc, alias, index) => {
+      return {
+        ...acc,
+        [`Alias${index}URL`]: {
+          Value: `https://${alias}`,
+        },
+      };
+    },
     {}
   );
 
@@ -324,7 +389,7 @@ const getCloudFrontTemplate = ({
         ],
       },
     },
-    [CLOUDFRONT_DISTRIBUTION_ID]: {
+    CloudFrontDistributionId: {
       Value: {
         Ref: CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
       },
@@ -362,5 +427,6 @@ export const getStaticAppTemplate = ({
       region,
     });
   }
-  return getBaseTemplate({ cloudfront, spa });
+
+  return getBucketStaticWebsiteTemplate({ spa });
 };
