@@ -1,4 +1,4 @@
-export { BaseStyles, type Theme } from 'theme-ui';
+export { BaseStyles, type Theme, Global } from 'theme-ui';
 export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
 
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
