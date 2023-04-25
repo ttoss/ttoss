@@ -1,4 +1,4 @@
-import { Box, Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
+import { Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 
@@ -7,6 +7,7 @@ export const FormFieldCheckbox = <
 >({
   label,
   name,
+  sx,
   ...checkboxProps
 }: {
   label?: string;
@@ -25,7 +26,7 @@ export const FormFieldCheckbox = <
   const error = !!errors[name]?.message;
 
   return (
-    <Box>
+    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
       <Flex sx={{ alignItems: 'center' }}>
         <Label aria-disabled={checkboxProps.disabled} htmlFor={id}>
           <Checkbox
@@ -42,6 +43,6 @@ export const FormFieldCheckbox = <
         </Label>
       </Flex>
       <ErrorMessage name={name} />
-    </Box>
+    </Flex>
   );
 };
