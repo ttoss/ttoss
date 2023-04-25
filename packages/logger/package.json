@@ -7,8 +7,12 @@
     "Eron Alves <eron.alves@rocketmail.com>"
   ],
   "main": "index.js",
+  "scripts": {
+    "build": "tsup"
+  },
   "devDependencies": {
-    "@ttoss/config": "workspace:^"
+    "@ttoss/config": "workspace:^",
+    "tsup": "^6.7.0"
   },
   "keywords": [],
   "publishConfig": {
