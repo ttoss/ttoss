@@ -1,6 +1,6 @@
 # @ttoss/logger
 
-Simple logger package for Vite.
+Simple environment agnostic logger.
 
 ## Motivation
 
@@ -22,10 +22,12 @@ These package solves this, providing some levels of log that are emitted based o
 
 ## How to use
 
-Just instantiate the logger and start to use:
+Just instantiate the logger, provide a context name and start to use:
 
 ```ts
-import { logger } from '@ttoss/logger';
+import { Logger } from '@ttoss/logger';
+
+const logger = Logger('createContext');
 
 logger.warn('This will emit an warn on console');
 
