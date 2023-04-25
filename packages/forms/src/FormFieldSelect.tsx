@@ -19,11 +19,13 @@ export const FormFieldSelect = <
   name: FieldPath<TFieldValues>;
   options: FormRadioOption[];
 } & SelectProps) => {
+  const { defaultValue } = selectProps;
+
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
     name,
-    defaultValue: '',
+    defaultValue: defaultValue ? defaultValue : '',
   });
 
   const id = `form-field-select-${name}`;
