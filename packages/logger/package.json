@@ -1,13 +1,12 @@
 {
   "name": "@ttoss/logger",
-  "version": "1.0.0",
-  "description": "Simple logger for vite",
+  "version": "0.1.0",
+  "description": "Simple environment agnostic logger",
   "license": "ISC",
-  "author": "",
+  "contributors": [
+    "Eron Alves <eron.alves@rocketmail.com>"
+  ],
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^"
   },
