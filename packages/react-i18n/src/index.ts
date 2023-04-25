@@ -1,4 +1,9 @@
-export { defineMessages, defineMessage, FormattedMessage } from 'react-intl';
+export {
+  defineMessages,
+  defineMessage,
+  FormattedMessage,
+  type IntlShape,
+} from 'react-intl';
 export {
   I18nProvider,
   I18nProviderProps,
