@@ -29,7 +29,7 @@
     "react-toastify": "^9.1.1"
   },
   "peerDependencies": {
-    "@ttoss/ui": "^1.0.0",
+    "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
