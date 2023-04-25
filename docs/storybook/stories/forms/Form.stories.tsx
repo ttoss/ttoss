@@ -1,8 +1,11 @@
-import { Button } from '@ttoss/ui/src';
+import { Box, Button } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
+  FormFieldSelect,
+  FormFieldTextarea,
+  FormGroup,
   useForm,
   yup,
   yupResolver,
@@ -16,17 +19,17 @@ export default {
   component: Form,
 } as Meta;
 
-const schema = yup.object({
-  firstName: yup.string().required('First name is required'),
-  age: yup.number().required('Age is required'),
-  receiveEmails: yup
-    .boolean()
-    .oneOf([true], 'It needs to be checked')
-    .required(),
-  version: yup.string().required('Version is required'),
-});
+export const Example1: StoryFn = () => {
+  const schema = yup.object({
+    firstName: yup.string().required('First name is required'),
+    age: yup.number().required('Age is required'),
+    receiveEmails: yup
+      .boolean()
+      .oneOf([true], 'It needs to be checked')
+      .required(),
+    version: yup.string().required('Version is required'),
+  });
 
-const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -63,4 +66,87 @@ const Template: StoryFn = () => {
   );
 };
 
-export const Example = Template.bind({});
+export const Example2: StoryFn = () => {
+  const formMethods = useForm();
+
+  const options = [
+    {
+      label: 'Option 1',
+      value: 'option1',
+    },
+    {
+      label: 'Option 2',
+      value: 'option2',
+    },
+    {
+      label: 'Option 3',
+      value: 'option3',
+    },
+  ];
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          padding: 'lg',
+          border: 'default',
+          borderColor: 'muted',
+        }}
+      >
+        <FormGroup
+          direction="row"
+          sx={{
+            backgroundColor: 'red',
+          }}
+        >
+          <FormFieldInput
+            name="firstName"
+            label="First Name"
+            placeholder="First Name"
+          />
+
+          <FormFieldInput
+            name="lastName"
+            label="Last Name"
+            placeholder="Last Name"
+          />
+        </FormGroup>
+        <FormGroup
+          direction="row"
+          sx={{
+            backgroundColor: 'blue',
+          }}
+        >
+          <FormFieldSelect
+            name="firstName"
+            label="First Name"
+            placeholder="First Name"
+            options={options}
+            sx={{ flex: 1 }}
+          />
+
+          <FormFieldSelect
+            name="lastName"
+            label="Last Name"
+            placeholder="Last Name"
+            options={options}
+            sx={{ flex: 1 }}
+          />
+        </FormGroup>
+        <FormGroup
+          direction="row"
+          sx={{
+            backgroundColor: 'green',
+          }}
+        >
+          <FormFieldTextarea
+            name="note"
+            label="Note"
+            placeholder="Let your notes here"
+          />
+        </FormGroup>
+      </Box>
+    </Form>
+  );
+};
