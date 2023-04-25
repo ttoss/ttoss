@@ -1,0 +1,14 @@
+{
+  "name": "@ttoss/logger",
+  "version": "0.1.0",
+  "description": "Simple environment agnostic logger",
+  "license": "ISC",
+  "contributors": [
+    "Eron Alves <eron.alves@rocketmail.com>"
+  ],
+  "main": "index.js",
+  "devDependencies": {
+    "@ttoss/config": "workspace:^"
+  },
+  "keywords": []
+}
