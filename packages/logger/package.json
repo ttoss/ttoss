@@ -6,9 +6,20 @@
   "contributors": [
     "Eron Alves <eron.alves@rocketmail.com>"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "sideEffects": false,
+  "typings": "dist/index.d.ts",
   "devDependencies": {
-    "@ttoss/config": "workspace:^"
+    "@ttoss/config": "workspace:^",
+    "tsup": "^6.7.0"
   },
   "keywords": [],
   "publishConfig": {
