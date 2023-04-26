@@ -21,14 +21,15 @@ const checkDefaultValue = (
   });
 
   if (placeholder && hasEmptyValue) return '';
-  if ((placeholder && !hasEmptyValue) || options.length === 0) {
-    options.push({
-      label: '',
+  if (placeholder && !hasEmptyValue) {
+    options.unshift({
+      label: placeholder,
       value: '',
     });
     return '';
   }
   if (!placeholder && defaultValue) return defaultValue;
+  if (options.length === 0) return '';
   return options?.[0]?.value;
 };
 
