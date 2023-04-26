@@ -18,9 +18,7 @@ export const FormFieldSelect = <
   label?: string;
   name: FieldPath<TFieldValues>;
   options: FormRadioOption[];
-} & SelectProps) => {
-  const { defaultValue } = selectProps;
-
+} & SelectSwitchProps) => {
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
