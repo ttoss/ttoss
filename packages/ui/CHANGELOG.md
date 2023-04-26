@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.33.0...@ttoss/ui@1.34.0) (2023-04-26)
+
+### Features
+
+- export keyframes from ttoss ui ([#304](https://github.com/ttoss/ttoss/issues/304)) ([d06001d](https://github.com/ttoss/ttoss/commit/d06001d0c4380c83ffe275684efb7d54c348cc5a))
+
 # [1.33.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.8...@ttoss/ui@1.33.0) (2023-04-25)
 
 ### Features
