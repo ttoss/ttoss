@@ -21,7 +21,7 @@ const checkDefaultValue = (
   });
 
   if (placeholder && hasEmptyValue) return '';
-  if (placeholder && !hasEmptyValue) {
+  if ((placeholder && !hasEmptyValue) || options.length === 0) {
     options.push({
       label: '',
       value: '',
@@ -29,7 +29,7 @@ const checkDefaultValue = (
     return '';
   }
   if (!placeholder && defaultValue) return defaultValue;
-  return options[0].value;
+  return options?.[0]?.value;
 };
 
 export const FormFieldSelect = <
