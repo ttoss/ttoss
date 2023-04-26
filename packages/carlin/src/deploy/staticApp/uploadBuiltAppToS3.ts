@@ -1,12 +1,13 @@
 import {
-  defaultBuildFolders,
-  findDefaultBuildFolder,
-} from './findDefaultBuildFolder';
-import {
+  copyRoot404To404Index,
   emptyS3Directory,
   getAllFilesInsideADirectory,
   uploadDirectoryToS3,
 } from '../s3';
+import {
+  defaultBuildFolders,
+  findDefaultBuildFolder,
+} from './findDefaultBuildFolder';
 
 export const uploadBuiltAppToS3 = async ({
   buildFolder: directory,
@@ -34,6 +35,7 @@ export const uploadBuiltAppToS3 = async ({
   if (defaultDirectory) {
     await emptyS3Directory({ bucket });
     await uploadDirectoryToS3({ bucket, directory: defaultDirectory });
+    await copyRoot404To404Index({ bucket });
     return;
   }
 
