@@ -92,3 +92,17 @@ export const Provider = (props) => {
   );
 };
 ```
+
+## Misc
+
+### keyframes
+
+```tsx
+import { Box, keyframes } from '@ttoss/ui';
+
+const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+
+export const Component = (props) => {
+  return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
+};
+```
