@@ -5,6 +5,8 @@ test('should export methods', () => {
   expect(uiModule.useResponsiveValue).toBeDefined();
   expect(uiModule.useTheme).toBeDefined();
   expect(uiModule.BaseStyles).toBeDefined();
+  expect(uiModule.Global).toBeDefined();
+  expect(uiModule.keyframes).toBeDefined();
 
   expect(uiModule.Badge).toBeDefined();
   expect(uiModule.Box).toBeDefined();

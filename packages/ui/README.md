@@ -5,7 +5,7 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/ui
+pnpm add @ttoss/ui
 ```
 
 ## Quick start
@@ -62,10 +62,47 @@ export const Component = () => {
 
 :::note Note
 
-You don't need to use the custom /\*\* @jsxImportSource theme-ui \*/ pragma if you use the `sx` prop directly on the components of the library.
+You don't need to use the custom `/** @jsxImportSource theme-ui */` pragma if you use the `sx` prop directly on the components of the library.
 
 :::
 
 ## Components
 
 You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/ui).
+
+### Global
+
+Wrapper around the Emotion Global component, made Theme UI theme-aware.
+
+```tsx
+import { Global } from '@ttoss/ui';
+
+export const Provider = (props) => {
+  return (
+    <Global
+      styles={{
+        button: {
+          m: 0,
+          bg: 'primary',
+          color: 'background',
+          border: 0,
+        },
+      }}
+    />
+  );
+};
+```
+
+## Misc
+
+### keyframes
+
+```tsx
+import { Box, keyframes } from '@ttoss/ui';
+
+const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+
+export const Component = (props) => {
+  return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
+};
+```
