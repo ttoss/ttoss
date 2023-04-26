@@ -7,6 +7,31 @@ type FormRadioOption = {
   label: string;
 };
 
+type SelectSwitchProps =
+  | (SelectProps & { placeholder?: never })
+  | (SelectProps & { defaultValue?: never });
+
+const checkDefaultValue = (
+  options: Array<FormRadioOption>,
+  defaultValue?: string | number | readonly string[],
+  placeholder?: string
+) => {
+  const hasEmptyValue = options.some((opt) => {
+    return opt.value === '' || opt.value === 0;
+  });
+
+  if (placeholder && hasEmptyValue) return '';
+  if (placeholder && !hasEmptyValue) {
+    options.push({
+      label: '',
+      value: '',
+    });
+    return '';
+  }
+  if (!placeholder && defaultValue) return defaultValue;
+  return options[0].value;
+};
+
 export const FormFieldSelect = <
   TFieldValues extends FieldValues = FieldValues
 >({
@@ -19,11 +44,19 @@ export const FormFieldSelect = <
   name: FieldPath<TFieldValues>;
   options: FormRadioOption[];
 } & SelectSwitchProps) => {
+  const { defaultValue, placeholder } = selectProps;
+
+  const checkedDefaultValue = checkDefaultValue(
+    options,
+    defaultValue,
+    placeholder
+  );
+
   const {
     field: { onChange, onBlur, value, ref },
   } = useController<any>({
     name,
-    defaultValue: defaultValue ? defaultValue : '',
+    defaultValue: checkedDefaultValue,
   });
 
   const id = `form-field-select-${name}`;
