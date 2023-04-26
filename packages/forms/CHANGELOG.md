@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.12](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.15.11...@ttoss/forms@0.15.12) (2023-04-26)
+
+### Bug Fixes
+
+- add support for defaultValue on FormFieldSelect ([#293](https://github.com/ttoss/ttoss/issues/293)) ([e9de142](https://github.com/ttoss/ttoss/commit/e9de142e016517f359fc8587eebfcbf2458fe7c1))
+
 ## [0.15.11](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.15.10...@ttoss/forms@0.15.11) (2023-04-26)
 
 **Note:** Version bump only for package @ttoss/forms
