@@ -1,8 +1,7 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldInput, FormGroup } from '@ttoss/forms/src';
+import { Form, FormFieldInput, FormGroup, useForm } from '@ttoss/forms/src';
 import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { useForm } from 'react-hook-form';
 
 export default {
   title: 'Forms/FormGroup',

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.9...@ttoss/react-i18n@1.20.0) (2023-04-25)
+
+### Features
+
+- export IntlShape on i18n package ([#296](https://github.com/ttoss/ttoss/issues/296)) ([4c5e96b](https://github.com/ttoss/ttoss/commit/4c5e96b5945b4e692213c45d0dd0a22d6f0c6458))
+
 ## [1.19.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.19.8...@ttoss/react-i18n@1.19.9) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/react-i18n

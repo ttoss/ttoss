@@ -40,6 +40,7 @@ const config = {
       'i18n-cli',
       'react-i18n',
       'ui',
+      'logger',
     ].map((package) => {
       return [
         'docusaurus-plugin-typedoc',

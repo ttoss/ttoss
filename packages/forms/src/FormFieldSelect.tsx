@@ -1,6 +1,6 @@
-import { Box, Label, Select, type SelectProps } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
+import { Flex, Label, Select, type SelectProps } from '@ttoss/ui';
 
 type FormRadioOption = {
   value: string | number;
@@ -38,6 +38,7 @@ export const FormFieldSelect = <
   label,
   name,
   options,
+  sx,
   ...selectProps
 }: {
   label?: string;
@@ -62,7 +63,7 @@ export const FormFieldSelect = <
   const id = `form-field-select-${name}`;
 
   return (
-    <Box>
+    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
       {label && <Label htmlFor={id}>{label}</Label>}
       <Select
         ref={ref}
@@ -82,6 +83,6 @@ export const FormFieldSelect = <
         })}
       </Select>
       <ErrorMessage name={name} />
-    </Box>
+    </Flex>
   );
 };

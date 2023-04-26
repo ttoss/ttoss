@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Box, Label } from '@ttoss/ui';
 import { ErrorMessage } from './ErrorMessage';
 import {
   FieldPath,
@@ -8,6 +7,7 @@ import {
   UseControllerReturn,
   useController,
 } from 'react-hook-form';
+import { Flex, type FlexProps, Label } from '@ttoss/ui';
 
 export const FormField = <
   TFieldValues extends FieldValues = FieldValues,
@@ -17,12 +17,14 @@ export const FormField = <
   id: idProp,
   name,
   defaultValue,
+  sx,
   render,
 }: {
   label?: string;
   id?: string;
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
+  sx?: FlexProps['sx'];
   render: (
     props: UseControllerReturn<TFieldValues, TName>
   ) => React.ReactElement;
@@ -41,10 +43,10 @@ export const FormField = <
   }, [controllerReturn, id, render]);
 
   return (
-    <Box>
+    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
       {label && <Label htmlFor={id}>{label}</Label>}
       {memoizedRender}
       <ErrorMessage name={name} />
-    </Box>
+    </Flex>
   );
 };

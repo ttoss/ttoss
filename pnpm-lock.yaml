@@ -769,6 +769,15 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
 
+  packages/logger:
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+
   packages/monorepo:
     dependencies:
       js-yaml:
