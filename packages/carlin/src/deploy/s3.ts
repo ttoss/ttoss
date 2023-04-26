@@ -87,6 +87,31 @@ export const getAllFilesInsideADirectory = async ({
   return allFiles;
 };
 
+/**
+ * Docusaurus 2 has a 404.html file in the root of the build folder. This
+ * function copies it to 404/index.html so that it can be served by S3 and
+ * CloudFront.
+ */
+export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
+  // check if root 404 exists and if it does, copy it to 404/index.html
+  const root404Exists = await s3
+    .headObject({
+      Bucket: bucket,
+      Key: '404.html',
+    })
+    .promise();
+
+  if (root404Exists) {
+    await s3
+      .copyObject({
+        Bucket: bucket,
+        CopySource: `${bucket}/404.html`,
+        Key: '404/index.html',
+      })
+      .promise();
+  }
+};
+
 export const uploadDirectoryToS3 = async ({
   bucket,
   bucketKey = '',
