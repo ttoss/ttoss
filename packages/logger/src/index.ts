@@ -1,13 +1,7 @@
 const { log, warn, error } = console;
 
 export const Logger = (isDev?: boolean) => {
-  let devEnv = true;
-
-  if (isDev === undefined) {
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    const node_env = process?.env?.NODE_ENV;
-    if (node_env === 'production') devEnv = false;
-  } else devEnv = isDev;
+  const devEnv = isDev !== undefined ? isDev : true;
 
   return (prefix: string) => {
     return {
