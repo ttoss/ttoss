@@ -210,6 +210,7 @@ test('When fetching, should display values correctly', async () => {
 
   const RenderForm = () => {
     const formMethods = useForm();
+    const { resetField } = formMethods;
     const [formOptions, setFormOptions] = useState<
       {
         value: string;
@@ -219,6 +220,8 @@ test('When fetching, should display values correctly', async () => {
 
     useEffect(() => {
       setFormOptions(RADIO_OPTIONS);
+      // fetch are side effects, so, if the options depends on fetch and have a default value, the field should be reseted in the effect
+      resetField('car', { defaultValue: 'Ferrari' });
     }, []);
 
     return (
