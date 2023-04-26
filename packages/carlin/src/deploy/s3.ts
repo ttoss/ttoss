@@ -93,22 +93,32 @@ export const getAllFilesInsideADirectory = async ({
  * CloudFront.
  */
 export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
-  // check if root 404 exists and if it does, copy it to 404/index.html
-  const root404Exists = await s3
-    .headObject({
-      Bucket: bucket,
-      Key: '404.html',
-    })
-    .promise();
-
-  if (root404Exists) {
-    await s3
-      .copyObject({
+  try {
+    const root404Exists = await s3
+      .headObject({
         Bucket: bucket,
-        CopySource: `${bucket}/404.html`,
-        Key: '404/index.html',
+        Key: '404.html',
       })
-      .promise();
+      .promise()
+      .catch(() => {
+        /**
+         * If the file does not exist, return false.
+         */
+        return false;
+      });
+
+    if (root404Exists) {
+      await s3
+        .copyObject({
+          Bucket: bucket,
+          CopySource: `${bucket}/404.html`,
+          Key: '404/index.html',
+        })
+        .promise();
+    }
+  } catch (err) {
+    log.error(logPrefix, `Cannot copy 404.html to 404/index.html`);
+    throw err;
   }
 };
 
