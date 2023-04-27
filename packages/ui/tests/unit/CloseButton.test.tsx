@@ -13,6 +13,11 @@ test('should render CloseButton with label', () => {
   expect(screen.getByText(LABEL)).toBeInTheDocument();
 });
 
+test('should not render CloseButton with no label and onlyText property as true', () => {
+  render(<CloseButton onlyText />);
+  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+});
+
 test('should call onClick function', async () => {
   const LABEL = 'Close Modal';
   const user = userEvent.setup({ delay: null });
