@@ -2,6 +2,7 @@ import { Theme } from 'theme-ui';
 import { fontSizes } from '../../tokens/fontSizes';
 import { fontWeights } from '../../tokens/fontWeights';
 import { letterSpacings } from '../../tokens/letterSpacings';
+import { lineHeights } from '../../tokens/lineHeights';
 import { space } from '../../tokens/space';
 
 const coreFonts = {
@@ -69,6 +70,7 @@ export const BruttalTheme: Theme = {
   fontWeights,
   letterSpacings,
   space,
+  lineHeights,
   colors: {
     background: coreColors.white,
     text: coreColors.black,
@@ -106,13 +108,15 @@ export const BruttalTheme: Theme = {
     h6: coreFonts.contrast,
     body: coreFonts.main,
     highlight: coreFonts.main,
-    caption: coreFonts.monospace,
+    caption: coreFonts.main,
   },
   borders: {
-    default: coreBorders.medium,
+    default: coreBorders.thin,
+    secondary: coreBorders.medium,
     muted: coreBorders.thin,
     interaction: coreBorders.medium,
     danger: coreBorders.medium,
+    highlight: coreBorders.medium,
   },
   radii: {
     informative: coreRadii.xs,
@@ -150,6 +154,7 @@ export const BruttalTheme: Theme = {
       bg: 'positive',
       fontFamily: 'caption',
       fontWeight: 'normal',
+      lineHeight: 'base',
       fontSize: 'xs',
       paddingX: 'xs',
       paddingY: '2xs',
@@ -160,6 +165,7 @@ export const BruttalTheme: Theme = {
       bg: 'danger',
       fontFamily: 'caption',
       fontWeight: 'normal',
+      lineHeight: 'base',
       fontSize: 'xs',
       paddingX: 'xs',
       paddingY: '2xs',
@@ -171,6 +177,7 @@ export const BruttalTheme: Theme = {
       fontFamily: 'caption',
       fontSize: 'xs',
       fontWeight: 'normal',
+      lineHeight: 'base',
       paddingX: 'xs',
       paddingY: '2xs',
       borderRadius: 'informative',
@@ -182,6 +189,7 @@ export const BruttalTheme: Theme = {
       bg: 'notice',
       fontFamily: 'caption',
       fontWeight: 'normal',
+      lineHeight: 'base',
       fontSize: 'xs',
       paddingX: 'xs',
       paddingY: '2xs',
@@ -195,14 +203,13 @@ export const BruttalTheme: Theme = {
       borderRadius: 'action',
       borderColor: 'accent',
       ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
+        filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'muted',
         borderColor: 'muted',
+        color: 'onMuted',
       },
     },
     primary: {
@@ -211,9 +218,7 @@ export const BruttalTheme: Theme = {
       borderRadius: 'action',
       borderColor: 'primary',
       ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
+        filter: 'brightness(90%)',
       },
       ':active': {
         backgroundColor: 'primary',
@@ -224,58 +229,62 @@ export const BruttalTheme: Theme = {
         cursor: 'default',
         backgroundColor: 'muted',
         borderColor: 'muted',
+        color: 'onMuted',
       },
     },
     secondary: {
       backgroundColor: 'secondary',
       color: 'onSecondary',
       borderRadius: 'action',
-      borderColor: 'secondary',
+      border: 'secondary',
+      borderColor: 'onSecondary',
       ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
+        filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'muted',
         borderColor: 'muted',
+        color: 'onMuted',
       },
     },
-    neutral: {
-      backgroundColor: 'muted',
-      color: 'onMuted',
-      borderRadius: 'action',
-      borderColor: 'muted',
-      ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
-      },
-      ':disabled': {
-        cursor: 'default',
-        backgroundColor: 'muted',
-        borderColor: 'muted',
-      },
-    },
-    danger: {
+    destructive: {
       color: 'onDanger',
       backgroundColor: 'danger',
+      ':hover:not(:active,[disabled])': {
+        filter: 'brightness(90%)',
+      },
+      ':disabled': {
+        cursor: 'default',
+        backgroundColor: 'muted',
+        borderColor: 'muted',
+        color: 'onMuted',
+      },
     },
     closeButton: {
-      backgroundColor: 'transparent',
-      color: 'text',
+      backgroundColor: 'background',
+      fontFamily: 'caption',
+      color: 'primary',
       fontSize: 'xs',
       display: 'inline-flex',
       alignItems: 'center',
       cursor: 'pointer',
+      gap: 'sm',
+      padding: 'sm',
+      border: 'default',
+      borderColor: 'primary',
+      width: 'fit-content',
       ':disabled': {
-        color: 'muted',
+        border: 'muted',
+        backgroundColor: 'muted',
+        color: 'onMuted',
         cursor: 'not-allowed',
       },
       ':is(:focus-within, :hover):not(:disabled)': {
-        color: 'accent',
-        outlineColor: 'transparent',
+        color: 'onHighlight',
+        backgroundColor: 'highlight',
+        border: 'highlight',
+        borderColor: 'highlight',
       },
     },
   },
@@ -294,6 +303,7 @@ export const BruttalTheme: Theme = {
     label: {
       color: 'text',
       fontFamily: 'body',
+      alignItems: 'center',
       '&:is([aria-disabled="true"])': {
         color: 'onMuted',
       },
@@ -321,8 +331,14 @@ export const BruttalTheme: Theme = {
       'input[aria-invalid="true"] ~ &': {
         color: 'danger',
       },
+      'input:focus ~ &': {
+        bg: 'transparent',
+      },
     },
     checkbox: {
+      'input:focus ~ &': {
+        bg: 'transparent',
+      },
       'input:not(:checked) ~ &': {
         color: 'primary',
       },
@@ -353,8 +369,8 @@ export const BruttalTheme: Theme = {
       },
       ':disabled': {
         backgroundColor: 'muted',
-        borderColor: 'onMuted',
         border: 'muted',
+        borderColor: 'onMuted',
       },
       '&.error': {
         borderColor: 'danger',
@@ -372,8 +388,8 @@ export const BruttalTheme: Theme = {
       paddingY: 'lg',
       paddingX: 'xl',
       ':disabled': {
-        borderColor: 'onMuted',
         border: 'muted',
+        borderColor: 'onMuted',
         color: 'muted',
       },
       ':disabled ~ span > iconify-icon': {
