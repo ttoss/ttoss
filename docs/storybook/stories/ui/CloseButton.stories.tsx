@@ -32,9 +32,9 @@ export const Disabled: Story = {
   },
 };
 
-export const Focus: Story = {
+export const OnlyText: Story = {
   args: {
     ...Default.args,
-    autoFocus: true,
+    onlyText: true,
   },
 };
