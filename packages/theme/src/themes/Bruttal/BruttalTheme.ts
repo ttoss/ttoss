@@ -218,9 +218,7 @@ export const BruttalTheme: Theme = {
       borderRadius: 'action',
       borderColor: 'primary',
       ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
+        filter: 'brightness(90%)',
       },
       ':active': {
         backgroundColor: 'primary',
@@ -241,9 +239,7 @@ export const BruttalTheme: Theme = {
       border: 'secondary',
       borderColor: 'onSecondary',
       ':hover:not(:active,[disabled])': {
-        backgroundColor: 'highlight',
-        color: 'onHighlight',
-        borderColor: 'highlight',
+        filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
@@ -255,6 +251,9 @@ export const BruttalTheme: Theme = {
     destructive: {
       color: 'onDanger',
       backgroundColor: 'danger',
+      ':hover:not(:active,[disabled])': {
+        filter: 'brightness(90%)',
+      },
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'muted',
