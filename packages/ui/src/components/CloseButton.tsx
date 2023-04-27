@@ -4,24 +4,28 @@ import React from 'react';
 
 export type CloseButtonProps = ButtonProps & {
   label?: string;
+  onlyText?: boolean;
 };
 
 export const CloseButton = React.forwardRef<
   HTMLButtonElement,
   CloseButtonProps
->(({ label, sx, ...props }, ref) => {
+>(({ label, onlyText, ...props }, ref) => {
+  if (onlyText && !label) {
+    return null;
+  }
+
   return (
     <Button
       variant="buttons.closeButton"
       type="button"
       aria-label={label}
-      sx={{ gap: 'sm', padding: 0, ...sx }}
       {...props}
       ref={ref}
     >
       {label}
 
-      <Icon icon="close" />
+      {!onlyText && <Icon icon="close" />}
     </Button>
   );
 });
