@@ -50,12 +50,7 @@ Secondary.args = {
   variant: 'secondary',
 };
 
-export const Neutral = Template.bind({});
-Neutral.args = {
-  variant: 'neutral',
-};
-
-export const Danger = Template.bind({});
-Danger.args = {
-  variant: 'danger',
+export const Destructive = Template.bind({});
+Destructive.args = {
+  variant: 'destructive',
 };
