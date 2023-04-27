@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.27.1](https://github.com/ttoss/carlin/compare/carlin@1.27.0...carlin@1.27.1) (2023-04-26)
+
+### Bug Fixes
+
+- cloudfront access denied ([#306](https://github.com/ttoss/carlin/issues/306)) ([8925bfc](https://github.com/ttoss/carlin/commit/8925bfc3145ee77534672bc7aac98c93d45916e2))
+
 # [1.27.0](https://github.com/ttoss/carlin/compare/carlin@1.26.9...carlin@1.27.0) (2023-04-25)
 
 ### Features

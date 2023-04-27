@@ -18,6 +18,26 @@ import { faker } from '@ttoss/test-utils/faker';
 
 const region = faker.random.word();
 
+test.each([
+  {
+    spa: true,
+  },
+  {
+    spa: false,
+  },
+])('should set DefaultRootObject as index.html for spa=$spa', ({ spa }) => {
+  const template = getStaticAppTemplate({
+    region,
+    cloudfront: true,
+    spa,
+  });
+
+  expect(
+    template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig.DefaultRootObject
+  ).toEqual('index.html');
+});
+
 /**
  * https://github.com/ttoss/ttoss/issues/295
  */
@@ -88,32 +108,6 @@ test.each([
     template.Resources[STATIC_APP_BUCKET_LOGICAL_ID].Properties
       .PublicAccessBlockConfiguration.BlockPublicPolicy
   ).toEqual(false);
-});
-
-test('should define default root object for spa', () => {
-  const template = getStaticAppTemplate({
-    region,
-    cloudfront: true,
-    spa: true,
-  });
-
-  expect(
-    template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
-      .DistributionConfig.DefaultRootObject
-  ).toEqual('index.html');
-});
-
-test('should define default root object as undefined for not spa', () => {
-  const template = getStaticAppTemplate({
-    region,
-    cloudfront: true,
-    spa: false,
-  });
-
-  expect(
-    template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
-      .DistributionConfig.DefaultRootObject
-  ).toEqual(undefined);
 });
 
 test('should not add CloudFront distribution', () => {
