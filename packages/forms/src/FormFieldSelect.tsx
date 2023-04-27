@@ -22,14 +22,15 @@ const checkDefaultValue = (
 
   if (placeholder && hasEmptyValue) return '';
   if (placeholder && !hasEmptyValue) {
-    options.push({
-      label: '',
+    options.unshift({
+      label: placeholder,
       value: '',
     });
     return '';
   }
   if (!placeholder && defaultValue) return defaultValue;
-  return options[0].value;
+  if (options.length === 0) return '';
+  return options?.[0]?.value;
 };
 
 export const FormFieldSelect = <

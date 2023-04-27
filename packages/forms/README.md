@@ -117,4 +117,35 @@ return (
 );
 ```
 
+When your Select options depends on fetched values, the manual defaultValue setting is required.
+
+```tsx
+const RenderForm = () => {
+  const formMethods = useForm();
+  const { resetField } = formMethods;
+  const [formOptions, setFormOptions] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    // some fetch operation here
+
+    setFormOptions(RADIO_OPTIONS);
+
+    // fetch are side effects, so, if the options depends on fetch and have a default value, the field should be reseted in the effect
+    resetField('car', { defaultValue: 'Ferrari' });
+  }, []);
+
+  return (
+    <Form {...formMethods} onSubmit={onSubmit}>
+      <FormFieldSelect name="car" label="Cars" options={formOptions} />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+```
+
 > NOTE: You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`

@@ -16,6 +16,8 @@ export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
 
 export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 
+export const ERROR_DOCUMENT = '404/index.html';
+
 /**
  * Name: Managed-CachingDisabled
  * ID: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
@@ -64,7 +66,7 @@ const getBucketStaticWebsiteTemplate = ({
           },
           WebsiteConfiguration: {
             IndexDocument: `index.html`,
-            ErrorDocument: spa ? 'index.html' : '404/index.html',
+            ErrorDocument: spa ? 'index.html' : ERROR_DOCUMENT,
           },
         },
       },
@@ -205,7 +207,7 @@ const getCloudFrontTemplate = ({
               ErrorCachingMinTTL: 0,
               ErrorCode: errorCode,
               ResponseCode: 404,
-              ResponsePagePath: '/404',
+              ResponsePagePath: '/' + ERROR_DOCUMENT,
             };
           }),
           DefaultCacheBehavior: {
@@ -226,7 +228,7 @@ const getCloudFrontTemplate = ({
             TargetOriginId: { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
             ViewerProtocolPolicy: 'redirect-to-https',
           },
-          DefaultRootObject: spa ? 'index.html' : undefined,
+          DefaultRootObject: 'index.html',
           Enabled: true,
           HttpVersion: 'http2',
           Origins: [
