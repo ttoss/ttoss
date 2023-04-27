@@ -331,10 +331,13 @@ export const BruttalTheme: Theme = {
       'input[aria-invalid="true"] ~ &': {
         color: 'danger',
       },
+      'input:focus ~ &': {
+        bg: 'transparent',
+      },
     },
     checkbox: {
-      ':focus-within': {
-        outlineColor: 'green',
+      'input:focus ~ &': {
+        bg: 'transparent',
       },
       'input:not(:checked) ~ &': {
         color: 'primary',
