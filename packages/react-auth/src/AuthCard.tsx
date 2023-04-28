@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Card, Flex, Link, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Link, Text } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
 
 export type LogoContextProps = {
@@ -36,19 +36,16 @@ export const AuthCard = ({
   const { isLoading } = useNotifications();
 
   return (
-    <Card sx={{ maxWidth: '564px' }}>
-      <Flex sx={{ flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ maxWidth: '564px' }}>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
         {logo && (
           <Flex sx={{ width: '100%', justifyContent: 'center' }}>{logo}</Flex>
         )}
-        <Text
-          variant="title"
-          sx={{ alignSelf: 'center', marginY: 4, fontSize: 5 }}
-        >
+        <Text sx={{ alignSelf: 'center', marginY: 'md', fontSize: 'xl' }}>
           {title}
         </Text>
         {children}
-        <Flex sx={{ justifyContent: 'space-between', marginTop: 3 }}>
+        <Flex sx={{ justifyContent: 'space-between', marginTop: 'md' }}>
           <Button
             type="submit"
             aria-label="submit-login"
@@ -64,8 +61,8 @@ export const AuthCard = ({
           sx={{
             justifyContent: 'space-between',
             flexDirection: 'column',
-            gap: 3,
-            marginTop: 4,
+            gap: 'sm',
+            marginTop: 'md',
             color: 'text',
           }}
         >
@@ -80,6 +77,6 @@ export const AuthCard = ({
           })}
         </Flex>
       </Flex>
-    </Card>
+    </Box>
   );
 };

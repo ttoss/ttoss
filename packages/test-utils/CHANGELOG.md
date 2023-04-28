@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.22.0 (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
 ## [1.21.5](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.21.4...@ttoss/test-utils@1.21.5) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/test-utils

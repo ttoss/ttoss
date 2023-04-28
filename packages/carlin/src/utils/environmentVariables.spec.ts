@@ -27,7 +27,9 @@ test.each(
       'REGION',
       'STACK_NAME',
     ] as EnvironmentVariables[]
-  ).map((env) => [env])
+  ).map((env) => {
+    return [env];
+  })
 )('%s', (key) => {
   const value = faker.random.word();
 
