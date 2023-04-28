@@ -304,6 +304,7 @@ export const BruttalTheme: Theme = {
       color: 'text',
       fontFamily: 'body',
       alignItems: 'center',
+      fontSize: 'base',
       '&:is([aria-disabled="true"])': {
         color: 'onMuted',
       },
@@ -334,6 +335,10 @@ export const BruttalTheme: Theme = {
       'input:focus ~ &': {
         bg: 'transparent',
       },
+      '&:is(svg, svg + svg)': {
+        width: fontSizes.base,
+        height: fontSizes.base,
+      },
     },
     checkbox: {
       'input:focus ~ &': {
@@ -350,6 +355,10 @@ export const BruttalTheme: Theme = {
       },
       'input[aria-invalid="true"] ~ &': {
         color: 'danger',
+      },
+      '&:is(svg, svg + svg)': {
+        width: fontSizes.base,
+        height: fontSizes.base,
       },
     },
     input: {
