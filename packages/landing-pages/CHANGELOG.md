@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.6.44...@ttoss/landing-pages@0.7.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
 ## [0.6.44](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.6.43...@ttoss/landing-pages@0.6.44) (2023-04-27)
 
 **Note:** Version bump only for package @ttoss/landing-pages
