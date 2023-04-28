@@ -1,7 +1,4 @@
 import { CloudFormation } from 'aws-sdk';
-
-import { NAME } from '../config';
-
 import {
   CloudFormationTemplate,
   getCurrentBranch,
@@ -10,6 +7,7 @@ import {
   getPackageVersion,
   getProjectName,
 } from '../utils';
+import { NAME } from '../config';
 
 // const logPrefix = 'addDefaultsCloudFormation';
 
@@ -22,12 +20,10 @@ export type Args = {
   template: CloudFormationTemplate;
 };
 
-type TemplateModifier = (
-  template: CloudFormationTemplate,
-) => Promise<CloudFormationTemplate>;
+type TemplateModifier = (template: CloudFormationTemplate) => Promise<void>;
 
 const addDefaultsParametersAndTagsToParams = async (
-  params: CloudFormationParams,
+  params: CloudFormationParams
 ): Promise<CloudFormationParams> => {
   const branchName = await getCurrentBranch();
   const environment = await getEnvironment();
@@ -51,7 +47,9 @@ const addDefaultsParametersAndTagsToParams = async (
       { Key: 'Package', Value: packageName },
       { Key: 'Project', Value: projectName },
       { Key: 'Version', Value: packageVersion },
-    ].filter(({ Value }) => !!Value),
+    ].filter(({ Value }) => {
+      return !!Value;
+    }),
   };
 };
 
@@ -69,17 +67,10 @@ const addDefaultParametersToTemplate: TemplateModifier = async (template) => {
     newParameters.Environment = { Default: environment, Type: 'String' };
   }
 
-  const newTemplate = {
-    ...template,
-    Parameters: { ...newParameters, ...template.Parameters },
-  };
-
-  return newTemplate;
+  template.Parameters = { ...newParameters, ...template.Parameters };
 };
 
-const addLogGroupToResources = (
-  template: CloudFormationTemplate,
-): CloudFormationTemplate => {
+const addLogGroupToResources = (template: CloudFormationTemplate) => {
   const { Resources } = template;
 
   const resourcesEntries = Object.entries(Resources);
@@ -87,7 +78,7 @@ const addLogGroupToResources = (
   resourcesEntries.forEach(([key, resource]) => {
     if (
       ['AWS::Lambda::Function', 'AWS::Serverless::Function'].includes(
-        resource.Type,
+        resource.Type
       )
     ) {
       /**
@@ -96,7 +87,7 @@ const addLogGroupToResources = (
        */
       const logGroup = resourcesEntries.find(([, resource2]) => {
         const logGroupNameStr = JSON.stringify(
-          resource2.Properties?.LogGroupName?.['Fn::Join'] || '',
+          resource2.Properties?.LogGroupName?.['Fn::Join'] || ''
         );
         return logGroupNameStr.includes(key);
       });
@@ -112,8 +103,6 @@ const addLogGroupToResources = (
       }
     }
   });
-
-  return template;
 };
 
 const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
@@ -152,16 +141,34 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
       Properties.Environment.Variables.ENVIRONMENT = environment;
     }
   });
+};
 
-  return template;
+export const CRITICAL_RESOURCES_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::DynamoDB::Table',
+];
+
+/**
+ * Generally, critical resources are those that contain user data, such as
+ * Amazon Cognito user pools or DynamoDB tables. If you delete these resources,
+ * you might lose user data that cannot be recovered.
+ */
+const addRetainToCriticalResources: TemplateModifier = async (template) => {
+  const environment = getEnvironment();
+
+  Object.entries(template.Resources).forEach(([key, resource]) => {
+    if (CRITICAL_RESOURCES_TYPES.includes(resource.Type)) {
+      if (!resource.DeletionPolicy && environment) {
+        resource.DeletionPolicy = 'Retain';
+      }
+    }
+  });
 };
 
 const addAppSyncApiOutputs: TemplateModifier = async (template) => {
-  const newTemplate = { ...template };
-
   Object.entries(template.Resources).forEach(([key, resource]) => {
     if (resource.Type === 'AWS::AppSync::GraphQLApi') {
-      newTemplate.Outputs = {
+      template.Outputs = {
         [key]: {
           Description: `Automatically added by ${NAME}`,
           Value: { 'Fn::GetAtt': [key, 'GraphQLUrl'] },
@@ -171,24 +178,23 @@ const addAppSyncApiOutputs: TemplateModifier = async (template) => {
             },
           },
         },
-        ...newTemplate.Outputs,
+        ...template.Outputs,
       };
     }
   });
-
-  return newTemplate;
 };
 
 export const addDefaults = async ({
   params,
   template,
 }: Args): Promise<Args> => {
-  const newTemplate = await [
-    addDefaultParametersToTemplate,
-    addLogGroupToResources,
-    addEnvironmentsToLambdaResources,
-    addAppSyncApiOutputs,
-  ].reduce(async (acc, addFn) => addFn(await acc), Promise.resolve(template));
+  const newTemplate = JSON.parse(JSON.stringify(template));
+
+  await addDefaultParametersToTemplate(newTemplate);
+  await addLogGroupToResources(newTemplate);
+  await addEnvironmentsToLambdaResources(newTemplate);
+  await addAppSyncApiOutputs(newTemplate);
+  await addRetainToCriticalResources(newTemplate);
 
   const response = {
     params: await addDefaultsParametersAndTagsToParams(params),
