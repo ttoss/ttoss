@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.0...@terezinha-farm/app@0.3.1) (2023-04-28)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.32...@terezinha-farm/app@0.3.0) (2023-04-28)
 
 ### Features
