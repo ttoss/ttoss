@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.1...@docs/storybook@1.36.2) (2023-05-01)
+
+### Bug Fixes
+
+- forms group layout ([#316](https://github.com/ttoss/ttoss/issues/316)) ([345dcf0](https://github.com/ttoss/ttoss/commit/345dcf00fb6cbf111403bb0a836c8882443d9246))
+
 ## [1.36.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.0...@docs/storybook@1.36.1) (2023-04-28)
 
 **Note:** Version bump only for package @docs/storybook
