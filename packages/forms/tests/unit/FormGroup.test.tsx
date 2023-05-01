@@ -203,3 +203,13 @@ test.each(
     ).toBeInTheDocument();
   }
 );
+
+test('should render group title', () => {
+  render(
+    <FormGroup title="title">
+      <Text>some text</Text>
+    </FormGroup>
+  );
+
+  expect(screen.getByText('title')).toBeInTheDocument();
+});
