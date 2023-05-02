@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.16.2...@ttoss/forms@0.16.3) (2023-05-02)
+
+### Bug Fixes
+
+- form group sx ([#317](https://github.com/ttoss/ttoss/issues/317)) ([ff329be](https://github.com/ttoss/ttoss/commit/ff329beac599fea59ae978698fba154d7a696b39))
+
 ## [0.16.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.16.1...@ttoss/forms@0.16.2) (2023-05-01)
 
 ### Bug Fixes

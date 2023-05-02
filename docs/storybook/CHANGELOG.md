@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.2...@docs/storybook@1.36.3) (2023-05-02)
+
+### Bug Fixes
+
+- form group sx ([#317](https://github.com/ttoss/ttoss/issues/317)) ([ff329be](https://github.com/ttoss/ttoss/commit/ff329beac599fea59ae978698fba154d7a696b39))
+
 ## [1.36.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.1...@docs/storybook@1.36.2) (2023-05-01)
 
 ### Bug Fixes
