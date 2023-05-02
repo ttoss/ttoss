@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Flex, FlexProps, Text } from '@ttoss/ui';
+import { Box, BoxProps, Flex, FlexProps, Text } from '@ttoss/ui';
 
 type FormGroupLevelsManagerContextType = {
   levelsLength: number;
@@ -58,9 +58,14 @@ export const useFormGroup = () => {
 type FormGroupProps = {
   title?: string;
   direction?: 'column' | 'row';
-} & FlexProps;
+} & BoxProps;
 
-const FormGroupWrapper = (props: FormGroupProps) => {
+const FormGroupWrapper = ({
+  title,
+  direction,
+  children,
+  ...boxProps
+}: FormGroupProps) => {
   const { level } = useFormGroup();
 
   const { registerChild } = React.useContext(FormGroupLevelsManagerContext);
@@ -75,22 +80,23 @@ const FormGroupWrapper = (props: FormGroupProps) => {
     }
   }, [level, registerChild]);
 
-  const sx: FlexProps['sx'] = {
-    flexDirection: props.direction || 'column',
+  const childrenContainerSx: FlexProps['sx'] = {
+    flexDirection: direction || 'column',
     gap: 'md',
     width: '100%',
-    ...props.sx,
   };
 
   return (
     <Box
       aria-level={level}
+      {...boxProps}
       sx={{
-        marginBottom: '2xl',
-        marginX: level === 0 ? 'none' : 'md',
+        marginTop: level === 0 ? 'none' : 'lg',
+        marginBottom: 'lg',
+        ...boxProps.sx,
       }}
     >
-      {props.title && (
+      {title && (
         <Box sx={{ marginBottom: 'md' }}>
           <Text
             sx={{
@@ -98,13 +104,11 @@ const FormGroupWrapper = (props: FormGroupProps) => {
               fontWeight: 'bold',
             }}
           >
-            {props.title}
+            {title}
           </Text>
         </Box>
       )}
-      <Flex {...props} sx={sx}>
-        {props.children}
-      </Flex>
+      <Flex sx={childrenContainerSx}>{children}</Flex>
     </Box>
   );
 };

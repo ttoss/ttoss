@@ -9,9 +9,7 @@ export default {
 } as Meta;
 
 export const Simple = () => {
-  const formMethods = useForm({
-    mode: 'all',
-  });
+  const formMethods = useForm();
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
@@ -36,9 +34,7 @@ export const Simple = () => {
 };
 
 export const Nested = () => {
-  const formMethods = useForm({
-    mode: 'all',
-  });
+  const formMethods = useForm();
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
@@ -96,6 +92,37 @@ export const Nested = () => {
             placeholder="input10"
             label="input10"
           />
+        </FormGroup>
+      </FormGroup>
+
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+
+export const FlexGrow = () => {
+  const formMethods = useForm();
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormGroup title="Group 1" direction="row">
+        <FormGroup
+          title="Group 1.1 - 300px"
+          sx={{
+            width: 300,
+          }}
+        >
+          <FormFieldInput name="input1" placeholder="input1" label="input1" />
+          <FormFieldInput name="input2" placeholder="input2" label="input2" />
+        </FormGroup>
+        <FormGroup
+          title="Group 1.2 - flex: 1"
+          sx={{
+            flex: 1,
+          }}
+        >
+          <FormFieldInput name="input3" placeholder="input3" label="input3" />
+          <FormFieldInput name="input4" placeholder="input4" label="input4" />
         </FormGroup>
       </FormGroup>
 
