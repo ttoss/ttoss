@@ -124,6 +124,7 @@ const CORE_ICONS = [
   'check-mark',
   'close',
   'copy',
+  'download',
   'edit',
   'delete',
   'error',
