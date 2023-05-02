@@ -195,6 +195,17 @@ export const BruttalTheme: Theme = {
       paddingY: '2xs',
       borderRadius: 'informative',
     },
+    muted: {
+      color: 'onMuted',
+      bg: 'muted',
+      fontFamily: 'caption',
+      fontWeight: 'normal',
+      lineHeight: 'base',
+      fontSize: 'xs',
+      paddingX: 'xs',
+      paddingY: '2xs',
+      borderRadius: 'xs',
+    },
   },
   buttons: {
     accent: {
