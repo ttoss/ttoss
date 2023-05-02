@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.4.2...@ttoss/react-auth@1.4.3) (2023-05-02)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.4.1...@ttoss/react-auth@1.4.2) (2023-05-01)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.4.0...@ttoss/react-auth@1.4.1) (2023-04-28)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+# [1.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.38...@ttoss/react-auth@1.4.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
+## [1.3.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.37...@ttoss/react-auth@1.3.38) (2023-04-27)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.36...@ttoss/react-auth@1.3.37) (2023-04-27)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.35...@ttoss/react-auth@1.3.36) (2023-04-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.34...@ttoss/react-auth@1.3.35) (2023-04-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.34](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.33...@ttoss/react-auth@1.3.34) (2023-04-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.33](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.32...@ttoss/react-auth@1.3.33) (2023-04-25)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.32](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.31...@ttoss/react-auth@1.3.32) (2023-04-25)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.31](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.30...@ttoss/react-auth@1.3.31) (2023-04-25)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.3.30](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.29...@ttoss/react-auth@1.3.30) (2023-04-24)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.3.29](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.3.28...@ttoss/react-auth@1.3.29) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/react-auth

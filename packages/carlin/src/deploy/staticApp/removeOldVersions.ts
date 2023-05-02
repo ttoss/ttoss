@@ -27,12 +27,16 @@ export const removeOldVersions = async ({ bucket }: { bucket: string }) => {
       .listObjectsV2({ Bucket: bucket, Delimiter: '/' })
       .promise();
 
-    const versions = CommonPrefixes?.map(({ Prefix }) =>
-      Prefix?.replace('/', '')
-    )
-      .filter((version) => semver.valid(version))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .sort((a, b) => (semver.gt(a!, b!) ? -1 : 1));
+    const versions = CommonPrefixes?.map(({ Prefix }) => {
+      return Prefix?.replace('/', '');
+    })
+      .filter((version) => {
+        return semver.valid(version);
+      })
+      .sort((a, b) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return semver.gt(a!, b!) ? -1 : 1;
+      });
 
     /**
      * Keep the 3 most recent versions.
@@ -42,9 +46,9 @@ export const removeOldVersions = async ({ bucket }: { bucket: string }) => {
     versions.shift();
 
     await Promise.all(
-      versions.map((version) =>
-        deleteS3Directory({ bucket, directory: `${version}` })
-      )
+      versions.map((version) => {
+        return deleteS3Directory({ bucket, directory: `${version}` });
+      })
     );
   } catch (error) {
     log.info(

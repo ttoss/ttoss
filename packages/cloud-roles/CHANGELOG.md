@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0 (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
 ## [0.5.16](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.5.15...@ttoss/cloud-roles@0.5.16) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

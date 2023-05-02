@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.10.14...@ttoss/appsync-api@0.11.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
+## [0.10.14](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.10.13...@ttoss/appsync-api@0.10.14) (2023-04-26)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.10.13](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.10.12...@ttoss/appsync-api@0.10.13) (2023-04-25)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
 ## [0.10.12](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.10.11...@ttoss/appsync-api@0.10.12) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/appsync-api

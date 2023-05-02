@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.35.0",
+  "version": "1.36.3",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
@@ -25,19 +25,19 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
-    "@storybook/addon-actions": "^7.0.4",
-    "@storybook/addon-essentials": "^7.0.4",
-    "@storybook/addon-interactions": "^7.0.4",
-    "@storybook/addon-links": "^7.0.4",
-    "@storybook/addon-mdx-gfm": "^7.0.4",
-    "@storybook/react": "^7.0.4",
-    "@storybook/react-webpack5": "^7.0.4",
+    "@storybook/addon-actions": "^7.0.7",
+    "@storybook/addon-essentials": "^7.0.7",
+    "@storybook/addon-interactions": "^7.0.7",
+    "@storybook/addon-links": "^7.0.7",
+    "@storybook/addon-mdx-gfm": "^7.0.7",
+    "@storybook/react": "^7.0.7",
+    "@storybook/react-webpack5": "^7.0.7",
     "@storybook/testing-library": "^0.1.0",
     "babel-loader": "^9.1.2",
     "carlin": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "storybook": "^7.0.4",
+    "storybook": "^7.0.7",
     "storybook-addon-locale": "^0.3.6"
   }
 }

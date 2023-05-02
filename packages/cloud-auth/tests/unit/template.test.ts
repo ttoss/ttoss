@@ -63,9 +63,13 @@ describe('user pool', () => {
     }
   );
 
-  test('should retain user pool', () => {
+  /**
+   * It should be undefined because carlin deploy will handle its value.
+   * See https://github.com/ttoss/ttoss/pull/312
+   */
+  test('retain user pool should be undefined', () => {
     const template = createAuthTemplate();
-    expect(template.Resources.CognitoUserPool.DeletionPolicy).toEqual('Retain');
+    expect(template.Resources.CognitoUserPool.DeletionPolicy).toBeUndefined();
   });
 });
 

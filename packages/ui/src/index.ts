@@ -1,5 +1,6 @@
-export { BaseStyles, type Theme } from 'theme-ui';
+export { BaseStyles, type Theme, Global, type SxProp } from 'theme-ui';
 export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
+export { keyframes, type Keyframes } from '@emotion/react';
 
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 

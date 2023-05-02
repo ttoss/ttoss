@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.35.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.35.0...@ttoss/ui@1.35.1) (2023-04-28)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# [1.35.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.34.2...@ttoss/ui@1.35.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
+## [1.34.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.34.1...@ttoss/ui@1.34.2) (2023-04-27)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [1.34.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.34.0...@ttoss/ui@1.34.1) (2023-04-27)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# [1.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.33.0...@ttoss/ui@1.34.0) (2023-04-26)
+
+### Features
+
+- export keyframes from ttoss ui ([#304](https://github.com/ttoss/ttoss/issues/304)) ([d06001d](https://github.com/ttoss/ttoss/commit/d06001d0c4380c83ffe275684efb7d54c348cc5a))
+
+# [1.33.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.8...@ttoss/ui@1.33.0) (2023-04-25)
+
+### Features
+
+- add Global to @ttoss/ui ([#303](https://github.com/ttoss/ttoss/issues/303)) ([b323f29](https://github.com/ttoss/ttoss/commit/b323f2957ae90af0af910d377bbbd46512e22a5a))
+
+## [1.32.8](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.7...@ttoss/ui@1.32.8) (2023-04-24)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## [1.32.7](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.32.6...@ttoss/ui@1.32.7) (2023-04-21)
 
 **Note:** Version bump only for package @ttoss/ui

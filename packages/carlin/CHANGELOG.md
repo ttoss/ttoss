@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/ttoss/carlin/compare/carlin@1.27.1...carlin@1.28.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/carlin/issues/312)) ([288e9de](https://github.com/ttoss/carlin/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
+## [1.27.1](https://github.com/ttoss/carlin/compare/carlin@1.27.0...carlin@1.27.1) (2023-04-26)
+
+### Bug Fixes
+
+- cloudfront access denied ([#306](https://github.com/ttoss/carlin/issues/306)) ([8925bfc](https://github.com/ttoss/carlin/commit/8925bfc3145ee77534672bc7aac98c93d45916e2))
+
+# [1.27.0](https://github.com/ttoss/carlin/compare/carlin@1.26.9...carlin@1.27.0) (2023-04-25)
+
+### Features
+
+- migrate from OAI to OAC ([#297](https://github.com/ttoss/carlin/issues/297)) ([f3bba2e](https://github.com/ttoss/carlin/commit/f3bba2ece3c8219ea1bab5c845c929ca3a7aaa23))
+
 ## [1.26.9](https://github.com/ttoss/carlin/compare/carlin@1.26.8...carlin@1.26.9) (2023-04-21)
 
 **Note:** Version bump only for package carlin

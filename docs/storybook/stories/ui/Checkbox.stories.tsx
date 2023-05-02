@@ -1,3 +1,4 @@
+/* eslint-disable formatjs/no-literal-string-in-jsx */
 import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 
@@ -23,7 +24,7 @@ export const ExampleError = Template.bind({});
 
 ExampleError.args = {
   'aria-invalid': 'true',
-  checked: false,
+  defaultChecked: false,
 };
 
 export default {

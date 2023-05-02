@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.2...@terezinha-farm/app@0.3.3) (2023-05-02)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.3.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.1...@terezinha-farm/app@0.3.2) (2023-05-01)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.0...@terezinha-farm/app@0.3.1) (2023-04-28)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.32...@terezinha-farm/app@0.3.0) (2023-04-28)
+
+### Features
+
+- add retain to critical resources ([#312](https://github.com/ttoss/ttoss/issues/312)) ([288e9de](https://github.com/ttoss/ttoss/commit/288e9de4021f7b8109487e593d5a55c8f4798b92))
+
+## [0.2.32](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.31...@terezinha-farm/app@0.2.32) (2023-04-27)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.31](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.30...@terezinha-farm/app@0.2.31) (2023-04-27)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.30](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.29...@terezinha-farm/app@0.2.30) (2023-04-26)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.29](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.28...@terezinha-farm/app@0.2.29) (2023-04-26)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.28](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.27...@terezinha-farm/app@0.2.28) (2023-04-26)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.27](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.26...@terezinha-farm/app@0.2.27) (2023-04-26)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.26](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.25...@terezinha-farm/app@0.2.26) (2023-04-25)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.25](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.24...@terezinha-farm/app@0.2.25) (2023-04-25)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.23...@terezinha-farm/app@0.2.24) (2023-04-25)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.2.23](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.22...@terezinha-farm/app@0.2.23) (2023-04-25)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## 0.2.22 (2023-04-24)
+
+### Bug Fixes
+
+- i18n compile ([#279](https://github.com/ttoss/ttoss/issues/279)) ([d7a08c3](https://github.com/ttoss/ttoss/commit/d7a08c3e3f7cfc3eddeb81bd5ee93dadea09e6a0))
+
 ## [0.2.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.2.20...@terezinha-farm/app@0.2.21) (2023-04-14)
 
 **Note:** Version bump only for package @terezinha-farm/app

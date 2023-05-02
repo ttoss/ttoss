@@ -1,16 +1,17 @@
+const BASE = '1rem';
+
+const MULTIPLIER_FACTOR = 1.333;
+
 export const fontSizes = {
-  '2xs': '0.5rem',
-  xs: '0.75rem',
-  sm: '0.875rem',
-  base: '1rem',
-  lg: '1.125rem',
-  xl: '1.25rem',
-  '2xl': '1.5rem',
-  '3xl': '1.875rem',
-  '4xl': '2.25rem',
-  '5xl': '3rem',
-  '6xl': '3.75rem',
-  '7xl': '4.5rem',
-  '8xl': '6rem',
-  '9xl': '8rem',
+  '2xs': `calc(${BASE} * (${Math.pow(MULTIPLIER_FACTOR, -3)})`,
+  xs: `calc(${BASE} * ${Math.pow(MULTIPLIER_FACTOR, -2)})`,
+  sm: `calc(${BASE} * ${Math.pow(MULTIPLIER_FACTOR, -1)})`,
+  base: BASE,
+  lg: `calc(${BASE} * (${MULTIPLIER_FACTOR}^1))`,
+  xl: `calc(${BASE} * (${MULTIPLIER_FACTOR}^2))`,
+  '2xl': `calc(${BASE} * (${MULTIPLIER_FACTOR}^3))`,
+  '3xl': `calc(${BASE} * (${MULTIPLIER_FACTOR}^4))`,
+  '4xl': `calc(${BASE} * (${MULTIPLIER_FACTOR}^5))`,
+  '5xl': `calc(${BASE} * (${MULTIPLIER_FACTOR}^6))`,
+  '6xl': `calc(${BASE} * (${MULTIPLIER_FACTOR}^7))`,
 };

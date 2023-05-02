@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Flex,
   Grid,
@@ -9,7 +10,6 @@ import {
   useTheme,
 } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
-import React from 'react';
 
 export default {
   title: 'UI/Icon',
@@ -124,6 +124,7 @@ const CORE_ICONS = [
   'check-mark',
   'close',
   'copy',
+  'edit',
   'delete',
   'error',
   'info',

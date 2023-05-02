@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.20.0 (2023-05-01)
+
+### Bug Fixes
+
+- forms group layout ([#316](https://github.com/ttoss/ttoss/issues/316)) ([345dcf0](https://github.com/ttoss/ttoss/commit/345dcf00fb6cbf111403bb0a836c8882443d9246))
+
+### Features
+
+- export keyframes from ttoss ui ([#304](https://github.com/ttoss/ttoss/issues/304)) ([d06001d](https://github.com/ttoss/ttoss/commit/d06001d0c4380c83ffe275684efb7d54c348cc5a))
+
+## [1.19.6](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.19.5...@ttoss/eslint-config@1.19.6) (2023-04-24)
+
+**Note:** Version bump only for package @ttoss/eslint-config
+
 ## 1.19.5 (2023-04-24)
 
 ### Bug Fixes
