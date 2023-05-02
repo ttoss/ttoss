@@ -106,3 +106,22 @@ export const Component = (props) => {
   return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
 };
 ```
+
+### Icons
+
+Our icon module is powered by [Iconify](https://iconify.design/), as this have an awesome open source icon collection.
+To use it, just import `Icon` and start using. The styling is maded the same as Iconify and all his icons are available for using.
+
+Please refer to our storybook to see some examples of use.
+
+Please, refer to [Iconify docs](https://docs.iconify.design/icon-components/react/) for the parameters and more control over icons
+
+```tsx
+import { Icon } from '@ttoss/ui';
+
+export const IconExample = () => {
+  return (
+    <Icon icon="mdi-light:alarm-panel" style={{ color: 'red' }} width={100} />
+  );
+};
+```
