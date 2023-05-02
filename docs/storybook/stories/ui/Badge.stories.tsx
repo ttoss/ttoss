@@ -48,3 +48,10 @@ Informative.args = {
   variant: 'informative',
   children: <>{'informative'}</>,
 };
+
+export const Muted = Template.bind({});
+
+Muted.args = {
+  variant: 'muted',
+  children: <>{'muted'}</>,
+};
