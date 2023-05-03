@@ -37,3 +37,4 @@ export { HelpText, type HelpTextProps } from './components/HelpText';
 export { CloseButton, type CloseButtonProps } from './components/CloseButton';
 export { InputNumber, type InputNumberProps } from './components/InputNumber';
 export { Stack, type StackProps } from './components/Stack';
+export { Paragraph, type ParagraphProps } from './components/Paragraph';

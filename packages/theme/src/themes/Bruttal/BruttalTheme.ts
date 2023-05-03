@@ -72,7 +72,7 @@ export const BruttalTheme: Theme = {
   space,
   lineHeights,
   colors: {
-    background: coreColors.white,
+    background: coreColors.complimentary,
     text: coreColors.black,
     muted: coreColors.gray200,
     onMuted: coreColors.gray600,
@@ -133,6 +133,24 @@ export const BruttalTheme: Theme = {
       fontSize: 'base',
       margin: 0,
       padding: 0,
+      backgroundColor: 'background',
+      /**
+       * HTML elements
+       */
+      table: {
+        borderCollapse: 'collapse',
+      },
+      th: {
+        paddingX: 'md',
+        paddingY: 'md',
+      },
+      tr: {
+        borderBottom: 'default',
+      },
+      td: {
+        paddingX: 'xl',
+        paddingY: 'md',
+      },
     },
     a: {
       color: 'text',

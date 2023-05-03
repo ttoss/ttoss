@@ -31,4 +31,5 @@ test('should export methods', () => {
   expect(uiModule.InfiniteLinearProgress).toBeDefined();
   expect(uiModule.Textarea).toBeDefined();
   expect(uiModule.Container).toBeDefined();
+  expect(uiModule.Paragraph).toBeDefined();
 });
