@@ -3,6 +3,16 @@ export CARLIN_ENVIRONMENT=Production
 # Fetch tags
 git fetch --tags --quiet
 
+# 1. `git tag --points-at HEAD`: This command lists all tags that point to the
+# current commit, which is specified as HEAD.
+# 2. `grep -q .`: This command searches for any character in the output of the
+# git tag command. If there are no tags, the output will be empty and grep will
+# return a non-zero exit code, which indicates failure. If there are tags, grep
+# will find at least one character in the output and return a zero exit code,
+# which indicates success.
+git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
+
+
 LATEST_TAG=$(git describe --tags --abbrev=0)
 
 # Setup NPM token
