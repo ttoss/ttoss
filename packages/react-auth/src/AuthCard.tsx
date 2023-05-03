@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Flex, Link, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Text } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
 
 export type LogoContextProps = {
@@ -23,58 +23,72 @@ type AuthCardProps = {
   title: string;
   buttonLabel: string;
   links?: LinkProps[];
+  extraButton?: React.ReactNode;
 };
 
 export const AuthCard = ({
   children,
   title,
   buttonLabel,
-  links = [],
+  extraButton,
 }: AuthCardProps) => {
   const { logo } = React.useContext(LogoContext);
 
   const { isLoading } = useNotifications();
 
   return (
-    <Box sx={{ maxWidth: '564px' }}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        {logo && (
-          <Flex sx={{ width: '100%', justifyContent: 'center' }}>{logo}</Flex>
-        )}
-        <Text sx={{ alignSelf: 'center', marginY: 'md', fontSize: 'xl' }}>
+    <Box
+      variant="reactAuth.card"
+      sx={{
+        maxWidth: '390px',
+        border: '1px solid #292C2A',
+        paddingX: '34px',
+        paddingY: '55px',
+      }}
+    >
+      {logo && (
+        <Flex
+          variant="reactAuth.logo"
+          sx={{
+            width: '100%',
+            maxHeight: '90px',
+            justifyContent: 'center',
+          }}
+        >
+          {logo}
+        </Flex>
+      )}
+      <Flex
+        variant="reactAuth.form.container"
+        sx={{ flexDirection: 'column', gap: 'md' }}
+      >
+        <Text
+          sx={{
+            marginY: '2xl',
+            fontSize: '3xl',
+          }}
+          variant="reactAuth.form.title"
+        >
           {title}
         </Text>
+
         {children}
-        <Flex sx={{ justifyContent: 'space-between', marginTop: 'md' }}>
+
+        <Flex
+          variant="reactAuth.form.buttonsContainer"
+          sx={{ flexDirection: 'column', width: '100%', gap: 'xl' }}
+        >
           <Button
             type="submit"
             aria-label="submit-login"
-            variant="cta"
+            variant="accent"
             disabled={isLoading}
-            sx={{ width: '100%' }}
+            sx={{ textAlign: 'center', display: 'initial' }}
           >
             {buttonLabel}
           </Button>
-        </Flex>
 
-        <Flex
-          sx={{
-            justifyContent: 'space-between',
-            flexDirection: 'column',
-            gap: 'sm',
-            marginTop: 'md',
-            color: 'text',
-          }}
-        >
-          {links.map((link) => {
-            return (
-              link && (
-                <Link key={link.label} onClick={link.onClick}>
-                  {link.label}
-                </Link>
-              )
-            );
-          })}
+          {extraButton}
         </Flex>
       </Flex>
     </Box>
