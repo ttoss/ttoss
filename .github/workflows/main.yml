@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Production
     # Run only if there are no tags
-    if: github.refs.tags.length == 0
+    if: "!contains(github.ref, 'refs/tags/')"
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
