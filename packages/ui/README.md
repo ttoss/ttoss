@@ -93,20 +93,6 @@ export const Provider = (props) => {
 };
 ```
 
-## Misc
-
-### keyframes
-
-```tsx
-import { Box, keyframes } from '@ttoss/ui';
-
-const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
-
-export const Component = (props) => {
-  return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
-};
-```
-
 ### Icons
 
 Our icon module is powered by [Iconify](https://iconify.design/), as this have an awesome open source icon collection.
@@ -123,5 +109,19 @@ export const IconExample = () => {
   return (
     <Icon icon="mdi-light:alarm-panel" style={{ color: 'red' }} width={100} />
   );
+};
+```
+
+## Misc
+
+### keyframes
+
+```tsx
+import { Box, keyframes } from '@ttoss/ui';
+
+const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+
+export const Component = (props) => {
+  return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
 };
 ```
