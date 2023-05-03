@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.35.38",
+  "version": "1.35.39",
   "scripts": {
     "build": "docusaurus build",
     "clear": "docusaurus clear",

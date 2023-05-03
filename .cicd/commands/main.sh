@@ -38,14 +38,31 @@ pnpm turbo run build test --filter=...[$LATEST_TAG]
 # turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
 git checkout -- .
 
-# Publish packages
-pnpm lerna publish from-git --yes
+# Use Git to check for changes in the origin repository. If there are any
+# changes, "git push --follow-tags" will fail. The error message will be:
+#
+# error: failed to push some refs to 'github.com:ttoss/ttoss.git'
+# hint: Updates were rejected because the remote contains work that you do
+# hint: not have locally. This is usually caused by another repository pushing
+# hint: to the same ref. You may want to first integrate the remote changes
+# hint: (e.g., 'git pull ...') before pushing again.
+#
+# To avoid this, we need to:
+#
+# 1. Fetch the latest changes from the origin/main repository.
+# 2. Compare the local and remote main branches using `git diff`.
+# 3. Check if there are any changes and stop the workflow if there are any.
+# 4. Exit and wait to the next main workflow starts because of the changes.
+git fetch
 
-# Push only tags to check if there's no issues with the tags
-git push --tags
+# HEAD^1 because lerna version created a commit
+git diff HEAD^1 origin/main --quiet || { echo "Changes found before publishing. Workflow stopped." && exit 1; }
 
 # Push changes
 git push --follow-tags
+
+# Publish packages
+pnpm lerna publish from-git --yes
 
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
