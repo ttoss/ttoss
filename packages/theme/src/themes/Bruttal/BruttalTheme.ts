@@ -1,4 +1,4 @@
-import { Theme } from 'theme-ui';
+import { Theme } from '../../types';
 import { fontSizes } from '../../tokens/fontSizes';
 import { fontWeights } from '../../tokens/fontWeights';
 import { letterSpacings } from '../../tokens/letterSpacings';
@@ -155,6 +155,7 @@ export const BruttalTheme: Theme = {
     a: {
       color: 'text',
       fontFamily: 'body',
+      textDecorationLine: 'underline',
       '&.quiet:not(:hover)': {
         textDecorationLine: 'none',
       },
@@ -571,6 +572,37 @@ export const BruttalTheme: Theme = {
       fontSize: 'xl',
       fontWeight: 'bold',
       letterSpacing: 'normal',
+    },
+  },
+  reactAuth: {
+    card: {
+      maxWidth: '390px',
+      border: 'default',
+      borderColor: 'primary',
+      paddingX: '2xl',
+      paddingY: '3xl',
+      backgroundColor: 'surface',
+    },
+    logo: {
+      width: '100%',
+      maxHeight: '90px',
+      justifyContent: 'center',
+      marginBottom: '2xl',
+    },
+    form: {
+      container: {
+        flexDirection: 'column',
+      },
+      fieldsContainer: {
+        flexDirection: 'column',
+        gap: 'xl',
+      },
+      buttonsContainer: {
+        flexDirection: 'column',
+        width: '100%',
+        gap: 'xl',
+        marginTop: '2xl',
+      },
     },
   },
 };

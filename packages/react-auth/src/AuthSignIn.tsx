@@ -1,10 +1,9 @@
 import { AuthCard } from './AuthCard';
-import { Button, Flex, Link } from '@ttoss/ui';
+import { Button, Flex, Link, Text } from '@ttoss/ui';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
-  FormGroup,
   useForm,
   yup,
   yupResolver,
@@ -16,6 +15,7 @@ import type { OnSignIn, OnSignInInput } from './types';
 export type AuthSignInProps = {
   onSignIn: OnSignIn;
   onSignUp: () => void;
+  onForgotPassword?: () => void;
   defaultValues?: Partial<OnSignInInput>;
   urlLogo?: string;
 };
@@ -24,6 +24,7 @@ export const AuthSignIn = ({
   onSignIn,
   onSignUp,
   defaultValues,
+  onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
 
@@ -61,6 +62,7 @@ export const AuthSignIn = ({
         )
       )
       .trim(),
+    remember: yup.boolean(),
   });
 
   const formMethods = useForm<OnSignInInput>({
@@ -73,34 +75,32 @@ export const AuthSignIn = ({
   };
 
   return (
-    <AuthCard
-      title={intl.formatMessage({
-        description: 'Sign in title.',
-        defaultMessage: 'Log in',
-      })}
-      buttonLabel={intl.formatMessage({
-        description: 'Button label.',
-        defaultMessage: 'Log in',
-      })}
-      extraButton={
-        <Button
-          type="button"
-          variant="secondary"
-          sx={{ textAlign: 'center', display: 'initial' }}
-          onClick={onSignUp}
-        >
-          {intl.formatMessage({
-            description: 'Sign up',
-            defaultMessage: 'Sign up',
-          })}
-        </Button>
-      }
-    >
-      <Form {...formMethods} onSubmit={onSubmitForm}>
-        <FormGroup
-          variant="reactAuth.form.fields.container"
-          sx={{ flexDirection: 'column', gap: 'xl' }}
-        >
+    <Form {...formMethods} onSubmit={onSubmitForm}>
+      <AuthCard
+        title={intl.formatMessage({
+          description: 'Sign in title.',
+          defaultMessage: 'Log in',
+        })}
+        buttonLabel={intl.formatMessage({
+          description: 'Button label.',
+          defaultMessage: 'Log in',
+        })}
+        isValidForm={formMethods.formState.isValid}
+        extraButton={
+          <Button
+            type="button"
+            variant="secondary"
+            sx={{ textAlign: 'center', display: 'initial' }}
+            onClick={onSignUp}
+          >
+            {intl.formatMessage({
+              description: 'Sign up',
+              defaultMessage: 'Sign up',
+            })}
+          </Button>
+        }
+      >
+        <Flex variant="reactAuth.form.fieldsContainer">
           <FormFieldInput
             name="email"
             label={intl.formatMessage({
@@ -110,12 +110,13 @@ export const AuthSignIn = ({
           />
           <FormFieldInput
             name="password"
+            type="password"
             label={intl.formatMessage({
               description: 'Password label.',
               defaultMessage: 'Password',
             })}
           />
-        </FormGroup>
+        </Flex>
 
         <Flex sx={{ justifyContent: 'space-between', marginTop: 'lg' }}>
           <FormFieldCheckbox
@@ -126,14 +127,14 @@ export const AuthSignIn = ({
             })}
           />
 
-          <Link quiet>
+          <Text as={Link} onClick={onForgotPassword}>
             {intl.formatMessage({
               description: 'Forgot password?',
               defaultMessage: 'Forgot password?',
             })}
-          </Link>
+          </Text>
         </Flex>
-      </Form>
-    </AuthCard>
+      </AuthCard>
+    </Form>
   );
 };

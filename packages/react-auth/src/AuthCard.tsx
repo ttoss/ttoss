@@ -13,17 +13,12 @@ export const LogoProvider = ({ children, ...values }: LogoContextProps) => {
   return <LogoContext.Provider value={values}>{children}</LogoContext.Provider>;
 };
 
-type LinkProps = {
-  label: string;
-  onClick: () => void;
-};
-
 type AuthCardProps = {
   children: React.ReactNode;
   title: string;
   buttonLabel: string;
-  links?: LinkProps[];
   extraButton?: React.ReactNode;
+  isValidForm?: boolean;
 };
 
 export const AuthCard = ({
@@ -31,40 +26,19 @@ export const AuthCard = ({
   title,
   buttonLabel,
   extraButton,
+  isValidForm,
 }: AuthCardProps) => {
   const { logo } = React.useContext(LogoContext);
 
   const { isLoading } = useNotifications();
 
   return (
-    <Box
-      variant="reactAuth.card"
-      sx={{
-        maxWidth: '390px',
-        border: '1px solid #292C2A',
-        paddingX: '34px',
-        paddingY: '55px',
-      }}
-    >
-      {logo && (
-        <Flex
-          variant="reactAuth.logo"
-          sx={{
-            width: '100%',
-            maxHeight: '90px',
-            justifyContent: 'center',
-          }}
-        >
-          {logo}
-        </Flex>
-      )}
-      <Flex
-        variant="reactAuth.form.container"
-        sx={{ flexDirection: 'column', gap: 'md' }}
-      >
+    <Box variant="reactAuth.card">
+      {logo && <Flex variant="reactAuth.logo">{logo}</Flex>}
+      <Flex variant="reactAuth.form.container">
         <Text
           sx={{
-            marginY: '2xl',
+            marginBottom: '2xl',
             fontSize: '3xl',
           }}
           variant="reactAuth.form.title"
@@ -74,15 +48,12 @@ export const AuthCard = ({
 
         {children}
 
-        <Flex
-          variant="reactAuth.form.buttonsContainer"
-          sx={{ flexDirection: 'column', width: '100%', gap: 'xl' }}
-        >
+        <Flex variant="reactAuth.form.buttonsContainer">
           <Button
             type="submit"
             aria-label="submit-login"
             variant="accent"
-            disabled={isLoading}
+            disabled={isLoading || !isValidForm}
             sx={{ textAlign: 'center', display: 'initial' }}
           >
             {buttonLabel}
