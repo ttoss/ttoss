@@ -1,5 +1,5 @@
 import { AuthSignIn, AuthSignInProps } from '@ttoss/react-auth/src/AuthSignIn';
-import { Flex } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
 import { LogoProvider } from '@ttoss/react-auth/src/AuthCard';
 import { Meta, Story } from '@storybook/react';
 
@@ -10,17 +10,15 @@ export default {
 
 const Logo = () => {
   return (
-    <Flex
+    <Box
       sx={{
-        backgroundColor: 'primary',
-        width: '100%',
-        height: '100%',
+        backgroundColor: '#D9D9D9',
+        minWidth: '100%',
+        height: '90px',
         justifyContent: 'center',
         alignItems: 'center',
       }}
-    >
-      <p style={{ color: 'white' }}>LOGO</p>
-    </Flex>
+    />
   );
 };
 
