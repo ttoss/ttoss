@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.35.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.35.2...@ttoss/ui@1.35.3) (2023-05-03)
+
+### Bug Fixes
+
+- UI issues ([#327](https://github.com/ttoss/ttoss/issues/327)) ([c0c0b0f](https://github.com/ttoss/ttoss/commit/c0c0b0f531fe785495dca89f6309e92c1ec9c59e))
+
 ## [1.35.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.35.1...@ttoss/ui@1.35.2) (2023-05-02)
 
 **Note:** Version bump only for package @ttoss/ui

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.5...@docs/storybook@1.36.6) (2023-05-03)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [1.36.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.4...@docs/storybook@1.36.5) (2023-05-03)
+
+### Bug Fixes
+
+- UI issues ([#327](https://github.com/ttoss/ttoss/issues/327)) ([c0c0b0f](https://github.com/ttoss/ttoss/commit/c0c0b0f531fe785495dca89f6309e92c1ec9c59e))
+
 ## [1.36.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.3...@docs/storybook@1.36.4) (2023-05-02)
 
 **Note:** Version bump only for package @docs/storybook

@@ -9,7 +9,7 @@ export const Form = <TFieldValues extends FieldValues = FieldValues>({
   ...formMethods
 }: {
   children?: React.ReactNode;
-  onSubmit: (data: TFieldValues) => Promise<void> | void;
+  onSubmit?: (data: TFieldValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
 } & FormProviderProps<TFieldValues>) => {
   return (
@@ -18,7 +18,7 @@ export const Form = <TFieldValues extends FieldValues = FieldValues>({
         as="form"
         variant="forms.form"
         onSubmit={formMethods.handleSubmit((data) => {
-          return onSubmit(data);
+          return onSubmit?.(data);
         })}
         sx={sx}
       >

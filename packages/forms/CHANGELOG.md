@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.16.5...@ttoss/forms@0.16.6) (2023-05-03)
+
+### Bug Fixes
+
+- remove required from onsbumit form ([#329](https://github.com/ttoss/ttoss/issues/329)) ([0eec143](https://github.com/ttoss/ttoss/commit/0eec143fb87befe3b80c28fc702fa95793856534))
+
+## [0.16.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.16.4...@ttoss/forms@0.16.5) (2023-05-03)
+
+**Note:** Version bump only for package @ttoss/forms
+
 ## [0.16.4](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.16.3...@ttoss/forms@0.16.4) (2023-05-02)
 
 **Note:** Version bump only for package @ttoss/forms
