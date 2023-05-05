@@ -1,3 +1,4 @@
+import { css as transformStyleObject } from '@theme-ui/css';
 import { useResponsiveValue, useTheme } from '@ttoss/ui';
 import ReactModal from 'react-modal';
 
@@ -11,33 +12,33 @@ export type ModalProps = ReactModal.Props;
 export const Modal = (props: ModalProps) => {
   const { theme } = useTheme();
 
+  const space = theme.space as Record<string, string>;
+
   const padding =
-    useResponsiveValue([
-      theme.space?.[2],
-      theme.space?.[3],
-      theme.space?.[4],
-    ]) || 0;
+    useResponsiveValue([space?.['lg'], space?.['xl'], space?.['xl']]) || 0;
 
   const style: ReactModal.Styles = {
-    overlay: {
+    overlay: transformStyleObject({
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      padding,
       ...props.style?.overlay,
-    },
-    content: {
+    })(theme) as any,
+    content: transformStyleObject({
       /**
        * Theme
        */
-      backgroundColor: theme.rawColors?.background?.toString() || '#fff',
+      backgroundColor: 'surface',
       padding,
+      border: 'default',
+      borderColor: 'surface',
+      borderRadius: 'default',
       /**
        * General
        */
@@ -48,13 +49,10 @@ export const Modal = (props: ModalProps) => {
       left: '0px',
       right: '0px',
       bottom: '0px',
-      border: '2px solid',
-      borderColor: theme.rawColors?.muted?.toString() || '#fff',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
+      maxHeight: '90%',
+      maxWidth: '90%',
       ...props.style?.content,
-    },
+    })(theme) as any,
   };
 
   return <ReactModal {...props} style={style} />;

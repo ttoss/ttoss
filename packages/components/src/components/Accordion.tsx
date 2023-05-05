@@ -37,7 +37,7 @@ export const Accordion = ({
         marginBottom: 3,
       },
       '.accordion__heading': {
-        padding: 2,
+        padding: 'md',
         border: '1px solid',
         borderColor: 'black',
       },
