@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.21.0...@ttoss/react-i18n@1.22.0) (2023-05-06)
+
+### Features
+
+- modal component working ([#333](https://github.com/ttoss/ttoss/issues/333)) ([adbf424](https://github.com/ttoss/ttoss/commit/adbf424b46aead19028b998c6e99ed8b2b7a8eb8))
+
 # 1.21.0 (2023-04-28)
 
 ### Features

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.36.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.35.41...@docs/website@1.36.0) (2023-05-06)
+
+### Features
+
+- modal component working ([#333](https://github.com/ttoss/ttoss/issues/333)) ([adbf424](https://github.com/ttoss/ttoss/commit/adbf424b46aead19028b998c6e99ed8b2b7a8eb8))
+
 ## [1.35.41](https://github.com/ttoss/ttoss/compare/@docs/website@1.35.40...@docs/website@1.35.41) (2023-05-03)
 
 **Note:** Version bump only for package @docs/website
