@@ -35,6 +35,7 @@ const config = {
       'appsync-api',
       'aws-appsync-nodejs',
       'cloud-auth',
+      'components',
       'config',
       'forms',
       'i18n-cli',
