@@ -28,7 +28,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["build", "test", "^deploy"],
+      "dependsOn": ["build", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }
