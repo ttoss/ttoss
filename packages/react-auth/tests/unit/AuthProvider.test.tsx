@@ -1,5 +1,5 @@
 import { AuthProvider, useAuth } from '../../src';
-import { act, render, screen, waitFor } from '@ttoss/test-utils';
+import { render, screen, waitFor } from '@ttoss/test-utils';
 
 jest.mock('aws-amplify', () => {
   return {
@@ -29,12 +29,9 @@ test('isAuthenticated returns undefined on first render', async () => {
    * The first render will return nothing because the AuthProvider is still
    * loading `isAuthenticated`.
    */
-  await act(async () => {
-    await waitFor(() => {
-      expect(screen.queryByText('isAuthenticated')).not.toBeInTheDocument();
-    });
+  await waitFor(async () => {
+    expect(screen.queryByText('isAuthenticated')).not.toBeInTheDocument();
   });
-
   expect(screen.getByText(/isAuthenticated/)).toBeInTheDocument();
   expect(screen.getByText(/false/)).toBeInTheDocument();
 });
