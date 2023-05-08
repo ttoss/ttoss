@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Flex, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Heading, Text } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
 
 export type LogoContextProps = {
@@ -33,25 +33,52 @@ export const AuthCard = ({
   const { isLoading } = useNotifications();
 
   return (
-    <Box variant="reactAuth.card">
-      {logo && <Flex variant="reactAuth.logo">{logo}</Flex>}
-      <Flex variant="reactAuth.form.container">
-        <Text
+    <Box
+      sx={{
+        maxWidth: '390px',
+        border: 'default',
+        borderColor: 'primary',
+        paddingX: '2xl',
+        paddingY: '3xl',
+        backgroundColor: 'surface',
+      }}
+    >
+      {logo && (
+        <Flex
+          sx={{
+            width: '100%',
+            maxHeight: '90px',
+            justifyContent: 'center',
+            marginBottom: '2xl',
+          }}
+        >
+          {logo}
+        </Flex>
+      )}
+      <Flex sx={{ flexDirection: 'column' }}>
+        <Heading
+          as="h2"
+          variant="h2"
           sx={{
             marginBottom: '2xl',
-            fontSize: '3xl',
           }}
-          variant="reactAuth.form.title"
         >
           {title}
-        </Text>
+        </Heading>
 
         {children}
 
-        <Flex variant="reactAuth.form.buttonsContainer">
+        <Flex
+          sx={{
+            flexDirection: 'column',
+            width: '100%',
+            gap: 'xl',
+            marginTop: '2xl',
+          }}
+        >
           <Button
             type="submit"
-            aria-label="submit-login"
+            aria-label="submit-button"
             variant="accent"
             disabled={isLoading || !isValidForm}
             sx={{ textAlign: 'center', display: 'initial' }}

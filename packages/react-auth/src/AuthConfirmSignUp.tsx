@@ -52,6 +52,7 @@ export const AuthConfirmSignUp = ({
           description: 'Confirm',
           defaultMessage: 'Confirm',
         })}
+        isValidForm={formMethods.formState.isValid}
         title={intl.formatMessage({
           description: 'Confirmation',
           defaultMessage: 'Confirmation',
