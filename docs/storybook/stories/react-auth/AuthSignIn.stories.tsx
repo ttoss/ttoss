@@ -12,7 +12,7 @@ const Logo = () => {
   return (
     <Box
       sx={{
-        backgroundColor: '#D9D9D9',
+        backgroundColor: 'muted',
         minWidth: '100%',
         height: '90px',
         justifyContent: 'center',
