@@ -27,12 +27,8 @@
         "tests/**/*.tsx"
       ]
     },
-    "topoTest": {
-      "dependsOn": ["^topoTest", "^test"],
-      "outputs": []
-    },
     "deploy": {
-      "dependsOn": ["build", "test", "^topoTest", "^deploy"],
+      "dependsOn": ["build", "test", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }
