@@ -13,7 +13,7 @@ git fetch --tags --quiet
 git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
 
 # Retrieve the latest tag
-LATEST_TAG=$(git describe --tags --abbrev=0)
+export LATEST_TAG=$(git describe --tags --abbrev=0)
 
 # Setup NPM token
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
@@ -44,10 +44,7 @@ if pnpm lerna changed; then
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
   pnpm turbo run build test --filter=...[$LATEST_TAG]
 
-  # Undo all files that were changed by the build command—this happens because
-  # the build can change files with different linting rules, or modify some
-  # auto-generated docs. We don't want these changes becaues it will cause
-  # turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+  # See description on pr.sh.
   git checkout -- .
 
   # Use Git to check for changes in the origin repository. If there are any
