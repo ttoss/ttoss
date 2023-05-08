@@ -8,11 +8,17 @@ For more information about each package, please, refer to the README of them.
 For contributing, building `config` is required, as this set some settings accross all the repository.
 
 1. Fork the repository
-2. Clone it
-3. Build `config`
+1. Clone it
+1. Install dependencies
 
-```sh
-pnpm build:config
-```
+   ```sh
+   pnpm install
+   ```
 
-4. Contribute ;)
+1. Build `config`
+
+   ```sh
+   pnpm build:config
+   ```
+
+1. Contribute ;)

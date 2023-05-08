@@ -23,7 +23,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "test": "jest"
+    "test": "jest --changedSince=$LATEST_TAG"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.321.1",

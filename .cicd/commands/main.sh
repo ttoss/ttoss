@@ -13,7 +13,7 @@ git fetch --tags --quiet
 git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
 
 # Retrieve the latest tag
-LATEST_TAG=$(git describe --tags --abbrev=0)
+export LATEST_TAG=$(git describe --tags --abbrev=0)
 
 # Setup NPM token
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
