@@ -74,7 +74,7 @@ if pnpm lerna changed; then
   git push --follow-tags
 
   # Publish packages
-  pnpm lerna publish from-git --yes
+  pnpm -r publish
 else
   echo "No changes detected on packages, skipping publish..."
 fi
