@@ -76,7 +76,7 @@ const getEnv = () => {
 /**
  * Transformed to method because finalConfig was failing the tests.
  */
-const cli = () => {
+export const cli = () => {
   /**
    * All config files merged.
    */
@@ -264,5 +264,3 @@ const cli = () => {
       .help()
   );
 };
-
-export default cli;

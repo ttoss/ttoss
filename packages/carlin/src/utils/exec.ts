@@ -3,8 +3,8 @@ import log from 'npmlog';
 
 log.heading = 'exec';
 
-export const exec = (cmd: string) =>
-  new Promise((resolve, reject) => {
+export const exec = (cmd: string) => {
+  return new Promise((resolve, reject) => {
     childProcess.exec(cmd, (error, stdout, stderr) => {
       if (error) {
         return reject(error);
@@ -21,3 +21,4 @@ export const exec = (cmd: string) =>
       return resolve(undefined);
     });
   });
+};

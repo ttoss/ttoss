@@ -2,7 +2,7 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-const cli = require('carlin/dist/cli').default;
+const { cli } = require('carlin/dist/cli');
 
 const {
   baseStackTemplate,
