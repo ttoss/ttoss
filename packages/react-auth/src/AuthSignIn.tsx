@@ -1,14 +1,8 @@
 import { AuthCard } from './AuthCard';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
-import {
-  Form,
-  FormFieldCheckbox,
-  FormFieldInput,
-  useForm,
-  yup,
-  yupResolver,
-} from '@ttoss/forms';
+import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
+import { useHidePassInput } from './useHidePassInput';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignIn, OnSignInInput } from './types';
 
@@ -27,6 +21,8 @@ export const AuthSignIn = ({
   onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
+
+  const { handleClick, icon, inputType } = useHidePassInput();
 
   const schema = yup.object().shape({
     email: yup
@@ -62,7 +58,7 @@ export const AuthSignIn = ({
         )
       )
       .trim(),
-    remember: yup.boolean(),
+    // remember: yup.boolean(),
   });
 
   const formMethods = useForm<OnSignInInput>({
@@ -92,6 +88,7 @@ export const AuthSignIn = ({
             variant="secondary"
             sx={{ textAlign: 'center', display: 'initial' }}
             onClick={onSignUp}
+            aria-label="sign-up"
           >
             {intl.formatMessage({
               description: 'Sign up',
@@ -100,7 +97,7 @@ export const AuthSignIn = ({
           </Button>
         }
       >
-        <Flex variant="reactAuth.form.fieldsContainer">
+        <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
           <FormFieldInput
             name="email"
             label={intl.formatMessage({
@@ -110,7 +107,9 @@ export const AuthSignIn = ({
           />
           <FormFieldInput
             name="password"
-            type="password"
+            trailingIcon={icon}
+            onTrailingIconClick={handleClick}
+            type={inputType}
             label={intl.formatMessage({
               description: 'Password label.',
               defaultMessage: 'Password',
@@ -119,13 +118,14 @@ export const AuthSignIn = ({
         </Flex>
 
         <Flex sx={{ justifyContent: 'space-between', marginTop: 'lg' }}>
-          <FormFieldCheckbox
+          {/* TODO: temporally commented */}
+          {/* <FormFieldCheckbox
             name="remember"
             label={intl.formatMessage({
               description: 'Remember',
               defaultMessage: 'Remember',
             })}
-          />
+          /> */}
 
           <Text as={Link} onClick={onForgotPassword}>
             {intl.formatMessage({

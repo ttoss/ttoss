@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Flex, Heading, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Heading } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
 
 export type LogoContextProps = {
