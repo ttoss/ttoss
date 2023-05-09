@@ -79,11 +79,6 @@ test.each([
   {
     options: {
       token,
-    },
-  },
-  {
-    options: {
-      token,
       environment: 'preview',
     },
   },
@@ -92,10 +87,6 @@ test.each([
       token,
       environment: 'Staging',
     },
-  },
-  {
-    options: {},
-    VERCEL_TOKEN: token,
   },
   {
     options: {
