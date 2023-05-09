@@ -15,9 +15,7 @@ import path from 'path';
 
 const coerceSetEnvVar = (env: EnvironmentVariables) => {
   return (value: any) => {
-    if (value) {
-      setEnvVar(env, value);
-    }
+    setEnvVar(env, value);
     return value;
   };
 };
