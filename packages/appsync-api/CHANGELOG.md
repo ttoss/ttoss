@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.11.2...@ttoss/appsync-api@0.12.0) (2023-05-09)
+
+### Features
+
+- add deploy vercel on carlin ([#336](https://github.com/ttoss/ttoss/issues/336)) ([9ca2994](https://github.com/ttoss/ttoss/commit/9ca2994ba1a1050028254c48e22c3fb1a41a086d))
+
 ## [0.11.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.11.1...@ttoss/appsync-api@0.11.2) (2023-05-08)
 
 **Note:** Version bump only for package @ttoss/appsync-api
