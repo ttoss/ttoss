@@ -1,5 +1,5 @@
 import { Input } from '../../src';
-import { render, screen } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
 test('should render Input component without icon', () => {
@@ -22,7 +22,7 @@ test('should render Input component with trailingIcon and leadingIcon as string'
     />
   );
 
-  const [trailingIconEl, leadingIconEl] = screen.getAllByTestId('iconify-icon');
+  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
@@ -37,8 +37,34 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
     />
   );
 
-  const [trailingIconEl, leadingIconEl] = screen.getAllByTestId('iconify-icon');
+  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
+});
+
+test('should call functions onLeadingIconClick and onTrailingIconClick when the icons are clicked', async () => {
+  const user = userEvent.setup({ delay: null });
+  const icon = 'ant-design:down-square-filled';
+  const onTrailingIconClick = jest.fn();
+  const onLeadingIconClick = jest.fn();
+
+  render(
+    <Input
+      trailingIcon={icon}
+      leadingIcon={icon}
+      onTrailingIconClick={onTrailingIconClick}
+      onLeadingIconClick={onLeadingIconClick}
+    />
+  );
+
+  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+
+  screen.debug();
+
+  await user.click(leadingIconEl);
+  expect(onLeadingIconClick).toHaveBeenCalled();
+
+  await user.click(trailingIconEl);
+  expect(onTrailingIconClick).toHaveBeenCalled();
 });
