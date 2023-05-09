@@ -5,6 +5,7 @@ import { deployCicdCommand } from './cicd/command';
 import { deployCloudFormation, destroyCloudFormation } from './cloudFormation';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
 import { deployStaticAppCommand } from './staticApp/command';
+import { deployVercelCommand } from './vercel/command';
 import { getStackName, setPreDefinedStackName } from './stackName';
 import { printStackOutputsAfterDeploy } from './cloudFormation.core';
 import { readDockerfile } from './readDockerfile';
@@ -21,6 +22,13 @@ const checkAwsAccountId = async (awsAccountId: string) => {
       );
     }
   } catch (error: any) {
+    if (error.code === 'CredentialsError') {
+      /**
+       * No credentials found.
+       */
+      return;
+    }
+
     log.error(logPrefix, error.message);
     process.exit();
   }
@@ -191,6 +199,7 @@ export const deployCommand: CommandModule<
       deployBaseStackCommand,
       deployStaticAppCommand,
       deployCicdCommand,
+      deployVercelCommand,
     ];
 
     yargsBuilder.positional('deploy', {

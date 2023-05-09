@@ -28,7 +28,7 @@ export const optionsFromConfigFiles = {
   },
 };
 
-import cli from './src/cli';
+import { cli } from './src/cli';
 
 export const parseCli = async (arg: any, context: any) => {
   return cli().strict(false).parse(arg, context);
