@@ -165,3 +165,12 @@ test.each([
     `vercel deploy --prebuilt --prod --token=${token}`
   );
 });
+
+test('should not deploy if --destroy is passed', async () => {
+  await parseCli(`deploy vercel`, {
+    destroy: true,
+    token,
+  });
+
+  expect(spawn).not.toHaveBeenCalled();
+});
