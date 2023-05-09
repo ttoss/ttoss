@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Button, Flex, Text } from '@ttoss/ui';
-import { Meta, Story } from '@storybook/react';
-import { Modal } from '@ttoss/components';
+import { Meta, StoryFn } from '@storybook/react';
+import { Modal } from '@ttoss/components/src';
 import { action } from '@storybook/addon-actions';
 
 export default {
@@ -9,16 +9,14 @@ export default {
   component: Modal,
 } as Meta;
 
-Modal.setAppElement('#root');
-
-const Template: Story<{
+const Template: StoryFn<{
   width: number;
   height: number;
 }> = (args) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <Box>
+    <Box id="modal-root">
       <Modal
         isOpen={isOpen}
         onAfterOpen={action('onAfterOpen')}
@@ -27,17 +25,22 @@ const Template: Story<{
           action('onRequestClose')();
           setIsOpen(false);
         }}
+        appElement={document.getElementById('modal-root') as HTMLElement}
       >
         <Flex
           sx={{
             width: args.width,
             height: args.height,
+            minWidth: args.width,
+            minHeight: args.height,
             flexDirection: 'column',
             alignItems: 'center',
+            gap: 'md',
+            backgroundColor: 'muted',
           }}
         >
           <Text>This is a modal.</Text>
-          <Text>Light gray is the content.</Text>
+          <Text>Here is the content.</Text>
           <Button
             onClick={() => {
               setIsOpen(false);
@@ -58,26 +61,30 @@ const Template: Story<{
   );
 };
 
+const small = 200;
+
+const large = 2000;
+
 export const SmallModal = Template.bind({});
 SmallModal.args = {
-  width: 200,
-  height: 100,
+  width: small,
+  height: small,
 };
 
 export const LargeWidthModal = Template.bind({});
 LargeWidthModal.args = {
-  width: 500,
-  height: 100,
+  width: large,
+  height: small,
 };
 
 export const LargeHeightModal = Template.bind({});
 LargeHeightModal.args = {
-  width: 200,
-  height: 500,
+  width: small,
+  height: large,
 };
 
 export const LargeModal = Template.bind({});
 LargeModal.args = {
-  width: 500,
-  height: 500,
+  width: large,
+  height: large,
 };

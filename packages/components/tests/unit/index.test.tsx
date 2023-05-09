@@ -1,4 +1,4 @@
-import * as componentsModule from './index';
+import * as componentsModule from '../../src/index';
 
 test.each([
   componentsModule.Accordion,

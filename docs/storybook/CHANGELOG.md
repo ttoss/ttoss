@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.37.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.37.0...@docs/storybook@1.37.1) (2023-05-08)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [1.37.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.6...@docs/storybook@1.37.0) (2023-05-06)
+
+### Features
+
+- modal component working ([#333](https://github.com/ttoss/ttoss/issues/333)) ([adbf424](https://github.com/ttoss/ttoss/commit/adbf424b46aead19028b998c6e99ed8b2b7a8eb8))
+
 ## [1.36.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.36.5...@docs/storybook@1.36.6) (2023-05-03)
 
 **Note:** Version bump only for package @docs/storybook

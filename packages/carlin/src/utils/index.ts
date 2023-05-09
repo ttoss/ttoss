@@ -10,3 +10,4 @@ export * from './getEnvironment';
 export * from './getIamPath';
 export * from './getProjectName';
 export * from './packageJson';
+export { spawn } from './spawn';

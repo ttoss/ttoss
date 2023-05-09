@@ -1,5 +1,5 @@
-import { Accordion } from '@ttoss/components';
-import { Meta, Story } from '@storybook/react';
+import { Accordion } from '@ttoss/components/src';
+import { Meta, StoryFn } from '@storybook/react';
 import { Text } from '@ttoss/ui';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   component: Accordion,
 } as Meta;
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   return (
     <Accordion>
       <Accordion.Item>

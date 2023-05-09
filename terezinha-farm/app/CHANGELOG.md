@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.4.0...@terezinha-farm/app@0.4.1) (2023-05-08)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.6...@terezinha-farm/app@0.4.0) (2023-05-06)
+
+### Features
+
+- modal component working ([#333](https://github.com/ttoss/ttoss/issues/333)) ([adbf424](https://github.com/ttoss/ttoss/commit/adbf424b46aead19028b998c6e99ed8b2b7a8eb8))
+
 ## [0.3.6](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.3.5...@terezinha-farm/app@0.3.6) (2023-05-03)
 
 **Note:** Version bump only for package @terezinha-farm/app

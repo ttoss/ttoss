@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@ttoss/ui';
-import { DecoratorFn } from '@storybook/react';
+import { Decorator } from '@storybook/react';
 import { themes } from '../themes';
 import { BruttalFonts } from '@ttoss/theme/Bruttal';
 import { I18nProvider } from '@ttoss/react-i18n';
@@ -36,7 +36,7 @@ export const globalTypes = {
   },
 };
 
-export const decorators: DecoratorFn[] = [
+export const decorators: Decorator[] = [
   (Story, context) => {
     const theme = {
       ...themes[context.globals.theme],

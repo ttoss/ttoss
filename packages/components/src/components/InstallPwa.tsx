@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Button, Flex, Text } from '@ttoss/ui';
 
 export type InstallPwaUiProps = {
@@ -32,4 +33,37 @@ export const InstallPwaUi = ({ onInstall }: InstallPwaUiProps) => {
       </Flex>
     </Flex>
   );
+};
+
+export const InstallPwa = () => {
+  const [supportsPwa, setSupportsPwa] = React.useState(false);
+  const [promptInstall, setPromptInstall] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setSupportsPwa(true);
+      setPromptInstall(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => {
+      return window.removeEventListener('transitionend', handler);
+    };
+  }, []);
+
+  const onInstall = (e: any) => {
+    e.preventDefault();
+    if (!promptInstall) {
+      return;
+    }
+    promptInstall.prompt();
+  };
+
+  if (!supportsPwa) {
+    return null;
+  }
+
+  return <InstallPwaUi onInstall={onInstall} />;
 };
