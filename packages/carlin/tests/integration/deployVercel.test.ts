@@ -30,13 +30,10 @@ const originalEnv = process.env;
 
 process.exit = jest.fn() as any;
 
-import { cache, spawn } from '../../src/utils';
+import { setEnvVar, spawn } from '../../src/utils';
 
 beforeEach(() => {
-  /**
-   * Cache clear to clear environment.
-   */
-  cache.clear();
+  setEnvVar('ENVIRONMENT', null);
 
   process.env = {
     ...originalEnv,
@@ -80,7 +77,9 @@ test.each([
 
 test.each([
   {
-    options: { token },
+    options: {
+      token,
+    },
   },
   {
     options: {

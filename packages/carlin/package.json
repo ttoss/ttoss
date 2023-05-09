@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --changedSince=$LATEST_TAG"
+    "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.329.0",
