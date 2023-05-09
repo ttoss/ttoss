@@ -14,5 +14,9 @@ export const getEnvVar = (key: EnvironmentVariables) => {
 };
 
 export const setEnvVar = (key: EnvironmentVariables, value: any) => {
+  if (!value) {
+    return cache.delete(key);
+  }
+
   return cache.set(key, value);
 };
