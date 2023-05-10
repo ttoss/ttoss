@@ -1,19 +1,31 @@
 {
+  "/J+02x": {
+    "defaultMessage": "Log in",
+    "description": "Button label."
+  },
   "0XOzcH": {
     "defaultMessage": "Required field",
     "description": "Required field."
-  },
-  "0cVgsc": {
-    "defaultMessage": "Login",
-    "description": "Button label."
   },
   "5E12mO": {
     "defaultMessage": "Email",
     "description": "Email label."
   },
+  "BtK6KR": {
+    "defaultMessage": "Forgot password?",
+    "description": "Forgot password?"
+  },
   "EXZxA0": {
     "defaultMessage": "Register",
     "description": "Title on sign up."
+  },
+  "EZ3YF2": {
+    "defaultMessage": "Sign up",
+    "description": "Sign up"
+  },
+  "F2iS37": {
+    "defaultMessage": "Log in",
+    "description": "Sign in title."
   },
   "KY2T6J": {
     "defaultMessage": "Code",
@@ -35,10 +47,6 @@
     "defaultMessage": "Password",
     "description": "Password label."
   },
-  "R1rFNQ": {
-    "defaultMessage": "Login",
-    "description": "Sign in title."
-  },
   "S3pjKw": {
     "defaultMessage": "Minimum {value} characters",
     "description": "Minimum {value} characters."
@@ -51,10 +59,6 @@
     "defaultMessage": "Confirm",
     "description": "Confirm"
   },
-  "XC1w2U": {
-    "defaultMessage": "Don't have an account? Sign up",
-    "description": "Link to sign up."
-  },
   "cGR2eI": {
     "defaultMessage": "Confirmation",
     "description": "Confirmation"
@@ -66,9 +70,5 @@
   "r+QgO+": {
     "defaultMessage": "Email field is required",
     "description": "Email is a required field."
-  },
-  "z5s0vm": {
-    "defaultMessage": "Do you forgot your password?",
-    "description": "Link to retrieve password."
   }
 }
