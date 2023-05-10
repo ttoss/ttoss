@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.29.0](https://github.com/ttoss/carlin/compare/carlin@1.28.2...carlin@1.29.0) (2023-05-09)
+
+### Bug Fixes
+
+- carlin tests cache ([4ea990e](https://github.com/ttoss/carlin/commit/4ea990e632a166c7d7b7835cc76cfb7e0d532428))
+- carlin tests cache environment ([e772975](https://github.com/ttoss/carlin/commit/e7729759ef9d4bfd27957c192304345e4057b01b))
+- remove broken tests ([ecf765f](https://github.com/ttoss/carlin/commit/ecf765f554c6f59445e3797b99008a898606ced2))
+
+### Features
+
+- add deploy vercel on carlin ([#336](https://github.com/ttoss/carlin/issues/336)) ([9ca2994](https://github.com/ttoss/carlin/commit/9ca2994ba1a1050028254c48e22c3fb1a41a086d))
+
 ## [1.28.2](https://github.com/ttoss/carlin/compare/carlin@1.28.1...carlin@1.28.2) (2023-05-08)
 
 **Note:** Version bump only for package carlin

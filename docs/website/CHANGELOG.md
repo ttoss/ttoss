@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.37.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.36.1...@docs/website@1.37.0) (2023-05-09)
+
+### Features
+
+- add deploy vercel on carlin ([#336](https://github.com/ttoss/ttoss/issues/336)) ([9ca2994](https://github.com/ttoss/ttoss/commit/9ca2994ba1a1050028254c48e22c3fb1a41a086d))
+
 ## [1.36.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.36.0...@docs/website@1.36.1) (2023-05-08)
 
 **Note:** Version bump only for package @docs/website
