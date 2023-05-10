@@ -6,6 +6,7 @@ export { Form } from './Form';
 export { FormField } from './FormField';
 export { FormFieldCheckbox } from './FormFieldCheckbox';
 export { FormFieldInput } from './FormFieldInput';
+export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldTextarea } from './FormFieldTextarea';

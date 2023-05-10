@@ -8,6 +8,12 @@ import {
   type LabelProps,
 } from '@ttoss/ui';
 
+export type FormFieldInputProps<TName> = {
+  label?: string;
+  name: TName;
+} & InputProps &
+  Pick<LabelProps, 'tooltip' | 'onTooltipClick'>;
+
 export const FormFieldInput = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -18,11 +24,7 @@ export const FormFieldInput = <
   onTooltipClick,
   sx,
   ...inputProps
-}: {
-  label?: string;
-  name: TName;
-} & InputProps &
-  Pick<LabelProps, 'tooltip' | 'onTooltipClick'>) => {
+}: FormFieldInputProps<TName>) => {
   const {
     field: { onChange, onBlur, value, ref },
     formState: { errors },
