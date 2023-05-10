@@ -1,27 +1,26 @@
-const MD = '0.5rem';
+import {
+  calcDividingValues,
+  calcMultiplyingValues,
+} from '../helpers/geometricCalc';
+
+const SIZE_TYPE = 'rem';
+
+const MD = 0.5;
 
 const MULTIPLIER_FACTOR = 1.618;
 
-const multiValues = (length: number) => {
-  return Array.from({ length })
-    .map(() => {
-      return MULTIPLIER_FACTOR;
-    })
-    .join(' * ');
-};
-
 export const space = {
   none: 0,
-  '2xs': `calc(${MD} / (${multiValues(3)}))`,
-  xs: `calc(${MD} / (${multiValues(2)}))`,
-  sm: `calc(${MD} / (${MULTIPLIER_FACTOR}))`,
-  md: MD,
-  lg: `calc(${MD} * ${MULTIPLIER_FACTOR})`,
-  xl: `calc(${MD} * ${multiValues(2)})`,
-  '2xl': `calc(${MD} * ${multiValues(3)})`,
-  '3xl': `calc(${MD} * ${multiValues(4)})`,
-  '4xl': `calc(${MD} * ${multiValues(5)})`,
-  '5xl': `calc(${MD} * ${multiValues(6)})`,
-  '6xl': `calc(${MD} * ${multiValues(7)})`,
-  '7xl': `calc(${MD} * ${multiValues(8)})`,
+  '2xs': calcDividingValues(MD, MULTIPLIER_FACTOR, 3),
+  xs: calcDividingValues(MD, MULTIPLIER_FACTOR, 2),
+  sm: calcDividingValues(MD, MULTIPLIER_FACTOR, 1),
+  md: `${MD}${SIZE_TYPE}`,
+  lg: calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 1),
+  xl: calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 2),
+  '2xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 3),
+  '3xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 4),
+  '4xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 5),
+  '5xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 6),
+  '6xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 7),
+  '7xl': calcMultiplyingValues(MD, MULTIPLIER_FACTOR, 8),
 };

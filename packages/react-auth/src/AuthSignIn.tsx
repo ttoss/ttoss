@@ -1,12 +1,15 @@
 import { AuthCard } from './AuthCard';
+import { Button, Flex, Link, Text } from '@ttoss/ui';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
+import { useHidePassInput } from './useHidePassInput';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignIn, OnSignInInput } from './types';
 
 export type AuthSignInProps = {
   onSignIn: OnSignIn;
   onSignUp: () => void;
+  onForgotPassword?: () => void;
   defaultValues?: Partial<OnSignInInput>;
   urlLogo?: string;
 };
@@ -15,8 +18,11 @@ export const AuthSignIn = ({
   onSignIn,
   onSignUp,
   defaultValues,
+  onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
+
+  const { handleClick, icon, inputType } = useHidePassInput();
 
   const schema = yup.object().shape({
     email: yup
@@ -52,6 +58,7 @@ export const AuthSignIn = ({
         )
       )
       .trim(),
+    // remember: yup.boolean(),
   });
 
   const formMethods = useForm<OnSignInInput>({
@@ -68,43 +75,65 @@ export const AuthSignIn = ({
       <AuthCard
         title={intl.formatMessage({
           description: 'Sign in title.',
-          defaultMessage: 'Login',
+          defaultMessage: 'Log in',
         })}
         buttonLabel={intl.formatMessage({
           description: 'Button label.',
-          defaultMessage: 'Login',
+          defaultMessage: 'Log in',
         })}
-        links={[
-          {
-            onClick: onSignUp,
-            label: intl.formatMessage({
-              description: 'Link to retrieve password.',
-              defaultMessage: 'Do you forgot your password?',
-            }),
-          },
-          {
-            onClick: onSignUp,
-            label: intl.formatMessage({
-              description: 'Link to sign up.',
-              defaultMessage: "Don't have an account? Sign up",
-            }),
-          },
-        ]}
+        isValidForm={formMethods.formState.isValid}
+        extraButton={
+          <Button
+            type="button"
+            variant="secondary"
+            sx={{ textAlign: 'center', display: 'initial' }}
+            onClick={onSignUp}
+            aria-label="sign-up"
+          >
+            {intl.formatMessage({
+              description: 'Sign up',
+              defaultMessage: 'Sign up',
+            })}
+          </Button>
+        }
       >
-        <FormFieldInput
-          name="email"
-          label={intl.formatMessage({
-            description: 'Email label.',
-            defaultMessage: 'Email',
-          })}
-        />
-        <FormFieldInput
-          name="password"
-          label={intl.formatMessage({
-            description: 'Password label.',
-            defaultMessage: 'Password',
-          })}
-        />
+        <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
+          <FormFieldInput
+            name="email"
+            label={intl.formatMessage({
+              description: 'Email label.',
+              defaultMessage: 'Email',
+            })}
+          />
+          <FormFieldInput
+            name="password"
+            trailingIcon={icon}
+            onTrailingIconClick={handleClick}
+            type={inputType}
+            label={intl.formatMessage({
+              description: 'Password label.',
+              defaultMessage: 'Password',
+            })}
+          />
+        </Flex>
+
+        <Flex sx={{ justifyContent: 'space-between', marginTop: 'lg' }}>
+          {/* TODO: temporally commented */}
+          {/* <FormFieldCheckbox
+            name="remember"
+            label={intl.formatMessage({
+              description: 'Remember',
+              defaultMessage: 'Remember',
+            })}
+          /> */}
+
+          <Text as={Link} onClick={onForgotPassword}>
+            {intl.formatMessage({
+              description: 'Forgot password?',
+              defaultMessage: 'Forgot password?',
+            })}
+          </Text>
+        </Flex>
       </AuthCard>
     </Form>
   );

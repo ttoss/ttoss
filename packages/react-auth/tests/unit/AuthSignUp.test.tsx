@@ -15,7 +15,7 @@ test('Should not call the onSubmit function if click on the Signup button withou
 
   render(<AuthSignUp {...{ onSignUp, onReturnToSignIn }} />);
 
-  await user.click(screen.getByRole('button'));
+  await user.click(screen.getByLabelText('submit-button'));
 
   expect(onSignUp).toHaveBeenCalledTimes(0);
 });
@@ -27,7 +27,7 @@ test('Should call the onSubmit function if click on the Signup button with filli
 
   const emailInput = screen.getByLabelText('Email');
   const password = screen.getByLabelText('Password');
-  const buttonSubmit = screen.getByRole('button');
+  const buttonSubmit = screen.getByLabelText('submit-button');
 
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);

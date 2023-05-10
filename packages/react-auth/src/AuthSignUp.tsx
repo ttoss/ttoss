@@ -1,5 +1,6 @@
 import { AuthCard } from './AuthCard';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Link, Text } from '@ttoss/ui';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignUp, OnSignUpInput } from './types';
@@ -67,15 +68,15 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           description: 'Title on sign up.',
           defaultMessage: 'Register',
         })}
-        links={[
-          {
-            label: intl.formatMessage({
+        isValidForm={formMethods.formState.isValid}
+        extraButton={
+          <Text onClick={onReturnToSignIn} as={Link}>
+            {intl.formatMessage({
               description: 'Link to sign in on sign up.',
               defaultMessage: 'Do you already have an account? Sign in',
-            }),
-            onClick: onReturnToSignIn,
-          },
-        ]}
+            })}
+          </Text>
+        }
       >
         <FormFieldInput
           name="email"
@@ -86,6 +87,7 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
         />
         <FormFieldInput
           name="password"
+          type="password"
           label={intl.formatMessage({
             description: 'Password label.',
             defaultMessage: 'Password',

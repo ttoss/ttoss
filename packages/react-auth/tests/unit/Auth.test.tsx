@@ -1,6 +1,6 @@
 import { Auth as AmplifyAuth } from 'aws-amplify';
 import { Auth } from '../../src/Auth';
-import { act, render, screen, userEvent, waitFor } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 
 jest.mock('aws-amplify', () => {
   return {
@@ -30,11 +30,7 @@ test('should call Amplify Auth.signIn', async () => {
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
 
-  await act(async () => {
-    await waitFor(async () => {
-      await user.click(screen.getByRole('button'));
-    });
-  });
+  await user.click(screen.getByLabelText('submit-button'));
 
   /**
    * Assert
@@ -51,7 +47,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
    * Sign In screen
    */
 
-  await user.click(screen.getByText("Don't have an account? Sign up"));
+  await user.click(screen.getByLabelText('sign-up'));
 
   expect(AmplifyAuth.signIn).not.toHaveBeenCalled();
 
@@ -61,11 +57,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
 
-  await act(async () => {
-    await waitFor(async () => {
-      await user.click(screen.getByRole('button'));
-    });
-  });
+  await user.click(screen.getByLabelText('submit-button'));
 
   expect(AmplifyAuth.signUp).toHaveBeenCalledWith({
     username: email,
@@ -80,9 +72,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
 
   await user.type(screen.getByLabelText('Code'), code);
 
-  await act(async () => {
-    await user.click(screen.getByRole('button'));
-  });
+  await user.click(screen.getByLabelText('submit-button'));
 
   expect(AmplifyAuth.confirmSignUp).toHaveBeenCalledWith(email, code);
 });
@@ -100,7 +90,7 @@ test('loading bar should render', async () => {
 
   render(<Auth />);
 
-  expect(screen.queryByRole('progressbar')).toBeNull();
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
   // userEvent.type(screen.getByLabelText('email'), email);
   // userEvent.type(screen.getByLabelText('password'), password);
