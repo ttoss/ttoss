@@ -18,7 +18,7 @@ import {
   AppSyncLambdaFunctionLogicalId,
 } from '../../src/createApiTemplate';
 import { createApiTemplate } from '../../src';
-import { schemaComposer } from 'graphql-compose';
+import { schemaComposer } from '@ttoss/graphql-api';
 
 const createApiTemplateInput = {
   schemaComposer,

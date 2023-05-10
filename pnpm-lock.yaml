@@ -216,18 +216,9 @@ importers:
       '@ttoss/cloudformation':
         specifier: workspace:^
         version: link:../cloudformation
-      express:
-        specifier: ^4.18.2
-        version: 4.18.2
-      graphql-compose-connection:
-        specifier: ^8.2.1
-        version: 8.2.1(graphql-compose@9.0.10)
-      graphql-helix:
-        specifier: ^1.13.0
-        version: 1.13.0(graphql@16.6.0)
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
+      '@ttoss/graphql-api':
+        specifier: workspace:^
+        version: link:../graphql-api
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
@@ -238,21 +229,12 @@ importers:
       '@types/aws-lambda':
         specifier: ^8.10.115
         version: 8.10.115
-      '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.17
       '@types/yargs':
         specifier: ^17.0.24
         version: 17.0.24
       carlin:
         specifier: workspace:^
         version: link:../carlin
-      graphql:
-        specifier: ^16.6.0
-        version: 16.6.0
-      graphql-compose:
-        specifier: ^9.0.10
-        version: 9.0.10(graphql@16.6.0)
       jest:
         specifier: ^29.5.0
         version: 29.5.0(@types/node@18.16.2)(ts-node@10.9.1)
@@ -712,6 +694,49 @@ importers:
       '@types/react':
         specifier: ^18.2.5
         version: 18.2.5
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.16.2)(ts-node@10.9.1)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+
+  packages/graphql-api:
+    dependencies:
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      graphql-compose:
+        specifier: ^9.0.10
+        version: 9.0.10(graphql@16.6.0)
+      graphql-compose-connection:
+        specifier: ^8.2.1
+        version: 8.2.1(graphql-compose@9.0.10)
+      graphql-helix:
+        specifier: ^1.13.0
+        version: 1.13.0(graphql@16.6.0)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.16.2)(typescript@5.0.4)
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@ttoss/relay-amplify':
+        specifier: workspace:^
+        version: link:../relay-amplify
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
+      '@types/yargs':
+        specifier: ^17.0.24
+        version: 17.0.24
+      graphql:
+        specifier: ^16.6.0
+        version: 16.6.0
       jest:
         specifier: ^29.5.0
         version: 29.5.0(@types/node@18.16.2)(ts-node@10.9.1)
@@ -18127,6 +18152,7 @@ packages:
     dependencies:
       graphql: 16.6.0
       graphql-type-json: 0.3.2(graphql@16.6.0)
+    dev: false
 
   /graphql-helix@1.13.0(graphql@16.6.0):
     resolution: {integrity: sha512-cqDKMoRywKjnL0ZWCTB0GOiBgsH6d3nU4JGDF6RuzAyd35tmalzKpSxkx3NNp4H5RvnKWnrukWzR51wUq277ng==}
@@ -18142,6 +18168,7 @@ packages:
       graphql: '>=0.8.0'
     dependencies:
       graphql: 16.6.0
+    dev: false
 
   /graphql@15.8.0:
     resolution: {integrity: sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==}
