@@ -1,8 +1,14 @@
 import { AuthCard } from './AuthCard';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+import {
+  Form,
+  FormFieldInput,
+  FormFieldPassword,
+  useForm,
+  yup,
+  yupResolver,
+} from '@ttoss/forms';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
-import { useHidePassInput } from './useHidePassInput';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignIn, OnSignInInput } from './types';
 
@@ -21,8 +27,6 @@ export const AuthSignIn = ({
   onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
-
-  const { handleClick, icon, inputType } = useHidePassInput();
 
   const schema = yup.object().shape({
     email: yup
@@ -105,11 +109,8 @@ export const AuthSignIn = ({
               defaultMessage: 'Email',
             })}
           />
-          <FormFieldInput
+          <FormFieldPassword
             name="password"
-            trailingIcon={icon}
-            onTrailingIconClick={handleClick}
-            type={inputType}
             label={intl.formatMessage({
               description: 'Password label.',
               defaultMessage: 'Password',
