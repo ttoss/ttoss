@@ -133,3 +133,28 @@ composeWithRelay(UserTC);
 ```
 
 _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github.io/docs/plugins/plugin-relay.html) to create `composeWithRelay`._
+
+## Building Schema
+
+As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`.
+
+```bash
+ttoss-graphl-api build-schema
+```
+
+## Server
+
+This package provides a Koa server to run your GraphQL API. You can use the `createServer` method to create the server.
+
+```ts
+import { createServer } from '@ttoss/graphql-api/server';
+
+const server = createServer({
+  schemaComposer,
+  graphiql: true,
+});
+
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+```

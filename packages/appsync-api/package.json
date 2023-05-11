@@ -9,9 +9,6 @@
   ],
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
-  "bin": {
-    "ttoss-appsync-api": "./bin/cli.js"
-  },
   "files": [
     "dist",
     "src"
@@ -27,14 +24,16 @@
     "@ttoss/graphql-api": "workspace:^"
   },
   "peerDependencies": {
-    "@ttoss/graphql-api": "workspace:^"
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/relay-amplify": "workspace:^",
     "@types/aws-lambda": "^8.10.115",
-    "@types/yargs": "^17.0.24",
     "carlin": "workspace:^",
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10",
     "jest": "^29.5.0",
     "tsup": "^6.7.0"
   },

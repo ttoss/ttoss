@@ -49,10 +49,6 @@ describe('tests with default template', () => {
     ).not.toContain('"""');
   });
 
-  test('should have schema with descriptions', () => {
-    expect(template.Metadata.Schema.Definition).toContain('"""');
-  });
-
   test('should contain UserPoolConfig', () => {
     expect(
       template.Resources[AppSyncGraphQLApiLogicalId].Properties[

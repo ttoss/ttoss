@@ -4,12 +4,12 @@
   "version": "0.6.31",
   "scripts": {
     "build": "ttoss-appsync-api build-schema",
-    "deploy": "carlin deploy",
-    "dev": "node -r ts-node/register --watch server/server.ts"
+    "deploy": "carlin deploy"
   },
   "dependencies": {
     "@terezinha-farm/config": "workspace:^",
     "@ttoss/appsync-api": "workspace:^",
+    "@ttoss/graphql-api": "workspace:^",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10"
   },
