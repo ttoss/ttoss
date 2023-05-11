@@ -42,6 +42,7 @@ const config = {
       'react-i18n',
       'ui',
       'logger',
+      'graphql-api',
     ].map((package) => {
       return [
         'docusaurus-plugin-typedoc',

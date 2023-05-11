@@ -3,7 +3,7 @@
   "name": "@terezinha-farm/api",
   "version": "0.6.31",
   "scripts": {
-    "build": "ttoss-appsync-api build-schema",
+    "build": "ttoss-graphql-api build-schema",
     "deploy": "carlin deploy"
   },
   "dependencies": {
