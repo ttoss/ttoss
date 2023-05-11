@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.38.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.37.1...@docs/website@1.38.0) (2023-05-11)
+
+### Features
+
+- graphql api ([#341](https://github.com/ttoss/ttoss/issues/341)) ([a7c6759](https://github.com/ttoss/ttoss/commit/a7c6759c50c9af3f8df78d087c37d35a0bfa743f))
+
 ## [1.37.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.37.0...@docs/website@1.37.1) (2023-05-10)
 
 **Note:** Version bump only for package @docs/website
