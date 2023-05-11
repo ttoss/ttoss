@@ -1,14 +1,26 @@
 {
-  "name": "@ttoss/appsync-api",
-  "version": "0.12.0",
-  "description": "A library for building GraphQL APIs for AWS AppSync.",
-  "license": "UNLICENSED",
+  "name": "@ttoss/graphql-api",
+  "version": "0.0.1",
+  "description": "A library for building GraphQL APIs.",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/index.js"
+    },
+    "./server": {
+      "import": "./dist/esm/server.js",
+      "require": "./dist/server.js"
+    }
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
+  "bin": {
+    "ttoss-graphql-api": "./bin/cli.js"
+  },
   "files": [
     "dist",
     "src"
@@ -20,8 +32,14 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "workspace:^",
-    "@ttoss/graphql-api": "workspace:^"
+    "@koa/router": "^12.0.0",
+    "graphql-compose-connection": "^8.2.1",
+    "graphql-helix": "^1.13.0",
+    "koa": "^2.14.2",
+    "koa-bodyparser": "^4.4.0",
+    "npmlog": "^7.0.1",
+    "ts-node": "^10.9.1",
+    "yargs": "^17.7.2"
   },
   "peerDependencies": {
     "graphql": "^16.6.0",
@@ -29,9 +47,10 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@ttoss/relay-amplify": "workspace:^",
-    "@types/aws-lambda": "^8.10.115",
-    "carlin": "workspace:^",
+    "@types/koa": "^2.13.6",
+    "@types/koa__router": "^12.0.0",
+    "@types/koa-bodyparser": "^4.3.10",
+    "@types/yargs": "^17.0.24",
     "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10",
     "jest": "^29.5.0",
@@ -39,8 +58,6 @@
   },
   "keywords": [
     "api",
-    "appsync",
-    "aws",
     "graphql"
   ],
   "publishConfig": {

@@ -5,7 +5,7 @@ import {
   fromGlobalId,
   schemaComposer,
   toGlobalId,
-} from '@ttoss/graphql-api';
+} from '../src';
 
 type Book = {
   id: string;

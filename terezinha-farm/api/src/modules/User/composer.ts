@@ -1,5 +1,5 @@
 import { findUserById } from './user';
-import { schemaComposer } from 'graphql-compose';
+import { schemaComposer } from '@ttoss/graphql-api';
 
 const UserTC = schemaComposer.createObjectTC({
   name: 'User',

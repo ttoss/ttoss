@@ -74,10 +74,6 @@ export const createApiTemplate = ({
     omitScalars: true,
   });
 
-  const sdlWithComments = schemaComposer.toSDL({
-    omitScalars: true,
-  });
-
   graphql.validateSchema(schemaComposer.buildSchema());
 
   /**
@@ -125,14 +121,6 @@ export const createApiTemplate = ({
 
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
-    /**
-     * This is a workaround to use with build script.
-     */
-    Metadata: {
-      Schema: {
-        Definition: sdlWithComments,
-      },
-    },
     Parameters: {
       Environment: {
         Default: 'Staging',
