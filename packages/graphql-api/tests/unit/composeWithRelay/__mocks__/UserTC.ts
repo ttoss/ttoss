@@ -39,9 +39,9 @@ export const findByIdResolver = schemaComposer.createResolver({
   resolve: (resolveParams: any) => {
     const args = resolveParams.args || {};
 
-    const { id } = fromGlobalId(args.id);
+    const { recordId } = fromGlobalId(args.id);
 
-    if (id.toString() === '1') {
+    if (recordId.toString() === '1') {
       return Promise.resolve({
         id: 1,
         name: 'Pavel',
@@ -49,7 +49,7 @@ export const findByIdResolver = schemaComposer.createResolver({
       });
     }
 
-    if (id.toString() === '2') {
+    if (recordId.toString() === '2') {
       return Promise.resolve({
         id: 2,
         name: 'Lee',

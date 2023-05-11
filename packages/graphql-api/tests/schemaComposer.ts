@@ -168,9 +168,9 @@ AuthorTC.addResolver({
   args: { id: 'ID!' },
   type: AuthorTC,
   resolve: async ({ args }: ResolverResolveParams<any, any, any>) => {
-    const { id } = fromGlobalId(args.id);
+    const { recordId } = fromGlobalId(args.id);
 
-    const [pk, sk] = id.split('##');
+    const [pk, sk] = recordId.split('##');
 
     return AUTHORS.find((author) => {
       return author.pk === pk && author.sk === sk;
@@ -249,10 +249,10 @@ BookTC.addResolver({
   args: { id: 'ID!' },
   type: BookTC,
   resolve: async ({ args }: ResolverResolveParams<any, any, any>) => {
-    const { id } = fromGlobalId(args.id);
+    const { recordId } = fromGlobalId(args.id);
 
     return BOOKS.find((book) => {
-      return book.id === id;
+      return book.id === recordId;
     });
   },
 });

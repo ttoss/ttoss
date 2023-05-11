@@ -1,6 +1,11 @@
 # @ttoss/graphql-api
 
-This package provides an opinionated way to create an GraphQL API using ttoss ecosystem modules. The main goal of this package is to provide a simple way to create a complex GraphQL API and retrieve the SDL.
+This package provides an opinionated way to create an GraphQL API using ttoss ecosystem modules. The main goal of this package is to provide a resilient way to create a complex GraphQL API to meet the following goals:
+
+1. **Modular**: you can create your GraphQL API using modules, so you can reduce the complexity of a big GraphQL API.
+1. **Relay**: ttoss uses Relay as the main GraphQL client, so this package implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/).
+1. **Build Schema**: as Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`.
+1. **AppSync Support**: this package provides a way to create a GraphQL API that works with AWS AppSync, besides you can also create a local GraphQL API server.
 
 ## Installation
 
@@ -44,38 +49,87 @@ import './modules/User/composer';
 export { schemaComposer };
 ```
 
-## Advanced
+## Relay Server Specification
 
-### Relay Wrapper
+As ttoss uses Relay as the main GraphQL client, this library implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/).
 
-As ttoss uses Relay as the main GraphQL client, you can wrap your types with the `composeWithRelay` method to add the `id` field and the `node` query.
+### Object Identification
+
+Method `composeWithRelay` will handle the object identification for your `ObjectTypeComposer`, it will return a globally unique ID among all types in the following format `base64(TypeName + ':' + recordId)`.
+
+Method `composeWithRelay` only works if `ObjectTypeComposer` meets the following requirements:
+
+1. Has defined `recordIdFn`: returns the id for the globalId construction. For example, if you use DynamoDB, you could create id from hash and range keys:
+
+   ```ts
+   UserTC.setRecordIdFn((source) => {
+     return `${source.hashKey}:${source.rangeKey}`;
+   });
+   ```
+
+2. Have `findById` resolver: this resolver will be used by `RootQuery.node` to resolve the object by globalId. For example:
+
+   ```ts
+   UserTC.addResolver({
+     name: 'findById',
+     type: UserTC,
+     args: {
+       id: 'String!',
+     },
+     resolve: ({ args }) => {
+       const { type, recordId } = fromGlobalId(args.id);
+       // find object
+     },
+   });
+   ```
+
+#### Example
 
 ```ts
-import { composeWithRelay, schemaComposer } from '@ttoss/graphql-api';
+import {
+  composeWithRelay,
+  schemaComposer,
+  fromGlobalId,
+} from '@ttoss/graphql-api';
 
 const UserTC = schemaComposer.createObjectTC({
-  name: 'ProficiencyTest',
+  name: 'User',
   fields: {
     id: 'ID!',
     name: 'String!',
   },
 });
 
-// 1. Returns you id for the globalId construction.
+/**
+ * 1. Returns you id for the globalId construction.
+ */
 UserTC.setRecordIdFn((source) => {
+  /**
+   * If you use DynamoDB, you could create id from hash and range keys:
+   * return `${source.hashKey}:${source.rangeKey}`;
+   */
   return source.id;
 });
 
-// 2. Define `findById` resolver (that will be used by `RootQuery.node`).
+/**
+ * 2. Define `findById` resolver (that will be used by `RootQuery.node`).
+ */
 UserTC.addResolver({
   name: 'findById',
   type: UserTC,
   args: {
     id: 'String!',
   },
-  resolve: // find user by id resolver
+  resolve: ({ args }) => {
+    const { type, recordId } = fromGlobalId(args.id);
+    // find object
+  },
 });
 
-// 3. Apply Relay properties to the UserTC
+/**
+ * 3. This will add the `id` field and the `node` query.
+ */
 composeWithRelay(UserTC);
 ```
+
+_We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github.io/docs/plugins/plugin-relay.html) to create `composeWithRelay`._
