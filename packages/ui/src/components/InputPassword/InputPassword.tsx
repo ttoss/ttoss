@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Input } from './Input';
-import { type InputProps } from './Input';
-import { useHidePassInput } from '../hooks/useHidePassInput';
+import { Input } from '../Input';
+import { type InputProps } from '../Input';
+import { useHidePassInput } from './useHidePassInput';
 
 export type InputPasswordProps = Omit<
   InputProps,

@@ -41,4 +41,4 @@ export { Paragraph, type ParagraphProps } from './components/Paragraph';
 export {
   InputPassword,
   type InputPasswordProps,
-} from './components/InputPassword';
+} from './components/InputPassword/InputPassword';
