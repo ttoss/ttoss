@@ -333,18 +333,21 @@ export const BruttalTheme: Theme = {
   forms: {
     label: {
       color: 'text',
-      fontFamily: 'body',
+      fontFamily: 'caption',
       alignItems: 'center',
-      fontSize: 'base',
+      fontSize: 'sm',
       '&:is([aria-disabled="true"])': {
         color: 'onMuted',
       },
       '& > span[aria-label="tooltip"]': {
-        fontSize: 'xs',
+        fontSize: 'sm',
         marginLeft: '2xs',
       },
       '&:has(input[type="checkbox"]:disabled)': {
         color: 'onMuted',
+      },
+      '&:has(+div>:is(input, select, textarea))': {
+        marginBottom: 'md',
       },
       '&:has(div > input[type="radio"])': {
         alignItems: 'center',
