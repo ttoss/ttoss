@@ -1,3 +1,3 @@
 import './modules/User/composer';
 
-export { schemaComposer } from 'graphql-compose';
+export { schemaComposer } from '@ttoss/graphql-api';

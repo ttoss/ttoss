@@ -1,4 +1,4 @@
-import { ResolverResolveParams } from 'graphql-compose';
+import { ResolverResolveParams } from '@ttoss/graphql-api';
 
 export const findUserById = ({
   args,

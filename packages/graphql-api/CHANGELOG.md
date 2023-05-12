@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.12.0...@ttoss/appsync-api@0.13.0) (2023-05-11)
+# 0.1.0 (2023-05-11)
 
 ### Features
 

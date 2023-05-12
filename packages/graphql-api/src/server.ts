@@ -6,27 +6,38 @@ import {
   sendResult,
   shouldRenderGraphiQL,
 } from 'graphql-helix';
-import express, { Express } from 'express';
+import Koa from 'koa';
+import Router from '@koa/router';
+import bodyParser from 'koa-bodyparser';
+
+export { Router };
 
 export const createServer = ({
   schemaComposer,
+  graphiql = false,
 }: {
   schemaComposer: SchemaComposer<any>;
-}): Express => {
-  const server = express();
+  graphiql?: boolean;
+}): Koa => {
+  const server = new Koa();
 
-  server.use(express.json());
+  const router = new Router();
 
-  server.use('/graphql', async (req, res) => {
+  server.use(bodyParser());
+
+  router.all('/graphql', async (ctx) => {
     const request = {
-      body: req.body,
-      headers: req.headers,
-      method: req.method,
-      query: req.query,
+      body: ctx.request.body,
+      headers: ctx.headers,
+      method: ctx.method,
+      query: ctx.request.query,
     };
 
     if (shouldRenderGraphiQL(request)) {
-      res.send(renderGraphiQL());
+      if (graphiql) {
+        ctx.body = renderGraphiQL({});
+      }
+
       return;
     }
 
@@ -40,8 +51,10 @@ export const createServer = ({
       schema: schemaComposer.buildSchema(),
     });
 
-    sendResult(result, res);
+    sendResult(result, ctx.res);
   });
+
+  server.use(router.routes()).use(router.allowedMethods());
 
   return server;
 };

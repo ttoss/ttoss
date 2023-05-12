@@ -9,11 +9,11 @@ describe('globalId', () => {
   test('should have correct method fromGlobalId()', () => {
     expect(fromGlobalId('VXNlcjo3ODk=')).toEqual({
       type: 'User',
-      id: '789',
+      recordId: '789',
     });
     expect(fromGlobalId('QXJ0aWNsZToyMg==')).toEqual({
       type: 'Article',
-      id: '22',
+      recordId: '22',
     });
   });
 });

@@ -2,7 +2,7 @@ export type Base64String = string;
 
 export type ResolvedGlobalId = {
   type: string;
-  id: string;
+  recordId: string;
 };
 
 export const base64 = (i: string): Base64String => {
@@ -17,8 +17,8 @@ export const unbase64 = (i: Base64String): string => {
  * Takes a type name and an ID specific to that type name, and returns a
  * "global ID" that is unique among all types.
  */
-export const toGlobalId = (type: string, id: string | number): string => {
-  return base64([type, id].join(':'));
+export const toGlobalId = (type: string, recordId: string | number): string => {
+  return base64([type, recordId].join(':'));
 };
 
 /**
@@ -27,6 +27,6 @@ export const toGlobalId = (type: string, id: string | number): string => {
  */
 export const fromGlobalId = (globalId: string): ResolvedGlobalId => {
   const unbasedGlobalId = unbase64(globalId);
-  const [type, id] = unbasedGlobalId.split(':');
-  return { type, id };
+  const [type, recordId] = unbasedGlobalId.split(':');
+  return { type, recordId };
 };

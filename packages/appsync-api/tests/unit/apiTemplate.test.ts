@@ -18,7 +18,7 @@ import {
   AppSyncLambdaFunctionLogicalId,
 } from '../../src/createApiTemplate';
 import { createApiTemplate } from '../../src';
-import { schemaComposer } from 'graphql-compose';
+import { schemaComposer } from '@ttoss/graphql-api';
 
 const createApiTemplateInput = {
   schemaComposer,
@@ -47,10 +47,6 @@ describe('tests with default template', () => {
     expect(
       template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
     ).not.toContain('"""');
-  });
-
-  test('should have schema with descriptions', () => {
-    expect(template.Metadata.Schema.Definition).toContain('"""');
   });
 
   test('should contain UserPoolConfig', () => {

@@ -1,6 +1,7 @@
 import { AUTHORS, schemaComposer } from '../schemaComposer';
-import { createAppSyncResolverHandler, toGlobalId } from '../../src';
+import { createAppSyncResolverHandler } from '../../src';
 import { encodeCredentials } from '@ttoss/relay-amplify';
+import { toGlobalId } from '@ttoss/graphql-api';
 
 test('lambda handler should call author resolver correctly', async () => {
   const handler = createAppSyncResolverHandler({ schemaComposer });
