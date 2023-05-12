@@ -2,19 +2,19 @@ import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 import {
   Flex,
-  Input,
-  type InputProps,
+  InputPassword,
+  type InputPasswordProps,
   Label,
   type LabelProps,
 } from '@ttoss/ui';
 
-export type FormFieldInputProps<TName> = {
+export type FormFieldPasswordProps<TName> = {
   label?: string;
   name: TName;
-} & InputProps &
+} & InputPasswordProps &
   Pick<LabelProps, 'tooltip' | 'onTooltipClick'>;
 
-export const FormFieldInput = <
+export const FormFieldPassword = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
@@ -24,7 +24,7 @@ export const FormFieldInput = <
   onTooltipClick,
   sx,
   ...inputProps
-}: FormFieldInputProps<TName>) => {
+}: FormFieldPasswordProps<TName>) => {
   const {
     field: { onChange, onBlur, value, ref },
     formState: { errors },
@@ -33,7 +33,7 @@ export const FormFieldInput = <
     defaultValue: '',
   });
 
-  const id = `form-field-input-${name}`;
+  const id = `form-field-password-${name}`;
 
   const hasError = !!errors[name]?.message;
 
@@ -50,7 +50,7 @@ export const FormFieldInput = <
         </Label>
       )}
 
-      <Input
+      <InputPassword
         ref={ref}
         onChange={onChange}
         className={hasError ? 'error' : ''}

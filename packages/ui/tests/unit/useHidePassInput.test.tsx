@@ -1,5 +1,5 @@
 import { render, screen, userEvent } from '@ttoss/test-utils';
-import { useHidePassInput } from '../../src/useHidePassInput';
+import { useHidePassInput } from '../../src/components/InputPassword/useHidePassInput';
 
 const INPUT_LABEL = 'INPUT';
 
