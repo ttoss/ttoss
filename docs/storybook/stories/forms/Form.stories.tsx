@@ -3,6 +3,7 @@ import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
+  FormFieldPassword,
   FormFieldSelect,
   FormFieldTextarea,
   FormGroup,
@@ -23,6 +24,10 @@ export const Example1: StoryFn = () => {
   const schema = yup.object({
     firstName: yup.string().required('First name is required'),
     age: yup.number().required('Age is required'),
+    password: yup
+      .string()
+      .min(6, 'Min of 6 caracteres')
+      .required('Password is a required field'),
     receiveEmails: yup
       .boolean()
       .oneOf([true], 'It needs to be checked')
@@ -56,6 +61,13 @@ export const Example1: StoryFn = () => {
         placeholder="Age"
         type="number"
         tooltip
+      />
+
+      <FormFieldPassword
+        name="password"
+        label="Password"
+        placeholder="Password"
+        showPasswordByDefault
       />
       <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
       <FormFieldInput name="version" label="Version (disabled)" disabled />
