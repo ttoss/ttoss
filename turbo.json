@@ -14,7 +14,7 @@
       "outputs": []
     },
     "i18n": {
-      "dependsOn": ["//#lint"],
+      "dependsOn": ["//#lint", "^build"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
