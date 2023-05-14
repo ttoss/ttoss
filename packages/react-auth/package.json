@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "i18n": "ttoss-i18n --no-compile",
+    "i18n": "ttoss-i18n",
     "test": "jest"
   },
   "sideEffects": false,
