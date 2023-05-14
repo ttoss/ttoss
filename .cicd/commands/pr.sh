@@ -7,7 +7,7 @@ export LATEST_TAG=$(git describe --tags --abbrev=0)
 pnpm turbo run build test --filter=...[main]
 
 # See description on the main.sh file.
-pnpm run lint
+pnpm turbo run lint
 git diff --exit-code --quiet || { echo "Error: There are changed files."; git status; exit 1; }
 
 # Run deploy separately from command above because we don't want to deploy
