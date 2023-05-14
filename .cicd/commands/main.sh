@@ -1,6 +1,6 @@
 export CARLIN_ENVIRONMENT=Production
 
-# Fetch tags
+# Fetch tags.
 git fetch --tags --quiet
 
 # 1. `git tag --points-at HEAD`: This command lists all tags that point to the
@@ -12,15 +12,15 @@ git fetch --tags --quiet
 # which indicates success.
 git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
 
-# Retrieve the latest tag
+# Retrieve the latest tag.
 export LATEST_TAG=$(git describe --tags --abbrev=0)
 
-# Setup NPM token
+# Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
 # the token to .npmrc will cause git uncommitted changes error.
 echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > ~/.npmrc
 
-# Print "NPM whoami" to check if the token is valid
+# Print "NPM whoami" to check if the token is valid.
 echo NPM whoami: $(npm whoami)
 
 # Build @ttoss/config package to lerna version command works properly
@@ -36,16 +36,20 @@ pnpm turbo run build:config
 if pnpm lerna changed; then
   echo "Changes detected on packages, publishing them..."
   
-  # Version before publish to rebuild all packages that Lerna will publish
+  # Version before publish to rebuild all packages that Lerna will publish.
   pnpm lerna version --yes --no-push
 
   # Test and build all packages since $LATEST_TAG
-  # and all the workspaces that depends on them
+  # and all the workspaces that depends on them.
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
   pnpm turbo run build test --filter=...[$LATEST_TAG]
 
-  # See description on pr.sh.
-  git checkout -- .
+  # Undo all files that were changed by the build command—this happens because
+  # the build can change files with different linting rules.
+  # We don't want these changes becaues it will cause
+  # turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+  pnpm turbo run lint
+  git diff --exit-code --quiet || { echo "Error: There are changed files."; git status; exit 1; }
 
   # Use Git to check for changes in the origin repository. If there are any
   # changes, "git push --follow-tags" will fail. The error message will be:
@@ -64,13 +68,13 @@ if pnpm lerna changed; then
   # 4. Exit and wait to the next main workflow starts because of the changes.
   git fetch
 
-  # HEAD^1 because lerna version created a commit
+  # HEAD^1 because lerna version created a commit.
   git diff HEAD^1 origin/main --quiet || { echo "Changes found before publishing. Workflow stopped." && exit 1; }
 
-  # Push changes
+  # Push changes.
   git push --follow-tags
 
-  # Publish packages
+  # Publish packages.
   pnpm -r publish
 else
   echo "No changes detected on packages, skipping publish..."

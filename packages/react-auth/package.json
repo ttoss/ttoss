@@ -15,7 +15,6 @@
     "src"
   ],
   "scripts": {
-    "prebuild": "pnpm i18n",
     "build": "tsup",
     "i18n": "ttoss-i18n --no-compile",
     "test": "jest"

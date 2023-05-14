@@ -4,7 +4,6 @@
   "version": "0.5.2",
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm i18n",
     "build": "tsc && vite build",
     "bundle": "pnpm build && serve -s stats",
     "deploy": "carlin deploy static-app",
