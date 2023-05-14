@@ -18,7 +18,7 @@
   "scripts": {
     "build": "turbo run build",
     "build:config": "pnpm run --filter=@ttoss/config build && pnpm i",
-    "build-graph": "turbo run build --graph=turbo-build-graph.png",
+    "build-graph": "turbo run build --only --graph=turbo-build-graph.png",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet",
     "ls": "lerna ls",
@@ -41,7 +41,7 @@
     "lint-staged": "13.1.0",
     "prettier": "^2.8.8",
     "syncpack": "^9.8.6",
-    "turbo": "^1.9.3"
+    "turbo": "^1.9.4"
   },
   "keywords": [],
   "engines": {
