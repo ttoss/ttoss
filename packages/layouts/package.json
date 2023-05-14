@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss/layouts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Layout components for React",
   "author": "ttoss",
   "contributors": [
@@ -19,7 +19,6 @@
   },
   "sideEffects": false,
   "typings": "dist/index.d.ts",
-  "dependencies": {},
   "peerDependencies": {
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
