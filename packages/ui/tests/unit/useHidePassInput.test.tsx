@@ -1,3 +1,4 @@
+import { Input } from '../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 import { useHidePassInput } from '../../src/components/InputPassword/useHidePassInput';
 
@@ -9,7 +10,12 @@ const Component = () => {
     <div>
       <button onClick={handleClick}>hide</button>
 
-      <input aria-label={INPUT_LABEL} value={icon} type={inputType} />
+      <Input
+        aria-label={INPUT_LABEL}
+        value={icon}
+        type={inputType}
+        onChange={jest.fn()}
+      />
     </div>
   );
 };

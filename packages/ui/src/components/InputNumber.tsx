@@ -1,6 +1,6 @@
+import * as React from 'react';
 import { Flex, Icon, Text } from '..';
 import { Input, type InputProps as InputPropsUI } from 'theme-ui';
-import React from 'react';
 
 export type InputNumberProps = Omit<
   InputPropsUI,
@@ -23,7 +23,7 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
           textAlign: 'left',
           '&[type=number]::-webkit-inner-spin-button, &[type=number]::-webkit-outer-spin-button':
             {
-              '-webkit-appearance': 'none',
+              WebkitAppearance: 'none',
               margin: 0,
             },
           ...sx,
@@ -38,7 +38,7 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
         textAlign: 'center',
         '&[type=number]::-webkit-inner-spin-button, &[type=number]::-webkit-outer-spin-button':
           {
-            '-webkit-appearance': 'none',
+            WebkitAppearance: 'none',
             margin: 0,
           },
         ...sx,
