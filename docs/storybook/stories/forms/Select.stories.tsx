@@ -19,7 +19,7 @@ const schema = yup.object({
 });
 
 const Template: Story = () => {
-  const formMethods = useForm({
+  const formMethods = useForm<{ car: string }>({
     mode: 'all',
     resolver: yupResolver(schema),
   });
@@ -28,6 +28,7 @@ const Template: Story = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldSelect
         name="car"
+        defaultValue="Mercedes"
         label="What car do you prefer?"
         options={[
           { value: '', label: 'Select a car' },
