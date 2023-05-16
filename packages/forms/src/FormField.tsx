@@ -9,6 +9,26 @@ import {
 } from 'react-hook-form';
 import { Flex, type FlexProps, Label } from '@ttoss/ui';
 
+export type FormFieldProps = {
+  sx?: FlexProps['sx'];
+  disabled?: boolean;
+  tooltip?: boolean;
+  onTooltipClick?: () => void;
+};
+
+type FormFieldCompleteProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = {
+  label?: string;
+  id?: string;
+  name: TName;
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
+  render: (
+    props: UseControllerReturn<TFieldValues, TName>
+  ) => React.ReactElement;
+} & FormFieldProps;
+
 export const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -19,16 +39,8 @@ export const FormField = <
   defaultValue,
   sx,
   render,
-}: {
-  label?: string;
-  id?: string;
-  name: TName;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
-  sx?: FlexProps['sx'];
-  render: (
-    props: UseControllerReturn<TFieldValues, TName>
-  ) => React.ReactElement;
-}) => {
+  ...formFieldProps
+}: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
     defaultValue,
@@ -38,13 +50,35 @@ export const FormField = <
 
   const memoizedRender = React.useMemo(() => {
     return React.Children.map(render(controllerReturn), (child) => {
-      return React.createElement(child.type, { id, ...child.props });
+      return (
+        <>
+          {label && (
+            <Label
+              aria-disabled={formFieldProps.disabled}
+              htmlFor={id}
+              tooltip={formFieldProps.tooltip}
+              onTooltipClick={formFieldProps.onTooltipClick}
+            >
+              {label}
+            </Label>
+          )}
+
+          {React.createElement(child.type, { id, ...child.props })}
+        </>
+      );
     });
-  }, [controllerReturn, id, render]);
+  }, [
+    controllerReturn,
+    formFieldProps.disabled,
+    formFieldProps.onTooltipClick,
+    formFieldProps.tooltip,
+    id,
+    label,
+    render,
+  ]);
 
   return (
     <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
-      {label && <Label htmlFor={id}>{label}</Label>}
       {memoizedRender}
       <ErrorMessage name={name} />
     </Flex>
