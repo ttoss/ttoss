@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "description": "ttoss authentication module for React apps.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -15,9 +15,8 @@
     "src"
   ],
   "scripts": {
-    "prebuild": "pnpm i18n",
     "build": "tsup",
-    "i18n": "ttoss-i18n --no-compile",
+    "i18n": "ttoss-i18n",
     "test": "jest"
   },
   "sideEffects": false,

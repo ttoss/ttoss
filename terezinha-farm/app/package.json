@@ -1,10 +1,9 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.5.1",
+  "version": "0.5.3",
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm i18n",
     "build": "tsc && vite build",
     "bundle": "pnpm build && serve -s stats",
     "deploy": "carlin deploy static-app",

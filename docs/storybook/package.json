@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.37.5",
+  "version": "1.37.7",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
@@ -16,6 +16,7 @@
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
+    "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",

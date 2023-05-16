@@ -1,8 +1,7 @@
 {
   "name": "@ttoss/components",
-  "version": "1.28.2",
-  "description": "React components.",
-  "license": "UNLICENSED",
+  "version": "1.28.4",
+  "description": "React components for ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"

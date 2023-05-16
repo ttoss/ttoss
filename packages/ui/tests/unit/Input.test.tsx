@@ -60,8 +60,6 @@ test('should call functions onLeadingIconClick and onTrailingIconClick when the 
 
   const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
 
-  screen.debug();
-
   await user.click(leadingIconEl);
   expect(onLeadingIconClick).toHaveBeenCalled();
 
