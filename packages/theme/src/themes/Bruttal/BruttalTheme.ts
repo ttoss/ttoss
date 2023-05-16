@@ -415,10 +415,10 @@ export const BruttalTheme: Theme = {
         border: 'muted',
         borderColor: 'onMuted',
       },
-      '&.error': {
+      '&[aria-invalid="true"]': {
         borderColor: 'danger',
       },
-      '&.error+span>iconify-icon': {
+      '&[aria-invalid="true"]+span>iconify-icon': {
         color: 'danger',
       },
     },
@@ -510,7 +510,6 @@ export const BruttalTheme: Theme = {
         border: 'muted',
         color: 'onMuted',
       },
-
       '&[aria-invalid="true"]': {
         borderColor: 'danger',
         outlineColor: 'danger',

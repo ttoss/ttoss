@@ -43,7 +43,7 @@ WithError.args = {
   trailingIcon: 'carbon:error-filled',
   leadingIcon: alertIcon,
   placeholder: 'Error',
-  className: 'error',
+  'aria-invalid': 'true',
 };
 
 export const GreaterFontSize = Template.bind({});

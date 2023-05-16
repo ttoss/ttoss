@@ -1,6 +1,6 @@
-import { ErrorMessage } from './ErrorMessage';
-import { FieldPath, FieldValues, useController } from 'react-hook-form';
-import { Flex, Label, Select, type SelectProps } from '@ttoss/ui';
+import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
+import { FormField, FormFieldProps } from './FormField';
+import { Select, type SelectProps } from '@ttoss/ui';
 
 type FormRadioOption = {
   value: string | number;
@@ -11,79 +11,97 @@ type SelectSwitchProps =
   | (SelectProps & { placeholder?: never })
   | (SelectProps & { defaultValue?: never });
 
-const checkDefaultValue = (
+const checkDefaultValue = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>(
   options: Array<FormRadioOption>,
-  defaultValue?: string | number | readonly string[],
+  defaultValue?: FieldPathValue<TFieldValues, TName>,
   placeholder?: string
-) => {
+): FieldPathValue<TFieldValues, TName> => {
+  if (defaultValue) {
+    return defaultValue;
+  }
+
   const hasEmptyValue = options.some((opt) => {
     return opt.value === '' || opt.value === 0;
   });
 
-  if (placeholder && hasEmptyValue) return '';
+  const EMPTY_VALUE = '' as FieldPathValue<TFieldValues, TName>;
+
+  if (placeholder && hasEmptyValue) {
+    return EMPTY_VALUE;
+  }
+
   if (placeholder && !hasEmptyValue) {
     options.unshift({
       label: placeholder,
       value: '',
     });
-    return '';
+    return EMPTY_VALUE;
   }
-  if (!placeholder && defaultValue) return defaultValue;
-  if (options.length === 0) return '';
-  return options?.[0]?.value;
+
+  if (!placeholder && defaultValue) return EMPTY_VALUE;
+  if (options.length === 0) return EMPTY_VALUE;
+
+  return options?.[0]?.value as FieldPathValue<TFieldValues, TName>;
 };
 
+type FormFieldSelectProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>
+> = SelectSwitchProps &
+  FormFieldProps & {
+    label?: string;
+    name: FieldPath<TFieldValues>;
+    options: FormRadioOption[];
+    defaultValue?: FieldPathValue<TFieldValues, TName>;
+  };
+
 export const FormFieldSelect = <
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
   label,
   name,
   options,
   sx,
   ...selectProps
-}: {
-  label?: string;
-  name: FieldPath<TFieldValues>;
-  options: FormRadioOption[];
-} & SelectSwitchProps) => {
+}: FormFieldSelectProps<TFieldValues, TName>) => {
   const { defaultValue, placeholder } = selectProps;
 
-  const checkedDefaultValue = checkDefaultValue(
+  const checkedDefaultValue = checkDefaultValue<TFieldValues, TName>(
     options,
     defaultValue,
     placeholder
   );
 
-  const {
-    field: { onChange, onBlur, value, ref },
-  } = useController<any>({
-    name,
-    defaultValue: checkedDefaultValue,
-  });
-
-  const id = `form-field-select-${name}`;
-
   return (
-    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
-      {label && <Label htmlFor={id}>{label}</Label>}
-      <Select
-        ref={ref}
-        name={name}
-        onChange={onChange}
-        onBlur={onBlur}
-        value={value}
-        id={id}
-        {...{ ...selectProps, defaultValue: undefined }}
-      >
-        {options.map((option) => {
-          return (
-            <option key={option.label} value={option.value}>
-              {option.label}
-            </option>
-          );
-        })}
-      </Select>
-      <ErrorMessage name={name} />
-    </Flex>
+    <FormField
+      name={name}
+      label={label}
+      disabled={selectProps.disabled}
+      tooltip={selectProps.tooltip}
+      onTooltipClick={selectProps.onTooltipClick}
+      sx={sx}
+      defaultValue={checkedDefaultValue}
+      render={({ field }) => {
+        return (
+          <Select
+            {...selectProps}
+            {...field}
+            {...{ ...selectProps, defaultValue: undefined }}
+          >
+            {options.map((option) => {
+              return (
+                <option key={option.label} value={option.value}>
+                  {option.label}
+                </option>
+              );
+            })}
+          </Select>
+        );
+      }}
+    />
   );
 };
