@@ -1,1 +1,5 @@
-environment: Production
+skipDeploy: true
+
+environments:
+  Production:
+    skipDeploy: false
