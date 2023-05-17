@@ -50,7 +50,7 @@ export const createAuthTemplate = ({
     };
   }[];
   usernameAttributes?: Array<'email' | 'phone_number'> | null;
-} = {}) => {
+} = {}): any => {
   const AutoVerifiedAttributes =
     Array.isArray(autoVerifiedAttributes) && autoVerifiedAttributes.length > 0
       ? autoVerifiedAttributes
