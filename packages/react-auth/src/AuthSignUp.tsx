@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AuthCard } from './AuthCard';
-import { Flex, Link, Text } from '@ttoss/ui';
+import { Button, Flex, Link, Text } from '@ttoss/ui';
 import {
   Form,
   FormFieldInput,
@@ -9,8 +9,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
+import { useError } from './ErrorProvider';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignUp, OnSignUpInput } from './types';
 
@@ -21,11 +21,7 @@ export type AuthSignUpProps = {
 
 export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
   const { intl } = useI18n();
-  const { setNotifications } = useNotifications();
-
-  React.useEffect(() => {
-    setNotifications(undefined);
-  }, [setNotifications]);
+  const { error, clearError } = useError();
 
   const schema = yup.object().shape({
     email: yup
@@ -81,6 +77,11 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
   const formMethods = useForm<OnSignUpInput>({
     mode: 'all',
     resolver: yupResolver(schema),
+    defaultValues: {
+      email: 'rayza.ocr@gmail.com',
+      password: 'senhaincorreta',
+      confirmPassword: 'senhaincorreta',
+    },
   });
 
   const onSubmitForm = (data: OnSignUpInput) => {
@@ -132,7 +133,26 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           />
         </Flex>
 
-        <NotificationsBox />
+        {!!error?.message && (
+          <Flex
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '2xl',
+            }}
+          >
+            <Button
+              sx={{
+                bg: error.type === 'error' ? 'danger' : 'positive',
+              }}
+              onClick={clearError}
+              rightIcon="close"
+              leftIcon={error.type === 'error' ? 'warning' : undefined}
+            >
+              {error.message}
+            </Button>
+          </Flex>
+        )}
       </AuthCard>
     </Form>
   );
