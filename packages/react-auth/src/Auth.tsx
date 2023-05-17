@@ -7,6 +7,7 @@ import { AuthSignUp } from './AuthSignUp';
 import { LogoContextProps, LogoProvider } from './AuthCard';
 import { assign, createMachine } from 'xstate';
 import { useAuth } from './AuthProvider';
+import { useError } from './ErrorProvider';
 import { useMachine } from '@xstate/react';
 import { useNotifications } from '@ttoss/react-notifications';
 import type { OnConfirmSignUp, OnSignIn, OnSignUp } from './types';
@@ -84,6 +85,7 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
 
 const AuthLogic = () => {
   const { isAuthenticated } = useAuth();
+  const { handleChangeError } = useError();
 
   const [state, send] = useMachine(authMachine);
 
@@ -124,13 +126,13 @@ const AuthLogic = () => {
         // toast('Signed Up');
         send({ type: 'SIGN_UP_CONFIRM', email } as any);
       } catch (error: any) {
-        setNotifications({ type: 'error', message: error.message });
+        handleChangeError('error', error.message);
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, handleChangeError]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -141,13 +143,13 @@ const AuthLogic = () => {
         // toast('Confirmed Signed In');
         send({ type: 'SIGN_UP_CONFIRMED', email } as any);
       } catch (error: any) {
-        setNotifications({ type: 'error', message: error.message });
+        handleChangeError('error', error.message);
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, handleChangeError]
   );
 
   const onReturnToSignIn = React.useCallback(() => {
