@@ -14,7 +14,11 @@ export const createRolesTemplate = ({
 }: {
   path?: string;
   resources: { [key: string]: IAMRoleResource };
-}): CloudFormationTemplate => {
+}): /**
+ * To fix The inferred type of 'template' cannot be named without a reference to '.pnpm/@ttoss+cloudformation@0.7.1
+ * https://github.com/ttoss/ttoss/issues/349
+ */
+any => {
   Object.values(resources).forEach((resource) => {
     if (!resource.Properties.Path) {
       resource.Properties.Path = path;
@@ -40,5 +44,5 @@ export const createRolesTemplate = ({
     Description: 'Roles template. Created by @ttoss/cloud-roles.',
     Resources: resources,
     Outputs: outputs,
-  };
+  } as CloudFormationTemplate;
 };
