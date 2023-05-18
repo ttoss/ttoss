@@ -125,7 +125,6 @@ const AuthLogic = () => {
         send({ type: 'SIGN_UP_CONFIRM', email } as any);
       } catch (error: any) {
         setNotifications({ type: 'error', message: error.message });
-        // handleChangeError('error', error.message);
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
