@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { AuthCard } from './AuthCard';
 import { AuthNotifications } from './AuthNotifications';
 import { Flex, Link, Text } from '@ttoss/ui';
@@ -11,6 +12,7 @@ import {
 } from '@ttoss/forms';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
+import { useNotifications } from '@ttoss/react-notifications';
 import type { OnSignUp, OnSignUpInput } from './types';
 
 export type AuthSignUpProps = {
@@ -20,6 +22,11 @@ export type AuthSignUpProps = {
 
 export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
   const { intl } = useI18n();
+  const { setNotifications } = useNotifications();
+
+  React.useEffect(() => {
+    setNotifications(undefined);
+  }, [setNotifications]);
 
   const schema = yup.object().shape({
     email: yup
