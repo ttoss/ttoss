@@ -983,6 +983,9 @@ importers:
       '@ttoss/components':
         specifier: workspace:^
         version: link:../components
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../ui

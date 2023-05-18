@@ -20,7 +20,8 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/components": "workspace:^"
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^"
   },
   "peerDependencies": {
     "@ttoss/ui": "workspace:^",
