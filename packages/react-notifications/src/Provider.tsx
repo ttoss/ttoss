@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
 
-type NotifyParams = {
+export type NotifyParams = {
   message: 'string' | React.ReactNode;
   type: 'success' | 'error' | 'warning' | 'info';
 };
@@ -9,7 +9,7 @@ type NotifyParams = {
 const NotificationsContext = React.createContext<{
   isLoading: boolean;
   setLoading: (arg: boolean) => void;
-  setNotifications: (args: NotifyParams | NotifyParams[]) => void;
+  setNotifications: (args: NotifyParams | NotifyParams[] | undefined) => void;
   notifications?: NotifyParams | NotifyParams[];
   enableNotificationBox?: boolean;
 }>({
