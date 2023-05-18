@@ -13,6 +13,7 @@ import {
 import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
+import { useNotifications } from '@ttoss/react-notifications';
 import type { OnSignIn, OnSignInInput } from './types';
 
 export type AuthSignInProps = {
