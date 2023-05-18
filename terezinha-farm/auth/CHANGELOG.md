@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.31 (2023-05-17)
+
+### Bug Fixes
+
+- type annotations error ([#351](https://github.com/ttoss/ttoss/issues/351)) ([e3c4ecd](https://github.com/ttoss/ttoss/commit/e3c4ecdecf887ccac515cc3d0977b3ce230a4078))
+
 ## [0.2.30](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.2.29...@terezinha-farm/auth@0.2.30) (2023-05-09)
 
 **Note:** Version bump only for package @terezinha-farm/auth

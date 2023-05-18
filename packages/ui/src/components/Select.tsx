@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Icon, Text } from '..';
-import { SelectProps, Select as SelectUi } from 'theme-ui';
+import { type SelectProps, Select as SelectUi } from 'theme-ui';
 
 export { SelectProps };
 

@@ -158,3 +158,45 @@ server.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
 ```
+
+## How to Create Tests
+
+We recommend testing the whole GraphQL API using the `graphql` object and the schema composer to provide the schema. For example:
+
+```ts
+import { graphql } from 'graphql';
+import { schemaComposer } from './schemaComposer';
+
+test('testing my query', () => {
+  const author = {
+    id: '1',
+    name: 'John Doe',
+  };
+
+  const response = await graphql({
+    schema: schemaComposer.buildSchema(),
+    source: /* GraphQL */ `
+      query ($id: ID!) {
+        node(id: $id) {
+          id
+          ... on Author {
+            name
+          }
+        }
+      }
+    `,
+    variableValues: {
+      id: author.id,
+    },
+  });
+
+  expect(response).toEqual({
+    data: {
+      node: {
+        id: author.id,
+        name: author.name,
+      },
+    },
+  });
+});
+```

@@ -6,10 +6,10 @@ const template = createRolesTemplate({
       Type: 'AWS::IAM::Role',
       Properties: {
         AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
+          Version: '2012-10-17' as const,
           Statement: [
             {
-              Effect: 'Allow',
+              Effect: 'Allow' as const,
               Action: 'sts:AssumeRole',
               Principal: {
                 Service: 'lambda.amazonaws.com',
@@ -26,10 +26,10 @@ const template = createRolesTemplate({
       Type: 'AWS::IAM::Role',
       Properties: {
         AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
+          Version: '2012-10-17' as const,
           Statement: [
             {
-              Effect: 'Allow',
+              Effect: 'Allow' as const,
               Action: 'sts:AssumeRole',
               Principal: {
                 Service: 'appsync.amazonaws.com',
@@ -44,10 +44,10 @@ const template = createRolesTemplate({
           {
             PolicyName: 'AppSyncGraphQLApiIAMRolePolicyName',
             PolicyDocument: {
-              Version: '2012-10-17',
+              Version: '2012-10-17' as const,
               Statement: [
                 {
-                  Effect: 'Allow',
+                  Effect: 'Allow' as const,
                   Action: ['lambda:InvokeFunction'],
                   Resource: '*',
                 },
@@ -60,4 +60,5 @@ const template = createRolesTemplate({
   },
 });
 
+// eslint-disable-next-line import/no-default-export
 export default template;

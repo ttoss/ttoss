@@ -1,5 +1,5 @@
 import { AUTHORS, BOOKS, schemaComposer } from '../schemaComposer';
-import { graphql } from 'graphql-compose/lib/graphql';
+import { graphql } from 'graphql';
 
 describe('authors query', () => {
   let authorsResponse: any;

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.27 (2023-05-17)
+
+### Bug Fixes
+
+- type annotations error ([#351](https://github.com/ttoss/ttoss/issues/351)) ([e3c4ecd](https://github.com/ttoss/ttoss/commit/e3c4ecdecf887ccac515cc3d0977b3ce230a4078))
+
 ## [0.2.26](https://github.com/ttoss/ttoss/compare/@terezinha-farm/iam@0.2.25...@terezinha-farm/iam@0.2.26) (2023-05-09)
 
 **Note:** Version bump only for package @terezinha-farm/iam

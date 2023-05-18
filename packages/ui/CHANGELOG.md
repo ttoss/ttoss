@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.6](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.36.5...@ttoss/ui@1.36.6) (2023-05-16)
+
+### Bug Fixes
+
+- no matching export SelectProps ([#348](https://github.com/ttoss/ttoss/issues/348)) ([8c1c279](https://github.com/ttoss/ttoss/commit/8c1c279f4715a8520a2a5448c09e7d107e2f7293))
+
 ## [1.36.5](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.36.4...@ttoss/ui@1.36.5) (2023-05-16)
 
 **Note:** Version bump only for package @ttoss/ui
