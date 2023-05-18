@@ -7,7 +7,6 @@ import { AuthSignUp } from './AuthSignUp';
 import { LogoContextProps, LogoProvider } from './AuthCard';
 import { assign, createMachine } from 'xstate';
 import { useAuth } from './AuthProvider';
-import { useError } from './ErrorProvider';
 import { useMachine } from '@xstate/react';
 import { useNotifications } from '@ttoss/react-notifications';
 import type { OnConfirmSignUp, OnSignIn, OnSignUp } from './types';
@@ -85,11 +84,10 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
 
 const AuthLogic = () => {
   const { isAuthenticated } = useAuth();
-  const { handleChangeError } = useError();
 
   const [state, send] = useMachine(authMachine);
 
-  const { setLoading } = useNotifications();
+  const { setLoading, setNotifications } = useNotifications();
 
   const onSignIn = React.useCallback<OnSignIn>(
     async ({ email, password }) => {
@@ -97,8 +95,8 @@ const AuthLogic = () => {
         setLoading(true);
         await AmplifyAuth.signIn(email, password);
         // toast('Signed In');
-      } catch (error) {
-        switch ((error as any).code) {
+      } catch (error: any) {
+        switch (error.code) {
           case 'UserNotConfirmedException':
             await AmplifyAuth.resendSignUp(email);
             send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email } as any);
@@ -106,11 +104,12 @@ const AuthLogic = () => {
           default:
           // toast(JSON.stringify(error, null, 2));
         }
+        setNotifications({ type: 'error', message: error.message });
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading]
+    [send, setLoading, setNotifications]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -125,13 +124,14 @@ const AuthLogic = () => {
         // toast('Signed Up');
         send({ type: 'SIGN_UP_CONFIRM', email } as any);
       } catch (error: any) {
-        handleChangeError('error', error.message);
+        setNotifications({ type: 'error', message: error.message });
+        // handleChangeError('error', error.message);
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, handleChangeError]
+    [send, setLoading, setNotifications]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -142,13 +142,13 @@ const AuthLogic = () => {
         // toast('Confirmed Signed In');
         send({ type: 'SIGN_UP_CONFIRMED', email } as any);
       } catch (error: any) {
-        handleChangeError('error', error.message);
+        setNotifications({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, handleChangeError]
+    [send, setLoading, setNotifications]
   );
 
   const onReturnToSignIn = React.useCallback(() => {

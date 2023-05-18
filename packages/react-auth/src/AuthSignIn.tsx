@@ -1,4 +1,5 @@
 import { AuthCard } from './AuthCard';
+import { AuthNotifications } from './AuthNotifications';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
 import {
   Form,
@@ -135,6 +136,8 @@ export const AuthSignIn = ({
             })}
           </Text>
         </Flex>
+
+        <AuthNotifications />
       </AuthCard>
     </Form>
   );
