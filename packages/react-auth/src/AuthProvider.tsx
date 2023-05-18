@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Auth, Hub } from 'aws-amplify';
-import { ErrorProvider } from './ErrorProvider';
 
 type User = {
   id: string;
@@ -30,7 +29,7 @@ const AuthContext = React.createContext<{
   tokens: null,
 });
 
-const AuthPureProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [{ user, tokens, isAuthenticated }, setAuthState] = React.useState<{
     user: User;
     tokens: Tokens;
@@ -95,14 +94,6 @@ const AuthPureProvider = ({ children }: { children: React.ReactNode }) => {
     >
       {children}
     </AuthContext.Provider>
-  );
-};
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ErrorProvider>
-      <AuthPureProvider>{children}</AuthPureProvider>
-    </ErrorProvider>
   );
 };
 
