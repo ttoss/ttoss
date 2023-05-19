@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { AuthCard } from './AuthCard';
-import { AuthNotifications } from './AuthNotifications';
 import { Flex, Link, Text } from '@ttoss/ui';
 import {
   Form,
@@ -10,9 +9,9 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
+import { NotificationBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
-import { useNotifications } from '@ttoss/react-notifications';
 import type { OnSignUp, OnSignUpInput } from './types';
 
 export type AuthSignUpProps = {
@@ -133,7 +132,7 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           />
         </Flex>
 
-        <AuthNotifications />
+        <NotificationBox />
       </AuthCard>
     </Form>
   );
