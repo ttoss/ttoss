@@ -4,5 +4,5 @@ export {
   NotificationsProviderProps,
   type NotifyParams,
 } from './Provider';
-export { NotificationBox } from './NotificationBox';
+export { NotificationsBox } from './NotificationsBox';
 export { NotificationsModal } from './NotificationsModal';

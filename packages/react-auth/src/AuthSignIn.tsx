@@ -10,6 +10,7 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
 import { useNotifications } from '@ttoss/react-notifications';
