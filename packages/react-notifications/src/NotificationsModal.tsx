@@ -1,9 +1,9 @@
+import * as React from 'react';
 import { Button, Stack, Text } from '@ttoss/ui';
-import { Modal } from '../../../components/dist';
-import { type NotifyParams } from '../Provider';
+import { Modal } from '../../components/dist';
+import { type NotifyParams } from './Provider';
 import { useI18n } from '@ttoss/react-i18n';
-import { useNotifications } from '../Provider';
-import { useState } from 'react';
+import { useNotifications } from './Provider';
 
 const isNotifyParams = (
   notification: NotifyParams | NotifyParams[]
@@ -13,7 +13,7 @@ const isNotifyParams = (
 
 export const NotificationsModal = () => {
   const { notifications, setNotifications } = useNotifications();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
   const {
     intl: { formatMessage },
   } = useI18n();

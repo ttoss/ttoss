@@ -5,3 +5,4 @@ export {
   type NotifyParams,
 } from './Provider';
 export { NotificationBox } from './NotificationBox';
+export { NotificationsModal } from './NotificationsModal';
