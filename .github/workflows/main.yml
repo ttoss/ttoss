@@ -13,7 +13,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     # Run only if github.event.head_commit.message IS NOT "chore(release): publish packages"
-    if: '!contains(github.event.head_commit.message, "chore(release): publish packages")'
+    if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
     environment: Production
     steps:
       - name: Configure AWS Credentials
