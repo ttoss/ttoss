@@ -56,6 +56,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
    */
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
+  await user.type(screen.getByLabelText('Confirm password'), password);
 
   await user.click(screen.getByLabelText('submit-button'));
 
