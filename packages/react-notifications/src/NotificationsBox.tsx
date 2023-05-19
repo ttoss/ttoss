@@ -1,8 +1,37 @@
 import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { Button, Flex, Stack } from '@ttoss/ui';
 import { type NotifyParams, useNotifications } from './Provider';
 
-export const NotificationsBox = () => {
+const NotificationBoxWrapper = ({
+  direction,
+  notifications,
+  children,
+}: React.PropsWithChildren<{
+  direction: 'flex' | 'stack';
+  notifications: NotifyParams | NotifyParams[] | undefined;
+}>) => {
+  const sx = {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 'md',
+    marginTop:
+      !notifications || (Array.isArray(notifications) && !notifications.length)
+        ? 0
+        : '2xl',
+  };
+
+  return direction === 'flex' ? (
+    <Flex sx={sx}>{children}</Flex>
+  ) : (
+    <Stack sx={sx}>{children}</Stack>
+  );
+};
+
+export const NotificationsBox = ({
+  direction = 'flex',
+}: {
+  direction?: 'flex' | 'stack';
+}) => {
   const { setNotifications, notifications } = useNotifications();
 
   if (!notifications) {
@@ -29,17 +58,7 @@ export const NotificationsBox = () => {
   ButtonMemoized.displayName = 'ButtonMemoized';
 
   return (
-    <Flex
-      sx={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop:
-          !notifications ||
-          (Array.isArray(notifications) && !notifications.length)
-            ? 0
-            : '2xl',
-      }}
-    >
+    <NotificationBoxWrapper {...{ notifications, direction }}>
       {Array.isArray(notifications) ? (
         notifications.map((notification) => {
           return (
@@ -52,6 +71,6 @@ export const NotificationsBox = () => {
       ) : (
         <ButtonMemoized {...notifications} />
       )}
-    </Flex>
+    </NotificationBoxWrapper>
   );
 };
