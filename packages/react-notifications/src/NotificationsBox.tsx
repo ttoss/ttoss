@@ -45,6 +45,13 @@ export const NotificationsBox = ({
           backgroundColor: type === 'error' ? 'danger' : 'positive',
         }}
         onClick={() => {
+          if (Array.isArray(notifications) && notifications.length > 1) {
+            return setNotifications(
+              notifications.filter((notification) => {
+                return notification.message !== message;
+              })
+            );
+          }
           return setNotifications(undefined);
         }}
         rightIcon="close"
