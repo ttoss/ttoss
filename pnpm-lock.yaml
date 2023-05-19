@@ -486,9 +486,6 @@ importers:
       '@types/react-modal':
         specifier: ^3.16.0
         version: 3.16.0
-      react:
-        specifier: '>=16.8.0'
-        version: 18.2.0
       react-accessible-accordion:
         specifier: ^5.0.0
         version: 5.0.0(react-dom@18.2.0)(react@18.2.0)
@@ -517,6 +514,9 @@ importers:
       jest:
         specifier: ^29.5.0
         version: 29.5.0(@types/node@18.16.2)(ts-node@10.9.1)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
@@ -990,6 +990,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
