@@ -8,6 +8,7 @@ const onReturnToSignIn = jest.fn();
 const userForm = {
   email: 'user@example.com',
   password: 'password',
+  confirmPassword: 'password',
 };
 
 test('Should not call the onSubmit function if click on the Signup button without filling in the fields', async () => {
@@ -27,10 +28,12 @@ test('Should call the onSubmit function if click on the Signup button with filli
 
   const emailInput = screen.getByLabelText('Email');
   const password = screen.getByLabelText('Password');
+  const confirmPassword = screen.getByLabelText('Confirm password');
   const buttonSubmit = screen.getByLabelText('submit-button');
 
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);
+  await user.type(confirmPassword, userForm.password);
   await user.click(buttonSubmit);
 
   expect(onSignUp).toHaveBeenCalledWith(userForm);
