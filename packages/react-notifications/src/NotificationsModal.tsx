@@ -20,11 +20,18 @@ export const NotificationsModal = () => {
   return (
     <Modal isOpen={!!notifications} style={{ content: { minWidth: '30%' } }}>
       <Stack sx={{ gap: '2xl' }}>
-        <Text>
-          {notifications &&
-            isNotifyParams(notifications) &&
-            notifications.message}
-        </Text>
+        {notifications &&
+          (isNotifyParams(notifications) ? (
+            <Text>{notifications.message}</Text>
+          ) : (
+            notifications.map((notification) => {
+              return (
+                <Text key={notification.message?.toString()}>
+                  {notification.message}
+                </Text>
+              );
+            })
+          ))}
         <Button
           onClick={() => {
             setNotifications(undefined);
