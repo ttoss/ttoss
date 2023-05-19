@@ -52,3 +52,28 @@ const Component = () => {
   );
 };
 ```
+
+### Modal
+
+This modules loads your notification in a Modal. Just put a container under a `NotificationsProvider` and you are ready to go.
+
+```tsx
+import { useNotifications } from '@ttoss/react-notifications';
+
+const Component = () => {
+  const { setNotifications } = useNotifications();
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          setNotifications({ message: "I'm a notification", type: 'info' })
+        }
+      >
+        Click Me!
+      </button>
+      <NotificationsModal />
+    </div>
+  );
+};
+```
