@@ -1,16 +1,9 @@
 import { Button, Stack, Text } from '@ttoss/ui';
 import { Modal } from '../../components/dist';
 import { NotificationBox } from './NotificationBox';
-import { type NotifyParams } from './Provider';
 import { useI18n } from '@ttoss/react-i18n';
 import { useNotifications } from '../Provider';
 import { useState } from 'react';
-
-const isNotifyParams = (
-  notification: NotifyParams | NotifyParams[]
-): notification is NotifyParams => {
-  return (notification as NotifyParams).message !== undefined;
-};
 
 export const NotificationsModal = () => {
   const { notifications, setNotifications } = useNotifications();
