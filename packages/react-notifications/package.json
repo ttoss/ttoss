@@ -20,15 +20,16 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/components": "workspace:^"
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^"
   },
   "peerDependencies": {
-    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^18.2.5",
     "jest": "^29.5.0",
