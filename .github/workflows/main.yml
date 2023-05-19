@@ -12,9 +12,9 @@ concurrency:
 jobs:
   main:
     runs-on: ubuntu-latest
+    # Run only if github.event.head_commit.message IS NOT "chore(release): publish packages"
+    if: '!contains(github.event.head_commit.message, "chore(release): publish packages")'
     environment: Production
-    # Run only if there are no tags
-    if: "!contains(github.ref, 'refs/tags/')"
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
