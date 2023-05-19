@@ -13,50 +13,21 @@ const isNotifyParams = (
 
 export const NotificationsModal = () => {
   const { notifications, setNotifications } = useNotifications();
-  const [isOpen, setIsOpen] = React.useState(false);
   const {
     intl: { formatMessage },
   } = useI18n();
 
-  if (!notifications) {
-    setIsOpen(false);
-    return null;
-  }
-
-  setIsOpen(true);
-
-  if (isNotifyParams(notifications)) {
-    const { message } = notifications;
-
-    return (
-      <Modal isOpen={isOpen}>
-        <Stack sx={{ gap: '2xl' }}>
-          <Text>{message}</Text>
-          <Button
-            onClick={() => {
-              setNotifications(undefined);
-            }}
-            sx={{ width: '50%' }}
-          >
-            {formatMessage({
-              defaultMessage: 'OK',
-              description: 'OK',
-            })}
-          </Button>
-        </Stack>
-      </Modal>
-    );
-  }
-
-  const notification = notifications.shift();
-
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={!!notifications} style={{ content: { minWidth: '30%' } }}>
       <Stack sx={{ gap: '2xl' }}>
-        <Text>{notification?.message}</Text>
+        <Text>
+          {notifications &&
+            isNotifyParams(notifications) &&
+            notifications.message}
+        </Text>
         <Button
           onClick={() => {
-            setIsOpen(false);
+            setNotifications(undefined);
           }}
           sx={{ width: '50%' }}
         >
