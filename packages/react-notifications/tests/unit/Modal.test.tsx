@@ -1,5 +1,4 @@
 import { Button } from '@ttoss/ui';
-import { I18nProvider } from '@ttoss/react-i18n';
 import {
   NotificationsModal,
   NotificationsProvider,
@@ -43,8 +42,7 @@ describe('Modal Notifications Test', () => {
         <TestModalComponent
           notifications={{ message: 'Test Message', type: 'info' }}
         />
-      </NotificationsProvider>,
-      { wrapper: I18nProvider }
+      </NotificationsProvider>
     );
 
     await act(async () => {
@@ -73,8 +71,7 @@ describe('Modal Notifications Test', () => {
             { message: 'Test 3', type: 'info' },
           ]}
         />
-      </NotificationsProvider>,
-      { wrapper: I18nProvider }
+      </NotificationsProvider>
     );
 
     await act(async () => {
