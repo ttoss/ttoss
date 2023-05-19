@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import {
   NotificationsProvider,
   useNotifications,
-} from '@ttoss/react-notifications';
+} from '@ttoss/react-notifications/src';
 
 export default {
   title: 'React Notifications/Loading',

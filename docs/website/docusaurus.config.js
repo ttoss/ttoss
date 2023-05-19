@@ -43,6 +43,7 @@ const config = {
       'ui',
       'logger',
       'graphql-api',
+      'react-notifications',
     ].map((package) => {
       return [
         'docusaurus-plugin-typedoc',
