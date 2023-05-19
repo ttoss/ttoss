@@ -34,4 +34,23 @@ const Template: Story = () => {
   );
 };
 
-export const Example = Template.bind({});
+const Template2: Story = () => {
+  const { setNotifications } = useNotifications();
+
+  return (
+    <Button
+      onClick={() => {
+        setNotifications([
+          { message: 'Hello', type: 'info' },
+          { message: 'Second Message', type: 'info' },
+          { message: 'More one', type: 'info' },
+        ]);
+      }}
+    >
+      Click me!!
+    </Button>
+  );
+};
+
+export const SingleNotification = Template.bind({});
+export const MultipleNotifications = Template2.bind({});
