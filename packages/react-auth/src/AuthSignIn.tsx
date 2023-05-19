@@ -9,7 +9,7 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { NotificationBox, useNotifications } from '@ttoss/react-notifications';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignIn, OnSignInInput } from './types';
@@ -143,7 +143,7 @@ export const AuthSignIn = ({
           </Text>
         </Flex>
 
-        <NotificationBox />
+        <NotificationsBox />
       </AuthCard>
     </Form>
   );

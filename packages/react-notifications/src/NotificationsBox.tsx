@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Flex } from '@ttoss/ui';
 import { type NotifyParams, useNotifications } from './Provider';
 
-export const NotificationBox = () => {
+export const NotificationsBox = () => {
   const { setNotifications, notifications } = useNotifications();
 
   if (!notifications) {
