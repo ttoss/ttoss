@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Stack, Text } from '@ttoss/ui';
+import { Button, Stack } from '@ttoss/ui';
 import { Modal } from '../../components/dist';
 import { NotificationBox } from './NotificationBox';
 import { useI18n } from '@ttoss/react-i18n';
