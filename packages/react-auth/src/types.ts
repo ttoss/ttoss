@@ -8,6 +8,7 @@ export type OnSignIn = (input: OnSignInInput) => void;
 export type OnSignUpInput = {
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
 export type OnSignUp = (input: OnSignUpInput) => void;

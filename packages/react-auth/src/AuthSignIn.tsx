@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { AuthCard } from './AuthCard';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
 import {
@@ -8,6 +9,7 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignIn, OnSignInInput } from './types';
@@ -27,6 +29,11 @@ export const AuthSignIn = ({
   onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
+  const { setNotifications } = useNotifications();
+
+  React.useEffect(() => {
+    setNotifications(undefined);
+  }, [setNotifications]);
 
   const schema = yup.object().shape({
     email: yup
@@ -135,6 +142,8 @@ export const AuthSignIn = ({
             })}
           </Text>
         </Flex>
+
+        <NotificationsBox />
       </AuthCard>
     </Form>
   );

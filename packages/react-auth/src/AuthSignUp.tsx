@@ -1,6 +1,15 @@
+import * as React from 'react';
 import { AuthCard } from './AuthCard';
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Link, Text } from '@ttoss/ui';
+import { Flex, Link, Text } from '@ttoss/ui';
+import {
+  Form,
+  FormFieldInput,
+  FormFieldPassword,
+  useForm,
+  yup,
+  yupResolver,
+} from '@ttoss/forms';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
 import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnSignUp, OnSignUpInput } from './types';
@@ -12,6 +21,11 @@ export type AuthSignUpProps = {
 
 export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
   const { intl } = useI18n();
+  const { setNotifications } = useNotifications();
+
+  React.useEffect(() => {
+    setNotifications(undefined);
+  }, [setNotifications]);
 
   const schema = yup.object().shape({
     email: yup
@@ -47,9 +61,25 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
         )
       )
       .trim(),
+    confirmPassword: yup
+      .string()
+      .required(
+        intl.formatMessage({
+          description: 'Confirm Password is required.',
+          defaultMessage: 'Confirm password field is required',
+        })
+      )
+      .oneOf(
+        [yup.ref('password')],
+        intl.formatMessage({
+          description: 'Passwords are not the same',
+          defaultMessage: 'Passwords are not the same',
+        })
+      ),
   });
 
   const formMethods = useForm<OnSignUpInput>({
+    mode: 'all',
     resolver: yupResolver(schema),
   });
 
@@ -62,37 +92,47 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
       <AuthCard
         buttonLabel={intl.formatMessage({
           description: 'Create account.',
-          defaultMessage: 'Create account',
+          defaultMessage: 'Sign up',
         })}
         title={intl.formatMessage({
           description: 'Title on sign up.',
-          defaultMessage: 'Register',
+          defaultMessage: 'Sign up',
         })}
         isValidForm={formMethods.formState.isValid}
         extraButton={
           <Text onClick={onReturnToSignIn} as={Link}>
             {intl.formatMessage({
               description: 'Link to sign in on sign up.',
-              defaultMessage: 'Do you already have an account? Sign in',
+              defaultMessage: 'I’m already registered',
             })}
           </Text>
         }
       >
-        <FormFieldInput
-          name="email"
-          label={intl.formatMessage({
-            description: 'Email label.',
-            defaultMessage: 'Email',
-          })}
-        />
-        <FormFieldInput
-          name="password"
-          type="password"
-          label={intl.formatMessage({
-            description: 'Password label.',
-            defaultMessage: 'Password',
-          })}
-        />
+        <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
+          <FormFieldInput
+            name="email"
+            label={intl.formatMessage({
+              description: 'Email label.',
+              defaultMessage: 'Email',
+            })}
+          />
+          <FormFieldPassword
+            name="password"
+            label={intl.formatMessage({
+              description: 'Password label.',
+              defaultMessage: 'Password',
+            })}
+          />
+          <FormFieldPassword
+            name="confirmPassword"
+            label={intl.formatMessage({
+              description: 'Confirm Password label.',
+              defaultMessage: 'Confirm password',
+            })}
+          />
+        </Flex>
+
+        <NotificationsBox />
       </AuthCard>
     </Form>
   );

@@ -87,7 +87,7 @@ const AuthLogic = () => {
 
   const [state, send] = useMachine(authMachine);
 
-  const { setLoading } = useNotifications();
+  const { setLoading, setNotifications } = useNotifications();
 
   const onSignIn = React.useCallback<OnSignIn>(
     async ({ email, password }) => {
@@ -95,8 +95,8 @@ const AuthLogic = () => {
         setLoading(true);
         await AmplifyAuth.signIn(email, password);
         // toast('Signed In');
-      } catch (error) {
-        switch ((error as any).code) {
+      } catch (error: any) {
+        switch (error.code) {
           case 'UserNotConfirmedException':
             await AmplifyAuth.resendSignUp(email);
             send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email } as any);
@@ -104,11 +104,12 @@ const AuthLogic = () => {
           default:
           // toast(JSON.stringify(error, null, 2));
         }
+        setNotifications({ type: 'error', message: error.message });
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading]
+    [send, setLoading, setNotifications]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -122,13 +123,14 @@ const AuthLogic = () => {
         });
         // toast('Signed Up');
         send({ type: 'SIGN_UP_CONFIRM', email } as any);
-      } catch (error) {
+      } catch (error: any) {
+        setNotifications({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading]
+    [send, setLoading, setNotifications]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -138,13 +140,14 @@ const AuthLogic = () => {
         await AmplifyAuth.confirmSignUp(email, code);
         // toast('Confirmed Signed In');
         send({ type: 'SIGN_UP_CONFIRMED', email } as any);
-      } catch (error) {
+      } catch (error: any) {
+        setNotifications({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading]
+    [send, setLoading, setNotifications]
   );
 
   const onReturnToSignIn = React.useCallback(() => {
