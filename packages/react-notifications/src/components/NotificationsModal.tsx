@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Modal } from '../../components/dist';
 import { NotificationsBox } from './NotificationsBox';
-import { Stack } from '@ttoss/ui';
 import { useNotifications } from './Provider';
 
 export const NotificationsModal = () => {
