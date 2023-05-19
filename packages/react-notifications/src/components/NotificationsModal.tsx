@@ -1,6 +1,7 @@
 import { Button, Stack, Text } from '@ttoss/ui';
-import { Modal } from '../../../components/dist';
-import { type NotifyParams } from '../Provider';
+import { Modal } from '../../components/dist';
+import { NotificationBox } from './NotificationBox';
+import { type NotifyParams } from './Provider';
 import { useI18n } from '@ttoss/react-i18n';
 import { useNotifications } from '../Provider';
 import { useState } from 'react';
@@ -20,18 +21,7 @@ export const NotificationsModal = () => {
   return (
     <Modal isOpen={!!notifications} style={{ content: { minWidth: '30%' } }}>
       <Stack sx={{ gap: '2xl' }}>
-        {notifications &&
-          (isNotifyParams(notifications) ? (
-            <Text>{notifications.message}</Text>
-          ) : (
-            notifications.map((notification) => {
-              return (
-                <Text key={notification.message?.toString()}>
-                  {notification.message}
-                </Text>
-              );
-            })
-          ))}
+        <NotificationBox />
         <Button
           onClick={() => {
             setNotifications(undefined);
