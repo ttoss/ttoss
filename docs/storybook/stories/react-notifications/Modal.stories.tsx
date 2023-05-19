@@ -1,17 +1,19 @@
 import { Button } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import {
+  NotificationsModal,
   NotificationsProvider,
   useNotifications,
 } from '@ttoss/react-notifications/src';
 
 export default {
-  title: 'React Notifications/Loading',
+  title: 'React Notifications/Modal',
   decorators: [
     (Story) => {
       return (
         <NotificationsProvider>
           <Story />
+          <NotificationsModal />
         </NotificationsProvider>
       );
     },
@@ -19,15 +21,15 @@ export default {
 } as Meta;
 
 const Template: Story = () => {
-  const { isLoading, setLoading } = useNotifications();
+  const { setNotifications } = useNotifications();
 
   return (
     <Button
       onClick={() => {
-        setLoading(!isLoading);
+        setNotifications({ message: 'Hello', type: 'info' });
       }}
     >
-      {isLoading ? 'Cancel loading' : 'Start loading'}
+      Click me!!
     </Button>
   );
 };
