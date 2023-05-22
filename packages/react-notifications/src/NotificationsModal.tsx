@@ -6,8 +6,20 @@ import { useNotifications } from './Provider';
 export const NotificationsModal = () => {
   const { notifications } = useNotifications();
 
+  const bodyElement = React.useMemo(() => {
+    return document.querySelector('body');
+  }, []);
+
+  if (!bodyElement) return null;
+
   return (
-    <Modal isOpen={!!notifications} style={{ content: { minWidth: '30%' } }}>
+    <Modal
+      isOpen={!!notifications}
+      style={{ content: { minWidth: '30%' } }}
+      appElement={document.getElementById('root') as HTMLElement}
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      ariaHideApp={process.env.NODE_ENV !== 'test'}
+    >
       <NotificationsBox direction="stack" />
     </Modal>
   );
