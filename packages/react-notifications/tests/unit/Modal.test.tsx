@@ -31,7 +31,7 @@ describe('Modal Notifications Test', () => {
         >
           Click me!!
         </Button>
-        <NotificationsModal />
+        <NotificationsModal elementSelector="body" />
       </>
     );
   };
