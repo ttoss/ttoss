@@ -19,14 +19,13 @@
   },
   "sideEffects": false,
   "typings": "dist/index.d.ts",
-  "dependencies": {
-    "@ttoss/components": "workspace:^"
-  },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^18.2.5",

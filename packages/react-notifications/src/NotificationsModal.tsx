@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Modal } from '@ttoss/components';
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';
