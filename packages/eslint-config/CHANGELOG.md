@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.21.0 (2023-05-22)
+
+### Features
+
+- enforces lint config function max-params ([#360](https://github.com/ttoss/ttoss/issues/360)) ([57e34db](https://github.com/ttoss/ttoss/commit/57e34dbf005accc90f180ae17f1b9f9779e084ff))
+
 # 1.20.0 (2023-05-01)
 
 ### Bug Fixes
