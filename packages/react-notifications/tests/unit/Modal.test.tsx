@@ -1,4 +1,5 @@
 import { Button } from '@ttoss/ui';
+import { Modal } from '@ttoss/components';
 import {
   NotificationsModal,
   NotificationsProvider,
@@ -31,10 +32,12 @@ describe('Modal Notifications Test', () => {
         >
           Click me!!
         </Button>
-        <NotificationsModal elementSelector="body" />
+        <NotificationsModal />
       </>
     );
   };
+
+  Modal.setAppElement('body');
 
   it('Should render only one notification', async () => {
     render(
