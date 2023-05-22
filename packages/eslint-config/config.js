@@ -47,6 +47,7 @@ module.exports = {
     'plugin:import/typescript',
   ],
   rules: {
+    'max-params': ['error', 1],
     '@typescript-eslint/no-non-null-assertion': 'error',
     /**
      * https://formatjs.io/docs/tooling/linter
