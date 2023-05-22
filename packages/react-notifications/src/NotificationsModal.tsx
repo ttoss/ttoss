@@ -1,16 +1,9 @@
-import * as React from 'react';
 import { Modal } from '@ttoss/components';
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';
 
 export const NotificationsModal = () => {
   const { notifications } = useNotifications();
-
-  const bodyElement = React.useMemo(() => {
-    return document.querySelector('body');
-  }, []);
-
-  if (!bodyElement) return null;
 
   return (
     <Modal
