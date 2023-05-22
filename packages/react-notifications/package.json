@@ -23,6 +23,7 @@
     "@ttoss/components": "workspace:^"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
