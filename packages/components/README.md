@@ -29,7 +29,7 @@ import { Box, Button, Flex, Text } from '@ttoss/ui';
  */
 // Modal.setAppElement('#root'); Prefer using this static method over setting it on the component.
 
-Modal.setAppElement('#root');
+Modal.setAppElement('#modal-root');
 
 const Component = () => {
   const [isOpen, setIsOpen] = React.useState(false);
