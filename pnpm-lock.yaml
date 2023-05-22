@@ -980,13 +980,13 @@ importers:
 
   packages/react-notifications:
     dependencies:
-      '@ttoss/components':
-        specifier: workspace:^
-        version: link:../components
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../ui
     devDependencies:
+      '@ttoss/components':
+        specifier: workspace:^
+        version: link:../components
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
