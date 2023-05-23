@@ -5,7 +5,12 @@ export type HelpTextProps = Omit<TextProps, 'variant'> & {
   negative?: boolean;
 };
 
-export const HelpText = ({ disabled, negative, ...props }: HelpTextProps) => {
+export const HelpText = ({
+  sx,
+  disabled,
+  negative,
+  ...props
+}: HelpTextProps) => {
   const variant = ['text.help', negative ? 'negative' : undefined]
     .filter(Boolean)
     .join('.');
@@ -13,6 +18,11 @@ export const HelpText = ({ disabled, negative, ...props }: HelpTextProps) => {
   return (
     <Text
       variant={variant}
+      sx={{
+        fontSize: 'xs',
+        fontFamily: 'caption',
+        ...sx,
+      }}
       aria-disabled={disabled ? 'true' : undefined}
       {...props}
     />

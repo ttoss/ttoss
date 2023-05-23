@@ -12,6 +12,12 @@ export const Badge = ({ icon, children, sx, ...props }: BadgeProps) => {
       sx={{
         display: 'flex',
         alignItems: 'center',
+        fontFamily: 'caption',
+        fontWeight: 'normal',
+        lineHeight: 'base',
+        fontSize: 'xs',
+        paddingX: 'xs',
+        paddingY: '2xs',
         gap: 'xs',
         ...sx,
       }}
