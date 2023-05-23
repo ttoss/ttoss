@@ -2,6 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 pnpm syncpack:list
-# pnpm lint-staged
+pnpm lint-staged
 pnpm run build-graph
 git add turbo-build-graph.png
