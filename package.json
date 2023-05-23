@@ -30,18 +30,18 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
-    "@lerna-lite/changed": "^2.3.0",
-    "@lerna-lite/cli": "^2.3.0",
-    "@lerna-lite/list": "^2.3.0",
-    "@lerna-lite/version": "^2.3.0",
+    "@lerna-lite/changed": "^2.4.0",
+    "@lerna-lite/cli": "^2.4.0",
+    "@lerna-lite/list": "^2.4.0",
+    "@lerna-lite/version": "^2.4.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
-    "eslint": "^8.40.0",
+    "eslint": "^8.41.0",
     "husky": "^8.0.3",
     "lint-staged": "13.1.0",
     "prettier": "^2.8.8",
     "syncpack": "^9.8.6",
-    "turbo": "^1.9.4"
+    "turbo": "^1.9.9"
   },
   "keywords": [],
   "engines": {
