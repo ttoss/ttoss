@@ -27,7 +27,9 @@ import { Box, Button, Flex, Text } from '@ttoss/ui';
 /**
  * See https://reactcommunity.org/react-modal/accessibility/#app-element
  */
-// Modal.setAppElement('#root'); // You can set the app element here or in prop `appElement`.
+// Modal.setAppElement('#root'); Prefer using this static method over setting it on the component.
+
+Modal.setAppElement('#modal-root');
 
 const Component = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -42,7 +44,6 @@ const Component = () => {
           action('onRequestClose')();
           setIsOpen(false);
         }}
-        appElement={document.getElementById('modal-root') as HTMLElement}
         style={{
           overlay: {
             backgroundColor: 'primary',
