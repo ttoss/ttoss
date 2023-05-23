@@ -45,7 +45,7 @@ if pnpm lerna changed; then
   pnpm turbo run build test --filter=...[$LATEST_TAG]
 
   # See description on the lint.sh file.
-  sh -e "$(dirname "$0")/lint.sh"
+  sh "$(dirname "$0")/lint.sh" || exit 1
 
   # Use Git to check for changes in the origin repository. If there are any
   # changes, "git push --follow-tags" will fail. The error message will be:

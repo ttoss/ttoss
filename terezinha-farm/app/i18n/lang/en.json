@@ -19,11 +19,6 @@
     "description": "Forgot password?",
     "module": "@ttoss/react-auth"
   },
-  "EXZxA0": {
-    "defaultMessage": "Register",
-    "description": "Title on sign up.",
-    "module": "@ttoss/react-auth"
-  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
     "description": "Sign up",
@@ -39,19 +34,14 @@
     "description": "Sign up confirmation code",
     "module": "@ttoss/react-auth"
   },
-  "LU2ddR": {
-    "defaultMessage": "Do you already have an account? Sign in",
-    "description": "Link to sign in on sign up.",
+  "NJ57Qj": {
+    "defaultMessage": "Confirm password field is required",
+    "description": "Confirm Password is required.",
     "module": "@ttoss/react-auth"
   },
   "OhDL0i": {
     "defaultMessage": "Invalid email",
     "description": "Invalid email.",
-    "module": "@ttoss/react-auth"
-  },
-  "Pdio77": {
-    "defaultMessage": "Create account",
-    "description": "Create account.",
     "module": "@ttoss/react-auth"
   },
   "PylVqx": {
@@ -74,6 +64,16 @@
     "description": "Confirm",
     "module": "@ttoss/react-auth"
   },
+  "URJDrG": {
+    "defaultMessage": "Sign up",
+    "description": "Create account.",
+    "module": "@ttoss/react-auth"
+  },
+  "WU/CqP": {
+    "defaultMessage": "Passwords are not the same",
+    "description": "Passwords are not the same",
+    "module": "@ttoss/react-auth"
+  },
   "cGR2eI": {
     "defaultMessage": "Confirmation",
     "description": "Confirmation",
@@ -84,9 +84,24 @@
     "description": "Password is required.",
     "module": "@ttoss/react-auth"
   },
+  "lY+cuM": {
+    "defaultMessage": "Confirm password",
+    "description": "Confirm Password label.",
+    "module": "@ttoss/react-auth"
+  },
+  "oayEC3": {
+    "defaultMessage": "Sign up",
+    "description": "Title on sign up.",
+    "module": "@ttoss/react-auth"
+  },
   "r+QgO+": {
     "defaultMessage": "Email field is required",
     "description": "Email is a required field.",
+    "module": "@ttoss/react-auth"
+  },
+  "rx8HF/": {
+    "defaultMessage": "I’m already registered",
+    "description": "Link to sign in on sign up.",
     "module": "@ttoss/react-auth"
   }
 }
