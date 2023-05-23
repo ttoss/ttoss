@@ -20,7 +20,7 @@
     "build:config": "pnpm run --filter=@ttoss/config build && pnpm i",
     "build-graph": "turbo run build --only --graph=turbo-build-graph.png",
     "preinstall": "npx only-allow pnpm",
-    "lint": "lint-staged --diff main --quiet",
+    "lint": "lint-staged --diff main --quiet --no-stash",
     "ls": "lerna ls",
     "prepare": "husky install",
     "syncpack:fix": "syncpack fix-mismatches",
