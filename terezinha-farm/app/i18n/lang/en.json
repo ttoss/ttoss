@@ -1,4 +1,9 @@
 {
+  "/J+02x": {
+    "defaultMessage": "Log in",
+    "description": "Button label.",
+    "module": "@ttoss/react-auth"
+  },
   "0XOzcH": {
     "defaultMessage": "Required field",
     "description": "Required field.",
