@@ -1,5 +1,5 @@
+import * as React from 'react';
 import { type LinkProps as LinkPropsUi, Link as LinkUi } from 'theme-ui';
-import React from 'react';
 
 export type LinkProps = LinkPropsUi & {
   quiet?: boolean;
