@@ -5,7 +5,7 @@ import { type SelectProps, Select as SelectUi } from 'theme-ui';
 export { SelectProps };
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ arrow, ...props }, ref) => {
+  ({ arrow, sx, ...props }, ref) => {
     return (
       <SelectUi
         // https://theme-ui.com/components/select#custom-arrow-icon
@@ -45,6 +45,13 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             )}
           </>
         }
+        sx={{
+          fontFamily: 'body',
+          width: '100%',
+          paddingY: 'lg',
+          paddingX: 'xl',
+          ...sx,
+        }}
         ref={ref}
         {...props}
       />

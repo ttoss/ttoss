@@ -12,10 +12,19 @@ export const Label = ({
   children,
   onTooltipClick,
   tooltip,
+  sx,
   ...props
 }: LabelProps) => {
   return (
-    <LabelUi {...props}>
+    <LabelUi
+      sx={{
+        fontFamily: 'caption',
+        alignItems: 'center',
+        fontSize: 'sm',
+        ...sx,
+      }}
+      {...props}
+    >
       {children}
 
       {tooltip && (
