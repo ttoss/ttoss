@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.9](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.17.8...@ttoss/forms@0.17.9) (2023-05-23)
+
+### Bug Fixes
+
+- add dotenv to deploy app ([#363](https://github.com/ttoss/ttoss/issues/363)) ([351e985](https://github.com/ttoss/ttoss/commit/351e9853b6efce90f8bbf012098bfa5c8fd071a8))
+
 ## [0.17.8](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.17.7...@ttoss/forms@0.17.8) (2023-05-23)
 
 **Note:** Version bump only for package @ttoss/forms

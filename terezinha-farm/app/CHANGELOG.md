@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.11](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.10...@terezinha-farm/app@0.5.11) (2023-05-23)
+
+### Bug Fixes
+
+- add dotenv to deploy app ([#363](https://github.com/ttoss/ttoss/issues/363)) ([351e985](https://github.com/ttoss/ttoss/commit/351e9853b6efce90f8bbf012098bfa5c8fd071a8))
+
 ## [0.5.10](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.9...@terezinha-farm/app@0.5.10) (2023-05-23)
 
 **Note:** Version bump only for package @terezinha-farm/app

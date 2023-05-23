@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.8](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.28.7...@ttoss/components@1.28.8) (2023-05-23)
+
+### Bug Fixes
+
+- add dotenv to deploy app ([#363](https://github.com/ttoss/ttoss/issues/363)) ([351e985](https://github.com/ttoss/ttoss/commit/351e9853b6efce90f8bbf012098bfa5c8fd071a8))
+
 ## [1.28.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.28.6...@ttoss/components@1.28.7) (2023-05-23)
 
 **Note:** Version bump only for package @ttoss/components
