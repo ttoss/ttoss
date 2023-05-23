@@ -44,6 +44,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <InputUI
           ref={ref}
           sx={{
+            fontFamily: 'body',
+            paddingY: 'lg',
+            paddingX: 'xl',
             ...sx,
             paddingLeft: leadingIcon ? '3xl' : undefined,
             paddingRight: trailingIcon ? '3xl' : undefined,

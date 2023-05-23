@@ -10,7 +10,7 @@ export type CloseButtonProps = ButtonProps & {
 export const CloseButton = React.forwardRef<
   HTMLButtonElement,
   CloseButtonProps
->(({ label, onlyText, ...props }, ref) => {
+>(({ label, sx, onlyText, ...props }, ref) => {
   if (onlyText && !label) {
     return null;
   }
@@ -20,6 +20,17 @@ export const CloseButton = React.forwardRef<
       variant="buttons.closeButton"
       type="button"
       aria-label={label}
+      sx={{
+        fontFamily: 'caption',
+        fontSize: 'xs',
+        display: 'inline-flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        gap: 'sm',
+        padding: 'sm',
+        width: 'fit-content',
+        ...sx,
+      }}
       {...props}
       ref={ref}
     >
