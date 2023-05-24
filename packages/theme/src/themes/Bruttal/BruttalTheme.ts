@@ -267,8 +267,10 @@ export const BruttalTheme: Theme = {
       color: 'primary',
       border: 'default',
       borderColor: 'primary',
+      borderRadius: 'action',
       ':disabled': {
         border: 'muted',
+        borderColor: 'onMuted',
         backgroundColor: 'muted',
         color: 'onMuted',
         cursor: 'not-allowed',
@@ -368,6 +370,7 @@ export const BruttalTheme: Theme = {
       },
       ':disabled': {
         backgroundColor: 'muted',
+        color: 'onMuted',
         border: 'muted',
         borderColor: 'onMuted',
       },

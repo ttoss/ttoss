@@ -1,4 +1,4 @@
-import { Box, Button } from '@ttoss/ui/src';
+import { Box, Button, Flex } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldCheckbox,
@@ -46,31 +46,33 @@ export const Example1: StoryFn = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormFieldInput
-        name="firstName"
-        label="First Name"
-        placeholder="First Name"
-        trailingIcon={alertIcon}
-        leadingIcon="ic:baseline-supervised-user-circle"
-        onTooltipClick={action('onTooltipClick')}
-        tooltip
-      />
-      <FormFieldInput
-        name="age"
-        label="Age"
-        placeholder="Age"
-        type="number"
-        tooltip
-      />
+      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+        <FormFieldInput
+          name="firstName"
+          label="First Name"
+          placeholder="First Name"
+          trailingIcon={alertIcon}
+          leadingIcon="ic:baseline-supervised-user-circle"
+          onTooltipClick={action('onTooltipClick')}
+          tooltip
+        />
+        <FormFieldInput
+          name="age"
+          label="Age"
+          placeholder="Age"
+          type="number"
+          tooltip
+        />
 
-      <FormFieldPassword
-        name="password"
-        label="Password"
-        placeholder="Password"
-        showPasswordByDefault
-      />
-      <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
-      <FormFieldInput name="version" label="Version (disabled)" disabled />
+        <FormFieldPassword
+          name="password"
+          label="Password"
+          placeholder="Password"
+          showPasswordByDefault
+        />
+        <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
+        <FormFieldInput name="version" label="Version (disabled)" disabled />
+      </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit
       </Button>

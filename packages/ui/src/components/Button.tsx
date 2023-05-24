@@ -8,11 +8,12 @@ import { Icon, IconType } from './Icon';
 export type ButtonProps = ButtonPropsUi & {
   leftIcon?: IconType;
   rightIcon?: IconType;
+  loading?: boolean;
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props, ref) => {
-    const { children, leftIcon, rightIcon, ...restProps } = props;
+    const { children, leftIcon, rightIcon, loading, ...restProps } = props;
 
     return (
       <ButtonUi
@@ -30,7 +31,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ...restProps.sx,
         }}
       >
-        {leftIcon && <Icon inline icon={leftIcon} />}
+        {loading && <Icon inline icon="three-dots-loading" />}
+        {!loading && leftIcon && <Icon inline icon={leftIcon} />}
         {children}
         {rightIcon && <Icon inline icon={rightIcon} />}
       </ButtonUi>

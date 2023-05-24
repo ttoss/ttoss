@@ -142,11 +142,13 @@ const CORE_ICONS = [
   'subtract',
   'success-circle',
   'small-close',
+  'three-dots-loading',
   'time',
   'upload',
   'view-off',
   'view-on',
   'warning',
+  'warning-alt',
 ];
 
 export const CoreIcons = () => {
