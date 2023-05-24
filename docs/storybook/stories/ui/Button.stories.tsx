@@ -28,9 +28,6 @@ const Template: Story<ButtonProps> = (args) => {
       <Button {...args} leftIcon="mdi-light:home" rightIcon="mdi-light:home">
         Right and Left Icons
       </Button>
-      {/* <Button {...args} disabled>
-        Disabled
-      </Button> */}
       <Button {...args} loading>
         Loading
       </Button>
