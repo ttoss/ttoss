@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.23.1 (2023-05-23)
+
+### Bug Fixes
+
+- add dotenv to deploy app ([#363](https://github.com/ttoss/ttoss/issues/363)) ([351e985](https://github.com/ttoss/ttoss/commit/351e9853b6efce90f8bbf012098bfa5c8fd071a8))
+- no matching export SelectProps ([#348](https://github.com/ttoss/ttoss/issues/348)) ([8c1c279](https://github.com/ttoss/ttoss/commit/8c1c279f4715a8520a2a5448c09e7d107e2f7293))
+
 # [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.22.0...@ttoss/test-utils@1.23.0) (2023-05-06)
 
 ### Features

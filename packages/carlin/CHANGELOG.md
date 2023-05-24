@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.29.1 (2023-05-23)
+
+### Bug Fixes
+
+- no matching export SelectProps ([#348](https://github.com/ttoss/carlin/issues/348)) ([8c1c279](https://github.com/ttoss/carlin/commit/8c1c279f4715a8520a2a5448c09e7d107e2f7293))
+
 # [1.29.0](https://github.com/ttoss/carlin/compare/carlin@1.28.2...carlin@1.29.0) (2023-05-09)
 
 ### Bug Fixes

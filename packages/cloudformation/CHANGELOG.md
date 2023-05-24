@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.2 (2023-05-23)
+
+### Bug Fixes
+
+- no matching export SelectProps ([#348](https://github.com/ttoss/ttoss/issues/348)) ([8c1c279](https://github.com/ttoss/ttoss/commit/8c1c279f4715a8520a2a5448c09e7d107e2f7293))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.7.0...@ttoss/cloudformation@0.7.1) (2023-05-06)
 
 **Note:** Version bump only for package @ttoss/cloudformation

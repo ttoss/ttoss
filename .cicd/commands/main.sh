@@ -44,13 +44,8 @@ if pnpm lerna changed; then
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
   pnpm turbo run build test --filter=...[$LATEST_TAG]
 
-  # Undo all files that were changed by the build command—this happens because
-  # the build can change files with different linting rules and `pnpm run lint`
-  # fix them.
-  # We don't want these changes becaues it will cause
-  # turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
-  pnpm turbo run lint -- --allow-empty
-  git diff --exit-code --quiet || { echo "Error: There are changed files."; git status; exit 1; }
+  # See description on the lint.sh file.
+  sh "$(dirname "$0")/lint.sh" || exit 1
 
   # Use Git to check for changes in the origin repository. If there are any
   # changes, "git push --follow-tags" will fail. The error message will be:

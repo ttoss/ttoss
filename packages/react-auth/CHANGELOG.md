@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.10...@ttoss/react-auth@1.6.11) (2023-05-23)
+
+### Bug Fixes
+
+- add dotenv to deploy app ([#363](https://github.com/ttoss/ttoss/issues/363)) ([351e985](https://github.com/ttoss/ttoss/commit/351e9853b6efce90f8bbf012098bfa5c8fd071a8))
+
 ## [1.6.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.9...@ttoss/react-auth@1.6.10) (2023-05-23)
 
 **Note:** Version bump only for package @ttoss/react-auth

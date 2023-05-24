@@ -23,4 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 stats/
-i18n/
+
+!.env
