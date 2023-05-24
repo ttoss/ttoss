@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Flex } from '@ttoss/ui';
+import { Button, ButtonProps, Flex } from '@ttoss/ui/src';
 import { Meta, Story } from '@storybook/react';
 
 export default {
@@ -28,8 +28,8 @@ const Template: Story<ButtonProps> = (args) => {
       <Button {...args} leftIcon="mdi-light:home" rightIcon="mdi-light:home">
         Right and Left Icons
       </Button>
-      <Button {...args} disabled>
-        Disabled
+      <Button {...args} loading>
+        Loading
       </Button>
     </Flex>
   );
@@ -53,4 +53,9 @@ Secondary.args = {
 export const Destructive = Template.bind({});
 Destructive.args = {
   variant: 'destructive',
+};
+
+export const Disabled = Template.bind({});
+Disabled.args = {
+  disabled: true,
 };

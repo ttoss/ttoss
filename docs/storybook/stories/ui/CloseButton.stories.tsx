@@ -6,9 +6,10 @@ type Story = StoryObj<typeof CloseButton>;
 
 const Component = (args: CloseButtonProps) => {
   return (
-    <Flex sx={{ flexDirection: 'column' }}>
-      <CloseButton {...args} label={undefined} />
+    <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
       <CloseButton {...args} />
+      <CloseButton {...args} onlyText />
+      <CloseButton {...args} label={undefined} />
     </Flex>
   );
 };
@@ -21,7 +22,7 @@ export default {
 export const Default: Story = {
   args: {
     onClick: action('onChange'),
-    label: 'Label Text',
+    label: 'Close',
   },
 };
 
@@ -29,12 +30,5 @@ export const Disabled: Story = {
   args: {
     ...Default.args,
     disabled: true,
-  },
-};
-
-export const OnlyText: Story = {
-  args: {
-    ...Default.args,
-    onlyText: true,
   },
 };

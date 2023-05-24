@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui';
+import { Button } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldRadio,
@@ -36,7 +36,9 @@ const Template: StoryFn = () => {
         ]}
       />
 
-      <Button type="submit">Submit</Button>
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
     </Form>
   );
 };

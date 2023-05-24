@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui';
+import { Button } from '@ttoss/ui/src';
 import {
   Form,
   FormFieldSelect,
@@ -38,7 +38,9 @@ const Template: Story = () => {
         ]}
       />
 
-      <Button type="submit">Submit</Button>
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
     </Form>
   );
 };
@@ -62,7 +64,9 @@ const Template2: Story = () => {
         placeholder="Please select a car"
       />
 
-      <Button type="submit">Submit</Button>
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
     </Form>
   );
 };

@@ -15,17 +15,27 @@ export const Default = Template.bind({});
 
 Default.args = {
   placeholder: 'Placeholder text',
+  value: 'Text',
 };
 
 export const Disabled = Template.bind({});
 
 Disabled.args = {
+  ...Default.args,
   disabled: true,
-  placeholder: 'Placeholder text',
+};
+
+export const WithError = Template.bind({});
+WithError.args = {
+  ...Default.args,
+  trailingIcon: 'warning-alt',
+  placeholder: 'Error',
+  'aria-invalid': 'true',
 };
 
 export const IconsAsString = Template.bind({});
 IconsAsString.args = {
+  ...Default.args,
   trailingIcon: 'mdi-light:home',
   leadingIcon: 'mdi-light:home',
   placeholder: 'Icon as string',
@@ -33,21 +43,15 @@ IconsAsString.args = {
 
 export const IconsAsSvgIcon = Template.bind({});
 IconsAsSvgIcon.args = {
+  ...Default.args,
   trailingIcon: alertIcon,
   leadingIcon: alertIcon,
   placeholder: 'Icon as SvgIcon',
 };
 
-export const WithError = Template.bind({});
-WithError.args = {
-  trailingIcon: 'carbon:error-filled',
-  leadingIcon: alertIcon,
-  placeholder: 'Error',
-  'aria-invalid': 'true',
-};
-
 export const GreaterFontSize = Template.bind({});
 GreaterFontSize.args = {
+  ...Default.args,
   trailingIcon: 'mdi-light:home',
   leadingIcon: 'mdi-light:home',
   placeholder: 'Icon as string',
