@@ -14,7 +14,7 @@ You should declare your messages as describe in the [FormatJS](https://formatjs.
 yarn add @ttoss/react-i18n @ttoss/i18n-cli
 ```
 
-To extract and compile your translations, check the [ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/) documentation.
+To extract and compile your translations, check the [ttoss/i18n-cli](./i18n-cli/) documentation.
 
 ## Examples of use
 
