@@ -164,6 +164,12 @@ importers:
       '@ttoss/forms':
         specifier: workspace:^
         version: link:../../packages/forms
+      '@ttoss/graphql-api':
+        specifier: workspace:^
+        version: link:../../packages/graphql-api
+      '@ttoss/graphql-api-server':
+        specifier: workspace:^
+        version: link:../../packages/graphql-api-server
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../../packages/i18n-cli
@@ -709,21 +715,12 @@ importers:
 
   packages/graphql-api:
     dependencies:
-      '@koa/router':
-        specifier: ^12.0.0
-        version: 12.0.0
+      graphql-compose:
+        specifier: ^9.0.10
+        version: 9.0.10(graphql@16.6.0)
       graphql-compose-connection:
         specifier: ^8.2.1
         version: 8.2.1(graphql-compose@9.0.10)
-      graphql-helix:
-        specifier: ^1.13.0
-        version: 1.13.0(graphql@16.6.0)
-      koa:
-        specifier: ^2.14.2
-        version: 2.14.2
-      koa-bodyparser:
-        specifier: ^4.4.0
-        version: 4.4.0
       npmlog:
         specifier: ^7.0.1
         version: 7.0.1
@@ -737,18 +734,58 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@types/yargs':
+        specifier: ^17.0.24
+        version: 17.0.24
+      graphql:
+        specifier: ^16.6.0
+        version: 16.6.0
+      jest:
+        specifier: ^29.5.0
+        version: 29.5.0(@types/node@18.16.2)(ts-node@10.9.1)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+
+  packages/graphql-api-server:
+    dependencies:
+      '@koa/cors':
+        specifier: ^4.0.0
+        version: 4.0.0
+      '@koa/router':
+        specifier: ^12.0.0
+        version: 12.0.0
+      aws-jwt-verify:
+        specifier: ^4.0.0
+        version: 4.0.0
+      graphql-helix:
+        specifier: ^1.13.0
+        version: 1.13.0(graphql@16.6.0)
+      koa:
+        specifier: ^2.14.2
+        version: 2.14.2
+      koa-bodyparser:
+        specifier: ^4.4.0
+        version: 4.4.0
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@ttoss/graphql-api':
+        specifier: workspace:^
+        version: link:../graphql-api
       '@types/koa':
         specifier: ^2.13.6
         version: 2.13.6
       '@types/koa-bodyparser':
         specifier: ^4.3.10
         version: 4.3.10
+      '@types/koa__cors':
+        specifier: ^4.0.0
+        version: 4.0.0
       '@types/koa__router':
         specifier: ^12.0.0
         version: 12.0.0
-      '@types/yargs':
-        specifier: ^17.0.24
-        version: 17.0.24
       graphql:
         specifier: ^16.6.0
         version: 16.6.0
@@ -8449,6 +8486,13 @@ packages:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: true
 
+  /@koa/cors@4.0.0:
+    resolution: {integrity: sha512-Y4RrbvGTlAaa04DBoPBWJqDR5gPj32OOz827ULXfgB1F7piD1MB/zwn8JR2LAnvdILhxUbXbkXGWuNVsFuVFCQ==}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      vary: 1.1.2
+    dev: false
+
   /@koa/router@12.0.0:
     resolution: {integrity: sha512-cnnxeKHXlt7XARJptflGURdJaO+ITpNkOHmQu7NHmCoRinPbyvFzce/EG/E8Zy81yQ1W9MoSdtklc3nyaDReUw==}
     engines: {node: '>= 12'}
@@ -9934,7 +9978,7 @@ packages:
       process: 0.11.10
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      semver: 7.5.0
+      semver: 7.5.1
       style-loader: 3.3.2(webpack@5.79.0)
       terser-webpack-plugin: 5.3.7(esbuild@0.17.18)(webpack@5.79.0)
       ts-dedent: 2.2.0
@@ -10036,7 +10080,7 @@ packages:
       prompts: 2.4.2
       puppeteer-core: 2.1.1
       read-pkg-up: 7.0.1
-      semver: 7.5.0
+      semver: 7.5.1
       shelljs: 0.8.5
       simple-update-notifier: 1.1.0
       strip-json-comments: 3.1.1
@@ -10341,7 +10385,7 @@ packages:
       memoizerific: 1.11.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      semver: 7.5.0
+      semver: 7.5.1
       store2: 2.14.2
       telejson: 7.1.0
       ts-dedent: 2.2.0
@@ -10399,7 +10443,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-refresh: 0.11.0
-      semver: 7.5.0
+      semver: 7.5.1
       typescript: 5.0.4
       webpack: 5.79.0(esbuild@0.17.18)
     transitivePeerDependencies:
@@ -11472,6 +11516,12 @@ packages:
       '@types/keygrip': 1.0.2
       '@types/koa-compose': 3.2.5
       '@types/node': 18.16.2
+    dev: true
+
+  /@types/koa__cors@4.0.0:
+    resolution: {integrity: sha512-qpwswNgQ2GxiDGNnKbDSBY5XmQTVJ6fspNvInLsAJ+jSwINxihvVzblj5anujNBg2BtL0xpUrcIt3UYwGzu05A==}
+    dependencies:
+      '@types/koa': 2.13.6
     dev: true
 
   /@types/koa__router@12.0.0:
@@ -13089,6 +13139,11 @@ packages:
       - debug
       - encoding
       - react-native
+
+  /aws-jwt-verify@4.0.0:
+    resolution: {integrity: sha512-1kCv+Ub3jBaQ6HnIjfAXswjp7xD0LO4GxwbQZ/o9IoJpb8/ZBUhHu5GQ4k2O7jOVTS/KOz86uw4NV71V3s6V3g==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /aws-sdk@2.1374.0:
     resolution: {integrity: sha512-Q7TExvBskRM23GfE1iy0GRxpUF+d9LY7ggmdHvL+2gX/QTzxSYaHHRPa8MNzFtzZLz+BDcDIgAcMjYKsrm18Rw==}
@@ -20438,7 +20493,7 @@ packages:
       escape-html: 1.0.3
       fresh: 0.5.2
       http-assert: 1.5.0
-      http-errors: 1.6.3
+      http-errors: 1.8.1
       is-generator-function: 1.0.10
       koa-compose: 4.1.0
       koa-convert: 2.0.0

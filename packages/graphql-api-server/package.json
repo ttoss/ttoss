@@ -1,0 +1,54 @@
+{
+  "name": "@ttoss/graphql-api-server",
+  "version": "0.0.1",
+  "description": "GraphQL API Server",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "echo jest"
+  },
+  "sideEffects": false,
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "@koa/cors": "^4.0.0",
+    "@koa/router": "^12.0.0",
+    "aws-jwt-verify": "^4.0.0",
+    "graphql-helix": "^1.13.0",
+    "koa": "^2.14.2",
+    "koa-bodyparser": "^4.4.0"
+  },
+  "peerDependencies": {
+    "@ttoss/graphql-api": "workspace:^",
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/graphql-api": "workspace:^",
+    "@types/koa": "^2.13.6",
+    "@types/koa__cors": "^4.0.0",
+    "@types/koa__router": "^12.0.0",
+    "@types/koa-bodyparser": "^4.3.10",
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10",
+    "jest": "^29.5.0",
+    "tsup": "^6.7.0"
+  },
+  "keywords": [
+    "api",
+    "graphql",
+    "koa"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

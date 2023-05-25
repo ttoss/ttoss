@@ -38,12 +38,13 @@ const config = {
       'components',
       'config',
       'forms',
-      'i18n-cli',
-      'react-i18n',
-      'ui',
-      'logger',
       'graphql-api',
+      'graphql-api-server',
+      'i18n-cli',
+      'logger',
+      'react-i18n',
       'react-notifications',
+      'ui',
     ].map((package) => {
       return [
         'docusaurus-plugin-typedoc',
