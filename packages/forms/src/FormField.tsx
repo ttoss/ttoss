@@ -78,7 +78,7 @@ export const FormField = <
   ]);
 
   return (
-    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
+    <Flex sx={{ flexDirection: 'column', width: '100%', gap: 'md', ...sx }}>
       {memoizedRender}
       <ErrorMessage name={name} />
     </Flex>

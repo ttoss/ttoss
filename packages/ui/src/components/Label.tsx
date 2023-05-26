@@ -21,6 +21,7 @@ export const Label = ({
         fontFamily: 'caption',
         alignItems: 'center',
         fontSize: 'sm',
+        lineHeight: 'base',
         ...sx,
       }}
       {...props}

@@ -33,7 +33,7 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
       .required(
         intl.formatMessage({
           description: 'Email is a required field.',
-          defaultMessage: 'Email field is required',
+          defaultMessage: 'Enter your email address',
         })
       )
       .email(
@@ -59,6 +59,13 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           },
           { value: PASSWORD_MINIMUM_LENGTH }
         )
+      )
+      .oneOf(
+        [yup.ref('confirmPassword')],
+        intl.formatMessage({
+          description: 'Password requirements not met',
+          defaultMessage: 'Password requirements not met',
+        })
       )
       .trim(),
     confirmPassword: yup
@@ -88,7 +95,11 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
   };
 
   return (
-    <Form {...formMethods} onSubmit={onSubmitForm}>
+    <Form
+      sx={{ maxWidth: '390px', width: '100%' }}
+      {...formMethods}
+      onSubmit={onSubmitForm}
+    >
       <AuthCard
         buttonLabel={intl.formatMessage({
           description: 'Create account.',
@@ -100,7 +111,7 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
         })}
         isValidForm={formMethods.formState.isValid}
         extraButton={
-          <Text onClick={onReturnToSignIn} as={Link}>
+          <Text sx={{ cursor: 'pointer' }} onClick={onReturnToSignIn} as={Link}>
             {intl.formatMessage({
               description: 'Link to sign in on sign up.',
               defaultMessage: 'I’m already registered',

@@ -33,7 +33,12 @@ export const FormFieldInput = <
         const hasError = !!formState.errors[name]?.message;
 
         return (
-          <Input {...inputProps} {...field} aria-invalid={hasError.valueOf()} />
+          <Input
+            {...inputProps}
+            {...field}
+            aria-invalid={hasError.valueOf()}
+            trailingIcon={hasError ? 'warning-alt' : undefined}
+          />
         );
       }}
     />

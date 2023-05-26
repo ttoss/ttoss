@@ -35,7 +35,7 @@ export const AuthCard = ({
   return (
     <Box
       sx={{
-        maxWidth: '390px',
+        width: '100%',
         border: 'default',
         borderColor: 'primary',
         paddingX: '2xl',
@@ -82,6 +82,7 @@ export const AuthCard = ({
             variant="accent"
             disabled={isLoading || !isValidForm}
             sx={{ textAlign: 'center', display: 'initial' }}
+            loading={isLoading}
           >
             {buttonLabel}
           </Button>

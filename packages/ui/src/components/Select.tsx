@@ -20,6 +20,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   alignSelf: 'center',
                   pointerEvents: 'none',
                   lineHeight: 0,
+                  fontSize: 'base',
                 }}
               >
                 <Icon icon="picker-down" />
@@ -38,6 +39,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   alignSelf: 'center',
                   pointerEvents: 'none',
                   lineHeight: 0,
+                  fontSize: 'base',
                 }}
               >
                 <Icon icon="error" />
