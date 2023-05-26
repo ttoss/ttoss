@@ -12,20 +12,21 @@ export default {
 export const Default: Story = {
   args: {
     onChange: action('onChange'),
-    children: 'Label Text',
-  },
-};
-
-export const WithTooltip: Story = {
-  args: {
-    ...Default.args,
+    children: 'Label (optional)',
     tooltip: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    ...WithTooltip.args,
+    ...Default.args,
     'aria-disabled': 'true',
+  },
+};
+
+export const WithoutTooltip: Story = {
+  args: {
+    ...Default.args,
+    tooltip: false,
   },
 };

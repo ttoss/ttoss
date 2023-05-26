@@ -3,13 +3,15 @@ import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
 import type { OnConfirmSignUp } from './types';
 
+export type AuthConfirmSignUpProps = {
+  email: string;
+  onConfirmSignUp: OnConfirmSignUp;
+};
+
 export const AuthConfirmSignUp = ({
   email,
   onConfirmSignUp,
-}: {
-  email: string;
-  onConfirmSignUp: OnConfirmSignUp;
-}) => {
+}: AuthConfirmSignUpProps) => {
   const { intl } = useI18n();
 
   const schema = yup

@@ -14,6 +14,21 @@
     "description": "Email label.",
     "module": "@ttoss/react-auth"
   },
+  "5oOshZ": {
+    "defaultMessage": "Enter your email address",
+    "description": "Required field.",
+    "module": "@ttoss/react-auth"
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancel",
+    "description": "Cancel",
+    "module": "@ttoss/react-auth"
+  },
+  "9cApwd": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Invalid email.",
+    "module": "@ttoss/react-auth"
+  },
   "BtK6KR": {
     "defaultMessage": "Forgot password?",
     "description": "Forgot password?",
@@ -54,6 +69,21 @@
     "description": "Minimum {value} characters.",
     "module": "@ttoss/react-auth"
   },
+  "S4bbEj": {
+    "defaultMessage": "Recovering Password",
+    "description": "Recovering Password",
+    "module": "@ttoss/react-auth"
+  },
+  "SPiKja": {
+    "defaultMessage": "Password requirements not met",
+    "description": "Password requirements not met",
+    "module": "@ttoss/react-auth"
+  },
+  "SnONhb": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Please, insert a valid e-mail",
+    "module": "@ttoss/react-auth"
+  },
   "TZ4WUk": {
     "defaultMessage": "Password requires {value} characters",
     "description": "Password must be at least {value} characters long.",
@@ -74,9 +104,19 @@
     "description": "Passwords are not the same",
     "module": "@ttoss/react-auth"
   },
+  "XreZg+": {
+    "defaultMessage": "Registered Email",
+    "description": "Registered Email",
+    "module": "@ttoss/react-auth"
+  },
   "cGR2eI": {
     "defaultMessage": "Confirmation",
     "description": "Confirmation",
+    "module": "@ttoss/react-auth"
+  },
+  "d1YCuH": {
+    "defaultMessage": "Enter your email address",
+    "description": "Email is a required field.",
     "module": "@ttoss/react-auth"
   },
   "kdFYba": {
@@ -89,14 +129,19 @@
     "description": "Confirm Password label.",
     "module": "@ttoss/react-auth"
   },
+  "lZvoYL": {
+    "defaultMessage": "Sign up now",
+    "description": "Sign up now",
+    "module": "@ttoss/react-auth"
+  },
+  "mZzmNV": {
+    "defaultMessage": "Recover Password",
+    "description": "Recover Password",
+    "module": "@ttoss/react-auth"
+  },
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up.",
-    "module": "@ttoss/react-auth"
-  },
-  "r+QgO+": {
-    "defaultMessage": "Email field is required",
-    "description": "Email is a required field.",
     "module": "@ttoss/react-auth"
   },
   "rx8HF/": {

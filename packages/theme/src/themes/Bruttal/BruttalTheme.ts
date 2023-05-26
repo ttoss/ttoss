@@ -157,6 +157,7 @@ export const BruttalTheme: Theme = {
       color: 'text',
       fontFamily: 'body',
       textDecorationLine: 'underline',
+      lineHeight: 'base',
       '&.quiet:not(:hover)': {
         textDecorationLine: 'none',
       },
@@ -172,29 +173,24 @@ export const BruttalTheme: Theme = {
     positive: {
       color: 'onPositive',
       bg: 'positive',
-      borderRadius: 'informative',
     },
     negative: {
       color: 'onDanger',
       bg: 'danger',
-      borderRadius: 'informative',
     },
     neutral: {
       color: 'onSecondary',
       bg: 'secondary',
-      borderRadius: 'informative',
       border: 'muted',
       borderColor: 'onMuted',
     },
     informative: {
       color: 'onNotice',
       bg: 'notice',
-      borderRadius: 'informative',
     },
     muted: {
       color: 'onMuted',
       bg: 'muted',
-      borderRadius: 'xs',
     },
   },
   buttons: {
@@ -304,11 +300,15 @@ export const BruttalTheme: Theme = {
         fontSize: 'sm',
         marginLeft: '2xs',
       },
+      '&:has(input[type="checkbox"])': {
+        fontSize: 'base',
+        gap: 'md',
+      },
+      '& > div:has(input[type="checkbox"]) > svg': {
+        marginRight: 0,
+      },
       '&:has(input[type="checkbox"]:disabled)': {
         color: 'onMuted',
-      },
-      '&:has(+div>:is(input, select, textarea))': {
-        marginBottom: 'md',
       },
       '&:has(div > input[type="radio"])': {
         alignItems: 'center',
@@ -362,6 +362,8 @@ export const BruttalTheme: Theme = {
       borderColor: 'onMuted',
       borderRadius: 'action',
       backgroundColor: 'surface',
+      fontSize: 'base',
+      lineHeight: 'base',
       '::placeholder': {
         color: 'onMuted',
       },
@@ -377,7 +379,7 @@ export const BruttalTheme: Theme = {
       '&[aria-invalid="true"]': {
         borderColor: 'danger',
       },
-      '&[aria-invalid="true"]+span>iconify-icon': {
+      '&[aria-invalid="true"] ~ span:has(iconify-icon)': {
         color: 'danger',
       },
     },

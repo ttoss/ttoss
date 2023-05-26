@@ -41,13 +41,13 @@ export const AuthSignIn = ({
       .required(
         intl.formatMessage({
           description: 'Email is a required field.',
-          defaultMessage: 'Email field is required',
+          defaultMessage: 'Enter your email address',
         })
       )
       .email(
         intl.formatMessage({
           description: 'Invalid email.',
-          defaultMessage: 'Invalid email',
+          defaultMessage: 'Please, insert a valid e-mail',
         })
       ),
     password: yup
@@ -74,6 +74,7 @@ export const AuthSignIn = ({
 
   const formMethods = useForm<OnSignInInput>({
     defaultValues,
+    mode: 'onBlur',
     resolver: yupResolver(schema),
   });
 
@@ -82,7 +83,11 @@ export const AuthSignIn = ({
   };
 
   return (
-    <Form {...formMethods} onSubmit={onSubmitForm}>
+    <Form
+      sx={{ maxWidth: '390px', width: '100%' }}
+      {...formMethods}
+      onSubmit={onSubmitForm}
+    >
       <AuthCard
         title={intl.formatMessage({
           description: 'Sign in title.',
@@ -135,7 +140,11 @@ export const AuthSignIn = ({
             })}
           /> */}
 
-          <Text as={Link} onClick={onForgotPassword}>
+          <Text
+            sx={{ marginLeft: 'auto' }}
+            as={Link}
+            onClick={onForgotPassword}
+          >
             {intl.formatMessage({
               description: 'Forgot password?',
               defaultMessage: 'Forgot password?',

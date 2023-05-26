@@ -19,8 +19,9 @@ export const HelpText = ({
     <Text
       variant={variant}
       sx={{
-        fontSize: 'xs',
+        fontSize: 'sm',
         fontFamily: 'caption',
+        lineHeight: 'base',
         ...sx,
       }}
       aria-disabled={disabled ? 'true' : undefined}

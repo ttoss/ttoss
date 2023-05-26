@@ -14,11 +14,15 @@ type SelectSwitchProps =
 const checkDefaultValue = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->(
-  options: Array<FormRadioOption>,
-  defaultValue?: FieldPathValue<TFieldValues, TName>,
-  placeholder?: string
-): FieldPathValue<TFieldValues, TName> => {
+>({
+  options,
+  defaultValue,
+  placeholder,
+}: {
+  options: Array<FormRadioOption>;
+  defaultValue?: FieldPathValue<TFieldValues, TName>;
+  placeholder?: string;
+}): FieldPathValue<TFieldValues, TName> => {
   if (defaultValue) {
     return defaultValue;
   }
@@ -70,11 +74,11 @@ export const FormFieldSelect = <
 }: FormFieldSelectProps<TFieldValues, TName>) => {
   const { defaultValue, placeholder } = selectProps;
 
-  const checkedDefaultValue = checkDefaultValue<TFieldValues, TName>(
+  const checkedDefaultValue = checkDefaultValue<TFieldValues, TName>({
     options,
     defaultValue,
-    placeholder
-  );
+    placeholder,
+  });
 
   return (
     <FormField
@@ -92,7 +96,7 @@ export const FormFieldSelect = <
             {...field}
             {...{ ...selectProps, defaultValue: undefined }}
           >
-            {options.map((option) => {
+            {options.map((option: FormRadioOption) => {
               return (
                 <option key={option.label} value={option.value}>
                   {option.label}

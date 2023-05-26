@@ -15,8 +15,10 @@ const Template: Story<BadgeProps> = (args) => {
         alignItems: 'start',
       }}
     >
-      <Badge {...args} />
-      <Badge {...args} icon="mdi-light:home" />
+      <Badge {...args}>Label</Badge>
+      <Badge {...args} icon="radio-not-selected">
+        Label
+      </Badge>
     </Flex>
   );
 };
@@ -25,33 +27,28 @@ export const Positive = Template.bind({});
 
 Positive.args = {
   variant: 'positive',
-  children: <>{'positive'}</>,
 };
 
 export const Negative = Template.bind({});
 
 Negative.args = {
   variant: 'negative',
-  children: <>{'negative'}</>,
 };
 
 export const Neutral = Template.bind({});
 
 Neutral.args = {
   variant: 'neutral',
-  children: <>{'neutral'}</>,
 };
 
 export const Informative = Template.bind({});
 
 Informative.args = {
   variant: 'informative',
-  children: <>{'informative'}</>,
 };
 
 export const Muted = Template.bind({});
 
 Muted.args = {
   variant: 'muted',
-  children: <>{'muted'}</>,
 };

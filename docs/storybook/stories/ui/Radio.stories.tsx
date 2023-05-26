@@ -7,7 +7,7 @@ const Component = (args: RadioProps) => {
   return (
     <Label>
       <Radio {...args} />
-      Label text
+      Label
     </Label>
   );
 };

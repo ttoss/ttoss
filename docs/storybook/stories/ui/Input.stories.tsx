@@ -1,6 +1,6 @@
 import { Flex, Input, InputProps } from '@ttoss/ui/src';
 import { Meta, Story } from '@storybook/react';
-import alertIcon from '@iconify-icons/mdi-light/alert';
+import radioButtonIcon from '@iconify/icons-carbon/radio-button';
 
 export default {
   title: 'UI/Input',
@@ -36,24 +36,21 @@ WithError.args = {
 export const IconsAsString = Template.bind({});
 IconsAsString.args = {
   ...Default.args,
-  trailingIcon: 'mdi-light:home',
-  leadingIcon: 'mdi-light:home',
+  trailingIcon: 'radio-not-selected',
   placeholder: 'Icon as string',
 };
 
 export const IconsAsSvgIcon = Template.bind({});
 IconsAsSvgIcon.args = {
   ...Default.args,
-  trailingIcon: alertIcon,
-  leadingIcon: alertIcon,
+  trailingIcon: radioButtonIcon,
   placeholder: 'Icon as SvgIcon',
 };
 
 export const GreaterFontSize = Template.bind({});
 GreaterFontSize.args = {
   ...Default.args,
-  trailingIcon: 'mdi-light:home',
-  leadingIcon: 'mdi-light:home',
+  trailingIcon: 'radio-not-selected',
   placeholder: 'Icon as string',
   sx: {
     fontSize: '2xl',
@@ -82,7 +79,7 @@ export const InsideFlex = () => {
           border: 'default',
           padding: 'lg',
         }}
-        trailingIcon="carbon:error-filled"
+        trailingIcon="radio-not-selected"
         placeholder="Input with padding and margin inside container with padding"
       />
     </Flex>

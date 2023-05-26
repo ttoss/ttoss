@@ -11,6 +11,18 @@
     "defaultMessage": "Email",
     "description": "Email label."
   },
+  "5oOshZ": {
+    "defaultMessage": "Enter your email address",
+    "description": "Required field."
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancel",
+    "description": "Cancel"
+  },
+  "9cApwd": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Invalid email."
+  },
   "BtK6KR": {
     "defaultMessage": "Forgot password?",
     "description": "Forgot password?"
@@ -43,6 +55,18 @@
     "defaultMessage": "Minimum {value} characters",
     "description": "Minimum {value} characters."
   },
+  "S4bbEj": {
+    "defaultMessage": "Recovering Password",
+    "description": "Recovering Password"
+  },
+  "SPiKja": {
+    "defaultMessage": "Password requirements not met",
+    "description": "Password requirements not met"
+  },
+  "SnONhb": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Please, insert a valid e-mail"
+  },
   "TZ4WUk": {
     "defaultMessage": "Password requires {value} characters",
     "description": "Password must be at least {value} characters long."
@@ -59,9 +83,17 @@
     "defaultMessage": "Passwords are not the same",
     "description": "Passwords are not the same"
   },
+  "XreZg+": {
+    "defaultMessage": "Registered Email",
+    "description": "Registered Email"
+  },
   "cGR2eI": {
     "defaultMessage": "Confirmation",
     "description": "Confirmation"
+  },
+  "d1YCuH": {
+    "defaultMessage": "Enter your email address",
+    "description": "Email is a required field."
   },
   "kdFYba": {
     "defaultMessage": "Password field is required",
@@ -71,13 +103,17 @@
     "defaultMessage": "Confirm password",
     "description": "Confirm Password label."
   },
+  "lZvoYL": {
+    "defaultMessage": "Sign up now",
+    "description": "Sign up now"
+  },
+  "mZzmNV": {
+    "defaultMessage": "Recover Password",
+    "description": "Recover Password"
+  },
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up."
-  },
-  "r+QgO+": {
-    "defaultMessage": "Email field is required",
-    "description": "Email is a required field."
   },
   "rx8HF/": {
     "defaultMessage": "I’m already registered",

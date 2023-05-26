@@ -18,18 +18,22 @@ const Template: Story<ButtonProps> = (args) => {
         alignItems: 'start',
       }}
     >
-      <Button {...args}>No icons</Button>
-      <Button {...args} rightIcon="mdi-light:home">
-        Right Icon
+      <Button {...args}>Label</Button>
+      <Button {...args} rightIcon="radio-not-selected">
+        Label
       </Button>
-      <Button {...args} leftIcon="mdi-light:home">
-        Left Icon
+      <Button {...args} leftIcon="radio-not-selected">
+        Label
       </Button>
-      <Button {...args} leftIcon="mdi-light:home" rightIcon="mdi-light:home">
-        Right and Left Icons
+      <Button
+        {...args}
+        leftIcon="radio-not-selected"
+        rightIcon="radio-not-selected"
+      >
+        Label
       </Button>
       <Button {...args} loading>
-        Loading
+        Label
       </Button>
     </Flex>
   );
