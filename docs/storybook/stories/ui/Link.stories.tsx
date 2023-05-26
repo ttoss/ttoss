@@ -9,7 +9,7 @@ const randomSite = () => {
 
 export const Default: Story = {
   args: {
-    children: 'Link Text',
+    children: 'Link',
     target: '_blank',
     href: randomSite(),
   },

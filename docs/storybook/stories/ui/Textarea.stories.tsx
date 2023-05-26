@@ -17,17 +17,17 @@ export const Default: Story = {
   },
 };
 
+export const Disabled: Story = {
+  args: {
+    ...Default.args,
+    disabled: true,
+  },
+};
+
 export const Error: Story = {
   args: {
     ...Default.args,
     'aria-invalid': 'true',
     trailingIcon: 'error',
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    ...Default.args,
-    disabled: true,
   },
 };

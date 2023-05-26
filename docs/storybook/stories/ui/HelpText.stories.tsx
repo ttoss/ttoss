@@ -14,9 +14,9 @@ const Template: Story<HelpTextProps> = (args) => {
         flexDirection: 'column',
       }}
     >
-      <HelpText {...args}>HelpText content</HelpText>
+      <HelpText {...args}>Help text</HelpText>
       <HelpText {...args} disabled>
-        HelpText content Disabled
+        Help text
       </HelpText>
     </Flex>
   );
