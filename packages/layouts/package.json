@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss/layouts",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Layout components for React",
   "author": "ttoss",
   "contributors": [
