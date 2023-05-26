@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.38.11",
+  "version": "1.39.0",
   "scripts": {
     "build": "docusaurus build",
     "clear": "docusaurus clear",
@@ -26,6 +26,8 @@
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/graphql-api": "workspace:^",
+    "@ttoss/graphql-api-server": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",

@@ -13,7 +13,7 @@ This package provides an opinionated way to create an GraphQL API using ttoss ec
 pnpm add @ttoss/graphql-api graphql
 ```
 
-## Getting Started
+## Quickstart
 
 This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-export all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
 
@@ -134,29 +134,41 @@ composeWithRelay(UserTC);
 
 _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github.io/docs/plugins/plugin-relay.html) to create `composeWithRelay`._
 
+### Connections
+
+This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
+
+```typescript
+import { composeWithConnection } from '@ttoss/appsync-api';
+
+composeWithConnection(AuthorTC, {
+  findManyResolver: AuthorTC.getResolver('findMany'),
+  countResolver: AuthorTC.getResolver('count'),
+  sort: {
+    ASC: {
+      value: {
+        scanIndexForward: true,
+      },
+      cursorFields: ['id'],
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$lt = cursorData.id;
+      },
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$gt = cursorData.id;
+      },
+    },
+  },
+});
+```
+
 ## Building Schema
 
 As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`.
 
 ```bash
 ttoss-graphl-api build-schema
-```
-
-## Server
-
-This package provides a Koa server to run your GraphQL API. You can use the `createServer` method to create the server.
-
-```ts
-import { createServer } from '@ttoss/graphql-api/server';
-
-const server = createServer({
-  schemaComposer,
-  graphiql: true,
-});
-
-server.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});
 ```
 
 ## How to Create Tests
