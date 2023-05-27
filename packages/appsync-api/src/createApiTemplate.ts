@@ -1,4 +1,4 @@
-import { type SchemaComposer, graphql } from 'graphql-compose';
+import { type SchemaComposer, graphql } from '@ttoss/graphql-api';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
 import packageJson from '../package.json';
 
