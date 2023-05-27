@@ -1,16 +1,3 @@
-jest.mock('carlin/src/utils/packageJson', () => {
-  return {
-    readPackageJson: () => {
-      return {
-        dependencies: {
-          graphql: '^16.6.0',
-          'graphql-compose': '^9.0.10',
-        },
-      };
-    },
-  };
-});
-
 import {
   AppSyncGraphQLApiKeyLogicalId,
   AppSyncGraphQLApiLogicalId,
@@ -140,9 +127,6 @@ test('should import @ttoss/appsync-api lambda layer', () => {
   expect(layers).toMatchObject([
     {
       'Fn::ImportValue': 'LambdaLayer-Graphql-16-6-0',
-    },
-    {
-      'Fn::ImportValue': 'LambdaLayer-GraphqlCompose-9-0-10',
     },
   ]);
 });

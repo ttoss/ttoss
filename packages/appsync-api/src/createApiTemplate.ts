@@ -1,4 +1,4 @@
-import { type SchemaComposer, graphql } from 'graphql-compose';
+import { type SchemaComposer, graphql } from '@ttoss/graphql-api';
 import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
 import packageJson from '../package.json';
 
@@ -101,16 +101,18 @@ export const createApiTemplate = ({
     })
     .filter(Boolean) as Array<{ fieldName: string; typeName: string }>;
 
-  const getGraphQLComposeDependenciesLambdaLayers = () => {
+  const getPeerDependenciesLambdaLayers = () => {
     const { peerDependencies } = packageJson;
 
-    const lambdaLayerStackNames = Object.entries(peerDependencies).map(
-      ([dependencyName, dependencyVersion]) => {
+    const lambdaLayerStackNames = Object.entries(peerDependencies)
+      .filter(([dependencyName]) => {
+        return ['graphql'].includes(dependencyName);
+      })
+      .map(([dependencyName, dependencyVersion]) => {
         return getPackageLambdaLayerStackName(
           [dependencyName, dependencyVersion].join('@')
         );
-      }
-    );
+      });
 
     return lambdaLayerStackNames.map((lambdaLayerStackName) => {
       return {
@@ -166,7 +168,7 @@ export const createApiTemplate = ({
             S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
           },
           Handler: 'index.handler',
-          Layers: getGraphQLComposeDependenciesLambdaLayers(),
+          Layers: getPeerDependenciesLambdaLayers(),
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
           Runtime: 'nodejs18.x',

@@ -30,7 +30,12 @@ server.listen(3000, () => {
 
 The server supports the following authentication types:
 
+- No authentication
 - [`AWS_COGNITO_USER_POOLS`](#aws_cognito_user_pools)
+
+### No authentication
+
+You can disable authentication by not setting the `authenticationType` option.
 
 ### AWS_COGNITO_USER_POOLS
 
@@ -52,5 +57,43 @@ const server = createServer({
 
 server.listen(3000, () => {
   console.log('Server listening on port 3000');
+});
+```
+
+### Middlewares
+
+You can add middlewares compatible with [`graphql-middleware`](https://github.com/dimatill/graphql-middleware) to the server using the `middlewares` option.
+
+```ts
+import { createServer } from '@ttoss/graphql-api-server';
+import { schemaComposer } from './schemaComposer';
+import { allow, deny, shield } from 'graphql-shield';
+
+const NotAuthorizedError = new Error('Not authorized!');
+/**
+ * The error name is the same value `errorType` on GraphQL errors response.
+ */
+NotAuthorizedError.name = 'NotAuthorizedError';
+
+const permissions = shield(
+  {
+    Query: {
+      '*': deny,
+      author: allow,
+    },
+    Author: {
+      id: allow,
+      name: allow,
+    },
+  },
+  {
+    fallbackRule: deny,
+    fallbackError: NotAuthorizedError,
+  }
+);
+
+const server = createServer({
+  schemaComposer,
+  middlewares: [permissions],
 });
 ```

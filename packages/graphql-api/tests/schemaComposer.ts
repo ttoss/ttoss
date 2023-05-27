@@ -189,10 +189,12 @@ composeWithConnection(AuthorTC, {
         scanIndexForward: true,
       },
       cursorFields: ['id'],
+      // eslint-disable-next-line max-params
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$lt = cursorData.id;
       },
+      // eslint-disable-next-line max-params
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$gt = cursorData.id;
@@ -278,10 +280,12 @@ composeWithConnection(BookTC, {
     ASC: {
       value: {},
       cursorFields: ['id'],
+      // eslint-disable-next-line max-params
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$lt = cursorData.id;
       },
+      // eslint-disable-next-line max-params
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$gt = cursorData.id;

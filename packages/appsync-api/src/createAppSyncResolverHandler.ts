@@ -1,6 +1,7 @@
+import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
+import { type GraphQLObjectType } from 'graphql';
 import { decodeCredentials } from '@ttoss/relay-amplify/src/encodeCredentials';
 import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
-import type { SchemaComposer } from 'graphql-compose';
 
 export type AppSyncResolverHandler<
   TArguments,
@@ -9,10 +10,8 @@ export type AppSyncResolverHandler<
 > = AwsAppSyncResolverHandler<TArguments, TResult, TSource>;
 
 export const createAppSyncResolverHandler = ({
-  schemaComposer,
-}: {
-  schemaComposer: SchemaComposer<any>;
-}): AppSyncResolverHandler<any, any, any> => {
+  ...buildSchemaInput
+}: BuildSchemaInput): AppSyncResolverHandler<any, any, any> => {
   return async (event, context) => {
     const { info, arguments: args, source, request } = event;
 
@@ -30,15 +29,33 @@ export const createAppSyncResolverHandler = ({
       return decodeCredentials(headersCredentials);
     })();
 
-    const resolveMethods = schemaComposer.getResolveMethods();
+    const schema = buildSchema(buildSchemaInput);
 
-    const resolver = (resolveMethods[parentTypeName] as any)[fieldName];
+    const parentType = schema.getType(parentTypeName) as GraphQLObjectType;
 
-    return resolver(
+    if (!parentType) {
+      throw new Error(`Type ${parentTypeName} not found`);
+    }
+
+    const field = parentType.getFields()[fieldName];
+
+    const resolver = field?.resolve;
+
+    if (!resolver) {
+      throw new Error(`Resolver for ${parentTypeName}.${fieldName} not found`);
+    }
+
+    const response = await resolver(
       source,
       args,
       { ...context, identity: event.identity, credentials, headers },
-      info
+      info as any
     );
+
+    if (response instanceof Error) {
+      throw response;
+    }
+
+    return response;
   };
 };

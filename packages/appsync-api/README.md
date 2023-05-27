@@ -18,7 +18,7 @@ You can create and deploy an AppSync API in four steps:
 
 ```typescript
 import { createApiTemplate } from '@ttoss/appsync-api';
-import { schemaComposer } from '@ttoss/graphql-api';
+import { schemaComposer } from './schemaComposer';
 
 const template = createApiTemplate({
   schemaComposer,
@@ -41,7 +41,7 @@ export default template;
 
 ```typescript
 import { createAppSyncResolverHandler } from '@ttoss/appsync-api';
-import { schemaComposer } from '@ttoss/graphql-api';
+import { schemaComposer } from './schemaComposer';
 
 export const handler = createAppSyncResolverHandler({ schemaComposer });
 ```
@@ -57,4 +57,44 @@ Now you can deploy your API using `carlin deploy`:
 
 ```bash
 carlin deploy
+```
+
+## Advanced Usage
+
+### Middlewares
+
+You can add middlewares compatible with [`graphql-middleware`](https://github.com/dimatill/graphql-middleware) to the server using the `middlewares` option.
+
+```ts
+import { createAppSyncResolverHandler } from '@ttoss/appsync-api';
+import { schemaComposer } from './schemaComposer';
+import { allow, deny, shield } from 'graphql-shield';
+
+const NotAuthorizedError = new Error('Not authorized!');
+/**
+ * The error name is the same value `errorType` on GraphQL errors response.
+ */
+NotAuthorizedError.name = 'NotAuthorizedError';
+
+const permissions = shield(
+  {
+    Query: {
+      '*': deny,
+      author: allow,
+    },
+    Author: {
+      id: allow,
+      name: allow,
+    },
+  },
+  {
+    fallbackRule: deny,
+    fallbackError: NotAuthorizedError,
+  }
+);
+
+export const handler = createAppSyncResolverHandler({
+  schemaComposer,
+  middlewares: [permissions],
+});
 ```

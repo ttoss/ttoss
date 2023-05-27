@@ -3,15 +3,15 @@
   "name": "@terezinha-farm/api",
   "version": "0.7.2",
   "scripts": {
-    "build": "ttoss-graphql-api build-schema",
-    "deploy": "carlin deploy"
+    "deploy": "carlin deploy",
+    "schema": "ttoss-graphql-api build-schema"
   },
   "dependencies": {
     "@terezinha-farm/config": "workspace:^",
     "@ttoss/appsync-api": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "graphql": "^16.6.0",
-    "graphql-compose": "^9.0.10"
+    "graphql-shield": "^7.6.5"
   },
   "devDependencies": {
     "@ttoss/aws-appsync-nodejs": "workspace:^",
