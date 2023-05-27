@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.7.2...@terezinha-farm/api@0.8.0) (2023-05-27)
+
+### Features
+
+- add middlewares to graphql-api ([#368](https://github.com/ttoss/ttoss/issues/368)) ([a2311bc](https://github.com/ttoss/ttoss/commit/a2311bcdd47bb5f7cfabce6410ceacd47997bd17))
+
 ## [0.7.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.7.1...@terezinha-farm/api@0.7.2) (2023-05-25)
 
 **Note:** Version bump only for package @terezinha-farm/api

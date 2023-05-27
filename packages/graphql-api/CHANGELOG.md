@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.2.0...@ttoss/graphql-api@0.3.0) (2023-05-27)
+
+### Features
+
+- add middlewares to graphql-api ([#368](https://github.com/ttoss/ttoss/issues/368)) ([a2311bc](https://github.com/ttoss/ttoss/commit/a2311bcdd47bb5f7cfabce6410ceacd47997bd17))
+
 # 0.2.0 (2023-05-25)
 
 ### Features
