@@ -1,5 +1,5 @@
+import { type BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
-import { type SchemaComposer } from '@ttoss/graphql-api';
 import {
   getGraphQLParameters,
   processRequest,
@@ -16,13 +16,7 @@ export { Router };
 
 export type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS';
 
-export const createServer = ({
-  schemaComposer,
-  graphiql = false,
-  authenticationType,
-  userPoolConfig,
-}: {
-  schemaComposer: SchemaComposer<any>;
+export type CreateServerInput = {
   graphiql?: boolean;
   authenticationType?: AuthenticationType;
   userPoolConfig?: {
@@ -30,7 +24,14 @@ export const createServer = ({
     tokenUse?: 'access' | 'id';
     clientId: string;
   };
-}): Koa => {
+} & BuildSchemaInput;
+
+export const createServer = ({
+  graphiql = false,
+  authenticationType,
+  userPoolConfig,
+  ...buildSchemaInput
+}: CreateServerInput): Koa => {
   const server = new Koa();
 
   const router = new Router();
@@ -91,7 +92,7 @@ export const createServer = ({
       query,
       variables,
       request,
-      schema: schemaComposer.buildSchema(),
+      schema: buildSchema(buildSchemaInput),
       contextFactory: () => {
         return {
           identity: ctx.identity,

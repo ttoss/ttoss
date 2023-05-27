@@ -1,4 +1,5 @@
 import { AUTHORS, BOOKS, schemaComposer } from '../schemaComposer';
+import { buildSchema } from '../../src';
 import { graphql } from 'graphql';
 
 describe('authors query', () => {
@@ -6,7 +7,7 @@ describe('authors query', () => {
 
   beforeAll(async () => {
     authorsResponse = await graphql({
-      schema: schemaComposer.buildSchema(),
+      schema: buildSchema({ schemaComposer }),
       source: /* GraphQL */ `
         query {
           authors {
@@ -41,7 +42,7 @@ describe('authors query', () => {
     const author = authorsResponse.data.authors.edges[0].node;
 
     const response = await graphql({
-      schema: schemaComposer.buildSchema(),
+      schema: buildSchema({ schemaComposer }),
       source: /* GraphQL */ `
         query ($id: ID!) {
           author(id: $id) {

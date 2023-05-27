@@ -1,4 +1,5 @@
 import { AUTHORS, schemaComposer } from '../schemaComposer';
+import { allow, deny, shield } from 'graphql-shield';
 import { createAppSyncResolverHandler } from '../../src';
 import { encodeCredentials } from '@ttoss/relay-amplify';
 import { toGlobalId } from '@ttoss/graphql-api';
@@ -28,17 +29,164 @@ test('lambda handler should call author resolver correctly', async () => {
   expect(response).toEqual(author);
 });
 
+describe('testing middlewares', () => {
+  const permissionError = new Error('Test Not allowed');
+  permissionError.name = 'NotAllowed';
+
+  test.each([
+    shield(
+      {
+        Query: {
+          '*': deny,
+        },
+      },
+      {
+        fallbackRule: deny,
+        fallbackError: permissionError,
+      }
+    ),
+    shield(
+      {
+        Query: {
+          '*': deny,
+        },
+      },
+      {
+        fallbackRule: allow,
+        fallbackError: permissionError,
+      }
+    ),
+    shield(
+      {
+        Query: {
+          author: deny,
+        },
+      },
+      {
+        fallbackRule: allow,
+        fallbackError: permissionError,
+      }
+    ),
+  ])('should NOT query author %#', async (permissions) => {
+    const handler = createAppSyncResolverHandler({
+      schemaComposer,
+      middlewares: [permissions],
+    });
+
+    const author = AUTHORS[0];
+
+    const event = {
+      info: {
+        parentTypeName: 'Query',
+        fieldName: 'author',
+      },
+      arguments: {
+        id: toGlobalId('Author', [author.pk, author.sk].join('##')),
+      },
+      source: {},
+    } as any;
+
+    const context = {} as any;
+
+    const callback = jest.fn();
+
+    let error;
+
+    try {
+      await handler(event, context, callback);
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toEqual(permissionError);
+    }
+  });
+
+  test.each([
+    shield(
+      {
+        Query: {
+          author: allow,
+        },
+      },
+      {
+        fallbackRule: allow,
+      }
+    ),
+    shield({
+      Query: {
+        author: allow,
+      },
+    }),
+    shield(
+      {
+        Query: {
+          '*': deny,
+          author: allow,
+        },
+        Author: {
+          id: allow,
+          name: allow,
+        },
+      },
+      {
+        fallbackRule: deny,
+      }
+    ),
+    shield(
+      {
+        Query: {
+          '*': deny,
+          author: allow,
+        },
+        Author: {
+          '*': allow,
+        },
+      },
+      {
+        fallbackRule: deny,
+      }
+    ),
+  ])('should query author %#', async (permissions) => {
+    const handler = createAppSyncResolverHandler({
+      schemaComposer,
+      middlewares: [permissions],
+    });
+
+    const author = AUTHORS[0];
+
+    const event = {
+      info: {
+        parentTypeName: 'Query',
+        fieldName: 'author',
+      },
+      arguments: {
+        id: toGlobalId('Author', [author.pk, author.sk].join('##')),
+      },
+      source: {},
+    } as any;
+
+    const context = {} as any;
+
+    const callback = jest.fn();
+
+    const response = await handler(event, context, callback);
+
+    expect(response).toEqual(author);
+  });
+});
+
 describe('testing headers', () => {
   const newSchemaComposer = schemaComposer.clone();
 
   const queryAuthorResolver = jest.fn();
 
   const resolver = newSchemaComposer.createResolver({
-    name: 'author',
+    name: 'mockedAuthor',
+    type: `type MockedAuthor { id: ID! name: String! }`,
     resolve: queryAuthorResolver,
   });
 
-  newSchemaComposer.Query.setField('author', resolver);
+  newSchemaComposer.Query.addFields({ mockedAuthor: resolver });
 
   const handler = createAppSyncResolverHandler({
     schemaComposer: newSchemaComposer,
@@ -59,7 +207,7 @@ describe('testing headers', () => {
   const event = {
     info: {
       parentTypeName: 'Query',
-      fieldName: 'author',
+      fieldName: 'mockedAuthor',
     },
     request: {
       headers: {

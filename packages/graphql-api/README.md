@@ -163,12 +163,60 @@ composeWithConnection(AuthorTC, {
 });
 ```
 
+### Middlewares
+
+This package provides a way to add middlewares to your final schema. You can add middlewares compatible with [`graphql-middleware`](https://github.com/dimatill/graphql-middleware) by passing them to the `middlewares` option on `buildSchema` method. For example, you can use [GraphQL Shield](https://the-guild.dev/graphql/shield) to add authorization to your API:
+
+```typescript
+import { buildSchema } from '@ttoss/graphql-api';
+import { allow, deny, shield } from 'graphql-shield';
+import { schemaComposer } from './schemaComposer';
+
+const NotAuthorizedError = new Error('Not authorized!');
+/**
+ * The error name is the same value `errorType` on GraphQL errors response.
+ */
+NotAuthorizedError.name = 'NotAuthorizedError';
+
+const permissions = shield(
+  {
+    Query: {
+      '*': deny,
+      author: allow,
+    },
+    Author: {
+      id: allow,
+      name: allow,
+    },
+  },
+  {
+    fallbackRule: deny,
+    fallbackError: NotAuthorizedError,
+  }
+);
+
+const schema = buildSchema({
+  schemaComposer,
+  middlewares; [permissions],
+})
+```
+
 ## Building Schema
 
 As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`.
 
 ```bash
 ttoss-graphl-api build-schema
+```
+
+You can add the `schema` script to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "schema": "ttoss-graphl-api build-schema"
+  }
+}
 ```
 
 ## How to Create Tests

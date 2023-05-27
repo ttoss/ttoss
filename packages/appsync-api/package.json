@@ -20,20 +20,20 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ttoss/cloudformation": "workspace:^",
-    "@ttoss/graphql-api": "workspace:^"
+    "@ttoss/cloudformation": "workspace:^"
   },
   "peerDependencies": {
-    "graphql": "^16.6.0",
-    "graphql-compose": "^9.0.10"
+    "@ttoss/graphql-api": "workspace:^",
+    "graphql": "^16.6.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/graphql-api": "workspace:^",
     "@ttoss/relay-amplify": "workspace:^",
     "@types/aws-lambda": "^8.10.115",
     "carlin": "workspace:^",
     "graphql": "^16.6.0",
-    "graphql-compose": "^9.0.10",
+    "graphql-shield": "^7.6.5",
     "jest": "^29.5.0",
     "tsup": "^6.7.0"
   },
@@ -45,15 +45,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "server": [
-        "./dist/server.d.ts"
-      ]
-    }
   }
 }
