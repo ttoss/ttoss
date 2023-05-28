@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { Tool } from '../executeTools';
 
 const gitignore = `
 # Logs
@@ -114,15 +114,23 @@ node_modules/
 tmp_*
 storybook-static/
 package-lock.json
+yarn.lock
 github-app/
-.npmrc
 .carlin/
 .vscode
 .turbo
-out/
-.mysql/
+**/i18n/compiled/
+**/i18n/missing/
+tsup.config.bundled*.mjs
 `;
 
-export const executeCommands = () => {
-  fs.writeFileSync('.gitignore', gitignore);
+export const git: Tool = async () => {
+  return {
+    configFiles: [
+      {
+        name: '.gitignore',
+        content: gitignore,
+      },
+    ],
+  };
 };

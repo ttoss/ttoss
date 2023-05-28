@@ -1,4 +1,4 @@
 import * as yargs from 'yargs';
-import { setupMonorepoCommand } from './setupMonorepoCommand';
+import { setupCommand } from './commands/setup/setupCommand';
 
-yargs.command(setupMonorepoCommand).parse();
+yargs.command(setupCommand).parse();
