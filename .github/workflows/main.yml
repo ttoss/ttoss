@@ -23,6 +23,12 @@ jobs:
         with:
           fetch-depth: 20
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Setup git user
+        run: >-
+          git config user.email
+          "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git config user.name "github-actions[bot]"
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:

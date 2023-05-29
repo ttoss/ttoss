@@ -306,6 +306,17 @@ const mainWorkflow = {
           fetchDepth: 20,
           token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}',
         }),
+        {
+          /**
+           * Need this because of Lerna tag creation. It needs a user to be set.
+           * https://github.com/actions/checkout/issues/13#issuecomment-724415212
+           */
+          name: 'Setup git user',
+          run: [
+            'git config user.email "41898282+github-actions[bot]@users.noreply.github.com"',
+            'git config user.name "github-actions[bot]"',
+          ].join('\n'),
+        },
         setupNodejsStep(),
         ...setupPnpmSteps(),
         {

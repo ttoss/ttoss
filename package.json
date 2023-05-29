@@ -35,6 +35,7 @@
     "@lerna-lite/version": "^2.4.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
+    "@ttoss/monorepo": "workspace:^",
     "eslint": "^8.41.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
