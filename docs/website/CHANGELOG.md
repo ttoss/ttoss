@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.40.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.39.2...@docs/website@1.40.0) (2023-05-29)
+
+### Features
+
+- ttoss-monorepo setup ([#369](https://github.com/ttoss/ttoss/issues/369)) ([e3eaf57](https://github.com/ttoss/ttoss/commit/e3eaf579c3ec5e60400d6b6d1db715e887ffe464))
+
 ## [1.39.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.39.1...@docs/website@1.39.2) (2023-05-27)
 
 **Note:** Version bump only for package @docs/website
