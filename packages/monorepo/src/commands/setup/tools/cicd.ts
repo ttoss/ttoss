@@ -326,8 +326,19 @@ const mainWorkflow = {
   },
 };
 
-export const cicd: Tool = async () => {
+export const cicd: Tool = async ({ ttoss }) => {
+  const scripts = (() => {
+    if (ttoss) {
+      return {
+        'build:config': 'pnpm run --filter=@ttoss/config build && pnpm i',
+      };
+    }
+
+    return {} as any;
+  })();
+
   return {
+    scripts,
     packages: [
       '@lerna-lite/changed',
       '@lerna-lite/cli',
