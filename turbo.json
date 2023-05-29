@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": ["CARLIN_ENVIRONMENT"],
   "pipeline": {
     "//#build:config": {
       "dependsOn": [],

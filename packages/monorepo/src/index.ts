@@ -1,4 +1,11 @@
 import * as yargs from 'yargs';
-import { setupMonorepoCommand } from './setupMonorepoCommand';
+import { setupCommand } from './commands/setup/setupCommand';
 
-yargs.command(setupMonorepoCommand).parse();
+yargs
+  .option('config', {
+    alias: 'c',
+    default: 'monorepo.json',
+  })
+  .config()
+  .command(setupCommand)
+  .parse();
