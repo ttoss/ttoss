@@ -18,27 +18,15 @@ const { prettierConfig } = require('@ttoss/config');
 module.exports = prettierConfig();
 `;
 
-export const eslint: Tool = async ({ ttoss }) => {
-  const packages = [
-    '@ttoss/config',
-    '@ttoss/eslint-config',
-    'eslint',
-    'lint-staged',
-    'prettier',
-  ].filter((pkg) => {
-    if (ttoss) {
-      /**
-       * Don't install @ttoss packages if ttoss is true because they have
-       * "workspaces:^".
-       */
-      return !pkg.startsWith('@ttoss');
-    }
-
-    return true;
-  });
-
+export const eslint: Tool = async () => {
   return {
-    packages,
+    packages: [
+      '@ttoss/config',
+      '@ttoss/eslint-config',
+      'eslint',
+      'lint-staged',
+      'prettier',
+    ],
     huskyHooks: [['pre-commit', 'pnpm lint-staged']],
     scripts: {
       lint: 'lint-staged --diff main --quiet --no-stash',

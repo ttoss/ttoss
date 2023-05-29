@@ -6,6 +6,7 @@ import { eslint } from './tools/eslint';
 import { executeTools } from './executeTools';
 import { git } from './tools/git';
 import { husky } from './tools/husky';
+import { monorepo } from './tools/monorepo';
 import { pnpm } from './tools/pnpm';
 import { syncpack } from './tools/syncpack';
 import { turbo } from './tools/turbo';
@@ -33,7 +34,14 @@ export const setupCommand: CommandModule<any, SetupOptions> = {
     await executeTools({
       options,
       tools: [
-        // pnpm, husky, turbo, eslint, syncpack, git, commitlint,
+        pnpm,
+        husky,
+        turbo,
+        eslint,
+        syncpack,
+        git,
+        commitlint,
+        monorepo,
         cicd,
       ],
     });

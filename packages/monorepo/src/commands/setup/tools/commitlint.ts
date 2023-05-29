@@ -8,7 +8,7 @@ module.exports = commitlintConfig();
 
 export const commitlint: Tool = async () => {
   return {
-    packages: ['@commitlint/cli', '@commitlint/config-conventional'],
+    packages: ['@commitlint/cli'],
     configFiles: [
       {
         name: '.commitlintrc.js',

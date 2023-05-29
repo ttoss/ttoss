@@ -30,7 +30,7 @@ echo NPM whoami: $(npm whoami)
 pnpm turbo run build:config
 
 # Publish packages only if `pnpm lerna changed` is success. This happens when
-# exists an updade on root and no packages changes. This way, `version` won't
+# exists an update on root and no packages changes. This way, `version` won't
 # create tags and `git diff HEAD^1 origin/main --quiet` will fail because
 # HEAD^1 will diff from origin/main.
 if pnpm lerna changed; then
@@ -80,4 +80,3 @@ fi
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
 pnpm turbo run deploy --filter=...[$LATEST_TAG]
-

@@ -33,9 +33,16 @@ const configureRootPackagesJson = ({
 
   const packagesJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-  delete packagesJson.dependencies;
-  delete packagesJson.devDependencies;
-  delete packagesJson.peerDependencies;
+  if (options.force) {
+    delete packagesJson.dependencies;
+    delete packagesJson.devDependencies;
+    delete packagesJson.peerDependencies;
+  }
+
+  /**
+   * Remove prepare script because it will be added by husky.
+   */
+  delete packagesJson.scripts.prepare;
 
   packagesJson.private = true;
 
@@ -122,6 +129,8 @@ export const executeTools = async ({
   /**
    * Install packages
    */
+  spawn('pnpm', ['install']);
+
   const packages = toolsExecutionInputs
     .map((tool) => {
       return tool?.packages || [];

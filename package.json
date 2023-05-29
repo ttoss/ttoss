@@ -17,16 +17,14 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "build:config": "pnpm run --filter=@ttoss/config build && pnpm i",
     "build-graph": "turbo run build --only --graph=turbo-build-graph.png",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet --no-stash",
-    "ls": "lerna ls",
+    "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky install",
     "syncpack:fix": "syncpack fix-mismatches",
     "syncpack:list": "syncpack list-mismatches",
-    "test": "turbo run test",
-    "turbo": "turbo"
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
@@ -38,9 +36,9 @@
     "@ttoss/eslint-config": "workspace:^",
     "eslint": "^8.41.0",
     "husky": "^8.0.3",
-    "lint-staged": "13.2.2",
+    "lint-staged": "^13.2.2",
     "prettier": "^2.8.8",
-    "syncpack": "^9.8.6",
+    "syncpack": "^10.0.0",
     "turbo": "^1.9.9"
   },
   "keywords": [],

@@ -1,5 +1,4 @@
 name: pr
-
 'on':
   pull_request:
     branches:
@@ -9,11 +8,9 @@ name: pr
       - synchronize
       - reopened
       - closed
-
 concurrency:
   group: pr-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
-
 jobs:
   pr:
     if: github.event.action != 'closed'
@@ -25,46 +22,36 @@ jobs:
           aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 50
-
       - name: Fetch and merge most recent main
-        run: |
+        run: |-
           git fetch origin main:main
           git merge main --ff-only --no-edit
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         id: pnpm-install
         with:
           run_install: false
           version: 8
-
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
+          restore-keys: ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
       - name: Run pr command
         run: sh -e ./.cicd/commands/pr.sh
         env:
