@@ -1,5 +1,6 @@
 import { type CommandModule } from 'yargs';
-import { SetupOptions, setupOptions } from './setupOptions';
+import { SetupOptions, cicdOptions, setupOptions } from './setupOptions';
+import { cicd } from './tools/cicd';
 import { commitlint } from './tools/commitlint';
 import { eslint } from './tools/eslint';
 import { executeTools } from './executeTools';
@@ -17,6 +18,13 @@ export const setupCommand: CommandModule<any, SetupOptions> = {
   describe: 'Setup monorepo',
   builder: (builder) => {
     builder.options(setupOptions);
+    Object.entries(cicdOptions).forEach(([key, optionConfig]) => {
+      builder.options({
+        [`cicd.${key}`]: {
+          ...optionConfig,
+        },
+      });
+    });
     return builder;
   },
   handler: async (options) => {
@@ -24,7 +32,10 @@ export const setupCommand: CommandModule<any, SetupOptions> = {
 
     await executeTools({
       options,
-      tools: [pnpm, husky, turbo, eslint, syncpack, git, commitlint],
+      tools: [
+        // pnpm, husky, turbo, eslint, syncpack, git, commitlint,
+        cicd,
+      ],
     });
   },
 };

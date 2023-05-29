@@ -90,6 +90,17 @@ export const executeTools = async ({
         }
       }
 
+      /**
+       * Create folders if not exists
+       */
+      const pathParts = configFile.name.split('/');
+
+      if (pathParts.length > 1) {
+        pathParts.pop();
+        const folderPath = path.join(process.cwd(), ...pathParts);
+        fs.mkdirSync(folderPath, { recursive: true });
+      }
+
       fs.writeFileSync(
         path.join(process.cwd(), configFile.name),
         configFile.content.trim()
@@ -111,8 +122,6 @@ export const executeTools = async ({
   /**
    * Install packages
    */
-  spawn('pnpm', ['install']);
-
   const packages = toolsExecutionInputs
     .map((tool) => {
       return tool?.packages || [];
