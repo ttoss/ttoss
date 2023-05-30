@@ -278,6 +278,31 @@ export const BruttalTheme: Theme = {
         borderColor: 'highlight',
       },
     },
+    actionButton: {
+      default: {
+        backgroundColor: 'secondary',
+        color: 'onSecondary',
+        border: 'default',
+        borderColor: 'onSecondary',
+        transition: 'all 0.2s',
+        ':is(:focus-within, :hover)': {
+          backgroundColor: 'highlight',
+          borderColor: 'highlight',
+          color: 'onHighlight',
+        },
+      },
+      accent: {
+        backgroundColor: 'accent',
+        color: 'onAccent',
+        border: 'none',
+      },
+      quiet: {
+        backgroundColor: 'transparent',
+        color: 'text',
+        border: 'none',
+        borderColor: 'transparent',
+      },
+    },
   },
   cards: {
     primary: {
