@@ -1,4 +1,4 @@
-import { Theme, get } from 'theme-ui';
+import { Theme } from 'theme-ui';
 import { fontSizes } from '../../tokens/fontSizes';
 import { fontWeights } from '../../tokens/fontWeights';
 import { letterSpacings } from '../../tokens/letterSpacings';
@@ -290,39 +290,17 @@ export const BruttalTheme: Theme = {
           borderColor: 'highlight',
           color: 'onHighlight',
         },
-        ':disabled': {
-          backgroundColor: 'muted',
-          color: 'onMuted',
-          cursor: 'not-allowed',
-          border: 'muted',
-          borderColor: 'onMuted',
-        },
       },
       accent: {
         backgroundColor: 'accent',
         color: 'onAccent',
         border: 'none',
-        ':disabled': (theme) => {
-          const actionButtonDefault = get(
-            theme,
-            'buttons.actionButton.default'
-          );
-          return actionButtonDefault[':disabled'];
-        },
       },
       quiet: {
         backgroundColor: 'transparent',
         color: 'text',
         border: 'none',
         borderColor: 'transparent',
-        ':disabled': (theme) => {
-          const actionButtonDefault = get(
-            theme,
-            'buttons.actionButton.default'
-          );
-
-          return actionButtonDefault[':disabled'];
-        },
       },
     },
   },

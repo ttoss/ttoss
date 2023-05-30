@@ -24,6 +24,15 @@ export const ActionButton = ({
         fontFamily: 'caption',
         borderRadius: 'action',
         outlineColor: 'transparent',
+        ':disabled': props.disabled
+          ? {
+              backgroundColor: 'muted',
+              color: 'onMuted',
+              cursor: 'not-allowed',
+              border: 'muted',
+              borderColor: 'onMuted',
+            }
+          : undefined,
         ...sx,
       }}
       {...props}
