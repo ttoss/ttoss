@@ -27,7 +27,7 @@ export default {
         <NotificationsProvider>
           <ZIndexContext.Provider value={setZIndex}>
             <Story />
-            <NotificationsModal {...{ zIndex }} />
+            <NotificationsModal style={{ overlay: { zIndex } }} />
           </ZIndexContext.Provider>
         </NotificationsProvider>
       );

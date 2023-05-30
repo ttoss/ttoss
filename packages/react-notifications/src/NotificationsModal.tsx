@@ -1,14 +1,21 @@
-import { Modal } from '@ttoss/components';
+import { Modal, type ModalProps } from '@ttoss/components';
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';
 
-export const NotificationsModal = ({ zIndex }: { zIndex?: number }) => {
+export const NotificationsModal = ({
+  style,
+}: {
+  style?: ModalProps['style'];
+}) => {
   const { notifications } = useNotifications();
 
   return (
     <Modal
       isOpen={!!notifications}
-      style={{ content: { minWidth: '30%' }, overlay: { zIndex } }}
+      style={{
+        content: { minWidth: '30%', ...style?.content },
+        overlay: style?.overlay,
+      }}
     >
       <NotificationsBox direction="stack" />
     </Modal>
