@@ -42,3 +42,7 @@ export {
   InputPassword,
   type InputPasswordProps,
 } from './components/InputPassword/InputPassword';
+export {
+  ActionButton,
+  type ActionButtonProps,
+} from './components/ActionButton';
