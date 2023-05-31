@@ -3,12 +3,14 @@ import { HelpText } from '@ttoss/ui';
 import { ErrorMessage as HookFormErrorMessage } from '@hookform/error-message';
 import { MessageDescriptor, useI18n } from '@ttoss/react-i18n';
 
+type ModifiedDescriptor = MessageDescriptor & { values?: any };
+
 const isMessageDescriptor = (
   possibleMessageDescriptor: unknown
-): possibleMessageDescriptor is MessageDescriptor => {
+): possibleMessageDescriptor is ModifiedDescriptor => {
   return (
     possibleMessageDescriptor !== undefined &&
-    (possibleMessageDescriptor as MessageDescriptor).defaultMessage !==
+    (possibleMessageDescriptor as ModifiedDescriptor).defaultMessage !==
       undefined
   );
 };
@@ -35,7 +37,7 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
   const { message } = error;
 
   const i18nMessage = isMessageDescriptor(message)
-    ? formatMessage(message)
+    ? formatMessage(message, message?.values)
     : error;
 
   const singleErrorMessage: any = {};
