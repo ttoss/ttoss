@@ -5,7 +5,8 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/forms
+yarn add @ttoss/forms @ttoss/react-i18n
+yarn add -d @ttoss/i18n-cli
 ```
 
 ## Quick Start
@@ -13,6 +14,7 @@ yarn add @ttoss/forms
 ```tsx
 import { Button } from '@ttoss/ui';
 import { Form, FormField, yupResolver, useForm, yup } from '@ttoss/forms';
+import { I18nProvider } from '@ttoss/react-i18n';
 
 const schema = yup.object({
   firstName: yup.string().required('First name is required'),
@@ -27,15 +29,19 @@ export const FormComponent = () => {
   });
 
   return (
-    <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <FormField.Input name="firstName" label="First Name" />
-      <FormField.Input name="age" label="Age" />
-      <FormField.Checkbox name="receiveEmails" label="Receive Emails" />
-      <Button type="submit">Submit</Button>
-    </Form>
+    <I18nProvider>
+      <Form {...formMethods} onSubmit={action('onSubmit')}>
+        <FormField.Input name="firstName" label="First Name" />
+        <FormField.Input name="age" label="Age" />
+        <FormField.Checkbox name="receiveEmails" label="Receive Emails" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    </I18nProvider>
   );
 };
 ```
+
+**WARNING:** I18n is necessary as `Forms` module has some integrations with it.
 
 ## FormFieldSelect support for Default Value
 
