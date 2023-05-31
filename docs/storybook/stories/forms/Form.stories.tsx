@@ -175,7 +175,7 @@ export const Example2: StoryFn = () => {
   );
 };
 
-export const Withi18n: StoryFn = () => {
+export const WithInternationalization: StoryFn = () => {
   const schema = yup.object({
     firstName: yup.string().required(),
     age: yup.number().required(),
