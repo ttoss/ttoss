@@ -1,8 +1,13 @@
-import { defineMessages } from '@ttoss/react-i18n';
+import { defineMessage } from '@ttoss/react-i18n';
+import { setLocale } from 'yup';
 
-export const messages = defineMessages({
-  field_required: {
-    defaultMessage: 'Field is required',
-    description: 'Fields is required',
+setLocale({
+  mixed: {
+    required: {
+      ...defineMessage({
+        defaultMessage: 'Field is required',
+        description: 'Field is required',
+      }),
+    },
   },
 });

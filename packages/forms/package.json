@@ -16,7 +16,7 @@
     "build": "tsup",
     "test": "jest"
   },
-  "sideEffects": false,
+  "sideEffects": true,
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
