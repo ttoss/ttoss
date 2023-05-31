@@ -35,6 +35,7 @@
     "@storybook/react-webpack5": "^7.0.8",
     "@storybook/testing-library": "^0.1.0",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.1.2",
     "carlin": "workspace:^",
     "react": "^18.2.0",
