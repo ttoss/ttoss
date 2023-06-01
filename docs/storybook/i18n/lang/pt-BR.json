@@ -1,0 +1,17 @@
+{
+  "D1C6fR": {
+    "defaultMessage": "Campo deve ter, pelo menos, {min} caracteres",
+    "description": "Min length field",
+    "module": "@ttoss/react-auth"
+  },
+  "MfWGyg": {
+    "defaultMessage": "Campo obrigatório",
+    "description": "Field is required",
+    "module": "@ttoss/react-auth"
+  },
+  "ZhaPt0": {
+    "defaultMessage": "Valor inválido para campo do tipo \"{type}\"",
+    "description": "Invalid Value",
+    "module": "@ttoss/react-auth"
+  }
+}
