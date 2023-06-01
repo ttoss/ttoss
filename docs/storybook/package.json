@@ -4,6 +4,7 @@
   "version": "1.37.18",
   "author": "ttoss",
   "scripts": {
+    "prebuild": "pnpm ttoss-i18n",
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
