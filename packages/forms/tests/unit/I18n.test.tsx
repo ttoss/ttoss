@@ -1,8 +1,8 @@
 import { Button, HelpText } from '@ttoss/ui';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../src';
-import { I18nProvider, defineMessage } from '@ttoss/react-i18n';
-import { JSXElementConstructor, PropsWithChildren } from 'react';
+import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
+import { JSXElementConstructor, PropsWithChildren, useMemo } from 'react';
 import { render, screen, userEvent } from '@ttoss/test-utils/.';
 import { setLocale } from 'yup';
 
@@ -150,5 +150,47 @@ describe('test i18n messages', () => {
     [mixed_requiredMessage, string_minMessage].forEach(async (message) => {
       expect(await screen.findByText(message)).toBeInTheDocument();
     });
+  });
+
+  it('should render a custom message provided in schema definition', async () => {
+    const RenderFormWithCustomSchema = () => {
+      const {
+        intl: { formatMessage },
+      } = useI18n();
+
+      const schema = useMemo(() => {
+        return yup.object({
+          name: yup.string().required(
+            formatMessage({
+              defaultMessage: 'Name is required',
+              description: 'Name required',
+            })
+          ),
+          age: yup.number().min(
+            5,
+            formatMessage({
+              defaultMessage: 'Less than 5',
+              description: 'Less than 5',
+            })
+          ),
+        });
+      }, [formatMessage]);
+
+      const formMethods = useForm({ resolver: yupResolver(schema) });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldInput name="name" type="text" />
+          <FormFieldInput name="age" type="number" defaultValue={0} />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderFormWithCustomSchema />, { wrapper: I18nProvider });
+
+    await click();
+    expect(await screen.findByText('Name is required')).toBeInTheDocument();
+    expect(await screen.findByText('Less than 5')).toBeInTheDocument();
   });
 });
