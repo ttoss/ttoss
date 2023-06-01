@@ -1,7 +1,6 @@
 import { FieldName, FieldValues, useFormContext } from 'react-hook-form';
+import { FormattedMessage, MessageDescriptor } from '@ttoss/react-i18n';
 import { HelpText } from '@ttoss/ui';
-import { ErrorMessage as HookFormErrorMessage } from '@hookform/error-message';
-import { MessageDescriptor, useI18n } from '@ttoss/react-i18n';
 
 type ModifiedDescriptor = MessageDescriptor & { values?: any };
 
@@ -26,29 +25,21 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
     formState: { errors },
   } = useFormContext<TFieldValues>();
 
-  const {
-    intl: { formatMessage },
-  } = useI18n();
-
   const error = errors[name];
 
   if (!error) return null;
 
   const { message } = error;
 
-  const i18nMessage = isMessageDescriptor(message)
-    ? formatMessage(message, message?.values)
-    : error;
-
-  const singleErrorMessage: any = {};
-  singleErrorMessage[name] = i18nMessage;
-
   return (
-    <HookFormErrorMessage
-      name={name as any}
-      errors={singleErrorMessage}
-      message={i18nMessage as string}
-      as={<HelpText negative disabled={disabled} />}
-    />
+    error && (
+      <HelpText negative disabled={disabled}>
+        {isMessageDescriptor(message) ? (
+          <FormattedMessage {...message} />
+        ) : (
+          (message as string)
+        )}
+      </HelpText>
+    )
   );
 };
