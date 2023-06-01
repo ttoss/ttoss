@@ -23,8 +23,8 @@ export default {
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
-    case 'br':
-      return (await import('../../i18n/compiled/br.json')).default;
+    case 'pt-BR':
+      return (await import('../../i18n/compiled/pt-BR.json')).default;
     case 'en':
       return (await import('../../i18n/compiled/en.json')).default;
   }
@@ -194,7 +194,7 @@ export const WithInternationalization: StoryFn = () => {
   });
 
   return (
-    <I18nProvider locale="br" loadLocaleData={loadLocaleData}>
+    <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
       <Form {...formMethods} onSubmit={action('onSubmit')}>
         <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
           <FormFieldInput
