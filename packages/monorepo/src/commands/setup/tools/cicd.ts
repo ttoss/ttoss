@@ -183,7 +183,7 @@ const setupPnpmSteps = () => {
       id: 'pnpm-install',
       with: {
         run_install: false,
-        version: 8.5,
+        version: '8.5.0',
       },
     },
     {
