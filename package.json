@@ -28,7 +28,7 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.3",
+    "@commitlint/cli": "^17.6.5",
     "@lerna-lite/changed": "^2.4.0",
     "@lerna-lite/cli": "^2.4.0",
     "@lerna-lite/list": "^2.4.0",
@@ -40,8 +40,8 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
     "prettier": "^2.8.8",
-    "syncpack": "^10.0.0",
-    "turbo": "^1.9.9"
+    "syncpack": "^10.1.0",
+    "turbo": "^1.10.1"
   },
   "keywords": [],
   "engines": {
