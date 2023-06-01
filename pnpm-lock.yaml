@@ -113,6 +113,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../../packages/i18n-cli
       babel-loader:
         specifier: ^9.1.2
         version: 9.1.2(@babel/core@7.21.4)(webpack@5.79.0)
@@ -641,9 +644,6 @@ importers:
 
   packages/forms:
     dependencies:
-      '@hookform/error-message':
-        specifier: ^2.0.1
-        version: 2.0.1(react-dom@18.2.0)(react-hook-form@7.43.9)(react@18.2.0)
       '@hookform/resolvers':
         specifier: ^3.1.0
         version: 3.1.0(react-hook-form@7.43.9)
@@ -657,6 +657,12 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
@@ -675,6 +681,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.2.0
+      react-error-boundary:
+        specifier: ^4.0.9
+        version: 4.0.9(react@18.2.0)
       theme-ui:
         specifier: ^0.15.7
         version: 0.15.7(@emotion/react@11.10.6)(react@18.2.0)
@@ -8148,18 +8157,6 @@ packages:
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
     dependencies:
       '@hapi/hoek': 9.3.0
-
-  /@hookform/error-message@2.0.1(react-dom@18.2.0)(react-hook-form@7.43.9)(react@18.2.0):
-    resolution: {integrity: sha512-U410sAr92xgxT1idlu9WWOVjndxLdgPUHEB8Schr27C9eh7/xUnITWpCMF93s+lGiG++D4JnbSnrb5A21AdSNg==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-      react-hook-form: ^7.0.0
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      react-hook-form: 7.43.9(react@18.2.0)
-    dev: false
 
   /@hookform/resolvers@3.1.0(react-hook-form@7.43.9):
     resolution: {integrity: sha512-z0A8K+Nxq+f83Whm/ajlwE6VtQlp/yPHZnXw7XWVPIGm1Vx0QV8KThU3BpbBRfAZ7/dYqCKKBNnQh85BkmBKkA==}
@@ -24474,6 +24471,15 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-is: 18.1.0
+    dev: true
+
+  /react-error-boundary@4.0.9(react@18.2.0):
+    resolution: {integrity: sha512-f6DcHVdTDZmc9ixmRmuLDZpkdghYR/HKZdUzMLHD58s4cR2C4R6y4ktYztCosM6pyeK4/C8IofwqxgID25W6kw==}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': 7.21.0
+      react: 18.2.0
     dev: true
 
   /react-error-overlay@6.0.11:
