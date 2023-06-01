@@ -1,0 +1,14 @@
+{
+  "D1C6fR": {
+    "defaultMessage": "Field must be at least {min} characters",
+    "description": "Min length field"
+  },
+  "MfWGyg": {
+    "defaultMessage": "Field is required",
+    "description": "Field is required"
+  },
+  "ZhaPt0": {
+    "defaultMessage": "Invalid Value for Field of type {type}",
+    "description": "Invalid Value"
+  }
+}

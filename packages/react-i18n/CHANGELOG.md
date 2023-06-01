@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.22.1...@ttoss/react-i18n@1.23.0) (2023-06-01)
+
+### Features
+
+- add graphql-api-server ([#365](https://github.com/ttoss/ttoss/issues/365)) ([1a4b03b](https://github.com/ttoss/ttoss/commit/1a4b03bac44cda154ee117940a92ad26f4e3759c))
+
 ## 1.22.1 (2023-05-23)
 
 ### Bug Fixes

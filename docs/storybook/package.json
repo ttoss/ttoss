@@ -1,12 +1,13 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "1.37.18",
+  "version": "1.37.19",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
+    "i18n": "pnpm ttoss-i18n",
     "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
@@ -35,6 +36,7 @@
     "@storybook/react-webpack5": "^7.0.18",
     "@storybook/testing-library": "^0.1.0",
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.1.2",
     "carlin": "workspace:^",
     "react": "^18.2.0",
