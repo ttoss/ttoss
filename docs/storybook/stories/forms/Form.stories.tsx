@@ -16,21 +16,30 @@ import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 
-export default {
-  title: 'Forms/Form',
-  component: Form,
-} as Meta;
-
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
     case 'pt-BR':
       return (await import('../../i18n/compiled/pt-BR.json')).default;
-    case 'en':
+    default:
       return (await import('../../i18n/compiled/en.json')).default;
   }
 };
 
-export const Example1: StoryFn = () => {
+export default {
+  title: 'Forms/Form',
+  component: Form,
+  decorators: [
+    (Story) => {
+      return (
+        <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
+          <Story />
+        </I18nProvider>
+      );
+    },
+  ],
+} as Meta;
+
+const Template: StoryFn = () => {
   const schema = yup.object({
     firstName: yup.string().required('First Name is required'),
     age: yup.number().required('Age is required'),
@@ -90,7 +99,7 @@ export const Example1: StoryFn = () => {
   );
 };
 
-export const Example2: StoryFn = () => {
+const Template2: StoryFn = () => {
   const formMethods = useForm();
 
   const options = [
@@ -175,7 +184,7 @@ export const Example2: StoryFn = () => {
   );
 };
 
-export const WithInternationalization: StoryFn = () => {
+const TemplateWithInternationalization: StoryFn = () => {
   const schema = yup.object({
     firstName: yup.string().required(),
     age: yup.number().required(),
@@ -230,3 +239,9 @@ export const WithInternationalization: StoryFn = () => {
     </I18nProvider>
   );
 };
+
+export const Example1 = Template.bind({});
+export const Example2 = Template2.bind({});
+export const WithInternationalization = TemplateWithInternationalization.bind(
+  {}
+);
