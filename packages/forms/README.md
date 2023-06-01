@@ -5,8 +5,8 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/forms @ttoss/react-i18n
-yarn add -d @ttoss/i18n-cli
+pnpm i @ttoss/forms @ttoss/react-i18n
+pnpm i --save-dev @ttoss/i18n-cli
 ```
 
 ## Quick Start
@@ -154,4 +154,71 @@ const RenderForm = () => {
 };
 ```
 
-> NOTE: You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`
+## Yup Validation
+
+You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`
+
+```tsx
+const FirstNameForm = () => {
+  const schema = yup.object({
+    firstName: yup.string().required(),
+  });
+
+  const formMethods = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={onSubmit}>
+      <FormField
+        name="firstName"
+        label="First Name"
+        defaultValue={''}
+        render={({ field }) => {
+          return <Input {...field} />;
+        }}
+      />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+```
+
+When field is invalid according with schema requirements, it gonna return the default. In this example, for required fields, it gonna be `Field is required`.
+
+You can translate the message or change the generic message by configuring the messages in the json i18n definition. To use this, please, refer to the docs on [React-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) and [i18n-CLI](https://ttoss.dev/docs/modules/packages/i18n-cli/).
+
+### Custom Error messages
+
+You can, also, pass custom error messages to the validation constraints in schema. It's really recommended that you use i18n pattern to create your custom message.
+
+```tsx
+const ComponentForm = () => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  const schema = useMemo(() => {
+    return yup.object({
+      name: yup.string().required(
+        formatMessage({
+          defaultMessage: 'Name must be not null',
+          description: 'Name required constraint',
+        })
+      ),
+      age: yup.number().min(
+        18,
+        formatMessage(
+          {
+            defaultMessage: 'You should be {age} years old or more',
+            description: 'Min Age Constriant message',
+          },
+          { age: 18 }
+        )
+      ),
+    });
+  }, [formatMessage]);
+
+  // ...
+};
+```
