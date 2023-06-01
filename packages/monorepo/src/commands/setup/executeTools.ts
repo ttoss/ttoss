@@ -31,34 +31,40 @@ const configureRootPackagesJson = ({
 }) => {
   const packageJsonPath = path.join(process.cwd(), 'package.json');
 
-  const packagesJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   if (options.force) {
-    delete packagesJson.dependencies;
-    delete packagesJson.devDependencies;
-    delete packagesJson.peerDependencies;
+    delete packageJson.dependencies;
+    delete packageJson.devDependencies;
+    delete packageJson.peerDependencies;
   }
 
   /**
    * Remove prepare script because it will be added by husky.
    */
-  delete packagesJson.scripts.prepare;
+  delete packageJson.scripts.prepare;
 
-  packagesJson.private = true;
+  packageJson.private = true;
 
   if (options.force) {
-    packagesJson.scripts = {
-      ...packagesJson.scripts,
+    packageJson.scripts = {
+      ...packageJson.scripts,
       ...scripts,
     };
   } else {
-    packagesJson.scripts = {
+    packageJson.scripts = {
       ...scripts,
-      ...packagesJson.scripts,
+      ...packageJson.scripts,
     };
   }
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packagesJson, null, 2));
+  packageJson.engines = {
+    ...packageJson.engines,
+    node: '^18.0.0',
+    pnpm: '8.5.0',
+  };
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 };
 
 export const executeTools = async ({
