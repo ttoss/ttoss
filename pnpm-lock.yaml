@@ -681,6 +681,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.2.0
+      react-error-boundary:
+        specifier: ^4.0.9
+        version: 4.0.9(react@18.2.0)
       theme-ui:
         specifier: ^0.15.7
         version: 0.15.7(@emotion/react@11.10.6)(react@18.2.0)
@@ -24468,6 +24471,15 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-is: 18.1.0
+    dev: true
+
+  /react-error-boundary@4.0.9(react@18.2.0):
+    resolution: {integrity: sha512-f6DcHVdTDZmc9ixmRmuLDZpkdghYR/HKZdUzMLHD58s4cR2C4R6y4ktYztCosM6pyeK4/C8IofwqxgID25W6kw==}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': 7.21.0
+      react: 18.2.0
     dev: true
 
   /react-error-overlay@6.0.11:
