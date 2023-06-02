@@ -23,8 +23,6 @@ export const Layout = (props: FlexProps) => {
             acc.header = child;
           } else if (child.type === Footer) {
             acc.footer = child;
-          } else {
-            acc.children = [...(acc.children || []), child];
           }
         }
 
@@ -47,7 +45,6 @@ export const Layout = (props: FlexProps) => {
       }}
     >
       {header}
-      {children}
       {footer}
     </Flex>
   );

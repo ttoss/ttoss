@@ -61,7 +61,7 @@ const configureRootPackagesJson = ({
   packageJson.engines = {
     ...packageJson.engines,
     node: '^18.0.0',
-    pnpm: '8.5.0',
+    pnpm: '^8.6.0',
   };
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));

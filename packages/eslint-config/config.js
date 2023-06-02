@@ -124,6 +124,12 @@ module.exports = {
         ecmaVersion: 2019,
         sourceType: 'module',
       },
+      rules: {
+        'jest/consistent-test-it': [
+          'error',
+          { fn: 'test', withinDescribe: 'test' },
+        ],
+      },
     },
   ],
 };

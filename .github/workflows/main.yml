@@ -38,7 +38,7 @@ jobs:
         id: pnpm-install
         with:
           run_install: false
-          version: 8.5.0
+          version: 8
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash

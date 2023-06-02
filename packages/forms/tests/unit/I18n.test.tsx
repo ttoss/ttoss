@@ -3,7 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../src';
 import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
 import { JSXElementConstructor, PropsWithChildren, useMemo } from 'react';
-import { render, screen, userEvent } from '@ttoss/test-utils/.';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 import { setLocale } from 'yup';
 
 describe('test i18n messages', () => {
@@ -86,7 +86,7 @@ describe('test i18n messages', () => {
     await user.click(await screen.findByText('Submit'));
   };
 
-  it('Should render i18n english error messages correctly', async () => {
+  test('Should render i18n english error messages correctly', async () => {
     renderForm();
     await click();
 
@@ -96,14 +96,14 @@ describe('test i18n messages', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render error boundary when not wrapped in I18nProvider', async () => {
+  test('should render error boundary when not wrapped in I18nProvider', async () => {
     renderForm(false);
     await click();
 
     expect(await screen.findByText('An error ocurred')).toBeInTheDocument();
   });
 
-  it('should render messages overrided in setLocale', async () => {
+  test('should render messages overrided in setLocale', async () => {
     setLocale({
       mixed: {
         required: 'This field is required',
@@ -124,7 +124,7 @@ describe('test i18n messages', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render translated render messages when locale is set in provider', async () => {
+  test('should render translated render messages when locale is set in provider', async () => {
     setLocale({
       mixed: {
         required: defineMessage({
@@ -152,7 +152,7 @@ describe('test i18n messages', () => {
     });
   });
 
-  it('should render a custom message provided in schema definition', async () => {
+  test('should render a custom message provided in schema definition', async () => {
     const RenderFormWithCustomSchema = () => {
       const {
         intl: { formatMessage },
