@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.7.2...@ttoss/cloudformation@0.7.3) (2023-06-02)
+
+**Note:** Version bump only for package @ttoss/cloudformation
+
 ## 0.7.2 (2023-05-23)
 
 ### Bug Fixes

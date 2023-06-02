@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0 (2023-06-02)
+
+### Features
+
+- add graphql-api-server ([#365](https://github.com/ttoss/ttoss/issues/365)) ([1a4b03b](https://github.com/ttoss/ttoss/commit/1a4b03bac44cda154ee117940a92ad26f4e3759c))
+
 # 0.5.0 (2023-04-28)
 
 ### Features
