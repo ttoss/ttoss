@@ -1,6 +1,13 @@
-import { Button, HelpText } from '@ttoss/ui';
+import { Button, HelpText, Text } from '@ttoss/ui';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../src';
+import {
+  Form,
+  FormFieldInput,
+  FormGroup,
+  useForm,
+  yup,
+  yupResolver,
+} from '../../src';
 import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
 import { JSXElementConstructor, PropsWithChildren, useMemo } from 'react';
 import { render, screen, userEvent } from '@ttoss/test-utils/.';
@@ -112,6 +119,37 @@ describe('test i18n messages', () => {
     expect(await screen.findByText('An error ocurred')).toBeInTheDocument();
 
     spy.mockRestore();
+  });
+
+  test('should render error messages for nested schemas', async () => {
+    const Nestedform = () => {
+      const schema = yup.object({
+        personalInfo: yup
+          .object({
+            name: yup.string().required(),
+          })
+          .required(),
+      });
+
+      const formMethods = useForm({
+        resolver: yupResolver(schema),
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormGroup>
+            <Text>Personal Information</Text>
+            <FormFieldInput name="personalInfo.name" label="Name" type="text" />
+          </FormGroup>
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<Nestedform />, { wrapper: I18nProvider });
+    await click();
+
+    expect(await screen.findByText('Field is required')).toBeInTheDocument();
   });
 
   test('should render messages overrided in setLocale', async () => {
