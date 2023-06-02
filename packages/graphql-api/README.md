@@ -169,7 +169,7 @@ This package provides a way to add middlewares to your final schema. You can add
 
 ```typescript
 import { buildSchema } from '@ttoss/graphql-api';
-import { allow, deny, shield } from 'graphql-shield';
+import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 import { schemaComposer } from './schemaComposer';
 
 const NotAuthorizedError = new Error('Not authorized!');
@@ -199,6 +199,14 @@ const schema = buildSchema({
   schemaComposer,
   middlewares; [permissions],
 })
+```
+
+#### Shield
+
+This package re-exports the all methods from [GraphQL Shield](https://the-guild.dev/graphql/shield).
+
+```typescript
+import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 ```
 
 ## Building Schema
