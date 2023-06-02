@@ -33,11 +33,12 @@ packages:
 `;
 
 const dotnpmrc = `
+enable-pre-post-scripts=true
+engine-strict=true
 public-hoist-pattern[]=*eslint*
 public-hoist-pattern[]=*prettier*
 # https://github.com/pnpm/pnpm/issues/4920#issuecomment-1226724790
 public-hoist-pattern[]=@types*
-enable-pre-post-scripts=true
 `;
 
 export const pnpm: Tool = async () => {
