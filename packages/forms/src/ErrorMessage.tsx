@@ -39,11 +39,14 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
       render={({ message }: { message: FieldError | string }) => {
         return (
           <HelpText negative disabled={disabled}>
-            {isMessageDescriptor(message) && !(typeof message === 'string') ? (
-              <FormattedMessage {...message} />
-            ) : (
-              (message as string)
-            )}
+            {(() => {
+              if (typeof message === 'string') return message;
+
+              if (isMessageDescriptor(message))
+                return <FormattedMessage {...message} />;
+
+              return JSON.stringify(message);
+            })()}
           </HelpText>
         );
       }}
