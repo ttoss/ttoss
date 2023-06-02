@@ -1,4 +1,4 @@
-import { allow, deny, shield } from 'graphql-shield';
+import { allow, deny, shield } from '../../src/shield';
 import { buildSchema } from '../../src';
 import { graphql } from 'graphql';
 import { schemaComposer } from '../schemaComposer';

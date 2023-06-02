@@ -6,6 +6,8 @@ import {
 } from 'graphql-middleware';
 import { type SchemaComposer } from 'graphql-compose';
 
+export type { IMiddleware, IMiddlewareGenerator };
+
 export type BuildSchemaInput<TContext = any> = {
   schemaComposer: SchemaComposer<TContext>;
   middlewares?: (IMiddleware | IMiddlewareGenerator<any, TContext, any>)[];
