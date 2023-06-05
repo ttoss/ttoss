@@ -9,7 +9,7 @@ pnpm i @ttoss/forms @ttoss/react-i18n
 pnpm i --save-dev @ttoss/i18n-cli
 ```
 
-## Quick Start
+## Quickstart
 
 ```tsx
 import { Button } from '@ttoss/ui';

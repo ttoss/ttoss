@@ -1,53 +1,23 @@
 import * as React from 'react';
-import { Flex, FlexProps } from '@ttoss/ui';
+import { type BoxProps, Container, type ContainerProps } from '@ttoss/ui';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { Main } from './Main';
+import { StackedLayout } from './StackedLayout';
 
-type LayoutComponents = {
-  [key: string]: React.ReactElement[] | React.ReactElement | null;
-  children: React.ReactElement[];
+export type { ContainerProps, BoxProps };
+
+type Layouts = 'StackedLayout';
+
+type LayoutProps = React.PropsWithChildren<{
+  layout?: Layouts;
+}>;
+
+export const Layout = ({ children }: LayoutProps) => {
+  return <StackedLayout>{children}</StackedLayout>;
 };
 
-export const Layout = (props: FlexProps) => {
-  /**
-   * It's not worth to use React.useMemo here because children props always
-   * change when the parent component re-renders.
-   */
-  const { header, footer, children } = (() => {
-    return React.Children.toArray(props.children).reduce<LayoutComponents>(
-      (acc, child) => {
-        if (React.isValidElement(child)) {
-          if (child.type === Header) {
-            acc.header = child;
-          } else if (child.type === Footer) {
-            acc.footer = child;
-          } else {
-            acc.children = [...(acc.children || []), child];
-          }
-        }
-
-        return acc;
-      },
-      {
-        Header: null,
-        Footer: null,
-        children: [],
-      }
-    );
-  })();
-
-  return (
-    <Flex
-      variant="layout.layout"
-      {...props}
-      sx={{
-        flexDirection: 'column',
-        ...props.sx,
-      }}
-    >
-      {header}
-      {children}
-      {footer}
-    </Flex>
-  );
-};
+Layout.Header = Header;
+Layout.Main = Main;
+Layout.Footer = Footer;
+Layout.Container = Container;

@@ -1,17 +1,10 @@
-import { Flex, FlexProps } from '@ttoss/ui';
+import { Box, BoxProps } from '@ttoss/ui';
 
-export const Footer = (props: FlexProps) => {
+export const Footer = (props: BoxProps) => {
   return (
-    <Flex
-      as="footer"
-      variant="layout.footer"
-      {...props}
-      sx={{
-        ...props.sx,
-      }}
-    >
+    <Box variant="layout.footer" {...props} as="footer">
       {props.children}
-    </Flex>
+    </Box>
   );
 };
 
