@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@ttoss/layouts",
   "version": "0.0.10",
   "description": "Layout components for React",
@@ -15,7 +14,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "echo jest"
+    "test": "jest"
   },
   "sideEffects": false,
   "typings": "dist/index.d.ts",
@@ -34,9 +33,7 @@
     "tsup": "^6.7.0"
   },
   "keywords": [
-    "React",
-    "ui",
-    "user interface"
+    "React"
   ],
   "publishConfig": {
     "access": "public"

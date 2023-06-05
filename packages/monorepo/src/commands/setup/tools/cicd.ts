@@ -148,7 +148,7 @@ const checkoutStep = ({
   fetchDepth,
   token,
 }: { fetchDepth?: number; token?: string } = {}) => {
-  const config = {
+  const config: any = {
     name: 'Checkout',
     uses: 'actions/checkout@v3',
     with: {},

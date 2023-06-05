@@ -8,7 +8,7 @@
 yarn add @ttoss/landing-pages @ttoss/ui
 ```
 
-## Quick start
+## Quickstart
 
 TODO
 

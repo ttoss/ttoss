@@ -8,7 +8,7 @@
 pnpm add @ttoss/ui
 ```
 
-## Quick start
+## Quickstart
 
 Create a theme object to define the design tokens of your application.
 

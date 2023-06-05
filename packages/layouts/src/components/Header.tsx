@@ -1,16 +1,11 @@
-import { Flex, FlexProps } from '@ttoss/ui';
+import { Box, BoxProps } from '@ttoss/ui';
 
-export const Header = (props: FlexProps) => {
+export const Header = (props: BoxProps) => {
   return (
-    <Flex
-      as="header"
-      variant="layout.header"
-      {...props}
-      sx={{
-        ...props.sx,
-      }}
-    >
+    <Box variant="layout.header" {...props} as="header">
       {props.children}
-    </Flex>
+    </Box>
   );
 };
+
+Header.displayName = 'Header';
