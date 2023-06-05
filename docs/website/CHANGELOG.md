@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.41.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.40.4...@docs/website@1.41.0) (2023-06-05)
+
+### Features
+
+- improve layouts module ([#377](https://github.com/ttoss/ttoss/issues/377)) ([f1d1578](https://github.com/ttoss/ttoss/commit/f1d15781930a8ec7d86e8f8c92f42335157ce7e2))
+
 ## [1.40.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.40.3...@docs/website@1.40.4) (2023-06-02)
 
 **Note:** Version bump only for package @docs/website
