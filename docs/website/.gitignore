@@ -24,3 +24,4 @@ yarn-error.log*
 /docs/modules/packages/*/modules.md
 /docs/modules/packages/*/namespaces
 /docs/modules/packages/*/interfaces
+!/docs/modules/packages/eslint-config/*
