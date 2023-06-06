@@ -1,20 +1,19 @@
-import * as React from 'react';
+import { BaseLayout, type BaseLayoutProps } from './BaseLayout';
 import { type BoxProps, Container, type ContainerProps } from '@ttoss/ui';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { Main } from './Main';
-import { StackedLayout } from './StackedLayout';
 
 export type { ContainerProps, BoxProps };
 
-type Layouts = 'StackedLayout';
+type LayoutProps = BaseLayoutProps;
 
-type LayoutProps = React.PropsWithChildren<{
-  layout?: Layouts;
-}>;
-
-export const Layout = ({ children }: LayoutProps) => {
-  return <StackedLayout>{children}</StackedLayout>;
+export const Layout = ({ children, ...props }: LayoutProps) => {
+  return (
+    <BaseLayout variant="layout.layout" {...props}>
+      {children}
+    </BaseLayout>
+  );
 };
 
 Layout.Header = Header;

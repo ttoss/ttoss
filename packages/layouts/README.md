@@ -16,7 +16,7 @@ You can use the `Layout` component to add a layout to your application:
 import { Layout } from '@ttoss/layouts';
 
 const App = () => (
-  <Layout layout="StackedLayout">
+  <Layout>
     <Layout.Header>Header</Layout.Header>
     <Layout.Main>Main</Layout.Main>
     <Layout.Footer>Footer</Layout.Footer>
@@ -24,7 +24,7 @@ const App = () => (
 );
 ```
 
-Or you can use specifics components as `StackedLayout` to add a layout to your application:
+Or you can use specifics components as `StackedLayout` to add specific layout to your application:
 
 ```tsx
 import { Layout, StackedLayout } from '@ttoss/layouts';
