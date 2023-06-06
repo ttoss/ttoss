@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.21.2...@ttoss/eslint-config@1.22.0) (2023-06-06)
+
+### Features
+
+- updated eslint rules to nextjs apps ([#378](https://github.com/ttoss/ttoss/issues/378)) ([4226285](https://github.com/ttoss/ttoss/commit/4226285db7b366e3956e76cdbaf916252f624e91))
+
 ## [1.21.2](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.21.1...@ttoss/eslint-config@1.21.2) (2023-06-02)
 
 **Note:** Version bump only for package @ttoss/eslint-config
