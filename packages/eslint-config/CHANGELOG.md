@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.1](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.0...@ttoss/eslint-config@1.22.1) (2023-06-06)
+
+### Bug Fixes
+
+- eslint next ([#382](https://github.com/ttoss/ttoss/issues/382)) ([08e1c94](https://github.com/ttoss/ttoss/commit/08e1c947755e5c0d5d0c2c13c86a006bf200e8b6))
+
 # [1.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.21.2...@ttoss/eslint-config@1.22.0) (2023-06-06)
 
 ### Features
