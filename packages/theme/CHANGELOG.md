@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.4.39...@ttoss/theme@1.5.0) (2023-06-06)
+
+### Features
+
+- zindices tokens ([#381](https://github.com/ttoss/ttoss/issues/381)) ([4662ae7](https://github.com/ttoss/ttoss/commit/4662ae7c6469c20f4f77ebf0e73a7c037ea071a5))
+
 ## [1.4.39](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.4.38...@ttoss/theme@1.4.39) (2023-06-02)
 
 **Note:** Version bump only for package @ttoss/theme

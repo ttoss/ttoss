@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.29.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.28.13...@ttoss/components@1.29.0) (2023-06-06)
+
+### Features
+
+- zindices tokens ([#381](https://github.com/ttoss/ttoss/issues/381)) ([4662ae7](https://github.com/ttoss/ttoss/commit/4662ae7c6469c20f4f77ebf0e73a7c037ea071a5))
+
 ## [1.28.13](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.28.12...@ttoss/components@1.28.13) (2023-06-05)
 
 **Note:** Version bump only for package @ttoss/components
