@@ -106,19 +106,9 @@ module.exports = {
       },
     },
     {
-      files: [
-        '**/*.stories.tsx',
-        '**/*.stories.jsx',
-        '**/+(page|template|layout).tsx',
-      ],
+      files: ['**/*.stories.tsx', '**/*.stories.jsx'],
       rules: {
         'import/no-default-export': 'off',
-      },
-    },
-    {
-      files: ['**/+(page|template|layout).tsx', '**/route.ts'],
-      rules: {
-        'prefer-arrow-functions/prefer-arrow-functions': 'off',
       },
     },
     {
