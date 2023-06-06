@@ -4,6 +4,7 @@ import { fontWeights } from '../../tokens/fontWeights';
 import { letterSpacings } from '../../tokens/letterSpacings';
 import { lineHeights } from '../../tokens/lineHeights';
 import { space } from '../../tokens/space';
+import { zIndices } from '../../tokens/zIndices';
 
 const coreFonts = {
   main: '"Atkinson Hyperlegible", sans-serif',
@@ -71,6 +72,7 @@ export const BruttalTheme: Theme = {
   letterSpacings,
   space,
   lineHeights,
+  zIndices,
   colors: {
     background: coreColors.complimentary,
     text: coreColors.black,
@@ -132,6 +134,7 @@ export const BruttalTheme: Theme = {
       fontFamily: 'body',
       fontWeight: 'normal',
       fontSize: 'base',
+      zIndex: 'base',
       margin: 0,
       padding: 0,
       backgroundColor: 'background',

@@ -28,6 +28,7 @@ export const Modal = (props: ModalProps) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      zIndex: 'modal',
       ...props.style?.overlay,
     })(theme) as any,
     content: transformStyleObject({
