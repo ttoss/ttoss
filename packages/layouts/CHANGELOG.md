@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.0...@ttoss/layouts@0.1.1) (2023-06-06)
+
+### Bug Fixes
+
+- remove stacked layout from layout ([#379](https://github.com/ttoss/ttoss/issues/379)) ([b3ab61c](https://github.com/ttoss/ttoss/commit/b3ab61cf9a61578a495869b04820c0602f2a1952))
+
 # [0.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.0.10...@ttoss/layouts@0.1.0) (2023-06-05)
 
 ### Features
