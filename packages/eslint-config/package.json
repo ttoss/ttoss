@@ -2,11 +2,15 @@
   "name": "@ttoss/eslint-config",
   "version": "1.22.1",
   "description": "ESLint config.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/eslint-config"
+  },
   "main": "index.js",
   "files": [
     "config.js",
@@ -40,6 +44,7 @@
     "eslintconfig"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

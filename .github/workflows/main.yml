@@ -9,6 +9,8 @@ concurrency:
 jobs:
   main:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
     environment: Production
     steps:
