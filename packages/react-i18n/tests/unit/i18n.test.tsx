@@ -6,7 +6,9 @@ import {
   defineMessages,
   useI18n,
 } from '../../src';
+import { PropsWithChildren } from 'react';
 import { act, render, renderHook, screen } from '@ttoss/test-utils';
+import { loadLocaleData } from '../setupTests';
 
 const messages = defineMessages({
   myNameIs: {
@@ -18,6 +20,20 @@ const messages = defineMessages({
     defaultMessage: 'Other message',
   },
 });
+
+const ProviderWithErrorHandler = ({ children }: PropsWithChildren) => {
+  return (
+    <I18nProvider
+      loadLocaleData={loadLocaleData}
+      locale="pt-BR"
+      onError={(err) => {
+        return;
+      }}
+    >
+      {children}
+    </I18nProvider>
+  );
+};
 
 let languageGetter: jest.SpyInstance;
 
@@ -111,4 +127,50 @@ test('FormattedMessage component', async () => {
    * https://testing-library.com/docs/dom-testing-library/api-async/#findby-queries
    */
   expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
+});
+
+test('Custom Error Handler', async () => {
+  const { result } = renderHook(() => {
+    return useI18n();
+  });
+  const { result: errorHandledResult } = renderHook(
+    () => {
+      return useI18n();
+    },
+    { wrapper: ProviderWithErrorHandler }
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const mock = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  await act(async () => {
+    await result.current.setLocale('pt-BR');
+    await errorHandledResult.current.setLocale('pt-BR');
+  });
+
+  result.current.intl.formatMessage({
+    defaultMessage: 'Untranslated Message',
+    description: 'Untranslated Message',
+  });
+
+  // eslint-disable-next-line no-console
+  expect(console.error).toHaveBeenCalled();
+
+  // From here, the test verifies if an provider with error handler is working properly
+
+  mock.mockReset();
+
+  errorHandledResult.current.intl.formatMessage({
+    defaultMessage: 'Untranslated Message',
+    description: 'Untranslated Message',
+  });
+
+  /**
+   * https://stackoverflow.com/questions/47706157/jest-how-to-assert-that-function-is-not-called
+   */
+  // eslint-disable-next-line no-console
+  expect(console.error).not.toHaveBeenCalled();
+
+  mock.mockRestore();
+  mock.mockClear();
 });

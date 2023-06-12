@@ -10,6 +10,7 @@ export type I18nProviderProps = {
   locale?: string;
   loadLocaleData?: LoadLocaleData;
   children?: React.ReactNode;
+  onError?: (err: Error) => void;
 };
 
 /**
