@@ -6,6 +6,11 @@
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/i18n-cli"
+  },
   "bin": {
     "ttoss-i18n": "./bin/cli.js"
   },

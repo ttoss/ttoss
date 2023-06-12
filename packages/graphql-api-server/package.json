@@ -6,6 +6,11 @@
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/graphql-api-server"
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "files": [

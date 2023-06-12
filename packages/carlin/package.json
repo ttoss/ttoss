@@ -4,13 +4,14 @@
   "description": "",
   "license": "GPL-3.0",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
-  "homepage": "https://github.com/ttoss/carlin#readme",
+  "homepage": "https://ttoss.dev/docs/carlin/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ttoss/carlin.git"
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/carlin"
   },
   "bugs": {
-    "url": "https://github.com/ttoss/carlin/issues"
+    "url": "https://github.com/ttoss/ttoss/issues"
   },
   "main": "dist/index.js",
   "bin": {

@@ -7,6 +7,11 @@
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
     "Rayza Oliveira Costa <rayza.ocr@gmail.com> (https://bio.link/rayza)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-i18n"
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "files": [

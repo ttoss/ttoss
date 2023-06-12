@@ -6,6 +6,11 @@
   "contributors": [
     "Eron Alves <eron.alves@rocketmail.com>"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/logger"
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "files": [
