@@ -25,6 +25,7 @@
     "tsup": "^6.7.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
