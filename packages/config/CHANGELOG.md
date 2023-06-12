@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.30.3](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.30.2...@ttoss/config@1.30.3) (2023-06-12)
+
+### Bug Fixes
+
+- add repository to pacakge json ([8105c0a](https://github.com/ttoss/ttoss/commit/8105c0a0cf0d3b3de4a118f29014c2b5eb082d07))
+
 ## [1.30.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.30.1...@ttoss/config@1.30.2) (2023-06-12)
 
 **Note:** Version bump only for package @ttoss/config

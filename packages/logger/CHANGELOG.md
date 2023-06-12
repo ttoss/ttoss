@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.1.6...@ttoss/logger@0.1.7) (2023-06-12)
+
+### Bug Fixes
+
+- add repository to pacakge json ([8105c0a](https://github.com/ttoss/ttoss/commit/8105c0a0cf0d3b3de4a118f29014c2b5eb082d07))
+
 ## [0.1.6](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.1.5...@ttoss/logger@0.1.6) (2023-06-12)
 
 **Note:** Version bump only for package @ttoss/logger

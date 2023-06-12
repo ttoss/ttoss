@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.23.3...@ttoss/react-i18n@1.23.4) (2023-06-12)
+
+### Bug Fixes
+
+- add repository to pacakge json ([8105c0a](https://github.com/ttoss/ttoss/commit/8105c0a0cf0d3b3de4a118f29014c2b5eb082d07))
+
 ## [1.23.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.23.2...@ttoss/react-i18n@1.23.3) (2023-06-12)
 
 **Note:** Version bump only for package @ttoss/react-i18n
