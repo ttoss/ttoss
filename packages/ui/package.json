@@ -24,16 +24,17 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@emotion/react": "^11.11.1",
     "@iconify-icon/react": "^1.0.7",
     "@theme-ui/match-media": "^0.15.7",
     "@ttoss/theme": "workspace:^",
     "theme-ui": "^0.15.7"
   },
   "peerDependencies": {
+    "@emotion/react": "^11.0.0",
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@emotion/react": "^11.11.1",
     "@iconify-icons/mdi-light": "^1.2.5",
     "@iconify/types": "^2.0.0",
     "@ttoss/config": "workspace:^",
