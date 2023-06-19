@@ -5,7 +5,7 @@
 ## Installation
 
 ```shell
-pnpm add @ttoss/ui
+pnpm add @ttoss/ui @emotion/react
 ```
 
 ## Quickstart
