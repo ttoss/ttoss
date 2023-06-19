@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BruttalFonts, BruttalTheme } from '@ttoss/theme/Bruttal';
 import { Global, css } from '@emotion/react';
-import { Theme, ThemeProvider as ThemeUiProvider } from 'theme-ui';
+import { Theme, ThemeUIProvider } from 'theme-ui';
 
 export type ThemeProviderProps = {
   children?: React.ReactNode;
@@ -19,7 +19,7 @@ export const ThemeProvider = ({
 }: ThemeProviderProps) => {
   return (
     <>
-      <ThemeUiProvider theme={theme}>
+      <ThemeUIProvider theme={theme}>
         <Global
           styles={css`
             ${fonts
@@ -30,7 +30,7 @@ export const ThemeProvider = ({
           `}
         />
         {children}
-      </ThemeUiProvider>
+      </ThemeUIProvider>
     </>
   );
 };

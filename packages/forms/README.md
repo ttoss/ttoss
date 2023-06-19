@@ -5,7 +5,7 @@
 ## Installation
 
 ```shell
-pnpm i @ttoss/forms @ttoss/react-i18n
+pnpm i @ttoss/forms @ttoss/react-i18n @ttoss/ui @emotion/react
 pnpm i --save-dev @ttoss/i18n-cli
 ```
 
