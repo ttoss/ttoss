@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/config",
-  "version": "1.30.3",
+  "version": "1.30.4",
   "description": "Default configuration for packages.",
   "license": "UNLICENSED",
   "author": "ttoss",
