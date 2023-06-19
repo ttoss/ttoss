@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^6.7.0"
+    "tsup": "^7.0.0"
   }
 }

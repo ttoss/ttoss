@@ -7,9 +7,7 @@
 Install `@ttoss/google-maps` in your project:
 
 ```shell
-$ yarn add @ttoss/google-maps
-# or
-$ npm install @ttoss/google-maps
+$ pnpm install @ttoss/google-maps
 ```
 
 If you use TypeScript, add the following to a declaration file (generally `typings.d.ts`):
