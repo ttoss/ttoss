@@ -89,12 +89,13 @@ export const FormFieldSelect = <
       onTooltipClick={selectProps.onTooltipClick}
       sx={sx}
       defaultValue={checkedDefaultValue}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         return (
           <Select
             {...selectProps}
             {...field}
             {...{ ...selectProps, defaultValue: undefined }}
+            aria-invalid={fieldState.error ? 'true' : undefined}
           >
             {options.map((option: FormRadioOption) => {
               return (

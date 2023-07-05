@@ -28,7 +28,7 @@ test('call onSubmit with correct data', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ input1: 'input1', input2: '2' });
 });
 
-test('should display error messages', async () => {
+test('should display error messages and error icon', async () => {
   const user = userEvent.setup({ delay: null });
 
   const onSubmit = jest.fn();
@@ -60,5 +60,9 @@ test('should display error messages', async () => {
 
   await user.click(screen.getByText('Submit'));
 
+  expect(await screen.findByTestId('iconify-icon')).toHaveAttribute(
+    'icon',
+    'warning-alt'
+  );
   expect(await screen.findByText('First name is required')).toBeInTheDocument();
 });
