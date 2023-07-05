@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@2.0.0...@ttoss/ui@2.0.1) (2023-06-19)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.37.4...@ttoss/ui@2.0.0) (2023-06-19)
+
+### chore
+
+- update package.json ([#388](https://github.com/ttoss/ttoss/issues/388)) ([351a9d4](https://github.com/ttoss/ttoss/commit/351a9d4128e5268d79069ad15b8064c4a9acd906))
+
+### BREAKING CHANGES
+
+- emotion is a peer dep
+
 ## [1.37.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@1.37.3...@ttoss/ui@1.37.4) (2023-06-12)
 
 **Note:** Version bump only for package @ttoss/ui

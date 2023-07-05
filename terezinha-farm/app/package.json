@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.5.23",
+  "version": "0.5.25",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^18.2.11",
+    "@types/react": "^18.2.12",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react": "^4.0.0",
     "carlin": "workspace:^",

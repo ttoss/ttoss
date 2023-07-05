@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A library for building GraphQL APIs.",
   "author": "ttoss",
   "contributors": [
@@ -53,7 +53,7 @@
     "@types/yargs": "^17.0.24",
     "graphql": "^16.6.0",
     "jest": "^29.5.0",
-    "tsup": "^6.7.0"
+    "tsup": "^7.0.0"
   },
   "keywords": [
     "api",

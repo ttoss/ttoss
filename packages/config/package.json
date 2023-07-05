@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/config",
-  "version": "1.30.3",
+  "version": "1.30.4",
   "description": "Default configuration for packages.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -42,7 +42,7 @@
     "@types/node": "^18.16.2",
     "esbuild": "^0.17.19",
     "jest": "^29.5.0",
-    "tsup": "^6.7.0"
+    "tsup": "^7.0.0"
   },
   "keywords": [],
   "publishConfig": {

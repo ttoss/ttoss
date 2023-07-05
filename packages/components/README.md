@@ -9,7 +9,7 @@
 ### Install @ttoss/components
 
 ```shell
-pnpm add @ttoss/components @ttoss/ui
+pnpm add @ttoss/components @ttoss/ui @emotion/react
 ```
 
 ## Components

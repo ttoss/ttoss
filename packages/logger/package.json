@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Simple environment agnostic logger",
   "license": "MIT",
   "contributors": [
@@ -24,7 +24,7 @@
   "typings": "dist/index.d.ts",
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^6.7.0"
+    "tsup": "^7.0.0"
   },
   "keywords": [],
   "publishConfig": {

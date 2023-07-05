@@ -5,7 +5,7 @@
 ## Installation
 
 ```shell
-yarn add @ttoss/landing-pages @ttoss/ui
+pnpm add @ttoss/landing-pages @ttoss/ui @emotion/react
 ```
 
 ## Quickstart

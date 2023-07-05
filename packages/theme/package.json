@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Theme for packages.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -37,7 +37,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@iconify-icon/react": "^1.0.7",
-    "@iconify/icons-carbon": "^1.2.17",
+    "@iconify/icons-carbon": "^1.2.18",
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
@@ -47,8 +47,8 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^29.5.0",
-    "theme-ui": "^0.15.7",
-    "tsup": "^6.7.0"
+    "theme-ui": "^0.16.0",
+    "tsup": "^7.0.0"
   },
   "keywords": [],
   "publishConfig": {
