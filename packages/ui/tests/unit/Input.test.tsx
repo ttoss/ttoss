@@ -28,6 +28,14 @@ test('should render Input component with trailingIcon and leadingIcon as string'
   expect(leadingIconEl).toBeInTheDocument();
 });
 
+test("should render Input component with trailingIcon 'warning-alt' when it's with aria-invalid as true", () => {
+  render(<Input placeholder="My Input" aria-invalid="true" />);
+
+  const [trailingIconEl] = screen.getAllByTestId('iconify-icon');
+
+  expect(trailingIconEl).toHaveAttribute('icon', 'warning-alt');
+});
+
 test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
   render(
     <Input

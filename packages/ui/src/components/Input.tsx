@@ -14,7 +14,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     {
       leadingIcon,
       onLeadingIconClick,
-      trailingIcon,
       onTrailingIconClick,
       className,
       sx,
@@ -22,7 +21,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const ariaInvalid = inputProps['aria-invalid'] === 'true';
+    const trailingIcon = inputProps['aria-invalid']
+      ? 'warning-alt'
+      : inputProps.trailingIcon;
 
     return (
       <Flex
@@ -58,7 +59,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...inputProps}
         />
 
-        {(trailingIcon || ariaInvalid) && (
+        {trailingIcon && (
           <Text
             sx={{
               position: 'absolute',
@@ -69,10 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             variant="trailing-icon"
             onClick={onTrailingIconClick}
           >
-            <Icon
-              inline
-              icon={ariaInvalid ? 'warning-alt' : (trailingIcon as string)}
-            />
+            <Icon inline icon={trailingIcon} />
           </Text>
         )}
       </Flex>
