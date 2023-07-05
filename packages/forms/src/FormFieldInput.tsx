@@ -1,6 +1,6 @@
 import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 import { FormField, type FormFieldProps } from './FormField';
-import { Input, type InputProps } from '@ttoss/ui/src';
+import { Input, type InputProps } from '@ttoss/ui';
 
 export type FormFieldInputProps<TName> = {
   label?: string;
