@@ -42,7 +42,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   fontSize: 'base',
                 }}
               >
-                <Icon icon="error" />
+                <Icon icon="warning-alt" />
               </Text>
             )}
           </>

@@ -1,6 +1,6 @@
 import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 import { FormField, type FormFieldProps } from './FormField';
-import { Input, type InputProps } from '@ttoss/ui';
+import { Input, type InputProps } from '@ttoss/ui/src';
 
 export type FormFieldInputProps<TName> = {
   label?: string;
@@ -33,12 +33,7 @@ export const FormFieldInput = <
         const hasError = !!formState.errors[name]?.message;
 
         return (
-          <Input
-            {...inputProps}
-            {...field}
-            aria-invalid={hasError.valueOf()}
-            trailingIcon={hasError ? 'warning-alt' : undefined}
-          />
+          <Input {...inputProps} {...field} aria-invalid={hasError.valueOf()} />
         );
       }}
     />

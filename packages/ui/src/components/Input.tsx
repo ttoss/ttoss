@@ -14,7 +14,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     {
       leadingIcon,
       onLeadingIconClick,
-      trailingIcon,
       onTrailingIconClick,
       className,
       sx,
@@ -22,6 +21,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const trailingIcon = inputProps['aria-invalid']
+      ? 'warning-alt'
+      : inputProps.trailingIcon;
+
     return (
       <Flex
         className={className}
