@@ -9,4 +9,4 @@
 # any modified, untracked, or staged files in the repository. If the output
 # of the command is not empty (-z checks for empty output), it means there are changed files.
 pnpm turbo run lint -- --allow-empty
-[ -z "$(git status --porcelain)" ] || { echo "Error: There are changed files."; git status; exit 1; }
+[ -z "$(git status --porcelain)" ] || { echo "Error: There are changes after build. Please, commit them locally and push again"; git status; exit 1; }
