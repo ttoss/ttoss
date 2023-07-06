@@ -59,10 +59,6 @@
     "defaultMessage": "Recovering Password",
     "description": "Recovering Password"
   },
-  "SPiKja": {
-    "defaultMessage": "Password requirements not met",
-    "description": "Password requirements not met"
-  },
   "SnONhb": {
     "defaultMessage": "Please, insert a valid e-mail",
     "description": "Please, insert a valid e-mail"

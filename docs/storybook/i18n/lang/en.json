@@ -89,11 +89,6 @@
     "description": "Recovering Password",
     "module": "@ttoss/react-auth"
   },
-  "SPiKja": {
-    "defaultMessage": "Password requirements not met",
-    "description": "Password requirements not met",
-    "module": "@ttoss/react-auth"
-  },
   "SnONhb": {
     "defaultMessage": "Please, insert a valid e-mail",
     "description": "Please, insert a valid e-mail",
