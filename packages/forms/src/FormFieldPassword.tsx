@@ -29,14 +29,12 @@ export const FormFieldPassword = <
       onTooltipClick={onTooltipClick}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
-      render={({ field, formState }) => {
-        const hasError = !!formState.errors[name]?.message;
-
+      render={({ field, fieldState }) => {
         return (
           <InputPassword
             {...inputProps}
             {...field}
-            aria-invalid={hasError.valueOf()}
+            aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );
       }}
