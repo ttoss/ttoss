@@ -46,9 +46,9 @@
     "@iconify/types": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^29.5.0",
+    "jest": "^29.6.1",
     "theme-ui": "^0.16.0",
-    "tsup": "^7.0.0"
+    "tsup": "^7.1.0"
   },
   "keywords": [],
   "publishConfig": {
