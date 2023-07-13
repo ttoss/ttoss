@@ -36,8 +36,8 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^18.2.12",
-    "jest": "^29.5.0",
-    "tsup": "^7.0.0"
+    "jest": "^29.6.1",
+    "tsup": "^7.1.0"
   },
   "publishConfig": {
     "access": "public",
