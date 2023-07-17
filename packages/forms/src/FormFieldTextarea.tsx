@@ -22,8 +22,14 @@ export const FormFieldTextarea = <
       name={name}
       id={id}
       sx={sx}
-      render={({ field }) => {
-        return <Textarea {...field} {...textareaProps} />;
+      render={({ field, fieldState }) => {
+        return (
+          <Textarea
+            {...field}
+            {...textareaProps}
+            aria-invalid={fieldState.error ? 'true' : undefined}
+          />
+        );
       }}
     />
   );

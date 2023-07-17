@@ -11,6 +11,22 @@ const userForm = {
   confirmPassword: 'password',
 };
 
+test('Should render the correct error message for password requirement', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  render(<AuthSignUp {...{ onSignUp, onReturnToSignIn }} />);
+
+  const password = screen.getByLabelText('Password');
+  const buttonSubmit = screen.getByLabelText('submit-button');
+
+  await user.type(password, 'pass');
+  await user.click(buttonSubmit);
+
+  expect(
+    screen.getByText('Password requires 8 characters')
+  ).toBeInTheDocument();
+});
+
 test('Should not call the onSubmit function if click on the Signup button without filling in the fields', async () => {
   const user = userEvent.setup({ delay: null });
 

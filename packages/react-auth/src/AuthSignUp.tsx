@@ -60,13 +60,6 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           { value: PASSWORD_MINIMUM_LENGTH }
         )
       )
-      .oneOf(
-        [yup.ref('confirmPassword')],
-        intl.formatMessage({
-          description: 'Password requirements not met',
-          defaultMessage: 'Password requirements not met',
-        })
-      )
       .trim(),
     confirmPassword: yup
       .string()

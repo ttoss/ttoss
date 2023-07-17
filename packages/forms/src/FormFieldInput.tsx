@@ -29,11 +29,13 @@ export const FormFieldInput = <
       onTooltipClick={onTooltipClick}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
-      render={({ field, formState }) => {
-        const hasError = !!formState.errors[name]?.message;
-
+      render={({ field, fieldState }) => {
         return (
-          <Input {...inputProps} {...field} aria-invalid={hasError.valueOf()} />
+          <Input
+            {...inputProps}
+            {...field}
+            aria-invalid={fieldState.error ? 'true' : undefined}
+          />
         );
       }}
     />
