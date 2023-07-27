@@ -101,8 +101,8 @@ describe('Notifications Box Test', () => {
 
   test('Should resolve notifications with the same key', async () => {
     const keyedNotifications: Array<NotifyParams> = [
-      { message: 'single message', type: 'error', notificationKey: 'message' },
-      { message: 'single message', type: 'error', notificationKey: 'message' },
+      { message: 'single message', type: 'error', key: 'message' },
+      { message: 'single message', type: 'error', key: 'message' },
     ];
 
     render(<Component notifications={keyedNotifications} />, {

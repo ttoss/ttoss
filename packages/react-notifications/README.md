@@ -99,12 +99,12 @@ const Component = () => {
             {
               message: "I'm a notification",
               type: 'info',
-              notificationKey: 'information',
+              key: 'information',
             },
             {
               message: "I'm considered to be the same notification",
               type: 'info',
-              notificationKey: 'information',
+              key: 'information',
             },
           ])
         }

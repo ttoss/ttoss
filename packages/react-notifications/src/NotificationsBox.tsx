@@ -7,7 +7,7 @@ const NotificationBoxWrapper = ({
   notifications,
   children,
 }: React.PropsWithChildren<{
-  direction: 'flex' | 'stack';
+  direction: 'row' | 'column';
   notifications: NotifyParams | NotifyParams[] | undefined;
 }>) => {
   const sx = {
@@ -20,7 +20,7 @@ const NotificationBoxWrapper = ({
         : '2xl',
   };
 
-  return direction === 'flex' ? (
+  return direction === 'row' ? (
     <Flex sx={sx}>{children}</Flex>
   ) : (
     <Stack sx={sx}>{children}</Stack>
@@ -34,21 +34,21 @@ const resolveNotifications = (notifications: NotifyParams | NotifyParams[]) => {
   const keyedNotifications = new Map<string | undefined, NotifyParams>(
     notifications
       .filter((notification) => {
-        return notification.notificationKey;
+        return notification.key;
       })
       .map((notification) => {
-        return [notification?.notificationKey, notification];
+        return [notification?.key, notification];
       })
   ).values();
 
   const nonKeyedNotifications = notifications
     .filter((notification) => {
-      return !notification.notificationKey;
+      return !notification.key;
     })
     .map((notification, index) => {
       return {
         ...notification,
-        notificationKey: index.toString() as string,
+        key: index.toString() as string,
       };
     });
 
@@ -56,9 +56,9 @@ const resolveNotifications = (notifications: NotifyParams | NotifyParams[]) => {
 };
 
 export const NotificationsBox = ({
-  direction = 'flex',
+  direction = 'row',
 }: {
-  direction?: 'flex' | 'stack';
+  direction?: 'row' | 'column';
 }) => {
   const { setNotifications, notifications } = useNotifications();
 
@@ -69,7 +69,11 @@ export const NotificationsBox = ({
   const renderNotifications = resolveNotifications(notifications);
 
   const ButtonMemoized = React.memo(
-    ({ message, type, notificationKey }: NotifyParams) => {
+    ({
+      notification: { key, type, message },
+    }: {
+      notification: NotifyParams;
+    }) => {
       return (
         <Button
           sx={{
@@ -82,7 +86,7 @@ export const NotificationsBox = ({
             ) {
               return setNotifications(
                 renderNotifications.filter((notification) => {
-                  return notification.notificationKey !== notificationKey;
+                  return notification.key !== key;
                 })
               );
             }
@@ -105,13 +109,13 @@ export const NotificationsBox = ({
         renderNotifications.map((notification) => {
           return (
             <ButtonMemoized
-              key={notification.notificationKey}
-              {...notification}
+              key={notification.key}
+              notification={notification}
             />
           );
         })
       ) : (
-        <ButtonMemoized {...renderNotifications} />
+        <ButtonMemoized notification={renderNotifications} />
       )}
     </NotificationBoxWrapper>
   );
