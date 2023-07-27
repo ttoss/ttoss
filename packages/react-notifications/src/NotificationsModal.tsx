@@ -7,7 +7,7 @@ export const NotificationsModal = () => {
 
   return (
     <Modal isOpen={!!notifications} style={{ content: { minWidth: '30%' } }}>
-      <NotificationsBox direction="stack" />
+      <NotificationsBox direction="row" />
     </Modal>
   );
 };
