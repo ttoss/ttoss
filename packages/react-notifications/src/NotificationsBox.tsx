@@ -27,6 +27,34 @@ const NotificationBoxWrapper = ({
   );
 };
 
+const resolveNotifications = (notifications: NotifyParams | NotifyParams[]) => {
+  if (!Array.isArray(notifications)) return notifications;
+
+  // keyed notifications should be unique
+  const keyedNotifications = new Map<string | undefined, NotifyParams>(
+    notifications
+      .filter((notification) => {
+        return notification.notificationKey;
+      })
+      .map((notification) => {
+        return [notification?.notificationKey, notification];
+      })
+  ).values();
+
+  const nonKeyedNotifications = notifications
+    .filter((notification) => {
+      return !notification.notificationKey;
+    })
+    .map((notification, index) => {
+      return {
+        ...notification,
+        notificationKey: index.toString() as string,
+      };
+    });
+
+  return Array.from(keyedNotifications).concat(nonKeyedNotifications);
+};
+
 export const NotificationsBox = ({
   direction = 'flex',
 }: {
@@ -38,45 +66,52 @@ export const NotificationsBox = ({
     return null;
   }
 
-  const ButtonMemoized = React.memo(({ message, type }: NotifyParams) => {
-    return (
-      <Button
-        sx={{
-          backgroundColor: type === 'error' ? 'danger' : 'positive',
-        }}
-        onClick={() => {
-          if (Array.isArray(notifications) && notifications.length > 1) {
-            return setNotifications(
-              notifications.filter((notification) => {
-                return notification.message !== message;
-              })
-            );
-          }
-          return setNotifications(undefined);
-        }}
-        rightIcon="close"
-        leftIcon={type === 'error' ? 'warning' : undefined}
-      >
-        {message}
-      </Button>
-    );
-  });
+  const renderNotifications = resolveNotifications(notifications);
+
+  const ButtonMemoized = React.memo(
+    ({ message, type, notificationKey }: NotifyParams) => {
+      return (
+        <Button
+          sx={{
+            backgroundColor: type === 'error' ? 'danger' : 'positive',
+          }}
+          onClick={() => {
+            if (
+              Array.isArray(renderNotifications) &&
+              renderNotifications.length > 1
+            ) {
+              return setNotifications(
+                renderNotifications.filter((notification) => {
+                  return notification.notificationKey !== notificationKey;
+                })
+              );
+            }
+            return setNotifications(undefined);
+          }}
+          rightIcon="close"
+          leftIcon={type === 'error' ? 'warning' : undefined}
+        >
+          {message}
+        </Button>
+      );
+    }
+  );
 
   ButtonMemoized.displayName = 'ButtonMemoized';
 
   return (
     <NotificationBoxWrapper {...{ notifications, direction }}>
-      {Array.isArray(notifications) ? (
-        notifications.map((notification) => {
+      {Array.isArray(renderNotifications) ? (
+        renderNotifications.map((notification) => {
           return (
             <ButtonMemoized
-              key={JSON.stringify(notification)}
+              key={notification.notificationKey}
               {...notification}
             />
           );
         })
       ) : (
-        <ButtonMemoized {...notifications} />
+        <ButtonMemoized {...renderNotifications} />
       )}
     </NotificationBoxWrapper>
   );
