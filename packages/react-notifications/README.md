@@ -77,3 +77,42 @@ const Component = () => {
   );
 };
 ```
+
+### Resolving notifications
+
+Additionally, the API accepts a third property in `setNotifications`: `notificationKey`.
+In this property, you can insert a placeholder for a particular notification, and, the library gonna resolve any repetated key for this notification to be only one notification.
+
+In that way, you have more control if you gonna render a repeated notification or not:
+
+```tsx
+import { useNotifications } from '@ttoss/react-notifications';
+
+const Component = () => {
+  const { setNotifications } = useNotifications();
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          setNotifications([
+            {
+              message: "I'm a notification",
+              type: 'info',
+              key: 'information',
+            },
+            {
+              message: "I'm considered to be the same notification",
+              type: 'info',
+              key: 'information',
+            },
+          ])
+        }
+      >
+        Click Me!
+      </button>
+      <NotificationsModal />
+    </div>
+  );
+};
+```

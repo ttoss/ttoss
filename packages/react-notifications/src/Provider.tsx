@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
 
 export type NotifyParams = {
+  key?: string;
   message: 'string' | React.ReactNode;
   type: 'success' | 'error' | 'warning' | 'info';
 };
