@@ -39,7 +39,7 @@ describe('Modal Notifications Test', () => {
 
   Modal.setAppElement('body');
 
-  it('Should render only one notification', async () => {
+  test('Should render only one notification', async () => {
     render(
       <NotificationsProvider>
         <TestModalComponent
@@ -64,7 +64,33 @@ describe('Modal Notifications Test', () => {
     expectNotBeInDocument(notification);
   });
 
-  it('Should render an array of notifications', async () => {
+  test('Should close notifications modal', async () => {
+    render(
+      <NotificationsProvider>
+        <TestModalComponent
+          notifications={{ message: 'Test Message', type: 'info' }}
+        />
+      </NotificationsProvider>
+    );
+
+    await act(async () => {
+      await user.click(await screen.findByText('Click me!!'));
+    });
+
+    const modalClose = await screen.findByPlaceholderText('Close');
+    const notification = await screen.findByText('Test Message');
+    expect(modalClose).toBeInTheDocument();
+    expect(notification).toBeInTheDocument();
+
+    // expect to disappear after click
+    await act(async () => {
+      await user.click(modalClose);
+    });
+    expectNotBeInDocument(notification);
+    expectNotBeInDocument(modalClose);
+  });
+
+  test('Should render an array of notifications', async () => {
     render(
       <NotificationsProvider>
         <TestModalComponent
