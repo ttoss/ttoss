@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.34](https://github.com/ttoss/ttoss/compare/@terezinha-farm/iam@0.2.33...@terezinha-farm/iam@0.2.34) (2023-08-03)
+
+**Note:** Version bump only for package @terezinha-farm/iam
+
 ## [0.2.33](https://github.com/ttoss/ttoss/compare/@terezinha-farm/iam@0.2.32...@terezinha-farm/iam@0.2.33) (2023-07-13)
 
 **Note:** Version bump only for package @terezinha-farm/iam

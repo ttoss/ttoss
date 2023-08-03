@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.30.0](https://github.com/ttoss/ttoss/compare/carlin@1.29.6...carlin@1.30.0) (2023-08-03)
+
+### Features
+
+- added a button to close react notifications modal ([#400](https://github.com/ttoss/ttoss/issues/400)) ([a7ef922](https://github.com/ttoss/ttoss/commit/a7ef922d5d514f6fe989539ae550997302f04874))
+
 ## [1.29.6](https://github.com/ttoss/ttoss/compare/carlin@1.29.5...carlin@1.29.6) (2023-07-13)
 
 **Note:** Version bump only for package carlin
