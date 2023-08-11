@@ -1,6 +1,10 @@
+import {
+  STACK_NAME_MAX_LENGTH,
+  getStackName,
+  setPreDefinedStackName,
+} from './stackName';
 import { faker } from '@ttoss/test-utils/faker';
 import { getCurrentBranch, getEnvironment, getPackageName } from '../utils';
-import { getStackName, setPreDefinedStackName } from './stackName';
 import { paramCase, pascalCase } from 'change-case';
 
 const mockMath = Object.create(global.Math);
@@ -23,11 +27,21 @@ const packageName = `@${faker.random.word()}/${faker.random.word()}`;
 
 jest.mock('../utils', () => {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(jest.requireActual('../utils') as any),
     getCurrentBranch: jest.fn(),
     getEnvironment: jest.fn(),
     getPackageName: jest.fn(),
   };
+});
+
+test('limit stackName length', async () => {
+  const bigName = faker.random.words(2 * STACK_NAME_MAX_LENGTH);
+  (getCurrentBranch as jest.Mock).mockReturnValueOnce(bigName);
+  (getEnvironment as jest.Mock).mockReturnValueOnce(bigName);
+  (getPackageName as jest.Mock).mockReturnValueOnce(bigName);
+  const stackName = await getStackName();
+  expect(stackName.length).toEqual(STACK_NAME_MAX_LENGTH);
 });
 
 describe('testing getStackName', () => {

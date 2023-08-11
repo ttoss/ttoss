@@ -47,6 +47,7 @@ export const createApiTemplate = ({
 }: {
   additionalAuthenticationProviders?: AuthenticationType[];
   authenticationType?: AuthenticationType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schemaComposer: SchemaComposer<any>;
   dataSource: {
     roleArn: StringOrImport;
@@ -140,15 +141,15 @@ export const createApiTemplate = ({
       },
     },
     Resources: {
+      /**
+       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#cfn-appsync-graphqlapi-name
+       */
       [AppSyncGraphQLApiLogicalId]: {
         Type: 'AWS::AppSync::GraphQLApi',
         Properties: {
           AuthenticationType: authenticationType,
           Name: {
-            'Fn::Join': [
-              ':',
-              [{ Ref: 'AWS::StackName' }, AppSyncGraphQLApiLogicalId],
-            ],
+            Ref: 'AWS::StackName',
           },
         },
       },
