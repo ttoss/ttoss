@@ -1,4 +1,4 @@
-import { Button, Icon } from '@ttoss/ui';
+import { CloseButton } from '@ttoss/ui';
 import { Modal } from '@ttoss/components';
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';
@@ -18,16 +18,13 @@ export const NotificationsModal = () => {
         },
       }}
     >
-      <Button
-        placeholder="Close"
-        style={{ alignSelf: 'flex-end' }}
+      <CloseButton
+        sx={{ alignSelf: 'flex-end' }}
         onClick={() => {
           setNotifications(undefined);
         }}
-      >
-        <Icon icon={'close'}></Icon>
-      </Button>
-      <NotificationsBox direction="row" />
+      />
+      <NotificationsBox direction="column" />
     </Modal>
   );
 };
