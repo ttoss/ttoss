@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button, type ButtonProps } from 'theme-ui';
-import { Icon } from './Icon';
+import { Button, type ButtonProps } from './Button';
+import { Icon } from '@ttoss/react-icons';
 
 export type CloseButtonProps = ButtonProps & {
   label?: string;
