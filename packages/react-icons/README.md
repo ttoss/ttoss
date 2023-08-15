@@ -11,7 +11,7 @@ pnpm add @ttoss/react-icons
 ## Quickstart
 
 ```tsx
-import { Icon } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 
 export const IconExample = () => {
   return (
