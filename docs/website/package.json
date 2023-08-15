@@ -3,7 +3,7 @@
   "name": "@docs/website",
   "version": "1.41.17",
   "scripts": {
-    "build": "docusaurus build",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm start",
