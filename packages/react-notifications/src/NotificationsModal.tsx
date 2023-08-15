@@ -1,4 +1,5 @@
-import { Button, Icon } from '@ttoss/ui';
+import { Button } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 import { Modal } from '@ttoss/components';
 import { NotificationsBox } from './NotificationsBox';
 import { useNotifications } from './Provider';

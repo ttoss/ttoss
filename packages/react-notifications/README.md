@@ -9,7 +9,7 @@ This module handles notifications in your applications and other ttoss modules.
 ### Install
 
 ```shell
-pnpm add @ttoss/notifications @ttoss/ui @emotion/react
+pnpm add @ttoss/notifications @ttoss/ui @ttoss/react-icons @emotion/react
 ```
 
 ## Usage

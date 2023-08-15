@@ -1,11 +1,11 @@
-import { Icon, Text } from '../../src';
+import { Icon } from '../../src';
 import { render, screen } from '@ttoss/test-utils';
 
 test('should render iconify-icon', () => {
   render(
-    <Text>
+    <p>
       <Icon icon="ant-design:down-square-filled" />
-    </Text>
+    </p>
   );
 
   const icon = screen.getByTestId('iconify-icon');

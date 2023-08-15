@@ -45,7 +45,9 @@ const config = {
       'logger',
       'monorepo',
       'react-i18n',
+      'react-icons',
       'react-notifications',
+      'theme',
       'ui',
     ].map((package) => {
       return [

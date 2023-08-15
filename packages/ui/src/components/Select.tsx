@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Icon, Text } from '..';
+import { Icon } from '@ttoss/react-icons';
 import { type SelectProps, Select as SelectUi } from 'theme-ui';
+import { Text } from '..';
 
 export { SelectProps };
 
@@ -14,6 +15,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {arrow ?? (
               <Text
                 sx={{
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   marginLeft: ({ space }: any) => {
                     return space?.['2xl'] ? '-2xl' : '-28px';
                   },
@@ -31,6 +33,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               <Text
                 className="error-icon"
                 sx={{
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   marginLeft: ({ space }: any) => {
                     return space?.['2xl']
                       ? `calc(-${space['2xl']} - 10px)`

@@ -1,19 +1,10 @@
 import * as React from 'react';
-import {
-  Flex,
-  Grid,
-  Icon,
-  Label,
-  Select,
-  Slider,
-  Text,
-  addIcon,
-  useTheme,
-} from '@ttoss/ui';
+import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
+import { Icon, addIcon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
 
 export default {
-  title: 'UI/Icon',
+  title: 'react-icons/Icon',
   component: Icon,
 } as Meta;
 

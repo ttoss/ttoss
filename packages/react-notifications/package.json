@@ -26,6 +26,7 @@
   "typings": "dist/index.d.ts",
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
