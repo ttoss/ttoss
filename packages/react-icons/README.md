@@ -32,7 +32,7 @@ Please refer to our storybook to see some examples of use.
 Please, refer to [Iconify docs](https://docs.iconify.design/icon-components/react/) for the parameters and more control over icons
 
 ```tsx
-import { Icon } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 
 export const IconExample = () => {
   return (
