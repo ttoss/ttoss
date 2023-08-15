@@ -7,6 +7,7 @@ import {
   Select,
   Slider,
   Text,
+  addIcon,
   useTheme,
 } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
@@ -75,6 +76,7 @@ const TemplateDynamic: Story = (args) => {
         <Slider
           defaultValue={50}
           max={200}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onChange={(e: any) => {
             return setFontSize(e.target.value);
           }}
@@ -83,6 +85,7 @@ const TemplateDynamic: Story = (args) => {
         <Label>Color</Label>
         <Select
           defaultValue={color}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onChange={(e: any) => {
             return setColor(e.target.value);
           }}
@@ -177,6 +180,35 @@ export const CoreIcons = () => {
           </Flex>
         );
       })}
+    </Flex>
+  );
+};
+
+addIcon('custom-search', {
+  body: `<svg xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 24 24" fill="none">
+  <path d="M15.8053 15.8013L21 21M10.5 7.5V13.5M7.5 10.5H13.5M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  width: 48,
+  height: 48,
+});
+
+export const CustomIcon = () => {
+  return (
+    <Flex sx={{ gap: 'lg', flexWrap: 'wrap' }}>
+      <Flex
+        sx={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '120px',
+          gap: 'md',
+        }}
+      >
+        <Text sx={{ fontSize: '3xl', color: 'primary' }}>
+          <Icon icon="custom-search" />
+        </Text>
+
+        <Text sx={{ textAlign: 'center' }}>custom-search</Text>
+      </Flex>
     </Flex>
   );
 };

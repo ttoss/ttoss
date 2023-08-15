@@ -3,6 +3,7 @@ export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
 export { keyframes, type Keyframes } from '@emotion/react';
 
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
+export { addIcon } from '@ttoss/theme';
 
 export { useTheme } from './theme/useTheme';
 
