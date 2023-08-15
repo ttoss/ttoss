@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.7](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.6...@ttoss/appsync-api@0.15.7) (2023-08-11)
+
+### Bug Fixes
+
+- limit stackName length ([#402](https://github.com/ttoss/ttoss/issues/402)) ([11dc8e5](https://github.com/ttoss/ttoss/commit/11dc8e56a128f74c26ecbfee17d64ea6dd64f087))
+
+## [0.15.6](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.5...@ttoss/appsync-api@0.15.6) (2023-08-03)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
 ## [0.15.5](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.4...@ttoss/appsync-api@0.15.5) (2023-07-13)
 
 **Note:** Version bump only for package @ttoss/appsync-api
