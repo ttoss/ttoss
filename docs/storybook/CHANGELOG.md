@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.39.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.38.18...@docs/storybook@1.39.0) (2023-08-15)
+
+### Features
+
+- create ttoss react-icons package ([#404](https://github.com/ttoss/ttoss/issues/404)) ([cd4c990](https://github.com/ttoss/ttoss/commit/cd4c990743da9bfd9d243d84adc38ad778824cc5))
+
+## [1.38.18](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.38.17...@docs/storybook@1.38.18) (2023-08-15)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [1.38.17](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.38.16...@docs/storybook@1.38.17) (2023-08-11)
 
 **Note:** Version bump only for package @docs/storybook

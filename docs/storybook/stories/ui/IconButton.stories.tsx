@@ -1,4 +1,5 @@
-import { Flex, Icon, IconButton, IconButtonProps } from '@ttoss/ui';
+import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
 
 export default {

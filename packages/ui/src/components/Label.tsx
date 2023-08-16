@@ -1,5 +1,6 @@
-import { Icon, Text } from '..';
+import { Icon } from '@ttoss/react-icons';
 import { type LabelProps as LabelPropsUi, Label as LabelUi } from 'theme-ui';
+import { Text } from '..';
 
 const TOOLTIP_LABEL = 'tooltip';
 

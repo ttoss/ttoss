@@ -1,6 +1,7 @@
+import * as React from 'react';
 import { Collapse } from 'react-collapse';
-import { Flex, Grid, Icon, Image, Link, Text } from '@ttoss/ui';
-import React from 'react';
+import { Flex, Grid, Image, Link, Text } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 
 type NavbarLink = {
   label: string;

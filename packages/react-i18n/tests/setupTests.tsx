@@ -2,7 +2,7 @@ import * as React from 'react';
 import { I18nProvider, LoadLocaleData } from '../src';
 import { setOptions } from '@ttoss/test-utils';
 
-const loadLocaleData: LoadLocaleData = (locale) => {
+export const loadLocaleData: LoadLocaleData = (locale) => {
   switch (locale) {
     case 'pt-BR':
       return import('../i18n/compiled/pt-BR.json');

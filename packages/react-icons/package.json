@@ -1,8 +1,7 @@
 {
-  "name": "@ttoss/landing-pages",
-  "version": "0.10.0",
-  "description": "Package for creating landing pages.",
-  "license": "UNLICENSED",
+  "name": "@ttoss/react-icons",
+  "version": "0.1.0",
+  "description": "React icons library for @ttoss ecosystem",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -10,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/landing-pages"
+    "directory": "packages/react-icons"
   },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
@@ -20,37 +19,32 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "pnpm workspace @docs/storybook run dev",
-    "test": "echo jest"
+    "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@iconify/react": "^4.1.0",
-    "react-collapse": "^5.1.1"
+    "@iconify-icon/react": "^1.0.8"
   },
   "peerDependencies": {
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@iconify/types": "^2.0.0",
     "@ttoss/config": "workspace:^",
-    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.3",
     "@types/react": "^18.2.12",
-    "@types/react-collapse": "^5.0.1",
     "jest": "^29.6.1",
+    "react": "^18.2.0",
     "tsup": "^7.1.0"
   },
   "keywords": [
-    "React",
-    "landing-pages"
+    "Icons",
+    "React"
   ],
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "gitHead": "e2b509ee8717f07f7365191b651dcbb5f080e05a"
+  }
 }

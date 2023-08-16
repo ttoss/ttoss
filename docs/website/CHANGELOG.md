@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.41.17...@docs/website@1.42.0) (2023-08-15)
+
+### Features
+
+- create ttoss react-icons package ([#404](https://github.com/ttoss/ttoss/issues/404)) ([cd4c990](https://github.com/ttoss/ttoss/commit/cd4c990743da9bfd9d243d84adc38ad778824cc5))
+
+## [1.41.17](https://github.com/ttoss/ttoss/compare/@docs/website@1.41.16...@docs/website@1.41.17) (2023-08-15)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.41.16](https://github.com/ttoss/ttoss/compare/@docs/website@1.41.15...@docs/website@1.41.16) (2023-08-11)
 
 **Note:** Version bump only for package @docs/website

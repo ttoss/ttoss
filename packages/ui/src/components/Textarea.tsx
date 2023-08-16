@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Flex, Icon, type IconType, Text } from '..';
+import { Flex, Text } from '..';
+import { Icon, type IconType } from '@ttoss/react-icons';
 import {
   type TextareaProps as TextareaPropsUI,
   Textarea as TextareaUI,

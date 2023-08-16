@@ -26,7 +26,7 @@ const ProviderWithErrorHandler = ({ children }: PropsWithChildren) => {
     <I18nProvider
       loadLocaleData={loadLocaleData}
       locale="pt-BR"
-      onError={(err) => {
+      onError={() => {
         return;
       }}
     >
