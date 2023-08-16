@@ -5,7 +5,7 @@ const config = jestConfig({
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     'react-markdown': [
-      '<rootDir>/../../node_modules/@ttoss/components/node_modules/react-markdown/react-markdown.min.js',
+      '<rootDir>/node_modules/@ttoss/react-notifications/node_modules/@ttoss/components/node_modules/react-markdown/react-markdown.min.js',
     ],
   },
 });
