@@ -43,16 +43,18 @@ const writeEnvFile = async ({
 export const generateEnv = async () => {
   const environment = getEnvironment();
 
-  const envFileName = `.env.${environment}`;
+  const envFileName = environment ? `.env.${environment}` : '.env';
 
   let envFile = await readEnvFile({ envFileName });
 
   if (!envFile) {
-    log.info(
-      logPrefix,
-      "Env file %s doesn't exist, reading .env.",
-      envFileName
-    );
+    if (environment) {
+      log.info(
+        logPrefix,
+        "Env file %s doesn't exist, reading .env.",
+        envFileName
+      );
+    }
 
     envFile = await readEnvFile({ envFileName: '.env' });
 
