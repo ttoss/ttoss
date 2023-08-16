@@ -17,7 +17,6 @@ const readEnvFile = async ({ envFileName }: { envFileName: string }) => {
     );
     return content;
   } catch {
-    log.info(logPrefix, "Env file %s doesn't exist.", envFileName);
     return undefined;
   }
 };
@@ -34,9 +33,9 @@ const writeEnvFile = async ({
 
 /**
  * Generate environment for packages using `carlin`. If [environment](/docs/CLI#environment)
- * isn't production, `carlin` will read `.env` file if exists, merge with
- * additional environment variables and write the result to `.env.local` file. If it's `Production`,
- * it'll read `.env.production` file instead.
+ * isn't defined, `carlin` will read `.env` file if exists, merge with
+ * additional environment variables and write the result to `.env.local` file. If it's `Environment`,
+ * it'll read `.env.Environment` file instead.
  *
  * We chose the name `.env.local` because it works for [Next.js](https://nextjs.org/docs/basic-features/environment-variables)
  * and [CRA](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used) projects.
@@ -44,14 +43,23 @@ const writeEnvFile = async ({
 export const generateEnv = async () => {
   const environment = getEnvironment();
 
-  const isProduction = environment?.toLocaleLowerCase() === 'production';
+  const envFileName = `.env.${environment}`;
 
-  const envFileName = isProduction ? '.env.production' : '.env';
-
-  const envFile = await readEnvFile({ envFileName });
+  let envFile = await readEnvFile({ envFileName });
 
   if (!envFile) {
-    return;
+    log.info(
+      logPrefix,
+      "Env file %s doesn't exist, reading .env.",
+      envFileName
+    );
+
+    envFile = await readEnvFile({ envFileName: '.env' });
+
+    if (!envFile) {
+      log.info(logPrefix, "Env file %s doesn't exist.", '.env');
+      return;
+    }
   }
 
   await writeEnvFile({ content: envFile, envFileName: '.env.local' });
