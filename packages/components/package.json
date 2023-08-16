@@ -29,6 +29,7 @@
     "@theme-ui/css": "^0.15.7",
     "@types/react-modal": "^3.16.0",
     "react-accessible-accordion": "^5.0.0",
+    "react-markdown": "^8.0.7",
     "react-modal": "^3.16.1",
     "react-toastify": "^9.1.3"
   },
