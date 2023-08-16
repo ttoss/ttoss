@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.5.36",
+  "version": "0.5.37",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
@@ -28,7 +28,7 @@
     "carlin": "workspace:^",
     "rollup-plugin-visualizer": "^5.9.0",
     "serve": "^14.2.0",
-    "typescript": "^5.0.4",
+    "typescript": "^5.1.6",
     "vite": "^4.3.8"
   }
 }

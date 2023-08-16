@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.7](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.23.6...@ttoss/test-utils@1.23.7) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
 ## [1.23.6](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.23.5...@ttoss/test-utils@1.23.6) (2023-07-13)
 
 **Note:** Version bump only for package @ttoss/test-utils

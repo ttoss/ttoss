@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/i18n-cli",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@formatjs/cli-lib": "^6.1.0",
-    "glob": "^10.2.2"
+    "glob": "^10.3.3"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

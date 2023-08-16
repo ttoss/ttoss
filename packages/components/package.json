@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "1.29.10",
+  "version": "1.29.11",
   "description": "React components for ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
@@ -43,7 +43,7 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.3",
     "@types/react": "^18.2.12",
-    "jest": "^29.6.1",
+    "jest": "^29.6.2",
     "tsup": "^7.1.0"
   },
   "keywords": [

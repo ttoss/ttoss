@@ -28,7 +28,7 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.6",
+    "@commitlint/cli": "^17.7.1",
     "@lerna-lite/changed": "^2.5.0",
     "@lerna-lite/cli": "^2.5.0",
     "@lerna-lite/list": "^2.5.0",
@@ -36,12 +36,12 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
-    "eslint": "^8.44.0",
+    "eslint": "^8.47.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
-    "syncpack": "^10.7.3",
-    "turbo": "^1.10.7"
+    "lint-staged": "^14.0.0",
+    "prettier": "^3.0.2",
+    "syncpack": "^11.2.1",
+    "turbo": "^1.10.12"
   },
   "keywords": [],
   "engines": {
