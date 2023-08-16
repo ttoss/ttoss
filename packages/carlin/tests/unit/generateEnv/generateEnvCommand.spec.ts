@@ -1,7 +1,7 @@
 /* eslint-disable no-var */
 import * as fs from 'fs';
 import { faker } from '@ttoss/test-utils/faker';
-import { parseCli } from '../../testUtils';
+import { parseCli } from '../../../testUtils';
 
 jest.mock('findup-sync', () => {
   return {
@@ -29,7 +29,7 @@ beforeEach(() => {
 });
 
 test('should read from .env if environment is not production', async () => {
-  const content = faker.random.words(10);
+  const content = faker.word.words(10);
 
   (fs.promises.readFile as jest.Mock).mockImplementationOnce(
     async (path: string) => {
@@ -49,26 +49,29 @@ test('should read from .env if environment is not production', async () => {
   );
 });
 
-test('should read from .env.production if environment is production', async () => {
-  const content = faker.random.words(10);
+test.each([['Development'], ['Test'], ['Staging'], ['Production']])(
+  'should read from .env.Environment if environment is defined',
+  async (environment) => {
+    const content = faker.word.words(10);
 
-  (fs.promises.readFile as jest.Mock).mockImplementationOnce(
-    async (path: string) => {
-      if (path.includes('/.env.production')) {
-        return content;
+    (fs.promises.readFile as jest.Mock).mockImplementationOnce(
+      async (path: string) => {
+        if (path.includes(`/.env.${environment}`)) {
+          return content;
+        }
+
+        return undefined;
       }
+    );
 
-      return undefined;
-    }
-  );
+    await parseCli('generate-env', { environment });
 
-  await parseCli('generate-env', { environment: 'Production' });
-
-  expect(fs.promises.writeFile).toHaveBeenCalledWith(
-    expect.stringContaining('/.env.local'),
-    content
-  );
-});
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env.local'),
+      content
+    );
+  }
+);
 
 test("should not write if .env file don't exists", async () => {
   (fs.promises.readFile as jest.Mock).mockResolvedValueOnce(undefined);

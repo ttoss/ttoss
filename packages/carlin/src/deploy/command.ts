@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommandModule, InferredOptionTypes } from 'yargs';
 import { addGroupToOptions, getAwsAccountId } from '../utils';
 import { deployBaseStackCommand } from './baseStack/command';
@@ -99,7 +100,6 @@ export const options = {
     default: [],
     describe:
       'A list of parameters that will be passed to CloudFormation Parameters when deploying.',
-    type: 'array',
   },
   'skip-deploy': {
     alias: 'skip',

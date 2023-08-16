@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-param-reassign */
 import * as yargs from 'yargs';
 import { AWS_DEFAULT_REGION, NAME } from './config';
