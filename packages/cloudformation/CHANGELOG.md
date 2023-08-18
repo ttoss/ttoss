@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.8](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.7.7...@ttoss/cloudformation@0.7.8) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
 ## [0.7.7](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.7.6...@ttoss/cloudformation@0.7.7) (2023-07-13)
 
 **Note:** Version bump only for package @ttoss/cloudformation

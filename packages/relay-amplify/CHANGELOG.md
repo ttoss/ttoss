@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.4.13...@ttoss/relay-amplify@0.4.14) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
 ## [0.4.13](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.4.12...@ttoss/relay-amplify@0.4.13) (2023-07-13)
 
 **Note:** Version bump only for package @ttoss/relay-amplify

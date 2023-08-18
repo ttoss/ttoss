@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.1...@ttoss/react-notifications@1.24.2) (2023-08-16)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.0...@ttoss/react-notifications@1.24.1) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
 # [1.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.23.1...@ttoss/react-notifications@1.24.0) (2023-08-15)
 
 ### Features

@@ -11,6 +11,6 @@
     "module": "CommonJS",
     "allowJs": true
   },
-  "include": ["src"],
+  "include": ["src", "tests/unit/generateEnv/generateEnvCommand.spec.ts"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }

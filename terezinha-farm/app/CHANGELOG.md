@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.38](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.37...@terezinha-farm/app@0.5.38) (2023-08-16)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.5.37](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.36...@terezinha-farm/app@0.5.37) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
 ## [0.5.36](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.35...@terezinha-farm/app@0.5.36) (2023-08-15)
 
 **Note:** Version bump only for package @terezinha-farm/app
