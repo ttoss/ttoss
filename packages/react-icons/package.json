@@ -1,0 +1,50 @@
+{
+  "name": "@ttoss/react-icons",
+  "version": "0.1.1",
+  "description": "React icons library for @ttoss ecosystem",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-icons"
+  },
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "sideEffects": false,
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "@iconify-icon/react": "^1.0.8"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@iconify/types": "^2.0.0",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@types/jest": "^29.5.3",
+    "@types/react": "^18.2.12",
+    "jest": "^29.6.2",
+    "react": "^18.2.0",
+    "tsup": "^7.1.0"
+  },
+  "keywords": [
+    "Icons",
+    "React"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

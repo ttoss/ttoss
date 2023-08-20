@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ResolverResolveParams,
   composeWithConnection,
@@ -18,10 +19,6 @@ type Author = {
   sk: string;
   name: string;
   books: Book[];
-};
-
-type BookWithAuthor = Book & {
-  author: Author;
 };
 
 export const AUTHORS: Author[] = [
@@ -189,12 +186,12 @@ composeWithConnection(AuthorTC, {
         scanIndexForward: true,
       },
       cursorFields: ['id'],
-      // eslint-disable-next-line max-params
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line max-params
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$gt = cursorData.id;
@@ -264,7 +261,7 @@ BookTC.addRelation('author', {
     return AuthorTC.getResolver('findById');
   },
   prepareArgs: {
-    id: (source) => {
+    id: (source: any) => {
       return toGlobalId(AuthorTC.getTypeName(), source.authorId);
     },
   },
@@ -280,12 +277,12 @@ composeWithConnection(BookTC, {
     ASC: {
       value: {},
       cursorFields: ['id'],
-      // eslint-disable-next-line max-params
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line max-params
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) rawQuery.id = {};
         rawQuery.id.$gt = cursorData.id;

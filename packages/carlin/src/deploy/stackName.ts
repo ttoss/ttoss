@@ -15,9 +15,10 @@ export const setPreDefinedStackName = (stackName: string) => {
 };
 
 /**
- * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html
+ * We use stackName as the name of appsync api, so we need to limit the length of stackName.
+ * It is limited to 100 characters, as from "https://github.com/ttoss/ttoss/issues/353".
  */
-export const STACK_NAME_MAX_LENGTH = 128;
+export const STACK_NAME_MAX_LENGTH = 100;
 
 export const limitStackName = (stackName: string) => {
   return `${stackName}`.substring(0, STACK_NAME_MAX_LENGTH);

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.30.2](https://github.com/ttoss/ttoss/compare/carlin@1.30.1...carlin@1.30.2) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
+## [1.30.1](https://github.com/ttoss/ttoss/compare/carlin@1.30.0...carlin@1.30.1) (2023-08-11)
+
+### Bug Fixes
+
+- limit stackName length ([#402](https://github.com/ttoss/ttoss/issues/402)) ([11dc8e5](https://github.com/ttoss/ttoss/commit/11dc8e56a128f74c26ecbfee17d64ea6dd64f087))
+
 # [1.30.0](https://github.com/ttoss/ttoss/compare/carlin@1.29.6...carlin@1.30.0) (2023-08-03)
 
 ### Features

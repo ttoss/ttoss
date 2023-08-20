@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.37...@ttoss/react-auth@1.6.38) (2023-08-19)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.6.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.36...@ttoss/react-auth@1.6.37) (2023-08-16)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.6.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.35...@ttoss/react-auth@1.6.36) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
+## [1.6.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.34...@ttoss/react-auth@1.6.35) (2023-08-15)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.6.34](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.33...@ttoss/react-auth@1.6.34) (2023-08-15)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.6.33](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.32...@ttoss/react-auth@1.6.33) (2023-08-03)
 
 **Note:** Version bump only for package @ttoss/react-auth

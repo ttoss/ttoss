@@ -5,5 +5,5 @@
 ## Install
 
 ```shell
-yarn add @ttoss/theme
+pnpm add @ttoss/theme @ttoss/react-icons
 ```

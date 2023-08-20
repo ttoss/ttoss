@@ -1,5 +1,6 @@
-import { Box, Button, Icon, IconButton, Input, Text } from '@ttoss/ui';
+import { Box, Button, IconButton, Input, Text } from '@ttoss/ui';
 import { BruttalTheme } from '@ttoss/theme/Bruttal';
+import { Icon } from '@ttoss/react-icons';
 import { Meta } from '@storybook/react';
 
 const buttonVariantOptions = Object.keys(BruttalTheme.buttons || {});

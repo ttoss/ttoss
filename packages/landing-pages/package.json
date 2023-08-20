@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.9.9",
+  "version": "0.10.1",
   "description": "Package for creating landing pages.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -29,17 +29,19 @@
     "react-collapse": "^5.1.1"
   },
   "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.3",
     "@types/react": "^18.2.12",
     "@types/react-collapse": "^5.0.1",
-    "jest": "^29.6.1",
+    "jest": "^29.6.2",
     "tsup": "^7.1.0"
   },
   "keywords": [

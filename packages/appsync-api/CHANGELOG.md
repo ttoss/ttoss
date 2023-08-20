@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.7...@ttoss/appsync-api@0.16.0) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
+### Features
+
+- create ttoss react-icons package ([#404](https://github.com/ttoss/ttoss/issues/404)) ([cd4c990](https://github.com/ttoss/ttoss/commit/cd4c990743da9bfd9d243d84adc38ad778824cc5))
+
+## [0.15.7](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.6...@ttoss/appsync-api@0.15.7) (2023-08-11)
+
+### Bug Fixes
+
+- limit stackName length ([#402](https://github.com/ttoss/ttoss/issues/402)) ([11dc8e5](https://github.com/ttoss/ttoss/commit/11dc8e56a128f74c26ecbfee17d64ea6dd64f087))
+
 ## [0.15.6](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.5...@ttoss/appsync-api@0.15.6) (2023-08-03)
 
 **Note:** Version bump only for package @ttoss/appsync-api

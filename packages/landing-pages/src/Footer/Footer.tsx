@@ -1,4 +1,5 @@
-import { Flex, Grid, Icon, Image, Link, Text } from '@ttoss/ui';
+import { Flex, Grid, Image, Link, Text } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
 
 type FooterLink = {
   label: string;

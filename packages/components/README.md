@@ -77,3 +77,43 @@ const Component = () => {
   );
 };
 ```
+
+### Markdown
+
+Markdown uses [react-markdown](https://remarkjs.github.io/react-markdown/) under the hood, so the props are the same. You can update the elements as you want. Ex:
+
+```tsx
+const MARKDOWN_CONTENT = `
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+
+Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum aperiam fugiat earum expedita non eligendi similique id minus explicabo, eum facere nihil aspernatur libero! Sapiente aliquid tenetur dolor.
+
+- Item 1
+- Item 2
+- Item 3
+
+![Alt Text](https://fastly.picsum.photos/id/436/200/300.jpg?hmac=OuJRsPTZRaNZhIyVFbzDkMYMyORVpV86q5M8igEfM3Y "Alt Text")
+
+[Google](https://google.com)
+`;
+
+const Component = () => {
+  return (
+    <Markdown
+      components={{
+        a: ({ children, ...props }) => (
+          <Link {...props} quiet>
+            {children}
+          </Link>
+        ),
+      }}
+    >
+      {MARKDOWN_CONTENT}
+    </Markdown>
+  );
+};
+```

@@ -3,7 +3,7 @@ import {
   type ButtonProps as ButtonPropsUi,
   Button as ButtonUi,
 } from 'theme-ui';
-import { Icon, IconType } from './Icon';
+import { Icon, IconType } from '@ttoss/react-icons';
 
 export type ButtonProps = ButtonPropsUi & {
   leftIcon?: IconType;

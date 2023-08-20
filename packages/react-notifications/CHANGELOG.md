@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.2...@ttoss/react-notifications@1.24.3) (2023-08-19)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.1...@ttoss/react-notifications@1.24.2) (2023-08-16)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.0...@ttoss/react-notifications@1.24.1) (2023-08-16)
+
+### Bug Fixes
+
+- carlin generate env ([#406](https://github.com/ttoss/ttoss/issues/406)) ([153ba71](https://github.com/ttoss/ttoss/commit/153ba71643461cdae076d3ba5779655f4988232c))
+
+# [1.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.23.1...@ttoss/react-notifications@1.24.0) (2023-08-15)
+
+### Features
+
+- create ttoss react-icons package ([#404](https://github.com/ttoss/ttoss/issues/404)) ([cd4c990](https://github.com/ttoss/ttoss/commit/cd4c990743da9bfd9d243d84adc38ad778824cc5))
+
+## [1.23.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.23.0...@ttoss/react-notifications@1.23.1) (2023-08-15)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 # [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.22.26...@ttoss/react-notifications@1.23.0) (2023-08-03)
 
 ### Features

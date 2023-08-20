@@ -25,7 +25,6 @@ test('should export methods', () => {
   expect(uiModule.Select).toBeDefined();
   expect(uiModule.Spinner).toBeDefined();
   expect(uiModule.Radio).toBeDefined();
-  expect(uiModule.Icon).toBeDefined();
   expect(uiModule.Slider).toBeDefined();
   expect(uiModule.Checkbox).toBeDefined();
   expect(uiModule.InfiniteLinearProgress).toBeDefined();
