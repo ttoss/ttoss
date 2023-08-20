@@ -77,17 +77,26 @@ describe('Modal Notifications Test', () => {
       await user.click(await screen.findByText('Click me!!'));
     });
 
-    const modalClose = await screen.findByPlaceholderText('Close');
-    const notification = await screen.findByText('Test Message');
+    const buttons = await screen.findAllByTestId('iconify-icon');
+
+    expect(buttons.length).toBe(2);
+
+    expect((buttons[0] as unknown as { icon: string }).icon).toBe('close');
+
+    const modalClose = buttons[0].parentElement;
+
     expect(modalClose).toBeInTheDocument();
+
+    const notification = await screen.findByText('Test Message');
+
     expect(notification).toBeInTheDocument();
 
     // expect to disappear after click
     await act(async () => {
-      await user.click(modalClose);
+      if (modalClose) await user.click(modalClose);
     });
     expectNotBeInDocument(notification);
-    expectNotBeInDocument(modalClose);
+    if (modalClose) expectNotBeInDocument(modalClose);
   });
 
   test('Should render an array of notifications', async () => {
