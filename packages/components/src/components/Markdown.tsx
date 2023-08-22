@@ -1,7 +1,7 @@
 import { BaseStyles, FlexProps } from '@ttoss/ui';
-import ReactMarkdown, { Options } from 'react-markdown';
+import ReactMarkdown, { CoreOptions } from 'react-markdown';
 
-export type MarkdownProps = Options & {
+export type MarkdownProps = CoreOptions & {
   children: string;
   sx?: FlexProps['sx'];
 };
