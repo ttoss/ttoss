@@ -1,12 +1,12 @@
-import { Link } from '@ttoss/ui/src';
+import { Heading, Link } from '@ttoss/ui/src';
 import { Markdown } from '@ttoss/components/src';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'Components/Markdown',
 } as Meta;
 
-const Template: Story<typeof Markdown> = (args) => {
+const Template: StoryFn<typeof Markdown> = (args) => {
   return <Markdown {...args} />;
 };
 
@@ -33,6 +33,12 @@ Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum ape
 Example.args = {
   children: INITIAL_MARKDOWN,
   components: {
+    h1: (props) => {
+      return <Heading as="h1" variant="h1" {...props} />;
+    },
+    h2: (props) => {
+      return <Heading as="h2" variant="h2" {...props} />;
+    },
     a: ({ children, ...props }) => {
       return (
         <Link {...props} quiet>
