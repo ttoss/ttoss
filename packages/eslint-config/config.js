@@ -95,6 +95,10 @@ module.exports = {
       },
     ],
     'import/no-default-export': 'error',
+    /**
+     * https://eslint.org/docs/latest/rules/curly#all
+     */
+    curly: 'error',
   },
   overrides: [
     {
