@@ -65,10 +65,13 @@ test('should display error messages and error icon', async () => {
 
   await user.click(screen.getByText('Submit'));
 
-  expect((await screen.findAllByTestId('iconify-icon'))[1]).toHaveAttribute(
-    'icon',
-    'warning-alt'
-  );
+  const icons = await screen.findAllByTestId('iconify-icon');
+
+  const errorIcon = icons.find((iconEl) => {
+    return iconEl.parentElement?.className.includes('error-icon');
+  });
+
+  expect(errorIcon).toHaveAttribute('icon', 'warning-alt');
   expect(await screen.findByText('Car is required')).toBeInTheDocument();
 });
 
