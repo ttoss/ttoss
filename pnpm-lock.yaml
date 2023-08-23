@@ -469,24 +469,6 @@ importers:
         specifier: ^7.1.0
         version: 7.1.0(ts-node@10.9.1)(typescript@5.1.6)
 
-  packages/cloud-storage:
-    devDependencies:
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
-      '@ttoss/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@types/jest':
-        specifier: ^29.5.3
-        version: 29.5.3
-      jest:
-        specifier: ^29.6.2
-        version: 29.6.2(@types/node@20.4.7)(ts-node@10.9.1)
-      tsup:
-        specifier: ^7.1.0
-        version: 7.1.0(ts-node@10.9.1)(typescript@5.1.6)
-
   packages/cloudformation:
     dependencies:
       js-yaml:
