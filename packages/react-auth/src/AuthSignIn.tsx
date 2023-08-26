@@ -17,7 +17,7 @@ import type { OnSignIn, OnSignInInput } from './types';
 export type AuthSignInProps = {
   onSignIn: OnSignIn;
   onSignUp: () => void;
-  onForgotPassword?: () => void;
+  onForgotPassword: () => void;
   defaultValues?: Partial<OnSignInInput>;
   urlLogo?: string;
 };
@@ -141,7 +141,7 @@ export const AuthSignIn = ({
           /> */}
 
           <Text
-            sx={{ marginLeft: 'auto' }}
+            sx={{ marginLeft: 'auto', cursor: 'pointer' }}
             as={Link}
             onClick={onForgotPassword}
           >
