@@ -3,14 +3,19 @@ import { Button, Link, Text } from '@ttoss/ui';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { NotificationsBox } from '@ttoss/react-notifications';
 import { useI18n } from '@ttoss/react-i18n';
+import type { OnForgotPassword } from './types';
 
-export type AuthRecoveryPasswordProps = {
-  onRecoveryPassword: (email: string) => void;
+export type AuthForgotPasswordProps = {
+  onForgotPassword: OnForgotPassword;
+  onCancel: () => void;
+  onSignUp: () => void;
 };
 
-export const AuthRecoveryPassword = ({
-  onRecoveryPassword,
-}: AuthRecoveryPasswordProps) => {
+export const AuthForgotPassword = ({
+  onForgotPassword,
+  onCancel,
+  onSignUp,
+}: AuthForgotPasswordProps) => {
   const { intl } = useI18n();
 
   const schema = yup
@@ -33,7 +38,7 @@ export const AuthRecoveryPassword = ({
     })
     .required();
 
-  const formMethods = useForm<yup.TypeOf<typeof schema>>({
+  const formMethods = useForm<yup.InferType<typeof schema>>({
     resolver: yupResolver(schema),
     mode: 'onBlur',
   });
@@ -45,7 +50,7 @@ export const AuthRecoveryPassword = ({
         maxWidth: '390px',
       }}
       onSubmit={({ email }) => {
-        return onRecoveryPassword(email);
+        return onForgotPassword({ email });
       }}
     >
       <AuthCard
@@ -62,6 +67,7 @@ export const AuthRecoveryPassword = ({
           <Button
             sx={{ textAlign: 'center', display: 'initial' }}
             variant="secondary"
+            onClick={onCancel}
           >
             {intl.formatMessage({
               description: 'Cancel',
@@ -80,7 +86,11 @@ export const AuthRecoveryPassword = ({
 
         <NotificationsBox />
 
-        <Text sx={{ marginTop: 'xl', cursor: 'pointer' }} as={Link}>
+        <Text
+          sx={{ marginTop: 'xl', cursor: 'pointer' }}
+          as={Link}
+          onClick={onSignUp}
+        >
           {intl.formatMessage({
             description: 'Sign up now',
             defaultMessage: 'Sign up now',

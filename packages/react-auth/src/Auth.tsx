@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Auth as AmplifyAuth } from 'aws-amplify';
 import { AuthConfirmSignUp } from './AuthConfirmSignUp';
+import { AuthForgotPassword } from './AuthForgotPassword';
+import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPassword';
 import { AuthFullScreen } from './AuthFullScreen';
 import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp } from './AuthSignUp';
@@ -9,7 +11,13 @@ import { assign, createMachine } from 'xstate';
 import { useAuth } from './AuthProvider';
 import { useMachine } from '@xstate/react';
 import { useNotifications } from '@ttoss/react-notifications';
-import type { OnConfirmSignUp, OnSignIn, OnSignUp } from './types';
+import type {
+  OnConfirmSignUp,
+  OnForgotPassword,
+  OnForgotPasswordResetPassword,
+  OnSignIn,
+  OnSignUp,
+} from './types';
 
 type AuthState =
   | {
@@ -27,6 +35,14 @@ type AuthState =
   | {
       value: 'signUpResendConfirmation';
       context: { email: string };
+    }
+  | {
+      value: 'forgotPassword';
+      context: Record<string, never>;
+    }
+  | {
+      value: 'forgotPasswordResetPassword';
+      context: { email: string };
     };
 
 type AuthEvent =
@@ -34,7 +50,10 @@ type AuthEvent =
   | { type: 'SIGN_UP_CONFIRM'; email: string }
   | { type: 'SIGN_UP_CONFIRMED'; email: string }
   | { type: 'SIGN_UP_RESEND_CONFIRMATION'; email: string }
-  | { type: 'RETURN_TO_SIGN_IN' };
+  | { type: 'RETURN_TO_SIGN_IN' }
+  | { type: 'FORGOT_PASSWORD' }
+  | { type: 'FORGOT_PASSWORD_RESET_PASSWORD'; email: string }
+  | { type: 'FORGOT_PASSWORD_CONFIRMED'; email: string };
 
 type AuthContext = { email?: string };
 
@@ -50,6 +69,7 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
             actions: ['assignEmail'],
             target: 'signUpConfirm',
           },
+          FORGOT_PASSWORD: { target: 'forgotPassword' },
         },
       },
       signUp: {
@@ -69,13 +89,36 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
           },
         },
       },
+      forgotPassword: {
+        on: {
+          RETURN_TO_SIGN_IN: { target: 'signIn' },
+          SIGN_UP: { target: 'signUp' },
+          FORGOT_PASSWORD_RESET_PASSWORD: {
+            actions: ['assignEmail'],
+            target: 'forgotPasswordResetPassword',
+          },
+        },
+      },
+      forgotPasswordResetPassword: {
+        on: {
+          FORGOT_PASSWORD_CONFIRMED: {
+            actions: ['assignEmail'],
+            target: 'signIn',
+          },
+          RETURN_TO_SIGN_IN: { target: 'signIn' },
+        },
+      },
     },
   },
   {
     actions: {
       assignEmail: assign({
         email: (_, event) => {
-          return (event as any).email;
+          if ('email' in event) {
+            return event.email;
+          }
+
+          return undefined;
         },
       }),
     },
@@ -95,11 +138,12 @@ const AuthLogic = () => {
         setLoading(true);
         await AmplifyAuth.signIn(email, password);
         // toast('Signed In');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         switch (error.code) {
           case 'UserNotConfirmedException':
             await AmplifyAuth.resendSignUp(email);
-            send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email } as any);
+            send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email });
             break;
           default:
           // toast(JSON.stringify(error, null, 2));
@@ -122,7 +166,8 @@ const AuthLogic = () => {
           attributes: { email },
         });
         // toast('Signed Up');
-        send({ type: 'SIGN_UP_CONFIRM', email } as any);
+        send({ type: 'SIGN_UP_CONFIRM', email });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         setNotifications({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
@@ -139,7 +184,8 @@ const AuthLogic = () => {
         setLoading(true);
         await AmplifyAuth.confirmSignUp(email, code);
         // toast('Confirmed Signed In');
-        send({ type: 'SIGN_UP_CONFIRMED', email } as any);
+        send({ type: 'SIGN_UP_CONFIRMED', email });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         setNotifications({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
@@ -153,6 +199,43 @@ const AuthLogic = () => {
   const onReturnToSignIn = React.useCallback(() => {
     send({ type: 'RETURN_TO_SIGN_IN' });
   }, [send]);
+
+  const onForgotPassword = React.useCallback<OnForgotPassword>(
+    async ({ email }) => {
+      try {
+        setLoading(true);
+        await AmplifyAuth.forgotPassword(email);
+        // toast('Forgot Password');
+        send({ type: 'FORGOT_PASSWORD_RESET_PASSWORD', email });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        setNotifications({ type: 'error', message: error.message });
+        // toast(JSON.stringify(error, null, 2));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [send, setLoading, setNotifications]
+  );
+
+  const onForgotPasswordResetPassword =
+    React.useCallback<OnForgotPasswordResetPassword>(
+      async ({ email, code, newPassword }) => {
+        try {
+          setLoading(true);
+          await AmplifyAuth.forgotPasswordSubmit(email, code, newPassword);
+          // toast('Forgot Password Reset Password');
+          send({ type: 'FORGOT_PASSWORD_CONFIRMED', email });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          setNotifications({ type: 'error', message: error.message });
+          // toast(JSON.stringify(error, null, 2));
+        } finally {
+          setLoading(false);
+        }
+      },
+      [send, setLoading, setNotifications]
+    );
 
   if (isAuthenticated) {
     return null;
@@ -168,7 +251,29 @@ const AuthLogic = () => {
     return (
       <AuthConfirmSignUp
         onConfirmSignUp={onConfirmSignUp}
-        email={(state.context as any).email}
+        email={state.context.email}
+      />
+    );
+  }
+
+  if (state.matches('forgotPassword')) {
+    return (
+      <AuthForgotPassword
+        onForgotPassword={onForgotPassword}
+        onCancel={onReturnToSignIn}
+        onSignUp={() => {
+          return send('SIGN_UP');
+        }}
+      />
+    );
+  }
+
+  if (state.matches('forgotPasswordResetPassword')) {
+    return (
+      <AuthForgotPasswordResetPassword
+        email={state.context.email}
+        onForgotPasswordResetPassword={onForgotPasswordResetPassword}
+        onCancel={onReturnToSignIn}
       />
     );
   }
@@ -179,7 +284,10 @@ const AuthLogic = () => {
       onSignUp={() => {
         return send('SIGN_UP');
       }}
-      defaultValues={{ email: (state.context as any).email }}
+      onForgotPassword={() => {
+        return send('FORGOT_PASSWORD');
+      }}
+      defaultValues={{ email: state.context.email }}
     />
   );
 };

@@ -7,6 +7,10 @@
     "defaultMessage": "Required field",
     "description": "Required field."
   },
+  "42HafR": {
+    "defaultMessage": "Code",
+    "description": "Code"
+  },
   "5E12mO": {
     "defaultMessage": "Email",
     "description": "Email label."
