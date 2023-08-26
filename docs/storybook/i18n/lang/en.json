@@ -24,6 +24,11 @@
     "description": "Required field.",
     "module": "@ttoss/react-auth"
   },
+  "42HafR": {
+    "defaultMessage": "Code",
+    "description": "Code",
+    "module": "@ttoss/react-auth"
+  },
   "5E12mO": {
     "defaultMessage": "Email",
     "description": "Email label.",
