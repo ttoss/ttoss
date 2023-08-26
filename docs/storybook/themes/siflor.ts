@@ -1,6 +1,6 @@
-import type { Theme } from '@ttoss/ui';
+import { createTheme } from '@ttoss/theme';
 
-export const theme: Theme = {
+export const theme = createTheme({
   breakpoints: ['42em', '60em'],
   fonts: {
     body: 'Overlock',
@@ -52,4 +52,4 @@ export const theme: Theme = {
       fontWeight: 'body',
     },
   },
-};
+});

@@ -102,12 +102,7 @@ export const BruttalTheme: Theme = {
     underemphasize: coreColors.gray300,
   },
   fonts: {
-    // h1: coreFonts.contrast,
-    // h2: coreFonts.contrast,
-    // h3: coreFonts.contrast,
-    // h4: coreFonts.contrast,
-    // h5: coreFonts.contrast,
-    // h6: coreFonts.contrast,
+    main: coreColors.main,
     contrast: coreFonts.contrast,
     body: coreFonts.main,
     highlight: coreFonts.main,
@@ -459,7 +454,7 @@ export const BruttalTheme: Theme = {
         backgroundColor: 'muted',
         color: 'onMuted',
       },
-      ':disabled ~ span:has(iconify-icon)': {
+      ':disabled ~ * > span:has(iconify-icon)': {
         color: 'onMuted',
       },
       '&[aria-invalid="true"]': {
@@ -467,7 +462,7 @@ export const BruttalTheme: Theme = {
         borderColor: 'danger',
         outlineColor: 'danger',
       },
-      '&[aria-invalid="true"] ~ span.error-icon': {
+      '&[aria-invalid="true"] ~ * > span.error-icon': {
         color: 'danger',
       },
     },
@@ -520,6 +515,20 @@ export const BruttalTheme: Theme = {
           color: 'onMuted',
         },
       },
+    },
+    headline: {
+      fontFamily: 'contrast',
+      fontWeight: 'bold',
+      lineHeight: 'flat',
+      fontSize: '5xl',
+      letterSpacing: 'regular',
+    },
+    subheadline: {
+      fontFamily: 'main',
+      fontWeight: 'bold',
+      lineHeight: 'base',
+      fontSize: 'xl',
+      letterSpacing: 'regular',
     },
     h1: {
       fontFamily: 'contrast',

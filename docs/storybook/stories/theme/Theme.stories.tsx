@@ -1,17 +1,17 @@
-import { Button, Flex, Text } from '@ttoss/ui';
+import * as React from 'react';
+import { Button, Flex, Text, Theme } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
 import { THEME_GLOBAL_KEY } from '../../constants/theme-global';
 import { action } from '@storybook/addon-actions';
-import React from 'react';
 import ReactJson from 'react-json-view';
 
 export default {
   title: 'Theme/Theme Global',
 } as Meta;
 
-const Template: Story = (args) => {
+const Template: Story = () => {
   const initialTheme = JSON.parse(localStorage.getItem(THEME_GLOBAL_KEY) || '');
-  const [result, setResult] = React.useState<any>(initialTheme);
+  const [result, setResult] = React.useState<Theme>(initialTheme);
 
   const reloadPage = () => {
     return location.reload();

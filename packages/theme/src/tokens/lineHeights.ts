@@ -1,9 +1,21 @@
+import {
+  calcDividingValues,
+  calcMultiplyingValues,
+} from '../helpers/geometricCalc';
+
+const BASE = 100;
+
+const MULTIPLIER_FACTOR = 1.333;
+
+const SIZE_TYPE = '%';
+
 export const lineHeights = {
-  '2xs': '0.422',
-  xs: '0.562',
-  sm: 'calc(1 / 1.333)',
-  base: '1',
-  lg: 'calc(1 * 1.333)',
-  xl: '1.776',
-  '2xl': '2.368',
+  '2xs': calcMultiplyingValues(BASE, MULTIPLIER_FACTOR, -3, SIZE_TYPE),
+  xs: calcMultiplyingValues(BASE, MULTIPLIER_FACTOR, -2, SIZE_TYPE),
+  sm: calcDividingValues(BASE, MULTIPLIER_FACTOR, 1, SIZE_TYPE),
+  base: 'normal',
+  lg: calcMultiplyingValues(BASE, MULTIPLIER_FACTOR, 1, SIZE_TYPE),
+  xl: calcMultiplyingValues(BASE, MULTIPLIER_FACTOR, 2, SIZE_TYPE),
+  '2xl': calcMultiplyingValues(BASE, MULTIPLIER_FACTOR, 3, SIZE_TYPE),
+  flat: '100%',
 };
