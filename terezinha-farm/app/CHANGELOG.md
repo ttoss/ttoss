@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.43...@terezinha-farm/app@0.6.0) (2023-08-26)
+
+### Features
+
+- forgot password working ([#412](https://github.com/ttoss/ttoss/issues/412)) ([0fbe416](https://github.com/ttoss/ttoss/commit/0fbe416da19d65f72fa572fe949128b60002ed4b))
+
 ## [0.5.43](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.5.42...@terezinha-farm/app@0.5.43) (2023-08-23)
 
 **Note:** Version bump only for package @terezinha-farm/app
