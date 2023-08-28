@@ -38,7 +38,7 @@ export const AuthConfirmSignUp = ({
     })
     .required();
 
-  const formMethods = useForm<yup.TypeOf<typeof schema>>({
+  const formMethods = useForm<yup.InferType<typeof schema>>({
     resolver: yupResolver(schema),
   });
 

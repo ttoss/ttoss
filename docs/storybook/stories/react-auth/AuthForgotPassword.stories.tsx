@@ -1,14 +1,14 @@
 import {
-  AuthRecoveryPassword,
-  type AuthRecoveryPasswordProps,
-} from '@ttoss/react-auth/src/AuthRecoveryPassword';
+  AuthForgotPassword,
+  type AuthForgotPasswordProps,
+} from '@ttoss/react-auth/src/AuthForgotPassword';
 import { Box } from '@ttoss/ui';
 import { LogoProvider } from '@ttoss/react-auth/src/AuthCard';
 import { Meta, Story } from '@storybook/react';
 
 export default {
-  title: 'React Auth/AuthRecoveryPassword',
-  component: AuthRecoveryPassword,
+  title: 'React Auth/AuthForgotPassword',
+  component: AuthForgotPassword,
 } as Meta;
 
 const Logo = () => {
@@ -25,16 +25,16 @@ const Logo = () => {
   );
 };
 
-const Template: Story<AuthRecoveryPasswordProps> = (args) => {
-  return <AuthRecoveryPassword {...args} />;
+const Template: Story<AuthForgotPasswordProps> = (args) => {
+  return <AuthForgotPassword {...args} />;
 };
 
 export const Example = Template.bind({});
 
-export const WithLogo: Story<AuthRecoveryPasswordProps> = (args) => {
+export const WithLogo: Story<AuthForgotPasswordProps> = (args) => {
   return (
     <LogoProvider logo={<Logo />}>
-      <AuthRecoveryPassword {...args} />
+      <AuthForgotPassword {...args} />
     </LogoProvider>
   );
 };

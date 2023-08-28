@@ -14,3 +14,11 @@ export type OnSignUpInput = {
 export type OnSignUp = (input: OnSignUpInput) => void;
 
 export type OnConfirmSignUp = (input: { email: string; code: string }) => void;
+
+export type OnForgotPassword = (input: { email: string }) => void;
+
+export type OnForgotPasswordResetPassword = (input: {
+  email: string;
+  code: string;
+  newPassword: string;
+}) => void;

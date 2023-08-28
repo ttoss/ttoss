@@ -454,7 +454,7 @@ export const BruttalTheme: Theme = {
         backgroundColor: 'muted',
         color: 'onMuted',
       },
-      ':disabled ~ span:has(iconify-icon)': {
+      ':disabled ~ * > span:has(iconify-icon)': {
         color: 'onMuted',
       },
       '&[aria-invalid="true"]': {
@@ -462,7 +462,7 @@ export const BruttalTheme: Theme = {
         borderColor: 'danger',
         outlineColor: 'danger',
       },
-      '&[aria-invalid="true"] ~ span.error-icon': {
+      '&[aria-invalid="true"] ~ * > span.error-icon': {
         color: 'danger',
       },
     },

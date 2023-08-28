@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.42...@ttoss/react-auth@1.7.0) (2023-08-26)
+
+### Features
+
+- forgot password working ([#412](https://github.com/ttoss/ttoss/issues/412)) ([0fbe416](https://github.com/ttoss/ttoss/commit/0fbe416da19d65f72fa572fe949128b60002ed4b))
+
+## [1.6.42](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.41...@ttoss/react-auth@1.6.42) (2023-08-23)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.6.41](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.6.40...@ttoss/react-auth@1.6.41) (2023-08-22)
 
 **Note:** Version bump only for package @ttoss/react-auth

@@ -35,10 +35,17 @@ export const Disabled: Story = {
   },
 };
 
+export const WithIcons: Story = {
+  args: {
+    ...Default.args,
+    leadingIcon: 'language',
+    trailingIcon: 'email',
+  },
+};
+
 export const Error: Story = {
   args: {
     ...Default.args,
     'aria-invalid': 'true',
-    errorIcon: 'carbon:error-filled',
   },
 };
