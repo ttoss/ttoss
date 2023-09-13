@@ -15,6 +15,20 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ arrow, sx, leadingIcon, trailingIcon, ...props }, ref) => {
     const hasError = props['aria-invalid'] === 'true';
 
+    const refEl = React.useRef<HTMLSelectElement>({} as HTMLSelectElement);
+
+    React.useImperativeHandle(ref, () => {
+      return refEl.current;
+    });
+
+    React.useEffect(() => {
+      const parentEl = refEl.current?.parentElement;
+
+      if (parentEl) {
+        parentEl.style.position = 'relative';
+      }
+    }, []);
+
     return (
       <SelectUi
         // https://theme-ui.com/components/select#custom-arrow-icon
@@ -30,10 +44,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   position: 'absolute',
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   left: ({ space }: any) => {
-                    const defaultLeftValue = '16px';
                     const leftSpaceValue = space?.['xl'] || '16px';
 
-                    return `calc(${leftSpaceValue} + ${defaultLeftValue})`;
+                    return leftSpaceValue;
                   },
                 }}
               >
@@ -47,10 +60,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 position: 'absolute',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 right: ({ space }: any) => {
-                  const defaultRightValue = '16px';
                   const xlSpace = space?.['xl'] || '16px';
 
-                  return `calc(${xlSpace} + ${defaultRightValue})`;
+                  return xlSpace;
                 },
                 alignSelf: 'center',
                 pointerEvents: 'none',
@@ -116,7 +128,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           },
           ...sx,
         }}
-        ref={ref}
+        ref={refEl}
         {...props}
       />
     );
