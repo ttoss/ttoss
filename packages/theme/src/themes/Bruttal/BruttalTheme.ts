@@ -532,7 +532,7 @@ export const BruttalTheme: Theme = {
     },
     h1: {
       fontFamily: 'contrast',
-      fontWeight: 'extraBold',
+      fontWeight: 'extrabold',
       lineHeight: 'base',
       fontSize: '3xl',
       letterSpacing: 'regular',
@@ -553,14 +553,14 @@ export const BruttalTheme: Theme = {
     },
     h4: {
       fontFamily: 'contrast',
-      fontWeight: 'semiBold',
+      fontWeight: 'semibold',
       lineHeight: 'base',
       fontSize: 'lg',
       letterSpacing: 'regular',
     },
     h5: {
       fontFamily: 'contrast',
-      fontWeight: 'semiBold',
+      fontWeight: 'semibold',
       lineHeight: 'base',
       fontSize: 'base',
       letterSpacing: 'regular',
