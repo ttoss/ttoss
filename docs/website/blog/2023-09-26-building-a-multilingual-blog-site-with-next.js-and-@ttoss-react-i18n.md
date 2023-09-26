@@ -23,7 +23,7 @@ Before we get started, make sure you have Node.js and npm (or yarn or pnpm) inst
 To create a new Next.js project, run the following command:
 
 ```bash
-npx create-next-app@12 my-blog
+npx create-next-app my-blog
 cd my-blog
 ```
 
