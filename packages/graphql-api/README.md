@@ -212,7 +212,7 @@ import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 
 ## Building Schema
 
-As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema.graphql` file and TypeScript types in `schema/types.ts` file.
+As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
 
 ```bash
 ttoss-graphl-api build-schema
