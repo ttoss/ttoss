@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.3.0 (2023-09-26)
+
+### Features
+
+- generate typescript types ([#415](https://github.com/ttoss/ttoss/issues/415)) ([0b752ce](https://github.com/ttoss/ttoss/commit/0b752ce81cb25eb0144396ddcf916add62c68b5a))
+
 ## [0.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.2.5...@ttoss/graphql-api-server@0.2.6) (2023-08-16)
 
 ### Bug Fixes
