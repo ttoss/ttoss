@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.9.0...@terezinha-farm/api@0.9.1) (2023-09-26)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+# 0.9.0 (2023-09-26)
+
+### Features
+
+- generate typescript types ([#415](https://github.com/ttoss/ttoss/issues/415)) ([0b752ce](https://github.com/ttoss/ttoss/commit/0b752ce81cb25eb0144396ddcf916add62c68b5a))
+
 ## [0.8.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.8.7...@terezinha-farm/api@0.8.8) (2023-08-16)
 
 **Note:** Version bump only for package @terezinha-farm/api

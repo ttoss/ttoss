@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.0...@ttoss/appsync-api@0.17.1) (2023-09-26)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+# 0.17.0 (2023-09-26)
+
+### Features
+
+- generate typescript types ([#415](https://github.com/ttoss/ttoss/issues/415)) ([0b752ce](https://github.com/ttoss/ttoss/commit/0b752ce81cb25eb0144396ddcf916add62c68b5a))
+
 # [0.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.15.7...@ttoss/appsync-api@0.16.0) (2023-08-16)
 
 ### Bug Fixes
