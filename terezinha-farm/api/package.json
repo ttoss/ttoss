@@ -3,8 +3,8 @@
   "name": "@terezinha-farm/api",
   "version": "0.8.8",
   "scripts": {
-    "deploy": "carlin deploy",
-    "schema": "ttoss-graphql-api build-schema"
+    "build": "ttoss-graphql-api build-schema",
+    "deploy": "carlin deploy"
   },
   "dependencies": {
     "@terezinha-farm/config": "workspace:^",
