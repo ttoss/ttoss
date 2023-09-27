@@ -14,6 +14,22 @@ tags:
 
 Internationalization (i18n) is an essential part of building modern websites, especially for those aiming to reach a global audience. In this tutorial, we will explore how to create a multilingual blog site using Next.js and the @ttoss/i18n library. This combination will allow us to provide an engaging reading experience for users in different languages.
 
+## Two Facets of i18n in Next.js
+
+Before we dive into the nitty-gritty, let's establish an essential distinction within Next.js's i18n capabilities:
+
+### **1. Next.js-Integrated i18n for Routing**
+
+**Why It Matters:** This mode focuses on managing different language versions of your website at the routing level. It's invaluable when you need to handle multilingual content that goes beyond simple text changes. For instance, if you're running a Content Management System (CMS) and want to optimize for Search Engine Optimization (SEO) with language-specific metadata, this approach is your go-to.
+
+**What It Solves:** This mode efficiently manages routes and server-side rendering for distinct locales. However, when it comes to straightforward text translation, it may fall short.
+
+### **2. Component-Level i18n with @ttoss/react-i18n and @ttoss/i18n-cli**
+
+**Why It Matters:** Here, we move inside the components themselves, addressing the finer details of internationalization. This approach is perfect for scenarios where you need to translate simple text elements like buttons, labels, and headings, making your site more user-friendly.
+
+**What It Solves:** The Component-Level i18n enables you to tackle those everyday translation needs. For example, switching "Submit" to "Submeter" in a form.
+
 ## Prerequisites
 
 Before we get started, make sure you have Node.js and npm (or yarn or pnpm) installed on your system.
@@ -38,6 +54,29 @@ yarn add @ttoss/react-i18n
 # or
 pnpm install @ttoss/react-i18n
 ```
+
+## Routing with Next.js i18n
+
+Let's first explore the robust routing capabilities that Next.js offers for internationalization. This method is indispensable when your website's multilingual needs extend to intricate content variations, such as managing a CMS or optimizing for SEO.
+
+In this mode:
+
+- You can efficiently handle routes for different locales, ensuring that users are directed to the appropriate language versions of your pages.
+- Server-side rendering takes care of delivering pre-rendered pages, optimizing the performance and SEO of your site.
+- Metadata and SEO parameters can be tailored for each language, elevating your website's search engine visibility.
+
+But here's the catch: while it excels at managing routes and complex content, this approach may not be the most efficient for handling straightforward text translation needs. For example, changing a simple button label from "Submit" to "Submeter" across the site may become cumbersome.
+
+## Component-Level i18n with @ttoss/react-i18n
+
+Now, let's zoom in on the component-level internationalization. This aspect of i18n focuses on addressing those everyday translation requirements, allowing you to effortlessly switch text elements within your components.
+
+Here's why this approach shines:
+
+- It enables you to handle simple text changes throughout your website with ease. For instance, translating buttons, labels, and headings is a breeze.
+- Users experience a more intuitive interface, as common text elements are seamlessly translated into their preferred language.
+
+So, whether you're dealing with a call-to-action button or a form label, Component-Level i18n with `@ttoss/react-i18n` and `@ttoss/i18n-cli` has you covered.
 
 ## Configuring Locales
 
@@ -175,21 +214,24 @@ export default LanguageSelector;
 
 ## Extracting Texts and Compiling Translations
 
-Add these script commands to your project's package.json:
+Add these script command to your project's package.json:
 
 ```json
 "scripts": {
-  "compile": "pnpm run compile:en && pnpm run compile:pt",
-  "compile:en": "formatjs compile i18n/lang/en-US.json --ast --out-file i18n/compiled/en-US.json",
-  "compile:pt": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled/pt-BR.json",
-  "i18n": "ttoss-i18n",
+  "i18n": "ttoss-i18n"
 },
 ```
 
 The last step is where the magic happens. First, you need to extract all the texts that have been added using `intl` from `useI18n` by running the `pnpm run i18n` command. Then, all the extracted texts will be added to the file you defined as the `defaultLocale` in `next.config.js`.
 
-Now you need to duplicate this file for the other languages and translate them. When you finish translating, run the `pnpm run compile` command to compile all the languages.
+Now you need to duplicate this file for the other languages and translate them. When you finish translating, run again the `pnpm run i18n` command to compile all the languages. This command will create a folder called `compiled` inside `i18n` folder with the translations that are gonna be used by `@ttoss/react-i18n` lib to show the correct language on screen.
 
 ## Conclusion
 
-By following this tutorial, you've learned how to build an engaging multilingual blog site using Next.js and `@ttoss/react-i18n`. This approach not only provides a personalized reading experience for your users but also demonstrates a commitment to global accessibility. Continue exploring internationalization possibilities in your projects to create more inclusive and impactful experiences.
+In this journey through Next.js and `@ttoss/react-i18n`, we've explored the two facets of internationalization that can transform your website into a multilingual masterpiece.
+
+- **Routing with Next.js i18n** is your go-to when you need to manage complex content variations, optimize SEO, and handle metadata intricacies. It's a powerful choice for scenarios like CMS-driven websites.
+
+- **Component-Level i18n** steps in to effortlessly manage those everyday translation needs. It makes tasks like changing button labels, form fields, and headings in your components a breeze, enhancing your website's user-friendliness.
+
+By understanding and implementing both aspects of i18n, you'll have the tools needed to create inclusive and impactful multilingual websites that cater to a global audience.
