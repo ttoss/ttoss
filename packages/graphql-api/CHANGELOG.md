@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.4.1...@ttoss/graphql-api@0.4.2) (2023-09-27)
+
+### Bug Fixes
+
+- create types.ts if not exists ([#418](https://github.com/ttoss/ttoss/issues/418)) ([599e40a](https://github.com/ttoss/ttoss/commit/599e40aba1868d7618075bc161770b8364352159))
+
 ## [0.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.4.0...@ttoss/graphql-api@0.4.1) (2023-09-26)
 
 **Note:** Version bump only for package @ttoss/graphql-api
