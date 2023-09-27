@@ -20,6 +20,19 @@ const argv: any = yargs(process.argv.slice(2)).argv;
   if (argv._.includes('build-schema')) {
     log.info(logPrefix, 'Building schema...');
 
+    await fs.promises.mkdir('schema', { recursive: true });
+
+    /**
+     * Create schema/types.ts if it doesn't exist. We need to do this because
+     * graphql-codegen will throw an error if the file doesn't exist and the
+     * code import the types from that file.
+     */
+    try {
+      await fs.promises.access('schema/types.ts');
+    } catch {
+      await fs.promises.writeFile('schema/types.ts', '');
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { schemaComposer } = require(path.resolve(
       process.cwd(),
@@ -53,12 +66,9 @@ const argv: any = yargs(process.argv.slice(2)).argv;
       },
     };
 
-    /**
-     * Save to schema/schema.graphql. schema folder might not exist.
-     */
-    await fs.promises.mkdir('schema', { recursive: true });
-
     await fs.promises.writeFile('schema/schema.graphql', sdl);
+
+    log.info(logPrefix, 'Generating types...');
 
     const typesOutput = await codegen(codegenConfig);
 
