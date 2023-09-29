@@ -142,6 +142,14 @@ This packages provides the method `composeWithConnection` to create a connection
 ```typescript
 import { composeWithConnection } from '@ttoss/appsync-api';
 
+AuthorTC.addResolver({
+  name: 'findMany',
+  type: AuthorTC,
+  resolve: async ({ args }) => {
+    // find many
+  },
+});
+
 composeWithConnection(AuthorTC, {
   findManyResolver: AuthorTC.getResolver('findMany'),
   countResolver: AuthorTC.getResolver('count'),
@@ -160,9 +168,77 @@ composeWithConnection(AuthorTC, {
         rawQuery.id.$gt = cursorData.id;
       },
     },
+    DESC: {
+      value: {
+        scanIndexForward: false,
+      },
+      cursorFields: ['id'],
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$gt = cursorData.id;
+      },
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.id) rawQuery.id = {};
+        rawQuery.id.$lt = cursorData.id;
+      },
+    },
   },
 });
+
+schemaComposer.Query.addFields({
+  authors: Authors.getResolver('connection'),
+});
 ```
+
+How it works? You need to provide the following options:
+
+#### `findManyResolver`
+
+The resolver that will be used to find the nodes. It receives the following arguments:
+
+#### `countResolver`
+
+#### `sort`
+
+It's an object that defines the sort options. Each key is the sort name and the value is an object with the following properties:
+
+- `value`: and object that the resolver will receive as the `sort` argument.
+- `cursorFields`: an array of fields that will be used to create the cursor.
+- `beforeCursorQuery`:
+- `afterCursorQuery`:
+
+When you `composeWithConnection` a type, it will add the resolver `connection` to the type, so you can add to `Query`:
+
+```ts
+schemaComposer.Query.addFields({
+  authors: Authors.getResolver('connection'),
+});
+```
+
+The resolver `connection` has the following arguments based on the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm):
+
+- `first`: the number of nodes to return.
+- `after`: the cursor to start the query.
+- `last`: the number of nodes to return.
+- `before`: the cursor to start the query.
+- `sort`: the sort option to use. It's the keys of the `sort` object. In our example, it's `ASC` and `DESC`.
+- `filter`: the filter to use. It'll exist if you add the `filter` to `findManyResolver` for example, the implementation below will add the `filter` argument with the `name` and `book` fields:
+
+  ```ts
+  AuthorTC.addResolver({
+    name: 'findMany',
+    type: AuthorTC,
+    args: {
+      filter: {
+        name: 'String',
+        book: 'String',
+      },
+    },
+    resolve: async ({ args }) => {
+      // find many
+    },
+  });
+  ```
 
 ### Middlewares
 
@@ -210,7 +286,7 @@ This package re-exports the all methods from [GraphQL Shield](https://the-guild.
 import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 ```
 
-## Building Schema
+## Building Schema and Types
 
 As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
 
