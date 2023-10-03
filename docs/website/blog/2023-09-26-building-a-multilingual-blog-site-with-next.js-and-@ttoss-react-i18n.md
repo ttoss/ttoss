@@ -78,22 +78,6 @@ Here's why this approach shines:
 
 So, whether you're dealing with a call-to-action button or a form label, Component-Level i18n with `@ttoss/react-i18n` and `@ttoss/i18n-cli` has you covered.
 
-## Configuring Locales
-
-In the root folder of your project, create a subfolder named `i18n`. Inside this folder, create a folder named `lang` with files `en-US.json` and `pt-BR.json` as shown below.
-
-**public/locales/en-US.json**:
-
-```json
-{}
-```
-
-**public/locales/pt-BR.json**:
-
-```json
-{}
-```
-
 ## Configuring Next.js
 
 This configuration defines the available languages in your application and sets the default language to `en-US`. Now, Next.js will use this configuration to handle server-side internationalization.
@@ -174,10 +158,6 @@ function BlogPost() {
 export default BlogPost;
 ```
 
-## Dynamic Pages with Next.js
-
-If we want to create dynamic pages for each blog post, we can use Next.js for that. Create a `posts` folder inside the `pages` folder, and inside it, create files like `post-1.js`, `post-2.js`, and so on. In each of these files, we can use the `BlogPost` component we created earlier to render the content.
-
 ## Switching Language
 
 Now, we can add a language selector to our site, allowing users to choose their preferred language. If you have the `localeDetection: true` option in `next.config.js`, when switching the language, Next.js will automatically update the route, and the `I18nProvider` will take care of displaying the content in the correct language. If this property is set to `false`, you can do it as follows:
@@ -222,7 +202,7 @@ Add these script command to your project's package.json:
 },
 ```
 
-The last step is where the magic happens. First, you need to extract all the texts that have been added using `intl` from `useI18n` by running the `pnpm run i18n` command. Then, all the extracted texts will be added to the file you defined as the `defaultLocale` in `next.config.js`.
+The last step is where the magic happens. First, you need to extract all the texts that have been added using `intl` from `useI18n` by running the `pnpm run i18n` command. Then, all the extracted texts will be added to the file `i18n/lang/en.json`.
 
 Now you need to duplicate this file for the other languages and translate them. When you finish translating, run again the `pnpm run i18n` command to compile all the languages. This command will create a folder called `compiled` inside `i18n` folder with the translations that are gonna be used by `@ttoss/react-i18n` lib to show the correct language on screen.
 
