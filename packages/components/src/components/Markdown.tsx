@@ -1,5 +1,6 @@
 import { BaseStyles, FlexProps } from '@ttoss/ui';
 import ReactMarkdown, { ReactMarkdownOptions } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export type MarkdownProps = ReactMarkdownOptions & {
   children: string;
@@ -9,7 +10,9 @@ export type MarkdownProps = ReactMarkdownOptions & {
 export const Markdown = ({ children, sx, ...props }: MarkdownProps) => {
   return (
     <BaseStyles sx={sx}>
-      <ReactMarkdown {...props}>{children}</ReactMarkdown>
+      <ReactMarkdown plugins={[remarkGfm]} {...props}>
+        {children}
+      </ReactMarkdown>
     </BaseStyles>
   );
 };
