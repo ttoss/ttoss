@@ -1,4 +1,4 @@
-import { Heading, Link } from '@ttoss/ui/src';
+import { Box, Heading, Link } from '@ttoss/ui/src';
 import { Markdown } from '@ttoss/components/src';
 import { Meta, StoryFn } from '@storybook/react';
 
@@ -19,6 +19,11 @@ const INITIAL_MARKDOWN = `
 #### Heading 4
 ##### Heading 5
 
+| Feature          | Support              |
+| ---------:       | :------------------- |
+| Aligned to right | Aligned to left      |
+| GFM              | 100% w/ "remark-gfm" |
+
 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum aperiam fugiat earum expedita non eligendi similique id minus explicabo, eum facere nihil aspernatur libero! Sapiente aliquid tenetur dolor.
 
 - Item 1
@@ -33,6 +38,15 @@ Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum ape
 Example.args = {
   children: INITIAL_MARKDOWN,
   components: {
+    thead: (props) => {
+      return (
+        <Box
+          as="thead"
+          sx={{ backgroundColor: 'primary', color: 'onPrimary' }}
+          {...props}
+        />
+      );
+    },
     h1: (props) => {
       return <Heading as="h1" variant="h1" {...props} />;
     },
