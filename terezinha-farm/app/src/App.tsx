@@ -1,6 +1,6 @@
 // import * as React from 'react';
 import { Auth, useAuth } from '@ttoss/react-auth';
-import { Flex } from '@ttoss/ui';
+import { Button, Flex } from '@ttoss/ui';
 
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
@@ -13,13 +13,13 @@ export const App = () => {
     <Flex>
       <h1>oi</h1>
       <p>{JSON.stringify(user, null, 2)}</p>
-      <button
+      <Button
         onClick={() => {
           signOut();
         }}
       >
         Logout
-      </button>
+      </Button>
     </Flex>
   );
 };
