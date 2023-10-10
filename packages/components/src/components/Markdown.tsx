@@ -1,5 +1,6 @@
 import { BaseStyles, FlexProps } from '@ttoss/ui';
 import ReactMarkdown, { ReactMarkdownOptions } from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
 export type MarkdownProps = ReactMarkdownOptions & {
@@ -10,7 +11,11 @@ export type MarkdownProps = ReactMarkdownOptions & {
 export const Markdown = ({ children, sx, ...props }: MarkdownProps) => {
   return (
     <BaseStyles sx={sx}>
-      <ReactMarkdown plugins={[remarkGfm]} {...props}>
+      <ReactMarkdown
+        rehypePlugins={[rehypeRaw] as ReactMarkdownOptions['rehypePlugins']}
+        plugins={[remarkGfm]}
+        {...props}
+      >
         {children}
       </ReactMarkdown>
     </BaseStyles>
