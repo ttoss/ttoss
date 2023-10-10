@@ -5,6 +5,8 @@ const HEADING_1 = 'HEADING_1';
 const HEADING_2 = 'HEADING_2';
 const HEADING_3 = 'HEADING_3';
 
+const UNDERLINE_TEXT = 'Underline Text';
+
 const LINK_HREF = 'https://ttoss.dev';
 
 const TABLE = {
@@ -30,6 +32,8 @@ const MARKDOWN_CONTENT = `
 - ListItem3
 
 [Ttoss](${LINK_HREF})
+
+<u>${UNDERLINE_TEXT}</u>
 `;
 
 test('markdown should render html tags instead markdown tags', () => {
@@ -64,4 +68,9 @@ test('markdown should render html tags instead markdown tags', () => {
     expect(column1.tagName.toLowerCase()).toEqual('td');
     expect(column2.tagName.toLowerCase()).toEqual('td');
   });
+
+  const underlineText = screen.getByText(UNDERLINE_TEXT);
+
+  expect(underlineText).toBeInTheDocument();
+  expect(underlineText.tagName.toLowerCase()).toEqual('a');
 });
