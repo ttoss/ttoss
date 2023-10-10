@@ -16,19 +16,19 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "aws-amplify": "^5.2.2",
+    "aws-amplify": "^5.3.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.27",
-    "@types/react-dom": "^18.2.4",
-    "@vitejs/plugin-react": "^4.0.0",
+    "@types/react-dom": "^18.2.12",
+    "@vitejs/plugin-react": "^4.1.0",
     "carlin": "workspace:^",
-    "rollup-plugin-visualizer": "^5.9.0",
-    "serve": "^14.2.0",
-    "typescript": "^5.1.6",
-    "vite": "^4.3.8"
+    "rollup-plugin-visualizer": "^5.9.2",
+    "serve": "^14.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11"
   }
 }
