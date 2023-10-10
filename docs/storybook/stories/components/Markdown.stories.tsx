@@ -33,6 +33,8 @@ Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum ape
 ![Alt text](https://fastly.picsum.photos/id/436/200/300.jpg?hmac=OuJRsPTZRaNZhIyVFbzDkMYMyORVpV86q5M8igEfM3Y "Alt Text")
 
 [Google](https://google.com)
+
+<u>Underline text</u>
 `;
 
 Example.args = {
