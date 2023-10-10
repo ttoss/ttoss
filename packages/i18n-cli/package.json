@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/i18n-cli",
-  "version": "0.6.5",
+  "version": "0.7.0",
   "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^7.1.0"
+    "tsup": "^7.2.0"
   },
   "publishConfig": {
     "access": "public",
