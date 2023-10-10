@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.24.0 (2023-10-10)
+
+### Features
+
+- forgot password working ([#412](https://github.com/ttoss/ttoss/issues/412)) ([0fbe416](https://github.com/ttoss/ttoss/commit/0fbe416da19d65f72fa572fe949128b60002ed4b))
+
 ## [1.23.7](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.23.6...@ttoss/test-utils@1.23.7) (2023-08-16)
 
 ### Bug Fixes
