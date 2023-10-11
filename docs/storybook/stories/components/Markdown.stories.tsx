@@ -34,7 +34,10 @@ Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum ape
 
 [Google](https://google.com)
 
-<u>Underline text</u>
+<u style="color:grey">Underline text</u>
+**Bold Text**
+_Italic Text_
+~~Strikethrough Text~~
 `;
 
 Example.args = {
