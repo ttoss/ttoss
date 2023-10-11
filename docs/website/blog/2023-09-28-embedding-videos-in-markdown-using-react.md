@@ -60,7 +60,7 @@ To embed a YouTube video, you need to obtain the embed link for the video. Follo
 
 ## Handling Video Links
 
-We need to identify links that are meant to embed videos. In this example, we check if the `href` attribute of the anchor element contains the strings 'youtube' or 'embed'.
+We need to identify links that are meant to embed videos. In this example, we check if the `href` attribute of the anchor element contains the strings 'youtube' and 'embed'.
 
 ```javascript
 if (['youtube', 'embed'].every((item) => props.href.includes(item))) {
@@ -99,6 +99,54 @@ return (
     />
   </Box>
 );
+```
+
+## Full Component
+
+The full component should look like that
+
+```jsx
+const Content = ({ content }) => {
+  return (
+    <Markdown
+      components={{
+        a: (props) => {
+          if (['youtube', 'embed'].every((item) => props.href.includes(item))) {
+            return (
+              <Box
+                sx={{
+                  position: 'relative',
+                  paddingBottom: ['56.25%', 'calc(56.25% * 0.75)'],
+                  width: ['unset', '75%'],
+                  height: 0,
+                  margin: '0 auto',
+                }}
+              >
+                <Box
+                  as="iframe"
+                  sx={{
+                    border: 'none',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  src={props.href}
+                  allowfullscreen="allowfullscreen"
+                />
+              </Box>
+            );
+          }
+
+          return <a {...props}>;
+        }
+      }}
+    >
+      {content}
+    </Markdown>
+  )
+}
 ```
 
 ## Usage Example
