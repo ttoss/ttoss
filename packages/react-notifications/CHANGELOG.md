@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.11...@ttoss/react-notifications@1.24.12) (2023-10-13)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 ## [1.24.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.10...@ttoss/react-notifications@1.24.11) (2023-10-10)
 
 **Note:** Version bump only for package @ttoss/react-notifications
