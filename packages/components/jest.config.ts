@@ -3,12 +3,7 @@ import { jestConfig } from '@ttoss/config';
 const config = jestConfig({
   setupFilesAfterEnv: ['./tests/setupTests.tsx'],
   testEnvironment: 'jsdom',
-  moduleNameMapper: {
-    'react-markdown': [
-      '<rootDir>/../../node_modules/react-markdown/react-markdown.min.js',
-      '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
-    ],
-  },
+  transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
 });
 
 // eslint-disable-next-line import/no-default-export

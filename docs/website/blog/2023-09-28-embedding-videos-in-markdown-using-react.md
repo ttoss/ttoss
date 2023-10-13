@@ -106,7 +106,6 @@ return (
 The full component should look like that
 
 ```jsx
-
 const Content = ({ content }) => {
   return (
     <Markdown

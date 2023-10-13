@@ -5,6 +5,11 @@ const HEADING_1 = 'HEADING_1';
 const HEADING_2 = 'HEADING_2';
 const HEADING_3 = 'HEADING_3';
 
+const UNDERLINE_TEXT = 'Underline Text';
+const BOLD_TEXT = 'Bold Text';
+const ITALIC_TEXT = 'Italic Text';
+const STRIKETHROUGH_TEXT = 'Strikethrough Text';
+
 const LINK_HREF = 'https://ttoss.dev';
 
 const TABLE = {
@@ -30,6 +35,11 @@ const MARKDOWN_CONTENT = `
 - ListItem3
 
 [Ttoss](${LINK_HREF})
+
+<u>${UNDERLINE_TEXT}</u>
+**${BOLD_TEXT}**
+_${ITALIC_TEXT}_
+~~${STRIKETHROUGH_TEXT}~~
 `;
 
 test('markdown should render html tags instead markdown tags', () => {
@@ -64,4 +74,20 @@ test('markdown should render html tags instead markdown tags', () => {
     expect(column1.tagName.toLowerCase()).toEqual('td');
     expect(column2.tagName.toLowerCase()).toEqual('td');
   });
+
+  const underlineText = screen.getByText(UNDERLINE_TEXT);
+  expect(underlineText).toBeInTheDocument();
+  expect(underlineText.tagName.toLowerCase()).toEqual('u');
+
+  const boldText = screen.getByText(BOLD_TEXT);
+  expect(boldText).toBeInTheDocument();
+  expect(boldText.tagName.toLowerCase()).toEqual('strong');
+
+  const italicText = screen.getByText(ITALIC_TEXT);
+  expect(italicText).toBeInTheDocument();
+  expect(italicText.tagName.toLowerCase()).toEqual('em');
+
+  const strikethroughText = screen.getByText(STRIKETHROUGH_TEXT);
+  expect(strikethroughText).toBeInTheDocument();
+  expect(strikethroughText.tagName.toLowerCase()).toEqual('del');
 });
