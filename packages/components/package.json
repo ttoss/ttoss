@@ -12,7 +12,7 @@
     "directory": "packages/components"
   },
   "type": "module",
-  "module": "dist/esm/index.js",
+  "exports": "./dist/esm/index.js",
   "files": [
     "dist",
     "src"

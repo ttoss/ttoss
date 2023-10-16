@@ -4,7 +4,7 @@ import {
   NotificationsModal,
   NotificationsProvider,
   useNotifications,
-} from '@ttoss/react-notifications/src';
+} from '../../../../packages/react-notifications/src';
 
 export default {
   title: 'React Notifications/Modal',

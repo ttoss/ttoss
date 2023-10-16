@@ -1,9 +1,9 @@
 import {
   AuthForgotPassword,
   type AuthForgotPasswordProps,
-} from '@ttoss/react-auth/src/AuthForgotPassword';
+} from '../../../../packages/react-auth/src/AuthForgotPassword';
 import { Box } from '@ttoss/ui';
-import { LogoProvider } from '@ttoss/react-auth/src/AuthCard';
+import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
 import { Meta, Story } from '@storybook/react';
 
 export default {
