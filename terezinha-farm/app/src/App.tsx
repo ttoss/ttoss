@@ -1,6 +1,9 @@
 // import * as React from 'react';
 import { Auth, useAuth } from '@ttoss/react-auth';
-import { Button, Flex } from '@ttoss/ui';
+import { Button, Stack } from '@ttoss/ui';
+import { Markdown } from '@ttoss/components';
+
+const markdown = '# ~Hi~, *Pluto*!';
 
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
@@ -10,7 +13,7 @@ export const App = () => {
   }
 
   return (
-    <Flex>
+    <Stack>
       <h1>oi</h1>
       <p>{JSON.stringify(user, null, 2)}</p>
       <Button
@@ -20,6 +23,7 @@ export const App = () => {
       >
         Logout
       </Button>
-    </Flex>
+      <Markdown>{markdown}</Markdown>
+    </Stack>
   );
 };
