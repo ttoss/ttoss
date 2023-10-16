@@ -1,4 +1,4 @@
-import { Accordion } from '@ttoss/components/src';
+import { Accordion } from '../../../../packages/components/src';
 import { Meta, StoryFn } from '@storybook/react';
 import { Text } from '@ttoss/ui';
 

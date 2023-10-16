@@ -1,4 +1,7 @@
-import { AuthSignUp, AuthSignUpProps } from '@ttoss/react-auth/src/AuthSignUp';
+import {
+  AuthSignUp,
+  AuthSignUpProps,
+} from '../../../../packages/react-auth/src/AuthSignUp';
 import { Meta, Story } from '@storybook/react';
 
 export default {

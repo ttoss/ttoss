@@ -1,6 +1,9 @@
-import { AuthSignIn, AuthSignInProps } from '@ttoss/react-auth/src/AuthSignIn';
+import {
+  AuthSignIn,
+  AuthSignInProps,
+} from '../../../../packages/react-auth/src/AuthSignIn';
 import { Box } from '@ttoss/ui';
-import { LogoProvider } from '@ttoss/react-auth/src/AuthCard';
+import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
 import { Meta, Story } from '@storybook/react';
 
 export default {
