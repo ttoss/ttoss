@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.40.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.40.6...@docs/storybook@1.40.7) (2023-10-19)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [1.40.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.40.5...@docs/storybook@1.40.6) (2023-10-16)
 
 **Note:** Version bump only for package @docs/storybook

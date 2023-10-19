@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-roles",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Create CloudFormation templates for roles with TypeScript.",
   "license": "UNLICENSED",
   "author": "ttoss",
