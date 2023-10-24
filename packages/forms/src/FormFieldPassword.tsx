@@ -10,7 +10,7 @@ export type FormFieldPasswordProps<TName> = {
 
 export const FormFieldPassword = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   name,

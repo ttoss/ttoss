@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -672,6 +672,9 @@ importers:
       react-hook-form:
         specifier: ^7.44.3
         version: 7.44.3(react@18.2.0)
+      react-number-format:
+        specifier: ^5.3.1
+        version: 5.3.1(react-dom@18.2.0)(react@18.2.0)
       yup:
         specifier: ^1.2.0
         version: 1.2.0
@@ -1293,6 +1296,9 @@ importers:
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../../packages/graphql-api
+      '@ttoss/graphql-api-server':
+        specifier: workspace:^
+        version: link:../../packages/graphql-api-server
       graphql:
         specifier: ^16.8.1
         version: 16.8.1
@@ -6442,12 +6448,12 @@ packages:
       semver: 7.5.4
       serve-handler: 6.1.5
       shelljs: 0.8.5
-      terser-webpack-plugin: 5.3.7(@swc/core@1.3.76)(esbuild@0.18.20)(webpack@5.79.0)
+      terser-webpack-plugin: 5.3.7(webpack@5.79.0)
       tslib: 2.5.0
       update-notifier: 5.1.0
       url-loader: 4.1.1(file-loader@6.2.0)(webpack@5.79.0)
       wait-on: 6.0.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
       webpack-bundle-analyzer: 4.8.0
       webpack-dev-server: 4.13.2(webpack@5.79.0)
       webpack-merge: 5.8.0
@@ -6516,7 +6522,7 @@ packages:
       unified: 9.2.2
       unist-util-visit: 2.0.3
       url-loader: 4.1.1(file-loader@6.2.0)(webpack@5.79.0)
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@docusaurus/types'
       - '@swc/core'
@@ -6573,7 +6579,7 @@ packages:
       tslib: 2.5.0
       unist-util-visit: 2.0.3
       utility-types: 3.10.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@parcel/css'
       - '@swc/core'
@@ -6618,7 +6624,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       tslib: 2.5.0
       utility-types: 3.10.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@parcel/css'
       - '@swc/core'
@@ -6655,7 +6661,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       tslib: 2.5.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@parcel/css'
       - '@swc/core'
@@ -7112,7 +7118,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       react-helmet-async: 1.3.0(react-dom@18.2.0)(react@18.2.0)
       utility-types: 3.10.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
       webpack-merge: 5.8.0
     transitivePeerDependencies:
       - '@swc/core'
@@ -7176,7 +7182,7 @@ packages:
       shelljs: 0.8.5
       tslib: 2.5.0
       url-loader: 4.1.1(file-loader@6.2.0)(webpack@5.79.0)
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -11970,6 +11976,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-darwin-x64@1.3.76:
@@ -11978,6 +11985,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-linux-arm-gnueabihf@1.3.76:
@@ -11986,6 +11994,7 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-linux-arm64-gnu@1.3.76:
@@ -11994,6 +12003,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-linux-arm64-musl@1.3.76:
@@ -12002,6 +12012,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-linux-x64-gnu@1.3.76:
@@ -12010,6 +12021,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-linux-x64-musl@1.3.76:
@@ -12018,6 +12030,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-win32-arm64-msvc@1.3.76:
@@ -12026,6 +12039,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-win32-ia32-msvc@1.3.76:
@@ -12034,6 +12048,7 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core-win32-x64-msvc@1.3.76:
@@ -12042,6 +12057,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@swc/core@1.3.76:
@@ -12064,6 +12080,7 @@ packages:
       '@swc/core-win32-arm64-msvc': 1.3.76
       '@swc/core-win32-ia32-msvc': 1.3.76
       '@swc/core-win32-x64-msvc': 1.3.76
+    dev: true
 
   /@szmarczak/http-timer@1.1.2:
     resolution: {integrity: sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA==}
@@ -14176,7 +14193,7 @@ packages:
       loader-utils: 2.0.4
       make-dir: 3.1.0
       schema-utils: 2.7.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /babel-loader@9.1.3(@babel/core@7.22.10)(webpack@5.79.0):
@@ -15597,7 +15614,7 @@ packages:
       normalize-path: 3.0.0
       schema-utils: 4.0.0
       serialize-javascript: 6.0.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /core-js-compat@3.31.1:
@@ -15757,7 +15774,7 @@ packages:
       postcss-modules-values: 4.0.0(postcss@8.4.23)
       postcss-value-parser: 4.2.0
       semver: 7.5.4
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
 
   /css-minimizer-webpack-plugin@4.2.2(clean-css@5.3.2)(webpack@5.79.0):
     resolution: {integrity: sha512-s3Of/4jKfw1Hj9CxEO1E5oXhQAxlayuHO2y/ML+C6I9sQ7FdzfEV6QgMLN3vI+qFsjJGIAFLKtQK7t8BOXAIyA==}
@@ -15791,7 +15808,7 @@ packages:
       schema-utils: 4.0.0
       serialize-javascript: 6.0.1
       source-map: 0.6.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /css-select@4.3.0:
@@ -18269,7 +18286,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.1.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /file-set@4.0.2:
@@ -18509,7 +18526,7 @@ packages:
       semver: 7.5.4
       tapable: 1.1.3
       typescript: 5.1.6
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /fork-ts-checker-webpack-plugin@8.0.0(typescript@5.1.6)(webpack@5.79.0):
@@ -19464,7 +19481,7 @@ packages:
       lodash: 4.17.21
       pretty-error: 4.0.0
       tapable: 2.2.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
 
   /htmlparser2@6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
@@ -22833,7 +22850,7 @@ packages:
       webpack: ^5.0.0
     dependencies:
       schema-utils: 4.0.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /minimalistic-assert@1.0.1:
@@ -24100,7 +24117,7 @@ packages:
       semver: 7.5.4
       ts-node: 10.9.1(@types/node@18.16.2)(typescript@5.1.6)
       typescript: 5.1.6
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - '@types/node'
     dev: false
@@ -24829,7 +24846,7 @@ packages:
       strip-ansi: 6.0.1
       text-table: 0.2.0
       typescript: 5.1.6
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -25015,7 +25032,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       react-loadable: /@docusaurus/react-loadable@5.5.2(react@18.2.0)
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /react-markdown@6.0.0(@types/react@18.2.12)(react@18.2.0):
@@ -25136,6 +25153,17 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+
+  /react-number-format@5.3.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-qpYcQLauIeEhCZUZY9jXZnnroOtdy3jYaS1zQ3M1Sr6r/KMOBEIGNIb7eKT19g2N1wbYgFgvDzs19hw5TrB8XQ==}
+    peerDependencies:
+      react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /react-refresh@0.11.0:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
@@ -27223,6 +27251,30 @@ packages:
       serialize-javascript: 6.0.1
       terser: 5.16.9
       webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+    dev: true
+
+  /terser-webpack-plugin@5.3.7(webpack@5.79.0):
+    resolution: {integrity: sha512-AfKwIktyP7Cu50xNjXF/6Qb5lBNzYaWpU6YfoX3uZicTx0zTy0stDDCsvjDapKsSDvOeWo5MEq4TmdBy2cNoHw==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      '@swc/core': '*'
+      esbuild: '*'
+      uglify-js: '*'
+      webpack: ^5.1.0
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      esbuild:
+        optional: true
+      uglify-js:
+        optional: true
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.18
+      jest-worker: 27.5.1
+      schema-utils: 3.1.1
+      serialize-javascript: 6.0.1
+      terser: 5.16.9
+      webpack: 5.79.0
 
   /terser@5.16.9:
     resolution: {integrity: sha512-HPa/FdTB9XGI2H1/keLFZHxl6WNvAI4YalHGtDQTlMnJcoqSab1UwL4l1hGEhs6/GmLHBZIg/YgB++jcbzoOEg==}
@@ -28206,7 +28258,7 @@ packages:
       loader-utils: 2.0.4
       mime-types: 2.1.35
       schema-utils: 3.1.1
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /url-parse-lax@3.0.0:
@@ -28637,7 +28689,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /webpack-dev-middleware@6.1.1(webpack@5.79.0):
@@ -28698,7 +28750,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
       webpack-dev-middleware: 5.3.3(webpack@5.79.0)
       ws: 8.13.0
     transitivePeerDependencies:
@@ -28730,6 +28782,45 @@ packages:
   /webpack-virtual-modules@0.5.0:
     resolution: {integrity: sha512-kyDivFZ7ZM0BVOUteVbDFhlRt7Ah/CSPwJdi8hBpkK7QLumUqdLtVfm/PX/hkcnrvr0i77fO5+TjZ94Pe+C9iw==}
     dev: true
+
+  /webpack@5.79.0:
+    resolution: {integrity: sha512-3mN4rR2Xq+INd6NnYuL9RC9GAmc1ROPKJoHhrZ4pAjdMFEkJJWrsPw8o2JjCIyQyTu7rTXYn4VG6OpyB3CobZg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    peerDependencies:
+      webpack-cli: '*'
+    peerDependenciesMeta:
+      webpack-cli:
+        optional: true
+    dependencies:
+      '@types/eslint-scope': 3.7.4
+      '@types/estree': 1.0.0
+      '@webassemblyjs/ast': 1.11.1
+      '@webassemblyjs/wasm-edit': 1.11.1
+      '@webassemblyjs/wasm-parser': 1.11.1
+      acorn: 8.10.0
+      acorn-import-assertions: 1.8.0(acorn@8.10.0)
+      browserslist: 4.21.9
+      chrome-trace-event: 1.0.3
+      enhanced-resolve: 5.12.0
+      es-module-lexer: 1.2.1
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.0
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.1.1
+      tapable: 2.2.1
+      terser-webpack-plugin: 5.3.7(webpack@5.79.0)
+      watchpack: 2.4.0
+      webpack-sources: 3.2.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
 
   /webpack@5.79.0(@swc/core@1.3.76)(esbuild@0.18.20):
     resolution: {integrity: sha512-3mN4rR2Xq+INd6NnYuL9RC9GAmc1ROPKJoHhrZ4pAjdMFEkJJWrsPw8o2JjCIyQyTu7rTXYn4VG6OpyB3CobZg==}
@@ -28769,6 +28860,7 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
+    dev: true
 
   /webpackbar@5.0.2(webpack@5.79.0):
     resolution: {integrity: sha512-BmFJo7veBDgQzfWXl/wwYXr/VFus0614qZ8i9znqcl9fnEdiVkdbi0TedLQ6xAK92HZHDJ0QmyQ0fmuZPAgCYQ==}
@@ -28780,7 +28872,7 @@ packages:
       consola: 2.15.3
       pretty-time: 1.1.0
       std-env: 3.3.2
-      webpack: 5.79.0(@swc/core@1.3.76)(esbuild@0.18.20)
+      webpack: 5.79.0
     dev: false
 
   /websocket-driver@0.7.4:

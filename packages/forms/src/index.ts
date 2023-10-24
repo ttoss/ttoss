@@ -7,6 +7,7 @@ export * as yup from 'yup';
 export { Form } from './Form';
 export { FormField } from './FormField';
 export { FormFieldCheckbox } from './FormFieldCheckbox';
+export { FormFieldNumericFormat } from './FormFieldNumericFormat';
 export { FormFieldInput } from './FormFieldInput';
 export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldRadio } from './FormFieldRadio';
