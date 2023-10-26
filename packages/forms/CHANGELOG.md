@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.18.21...@ttoss/forms@0.19.0) (2023-10-26)
+
+### Features
+
+- formFieldNumericFormat ([#427](https://github.com/ttoss/ttoss/issues/427)) ([792c787](https://github.com/ttoss/ttoss/commit/792c787332188b29f26473130a39a8effb119fb3))
+
 ## [0.18.21](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.18.20...@ttoss/forms@0.18.21) (2023-10-19)
 
 **Note:** Version bump only for package @ttoss/forms

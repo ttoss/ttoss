@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.41.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.40.7...@docs/storybook@1.41.0) (2023-10-26)
+
+### Features
+
+- formFieldNumericFormat ([#427](https://github.com/ttoss/ttoss/issues/427)) ([792c787](https://github.com/ttoss/ttoss/commit/792c787332188b29f26473130a39a8effb119fb3))
+
 ## [1.40.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.40.6...@docs/storybook@1.40.7) (2023-10-19)
 
 **Note:** Version bump only for package @docs/storybook
