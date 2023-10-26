@@ -1296,9 +1296,6 @@ importers:
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../../packages/graphql-api
-      '@ttoss/graphql-api-server':
-        specifier: workspace:^
-        version: link:../../packages/graphql-api-server
       graphql:
         specifier: ^16.8.1
         version: 16.8.1
