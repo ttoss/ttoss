@@ -190,24 +190,7 @@ schemaComposer.Query.addFields({
 });
 ```
 
-How it works? You need to provide the following options:
-
-#### `findManyResolver`
-
-The resolver that will be used to find the nodes. It receives the following arguments:
-
-#### `countResolver`
-
-#### `sort`
-
-It's an object that defines the sort options. Each key is the sort name and the value is an object with the following properties:
-
-- `value`: and object that the resolver will receive as the `sort` argument.
-- `cursorFields`: an array of fields that will be used to create the cursor.
-- `beforeCursorQuery`:
-- `afterCursorQuery`:
-
-When you `composeWithConnection` a type, it will add the resolver `connection` to the type, so you can add to `Query`:
+When you `composeWithConnection` a type, it will add the resolver `connection` to the type, so you can add to `Query` or any other type:
 
 ```ts
 schemaComposer.Query.addFields({
@@ -238,6 +221,112 @@ The resolver `connection` has the following arguments based on the [Relay Connec
       // find many
     },
   });
+  ```
+
+To configure `composeWithConnection`, you need to provide the following options:
+
+#### `findManyResolver`
+
+The resolver that will be used to find the nodes. It receives the following arguments:
+
+- `args`: the `args` object from the resolver. Example:
+
+  ```ts
+  AuthorTC.addResolver({
+    name: 'findMany',
+    type: AuthorTC,
+    args: {
+      filter: {
+        name: 'String',
+        book: 'String',
+      },
+    },
+    resolve: async ({
+      args,
+    }: {
+      args: {
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+        /**
+         * The `filter` argument, if provided on the query.
+         */
+        filter: {
+          name: string;
+          book: string;
+        };
+        /**
+         * The `sort` argument, if provided on the query as
+         * they keys of the `sort` object. In our example
+         * above, it's `ASC` and `DESC`. `scanIndexForward`
+         * is the value of the `value` property on the sort
+         * object. In our example above, it's `true` for
+         * `ASC` and `false` for `DESC`.
+         */
+        sort: {
+          scanIndexForward: boolean;
+        };
+      };
+    }) => {
+      //
+    },
+  });
+  ```
+
+- `rawQuery`: an object created by `beforeCursorQuery` or `afterCursorQuery` methods from [sort](#sort) option.
+
+#### `countResolver`
+
+#### `sort`
+
+It's an object that defines the sort options. Each key is the sort name and the value is an object with the following properties:
+
+- `value`: and object that the resolver will receive as the `sort` argument.
+- `cursorFields`: an array of fields that will be used to create the cursor.
+- `beforeCursorQuery` and `afterCursorQuery`: methods that will be used to create the `rawQuery` object for the `findManyResolver`. They receive the following arguments:
+
+  - `rawQuery`: the `rawQuery` object that will be used to find the nodes.
+  - `cursorData`: the data from the cursor define on `cursorFields`. For example, if you define `cursorFields` as `['id', 'name']`, the `cursorData` will an object with the `id` and `name` properties.
+  - `resolveParams`: the `resolveParams` object from the resolver. You can access `args`, `context` and `info` and other GraphQL properties from this object.
+
+  Example:
+
+  ```ts
+  composeWithConnection(AuthorTC, {
+    // ...
+    sort: {
+      ASC: {
+        // ...
+        cursorFields: ['id', 'name'],
+        // Called when `before` cursor is provided.
+        beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+          if (!rawQuery.id) rawQuery.id = {};
+          rawQuery.id.$lt = cursorData.id;
+          rawQuery.name.$lt = cursorData.name;
+        },
+        // Called when `after` cursor is provided.
+        afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+          if (!rawQuery.id) rawQuery.id = {};
+          rawQuery.id.$gt = cursorData.id;
+          rawQuery.name.$gt = cursorData.name;
+        },
+      },
+    },
+  });
+  ```
+
+  In the example above, the `findManyResolver` will receive the following `rawQuery` object when `before` cursor is provided:
+
+  ```json
+  {
+    "id": {
+      "$lt": "id-from-cursor"
+    },
+    "name": {
+      "$lt": "name-from-cursor"
+    }
+  }
   ```
 
 ### Middlewares

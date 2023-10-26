@@ -1,8 +1,7 @@
 {
   "name": "@ttoss/react-notifications",
-  "version": "1.24.9",
+  "version": "1.24.14",
   "description": "ttoss notifications module for React apps.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -12,8 +11,8 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-notifications"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "type": "module",
+  "exports": "./dist/esm/index.js",
   "files": [
     "dist",
     "src"
@@ -34,15 +33,18 @@
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.12",
-    "jest": "^29.6.2",
+    "@types/react": "^18.2.29",
+    "jest": "^29.7.0",
     "react": "^18.2.0",
-    "tsup": "^7.1.0"
+    "tsup": "^7.2.0"
   },
   "keywords": [
     "React",
     "notifications"
   ],
+  "engines": {
+    "node": ">=16"
+  },
   "publishConfig": {
     "access": "public",
     "provenance": true

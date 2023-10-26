@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "1.7.2",
+  "version": "1.7.7",
   "description": "ttoss authentication module for React apps.",
   "license": "UNLICENSED",
   "author": "ttoss",
@@ -12,8 +12,8 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-auth"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/esm/index.js",
+  "type": "module",
+  "exports": "./dist/esm/index.js",
   "files": [
     "dist",
     "i18n",
@@ -46,15 +46,18 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^18.2.12",
-    "aws-amplify": "^5.2.2",
-    "jest": "^29.6.2",
-    "tsup": "^7.1.0"
+    "@types/react": "^18.2.29",
+    "aws-amplify": "^5.3.11",
+    "jest": "^29.7.0",
+    "tsup": "^7.2.0"
   },
   "keywords": [
     "React",
     "authentication"
   ],
+  "engines": {
+    "node": ">=16"
+  },
   "publishConfig": {
     "access": "public",
     "provenance": true
