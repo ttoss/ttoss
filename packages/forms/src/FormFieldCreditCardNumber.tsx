@@ -15,11 +15,11 @@ export const FormFieldCreditCardNumber = ({
 }: FormFieldCreditCardNumberProps) => {
   return (
     <FormFieldPatternFormat
-      {...formFieldPatternFormatProps}
       name={name}
       label={label}
       format="#### #### #### ####"
       placeholder="1234 1234 1234 1234"
+      {...formFieldPatternFormatProps}
     />
   );
 };
