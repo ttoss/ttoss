@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.41.0...@docs/storybook@1.42.0) (2023-10-30)
+
+### Features
+
+- create components ttoss ([#428](https://github.com/ttoss/ttoss/issues/428)) ([88f5993](https://github.com/ttoss/ttoss/commit/88f59935a73d990bf9b1ce70676d983e7be2dc3e))
+
 # [1.41.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.40.7...@docs/storybook@1.41.0) (2023-10-26)
 
 ### Features
