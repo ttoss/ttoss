@@ -35,7 +35,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "@ttoss/relay-amplify": "workspace:^",
-    "@types/aws-lambda": "^8.10.119",
+    "@types/aws-lambda": "^8.10.129",
     "carlin": "workspace:^",
     "graphql": "^16.8.1",
     "graphql-shield": "^7.6.5",
