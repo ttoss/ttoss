@@ -31,17 +31,17 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "react-intl": "^6.3.1"
+    "react-intl": "^6.5.5"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@formatjs/cli": "^6.0.4",
+    "@formatjs/cli": "^6.2.4",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.29",
+    "@types/react": "^18.2.38",
     "jest": "^29.7.0",
     "tsup": "^8.0.1"
   },
