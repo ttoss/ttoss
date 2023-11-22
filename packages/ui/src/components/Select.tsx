@@ -14,21 +14,30 @@ import ReactSelect, {
   type IndicatorsContainerProps,
   type PlaceholderProps,
   type Props as ReactSelectProps,
-  type Options as SelectOptions,
   type ValueContainerProps,
   components,
 } from 'react-select';
 
-export type { SelectOptions };
+export type SelectOption = {
+  label: string;
+  value: string | number;
+};
 
-export type SelectProps = ReactSelectProps &
+export type SelectOptions = SelectOption[];
+
+/**
+ * TODO: remove this when we accept multi select.
+ */
+type IsMulti = false;
+
+export type SelectProps = ReactSelectProps<SelectOption, IsMulti> &
   SxProp & {
     disabled?: boolean;
     leadingIcon?: IconType;
     trailingIcon?: IconType;
   };
 
-const Control = (props: ControlProps<unknown, false>) => {
+const Control = (props: ControlProps<SelectOption, IsMulti>) => {
   const isDisabled = props.selectProps.isDisabled;
 
   const hasError = props.selectProps['aria-invalid'] === 'true';
@@ -71,7 +80,9 @@ const Control = (props: ControlProps<unknown, false>) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DropdownIndicator = (props: DropdownIndicatorProps<unknown, true>) => {
+const DropdownIndicator = (
+  props: DropdownIndicatorProps<SelectOption, IsMulti>
+) => {
   const isDisabled = props.selectProps.isDisabled;
 
   const color = (() => {
@@ -101,7 +112,7 @@ const IndicatorsContainer = ({
   children,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
-}: IndicatorsContainerProps<unknown, true>) => {
+}: IndicatorsContainerProps<SelectOption, IsMulti>) => {
   return (
     <Box
       sx={{
@@ -114,7 +125,7 @@ const IndicatorsContainer = ({
   );
 };
 
-const Placeholder = ({ children }: PlaceholderProps<unknown>) => {
+const Placeholder = ({ children }: PlaceholderProps<SelectOption, IsMulti>) => {
   return (
     <Text
       sx={{
@@ -127,7 +138,10 @@ const Placeholder = ({ children }: PlaceholderProps<unknown>) => {
   );
 };
 
-const SelectContainer = ({ children, ...props }: ContainerProps) => {
+const SelectContainer = ({
+  children,
+  ...props
+}: ContainerProps<SelectOption, IsMulti>) => {
   const { sx, css } = props.selectProps as SelectProps;
 
   return (
@@ -143,7 +157,7 @@ const ValueContainer = ({
   children,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
-}: ValueContainerProps<unknown>) => {
+}: ValueContainerProps<SelectOption, IsMulti>) => {
   const { leadingIcon, trailingIcon } = props.selectProps as SelectProps;
 
   const hasError = props.selectProps['aria-invalid'] === 'true';
@@ -208,7 +222,7 @@ const ValueContainer = ({
 export const Select = React.forwardRef<any, SelectProps>(
   ({ ...props }, ref) => {
     return (
-      <ReactSelect
+      <ReactSelect<SelectOption, IsMulti>
         ref={ref}
         /**
          * https://react-select.com/components

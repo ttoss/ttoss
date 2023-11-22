@@ -7,39 +7,44 @@ import {
   UseControllerReturn,
   useController,
 } from 'react-hook-form';
-import { Flex, type FlexProps, Label } from '@ttoss/ui';
+import { Flex, Label, type SxProp } from '@ttoss/ui';
 
-export type FormFieldProps = {
-  sx?: FlexProps['sx'];
-  disabled?: boolean;
-  tooltip?: boolean;
-  onTooltipClick?: () => void;
-};
-
-type FormFieldCompleteProps<
+export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   label?: string;
   id?: string;
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
+  disabled?: boolean;
+  tooltip?: boolean;
+  onTooltipClick?: () => void;
+} & SxProp;
+
+type FormFieldCompleteProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
   render: (
     props: UseControllerReturn<TFieldValues, TName>
   ) => React.ReactElement;
-} & FormFieldProps;
+} & FormFieldProps<TFieldValues, TName>;
 
 export const FormField = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   id: idProp,
   name,
   defaultValue,
+  disabled,
+  tooltip,
+  onTooltipClick,
   sx,
+  css,
   render,
-  ...formFieldProps
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -54,10 +59,10 @@ export const FormField = <
         <>
           {label && (
             <Label
-              aria-disabled={formFieldProps.disabled}
+              aria-disabled={disabled}
               htmlFor={id}
-              tooltip={formFieldProps.tooltip}
-              onTooltipClick={formFieldProps.onTooltipClick}
+              tooltip={tooltip}
+              onTooltipClick={onTooltipClick}
             >
               {label}
             </Label>
@@ -67,18 +72,13 @@ export const FormField = <
         </>
       );
     });
-  }, [
-    controllerReturn,
-    formFieldProps.disabled,
-    formFieldProps.onTooltipClick,
-    formFieldProps.tooltip,
-    id,
-    label,
-    render,
-  ]);
+  }, [controllerReturn, disabled, onTooltipClick, tooltip, id, label, render]);
 
   return (
-    <Flex sx={{ flexDirection: 'column', width: '100%', gap: 'md', ...sx }}>
+    <Flex
+      sx={{ flexDirection: 'column', width: '100%', gap: 'md', ...sx }}
+      css={css}
+    >
       {memoizedRender}
       <ErrorMessage name={name} />
     </Flex>

@@ -74,7 +74,7 @@ import { render, screen, userEvent } from '@ttoss/test-utils';
 import Component from './Component';
 
 test('test with render', async () => {
-  const user = await userEvent.setup();
+  const user = userEvent.setup();
 
   render(<Component />);
 

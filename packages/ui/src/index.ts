@@ -33,6 +33,7 @@ export {
   Select,
   type SelectProps,
   type SelectOptions,
+  type SelectOption,
 } from './components/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Radio, type RadioProps } from './components/Radio';
