@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.20.0...@ttoss/forms@0.21.0) (2023-11-22)
+
+### Features
+
+- Task 1363 pedro arantes criar select com filtering e scroll infinito ([#429](https://github.com/ttoss/ttoss/issues/429)) ([1caaedf](https://github.com/ttoss/ttoss/commit/1caaedf19b4270a25781a538c86e641e48a12624))
+
+### BREAKING CHANGES
+
+- update Select API. Removed children and added options.
+
 # [0.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.19.0...@ttoss/forms@0.20.0) (2023-10-30)
 
 ### Features
