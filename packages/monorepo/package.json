@@ -32,7 +32,7 @@
     "@ttoss/config": "workspace:^",
     "@types/npmlog": "^4.1.4",
     "@types/yargs": "^17.0.24",
-    "tsup": "^7.2.0"
+    "tsup": "^8.0.1"
   },
   "publishConfig": {
     "access": "public",
