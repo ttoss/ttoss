@@ -6,6 +6,13 @@ type Story = StoryObj<typeof Select>;
 
 const OPTIONS = ['orange', 'grape', 'apple'];
 
+const options = OPTIONS.map((option) => {
+  return {
+    label: option.toUpperCase(),
+    value: option,
+  };
+});
+
 export default {
   title: 'UI/Select',
   component: Select,
@@ -14,17 +21,8 @@ export default {
 export const Default: Story = {
   args: {
     onChange: action('onChange'),
-    children: (
-      <>
-        {OPTIONS.map((option) => {
-          return (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          );
-        })}
-      </>
-    ),
+    defaultValue: options[0],
+    options,
   },
 };
 
@@ -47,5 +45,15 @@ export const Error: Story = {
   args: {
     ...Default.args,
     'aria-invalid': 'true',
+  },
+};
+
+export const WithSxProps: Story = {
+  args: {
+    ...Default.args,
+    sx: {
+      width: '300px',
+      margin: 'xl',
+    },
   },
 };

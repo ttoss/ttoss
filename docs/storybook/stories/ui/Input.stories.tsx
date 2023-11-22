@@ -1,5 +1,5 @@
 import { Flex, Input, InputProps } from '@ttoss/ui/src';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   component: Input,
 } as Meta;
 
-const Template: Story<InputProps> = (args) => {
+const Template: StoryFn<InputProps> = (args) => {
   return <Input {...args} />;
 };
 

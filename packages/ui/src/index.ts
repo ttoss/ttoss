@@ -1,4 +1,10 @@
-export { BaseStyles, type Theme, Global, type SxProp } from 'theme-ui';
+export {
+  BaseStyles,
+  type Theme,
+  Global,
+  type SxProp,
+  type ThemeUIStyleObject,
+} from 'theme-ui';
 export { useResponsiveValue, useBreakpointIndex } from '@theme-ui/match-media';
 export { keyframes, type Keyframes } from '@emotion/react';
 
@@ -23,7 +29,11 @@ export {
   type LinearProgressProps,
 } from './components/LinearProgress';
 export { Text, type TextProps } from './components/Text';
-export { Select, type SelectProps } from './components/Select';
+export {
+  Select,
+  type SelectProps,
+  type SelectOptions,
+} from './components/Select';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Radio, type RadioProps } from './components/Radio';
 export { IconButton, type IconButtonProps } from './components/IconButton';

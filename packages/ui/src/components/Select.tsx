@@ -1,137 +1,236 @@
+/**
+ * We're using React Select component to build ttoss Select.
+ * More info about React Select: https://react-select.com/home
+ * ttoss Figma: https://www.figma.com/file/VrB76VkH4hKCDUe9iYhpYu/_Component-%2F-Forms-%2F-Select?type=design&mode=design&t=ZBIeOpqcvQn3yq2t-0
+ */
 import * as React from 'react';
-import { Flex, Text } from '..';
+import { Box, Flex, Text } from '..';
 import { Icon, IconType } from '@ttoss/react-icons';
-import {
-  type SelectProps as SelectPropsUi,
-  Select as SelectUi,
-} from 'theme-ui';
+import { type SxProp } from 'theme-ui';
+import ReactSelect, {
+  type ContainerProps,
+  type ControlProps,
+  type DropdownIndicatorProps,
+  type IndicatorsContainerProps,
+  type PlaceholderProps,
+  type Props as ReactSelectProps,
+  type Options as SelectOptions,
+  type ValueContainerProps,
+  components,
+} from 'react-select';
 
-export type SelectProps = SelectPropsUi & {
-  leadingIcon?: IconType;
-  trailingIcon?: IconType;
+export type { SelectOptions };
+
+export type SelectProps = ReactSelectProps &
+  SxProp & {
+    disabled?: boolean;
+    leadingIcon?: IconType;
+    trailingIcon?: IconType;
+  };
+
+const Control = (props: ControlProps<unknown, false>) => {
+  const isDisabled = props.selectProps.isDisabled;
+
+  const hasError = props.selectProps['aria-invalid'] === 'true';
+
+  const border = (() => {
+    if (isDisabled) {
+      return 'muted';
+    }
+
+    if (hasError) {
+      return 'danger';
+    }
+
+    return 'interaction';
+  })();
+
+  const backgroundColor = (() => {
+    if (isDisabled) {
+      return 'muted';
+    }
+
+    return 'surface';
+  })();
+
+  return (
+    <Box
+      sx={{
+        '.react-select__control': {
+          border,
+          backgroundColor,
+          paddingX: 'xl',
+          paddingY: 'lg',
+          borderRadius: 'action',
+        },
+      }}
+    >
+      <components.Control {...props} />
+    </Box>
+  );
 };
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ arrow, sx, leadingIcon, trailingIcon, ...props }, ref) => {
-    const hasError = props['aria-invalid'] === 'true';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DropdownIndicator = (props: DropdownIndicatorProps<unknown, true>) => {
+  const isDisabled = props.selectProps.isDisabled;
 
-    const refEl = React.useRef<HTMLSelectElement>({} as HTMLSelectElement);
+  const color = (() => {
+    if (isDisabled) {
+      return 'onMuted';
+    }
 
-    React.useImperativeHandle(ref, () => {
-      return refEl.current;
-    });
+    return 'text';
+  })();
 
-    React.useEffect(() => {
-      const parentEl = refEl.current?.parentElement;
+  return (
+    <Text
+      sx={{
+        fontSize: 'base',
+        color,
+        alignSelf: 'center',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <Icon icon="picker-down" />
+    </Text>
+  );
+};
 
-      if (parentEl) {
-        parentEl.style.position = 'relative';
-      }
-    }, []);
+const IndicatorsContainer = ({
+  children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ...props
+}: IndicatorsContainerProps<unknown, true>) => {
+  return (
+    <Box
+      sx={{
+        marginLeft: 'lg',
+        border: 'none',
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
 
-    return (
-      <SelectUi
-        // https://theme-ui.com/components/select#custom-arrow-icon
-        arrow={
-          <>
-            {leadingIcon && (
-              <Text
-                sx={{
-                  alignSelf: 'center',
-                  pointerEvents: 'none',
-                  lineHeight: 0,
-                  fontSize: 'base',
-                  position: 'absolute',
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  left: ({ space }: any) => {
-                    const leftSpaceValue = space?.['xl'] || '16px';
+const Placeholder = ({ children }: PlaceholderProps<unknown>) => {
+  return (
+    <Text
+      sx={{
+        color: 'onMuted',
+        alignSelf: 'center',
+      }}
+    >
+      {children}
+    </Text>
+  );
+};
 
-                    return leftSpaceValue;
-                  },
-                }}
-              >
-                <Icon icon={leadingIcon} />
-              </Text>
-            )}
+const SelectContainer = ({ children, ...props }: ContainerProps) => {
+  const { sx, css } = props.selectProps as SelectProps;
 
-            <Flex
-              sx={{
-                gap: 'lg',
-                position: 'absolute',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                right: ({ space }: any) => {
-                  const xlSpace = space?.['xl'] || '16px';
+  return (
+    <Box sx={sx} css={css}>
+      <components.SelectContainer {...props}>
+        {children}
+      </components.SelectContainer>
+    </Box>
+  );
+};
 
-                  return xlSpace;
-                },
-                alignSelf: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              {(trailingIcon || hasError) && (
-                <Text
-                  className={hasError ? 'error-icon' : ''}
-                  sx={{
-                    alignSelf: 'center',
-                    pointerEvents: 'none',
-                    lineHeight: 0,
-                    fontSize: 'base',
-                  }}
-                >
-                  <Icon
-                    icon={hasError ? 'warning-alt' : (trailingIcon as IconType)}
-                  />
-                </Text>
-              )}
+const ValueContainer = ({
+  children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ...props
+}: ValueContainerProps<unknown>) => {
+  const { leadingIcon, trailingIcon } = props.selectProps as SelectProps;
 
-              {arrow ?? (
-                <Text
-                  sx={{
-                    lineHeight: 0,
-                    fontSize: 'base',
-                  }}
-                >
-                  <Icon icon="picker-down" />
-                </Text>
-              )}
-            </Flex>
-          </>
-        }
+  const hasError = props.selectProps['aria-invalid'] === 'true';
+
+  const trailingIconColor = (() => {
+    if (hasError) {
+      return 'danger';
+    }
+
+    return 'text';
+  })();
+
+  return (
+    <Flex
+      sx={{
+        gap: 'lg',
+        flex: 1,
+      }}
+    >
+      {leadingIcon && (
+        <Text
+          sx={{
+            alignSelf: 'center',
+            pointerEvents: 'none',
+            lineHeight: 0,
+            fontSize: 'base',
+          }}
+        >
+          <Icon icon={leadingIcon} />
+        </Text>
+      )}
+      <Flex
         sx={{
-          fontFamily: 'body',
-          width: '100%',
-          paddingY: 'lg',
-          paddingX: 'xl',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          paddingLeft: ({ space, fontSizes }: any) => {
-            const xlSpace = space?.['xl'] || '16px';
-            const iconSize = fontSizes?.['base'] || '16px';
-            const lgSpace = space?.['lg'] || '16px';
-
-            if (leadingIcon) {
-              return `calc(${xlSpace} + ${iconSize} +  ${lgSpace})`;
-            }
-
-            return xlSpace;
-          },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          paddingRight: ({ space, fontSizes }: any) => {
-            const xlSpace = space?.['xl'] || '16px';
-            const iconSize = fontSizes?.['base'] || '16px';
-            const lgSpace = space?.['lg'] || '16px';
-
-            if (trailingIcon || hasError) {
-              return `calc(${lgSpace} + ${iconSize} + ${lgSpace} + ${iconSize} + ${xlSpace})`;
-            }
-
-            return `calc(${lgSpace} + ${iconSize} + ${xlSpace})`;
-          },
-          ...sx,
+          flex: 1,
+          alignItems: 'center',
         }}
-        ref={refEl}
+      >
+        {children}
+      </Flex>
+      {(trailingIcon || hasError) && (
+        <Text
+          className={hasError ? 'error-icon' : ''}
+          sx={{
+            alignSelf: 'center',
+            pointerEvents: 'none',
+            lineHeight: 0,
+            fontSize: 'base',
+            color: trailingIconColor,
+          }}
+        >
+          <Icon icon={hasError ? 'warning-alt' : (trailingIcon as IconType)} />
+        </Text>
+      )}
+    </Flex>
+  );
+};
+
+/**
+ * https://react-select.com/home
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const Select = React.forwardRef<any, SelectProps>(
+  ({ ...props }, ref) => {
+    return (
+      <ReactSelect
+        ref={ref}
+        /**
+         * https://react-select.com/components
+         */
+        components={{
+          Control,
+          DropdownIndicator,
+          IndicatorsContainer,
+          Placeholder,
+          SelectContainer,
+          ValueContainer,
+          ...props.components,
+        }}
+        isDisabled={props.disabled}
         {...props}
+        /**
+         * https://react-select.com/styles#the-classnameprefix-prop
+         */
+        classNamePrefix="react-select"
       />
     );
   }
 );
+
 Select.displayName = 'Select';

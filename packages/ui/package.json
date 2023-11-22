@@ -26,6 +26,7 @@
   "dependencies": {
     "@theme-ui/match-media": "^0.16.1",
     "@ttoss/theme": "workspace:^",
+    "react-select": "^5.8.0",
     "theme-ui": "^0.16.1"
   },
   "peerDependencies": {
