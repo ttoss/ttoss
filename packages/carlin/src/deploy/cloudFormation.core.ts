@@ -3,6 +3,7 @@ import * as path from 'path';
 import {
   CloudFormationClient,
   CreateStackCommand,
+  CreateStackCommandInput,
   DeleteStackCommand,
   DescribeStackEventsCommand,
   DescribeStackResourceCommand,
@@ -10,6 +11,7 @@ import {
   DescribeStacksCommand,
   ListStackResourcesCommand,
   UpdateStackCommand,
+  UpdateStackCommandInput,
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
 import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
@@ -95,6 +97,7 @@ export const doesStackExist = async ({ stackName }: { stackName: string }) => {
     await describeStacks({ stackName });
     log.info(logPrefix, `Stack ${stackName} already exists.`);
     return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.Code === 'ValidationError') {
       log.info(logPrefix, `Stack ${stackName} does not exist.`);
@@ -171,6 +174,7 @@ const saveEnvironmentOutput = async ({
   outputs: AWS.CloudFormation.Output[];
   stackName: string;
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const envFile: any = { stackName };
 
   envFile.outputs = outputs.reduce((acc, output) => {
@@ -244,9 +248,9 @@ export const deleteStack = async ({ stackName }: { stackName: string }) => {
 export const createStack = async ({
   params,
 }: {
-  params: AWS.CloudFormation.CreateStackInput;
+  params: CreateStackCommandInput;
 }) => {
-  const { StackName: stackName } = params;
+  const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Creating stack ${stackName}...`);
   await cloudFormation().send(new CreateStackCommand(params));
   try {
@@ -265,15 +269,16 @@ export const createStack = async ({
 export const updateStack = async ({
   params,
 }: {
-  params: AWS.CloudFormation.UpdateStackInput;
+  params: UpdateStackCommandInput;
 }) => {
-  const { StackName: stackName } = params;
+  const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Updating stack ${stackName}...`);
   try {
     await cloudFormation().send(new UpdateStackCommand(params));
     await cloudFormationV2()
       .waitFor('stackUpdateComplete', { StackName: stackName })
       .promise();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.message === 'No updates are to be performed.') {
       log.info(logPrefix, error.message);
@@ -328,14 +333,16 @@ export const deploy = async ({
   ...paramsAndTemplate
 }: {
   terminationProtection?: boolean;
-  params:
-    | AWS.CloudFormation.CreateStackInput
-    | AWS.CloudFormation.UpdateStackInput;
+  params: CreateStackCommandInput | UpdateStackCommandInput;
   template: CloudFormationTemplate;
 }) => {
   const { params, template } = await addDefaults(paramsAndTemplate);
 
   const stackName = params.StackName;
+
+  if (!stackName) {
+    throw new Error('StackName is required');
+  }
 
   delete params.TemplateBody;
   delete params.TemplateURL;
