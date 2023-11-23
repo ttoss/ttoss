@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.8](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.6.7...@ttoss/theme@1.6.8) (2023-11-23)
+
+### Bug Fixes
+
+- add disable to FormFieldSelect ([#432](https://github.com/ttoss/ttoss/issues/432)) ([aa14f74](https://github.com/ttoss/ttoss/commit/aa14f746c58035983391a367284f246b3ffb78f4))
+
 ## [1.6.7](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.6.6...@ttoss/theme@1.6.7) (2023-11-23)
 
 **Note:** Version bump only for package @ttoss/theme

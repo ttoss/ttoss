@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.2.2...@ttoss/react-icons@0.2.3) (2023-11-23)
+
+### Bug Fixes
+
+- add disable to FormFieldSelect ([#432](https://github.com/ttoss/ttoss/issues/432)) ([aa14f74](https://github.com/ttoss/ttoss/commit/aa14f746c58035983391a367284f246b3ffb78f4))
+
 ## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.2.1...@ttoss/react-icons@0.2.2) (2023-11-23)
 
 **Note:** Version bump only for package @ttoss/react-icons
