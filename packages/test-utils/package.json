@@ -38,14 +38,14 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/jest": "^11.11.0",
-    "@faker-js/faker": "^8.0.2",
-    "@testing-library/dom": "^9.3.0",
+    "@faker-js/faker": "^8.3.1",
+    "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3",
-    "@types/relay-test-utils": "^14.1.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "relay-test-utils": "^15.0.0",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/relay-test-utils": "^14.1.4",
+    "jest-environment-jsdom": "^29.7.0",
+    "relay-test-utils": "^16.0.0",
     "resize-observer-polyfill": "^1.5.1"
   },
   "peerDependencies": {
