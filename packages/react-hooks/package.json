@@ -2,7 +2,6 @@
   "name": "@ttoss/react-hooks",
   "version": "1.24.1",
   "description": "React hooks.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"

@@ -2,7 +2,6 @@
   "name": "@ttoss/monorepo",
   "version": "1.26.0",
   "description": "Monorepo setup for ttoss",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"

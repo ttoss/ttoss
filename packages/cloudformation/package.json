@@ -2,7 +2,6 @@
   "name": "@ttoss/cloudformation",
   "version": "0.8.1",
   "description": "CloudFormation utils.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"

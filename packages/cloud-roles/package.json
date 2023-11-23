@@ -2,7 +2,6 @@
   "name": "@ttoss/cloud-roles",
   "version": "0.7.1",
   "description": "Create CloudFormation templates for roles with TypeScript.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
