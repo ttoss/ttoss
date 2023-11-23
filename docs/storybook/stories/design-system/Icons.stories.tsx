@@ -1,5 +1,5 @@
 import { Box, Button, IconButton, Input, Text } from '@ttoss/ui';
-import { BruttalTheme } from '@ttoss/theme/Bruttal';
+import { BrutalIcons, BruttalTheme } from '@ttoss/theme/Bruttal';
 import { Icon } from '@ttoss/react-icons';
 import { Meta } from '@storybook/react';
 
@@ -38,33 +38,7 @@ export default {
   },
 } as Meta;
 
-const icons = [
-  'add',
-  'avatar',
-  'calendar',
-  'checkbox-checked',
-  'checkbox-indeterminate',
-  'checkbox-unchecked',
-  'close',
-  'copy',
-  'delete',
-  'error',
-  'info',
-  'paste',
-  'picker-down',
-  'picker-up',
-  'picker-left',
-  'picker-right',
-  'radio-not-selected',
-  'radio-selected',
-  'refresh',
-  'replicate',
-  'small-close',
-  'time',
-  'view-off',
-  'view-on',
-  'warning',
-];
+const icons = Object.keys(BrutalIcons);
 
 export const Icons = ({
   buttonVariant,

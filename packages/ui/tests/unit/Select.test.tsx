@@ -3,6 +3,26 @@ import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const OPTIONS = ['orange', 'blue', 'red', 'pink'];
 
+test('work as a controlled component', () => {
+  const value = 'orange';
+
+  render(
+    <Select
+      placeholder="My Select"
+      value={value}
+      onChange={() => {}}
+      options={OPTIONS.map((option) => {
+        return {
+          label: option.toUpperCase(),
+          value: option,
+        };
+      })}
+    />
+  );
+
+  expect(screen.getByText(value.toUpperCase())).toBeInTheDocument();
+});
+
 test('should filter options', async () => {
   const user = userEvent.setup({ delay: null });
 
@@ -12,9 +32,10 @@ test('should filter options', async () => {
     <Select
       isSearchable
       placeholder="My Select"
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onChange={(newValue: any) => {
-        selectedValue = newValue.value;
+      onChange={(newValue) => {
+        if (typeof newValue === 'string') {
+          selectedValue = newValue;
+        }
       }}
       options={OPTIONS.map((option) => {
         return {
@@ -49,9 +70,10 @@ test('should render and select options on Select component with options', async 
   render(
     <Select
       placeholder="My Select"
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onChange={(newValue: any) => {
-        selectedValue = newValue.value;
+      onChange={(newValue) => {
+        if (typeof newValue === 'string') {
+          selectedValue = newValue;
+        }
       }}
       options={OPTIONS.map((option) => {
         return {

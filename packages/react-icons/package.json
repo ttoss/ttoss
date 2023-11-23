@@ -30,7 +30,6 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@iconify/types": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^29.5.10",

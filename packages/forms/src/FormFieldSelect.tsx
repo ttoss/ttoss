@@ -1,6 +1,6 @@
 import { FieldPath, FieldValues } from 'react-hook-form';
 import { FormField, FormFieldProps } from './FormField';
-import { Select, SelectOption, type SelectProps } from '@ttoss/ui';
+import { Select, type SelectProps } from '@ttoss/ui';
 
 type FormFieldSelectProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -33,24 +33,11 @@ export const FormFieldSelect = <
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {
-        const value = selectProps.options?.find((option) => {
-          if ('value' in option) {
-            return option.value === field.value;
-          }
-
-          return false;
-        }) as SelectOption | undefined;
-
         return (
           <Select
             {...selectProps}
             {...field}
             isDisabled={disabled}
-            defaultValue={value}
-            value={value}
-            onChange={(value) => {
-              field.onChange(value?.value);
-            }}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

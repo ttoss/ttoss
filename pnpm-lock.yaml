@@ -1082,9 +1082,6 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8(react@18.2.0)
     devDependencies:
-      '@iconify/types':
-        specifier: ^2.0.0
-        version: 2.0.0
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config

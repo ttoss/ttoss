@@ -18,9 +18,11 @@ import ReactSelect, {
   components,
 } from 'react-select';
 
+type SelectOptionValue = string;
+
 export type SelectOption = {
   label: string;
-  value: string | number;
+  value: SelectOptionValue;
 };
 
 export type SelectOptions = SelectOption[];
@@ -30,8 +32,13 @@ export type SelectOptions = SelectOption[];
  */
 type IsMulti = false;
 
-export type SelectProps = ReactSelectProps<SelectOption, IsMulti> &
+export type SelectProps = Omit<
+  ReactSelectProps<SelectOption, IsMulti>,
+  'styles' | 'value' | 'onChange' | 'components'
+> &
   SxProp & {
+    value?: SelectOptionValue;
+    onChange?: (value: SelectOptionValue | undefined) => void;
     disabled?: boolean;
     leadingIcon?: IconType;
     trailingIcon?: IconType;
@@ -142,7 +149,7 @@ const SelectContainer = ({
   children,
   ...props
 }: ContainerProps<SelectOption, IsMulti>) => {
-  const { sx, css } = props.selectProps as SelectProps;
+  const { sx, css } = props.selectProps as unknown as SelectProps;
 
   return (
     <Box sx={sx} css={css}>
@@ -158,7 +165,8 @@ const ValueContainer = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
 }: ValueContainerProps<SelectOption, IsMulti>) => {
-  const { leadingIcon, trailingIcon } = props.selectProps as SelectProps;
+  const { leadingIcon, trailingIcon, isSearchable } =
+    props.selectProps as unknown as SelectProps;
 
   const hasError = props.selectProps['aria-invalid'] === 'true';
 
@@ -170,6 +178,14 @@ const ValueContainer = ({
     return 'text';
   })();
 
+  const finalLeadingIcon = (() => {
+    if (!isSearchable) {
+      return leadingIcon;
+    }
+
+    return leadingIcon || 'search';
+  })();
+
   return (
     <Flex
       sx={{
@@ -177,7 +193,7 @@ const ValueContainer = ({
         flex: 1,
       }}
     >
-      {leadingIcon && (
+      {finalLeadingIcon && (
         <Text
           sx={{
             alignSelf: 'center',
@@ -186,7 +202,7 @@ const ValueContainer = ({
             fontSize: 'base',
           }}
         >
-          <Icon icon={leadingIcon} />
+          <Icon icon={finalLeadingIcon} />
         </Text>
       )}
       <Flex
@@ -221,6 +237,14 @@ const ValueContainer = ({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Select = React.forwardRef<any, SelectProps>(
   ({ ...props }, ref) => {
+    const value = props.options?.find((option) => {
+      if ('value' in option) {
+        return option.value === props.value;
+      }
+
+      return false;
+    }) as SelectOption | undefined;
+
     return (
       <ReactSelect<SelectOption, IsMulti>
         ref={ref}
@@ -234,10 +258,21 @@ export const Select = React.forwardRef<any, SelectProps>(
           Placeholder,
           SelectContainer,
           ValueContainer,
-          ...props.components,
         }}
         isDisabled={props.disabled}
         {...props}
+        value={value}
+        onChange={(value) => {
+          props.onChange?.(value?.value);
+        }}
+        styles={{
+          input: (baseStyles) => {
+            return {
+              ...baseStyles,
+              position: 'absolute',
+            };
+          },
+        }}
         /**
          * https://react-select.com/styles#the-classnameprefix-prop
          */
