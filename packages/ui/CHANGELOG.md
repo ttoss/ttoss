@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@4.0.2...@ttoss/ui@4.0.3) (2023-11-23)
+
+### Bug Fixes
+
+- allow number on select ([#433](https://github.com/ttoss/ttoss/issues/433)) ([dbc1ee8](https://github.com/ttoss/ttoss/commit/dbc1ee85fc56b250d7ef9fc21a539732d4d81a77))
+
 ## [4.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@4.0.1...@ttoss/ui@4.0.2) (2023-11-23)
 
 ### Bug Fixes
