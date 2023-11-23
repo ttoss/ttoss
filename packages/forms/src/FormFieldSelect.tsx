@@ -45,6 +45,7 @@ export const FormFieldSelect = <
           <Select
             {...selectProps}
             {...field}
+            isDisabled={disabled}
             defaultValue={value}
             value={value}
             onChange={(value) => {

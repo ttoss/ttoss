@@ -9,6 +9,39 @@ const OPTIONS = [
   { value: 'bmw', label: 'BMW' },
 ];
 
+test('should disable the select', () => {
+  const placeholder = 'Select a car';
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldSelect
+          name="car"
+          label="Cars"
+          options={OPTIONS}
+          disabled
+          placeholder={placeholder}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const select = screen.queryByRole('combobox');
+
+  /**
+   * When a select is disabled, the query returns null, which can be
+   * interpreted as the element is not in the DOM.
+   */
+  expect(select).not.toBeInTheDocument();
+});
+
 test('call onSubmit with correct data by clicking', async () => {
   const user = userEvent.setup({ delay: null });
 
