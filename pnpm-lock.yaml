@@ -50,6 +50,9 @@ importers:
       turbo:
         specifier: ^1.10.16
         version: 1.10.16
+      typescript:
+        specifier: ~5.2.2
+        version: 5.2.2
 
   docs/storybook:
     dependencies:
@@ -236,7 +239,7 @@ importers:
         specifier: ^3.17.1
         version: 3.17.1(typedoc@0.25.3)
       typescript:
-        specifier: ^5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/appsync-api:
@@ -425,7 +428,7 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.9.4)(ts-node@10.9.1)
       typescript:
-        specifier: ^5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/cloud-auth:
@@ -447,7 +450,7 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1(ts-node@10.9.1)(typescript@5.2.2)
       typescript:
-        specifier: ^5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
 
   packages/cloud-roles:
@@ -1377,7 +1380,7 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1
       typescript:
-        specifier: ^5.2.2
+        specifier: ~5.2.2
         version: 5.2.2
       vite:
         specifier: ^4.4.11
