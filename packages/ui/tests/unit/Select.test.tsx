@@ -3,6 +3,38 @@ import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const OPTIONS = ['orange', 'blue', 'red', 'pink'];
 
+test('allow number as value', () => {
+  const options = [
+    {
+      label: 'Orange',
+      value: 0,
+    },
+    {
+      label: 'Blue',
+      value: 1,
+    },
+    {
+      label: 'Red',
+      value: 2,
+    },
+    {
+      label: 'Pink',
+      value: 3,
+    },
+  ];
+
+  render(
+    <Select
+      placeholder="My Select"
+      value={1}
+      onChange={() => {}}
+      options={options}
+    />
+  );
+
+  expect(screen.getByText('Blue')).toBeInTheDocument();
+});
+
 test('work as a controlled component', () => {
   const value = 'orange';
 

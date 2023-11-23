@@ -18,7 +18,7 @@ import ReactSelect, {
   components,
 } from 'react-select';
 
-type SelectOptionValue = string;
+type SelectOptionValue = string | number | boolean;
 
 export type SelectOption = {
   label: string;
