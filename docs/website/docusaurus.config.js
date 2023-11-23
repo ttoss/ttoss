@@ -3,8 +3,9 @@
 
 const path = require('path');
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const { themes } = require('prism-react-renderer');
+const lightTheme = themes.github;
+const darkTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -49,18 +50,20 @@ const config = {
       'react-notifications',
       'theme',
       'ui',
-    ].map((package) => {
+    ].map((pkg) => {
       return [
         'docusaurus-plugin-typedoc',
         {
-          id: package,
-          entryPoints: [`../../packages/${package}/src/index.ts`],
-          tsconfig: `../../packages/${package}/tsconfig.json`,
-          out: `modules/packages/${package}`,
+          id: pkg,
+          entryPoints: [`../../packages/${pkg}/src/index.ts`],
+          tsconfig: `../../packages/${pkg}/tsconfig.json`,
+          out: `modules/packages/${pkg}`,
           sidebar: {
-            categoryLabel: `@ttoss/${package}`,
+            categoryLabel: `@ttoss/${pkg}`,
           },
           excludeExternals: true,
+          excludeNotDocumented: true,
+          excludeNotDocumentedKinds: ['Namespace'],
         },
       ];
     }),
@@ -195,8 +198,8 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: lightTheme,
+        darkTheme: darkTheme,
       },
     }),
   markdown: {

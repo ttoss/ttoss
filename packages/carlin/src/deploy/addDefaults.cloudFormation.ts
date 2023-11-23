@@ -1,4 +1,3 @@
-import { CloudFormation } from 'aws-sdk';
 import {
   CloudFormationTemplate,
   getCurrentBranch,
@@ -7,13 +6,15 @@ import {
   getPackageVersion,
   getProjectName,
 } from '../utils';
+import {
+  CreateStackCommandInput,
+  UpdateStackCommandInput,
+} from '@aws-sdk/client-cloudformation';
 import { NAME } from '../config';
 
 // const logPrefix = 'addDefaultsCloudFormation';
 
-type CloudFormationParams =
-  | CloudFormation.CreateStackInput
-  | CloudFormation.UpdateStackInput;
+type CloudFormationParams = CreateStackCommandInput | UpdateStackCommandInput;
 
 export type Args = {
   params: CloudFormationParams;
@@ -59,6 +60,7 @@ const addDefaultParametersToTemplate: TemplateModifier = async (template) => {
     getProjectName(),
   ]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newParameters: any = {
     Project: { Default: projectName, Type: 'String' },
   };
@@ -156,7 +158,7 @@ export const CRITICAL_RESOURCES_TYPES = [
 const addRetainToCriticalResources: TemplateModifier = async (template) => {
   const environment = getEnvironment();
 
-  Object.entries(template.Resources).forEach(([key, resource]) => {
+  Object.entries(template.Resources).forEach(([, resource]) => {
     if (CRITICAL_RESOURCES_TYPES.includes(resource.Type)) {
       if (!resource.DeletionPolicy && environment) {
         resource.DeletionPolicy = 'Retain';
