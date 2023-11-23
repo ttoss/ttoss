@@ -57,3 +57,10 @@ export const WithSxProps: Story = {
     },
   },
 };
+
+export const NotSearchable: Story = {
+  args: {
+    ...Default.args,
+    isSearchable: false,
+  },
+};
