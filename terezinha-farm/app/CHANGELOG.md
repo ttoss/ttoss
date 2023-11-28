@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.14](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.13...@terezinha-farm/app@0.6.14) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
 ## [0.6.13](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.12...@terezinha-farm/app@0.6.13) (2023-11-23)
 
 **Note:** Version bump only for package @terezinha-farm/app

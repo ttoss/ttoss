@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.0.0...@ttoss/test-utils@2.0.1) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
 # [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@1.24.1...@ttoss/test-utils@2.0.0) (2023-11-23)
 
 ### Features

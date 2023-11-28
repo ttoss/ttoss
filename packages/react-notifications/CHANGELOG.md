@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.18...@ttoss/react-notifications@1.24.19) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
 ## [1.24.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.17...@ttoss/react-notifications@1.24.18) (2023-11-23)
 
 **Note:** Version bump only for package @ttoss/react-notifications
