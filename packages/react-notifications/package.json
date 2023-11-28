@@ -12,6 +12,7 @@
     "directory": "packages/react-notifications"
   },
   "type": "module",
+  "exports": "./dist/esm/index.js",
   "module": "dist/esm/index.js",
   "files": [
     "dist",
