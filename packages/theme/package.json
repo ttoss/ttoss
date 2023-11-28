@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@iconify/icons-eos-icons": "^1.2.6",
-    "@iconify/icons-mdi": "^1.2.47",
+    "@iconify/icons-mdi": "^1.2.48",
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

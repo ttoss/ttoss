@@ -5,6 +5,7 @@ module.exports = {
      * Example https://github.com/testing-library/jest-dom/issues/546
      */
     '@testing-library/jest-dom',
+    'aws-amplify',
     /**
      * change-case v5 is ESM and carlin is CJS.
      */

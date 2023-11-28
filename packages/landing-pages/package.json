@@ -24,7 +24,7 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@iconify/react": "^4.1.0",
+    "@iconify/react": "^4.1.1",
     "react-collapse": "^5.1.1"
   },
   "peerDependencies": {
@@ -38,8 +38,8 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.10",
-    "@types/react": "^18.2.38",
-    "@types/react-collapse": "^5.0.1",
+    "@types/react": "^18.2.39",
+    "@types/react-collapse": "^5.0.4",
     "jest": "^29.7.0",
     "tsup": "^8.0.1"
   },
