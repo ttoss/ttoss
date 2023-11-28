@@ -12,7 +12,7 @@
     "directory": "packages/react-auth"
   },
   "type": "module",
-  "exports": "./dist/esm/index.js",
+  "module": "dist/esm/index.js",
   "files": [
     "dist",
     "i18n",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@ttoss/forms": "workspace:^",
     "@xstate/react": "^3.2.2",
-    "xstate": "^4.37.2"
+    "xstate": "^4.38.3"
   },
   "peerDependencies": {
     "@ttoss/react-i18n": "workspace:^",
@@ -45,7 +45,7 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^18.2.38",
+    "@types/react": "^18.2.39",
     "aws-amplify": "^5.3.11",
     "jest": "^29.7.0",
     "tsup": "^8.0.1"
