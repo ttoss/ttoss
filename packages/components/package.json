@@ -12,8 +12,9 @@
     "directory": "packages/components"
   },
   "type": "module",
-  "exports": "./dist/esm/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -24,7 +25,7 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@emotion/css": "^11.11.2",
     "@theme-ui/css": "^0.16.1",
@@ -58,7 +59,11 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "exports": {
+      ".": "./dist/esm/index.js"
+    },
+    "provenance": true,
+    "types": "./dist/index.d.ts"
   },
   "gitHead": "e2b509ee8717f07f7365191b651dcbb5f080e05a"
 }

@@ -12,8 +12,9 @@
     "directory": "packages/react-auth"
   },
   "type": "module",
-  "exports": "./dist/esm/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "i18n",
@@ -25,7 +26,7 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@ttoss/forms": "workspace:^",
     "@xstate/react": "^3.2.2",
@@ -60,6 +61,10 @@
   },
   "publishConfig": {
     "access": "public",
-    "provenance": true
+    "exports": {
+      ".": "./dist/esm/index.js"
+    },
+    "provenance": true,
+    "types": "./dist/index.d.ts"
   }
 }

@@ -12,8 +12,9 @@
     "directory": "packages/react-notifications"
   },
   "type": "module",
-  "exports": "./dist/esm/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -23,7 +24,7 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
+  "types": "./src/index.ts",
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
@@ -47,7 +48,13 @@
     "node": ">=16"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "publishConfig": {
+      "access": "public",
+      "provenance": true,
+      "exports": {
+        ".": "./dist/esm/index.js"
+      },
+      "types": "./dist/index.d.ts"
+    }
   }
 }
