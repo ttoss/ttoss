@@ -1,5 +1,3 @@
 import { tsupConfig } from '@ttoss/config';
 
-export const tsup = tsupConfig({
-  inject: ['./tsup.inject.js'],
-});
+export const tsup = tsupConfig();

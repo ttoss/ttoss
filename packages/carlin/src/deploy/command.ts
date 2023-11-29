@@ -147,7 +147,9 @@ export const deployCommand: CommandModule<
        * Set stack name.
        */
       .middleware(({ stackName }) => {
-        if (stackName) setPreDefinedStackName(stackName);
+        if (stackName) {
+          setPreDefinedStackName(stackName);
+        }
       })
       /**
        * Set lambdaImage if lambdaDockerfile exists.

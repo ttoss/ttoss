@@ -1,4 +1,3 @@
 {
-  "extends": "@ttoss/config/tsconfig.json",
-  "include": ["src/**/*"]
+  "extends": "@ttoss/config/tsconfig.json"
 }

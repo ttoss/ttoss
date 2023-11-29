@@ -10,6 +10,10 @@ export const defaultConfig = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
+  /**
+   * https://github.com/jestjs/jest/issues/13739#issuecomment-1517190965
+   */
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   fakeTimers: {
     enableGlobally: true,
   },
@@ -25,4 +29,5 @@ export const defaultConfig = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const jestConfig = configCreator<any>(defaultConfig);

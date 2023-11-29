@@ -14,19 +14,20 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./faker": {
       "import": "./dist/esm/faker.js",
-      "require": "./dist/faker.js"
+      "require": "./dist/faker.js",
+      "types": "./dist/faker.d.ts"
     },
     "./relay": {
       "import": "./dist/esm/relay.js",
-      "require": "./dist/relay.js"
+      "require": "./dist/relay.js",
+      "types": "./dist/relay.d.ts"
     }
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
   "files": [
     "dist",
     "src"
@@ -73,18 +74,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "faker": [
-        "./dist/faker.d.ts"
-      ],
-      "relay": [
-        "./dist/relay.d.ts"
-      ]
-    }
   }
 }

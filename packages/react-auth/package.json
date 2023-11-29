@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsup",
     "i18n": "ttoss-i18n",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "sideEffects": false,
   "dependencies": {
@@ -42,6 +42,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@ttoss/cloud-auth": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",

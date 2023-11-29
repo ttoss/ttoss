@@ -9,15 +9,20 @@
         "ast": true
       }
     ],
-    "lib": ["dom", "ES2022"],
+    /**
+     * Set `moduleResolution` to `Bundler` to use with applications that use
+     * webpack, rollup, or other bundlers. If your application uses Node.js
+     * without a bundler, set `moduleResolution` to `NodeNext`.
+     */
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
     "module": "ESNext",
-    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "declaration": true,
     "sourceMap": true,
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "nodenext",
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,

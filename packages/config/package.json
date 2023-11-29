@@ -16,7 +16,8 @@
   "files": [
     "dist",
     "src",
-    "tsconfig.json"
+    "tsconfig.json",
+    "tsconfig.test.json"
   ],
   "scripts": {
     "build": "tsup-node",

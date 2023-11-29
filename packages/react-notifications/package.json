@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "sideEffects": false,
   "peerDependencies": {
@@ -50,15 +50,13 @@
     "node": ">=16"
   },
   "publishConfig": {
-    "publishConfig": {
-      "access": "public",
-      "provenance": true,
-      "exports": {
-        ".": {
-          "types": "./dist/index.d.ts",
-          "import": "./dist/esm/index.js"
-        }
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/esm/index.js"
       }
-    }
+    },
+    "provenance": true
   }
 }
