@@ -28,7 +28,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "types": "./src/index.ts",
   "dependencies": {
     "@emotion/css": "^11.11.2",
     "@theme-ui/css": "^0.16.1",

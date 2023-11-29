@@ -29,7 +29,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "types": "./src/index.ts",
   "dependencies": {
     "@ttoss/forms": "workspace:^",
     "@xstate/react": "^3.2.2",
