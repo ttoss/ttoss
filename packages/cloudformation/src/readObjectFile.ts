@@ -16,12 +16,13 @@ export const readObjectFile = ({ path }: { path: string }) => {
 
   if (extension === 'ts') {
     require('ts-node').register({
-      compilerOptions: { module: 'commonjs' },
+      compilerOptions: { moduleResolution: 'node', module: 'commonjs' },
       moduleTypes: {
         'carlin.*': 'cjs',
       },
       transpileOnly: true,
     });
+
     const tsObj = require(path);
     const obj = tsObj.default || tsObj;
     return typeof obj === 'function' ? obj() : obj;
