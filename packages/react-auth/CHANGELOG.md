@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.14...@ttoss/react-auth@1.7.15) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
 ## [1.7.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.13...@ttoss/react-auth@1.7.14) (2023-11-28)
 
 ### Bug Fixes

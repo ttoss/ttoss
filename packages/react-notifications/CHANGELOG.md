@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.19...@ttoss/react-notifications@1.24.20) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
 ## [1.24.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.18...@ttoss/react-notifications@1.24.19) (2023-11-28)
 
 ### Bug Fixes

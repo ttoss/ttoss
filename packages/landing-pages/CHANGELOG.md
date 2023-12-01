@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.13](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.12...@ttoss/landing-pages@0.10.13) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
 ## [0.10.12](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.11...@ttoss/landing-pages@0.10.12) (2023-11-28)
 
 ### Bug Fixes
