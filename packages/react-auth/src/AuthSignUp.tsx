@@ -107,7 +107,7 @@ export const AuthSignUp = ({ onSignUp, onReturnToSignIn }: AuthSignUpProps) => {
           <Text sx={{ cursor: 'pointer' }} onClick={onReturnToSignIn} as={Link}>
             {intl.formatMessage({
               description: 'Link to sign in on sign up.',
-              defaultMessage: 'I’m already registered',
+              defaultMessage: "I'm already registered",
             })}
           </Text>
         }
