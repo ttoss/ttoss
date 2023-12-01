@@ -12,8 +12,12 @@
     "directory": "packages/react-auth"
   },
   "type": "module",
-  "exports": "./dist/esm/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
   "files": [
     "dist",
     "i18n",
@@ -22,10 +26,9 @@
   "scripts": {
     "build": "tsup",
     "i18n": "ttoss-i18n",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "sideEffects": false,
-  "typings": "./dist/index.d.ts",
   "dependencies": {
     "@ttoss/forms": "workspace:^",
     "@xstate/react": "^3.2.2",
@@ -39,6 +42,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@ttoss/cloud-auth": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
@@ -60,6 +64,12 @@
   },
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/esm/index.js"
+      }
+    },
     "provenance": true
   }
 }

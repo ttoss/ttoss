@@ -1,7 +1,3 @@
 {
-  "extends": "@ttoss/config/tsconfig.json",
-  // supports `import.meta`
-  "compilerOptions": {
-    "module": "es2020"
-  }
+  "extends": "@ttoss/config/tsconfig.json"
 }

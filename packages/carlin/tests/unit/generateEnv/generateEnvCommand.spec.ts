@@ -50,7 +50,7 @@ test('should read from .env if environment is not production', async () => {
 });
 
 test.each([['Development'], ['Test'], ['Staging'], ['Production']])(
-  'should read from .env.Environment if environment is defined',
+  'should read from .env.Environment if environment is defined - %s',
   async (environment) => {
     const content = faker.word.words(10);
 

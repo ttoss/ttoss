@@ -14,15 +14,15 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./shield": {
       "import": "./dist/esm/shield.js",
-      "require": "./dist/shield.js"
+      "require": "./dist/shield.js",
+      "types": "./dist/shield.d.ts"
     }
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
   "bin": {
     "ttoss-graphql-api": "./bin/cli.js"
   },
@@ -35,7 +35,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@graphql-codegen/core": "^4.0.0",
     "@graphql-codegen/typescript": "^4.0.1",
@@ -64,15 +63,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "shield": [
-        "./dist/shield.d.ts"
-      ]
-    }
   }
 }

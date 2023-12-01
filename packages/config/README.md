@@ -154,6 +154,15 @@ Extend default configuration for each `tsconfig.json` (`touch tsconfig.json`) on
 }
 ```
 
+For tests, you can extend the default test configuration `tsconfig.test.json` on the package `tests` folder:
+
+```json title="tests/tsconfig.json"
+{
+  "extends": "@ttoss/config/tsconfig.test.json",
+  "include": ["**/*.test.ts", "**/*.test.tsx"]
+}
+```
+
 ## Extending configurations
 
 Each configuration is customizable and you can extend them with your own. For example, you can use the default `.prettierrc.js` file in your monorepo:

@@ -1,4 +1,5 @@
 import { AuthSignUp } from '../../src/AuthSignUp';
+import { jest } from '@jest/globals';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const onSignUp = jest.fn();

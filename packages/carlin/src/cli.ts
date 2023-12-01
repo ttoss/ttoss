@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-param-reassign */
-import * as yargs from 'yargs';
 import { AWS_DEFAULT_REGION, NAME } from './config';
 import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
 import { constantCase, paramCase } from 'change-case';
 import { deployCommand } from './deploy/command';
 import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
 import { generateEnvCommand } from './generateEnv/generateEnvCommand';
+import { hideBin } from 'yargs/helpers';
 import { unstable_readObjectFile } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
 import findUpSync from 'findup-sync';
 import path from 'path';
+import yargs from 'yargs';
 
 const coerceSetEnvVar = (env: EnvironmentVariables) => {
   return (value: any) => {
@@ -125,7 +126,7 @@ export const cli = () => {
     const names = ['js', 'yml', 'yaml', 'json', 'ts'].map((ext) => {
       return `${NAME}.${ext}`;
     });
-    const paths = [];
+    const paths: string[] = [];
     let currentPath = process.cwd();
     let findUpPath: string | null;
 
@@ -151,7 +152,7 @@ export const cli = () => {
   };
 
   return (
-    yargs
+    yargs(hideBin(process.argv))
       /**
        * It can't be full strict because options may overlap among carlin config
        * files.

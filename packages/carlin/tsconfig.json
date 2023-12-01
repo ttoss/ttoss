@@ -7,10 +7,10 @@
     "declaration": false,
     "downlevelIteration": true,
     "sourceMap": false,
-    "target": "es2019",
-    "module": "CommonJS",
-    "allowJs": true
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "Node"
   },
-  "include": ["src", "tests/unit/generateEnv/generateEnvCommand.spec.ts"],
+  "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }
