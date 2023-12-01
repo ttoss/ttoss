@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.5](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.8.4...@ttoss/cloudformation@0.8.5) (2023-12-01)
+
+### Bug Fixes
+
+- cloudformation read ts files ([#439](https://github.com/ttoss/ttoss/issues/439)) ([9b30d63](https://github.com/ttoss/ttoss/commit/9b30d6302b73b356cdae9874e457eeb67047a0a8))
+
 ## [0.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.8.3...@ttoss/cloudformation@0.8.4) (2023-12-01)
 
 **Note:** Version bump only for package @ttoss/cloudformation
