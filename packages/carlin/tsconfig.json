@@ -7,7 +7,9 @@
     "declaration": false,
     "downlevelIteration": true,
     "sourceMap": false,
-    "allowJs": true
+    "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "Node"
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]
