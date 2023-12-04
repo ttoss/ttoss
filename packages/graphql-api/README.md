@@ -140,7 +140,7 @@ _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github
 This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
 
 ```typescript
-import { composeWithConnection } from '@ttoss/appsync-api';
+import { composeWithConnection } from '@ttoss/graphql-api';
 
 AuthorTC.addResolver({
   name: 'findMany',
