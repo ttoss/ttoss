@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
 import { compile, extract } from '@formatjs/cli-lib';
+import minimist from 'minimist';
 
 const DEFAULT_DIR = 'i18n';
 
@@ -13,7 +14,7 @@ const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled');
 
 const MISSING_DIR = path.join(DEFAULT_DIR, 'missing');
 
-const args = process.argv.slice(2);
+const argv = minimist(process.argv.slice(2));
 
 const getTtossExtractedTranslations = async () => {
   /**
@@ -46,6 +47,7 @@ const getTtossExtractedTranslations = async () => {
     /**
      * Remove duplicates
      */
+    // eslint-disable-next-line max-params
     .filter((dependency, index, array) => {
       return array.indexOf(dependency) === index;
     });
@@ -113,7 +115,7 @@ const getTtossExtractedTranslations = async () => {
         ttossExtractedTranslations,
         extractedTranslationsWithModule
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       continue;
     }
   }
@@ -125,16 +127,16 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Extract
    */
-  const extractedDataAsString = await extract(
-    glob.sync('src/**/*.{ts,tsx}', {
-      ignore: ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
-    }),
-    {
-      idInterpolationPattern: '[sha512:contenthash:base64:6]',
-    }
-  );
 
-  const ignoreTtossPackages = args.includes('--ignore-ttoss-packages');
+  const pattern = argv.pattern || 'src/**/*.{ts,tsx}';
+
+  const ignore = argv.ignore || ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'];
+
+  const extractedDataAsString = await extract(glob.sync(pattern, { ignore }), {
+    idInterpolationPattern: '[sha512:contenthash:base64:6]',
+  });
+
+  const ignoreTtossPackages = argv['ignore-ttoss-packages'];
 
   const ttossExtractedTranslations = await getTtossExtractedTranslations();
 
@@ -157,7 +159,7 @@ const getTtossExtractedTranslations = async () => {
 
   await fs.promises.writeFile(EXTRACT_FILE, finalExtractedData);
 
-  if (args.includes('--no-compile')) {
+  if (argv['no-compile']) {
     return;
   }
 
@@ -217,6 +219,7 @@ const getTtossExtractedTranslations = async () => {
 
         return acc;
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<string, any>
     );
 

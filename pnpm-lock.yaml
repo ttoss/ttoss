@@ -865,6 +865,9 @@ importers:
       glob:
         specifier: ^10.3.10
         version: 10.3.10
+      minimist:
+        specifier: ^1.2.8
+        version: 1.2.8
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
