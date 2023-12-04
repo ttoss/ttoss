@@ -37,7 +37,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.39",
+    "@types/react": "^18.2.41",
     "jest": "^29.7.0",
     "tsup": "^8.0.1"
   },

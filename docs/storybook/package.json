@@ -28,14 +28,14 @@
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
-    "@storybook/addon-actions": "^7.6.0",
-    "@storybook/addon-essentials": "^7.6.0",
-    "@storybook/addon-interactions": "^7.6.0",
-    "@storybook/addon-links": "^7.6.0",
-    "@storybook/addon-mdx-gfm": "^7.6.0",
-    "@storybook/react": "^7.6.0",
-    "@storybook/react-webpack5": "^7.6.0",
+    "@babel/core": "^7.23.5",
+    "@storybook/addon-actions": "^7.6.3",
+    "@storybook/addon-essentials": "^7.6.3",
+    "@storybook/addon-interactions": "^7.6.3",
+    "@storybook/addon-links": "^7.6.3",
+    "@storybook/addon-mdx-gfm": "^7.6.3",
+    "@storybook/react": "^7.6.3",
+    "@storybook/react-webpack5": "^7.6.3",
     "@storybook/testing-library": "^0.2.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
@@ -43,7 +43,7 @@
     "carlin": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "storybook": "^7.6.0",
+    "storybook": "^7.6.3",
     "storybook-addon-locale": "^0.3.6"
   }
 }

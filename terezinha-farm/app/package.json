@@ -23,13 +23,13 @@
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^18.2.39",
+    "@types/react": "^18.2.41",
     "@types/react-dom": "^18.2.17",
-    "@vitejs/plugin-react": "^4.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "carlin": "workspace:^",
-    "rollup-plugin-visualizer": "^5.9.3",
+    "rollup-plugin-visualizer": "^5.10.0",
     "serve": "^14.2.1",
     "typescript": "~5.2.2",
-    "vite": "^5.0.3"
+    "vite": "^5.0.5"
   }
 }
