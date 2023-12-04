@@ -20,11 +20,9 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm workspace @ttoss/storybook run dev",
-    "pretest:compile": "pnpm run pretest:compile:en && pnpm run pretest:compile:ptBR",
-    "pretest:compile:en": "formatjs compile i18n/lang/en.json --ast --out-file i18n/compiled/en.json",
-    "pretest:compile:ptBR": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled/pt-BR.json",
-    "pretest:extract": "formatjs extract 'tests/**/*.ts*' --out-file i18n/lang/en.json",
-    "pretest": "pnpm run pretest:extract && pnpm run pretest:compile",
+    "i18n": "ttoss-i18n",
+    "pretest:compile": "ttoss-i18n",
+    "pretest": "pnpm run i18n",
     "test": "jest"
   },
   "sideEffects": false,
