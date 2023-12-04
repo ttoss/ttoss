@@ -1,1 +1,14 @@
-{}
+{
+  "IDLw9V": {
+    "defaultMessage": "My name is {name}.",
+    "description": "My name is"
+  },
+  "JyBnk6": {
+    "defaultMessage": "Untranslated Message",
+    "description": "Untranslated Message"
+  },
+  "tPkQ38": {
+    "defaultMessage": "Other message",
+    "description": "Other message"
+  }
+}

@@ -20,8 +20,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm workspace @ttoss/storybook run dev",
-    "i18n": "ttoss-i18n",
-    "pretest:compile": "ttoss-i18n",
+    "i18n": "ttoss-i18n --pattern './tests/**/*.test.tsx'",
     "pretest": "pnpm run i18n",
     "test": "jest"
   },

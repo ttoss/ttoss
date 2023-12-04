@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@formatjs/cli-lib": "^6.3.3",
-    "glob": "^10.3.10"
+    "glob": "^10.3.10",
+    "minimist": "^1.2.8"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
