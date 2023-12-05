@@ -42,7 +42,7 @@ test('should read from .env.DEFAULT_ENVIRONMENT if environment is not defined', 
     }
   );
 
-  await parseCli('generate-env', {});
+  await parseCli('generate-env', { environment: undefined });
 
   expect(fs.promises.writeFile).toHaveBeenCalledWith(
     expect.stringContaining('/.env'),
