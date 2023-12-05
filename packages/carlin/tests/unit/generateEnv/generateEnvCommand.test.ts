@@ -97,7 +97,7 @@ test('should read envs from path', async () => {
     }
   );
 
-  await parseCli('generate-env', { path: envsPath });
+  await parseCli('generate-env', { path: envsPath, environment: 'Staging' });
 
   expect(fs.promises.writeFile).toHaveBeenCalledWith(
     expect.stringContaining('/.env'),
