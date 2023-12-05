@@ -22,19 +22,19 @@ const farmQuery = graphql`
 `;
 
 const FarmWrongPaginationList = ({
-  farmQuery,
+  farmQueryRef,
 }: {
-  farmQuery: PreloadedQuery<FarmWrongPaginationQuery>;
+  farmQueryRef: PreloadedQuery<FarmWrongPaginationQuery>;
 }) => {
-  const data2 = usePreloadedQuery<FarmWrongPaginationQuery>(
+  const data = usePreloadedQuery<FarmWrongPaginationQuery>(
     farmQuery,
-    farmQuery
+    farmQueryRef
   );
 
   return (
     <React.Suspense fallback="Loading...">
       <ul>
-        {data2?.farms?.edges?.map((obj) => {
+        {data?.farms?.edges?.map((obj) => {
           return <li key={obj?.node?.name}>{obj?.node?.name}</li>;
         })}
       </ul>
@@ -54,36 +54,24 @@ export const FarmWrongPagination = () => {
 
   const [first, setFirst] = React.useState(2);
 
-  // React.useEffect(() => {
-  //   loadQuery({ first });
-  // }, [first]);
+  React.useEffect(() => {
+    loadQuery({ first });
+  }, [first]);
 
   return (
     <React.Suspense fallback="Loading...">
-      {!farmQueryRef && (
-        <Button
-          onClick={() => {
-            return loadQuery({ first });
-          }}
-        >
-          First Load
-        </Button>
-      )}
+      <Button
+        onClick={() => {
+          setFirst((prev) => {
+            return prev + 1;
+          });
+        }}
+      >
+        Load More
+      </Button>
 
       {!!farmQueryRef && (
-        <>
-          <Button
-            onClick={() => {
-              setFirst((prev) => {
-                return prev + 1;
-              });
-              loadQuery({ first });
-            }}
-          >
-            Load More
-          </Button>
-          <FarmWrongPaginationList farmQuery={farmQueryRef} />
-        </>
+        <FarmWrongPaginationList farmQueryRef={farmQueryRef} />
       )}
     </React.Suspense>
   );
