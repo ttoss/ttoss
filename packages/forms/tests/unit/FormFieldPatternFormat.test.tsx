@@ -58,9 +58,6 @@ test('should display error messages', async () => {
 
   const RenderForm = () => {
     const formMethods = useForm({
-      defaultValues: {
-        name: 'input1',
-      },
       mode: 'all',
       resolver: yupResolver(schema),
     });

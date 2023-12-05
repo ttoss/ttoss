@@ -9,7 +9,7 @@
     "dev": "pnpm start",
     "docusaurus": "docusaurus",
     "serve": "docusaurus serve",
-    "start": "docusaurus start",
+    "start": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus start",
     "swizzle": "docusaurus swizzle",
     "write-heading-ids": "docusaurus write-heading-ids",
     "write-translations": "docusaurus write-translations"

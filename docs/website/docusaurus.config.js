@@ -51,6 +51,9 @@ const config = {
       'theme',
       'ui',
     ].map((pkg) => {
+      /**
+       * https://github.com/tgreyuk/typedoc-plugin-markdown/tree/master/packages/docusaurus-plugin-typedoc#multi-instance
+       */
       return [
         'docusaurus-plugin-typedoc',
         {

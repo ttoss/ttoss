@@ -74,5 +74,18 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "faker": [
+        "./dist/faker.d.ts"
+      ],
+      "relay": [
+        "./dist/relay.d.ts"
+      ]
+    }
   }
 }

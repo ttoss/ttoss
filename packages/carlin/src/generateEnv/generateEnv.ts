@@ -5,14 +5,16 @@ import log from 'npmlog';
 
 const logPrefix = 'generate-env';
 
-const getEnvFilePath = ({ envFileName }: { envFileName: string }) => {
-  return path.resolve(process.cwd(), envFileName);
-};
-
-const readEnvFile = async ({ envFileName }: { envFileName: string }) => {
+const readEnvFile = async ({
+  envFileName,
+  envsPath,
+}: {
+  envFileName: string;
+  envsPath: string;
+}) => {
   try {
     const content = await fs.promises.readFile(
-      getEnvFilePath({ envFileName }),
+      path.resolve(process.cwd(), envsPath, envFileName),
       'utf8'
     );
     return content;
@@ -28,48 +30,47 @@ const writeEnvFile = async ({
   envFileName: string;
   content: string;
 }) => {
-  return fs.promises.writeFile(getEnvFilePath({ envFileName }), content);
+  return fs.promises.writeFile(
+    path.resolve(process.cwd(), envFileName),
+    content
+  );
 };
 
 /**
  * Generate environment for packages using `carlin`. If [environment](/docs/CLI#environment)
- * isn't defined, `carlin` will read `.env` file if exists, merge with
- * additional environment variables and write the result to `.env.local` file. If it's `Environment`,
- * it'll read `.env.Environment` file instead.
- *
- * We chose the name `.env.local` because it works for [Next.js](https://nextjs.org/docs/basic-features/environment-variables)
- * and [CRA](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used) projects.
+ * isn't defined, `carlin` will read `.env.Staging` file if exists and write
+ * `.env` file. If it's `Environment`, it'll read `.env.Environment` file instead.
+ * For example, if `environment` is `Production`, `carlin` will read `.env.Production`
  */
-export const generateEnv = async () => {
-  const environment = getEnvironment();
+export const generateEnv = async ({
+  defaultEnvironment,
+  path: envsPath,
+}: {
+  defaultEnvironment: string;
+  path: string;
+}) => {
+  const environment = getEnvironment() || defaultEnvironment;
 
-  const envFileName = environment ? `.env.${environment}` : '.env';
+  const envFileName = `.env.${environment}`;
 
-  let envFile = await readEnvFile({ envFileName });
+  const envFile = await readEnvFile({ envFileName, envsPath });
 
   if (!envFile) {
-    if (environment) {
-      log.info(
-        logPrefix,
-        "Env file %s doesn't exist, reading .env.",
-        envFileName
-      );
-    }
+    log.info(
+      logPrefix,
+      "Env file %s doesn't exist. Skip generating env file.",
+      envFileName
+    );
 
-    envFile = await readEnvFile({ envFileName: '.env' });
-
-    if (!envFile) {
-      log.info(logPrefix, "Env file %s doesn't exist.", '.env');
-      return;
-    }
+    return;
   }
 
-  await writeEnvFile({ content: envFile, envFileName: '.env.local' });
+  await writeEnvFile({ content: envFile, envFileName: '.env' });
 
   log.info(
     logPrefix,
     'Generate env file %s from %s successfully.',
-    '.env.local',
+    '.env',
     envFileName
   );
 };
