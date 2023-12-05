@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { QueryUserArgs } from '../../../schema/types';
+import { QueryuserArgs } from '../../../schema/types';
 import { ResolverResolveParams } from '@ttoss/graphql-api';
 
 export const findUserById = ({
   args,
-}: ResolverResolveParams<any, any, QueryUserArgs>) => {
+}: ResolverResolveParams<any, any, QueryuserArgs>) => {
   return { id: args.id, name: 'John Doe' };
 };

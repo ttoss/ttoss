@@ -3,8 +3,11 @@ import { App } from './App';
 import { AuthProvider } from '@ttoss/react-auth';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
+import { RelayEnvironmentProvider } from 'react-relay';
 import { ThemeProvider } from '@ttoss/ui';
+import { environment } from './RelayEnvironment';
 import ReactDOM from 'react-dom/client';
+
 import './amplify';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -13,7 +16,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <I18nProvider>
         <NotificationsProvider>
           <AuthProvider>
-            <App />
+            <RelayEnvironmentProvider environment={environment}>
+              <App />
+            </RelayEnvironmentProvider>
           </AuthProvider>
         </NotificationsProvider>
       </I18nProvider>

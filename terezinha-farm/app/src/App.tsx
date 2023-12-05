@@ -3,6 +3,8 @@ import { Auth, useAuth } from '@ttoss/react-auth';
 import { Button, Stack } from '@ttoss/ui';
 import { Markdown } from '@ttoss/components';
 
+import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
+
 const markdown = '# ~Hi~, *Pluto*!';
 
 export const App = () => {
@@ -24,6 +26,8 @@ export const App = () => {
         Logout
       </Button>
       <Markdown>{markdown}</Markdown>
+
+      <FarmWrongPagination />
     </Stack>
   );
 };
