@@ -14,6 +14,7 @@ const farmQuery = graphql`
     farms(first: $first) {
       edges {
         node {
+          id
           name
         }
       }
@@ -34,8 +35,8 @@ const FarmWrongPaginationList = ({
   return (
     <React.Suspense fallback="Loading...">
       <ul>
-        {data?.farms?.edges?.map((obj) => {
-          return <li key={obj?.node?.name}>{obj?.node?.name}</li>;
+        {data.farms?.edges?.map((obj) => {
+          return <li key={obj.node.id}>{obj.node.name}</li>;
         })}
       </ul>
     </React.Suspense>

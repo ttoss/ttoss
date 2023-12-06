@@ -12,16 +12,18 @@ import './amplify';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <I18nProvider>
-        <NotificationsProvider>
-          <AuthProvider>
-            <RelayEnvironmentProvider environment={environment}>
-              <App />
-            </RelayEnvironmentProvider>
-          </AuthProvider>
-        </NotificationsProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <RelayEnvironmentProvider environment={environment}>
+      <ThemeProvider>
+        <I18nProvider>
+          <NotificationsProvider>
+            <AuthProvider>
+              <React.Suspense fallback="Loading...">
+                <App />
+              </React.Suspense>
+            </AuthProvider>
+          </NotificationsProvider>
+        </I18nProvider>
+      </ThemeProvider>
+    </RelayEnvironmentProvider>
   </React.StrictMode>
 );
