@@ -4,12 +4,14 @@
   "version": "0.6.16",
   "type": "module",
   "scripts": {
-    "build": "relay-compiler && tsc && vite build",
+    "prebuild": "pnpm relay",
+    "build": "tsc && vite build",
     "bundle": "pnpm build && serve -s stats",
     "deploy": "carlin deploy static-app",
     "dev": "vite",
     "i18n": "ttoss-i18n",
     "preview": "vite preview",
+    "prerelay": "pnpm run --filter=@terezinha-farm/api build-schema",
     "relay": "relay-compiler"
   },
   "dependencies": {
