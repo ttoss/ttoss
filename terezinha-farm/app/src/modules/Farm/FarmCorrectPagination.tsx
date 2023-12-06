@@ -7,7 +7,7 @@ import {
   useQueryLoader,
 } from 'react-relay';
 
-import { Button, Flex } from '@ttoss/ui';
+import { Button, Flex, Heading, HelpText } from '@ttoss/ui';
 import { FarmCorrectPaginationFragment_query$key } from './__generated__/FarmCorrectPaginationFragment_query.graphql';
 import { FarmCorrectPaginationQuery } from './__generated__/FarmCorrectPaginationQuery.graphql';
 
@@ -53,6 +53,13 @@ const FarmCorrectPaginationList = ({
   return (
     <React.Suspense>
       <Flex sx={{ flexDirection: 'column', gap: 'md', alignItems: 'start' }}>
+        <ul>
+          {data.farms?.edges?.map((obj) => {
+            return <li key={obj?.node?.name}>{obj?.node?.name}</li>;
+          })}
+          {isLoadingNext && <li key="loading">Loading...</li>}
+        </ul>
+
         {hasNext && (
           <Button
             disabled={isLoadingNext}
@@ -64,12 +71,6 @@ const FarmCorrectPaginationList = ({
             Load More
           </Button>
         )}
-        <ul>
-          {data.farms?.edges?.map((obj) => {
-            return <li key={obj?.node?.name}>{obj?.node?.name}</li>;
-          })}
-          {isLoadingNext && <li key="loading">Loading...</li>}
-        </ul>
       </Flex>
     </React.Suspense>
   );
@@ -89,6 +90,10 @@ export const FarmCorrectPagination = () => {
 
   return (
     <React.Suspense fallback="Loading...">
+      <Heading variant="h3">FarmCorrectPagination</Heading>
+
+      <HelpText>Description why is correct</HelpText>
+
       {!!farmQueryRef && (
         <FarmCorrectPaginationList farmQueryRef={farmQueryRef} />
       )}

@@ -28,7 +28,7 @@ export const App = () => {
       </Button>
       <Markdown>{markdown}</Markdown>
 
-      <Flex sx={{ flex: '1' }}>
+      <Flex sx={{ paddingX: 'xl' }}>
         <Box sx={{ flex: 1 }}>
           <FarmWrongPagination />
         </Box>

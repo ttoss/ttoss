@@ -6,7 +6,7 @@ import {
   useQueryLoader,
 } from 'react-relay';
 
-import { Button } from '@ttoss/ui';
+import { Button, Heading, HelpText } from '@ttoss/ui';
 import { FarmWrongPaginationQuery } from './__generated__/FarmWrongPaginationQuery.graphql';
 
 const farmQuery = graphql`
@@ -61,6 +61,13 @@ export const FarmWrongPagination = () => {
 
   return (
     <React.Suspense fallback="Loading...">
+      <Heading variant="h3">FarmWrongPagination</Heading>
+      <HelpText>Description why is wrong</HelpText>
+
+      {!!farmQueryRef && (
+        <FarmWrongPaginationList farmQueryRef={farmQueryRef} />
+      )}
+
       <Button
         onClick={() => {
           setFirst((prev) => {
@@ -70,10 +77,6 @@ export const FarmWrongPagination = () => {
       >
         Load More
       </Button>
-
-      {!!farmQueryRef && (
-        <FarmWrongPaginationList farmQueryRef={farmQueryRef} />
-      )}
     </React.Suspense>
   );
 };
