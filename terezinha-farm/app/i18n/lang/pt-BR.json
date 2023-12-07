@@ -1,0 +1,167 @@
+{
+  "/J+02x": {
+    "defaultMessage": "Log in",
+    "description": "Button label.",
+    "module": "@ttoss/react-auth"
+  },
+  "0XOzcH": {
+    "defaultMessage": "Campo obrigatório",
+    "description": "Required field.",
+    "module": "@ttoss/react-auth"
+  },
+  "42HafR": {
+    "defaultMessage": "Código",
+    "description": "Code",
+    "module": "@ttoss/react-auth"
+  },
+  "5E12mO": {
+    "defaultMessage": "Email",
+    "description": "Email label.",
+    "module": "@ttoss/react-auth"
+  },
+  "5oOshZ": {
+    "defaultMessage": "Insira seu endereço de email",
+    "description": "Required field.",
+    "module": "@ttoss/react-auth"
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancelar",
+    "description": "Cancel",
+    "module": "@ttoss/react-auth"
+  },
+  "9cApwd": {
+    "defaultMessage": "Insira um endereço de email válido, por favor",
+    "description": "Invalid email.",
+    "module": "@ttoss/react-auth"
+  },
+  "BtK6KR": {
+    "defaultMessage": "Esqueceu sua senha?",
+    "description": "Forgot password?",
+    "module": "@ttoss/react-auth"
+  },
+  "EZ3YF2": {
+    "defaultMessage": "Cadastre-se",
+    "description": "Sign up",
+    "module": "@ttoss/react-auth"
+  },
+  "F2iS37": {
+    "defaultMessage": "Log in",
+    "description": "Sign in title.",
+    "module": "@ttoss/react-auth"
+  },
+  "KY2T6J": {
+    "defaultMessage": "Código",
+    "description": "Sign up confirmation code",
+    "module": "@ttoss/react-auth"
+  },
+  "NJ57Qj": {
+    "defaultMessage": "O campo Confirmar senha é obrigatório",
+    "description": "Confirm Password is required.",
+    "module": "@ttoss/react-auth"
+  },
+  "OhDL0i": {
+    "defaultMessage": "Email inválido",
+    "description": "Invalid email.",
+    "module": "@ttoss/react-auth"
+  },
+  "PylVqx": {
+    "defaultMessage": "Senha",
+    "description": "Password label.",
+    "module": "@ttoss/react-auth"
+  },
+  "S3pjKw": {
+    "defaultMessage": "Mínimo {value} caracteres",
+    "description": "Minimum {value} characters.",
+    "module": "@ttoss/react-auth"
+  },
+  "S4bbEj": {
+    "defaultMessage": "Recuperando senha",
+    "description": "Recovering Password",
+    "module": "@ttoss/react-auth"
+  },
+  "SnONhb": {
+    "defaultMessage": "Insira um endereço de email válido, por favor",
+    "description": "Please, insert a valid e-mail",
+    "module": "@ttoss/react-auth"
+  },
+  "TZ4WUk": {
+    "defaultMessage": "A senha requer {value} caracteres",
+    "description": "Password must be at least {value} characters long.",
+    "module": "@ttoss/react-auth"
+  },
+  "UNttd+": {
+    "defaultMessage": "Confirma",
+    "description": "Confirm",
+    "module": "@ttoss/react-auth"
+  },
+  "URJDrG": {
+    "defaultMessage": "Cadastre-se",
+    "description": "Create account.",
+    "module": "@ttoss/react-auth"
+  },
+  "WU/CqP": {
+    "defaultMessage": "Senhas não são as mesmas",
+    "description": "Passwords are not the same",
+    "module": "@ttoss/react-auth"
+  },
+  "XreZg+": {
+    "defaultMessage": "Email registrado",
+    "description": "Registered Email",
+    "module": "@ttoss/react-auth"
+  },
+  "cGR2eI": {
+    "defaultMessage": "Confirmação",
+    "description": "Confirmation",
+    "module": "@ttoss/react-auth"
+  },
+  "d1YCuH": {
+    "defaultMessage": "Insira seu endereço de email",
+    "description": "Email is a required field.",
+    "module": "@ttoss/react-auth"
+  },
+  "kdFYba": {
+    "defaultMessage": "O campo de senha é obrigatório",
+    "description": "Password is required.",
+    "module": "@ttoss/react-auth"
+  },
+  "lY+cuM": {
+    "defaultMessage": "Confirma senha",
+    "description": "Confirm Password label.",
+    "module": "@ttoss/react-auth"
+  },
+  "lZvoYL": {
+    "defaultMessage": "Cadastre-se agora",
+    "description": "Sign up now",
+    "module": "@ttoss/react-auth"
+  },
+  "mZzmNV": {
+    "defaultMessage": "Recuperando senha",
+    "description": "Recover Password",
+    "module": "@ttoss/react-auth"
+  },
+  "oayEC3": {
+    "defaultMessage": "Cadastre-se",
+    "description": "Title on sign up.",
+    "module": "@ttoss/react-auth"
+  },
+  "rx8HF/": {
+    "defaultMessage": "Já estou cadastrado",
+    "description": "Link to sign in on sign up.",
+    "module": "@ttoss/react-auth"
+  },
+  "D1C6fR": {
+    "defaultMessage": "O campo deve ter pelo menos {min} caracteres",
+    "description": "Min length field",
+    "module": "@ttoss/react-auth"
+  },
+  "MfWGyg": {
+    "defaultMessage": "Campo é obrigatório",
+    "description": "Field is required",
+    "module": "@ttoss/react-auth"
+  },
+  "ZhaPt0": {
+    "defaultMessage": "Valor inválido para campo do tipo {type}",
+    "description": "Invalid Value",
+    "module": "@ttoss/react-auth"
+  }
+}

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { IntlProvider } from 'react-intl';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MessagesType = any;
 
 // eslint-disable-next-line no-unused-vars
@@ -23,12 +24,14 @@ export type I18nConfigContextProps = Omit<
   'LoadLocaleData'
 > & {
   defaultLocale: string;
+  messages: MessagesType;
   // eslint-disable-next-line no-unused-vars
   setLocale: (language: string) => void;
 };
 
 export const I18nConfigContext = React.createContext<I18nConfigContextProps>({
   defaultLocale: DEFAULT_LOCALE,
+  messages: [],
   setLocale: () => {
     return null;
   },
@@ -40,14 +43,34 @@ export const I18nProvider = ({
   loadLocaleData,
   ...intlConfig
 }: I18nProviderProps) => {
-  const [locale, setLocale] = React.useState(initialLocale || DEFAULT_LOCALE);
+  /**
+   * locale state exist to setlocale provided by website on 'I18nConfigContext.Provider' and
+   * to use in loadLocaleData function
+   */
+  const [locale, setLocale] = React.useState<string>(
+    initialLocale || DEFAULT_LOCALE
+  );
 
-  const [messages, setMessages] = React.useState<MessagesType>();
+  /**
+   * messagesAndLocale state exist because locale and messages depend on each other
+   * so, they must be defined togheter to load translations correctly
+   * if not, the website will take the 'locale' before take the translation package, so the 'message' will be undefined
+   * and it will display an MISSING TRANSALTION error on console.
+   */
+  const [messagesAndLocale, setMessagesAndLocale] = React.useState<{
+    messages?: MessagesType;
+    locale: string;
+  }>({
+    locale: DEFAULT_LOCALE,
+  });
 
   React.useEffect(() => {
-    if (loadLocaleData) {
-      loadLocaleData(locale).then((message) => {
-        return setMessages(message);
+    if (loadLocaleData && locale) {
+      loadLocaleData(locale).then((messages) => {
+        setMessagesAndLocale({
+          messages,
+          locale,
+        });
       });
     }
   }, [loadLocaleData, locale]);
@@ -55,16 +78,17 @@ export const I18nProvider = ({
   return (
     <I18nConfigContext.Provider
       value={{
-        defaultLocale: DEFAULT_LOCALE,
         locale,
+        defaultLocale: DEFAULT_LOCALE,
+        messages: messagesAndLocale.messages,
         setLocale,
         ...intlConfig,
       }}
     >
       <IntlProvider
         defaultLocale={DEFAULT_LOCALE}
-        locale={locale}
-        messages={messages}
+        locale={messagesAndLocale.locale}
+        messages={messagesAndLocale.messages}
         {...intlConfig}
       >
         <>{children}</>
