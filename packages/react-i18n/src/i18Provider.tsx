@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, MessageFormatElement } from 'react-intl';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MessagesType = any;
+export type Messages =
+  | Record<string, string>
+  | Record<string, MessageFormatElement[]>;
 
-// eslint-disable-next-line no-unused-vars
-export type LoadLocaleData = (locale: string) => Promise<MessagesType>;
+export type LoadLocaleData = (locale: string) => Promise<Messages> | Messages;
 
 export type I18nProviderProps = {
   locale?: string;
@@ -24,14 +24,13 @@ export type I18nConfigContextProps = Omit<
   'LoadLocaleData'
 > & {
   defaultLocale: string;
-  messages: MessagesType;
-  // eslint-disable-next-line no-unused-vars
+  messages?: Messages;
   setLocale: (language: string) => void;
 };
 
 export const I18nConfigContext = React.createContext<I18nConfigContextProps>({
   defaultLocale: DEFAULT_LOCALE,
-  messages: [],
+  messages: {},
   setLocale: () => {
     return null;
   },
@@ -44,21 +43,24 @@ export const I18nProvider = ({
   ...intlConfig
 }: I18nProviderProps) => {
   /**
-   * locale state exist to setlocale provided by website on 'I18nConfigContext.Provider' and
-   * to use in loadLocaleData function
+   * This is state is a internal state of the I18nProvider. Users modify it
+   * through the `setLocale` function or by changing the `locale` prop. It
+   * triggers the useEffect below to load the locale data.
    */
   const [locale, setLocale] = React.useState<string>(
     initialLocale || DEFAULT_LOCALE
   );
 
   /**
-   * messagesAndLocale state exist because locale and messages depend on each other
-   * so, they must be defined togheter to load translations correctly
-   * if not, the website will take the 'locale' before take the translation package, so the 'message' will be undefined
-   * and it will display an MISSING TRANSALTION error on console.
+   * This state exists because of the `loadLocaleData` async characteristic.
+   * It is used to store the locale and the loaded messages because `messages`
+   * can be undefined while they are being loaded. This way, we need to sync
+   * the `messages` with a `locale` before passing to the IntlProvider.
+   * If we pass `locale` defined and `messages` undefined, the IntlProvider
+   * will display a MISSING TRANSLATION error on console.
    */
   const [messagesAndLocale, setMessagesAndLocale] = React.useState<{
-    messages?: MessagesType;
+    messages?: Messages;
     locale: string;
   }>({
     locale: DEFAULT_LOCALE,
@@ -66,11 +68,11 @@ export const I18nProvider = ({
 
   React.useEffect(() => {
     if (loadLocaleData && locale) {
-      loadLocaleData(locale).then((messages) => {
-        setMessagesAndLocale({
-          messages,
-          locale,
-        });
+      /**
+       * https://stackoverflow.com/a/27760489/8786986
+       */
+      Promise.resolve(loadLocaleData(locale)).then((messages) => {
+        setMessagesAndLocale({ messages, locale });
       });
     }
   }, [loadLocaleData, locale]);

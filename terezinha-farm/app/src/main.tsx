@@ -10,8 +10,7 @@ import './amplify.ts';
 const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
     case 'pt-BR': {
-      const ptBR = (await import('../i18n/compiled/pt-BR.json')).default;
-      return ptBR;
+      return (await import('../i18n/compiled/pt-BR.json')).default;
     }
     default:
       return (await import('../i18n/compiled/en.json')).default;
