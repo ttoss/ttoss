@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.9](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.8...@ttoss/appsync-api@0.17.9) (2023-12-05)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.17.8](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.7...@ttoss/appsync-api@0.17.8) (2023-12-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.17.7](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.6...@ttoss/appsync-api@0.17.7) (2023-12-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.17.6](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.5...@ttoss/appsync-api@0.17.6) (2023-11-28)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.17.5](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.4...@ttoss/appsync-api@0.17.5) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
 ## [0.17.4](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.3...@ttoss/appsync-api@0.17.4) (2023-10-19)
 
 **Note:** Version bump only for package @ttoss/appsync-api

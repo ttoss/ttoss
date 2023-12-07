@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.7...@docs/storybook@2.0.8) (2023-12-05)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.0.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.6...@docs/storybook@2.0.7) (2023-12-04)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.0.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.5...@docs/storybook@2.0.6) (2023-12-01)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.0.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.4...@docs/storybook@2.0.5) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [2.0.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.3...@docs/storybook@2.0.4) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [2.0.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.2...@docs/storybook@2.0.3) (2023-11-23)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.0.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.1...@docs/storybook@2.0.2) (2023-11-23)
+
+### Bug Fixes
+
+- add disable to FormFieldSelect ([#432](https://github.com/ttoss/ttoss/issues/432)) ([aa14f74](https://github.com/ttoss/ttoss/commit/aa14f746c58035983391a367284f246b3ffb78f4))
+
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.0...@docs/storybook@2.0.1) (2023-11-23)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.42.0...@docs/storybook@2.0.0) (2023-11-22)
+
+### Features
+
+- Task 1363 pedro arantes criar select com filtering e scroll infinito ([#429](https://github.com/ttoss/ttoss/issues/429)) ([1caaedf](https://github.com/ttoss/ttoss/commit/1caaedf19b4270a25781a538c86e641e48a12624))
+
+### BREAKING CHANGES
+
+- update Select API. Removed children and added options.
+
 # [1.42.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@1.41.0...@docs/storybook@1.42.0) (2023-10-30)
 
 ### Features

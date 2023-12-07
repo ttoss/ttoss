@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.20...@ttoss/react-notifications@1.24.21) (2023-12-05)
+
+### Bug Fixes
+
+- carlin generate env algorithm ([#447](https://github.com/ttoss/ttoss/issues/447)) ([7a8789f](https://github.com/ttoss/ttoss/commit/7a8789ff662dcff1cc5870a7ca7d72e578179020))
+
+## [1.24.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.19...@ttoss/react-notifications@1.24.20) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [1.24.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.18...@ttoss/react-notifications@1.24.19) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [1.24.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.17...@ttoss/react-notifications@1.24.18) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.16...@ttoss/react-notifications@1.24.17) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.15...@ttoss/react-notifications@1.24.16) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.14...@ttoss/react-notifications@1.24.15) (2023-11-22)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 ## [1.24.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.13...@ttoss/react-notifications@1.24.14) (2023-10-19)
 
 **Note:** Version bump only for package @ttoss/react-notifications

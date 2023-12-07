@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/app",
-  "version": "0.6.9",
+  "version": "0.6.18",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
@@ -23,13 +23,13 @@
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^18.2.29",
-    "@types/react-dom": "^18.2.12",
-    "@vitejs/plugin-react": "^4.1.0",
+    "@types/react": "^18.2.39",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.0",
     "carlin": "workspace:^",
-    "rollup-plugin-visualizer": "^5.9.2",
+    "rollup-plugin-visualizer": "^5.9.3",
     "serve": "^14.2.1",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.11"
+    "typescript": "~5.2.2",
+    "vite": "^5.0.3"
   }
 }

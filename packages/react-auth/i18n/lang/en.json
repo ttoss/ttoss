@@ -23,6 +23,10 @@
     "defaultMessage": "Cancel",
     "description": "Cancel"
   },
+  "8GMUPk": {
+    "defaultMessage": "I'm already registered",
+    "description": "Link to sign in on sign up."
+  },
   "9cApwd": {
     "defaultMessage": "Please, insert a valid e-mail",
     "description": "Invalid email."
@@ -114,10 +118,6 @@
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up."
-  },
-  "rx8HF/": {
-    "defaultMessage": "I’m already registered",
-    "description": "Link to sign in on sign up."
   },
   "D1C6fR": {
     "defaultMessage": "Field must be at least {min} characters",

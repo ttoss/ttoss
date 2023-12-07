@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.14](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.13...@ttoss/landing-pages@0.10.14) (2023-12-05)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.10.13](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.12...@ttoss/landing-pages@0.10.13) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [0.10.12](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.11...@ttoss/landing-pages@0.10.12) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [0.10.11](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.10...@ttoss/landing-pages@0.10.11) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.10.10](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.9...@ttoss/landing-pages@0.10.10) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.10.9](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.8...@ttoss/landing-pages@0.10.9) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.10.8](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.7...@ttoss/landing-pages@0.10.8) (2023-11-22)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 ## [0.10.7](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.10.6...@ttoss/landing-pages@0.10.7) (2023-10-19)
 
 **Note:** Version bump only for package @ttoss/landing-pages

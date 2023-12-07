@@ -1,8 +1,7 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.6.6",
+  "version": "1.6.11",
   "description": "Theme for packages.",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Rayza Oliveira <rayza.ocr@gmail.com>"
@@ -15,15 +14,15 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./Bruttal": {
       "import": "./dist/esm/themes/Bruttal/Bruttal.js",
-      "require": "./dist/themes/Bruttal/Bruttal.js"
+      "require": "./dist/themes/Bruttal/Bruttal.js",
+      "types": "./dist/themes/Bruttal/Bruttal.d.ts"
     }
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
   "files": [
     "dist",
     "src",
@@ -34,7 +33,6 @@
     "test": "jest"
   },
   "sideEffects": true,
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@iconify/icons-carbon": "^1.2.20",
     "deepmerge": "^4.3.1"
@@ -44,27 +42,17 @@
   },
   "devDependencies": {
     "@iconify/icons-eos-icons": "^1.2.6",
-    "@iconify/icons-mdi": "^1.2.47",
+    "@iconify/icons-mdi": "^1.2.48",
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^29.7.0",
     "theme-ui": "^0.16.1",
-    "tsup": "^7.2.0"
+    "tsup": "^8.0.1"
   },
   "keywords": [],
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "Bruttal": [
-        "./dist/themes/Bruttal/Bruttal.d.ts"
-      ]
-    }
   }
 }

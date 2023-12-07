@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.17...@ttoss/react-auth@1.7.18) (2023-12-05)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.16...@ttoss/react-auth@1.7.17) (2023-12-04)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.15...@ttoss/react-auth@1.7.16) (2023-12-01)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.14...@ttoss/react-auth@1.7.15) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [1.7.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.13...@ttoss/react-auth@1.7.14) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [1.7.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.12...@ttoss/react-auth@1.7.13) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.11...@ttoss/react-auth@1.7.12) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.10...@ttoss/react-auth@1.7.11) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [1.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.9...@ttoss/react-auth@1.7.10) (2023-11-22)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.7.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.8...@ttoss/react-auth@1.7.9) (2023-10-30)
 
 **Note:** Version bump only for package @ttoss/react-auth

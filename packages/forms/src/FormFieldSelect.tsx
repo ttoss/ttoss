@@ -1,110 +1,45 @@
-import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
+import { FieldPath, FieldValues } from 'react-hook-form';
 import { FormField, FormFieldProps } from './FormField';
 import { Select, type SelectProps } from '@ttoss/ui';
 
-type FormRadioOption = {
-  value: string | number;
-  label: string;
-};
-
-type SelectSwitchProps =
-  | (SelectProps & { placeholder?: never })
-  | (SelectProps & { defaultValue?: never });
-
-const checkDefaultValue = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->({
-  options,
-  defaultValue,
-  placeholder,
-}: {
-  options: Array<FormRadioOption>;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
-  placeholder?: string;
-}): FieldPathValue<TFieldValues, TName> => {
-  if (defaultValue) {
-    return defaultValue;
-  }
-
-  const hasEmptyValue = options.some((opt) => {
-    return opt.value === '' || opt.value === 0;
-  });
-
-  const EMPTY_VALUE = '' as FieldPathValue<TFieldValues, TName>;
-
-  if (placeholder && hasEmptyValue) {
-    return EMPTY_VALUE;
-  }
-
-  if (placeholder && !hasEmptyValue) {
-    options.unshift({
-      label: placeholder,
-      value: '',
-    });
-    return EMPTY_VALUE;
-  }
-
-  if (!placeholder && defaultValue) return EMPTY_VALUE;
-  if (options.length === 0) return EMPTY_VALUE;
-
-  return options?.[0]?.value as FieldPathValue<TFieldValues, TName>;
-};
-
 type FormFieldSelectProps<
-  TFieldValues extends FieldValues,
-  TName extends FieldPath<TFieldValues>
-> = SelectSwitchProps &
-  FormFieldProps & {
-    label?: string;
-    name: FieldPath<TFieldValues>;
-    options: FormRadioOption[];
-    defaultValue?: FieldPathValue<TFieldValues, TName>;
-  };
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Omit<SelectProps, 'defaultValue'> & FormFieldProps<TFieldValues, TName>;
 
 export const FormFieldSelect = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
   label,
   name,
-  options,
+  id,
+  defaultValue,
   sx,
+  css,
+  disabled,
+  tooltip,
+  onTooltipClick,
   ...selectProps
-}: FormFieldSelectProps<TFieldValues, TName>) => {
-  const { defaultValue, placeholder } = selectProps;
-
-  const checkedDefaultValue = checkDefaultValue<TFieldValues, TName>({
-    options,
-    defaultValue,
-    placeholder,
-  });
-
+}: FormFieldSelectProps<TFieldValues>) => {
   return (
     <FormField
       name={name}
       label={label}
-      disabled={selectProps.disabled}
-      tooltip={selectProps.tooltip}
-      onTooltipClick={selectProps.onTooltipClick}
+      id={id}
+      defaultValue={defaultValue}
+      disabled={disabled}
+      tooltip={tooltip}
+      onTooltipClick={onTooltipClick}
       sx={sx}
-      defaultValue={checkedDefaultValue}
+      css={css}
       render={({ field, fieldState }) => {
         return (
           <Select
             {...selectProps}
             {...field}
-            {...{ ...selectProps, defaultValue: undefined }}
+            isDisabled={disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
-          >
-            {options.map((option: FormRadioOption) => {
-              return (
-                <option key={option.label} value={option.value}>
-                  {option.label}
-                </option>
-              );
-            })}
-          </Select>
+          />
         );
       }}
     />

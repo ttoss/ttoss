@@ -1,8 +1,7 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.26.0",
+  "version": "1.26.3",
   "description": "Monorepo setup for ttoss",
-  "license": "UNLICENSED",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -30,9 +29,9 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/npmlog": "^4.1.4",
-    "@types/yargs": "^17.0.24",
-    "tsup": "^7.2.0"
+    "@types/npmlog": "^7.0.0",
+    "@types/yargs": "^17.0.32",
+    "tsup": "^8.0.1"
   },
   "publishConfig": {
     "access": "public",

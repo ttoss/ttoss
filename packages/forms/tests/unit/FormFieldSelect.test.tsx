@@ -3,14 +3,46 @@ import { Form, FormFieldSelect, useForm, yup, yupResolver } from '../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 import { useEffect, useState } from 'react';
 
-const RADIO_OPTIONS = [
-  { value: '', label: 'Select a car' },
-  { value: 'Ferrari', label: 'Ferrari' },
-  { value: 'Mercedes', label: 'Mercedes' },
-  { value: 'BMW', label: 'BMW' },
+const OPTIONS = [
+  { value: 'ferrari', label: 'Ferrari' },
+  { value: 'mercedes', label: 'Mercedes' },
+  { value: 'bmw', label: 'BMW' },
 ];
 
-test('call onSubmit with correct data', async () => {
+test('should disable the select', () => {
+  const placeholder = 'Select a car';
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldSelect
+          name="car"
+          label="Cars"
+          options={OPTIONS}
+          disabled
+          placeholder={placeholder}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const select = screen.queryByRole('combobox');
+
+  /**
+   * When a select is disabled, the query returns null, which can be
+   * interpreted as the element is not in the DOM.
+   */
+  expect(select).not.toBeInTheDocument();
+});
+
+test('call onSubmit with correct data by clicking', async () => {
   const user = userEvent.setup({ delay: null });
 
   const onSubmit = jest.fn();
@@ -20,7 +52,7 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
+        <FormFieldSelect name="car" label="Cars" options={OPTIONS} />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -28,14 +60,38 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.selectOptions(
-    screen.getByRole('combobox'),
-    screen.getByText('BMW')
-  );
+  await user.click(screen.getByRole('combobox'));
+
+  await user.click(screen.getByText('BMW'));
 
   await user.click(screen.getByText('Submit'));
 
-  expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'bmw' });
+});
+
+test('call onSubmit with correct data by typing', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldSelect name="car" label="Cars" options={OPTIONS} />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  await user.type(screen.getByRole('combobox'), 'BMW{enter}');
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'bmw' });
 });
 
 test('should display error messages and error icon', async () => {
@@ -55,7 +111,7 @@ test('should display error messages and error icon', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
+        <FormFieldSelect name="car" label="Cars" options={OPTIONS} />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -88,8 +144,8 @@ test('should set a default value', async () => {
         <FormFieldSelect
           name="car"
           label="Cars"
-          options={RADIO_OPTIONS}
-          defaultValue="Ferrari"
+          options={OPTIONS}
+          defaultValue="ferrari"
         />
         <Button type="submit">Submit</Button>
       </Form>
@@ -98,8 +154,12 @@ test('should set a default value', async () => {
 
   render(<RenderForm />);
 
+  const ferrariLabel = await screen.findByText('Ferrari');
+
+  expect(ferrariLabel).toBeInTheDocument();
+
   await user.click(screen.getByText('Submit'));
-  expect(onSubmit).toHaveBeenCalledWith({ car: 'Ferrari' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'ferrari' });
 });
 
 test('should have a default a value and change correctly', async () => {
@@ -115,8 +175,8 @@ test('should have a default a value and change correctly', async () => {
         <FormFieldSelect
           name="car"
           label="Cars"
-          options={RADIO_OPTIONS}
-          defaultValue="Ferrari"
+          options={OPTIONS}
+          defaultValue="ferrari"
         />
         <Button type="submit">Submit</Button>
       </Form>
@@ -125,23 +185,16 @@ test('should have a default a value and change correctly', async () => {
 
   render(<RenderForm />);
 
-  await user.selectOptions(
-    screen.getByRole('combobox'),
-    screen.getByText('BMW')
-  );
+  await user.click(screen.getByRole('combobox'));
+
+  await user.click(screen.getByText('BMW'));
 
   await user.click(screen.getByText('Submit'));
 
-  expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'bmw' });
 });
 
-test('should have an empty default when set a placeholder', async () => {
-  const RADIO_OPTIONS = [
-    { value: 'Ferrari', label: 'Ferrari' },
-    { value: 'Mercedes', label: 'Mercedes' },
-    { value: 'BMW', label: 'BMW' },
-  ];
-
+test('should return undefined when no option is selected', async () => {
   const user = userEvent.setup({ delay: null });
 
   const onSubmit = jest.fn();
@@ -154,7 +207,7 @@ test('should have an empty default when set a placeholder', async () => {
         <FormFieldSelect
           name="car"
           label="Cars"
-          options={RADIO_OPTIONS}
+          options={OPTIONS}
           placeholder="Select a car"
         />
         <Button type="submit">Submit</Button>
@@ -164,48 +217,15 @@ test('should have an empty default when set a placeholder', async () => {
 
   render(<RenderForm />);
 
-  await user.click(screen.getByText('Submit'));
-
-  expect(
-    RADIO_OPTIONS.some((opt) => {
-      return opt.value === '';
-    })
-  ).toBeTruthy();
-
-  expect(onSubmit).toHaveBeenCalledWith({ car: '' });
-});
-
-test('should have the first option as default when nor placeholder, defaultValue or empty value is set', async () => {
-  const RADIO_OPTIONS = [
-    { value: 'Ferrari', label: 'Ferrari' },
-    { value: 'Mercedes', label: 'Mercedes' },
-    { value: 'BMW', label: 'BMW' },
-  ];
-
-  const user = userEvent.setup({ delay: null });
-
-  const onSubmit = jest.fn();
-
-  const RenderForm = () => {
-    const formMethods = useForm();
-
-    return (
-      <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldSelect name="car" label="Cars" options={RADIO_OPTIONS} />
-        <Button type="submit">Submit</Button>
-      </Form>
-    );
-  };
-
-  render(<RenderForm />);
+  expect(screen.getByText('Select a car')).toBeInTheDocument();
 
   await user.click(screen.getByText('Submit'));
 
-  expect(onSubmit).toHaveBeenCalledWith({ car: 'Ferrari' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: undefined });
 });
 
 test('When fetching, should display values correctly', async () => {
-  const RADIO_OPTIONS = [
+  const OPTIONS = [
     { value: 'Ferrari', label: 'Ferrari' },
     { value: 'Mercedes', label: 'Mercedes' },
     { value: 'BMW', label: 'BMW' },
@@ -226,10 +246,10 @@ test('When fetching, should display values correctly', async () => {
     >([]);
 
     useEffect(() => {
-      setFormOptions(RADIO_OPTIONS);
+      setFormOptions(OPTIONS);
       // fetch are side effects, so, if the options depends on fetch and have a default value, the field should be reseted in the effect
-      resetField('car', { defaultValue: 'Ferrari' });
-    }, []);
+      resetField('car', { defaultValue: 'ferrari' });
+    }, [resetField]);
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
@@ -243,5 +263,5 @@ test('When fetching, should display values correctly', async () => {
 
   await user.click(screen.getByText('Submit'));
 
-  expect(onSubmit).toHaveBeenCalledWith({ car: 'Ferrari' });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'ferrari' });
 });

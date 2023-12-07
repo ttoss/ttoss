@@ -1,4 +1,5 @@
 import { camelCase } from 'change-case';
+import { hideBin } from 'yargs/helpers';
 import { pipelines } from './pipelines';
 import yargs from 'yargs';
 
@@ -57,11 +58,12 @@ export const options = {
 } as const;
 
 export type CicdCommandOptions = Partial<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key in keyof typeof options]: any;
 }>;
 
 export const getCicdConfig = () => {
-  const { parsed } = yargs.config();
+  const { parsed } = yargs(hideBin(process.argv)).config();
 
   if (!parsed) {
     return false;
@@ -77,6 +79,7 @@ export const getCicdConfig = () => {
     }
 
     return acc;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }, {} as any);
 
   return config;

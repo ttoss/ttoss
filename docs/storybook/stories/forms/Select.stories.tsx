@@ -31,7 +31,6 @@ const Template: Story = () => {
         defaultValue="Mercedes"
         label="What car do you prefer?"
         options={[
-          { value: '', label: 'Select a car' },
           { value: 'Ferrari', label: 'Ferrari' },
           { value: 'Mercedes', label: 'Mercedes' },
           { value: 'BMW', label: 'BMW' },

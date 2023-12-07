@@ -1,9 +1,12 @@
 import { AuthSignIn } from '../../src/AuthSignIn';
+import { jest } from '@jest/globals';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const onSignIn = jest.fn();
 
 const onSignUp = jest.fn();
+
+const onForgotPassword = jest.fn();
 
 const userForm = {
   email: 'user@example.com',
@@ -13,7 +16,13 @@ const userForm = {
 test('Should not call the onSubmit function if click on the login button without filling in the fields', async () => {
   const user = userEvent.setup({ delay: null });
 
-  render(<AuthSignIn onSignIn={onSignIn} onSignUp={onSignUp} />);
+  render(
+    <AuthSignIn
+      onSignIn={onSignIn}
+      onSignUp={onSignUp}
+      onForgotPassword={onForgotPassword}
+    />
+  );
 
   const [submitButton] = screen.getAllByRole('button');
 
@@ -25,7 +34,13 @@ test('Should not call the onSubmit function if click on the login button without
 test('Should call the onSubmit function if click on the login button with filling in the fields', async () => {
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-  render(<AuthSignIn onSignIn={onSignIn} onSignUp={onSignUp} />);
+  render(
+    <AuthSignIn
+      onSignIn={onSignIn}
+      onSignUp={onSignUp}
+      onForgotPassword={onForgotPassword}
+    />
+  );
 
   const emailInput = screen.getByLabelText('Email');
   const password = screen.getByLabelText('Password');

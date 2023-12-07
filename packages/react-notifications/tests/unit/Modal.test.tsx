@@ -6,7 +6,7 @@ import {
   NotifyParams,
   useNotifications,
 } from '../../src';
-import { act, render, screen, userEvent } from '@ttoss/test-utils/.';
+import { act, render, screen, userEvent } from '@ttoss/test-utils';
 
 const expectNotBeInDocument = (element: HTMLElement) => {
   expect(() => {
@@ -93,10 +93,14 @@ describe('Modal Notifications Test', () => {
 
     // expect to disappear after click
     await act(async () => {
-      if (modalClose) await user.click(modalClose);
+      if (modalClose) {
+        await user.click(modalClose);
+      }
     });
     expectNotBeInDocument(notification);
-    if (modalClose) expectNotBeInDocument(modalClose);
+    if (modalClose) {
+      expectNotBeInDocument(modalClose);
+    }
   });
 
   test('Should render an array of notifications', async () => {

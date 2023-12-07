@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.26](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.25...@ttoss/layouts@0.1.26) (2023-12-05)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.1.25](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.24...@ttoss/layouts@0.1.25) (2023-12-01)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.1.24](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.23...@ttoss/layouts@0.1.24) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [0.1.23](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.22...@ttoss/layouts@0.1.23) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.1.22](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.21...@ttoss/layouts@0.1.22) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.1.21](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.20...@ttoss/layouts@0.1.21) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.1.20](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.19...@ttoss/layouts@0.1.20) (2023-11-22)
+
+**Note:** Version bump only for package @ttoss/layouts
+
 ## [0.1.19](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.1.18...@ttoss/layouts@0.1.19) (2023-10-19)
 
 **Note:** Version bump only for package @ttoss/layouts

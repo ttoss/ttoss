@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.6](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.3.5...@ttoss/graphql-api-server@0.3.6) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [0.3.5](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.3.4...@ttoss/graphql-api-server@0.3.5) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [0.3.4](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.3.3...@ttoss/graphql-api-server@0.3.4) (2023-11-23)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
 ## [0.3.3](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.3.2...@ttoss/graphql-api-server@0.3.3) (2023-10-10)
 
 **Note:** Version bump only for package @ttoss/graphql-api-server

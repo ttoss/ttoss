@@ -140,7 +140,7 @@ _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github
 This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
 
 ```typescript
-import { composeWithConnection } from '@ttoss/appsync-api';
+import { composeWithConnection } from '@ttoss/graphql-api';
 
 AuthorTC.addResolver({
   name: 'findMany',
@@ -190,7 +190,7 @@ schemaComposer.Query.addFields({
 });
 ```
 
-When you `composeWithConnection` a type, it will add the resolver `connection` to the type, so you can add to `Query` or any other type:
+When you `composeWithConnection` a type composer, it will add the resolver `connection` to the type composer, so you can add to `Query` or any other type composer. For example:
 
 ```ts
 schemaComposer.Query.addFields({
@@ -204,6 +204,8 @@ The resolver `connection` has the following arguments based on the [Relay Connec
 - `after`: the cursor to start the query.
 - `last`: the number of nodes to return.
 - `before`: the cursor to start the query.
+- `limit`: the limit of nodes to return. It's the `first` or `last` argument plus one. It's used to know if there are more nodes to return to set `hasNextPage` or `hasPreviousPage` [PageInfo](https://relay.dev/graphql/connections.htm#sec-undefined.PageInfo) fields. For example, if `first` is `10`, `limit` will be `11`. If the resolver returns `11` nodes, the resolver will return `10` but it knows there are more nodes to return, so `hasNextPage` will be `true`.
+- `skip`: it's the `count` minus `last`. It only works on [backward pagination](https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments).
 - `sort`: the sort option to use. It's the keys of the `sort` object. In our example, it's `ASC` and `DESC`.
 - `filter`: the filter to use. It'll exist if you add the `filter` to `findManyResolver` for example, the implementation below will add the `filter` argument with the `name` and `book` fields:
 
@@ -250,9 +252,13 @@ The resolver that will be used to find the nodes. It receives the following argu
         last?: number;
         before?: string;
         /**
+         * It's the `first` or `last` argument plus one.
+         */
+        limit: number;
+        /**
          * The `filter` argument, if provided on the query.
          */
-        filter: {
+        filter?: {
           name: string;
           book: string;
         };
@@ -277,6 +283,8 @@ The resolver that will be used to find the nodes. It receives the following argu
 - `rawQuery`: an object created by `beforeCursorQuery` or `afterCursorQuery` methods from [sort](#sort) option.
 
 #### `countResolver`
+
+The resolver that will be used to count the nodes.
 
 #### `sort`
 

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.6](https://github.com/ttoss/ttoss/compare/carlin@1.31.5...carlin@1.31.6) (2023-12-05)
+
+### Bug Fixes
+
+- carlin generate env algorithm ([#447](https://github.com/ttoss/ttoss/issues/447)) ([7a8789f](https://github.com/ttoss/ttoss/commit/7a8789ff662dcff1cc5870a7ca7d72e578179020))
+- carlin tests ([5b63e03](https://github.com/ttoss/ttoss/commit/5b63e03e8d641b5e35140cfbd6566710ef33bd67))
+
+## [1.31.5](https://github.com/ttoss/ttoss/compare/carlin@1.31.4...carlin@1.31.5) (2023-12-01)
+
+**Note:** Version bump only for package carlin
+
+## [1.31.4](https://github.com/ttoss/ttoss/compare/carlin@1.31.3...carlin@1.31.4) (2023-12-01)
+
+### Bug Fixes
+
+- package.json config error ([#436](https://github.com/ttoss/ttoss/issues/436)) ([868a3dd](https://github.com/ttoss/ttoss/commit/868a3dd033061d82edfc5a93497d0b91ac2e98e8))
+
+## [1.31.3](https://github.com/ttoss/ttoss/compare/carlin@1.31.2...carlin@1.31.3) (2023-11-28)
+
+### Bug Fixes
+
+- remove exports and change to module ([#435](https://github.com/ttoss/ttoss/issues/435)) ([4e6ea74](https://github.com/ttoss/ttoss/commit/4e6ea74fbf646df3f677221ebad78becca2c26d4))
+
+## [1.31.2](https://github.com/ttoss/ttoss/compare/carlin@1.31.1...carlin@1.31.2) (2023-11-23)
+
+**Note:** Version bump only for package carlin
+
 ## [1.31.1](https://github.com/ttoss/ttoss/compare/carlin@1.31.0...carlin@1.31.1) (2023-10-19)
 
 **Note:** Version bump only for package carlin

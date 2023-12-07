@@ -1,50 +1,37 @@
 /* eslint-disable global-require */
-const fs = require('fs');
-const yaml = require('js-yaml');
-
-const { cli } = require('carlin/dist/cli');
-
-const {
-  baseStackTemplate,
-} = require('carlin/dist/deploy/baseStack/deployBaseStack');
-
-const { defaultTemplatePaths } = require('carlin/dist/deploy/cloudFormation');
-
-const {
-  getStaticAppTemplate,
-} = require('carlin/dist/deploy/staticApp/staticApp.template');
-
-const {
-  getBuildSpec,
-  getLambdaLayerBuilderTemplate,
-} = require('carlin/dist/deploy/baseStack/getLambdaLayerBuilder.template');
-
-const {
-  getLambdaLayerTemplate,
-} = require('carlin/dist/deploy/lambdaLayer/deployLambdaLayer');
-
-const {
-  getCicdTemplate,
-  getRepositoryImageBuilder,
+import {
   ECR_REPOSITORY_LOGICAL_ID,
   REPOSITORY_ECS_TASK_DEFINITION_LOGICAL_ID,
-} = require('carlin/dist/deploy/cicd/cicd.template');
-
-const { getComment, getComments, toHtml } = require('./comments');
-
-const {
-  global: testsCoverageThreshold,
-} = require('carlin/jest.coverageThreshold');
+  getCicdTemplate,
+  getRepositoryImageBuilder,
+} from 'carlin/src/deploy/cicd/cicd.template';
+import { baseStackTemplate } from 'carlin/src/deploy/baseStack/deployBaseStack';
+import { cli } from 'carlin/src/cli';
+import { defaultTemplatePaths } from 'carlin/src/deploy/cloudFormation';
+import {
+  getBuildSpec,
+  getLambdaLayerBuilderTemplate,
+} from 'carlin/src/deploy/baseStack/getLambdaLayerBuilder.template';
+import { getComment, getComments, toHtml } from './comments';
+import { getLambdaLayerTemplate } from 'carlin/src/deploy/lambdaLayer/deployLambdaLayer';
+import { getStaticAppTemplate } from 'carlin/src/deploy/staticApp/staticApp.template';
+import { global as testsCoverageThreshold } from 'carlin/jest.coverageThreshold';
+import yaml from 'js-yaml';
 
 const cliApi = async (cmd) => {
   return new Promise((resolve) => {
+    // eslint-disable-next-line max-params
     cli().parse(cmd, { help: true }, (_, __, output) => {
       resolve(output);
     });
   });
 };
 
-module.exports = () => {
+/**
+ * https://docusaurus.io/docs/api/plugin-methods/lifecycle-apis
+ */
+// eslint-disable-next-line import/no-default-export, @typescript-eslint/no-unused-vars
+export default (context, options) => {
   return {
     name: 'carlin',
     loadContent: async () => {

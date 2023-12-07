@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.4.2...@terezinha-farm/config@0.4.3) (2023-12-01)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
+## [0.4.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.4.1...@terezinha-farm/config@0.4.2) (2023-11-28)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
+## [0.4.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.4.0...@terezinha-farm/config@0.4.1) (2023-11-23)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
 # 0.4.0 (2023-10-10)
 
 ### Features

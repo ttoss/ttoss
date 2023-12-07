@@ -1,7 +1,6 @@
 {
   "name": "@ttoss/i18n-cli",
-  "version": "0.7.0",
-  "license": "UNLICENSED",
+  "version": "0.7.4",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
@@ -22,12 +21,13 @@
     "build": "tsup-node"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^6.1.0",
-    "glob": "^10.3.3"
+    "@formatjs/cli-lib": "^6.3.3",
+    "glob": "^10.3.10",
+    "minimist": "^1.2.8"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^7.2.0"
+    "tsup": "^8.0.1"
   },
   "publishConfig": {
     "access": "public",

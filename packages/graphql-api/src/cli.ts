@@ -11,6 +11,10 @@ const logPrefix = 'graphql-api';
 
 register({
   transpileOnly: true,
+  compilerOptions: {
+    module: 'NodeNext',
+    moduleResolution: 'NodeNext',
+  },
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,11 +38,9 @@ const argv: any = yargs(process.argv.slice(2)).argv;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { schemaComposer } = require(path.resolve(
-      process.cwd(),
-      'src',
-      'schemaComposer.ts'
-    ));
+    const { schemaComposer } = require(
+      path.resolve(process.cwd(), 'src', 'schemaComposer.ts')
+    );
 
     const sdl = schemaComposer.toSDL();
 

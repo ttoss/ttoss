@@ -1,7 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "1.25.1",
-  "license": "UNLICENSED",
+  "version": "1.25.6",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
@@ -21,29 +20,26 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm workspace @ttoss/storybook run dev",
-    "pretest:compile": "pnpm run pretest:compile:en && pnpm run pretest:compile:ptBR",
-    "pretest:compile:en": "formatjs compile i18n/lang/en.json --ast --out-file i18n/compiled/en.json",
-    "pretest:compile:ptBR": "formatjs compile i18n/lang/pt-BR.json --ast --out-file i18n/compiled/pt-BR.json",
-    "pretest:extract": "formatjs extract 'tests/**/*.ts*' --out-file i18n/lang/en.json",
-    "pretest": "pnpm run pretest:extract && pnpm run pretest:compile",
+    "i18n": "ttoss-i18n --pattern './tests/**/*.test.tsx'",
+    "pretest": "pnpm run i18n",
     "test": "jest"
   },
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "react-intl": "^6.3.1"
+    "react-intl": "^6.5.5"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@formatjs/cli": "^6.0.4",
+    "@formatjs/cli": "^6.2.4",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.29",
+    "@types/react": "^18.2.39",
     "jest": "^29.7.0",
-    "tsup": "^7.2.0"
+    "tsup": "^8.0.1"
   },
   "keywords": [
     "React",

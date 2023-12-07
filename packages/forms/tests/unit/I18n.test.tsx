@@ -10,7 +10,7 @@ import {
 } from '../../src';
 import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
 import { JSXElementConstructor, PropsWithChildren, useMemo } from 'react';
-import { render, screen, userEvent } from '@ttoss/test-utils/.';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 import { setLocale } from 'yup';
 
 describe('test i18n messages', () => {
@@ -77,6 +77,7 @@ describe('test i18n messages', () => {
   const renderForm = (
     wrapper = true,
     customProvider?: JSXElementConstructor<{
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       children: React.ReactElement<any, string | JSXElementConstructor<any>>;
     }>
   ) => {

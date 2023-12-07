@@ -1,7 +1,7 @@
-import { createServer } from '@ttoss/graphql-api/server';
+import { createServer } from '@ttoss/graphql-api-server';
 import { schemaComposer } from '../src/schemaComposer';
 
-const server = createServer({ schemaComposer });
+const server = createServer({ schemaComposer, graphiql: true });
 
 server.listen(4000, () => {
   // eslint-disable-next-line no-console

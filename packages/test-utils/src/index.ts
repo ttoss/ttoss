@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import { RenderOptions, render, renderHook } from '@testing-library/react';
 import { createSerializer, matchers } from '@emotion/jest';
