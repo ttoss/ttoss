@@ -2,19 +2,33 @@ import * as React from 'react';
 import { I18nProvider, LoadLocaleData } from '../src';
 import { setOptions } from '@ttoss/test-utils';
 
-export const loadLocaleData: LoadLocaleData = (locale) => {
+const delay = (ms: number) => {
+  return new Promise((resolve) => {
+    return setTimeout(resolve, ms);
+  });
+};
+
+export const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
-    case 'pt-BR':
-      return import('../i18n/compiled/pt-BR.json');
+    case 'pt-BR': {
+      await delay(1000);
+      return (await import('../i18n/compiled/pt-BR.json')).default;
+    }
     default:
-      return import('../i18n/compiled/en.json');
+      return (await import('../i18n/compiled/en.json')).default;
   }
 };
 
-export const Providers = ({ children }: { children: React.ReactNode }) => {
+export const Providers = ({
+  children,
+  locale,
+}: {
+  children: React.ReactNode;
+  locale?: string;
+}) => {
   return (
     <I18nProvider
-      locale={window.navigator.language}
+      locale={locale || window.navigator.language}
       loadLocaleData={loadLocaleData}
     >
       {children}

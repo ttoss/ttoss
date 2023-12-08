@@ -7,8 +7,8 @@ import {
   useI18n,
 } from '../../src';
 import { PropsWithChildren } from 'react';
+import { Providers, loadLocaleData } from '../setupTests';
 import { act, render, renderHook, screen } from '@ttoss/test-utils';
-import { loadLocaleData } from '../setupTests';
 
 const messages = defineMessages({
   myNameIs: {
@@ -95,8 +95,12 @@ test('formatMessage - change en -> pt-BR -> en', async () => {
     'Other message'
   );
 
-  await act(() => {
+  act(() => {
     result.current.setLocale('pt-BR');
+  });
+
+  await act(async () => {
+    await jest.runAllTimersAsync();
   });
 
   expect(result.current.locale).toBe('pt-BR');
@@ -104,8 +108,12 @@ test('formatMessage - change en -> pt-BR -> en', async () => {
     'Outra mensagem'
   );
 
-  await act(() => {
+  act(() => {
     result.current.setLocale('en');
+  });
+
+  await act(async () => {
+    await jest.runAllTimersAsync();
   });
 
   expect(result.current.locale).toBe('en');
@@ -123,30 +131,27 @@ test('FormattedMessage component', async () => {
 
   render(<Component />);
 
-  /**
-   * https://testing-library.com/docs/dom-testing-library/api-async/#findby-queries
-   */
-  expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
+  await act(async () => {
+    /**
+     * https://testing-library.com/docs/dom-testing-library/api-async/#findby-queries
+     */
+    expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
+  });
 });
 
-test('Custom Error Handler', async () => {
+test('log error when message is not translated', async () => {
   const { result } = renderHook(() => {
     return useI18n();
   });
-  const { result: errorHandledResult } = renderHook(
-    () => {
-      return useI18n();
-    },
-    { wrapper: ProviderWithErrorHandler }
-  );
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const mock = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  await act(async () => {
-    await result.current.setLocale('pt-BR');
-    await errorHandledResult.current.setLocale('pt-BR');
+  act(() => {
+    result.current.setLocale('pt-BR');
   });
+
+  await jest.runAllTimersAsync();
 
   result.current.intl.formatMessage({
     defaultMessage: 'Untranslated Message',
@@ -156,21 +161,57 @@ test('Custom Error Handler', async () => {
   // eslint-disable-next-line no-console
   expect(console.error).toHaveBeenCalled();
 
-  // From here, the test verifies if an provider with error handler is working properly
+  mock.mockRestore();
+  mock.mockClear();
+});
 
-  mock.mockReset();
+test('should not log error when onError is handled', () => {
+  const { result } = renderHook(
+    () => {
+      return useI18n();
+    },
+    { wrapper: ProviderWithErrorHandler }
+  );
 
-  errorHandledResult.current.intl.formatMessage({
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const mock = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  result.current.setLocale('pt-BR');
+
+  result.current.intl.formatMessage({
     defaultMessage: 'Untranslated Message',
     description: 'Untranslated Message',
   });
 
-  /**
-   * https://stackoverflow.com/questions/47706157/jest-how-to-assert-that-function-is-not-called
-   */
   // eslint-disable-next-line no-console
   expect(console.error).not.toHaveBeenCalled();
 
   mock.mockRestore();
   mock.mockClear();
+});
+
+/**
+ * https://github.com/ttoss/ttoss/issues/443
+ */
+test('should not call onError while loading messages', async () => {
+  const onError = jest.fn();
+
+  renderHook(
+    () => {
+      return useI18n();
+    },
+    {
+      wrapper: Providers,
+      initialProps: {
+        locale: 'pt-BR',
+        onError,
+      },
+    }
+  );
+
+  await act(async () => {
+    await jest.runAllTimersAsync();
+  });
+
+  expect(onError).not.toHaveBeenCalled();
 });

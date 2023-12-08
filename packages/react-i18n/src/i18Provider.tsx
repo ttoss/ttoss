@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, MessageFormatElement } from 'react-intl';
 
-export type MessagesType = any;
+export type Messages =
+  | Record<string, string>
+  | Record<string, MessageFormatElement[]>;
 
-// eslint-disable-next-line no-unused-vars
-export type LoadLocaleData = (locale: string) => Promise<MessagesType>;
+export type LoadLocaleData = (locale: string) => Promise<Messages> | Messages;
 
 export type I18nProviderProps = {
   locale?: string;
@@ -23,12 +24,13 @@ export type I18nConfigContextProps = Omit<
   'LoadLocaleData'
 > & {
   defaultLocale: string;
-  // eslint-disable-next-line no-unused-vars
+  messages?: Messages;
   setLocale: (language: string) => void;
 };
 
 export const I18nConfigContext = React.createContext<I18nConfigContextProps>({
   defaultLocale: DEFAULT_LOCALE,
+  messages: {},
   setLocale: () => {
     return null;
   },
@@ -40,14 +42,37 @@ export const I18nProvider = ({
   loadLocaleData,
   ...intlConfig
 }: I18nProviderProps) => {
-  const [locale, setLocale] = React.useState(initialLocale || DEFAULT_LOCALE);
+  /**
+   * This is state is a internal state of the I18nProvider. Users modify it
+   * through the `setLocale` function or by changing the `locale` prop. It
+   * triggers the useEffect below to load the locale data.
+   */
+  const [locale, setLocale] = React.useState<string>(
+    initialLocale || DEFAULT_LOCALE
+  );
 
-  const [messages, setMessages] = React.useState<MessagesType>();
+  /**
+   * This state exists because of the `loadLocaleData` async characteristic.
+   * It is used to store the locale and the loaded messages because `messages`
+   * can be undefined while they are being loaded. This way, we need to sync
+   * the `messages` with a `locale` before passing to the IntlProvider.
+   * If we pass `locale` defined and `messages` undefined, the IntlProvider
+   * will display a MISSING TRANSLATION error on console.
+   */
+  const [messagesAndLocale, setMessagesAndLocale] = React.useState<{
+    messages?: Messages;
+    locale: string;
+  }>({
+    locale: DEFAULT_LOCALE,
+  });
 
   React.useEffect(() => {
-    if (loadLocaleData) {
-      loadLocaleData(locale).then((message) => {
-        return setMessages(message);
+    if (loadLocaleData && locale) {
+      /**
+       * https://stackoverflow.com/a/27760489/8786986
+       */
+      Promise.resolve(loadLocaleData(locale)).then((messages) => {
+        setMessagesAndLocale({ messages, locale });
       });
     }
   }, [loadLocaleData, locale]);
@@ -55,16 +80,17 @@ export const I18nProvider = ({
   return (
     <I18nConfigContext.Provider
       value={{
-        defaultLocale: DEFAULT_LOCALE,
         locale,
+        defaultLocale: DEFAULT_LOCALE,
+        messages: messagesAndLocale.messages,
         setLocale,
         ...intlConfig,
       }}
     >
       <IntlProvider
         defaultLocale={DEFAULT_LOCALE}
-        locale={locale}
-        messages={messages}
+        locale={messagesAndLocale.locale}
+        messages={messagesAndLocale.messages}
         {...intlConfig}
       >
         <>{children}</>

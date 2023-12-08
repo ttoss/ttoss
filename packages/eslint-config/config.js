@@ -75,6 +75,7 @@ module.exports = {
       },
     ],
     'no-use-before-define': ['error'],
+    'object-shorthand': ['error', 'always'],
     'prefer-arrow-callback': 'error',
     /**
      * https://github.com/JamieMason/eslint-plugin-prefer-arrow-functions
