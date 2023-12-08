@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.7](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.6...@ttoss/eslint-config@1.22.7) (2023-12-08)
+
+### Bug Fixes
+
+- i18n error missing translation change i18nProvider file ([#451](https://github.com/ttoss/ttoss/issues/451)) ([da080e3](https://github.com/ttoss/ttoss/commit/da080e398402069d01c07588461e4d2f7922e946))
+
 ## [1.22.6](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.5...@ttoss/eslint-config@1.22.6) (2023-11-28)
 
 ### Bug Fixes

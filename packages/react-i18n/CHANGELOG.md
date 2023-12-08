@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.25.6...@ttoss/react-i18n@1.25.7) (2023-12-08)
+
+### Bug Fixes
+
+- i18n error missing translation change i18nProvider file ([#451](https://github.com/ttoss/ttoss/issues/451)) ([da080e3](https://github.com/ttoss/ttoss/commit/da080e398402069d01c07588461e4d2f7922e946))
+
 ## [1.25.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.25.5...@ttoss/react-i18n@1.25.6) (2023-12-05)
 
 **Note:** Version bump only for package @ttoss/react-i18n
