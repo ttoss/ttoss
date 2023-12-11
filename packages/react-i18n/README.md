@@ -11,26 +11,27 @@ You should declare your messages as describe in the [FormatJS](https://formatjs.
 ### Install @ttoss/react-i18n
 
 ```shell
-yarn add @ttoss/react-i18n @ttoss/i18n-cli
+pnpm add @ttoss/react-i18n
+pnpm add -D @ttoss/i18n-cli
 ```
 
 To extract and compile your translations, check the [ttoss/i18n-cli](./i18n-cli/) documentation.
 
 ## Examples of use
 
-### Index.tsx
+### index.tsx
 
-Import the I18nProvider and wrap your application with it. Add to it a function called `loadLocaleData` to load all the translation data.
+Import the `I18nProvider` and wrap your application with it. Add to it a function called `loadLocaleData` to load all the translation data.
 
 ```tsx title="src/index.tsx"
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 
-const loadLocaleData: LoadLocaleData = (locale) => {
+const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
     case 'pt-BR':
-      return import('../i18n/compiled-lang/pt-BR.json');
+      return import('../i18n/compiled/pt-BR.json');
     default:
-      return import('../i18n/compiled-lang/en.json');
+      return import('../i18n/compiled/en.json');
   }
 };
 

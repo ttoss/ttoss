@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.42.30](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.29...@docs/website@1.42.30) (2023-12-08)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.42.29](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.28...@docs/website@1.42.29) (2023-12-05)
+
+### Bug Fixes
+
+- carlin generate env algorithm ([#447](https://github.com/ttoss/ttoss/issues/447)) ([7a8789f](https://github.com/ttoss/ttoss/commit/7a8789ff662dcff1cc5870a7ca7d72e578179020))
+
+## [1.42.28](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.27...@docs/website@1.42.28) (2023-12-04)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.42.27](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.26...@docs/website@1.42.27) (2023-12-01)
 
 **Note:** Version bump only for package @docs/website

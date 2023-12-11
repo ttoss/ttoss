@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.20...@ttoss/react-notifications@1.24.21) (2023-12-05)
+
+### Bug Fixes
+
+- carlin generate env algorithm ([#447](https://github.com/ttoss/ttoss/issues/447)) ([7a8789f](https://github.com/ttoss/ttoss/commit/7a8789ff662dcff1cc5870a7ca7d72e578179020))
+
 ## [1.24.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.19...@ttoss/react-notifications@1.24.20) (2023-12-01)
 
 ### Bug Fixes

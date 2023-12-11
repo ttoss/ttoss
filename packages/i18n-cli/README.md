@@ -21,11 +21,16 @@ Add this script to your `package.json`
 ```json
 {
   "scripts": {
-    "i18n": "ttoss-i18n",
-    "i18n:extract": "ttoss-i18n --no-compile",
-    "i18n:ignore-ttoss-pkg": "ttoss-i18n --ignore-ttoss-packages"
+    "i18n": "ttoss-i18n"
   }
 }
+```
+
+Add to your `.gitignore`:
+
+```
+i18n/compiled/
+i18n/missing/
 ```
 
 ## Usage
@@ -33,7 +38,7 @@ Add this script to your `package.json`
 ### Extract only:
 
 ```sh
-pnpm run i18n:extract
+pnpm i18n --no-compile # ttoss-i18n --no-compile
 ```
 
 This command extracts translations from your code but doesn't compile them. And created a new path (`i18n/lang/en.json`) if doesn't exists with extracted translations. As followed below:
@@ -64,20 +69,28 @@ To translate your text, you only need to duplicate the file `i18n/lang/en.json` 
 }
 ```
 
+`en` is the default language, so you don't need to create a file for it. But you need to create a file for each language you want to translate.
+
 ### Extract and compile:
 
 ```sh
-pnpm run i18n
+pnpm i18n # ttoss-i18n
 ```
 
-This command extracts translations from your code and compiles them into a usable format. And create a new path (`i18n/compiled/en.json`) if doesn't exists with compiled translations based in all of the files on path `i18n/lang`. As followed below:
+This command extracts translations from your code and compiles them into a usable format. And create a new path (`i18n/compiled/LANG.json` and `i18n/missing/LANG.json`) if doesn't exists with compiled translations based in all of the files on path `i18n/lang`. As followed below:
 
 - 📂 i18n
   - 📂 compiled
     - 📄 en.json
     - 📄 pt-BR.json
+  - 📂 lang
+    - 📄 en.json
+    - 📄 pt-BR.json
+  - 📂 missing
+    - 📄 en.json
+    - 📄 pt-BR.json
 
-#### en.json
+#### i18n/compiled/en.json
 
 ```json
 // i18n/compiled/en.json
@@ -91,7 +104,7 @@ This command extracts translations from your code and compiles them into a usabl
 }
 ```
 
-#### pt-BR.json
+#### i18n/compiled/pt-BR.json
 
 ```json
 // i18n/compiled/pt-BR.json
@@ -105,10 +118,12 @@ This command extracts translations from your code and compiles them into a usabl
 }
 ```
 
+The `i18n/missing` folder contains all the translations that are missing in the `i18n/lang/LANG.json` file, compared with `i18n/lang/en.json`. This folder is useful to know which translations are missing in your application.
+
 ### Ignoring ttoss packages:
 
 ```sh
-pnpm run i18n:ignore-ttoss-pkg
+pnpm i18n --ignore-ttoss-packages # ttoss-i18n --ignore-ttoss-packages
 ```
 
 This command extracts and compiles translations, ignoring translations from all ttoss packages, if you have them installed in your project.

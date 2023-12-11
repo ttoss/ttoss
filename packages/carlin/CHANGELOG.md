@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.6](https://github.com/ttoss/ttoss/compare/carlin@1.31.5...carlin@1.31.6) (2023-12-05)
+
+### Bug Fixes
+
+- carlin generate env algorithm ([#447](https://github.com/ttoss/ttoss/issues/447)) ([7a8789f](https://github.com/ttoss/ttoss/commit/7a8789ff662dcff1cc5870a7ca7d72e578179020))
+- carlin tests ([5b63e03](https://github.com/ttoss/ttoss/commit/5b63e03e8d641b5e35140cfbd6566710ef33bd67))
+
 ## [1.31.5](https://github.com/ttoss/ttoss/compare/carlin@1.31.4...carlin@1.31.5) (2023-12-01)
 
 **Note:** Version bump only for package carlin
