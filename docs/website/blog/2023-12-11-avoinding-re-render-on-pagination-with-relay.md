@@ -170,6 +170,22 @@ To optimize, you can separate the components in such a way that only the part of
 
 **4. Rendering Optimization with Suspense:** Relay integrates with React Suspense, allowing you to define suspension points in your application for data loading. This means that Relay can "wait" until all necessary data is available before rendering the component, avoiding partial or incomplete re-renders.
 
+### Important
+
+To determine if the API you're using supports the `usePaginationFragment` from Relay, you should check several key aspects of the API's structure, particularly how it handles pagination. The `usePaginationFragment` is designed to work with the GraphQL connection pattern, which includes specific elements. Here's what to look for:
+
+1. **GraphQL Connection Pattern**: Check if the API uses the GraphQL connection pattern. This means the API should implement a system of "edges" and "nodes" for lists of data, along with "pageInfo" fields that include "endCursor" and "hasNextPage".
+
+2. **Cursor-based Pagination Support**: The `usePaginationFragment` works well with APIs that support cursor-based pagination. This means the API should allow you to query by specifying a cursor (usually an ID or a token) and a number of items to fetch. Cursors are used to incrementally load subsequent data.
+
+3. **Refetchable Query**: To use `usePaginationFragment`, the GraphQL query needs to be "refetchable". This means it should be structured in a way that Relay can easily redo the query to fetch more data based on the current cursor.
+
+4. **API Documentation**: Review the API documentation for any mention of cursor-based pagination or connection patterns support. Often, the documentation will clearly explain how the API handles pagination and whether it is compatible with Relay's requirements.
+
+5. **Testing with GraphQL Tools**: You can use GraphQL tools like GraphiQL or Apollo Studio to test the API. Try making a pagination query using cursors to see if the API responds as expected.
+
+If the API meets these criteria, it is likely to support `usePaginationFragment`. If not, you may need to adopt an alternative approach to pagination or even contact the API maintainers for more information about its pagination capabilities.
+
 ### Practical Example
 
 Let's consider a component that lists "Farms" using **usePaginationFragment**:
