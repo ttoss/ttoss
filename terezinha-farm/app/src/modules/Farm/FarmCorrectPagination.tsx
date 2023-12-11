@@ -92,7 +92,21 @@ export const FarmCorrectPagination = () => {
     <React.Suspense fallback="Loading...">
       <Heading variant="h3">FarmCorrectPagination</Heading>
 
-      <HelpText>Description why is correct</HelpText>
+      <HelpText>
+        The usePaginationFragment in Relay helps to prevent unnecessary
+        re-renders in pagination processes by efficiently managing the addition
+        of new data into an existing list. Unlike the combination of
+        useQueryLoader and usePreloadedQuery, which can lead to complete
+        re-renders of the component with every change in pagination state,
+        usePaginationFragment adds new data incrementally. This means only new
+        items are appended to the existing data set, eliminating the need to
+        re-render the entire component and updating only the parts that display
+        the new data. Furthermore, by using usePaginationFragment, Relay
+        leverages its caching system to reuse previously loaded data, minimizing
+        the need for new queries and re-renders. This approach not only enhances
+        performance but also keeps the user interface smooth and responsive,
+        especially crucial in applications dealing with large data sets.
+      </HelpText>
 
       {!!farmQueryRef && (
         <FarmCorrectPaginationList farmQueryRef={farmQueryRef} />

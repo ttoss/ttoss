@@ -62,7 +62,21 @@ export const FarmWrongPagination = () => {
   return (
     <React.Suspense fallback="Loading...">
       <Heading variant="h3">FarmWrongPagination</Heading>
-      <HelpText>Description why is wrong</HelpText>
+
+      <HelpText>
+        The combined use of useQueryLoader and usePreloadedQuery in Relay can
+        lead to unnecessary re-renders due to their operation and interaction
+        with React state. When you use useQueryLoader, it loads a GraphQL query
+        and returns a reference to this query. If you are using React states to
+        control pagination (like the number of items to be loaded), any change
+        in this state (such as clicking a button to load more items) will
+        trigger a re-render of the component. This happens because the change in
+        state leads to a new call of useQueryLoader to reload the query with new
+        parameters, and usePreloadedQuery then accesses the updated data. This
+        sequence of events results in multiple re-renders, especially if the
+        component is complex or has many children, since each update to the
+        pagination state initiates a new render cycle for the entire component.
+      </HelpText>
 
       {!!farmQueryRef && (
         <FarmWrongPaginationList farmQueryRef={farmQueryRef} />
