@@ -6,6 +6,12 @@ import {
   Store,
 } from 'relay-runtime';
 
+const sleep = (timeout: number) => {
+  return new Promise((resolve) => {
+    return setTimeout(resolve, timeout);
+  });
+};
+
 const fetchQuery: FetchFunction = (operation, variables) => {
   return fetch(import.meta.env.VITE_APPSYNC_GRAPHQL_ENDPOINT, {
     method: 'POST',
@@ -16,7 +22,8 @@ const fetchQuery: FetchFunction = (operation, variables) => {
       query: operation.text,
       variables,
     }),
-  }).then((response) => {
+  }).then(async (response) => {
+    await sleep(500);
     return response.json();
   });
 };
