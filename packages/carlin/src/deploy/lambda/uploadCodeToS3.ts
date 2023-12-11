@@ -32,7 +32,7 @@ export const uploadCodeToS3 = async ({ stackName }: { stackName: string }) => {
 
   return uploadFileToS3({
     bucket: bucketName,
-    contentType: 'application/zip' as any,
+    contentType: 'application/zip',
     key: `lambdas/${stackName}/lambda.zip`,
     file: zip.toBuffer(),
   });
