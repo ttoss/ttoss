@@ -3,7 +3,7 @@
 
 // const deployMock = jest.fn();
 
-// jest.mock('../cloudFormation.core', () => ({
+// jest.mock('../cloudformation.core', () => ({
 //   deploy: deployMock,
 // }));
 

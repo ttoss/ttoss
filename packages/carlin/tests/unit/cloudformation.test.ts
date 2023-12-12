@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
 import { CloudFormationTemplate } from '../../src/utils/cloudFormationTemplate';
-import { deploy } from '../../src/deploy/cloudFormation.core';
+import { deploy } from '../../src/deploy/cloudformation.core';
 import { deployLambdaCode } from '../../src/deploy/lambda/deployLambdaCode';
 import { faker } from '@ttoss/test-utils/faker';
 import { getStackName } from '../../src/deploy/stackName';
@@ -15,9 +15,9 @@ const mockWorkingCloudFormationTemplate: CloudFormationTemplate = {
   },
 };
 
-jest.mock('../../src/deploy/cloudFormation.core', () => {
+jest.mock('../../src/deploy/cloudformation.core', () => {
   return {
-    ...jest.requireActual('../../src/deploy/cloudFormation.core'),
+    ...jest.requireActual('../../src/deploy/cloudformation.core'),
     deploy: jest.fn(),
     validateTemplate: jest.fn(),
     cloudFormationV2: jest.fn().mockReturnValue({
@@ -47,7 +47,7 @@ jest.mock('../../src/deploy/stackName', () => {
 import {
   defaultTemplatePaths,
   deployCloudFormation,
-} from '../../src/deploy/cloudFormation';
+} from '../../src/deploy/cloudformation';
 
 const mockStackName = faker.random.word();
 

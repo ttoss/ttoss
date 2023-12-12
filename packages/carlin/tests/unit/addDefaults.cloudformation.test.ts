@@ -11,7 +11,7 @@ jest.mock('../../src/utils', () => {
 import {
   CRITICAL_RESOURCES_TYPES,
   addDefaults,
-} from '../../src/deploy/addDefaults.cloudFormation';
+} from '../../src/deploy/addDefaults.cloudformation';
 import { CloudFormationTemplate } from '../../src/utils/cloudFormationTemplate';
 import { getEnvironment, getProjectName } from '../../src/utils';
 
@@ -160,6 +160,7 @@ describe('testing template update', () => {
         },
       },
     ],
+    // eslint-disable-next-line max-params
   ])('%s', async (_, template, newTemplate) => {
     const params = { StackName: 'stackName' };
     expect((await addDefaults({ params, template })).template).toEqual(

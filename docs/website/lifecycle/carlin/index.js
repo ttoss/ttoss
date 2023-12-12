@@ -50,10 +50,10 @@ export default (context, options) => {
         deployCicdApi: await cliApi('deploy cicd'),
 
         ...getComments({
-          deployComment: ['deploy/cloudFormation.core.js', 'deploy'],
+          deployComment: ['deploy/cloudformation.core.js', 'deploy'],
           deployCloudFormationDeployLambdaCodeComment: [
-            'deploy/cloudFormation.js',
-            'deployCloudFormation~deployCloudFormationDeployLambdaCode',
+            'deploy/cloudformation.js',
+            'deployCloudformation~deployCloudFormationDeployLambdaCode',
           ],
           deployBaseStackComment: [
             'deploy/baseStack/deployBaseStack.js',
@@ -71,7 +71,7 @@ export default (context, options) => {
             'deploy/staticApp/removeOldVersions.js',
             'removeOldVersions',
           ],
-          destroyComment: ['deploy/cloudFormation.js', 'destroy'],
+          destroyComment: ['deploy/cloudformation.js', 'destroy'],
           assignSecurityHeadersComment: [
             'deploy/staticApp/staticApp.template.js',
             'assignSecurityHeaders',

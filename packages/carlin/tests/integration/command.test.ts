@@ -1,4 +1,4 @@
-jest.mock('./../../src/deploy/cloudFormation', () => {
+jest.mock('./../../src/deploy/cloudformation', () => {
   return {
     deployCloudFormation: jest.fn(),
     destroyCloudFormation: jest.fn(),
@@ -13,7 +13,7 @@ import * as deployStaticAppModule from '../../src/deploy/staticApp/deployStaticA
 import {
   deployCloudFormation,
   destroyCloudFormation,
-} from '../../src/deploy/cloudFormation';
+} from '../../src/deploy/cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
 import { getEnvVar } from '../../src/utils/environmentVariables';
 import {
@@ -25,7 +25,9 @@ import yargs from 'yargs';
 
 const cli = yargs.command(commandModule.deployCommand);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse = (command: string, options: any = {}) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Promise<any>((resolve, reject) => {
     cli.parse(command, options, (err, argv) => {
       if (err) {
@@ -48,6 +50,7 @@ describe('testing skip-deploy flag', () => {
   /**
    * https://stackoverflow.com/a/49290777/8786986
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   global.process = { ...realProcess, exit: mockExit as any };
 
   beforeEach(() => {
@@ -145,6 +148,7 @@ describe('handlers', () => {
       command: 'deploy static-app',
     },
   ])('should call $method', async ({ module, method, command }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mock = jest.spyOn(module as any, method).mockImplementation(() => {
       return Promise.resolve();
     });
