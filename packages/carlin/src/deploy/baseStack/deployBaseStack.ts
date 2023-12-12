@@ -1,10 +1,10 @@
 import { BASE_STACK_NAME } from './config';
 import { CloudFormationTemplate } from '../../utils';
 import { deploy } from '../cloudFormation.core';
-import { getBucketTemplate } from './getBucket.template';
-import { getLambdaImageBuilderTemplate } from './getLambdaImageBuilder.template';
-import { getLambdaLayerBuilderTemplate } from './getLambdaLayerBuilder.template';
-import { getVpcTemplate } from './getVpc.template';
+import { getBucketTemplate } from './getBucketTemplate';
+import { getLambdaImageBuilderTemplate } from './getLambdaImageBuilderTemplate';
+import { getLambdaLayerBuilderTemplate } from './getLambdaLayerBuilderTemplate';
+import { getVpcTemplate } from './getVpcTemplate';
 import { handleDeployError, handleDeployInitialization } from '../utils';
 import deepmerge from 'deepmerge';
 
@@ -52,6 +52,7 @@ export const deployBaseStack = async () => {
       params: { StackName: stackName },
       terminationProtection: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleDeployError({ error, logPrefix });
   }

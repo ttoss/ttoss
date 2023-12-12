@@ -1,6 +1,5 @@
-import { pascalCase } from 'change-case';
-
 import { NAME } from '../../config';
+import { pascalCase } from 'change-case';
 
 const pascalCaseName = pascalCase(NAME);
 

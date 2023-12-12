@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
 import {
   CloudFormationClient,
+  CloudFormationClientConfig,
   CreateStackCommand,
   CreateStackCommandInput,
   DeleteStackCommand,
@@ -60,24 +62,35 @@ const uploadTemplateToBaseStackBucket = async ({
   const { url } = await uploadFileToS3({
     bucket: bucketName,
     contentType: 'application/json',
-    key: `templates/${stackName}/cloudformation.json`,
+    key: `${BASE_STACK_BUCKET_TEMPLATES_FOLDER}/${stackName}/cloudformation.json`,
     file: Buffer.from(JSON.stringify(template, null, 2)),
   });
 
   return { url };
 };
 
-let cloudFormationClient: CloudFormationClient | undefined;
+/**
+ * CloudFormation client cache to avoid creating multiple clients.
+ * Each client is created with different parameters.
+ */
+const cloudFormationClients: { [key: string]: CloudFormationClient } = {};
 
 export const cloudFormation = () => {
-  if (!cloudFormationClient) {
-    cloudFormationClient = new CloudFormationClient({
+  const cloudFormationClientConfig: CloudFormationClientConfig = {
+    apiVersion: '2010-05-15',
+    region: getEnvVar('REGION'),
+  };
+
+  const key = JSON.stringify(cloudFormationClientConfig);
+
+  if (!cloudFormationClients[key]) {
+    cloudFormationClients[key] = new CloudFormationClient({
       apiVersion: '2010-05-15',
       region: getEnvVar('REGION'),
     });
   }
 
-  return cloudFormationClient;
+  return cloudFormationClients[key];
 };
 
 export const cloudFormationV2 = () => {
