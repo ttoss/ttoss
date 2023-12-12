@@ -64,17 +64,6 @@ module.exports = {
     'formatjs/no-id': 'error',
     'formatjs/no-complex-selectors': 'error',
     'no-console': 'error',
-    /**
-     * https://github.com/jsx-eslint/eslint-plugin-react/issues/2628#issuecomment-984160944
-     */
-    'no-restricted-syntax': [
-      'error',
-      {
-        selector:
-          "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
-        message: 'Use "import * as React from \'react\'" instead.',
-      },
-    ],
     'no-use-before-define': ['error'],
     'object-shorthand': ['error', 'always'],
     'prefer-arrow-callback': 'error',
@@ -89,6 +78,7 @@ module.exports = {
     ],
     /**
      * https://github.com/gonstoll/eslint-plugin-react-namespace-import
+     * https://github.com/jsx-eslint/eslint-plugin-react/issues/2628
      */
     'react-namespace-import/no-namespace-import': 'error',
     'relay/generated-flow-types': 'off',
