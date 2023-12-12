@@ -6,7 +6,6 @@ import {
   deleteStack,
   deploy,
   doesStackExist,
-  validateTemplate,
 } from './cloudFormation.core';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { emptyS3Directory } from './s3';
@@ -40,7 +39,6 @@ export const deployCloudFormation = async ({
   lambdaExternals?: string[];
   parameters?: {
     key: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any;
     usePreviousValue?: true | false;
     resolvedValue?: string;
@@ -91,7 +89,11 @@ export const deployCloudFormation = async ({
       };
     });
 
-    await validateTemplate({ stackName, template: cloudFormationTemplate });
+    await cloudFormationV2()
+      .validateTemplate({
+        TemplateBody: JSON.stringify(cloudFormationTemplate, null, 2),
+      })
+      .promise();
 
     const params = {
       StackName: stackName,
@@ -174,7 +176,6 @@ export const deployCloudFormation = async ({
     });
 
     return output;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return handleDeployError({ error, logPrefix });
   }
@@ -254,7 +255,6 @@ export const destroyCloudFormation = async ({
     const stackName = defaultStackName || (await getStackName());
     log.info(logPrefix, `stackName: ${stackName}`);
     await destroy({ stackName });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleDeployError({ error, logPrefix });
   }

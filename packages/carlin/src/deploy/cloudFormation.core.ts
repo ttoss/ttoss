@@ -13,13 +13,10 @@ import {
   UpdateStackCommand,
   UpdateStackCommandInput,
   UpdateTerminationProtectionCommand,
-  ValidateTemplateCommand,
-  ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
 import { addDefaults } from './addDefaults.cloudFormation';
-import { emptyS3Directory, uploadFileToS3 } from './s3';
-import { getBaseStackResource } from './baseStack/getBaseStackResource';
+import { emptyS3Directory } from './s3';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
 
@@ -53,31 +50,25 @@ const uploadTemplateToBaseStackBucket = async ({
   stackName: string;
   template: CloudFormationTemplate;
 }) => {
-  const bucketName = await getBaseStackResource(
-    'BASE_STACK_BUCKET_LOGICAL_NAME'
-  );
-
-  const { url } = await uploadFileToS3({
-    bucket: bucketName,
-    contentType: 'application/json',
-    key: `templates/${stackName}/cloudformation.json`,
-    file: Buffer.from(JSON.stringify(template, null, 2)),
-  });
-
-  return { url };
+  // eslint-disable-next-line no-console
+  console.info({ stackName, template });
+  // eslint-disable-next-line no-console
+  console.log('uploadTemplateToBaseStackBucket needs to be implemented.');
+  throw new Error();
+  // const key = getPepeBucketTemplateKey({ stackName });
+  // return uploadFileToS3({
+  //   bucket: await getPepeBucketName(),
+  //   contentType: 'application/json',
+  //   file: Buffer.from(JSON.stringify(template, null, 2)),
+  //   key,
+  // });
 };
 
-let cloudFormationClient: CloudFormationClient | undefined;
-
 export const cloudFormation = () => {
-  if (!cloudFormationClient) {
-    cloudFormationClient = new CloudFormationClient({
-      apiVersion: '2010-05-15',
-      region: getEnvVar('REGION'),
-    });
-  }
-
-  return cloudFormationClient;
+  return new CloudFormationClient({
+    apiVersion: '2010-05-15',
+    region: getEnvVar('REGION'),
+  });
 };
 
 export const cloudFormationV2 = () => {
@@ -463,29 +454,4 @@ export const destroy = async ({ stackName }: { stackName: string }) => {
   await emptyStackBuckets({ stackName });
 
   await deleteStack({ stackName });
-};
-
-export const validateTemplate = async ({
-  stackName,
-  template,
-}: {
-  stackName: string;
-  template: CloudFormationTemplate;
-}) => {
-  const validateTemplateCommandInput: ValidateTemplateCommandInput = {};
-
-  if (isTemplateBodyGreaterThanMaxSize(template)) {
-    const { url } = await uploadTemplateToBaseStackBucket({
-      stackName,
-      template,
-    });
-
-    validateTemplateCommandInput.TemplateURL = url;
-  } else {
-    validateTemplateCommandInput.TemplateBody = JSON.stringify(template);
-  }
-
-  await cloudFormation().send(
-    new ValidateTemplateCommand(validateTemplateCommandInput)
-  );
 };

@@ -56,7 +56,6 @@ export const uploadFileToS3 = async ({
     params.Body = Buffer.from(readFile);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { Bucket, Key, VersionId } = (await s3.upload(params).promise()) as any;
 
   return {
@@ -155,7 +154,6 @@ export const uploadDirectoryToS3 = async ({
    * Divide all files and create "numberOfGroups" groups of files whose max
    * length is GROUP_MAX_LENGTH.
    */
-  // eslint-disable-next-line max-params
   const aoaOfFiles = allFiles.reduce<string[][]>((acc, file, index) => {
     const groupIndex = index % numberOfGroups;
     if (!acc[groupIndex]) {
