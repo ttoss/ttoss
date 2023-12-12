@@ -32,6 +32,7 @@ module.exports = {
     'prettier',
     'jest-dom',
     'import',
+    'react-namespace-import',
   ],
   extends: [
     'eslint:recommended',
@@ -86,6 +87,10 @@ module.exports = {
         returnStyle: 'explicit',
       },
     ],
+    /**
+     * https://github.com/gonstoll/eslint-plugin-react-namespace-import
+     */
+    'react-namespace-import/no-namespace-import': 'error',
     'relay/generated-flow-types': 'off',
     'sort-imports-es6-autofix/sort-imports-es6': [
       2,
