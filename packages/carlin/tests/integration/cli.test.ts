@@ -6,6 +6,7 @@ jest.mock('../../src/deploy/baseStack/deployBaseStack', () => {
   return {
     ...(jest.requireActual(
       '../../src/deploy/baseStack/deployBaseStack'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any),
     deployBaseStack: jest.fn(),
   };
@@ -29,7 +30,7 @@ jest.mock('findup-sync', () => {
 
 import * as deepmerge from 'deepmerge';
 import { AWS_DEFAULT_REGION } from '../../src/config';
-import { cloudFormation } from '../../src/deploy/cloudFormation.core';
+import { cloudformation } from '../../src/deploy/cloudformation.core';
 import { deployBaseStack } from '../../src/deploy/baseStack/deployBaseStack';
 import { faker } from '@ttoss/test-utils/faker';
 import {
@@ -65,7 +66,7 @@ describe('testing AWS region', () => {
     const argv = await parseCli(command, {});
     expect(argv.region).toEqual(result);
     expect(AWS.config.region).toEqual(result);
-    expect(await cloudFormation().config.region()).toEqual(result);
+    expect(await cloudformation().config.region()).toEqual(result);
     expect(getEnvVar('REGION')).toEqual(result);
   });
 });
@@ -118,6 +119,7 @@ describe('validating environment variables', () => {
     };
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const testExpects = async ({ argv, branch, environment, project }: any) => {
     expect(await getCurrentBranch()).toEqual(branch);
     expect(argv.branch).toEqual(branch);

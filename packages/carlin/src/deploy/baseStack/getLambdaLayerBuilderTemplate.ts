@@ -1,9 +1,8 @@
-import { getIamPath } from '../../utils';
-
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
 } from './config';
+import { getIamPath } from '../../utils';
 
 const CODE_BUILD_PROJECT_LOGS_GROUP_LOGICAL_ID = `${BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME}LogsLogGroup`;
 
@@ -12,8 +11,8 @@ const CODE_BUILD_PROJECT_IAM_ROLE_LOGICAL_ID = `${BASE_STACK_LAMBDA_LAYER_BUILDE
 /**
  * https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
  */
-export const getBuildSpec = () =>
-  `
+export const getBuildSpec = () => {
+  return `
 version: 0.2
 phases:
   install:
@@ -28,6 +27,7 @@ artifacts:
     - nodejs/**/*
   name: $PACKAGE_NAME.zip
 `.trim();
+};
 
 /**
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
