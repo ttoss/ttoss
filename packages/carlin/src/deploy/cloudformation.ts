@@ -7,7 +7,7 @@ import {
   deploy,
   doesStackExist,
   validateTemplate,
-} from './cloudFormation.core';
+} from './cloudformation.core';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { emptyS3Directory } from './s3';
 import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';

@@ -1,6 +1,6 @@
 import { BASE_STACK_NAME } from './config';
 import { CloudFormationTemplate } from '../../utils';
-import { deploy } from '../cloudFormation.core';
+import { deploy } from '../cloudformation.core';
 import { getBucketTemplate } from './getBucketTemplate';
 import { getLambdaImageBuilderTemplate } from './getLambdaImageBuilderTemplate';
 import { getLambdaLayerBuilderTemplate } from './getLambdaLayerBuilderTemplate';

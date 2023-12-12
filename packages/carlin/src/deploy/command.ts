@@ -3,12 +3,12 @@ import { CommandModule, InferredOptionTypes } from 'yargs';
 import { addGroupToOptions, getAwsAccountId } from '../utils';
 import { deployBaseStackCommand } from './baseStack/command';
 import { deployCicdCommand } from './cicd/command';
-import { deployCloudFormation, destroyCloudFormation } from './cloudFormation';
+import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVercelCommand } from './vercel/command';
 import { getStackName, setPreDefinedStackName } from './stackName';
-import { printStackOutputsAfterDeploy } from './cloudFormation.core';
+import { printStackOutputsAfterDeploy } from './cloudformation.core';
 import { readDockerfile } from './readDockerfile';
 import log from 'npmlog';
 

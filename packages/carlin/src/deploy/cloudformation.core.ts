@@ -19,7 +19,7 @@ import {
   ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
-import { addDefaults } from './addDefaults.cloudFormation';
+import { addDefaults } from './addDefaults.cloudformation';
 import { emptyS3Directory, uploadFileToS3 } from './s3';
 import { getBaseStackResource } from './baseStack/getBaseStackResource';
 import AWS from 'aws-sdk';
@@ -62,7 +62,7 @@ const uploadTemplateToBaseStackBucket = async ({
   const { url } = await uploadFileToS3({
     bucket: bucketName,
     contentType: 'application/json',
-    key: `${BASE_STACK_BUCKET_TEMPLATES_FOLDER}/${stackName}/cloudformation.json`,
+    key: `${BASE_STACK_BUCKET_TEMPLATES_FOLDER}/${stackName}.json`,
     file: Buffer.from(JSON.stringify(template, null, 2)),
   });
 

@@ -4,7 +4,7 @@ import {
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
   BASE_STACK_NAME,
 } from './config';
-import { getStackOutput } from '../cloudFormation.core';
+import { getStackOutput } from '../cloudformation.core';
 
 export const getBaseStackOutput = async (outputKey: string) => {
   const output = await getStackOutput({

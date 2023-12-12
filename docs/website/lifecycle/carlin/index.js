@@ -7,11 +7,11 @@ import {
 } from 'carlin/src/deploy/cicd/cicd.template';
 import { baseStackTemplate } from 'carlin/src/deploy/baseStack/deployBaseStack';
 import { cli } from 'carlin/src/cli';
-import { defaultTemplatePaths } from 'carlin/src/deploy/cloudFormation';
+import { defaultTemplatePaths } from 'carlin/src/deploy/cloudformation';
 import {
   getBuildSpec,
   getLambdaLayerBuilderTemplate,
-} from 'carlin/src/deploy/baseStack/getLambdaLayerBuilder.template';
+} from 'carlin/src/deploy/baseStack/getLambdaLayerBuilderTemplate';
 import { getComment, getComments, toHtml } from './comments';
 import { getLambdaLayerTemplate } from 'carlin/src/deploy/lambdaLayer/deployLambdaLayer';
 import { getStaticAppTemplate } from 'carlin/src/deploy/staticApp/staticApp.template';
