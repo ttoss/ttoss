@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.8...@ttoss/eslint-config@1.23.0) (2023-12-12)
+
+### Features
+
+- enforce react import ([#454](https://github.com/ttoss/ttoss/issues/454)) ([9bd7144](https://github.com/ttoss/ttoss/commit/9bd7144e4be17855113ce9b315aa836be2b09d19))
+
 ## [1.22.8](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.7...@ttoss/eslint-config@1.22.8) (2023-12-12)
 
 ### Bug Fixes
