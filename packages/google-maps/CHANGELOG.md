@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.6](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@1.25.5...@ttoss/google-maps@1.25.6) (2023-12-12)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
 ## [1.25.5](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@1.25.4...@ttoss/google-maps@1.25.5) (2023-12-05)
 
 **Note:** Version bump only for package @ttoss/google-maps

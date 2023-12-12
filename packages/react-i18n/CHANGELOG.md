@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.25.7...@ttoss/react-i18n@1.25.8) (2023-12-12)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## [1.25.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.25.6...@ttoss/react-i18n@1.25.7) (2023-12-08)
 
 ### Bug Fixes
