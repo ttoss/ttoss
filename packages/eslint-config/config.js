@@ -47,7 +47,11 @@ module.exports = {
     'plugin:import/typescript',
   ],
   rules: {
-    'max-params': ['error', 2],
+    /**
+     * 3 parameters because some array methods as reduce, map, filter
+     * can have 3 parameters.
+     */
+    'max-params': ['error', 3],
     '@typescript-eslint/no-non-null-assertion': 'error',
     /**
      * https://formatjs.io/docs/tooling/linter
