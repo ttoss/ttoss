@@ -1,4 +1,4 @@
-import { describeStackResource } from '../cloudFormation.core';
+import { describeStackResource } from '../cloudformation.core';
 
 const STATIC_APP_BUCKET_LOGICAL_ID = 'StaticBucket';
 

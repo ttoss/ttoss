@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "A library for building GraphQL APIs using ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
@@ -43,7 +43,7 @@
     "graphql-middleware": "^6.1.35",
     "graphql-shield": "^7.6.5",
     "npmlog": "^7.0.1",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {

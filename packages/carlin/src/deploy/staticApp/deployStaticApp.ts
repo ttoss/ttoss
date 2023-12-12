@@ -1,4 +1,4 @@
-import { deploy } from '../cloudFormation.core';
+import { deploy } from '../cloudformation.core';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { getStaticAppTemplate } from './staticApp.template';
 import { handleDeployError, handleDeployInitialization } from '../utils';
@@ -83,6 +83,7 @@ export const deployStaticApp = async ({
 
       await uploadBuiltAppToS3({ buildFolder, bucket: newBucket, cloudfront });
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleDeployError({ error, logPrefix });
   }

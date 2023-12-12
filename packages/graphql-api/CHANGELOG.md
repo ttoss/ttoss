@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.4.6...@ttoss/graphql-api@0.4.7) (2023-12-12)
+
+### Bug Fixes
+
+- upload template when size is big ([#453](https://github.com/ttoss/ttoss/issues/453)) ([59371b7](https://github.com/ttoss/ttoss/commit/59371b7eb9befa006ffe316541f60dfc534dcbd4))
+
 ## [0.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.4.5...@ttoss/graphql-api@0.4.6) (2023-12-01)
 
 ### Bug Fixes

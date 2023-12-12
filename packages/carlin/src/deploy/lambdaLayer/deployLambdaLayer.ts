@@ -1,7 +1,7 @@
 import { CloudFormationTemplate, waitCodeBuildFinish } from '../../utils';
 import { CodeBuild } from 'aws-sdk';
 import { NODE_RUNTIME } from '../../config';
-import { deploy, doesStackExist } from '../cloudFormation.core';
+import { deploy, doesStackExist } from '../cloudformation.core';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { getPackageLambdaLayerStackName } from './getPackageLambdaLayerStackName';
 import { handleDeployError } from '../utils';
@@ -167,6 +167,7 @@ export const deployLambdaLayer = async ({
           terminationProtection: true,
           params: { StackName: getPackageLambdaLayerStackName(packageName) },
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         handleDeployError({ error, logPrefix });
       }
@@ -177,6 +178,7 @@ export const deployLambdaLayer = async ({
         return deployLambdaLayerSinglePackage(packageName);
       })
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleDeployError({ error, logPrefix });
   }

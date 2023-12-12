@@ -6,13 +6,12 @@ import { faker } from '@ttoss/test-utils/faker';
 
 const MockDescribeStacksCommand = DescribeStacksCommand;
 
-// : CloudFormation.DescribeStacksOutput
 const mockDescribeStacksOutput = {
   Stacks: [
     {
       StackName: faker.random.word(),
       CreationTime: faker.date.past(3),
-      StackStatus: 'OK',
+      StackStatus: 'CREATE_COMPLETE',
       Outputs: [
         {
           OutputKey: 'k0' + faker.random.word(),
@@ -27,7 +26,7 @@ const mockDescribeStacksOutput = {
     {
       StackName: faker.random.word(),
       CreationTime: faker.date.past(3),
-      StackStatus: 'OK',
+      StackStatus: 'CREATE_COMPLETE',
       Outputs: [],
     },
   ],
@@ -35,9 +34,11 @@ const mockDescribeStacksOutput = {
 
 jest.mock('@aws-sdk/client-cloudformation', () => {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(jest.requireActual('@aws-sdk/client-cloudformation') as any),
     CloudFormationClient: jest.fn(() => {
       return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         send: jest.fn((input: any) => {
           if (input instanceof MockDescribeStacksCommand) {
             const {
@@ -46,7 +47,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
 
             return new Promise<DescribeStacksOutput>((resolve, reject) => {
               if (!StackName) {
-                resolve(mockDescribeStacksOutput);
+                resolve(mockDescribeStacksOutput as DescribeStacksOutput);
               } else {
                 const stacks = (mockDescribeStacksOutput.Stacks || []).filter(
                   (stack) => {
@@ -60,7 +61,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
                       (stack) => {
                         return stack.StackName === StackName;
                       }
-                    ),
+                    ) as DescribeStacksOutput['Stacks'],
                   });
                 } else {
                   // eslint-disable-next-line prefer-promise-reject-errors
@@ -86,12 +87,14 @@ import {
   doesStackExist,
   getStackOutput,
   printStackOutputsAfterDeploy,
-} from '../../src/deploy/cloudFormation.core';
+} from '../../src/deploy/cloudformation.core';
 
 jest.mock('fs', () => {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(jest.requireActual('fs') as any),
     promises: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(jest.requireActual('fs').promises as any),
       mkdir: jest.fn(),
       writeFile: jest.fn().mockResolvedValue(undefined),
@@ -103,6 +106,7 @@ describe('printStackOutputsAfterDeploy', () => {
   test('should save the outputs using fs.promises.writeFile', async () => {
     const stackName = mockDescribeStacksOutput.Stacks[0].StackName;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let writeFileData: any;
 
     jest.spyOn(fs.promises, 'writeFile').mockImplementation((_, data) => {

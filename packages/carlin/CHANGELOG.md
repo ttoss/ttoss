@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.7](https://github.com/ttoss/ttoss/compare/carlin@1.31.6...carlin@1.31.7) (2023-12-12)
+
+### Bug Fixes
+
+- upload template when size is big ([#453](https://github.com/ttoss/ttoss/issues/453)) ([59371b7](https://github.com/ttoss/ttoss/commit/59371b7eb9befa006ffe316541f60dfc534dcbd4))
+
 ## [1.31.6](https://github.com/ttoss/ttoss/compare/carlin@1.31.5...carlin@1.31.6) (2023-12-05)
 
 ### Bug Fixes

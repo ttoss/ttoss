@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
 import {
   CloudFormationClient,
+  CloudFormationClientConfig,
   CreateStackCommand,
   CreateStackCommandInput,
   DeleteStackCommand,
@@ -13,10 +15,13 @@ import {
   UpdateStackCommand,
   UpdateStackCommandInput,
   UpdateTerminationProtectionCommand,
+  ValidateTemplateCommand,
+  ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
-import { addDefaults } from './addDefaults.cloudFormation';
-import { emptyS3Directory } from './s3';
+import { addDefaults } from './addDefaults.cloudformation';
+import { emptyS3Directory, uploadFileToS3 } from './s3';
+import { getBaseStackResource } from './baseStack/getBaseStackResource';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
 
@@ -50,25 +55,42 @@ const uploadTemplateToBaseStackBucket = async ({
   stackName: string;
   template: CloudFormationTemplate;
 }) => {
-  // eslint-disable-next-line no-console
-  console.info({ stackName, template });
-  // eslint-disable-next-line no-console
-  console.log('uploadTemplateToBaseStackBucket needs to be implemented.');
-  throw new Error();
-  // const key = getPepeBucketTemplateKey({ stackName });
-  // return uploadFileToS3({
-  //   bucket: await getPepeBucketName(),
-  //   contentType: 'application/json',
-  //   file: Buffer.from(JSON.stringify(template, null, 2)),
-  //   key,
-  // });
+  const bucketName = await getBaseStackResource(
+    'BASE_STACK_BUCKET_LOGICAL_NAME'
+  );
+
+  const { url } = await uploadFileToS3({
+    bucket: bucketName,
+    contentType: 'application/json',
+    key: `${BASE_STACK_BUCKET_TEMPLATES_FOLDER}/${stackName}.json`,
+    file: Buffer.from(JSON.stringify(template, null, 2)),
+  });
+
+  return { url };
 };
 
-export const cloudFormation = () => {
-  return new CloudFormationClient({
+/**
+ * CloudFormation client cache to avoid creating multiple clients.
+ * Each client is created with different parameters.
+ */
+const cloudFormationClients: { [key: string]: CloudFormationClient } = {};
+
+export const cloudformation = () => {
+  const cloudFormationClientConfig: CloudFormationClientConfig = {
     apiVersion: '2010-05-15',
     region: getEnvVar('REGION'),
-  });
+  };
+
+  const key = JSON.stringify(cloudFormationClientConfig);
+
+  if (!cloudFormationClients[key]) {
+    cloudFormationClients[key] = new CloudFormationClient({
+      apiVersion: '2010-05-15',
+      region: getEnvVar('REGION'),
+    });
+  }
+
+  return cloudFormationClients[key];
 };
 
 export const cloudFormationV2 = () => {
@@ -78,7 +100,7 @@ export const cloudFormationV2 = () => {
 export const describeStacks = async ({
   stackName,
 }: { stackName?: string } = {}) => {
-  const { Stacks } = await cloudFormation().send(
+  const { Stacks } = await cloudformation().send(
     new DescribeStacksCommand({ StackName: stackName })
   );
   return Stacks;
@@ -87,7 +109,7 @@ export const describeStacks = async ({
 export const describeStackResource = async (
   input: DescribeStackResourceCommandInput
 ) => {
-  return cloudFormation().send(new DescribeStackResourceCommand(input));
+  return cloudformation().send(new DescribeStackResourceCommand(input));
 };
 
 export const doesStackExist = async ({ stackName }: { stackName: string }) => {
@@ -114,7 +136,7 @@ export const describeStackEvents = async ({
 }) => {
   log.error(logPrefix, 'Stack events:');
 
-  const { StackEvents } = await cloudFormation().send(
+  const { StackEvents } = await cloudformation().send(
     new DescribeStackEventsCommand({ StackName: stackName })
   );
 
@@ -232,7 +254,7 @@ export const printStackOutputsAfterDeploy = async ({
 
 export const deleteStack = async ({ stackName }: { stackName: string }) => {
   log.info(logPrefix, `Deleting stack ${stackName}...`);
-  await cloudFormation().send(new DeleteStackCommand({ StackName: stackName }));
+  await cloudformation().send(new DeleteStackCommand({ StackName: stackName }));
   try {
     await cloudFormationV2()
       .waitFor('stackDeleteComplete', { StackName: stackName })
@@ -252,7 +274,7 @@ export const createStack = async ({
 }) => {
   const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Creating stack ${stackName}...`);
-  await cloudFormation().send(new CreateStackCommand(params));
+  await cloudformation().send(new CreateStackCommand(params));
   try {
     await cloudFormationV2()
       .waitFor('stackCreateComplete', { StackName: stackName })
@@ -274,7 +296,7 @@ export const updateStack = async ({
   const { StackName: stackName = '' } = params;
   log.info(logPrefix, `Updating stack ${stackName}...`);
   try {
-    await cloudFormation().send(new UpdateStackCommand(params));
+    await cloudformation().send(new UpdateStackCommand(params));
     await cloudFormationV2()
       .waitFor('stackUpdateComplete', { StackName: stackName })
       .promise();
@@ -299,7 +321,7 @@ export const enableTerminationProtection = async ({
   log.info(logPrefix, `Enabling termination protection...`);
 
   try {
-    await cloudFormation().send(
+    await cloudformation().send(
       new UpdateTerminationProtectionCommand({
         EnableTerminationProtection: true,
         StackName: stackName,
@@ -396,7 +418,7 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
   const buckets: string[] = [];
 
   await (async ({ nextToken }: { nextToken?: string }) => {
-    const { NextToken, StackResourceSummaries } = await cloudFormation().send(
+    const { NextToken, StackResourceSummaries } = await cloudformation().send(
       new ListStackResourcesCommand({
         StackName: stackName,
         NextToken: nextToken,
@@ -454,4 +476,29 @@ export const destroy = async ({ stackName }: { stackName: string }) => {
   await emptyStackBuckets({ stackName });
 
   await deleteStack({ stackName });
+};
+
+export const validateTemplate = async ({
+  stackName,
+  template,
+}: {
+  stackName: string;
+  template: CloudFormationTemplate;
+}) => {
+  const validateTemplateCommandInput: ValidateTemplateCommandInput = {};
+
+  if (isTemplateBodyGreaterThanMaxSize(template)) {
+    const { url } = await uploadTemplateToBaseStackBucket({
+      stackName,
+      template,
+    });
+
+    validateTemplateCommandInput.TemplateURL = url;
+  } else {
+    validateTemplateCommandInput.TemplateBody = JSON.stringify(template);
+  }
+
+  await cloudformation().send(
+    new ValidateTemplateCommand(validateTemplateCommandInput)
+  );
 };
