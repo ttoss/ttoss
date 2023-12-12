@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/eslint-config",
-  "version": "1.22.7",
+  "version": "1.22.8",
   "description": "ESLint config.",
   "author": "ttoss",
   "contributors": [
