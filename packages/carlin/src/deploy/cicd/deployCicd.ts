@@ -4,7 +4,7 @@ import {
   REPOSITORY_IMAGE_CODE_BUILD_PROJECT_LOGICAL_ID,
   getCicdTemplate,
 } from './cicd.template';
-import { deploy, getStackOutput } from '../cloudFormation.core';
+import { deploy, getStackOutput } from '../cloudformation.core';
 import { deployLambdaCode } from '../lambda/deployLambdaCode';
 import { getCicdStackName } from './getCicdStackName';
 import { handleDeployError, handleDeployInitialization } from '../utils';
@@ -126,6 +126,7 @@ export const deployCicd = async ({
     if (updateRepository) {
       await waitRepositoryImageUpdate({ stackName });
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleDeployError({ error, logPrefix });
   }

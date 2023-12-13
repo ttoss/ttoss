@@ -1,4 +1,4 @@
-jest.mock('../cloudFormation.core');
+jest.mock('../cloudformation.core');
 
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
@@ -6,7 +6,7 @@ import {
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
   BASE_STACK_NAME,
 } from './config';
-import { deploy } from '../cloudFormation.core';
+import { deploy } from '../cloudformation.core';
 import { deployBaseStack } from './deployBaseStack';
 
 test('should create base resources', async () => {
