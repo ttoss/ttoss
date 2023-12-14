@@ -669,6 +669,9 @@ importers:
       eslint-plugin-react-namespace-import:
         specifier: ^1.0.5
         version: 1.0.5(eslint@8.38.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.5
+        version: 0.4.5(eslint@8.38.0)
       eslint-plugin-relay:
         specifier: ^1.8.3
         version: 1.8.3
@@ -1327,6 +1330,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@ttoss/eslint-config':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@ttoss/graphql-api-server':
         specifier: workspace:^
         version: link:../../packages/graphql-api-server
@@ -1379,6 +1385,9 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(babel-plugin-relay@16.0.0)(vite@5.0.3)
     devDependencies:
+      '@ttoss/eslint-config':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../../packages/i18n-cli
@@ -17708,6 +17717,14 @@ packages:
     resolution: {integrity: sha512-0gUj6hSRL8cTxyLtVvbu/Rzr3aEmO4fUyJIc3qkGum2Lth+atx3z/JJgBd+PUpaksdv0D6gmBBHwjmn/nPAobQ==}
     peerDependencies:
       eslint: '>=0.8.0'
+    dependencies:
+      eslint: 8.38.0
+    dev: false
+
+  /eslint-plugin-react-refresh@0.4.5(eslint@8.38.0):
+    resolution: {integrity: sha512-D53FYKJa+fDmZMtriODxvhwrO+IOqrxoEo21gMA0sjHdU6dPVH4OhyFip9ypl8HOF5RV5KdTo+rBQLvnY2cO8w==}
+    peerDependencies:
+      eslint: '>=7'
     dependencies:
       eslint: 8.38.0
     dev: false

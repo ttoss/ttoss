@@ -30,6 +30,7 @@
     "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
+    "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.39",
     "@types/react-dom": "^18.2.17",
