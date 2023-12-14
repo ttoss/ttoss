@@ -4,12 +4,15 @@
   "version": "0.6.20",
   "type": "module",
   "scripts": {
+    "prebuild": "pnpm relay",
     "build": "tsc && vite build",
     "bundle": "pnpm build && serve -s stats",
     "deploy": "carlin deploy static-app",
     "dev": "vite",
     "i18n": "ttoss-i18n",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prerelay": "pnpm run --filter=@terezinha-farm/api schema",
+    "relay": "relay-compiler"
   },
   "dependencies": {
     "@ttoss/components": "workspace:^",
@@ -18,15 +21,23 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^5.3.11",
+    "babel-plugin-relay": "^16.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-relay": "^16.0.0",
+    "react-router-dom": "^6.20.1",
+    "relay-runtime": "^16.0.0",
+    "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.39",
     "@types/react-dom": "^18.2.17",
+    "@types/react-relay": "^16.0.5",
+    "@types/relay-runtime": "^14.1.19",
     "@vitejs/plugin-react": "^4.2.0",
     "carlin": "workspace:^",
+    "relay-compiler": "^16.0.0",
     "rollup-plugin-visualizer": "^5.9.3",
     "serve": "^14.2.1",
     "typescript": "~5.2.2",
