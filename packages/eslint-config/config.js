@@ -33,6 +33,7 @@ module.exports = {
     'jest-dom',
     'import',
     'react-namespace-import',
+    'react-refresh',
   ],
   extends: [
     'eslint:recommended',
@@ -85,6 +86,13 @@ module.exports = {
      * https://github.com/jsx-eslint/eslint-plugin-react/issues/2628
      */
     'react-namespace-import/no-namespace-import': 'error',
+    /**
+     * https://github.com/ArnaudBarre/eslint-plugin-react-refresh
+     */
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
     'relay/generated-flow-types': 'off',
     'sort-imports-es6-autofix/sort-imports-es6': [
       2,
