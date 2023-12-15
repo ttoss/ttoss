@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/eslint-config",
-  "version": "1.22.6",
+  "version": "1.24.0",
   "description": "ESLint config.",
   "author": "ttoss",
   "contributors": [
@@ -18,11 +18,11 @@
   ],
   "dependencies": {
     "@rushstack/eslint-patch": "^1.6.0",
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
-    "eslint-config-next": "^14.0.3",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-config-turbo": "^1.10.16",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint-config-next": "^14.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-turbo": "^1.11.1",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-formatjs": "^4.11.3",
     "eslint-plugin-import": "^2.29.0",
@@ -33,6 +33,8 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-namespace-import": "^1.0.5",
+    "eslint-plugin-react-refresh": "^0.4.5",
     "eslint-plugin-relay": "^1.8.3",
     "eslint-plugin-sort-imports-es6-autofix": "^0.6.0"
   },

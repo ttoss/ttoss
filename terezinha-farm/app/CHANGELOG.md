@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.21...@terezinha-farm/app@0.7.0) (2023-12-14)
+
+### Features
+
+- eslint config fast refresh rules ([#456](https://github.com/ttoss/ttoss/issues/456)) ([27b6cbf](https://github.com/ttoss/ttoss/commit/27b6cbf9e4d231252a35b6f2e589dd60b009e482))
+
+## [0.6.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.20...@terezinha-farm/app@0.6.21) (2023-12-14)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.6.20](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.19...@terezinha-farm/app@0.6.20) (2023-12-12)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.6.19](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.18...@terezinha-farm/app@0.6.19) (2023-12-08)
+
+### Bug Fixes
+
+- i18n error missing translation change i18nProvider file ([#451](https://github.com/ttoss/ttoss/issues/451)) ([da080e3](https://github.com/ttoss/ttoss/commit/da080e398402069d01c07588461e4d2f7922e946))
+
 ## [0.6.18](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.17...@terezinha-farm/app@0.6.18) (2023-12-05)
 
 **Note:** Version bump only for package @terezinha-farm/app

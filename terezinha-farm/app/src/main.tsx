@@ -3,7 +3,9 @@ import { App } from './App';
 import { AuthProvider } from '@ttoss/react-auth';
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
+import { RelayEnvironmentProvider } from 'react-relay';
 import { ThemeProvider } from '@ttoss/ui';
+import { environment } from './RelayEnvironment';
 import ReactDOM from 'react-dom/client';
 import './amplify.ts';
 
@@ -19,14 +21,16 @@ const loadLocaleData: LoadLocaleData = async (locale) => {
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
-        <NotificationsProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </NotificationsProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <RelayEnvironmentProvider environment={environment}>
+      <ThemeProvider>
+        <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
+          <NotificationsProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </NotificationsProvider>
+        </I18nProvider>
+      </ThemeProvider>
+    </RelayEnvironmentProvider>
   </React.StrictMode>
 );

@@ -11,15 +11,16 @@ FarmTC.addResolver({
   type: FarmTC,
   resolve: async ({
     args,
+    rawQuery,
   }: ResolverResolveParams<
     unknown,
     unknown,
     QueryfarmsArgs & { limit: number }
   >) => {
-    if (args.before) {
+    if (rawQuery.id?.$lt) {
       return [...new Array(args.limit)]
         .map((_, index) => {
-          const id = Number(args.before || 0) - index - 1;
+          const id = Number(rawQuery.id.$lt || 0) - index - 1;
           return {
             id,
             name: `Farm ${id}`,
@@ -32,7 +33,7 @@ FarmTC.addResolver({
 
     return [...new Array(args.limit)]
       .map((_, index) => {
-        const id = index + 1 + Number(args.after || 0);
+        const id = index + 1 + Number(rawQuery.id?.$gt || 0);
         return {
           id,
           name: `Farm ${id}`,

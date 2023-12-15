@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.9.12...@terezinha-farm/api@0.10.0) (2023-12-14)
+
+### Features
+
+- eslint config fast refresh rules ([#456](https://github.com/ttoss/ttoss/issues/456)) ([27b6cbf](https://github.com/ttoss/ttoss/commit/27b6cbf9e4d231252a35b6f2e589dd60b009e482))
+
+## [0.9.12](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.9.11...@terezinha-farm/api@0.9.12) (2023-12-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.9.11](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.9.10...@terezinha-farm/api@0.9.11) (2023-12-12)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## [0.9.10](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.9.9...@terezinha-farm/api@0.9.10) (2023-12-05)
 
 **Note:** Version bump only for package @terezinha-farm/api

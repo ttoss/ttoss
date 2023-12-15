@@ -4,7 +4,7 @@ import { CommandModule, InferredOptionTypes } from 'yargs';
 import { addGroupToOptions } from '../../utils';
 import { defaultBuildFolders } from './findDefaultBuildFolder';
 import { deployStaticApp } from './deployStaticApp';
-import { destroyCloudFormation } from '../cloudFormation';
+import { destroyCloudFormation } from '../cloudformation';
 import AWS from 'aws-sdk';
 
 export const options = {
@@ -42,7 +42,9 @@ export const options = {
    * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-cloudfront-triggers
    */
   region: {
-    coerce: () => CLOUDFRONT_REGION,
+    coerce: () => {
+      return CLOUDFRONT_REGION;
+    },
     default: CLOUDFRONT_REGION,
     hidden: true,
     type: 'string',
@@ -63,25 +65,30 @@ export const options = {
 } as const;
 
 export const deployStaticAppCommand: CommandModule<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any,
   InferredOptionTypes<typeof options>
 > = {
   command: 'static-app',
   describe: 'Deploy static app.',
-  builder: (yargs) =>
-    yargs
-      .options(addGroupToOptions(options, 'Deploy Static App Options'))
-      /**
-       * CloudFront triggers can be only in US East (N. Virginia) Region.
-       * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-cloudfront-triggers
-       */
-      .middleware(() => {
-        AWS.config.region = CLOUDFRONT_REGION;
-      }),
+  builder: (yargs) => {
+    return (
+      yargs
+        .options(addGroupToOptions(options, 'Deploy Static App Options'))
+        /**
+         * CloudFront triggers can be only in US East (N. Virginia) Region.
+         * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-cloudfront-triggers
+         */
+        .middleware(() => {
+          AWS.config.region = CLOUDFRONT_REGION;
+        })
+    );
+  },
   handler: ({ destroy, ...rest }) => {
     if (destroy) {
       destroyCloudFormation();
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       deployStaticApp(rest as any);
     }
   },

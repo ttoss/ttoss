@@ -202,7 +202,7 @@ const config = {
       },
       prism: {
         theme: lightTheme,
-        darkTheme: darkTheme,
+        darkTheme,
       },
     }),
   markdown: {

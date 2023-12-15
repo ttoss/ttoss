@@ -25,3 +25,5 @@ dist-ssr
 stats/
 
 !.env
+
+__generated__

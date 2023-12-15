@@ -1,19 +1,21 @@
-jest.mock('../cloudFormation');
+jest.mock('../cloudformation');
 
 jest.mock('./deployStaticApp');
 
 import { CLOUDFRONT_REGION } from '../../config';
 import { deployStaticApp } from './deployStaticApp';
 import { deployStaticAppCommand } from './command';
-import { destroyCloudFormation } from '../cloudFormation';
+import { destroyCloudFormation } from '../cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
 import AWS from 'aws-sdk';
 import yargs from 'yargs';
 
 const cli = yargs.command(deployStaticAppCommand);
 
-const parse = (options: any) =>
-  new Promise<any>((resolve, reject) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parse = (options: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new Promise<any>((resolve, reject) => {
     cli.parse('static-app', options, (err, argv) => {
       if (err) {
         reject(err);
@@ -22,6 +24,7 @@ const parse = (options: any) =>
       resolve(argv);
     });
   });
+};
 
 describe('region should be us-east-1', () => {
   beforeEach(() => {
@@ -90,6 +93,7 @@ describe('handling methods', () => {
 });
 
 describe('should set cloudfront', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const testHelper = async (optionsArray: any[], every: boolean) => {
     const results = await Promise.all(
       optionsArray.map(async (options) => {
@@ -98,7 +102,9 @@ describe('should set cloudfront', () => {
       })
     );
 
-    return results.every((value) => value === every);
+    return results.every((value) => {
+      return value === every;
+    });
   };
 
   test('cloudfront must be true', () => {

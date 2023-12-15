@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.42.32](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.31...@docs/website@1.42.32) (2023-12-14)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.42.31](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.30...@docs/website@1.42.31) (2023-12-12)
+
+### Bug Fixes
+
+- upload template when size is big ([#453](https://github.com/ttoss/ttoss/issues/453)) ([59371b7](https://github.com/ttoss/ttoss/commit/59371b7eb9befa006ffe316541f60dfc534dcbd4))
+
+## [1.42.30](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.29...@docs/website@1.42.30) (2023-12-08)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.42.29](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.28...@docs/website@1.42.29) (2023-12-05)
 
 ### Bug Fixes

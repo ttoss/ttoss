@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.23.0...@ttoss/eslint-config@1.24.0) (2023-12-14)
+
+### Features
+
+- eslint config fast refresh rules ([#456](https://github.com/ttoss/ttoss/issues/456)) ([27b6cbf](https://github.com/ttoss/ttoss/commit/27b6cbf9e4d231252a35b6f2e589dd60b009e482))
+
+# [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.8...@ttoss/eslint-config@1.23.0) (2023-12-12)
+
+### Features
+
+- enforce react import ([#454](https://github.com/ttoss/ttoss/issues/454)) ([9bd7144](https://github.com/ttoss/ttoss/commit/9bd7144e4be17855113ce9b315aa836be2b09d19))
+
+## [1.22.8](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.7...@ttoss/eslint-config@1.22.8) (2023-12-12)
+
+### Bug Fixes
+
+- max params ([#455](https://github.com/ttoss/ttoss/issues/455)) ([7d94337](https://github.com/ttoss/ttoss/commit/7d943370efd1663f74e2104b8e0ac2141b9c01ae))
+
+## [1.22.7](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.6...@ttoss/eslint-config@1.22.7) (2023-12-08)
+
+### Bug Fixes
+
+- i18n error missing translation change i18nProvider file ([#451](https://github.com/ttoss/ttoss/issues/451)) ([da080e3](https://github.com/ttoss/ttoss/commit/da080e398402069d01c07588461e4d2f7922e946))
+
 ## [1.22.6](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.5...@ttoss/eslint-config@1.22.6) (2023-11-28)
 
 ### Bug Fixes
