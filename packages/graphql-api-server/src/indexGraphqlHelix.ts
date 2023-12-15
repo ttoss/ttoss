@@ -26,7 +26,7 @@ export type CreateServerInput = {
   };
 } & BuildSchemaInput;
 
-export const createServer = ({
+export const createServerNew = ({
   graphiql = false,
   authenticationType,
   userPoolConfig,
