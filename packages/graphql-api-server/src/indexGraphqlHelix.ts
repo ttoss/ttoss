@@ -1,7 +1,18 @@
-import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
+import { type BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
-import { createYoga } from 'graphql-yoga';
+import {
+  getGraphQLParameters,
+  processRequest,
+  renderGraphiQL,
+  sendResult,
+  shouldRenderGraphiQL,
+} from 'graphql-helix';
 import Koa from 'koa';
+import Router from '@koa/router';
+import bodyParser from 'koa-bodyparser';
+import cors from '@koa/cors';
+
+export { Router };
 
 export type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS';
 
@@ -16,12 +27,19 @@ export type CreateServerInput = {
 } & BuildSchemaInput;
 
 export const createServer = ({
+  graphiql = false,
   authenticationType,
   userPoolConfig,
   ...buildSchemaInput
 }: CreateServerInput): Koa => {
-  const app = new Koa();
+  const server = new Koa();
 
+  const router = new Router();
+
+  /**
+   * Create the verifier outside your route handlers,
+   * so the cache is persisted and can be shared amongst them.
+   */
   const jwtVerifier = (() => {
     if (authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
       if (!userPoolConfig) {
@@ -39,15 +57,13 @@ export const createServer = ({
     return null;
   })();
 
-  app.use(async (ctx) => {
+  router.all('/graphql', async (ctx) => {
     const request = {
       body: ctx.request.body,
       headers: ctx.headers,
       method: ctx.method,
       query: ctx.request.query,
     };
-
-    //console.log(request);
 
     try {
       if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
@@ -61,30 +77,37 @@ export const createServer = ({
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const operationName = request.body;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const query = request.headers;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const variables = request.method;
+    if (shouldRenderGraphiQL(request)) {
+      if (graphiql) {
+        ctx.body = renderGraphiQL({});
+      }
 
-    const yoga = createYoga<Koa.ParameterizedContext>({
-      schema: buildSchema(buildSchemaInput),
-      logging: false,
-    });
-
-    const response = await yoga.handleNodeRequest(ctx.req, ctx);
-
-    // Set status code
-    ctx.status = response.status;
-
-    // Set headers
-    for (const [key, value] of response.headers.entries()) {
-      ctx.append(key, value);
+      return;
     }
 
-    ctx.body = response.body;
+    const { operationName, query, variables } = getGraphQLParameters(request);
+
+    const result = await processRequest({
+      operationName,
+      query,
+      variables,
+      request,
+      schema: buildSchema(buildSchemaInput),
+      contextFactory: () => {
+        return {
+          identity: ctx.identity,
+        };
+      },
+    });
+
+    sendResult(result, ctx.res);
   });
 
-  return app;
+  server
+    .use(cors())
+    .use(bodyParser())
+    .use(router.routes())
+    .use(router.allowedMethods());
+
+  return server;
 };
