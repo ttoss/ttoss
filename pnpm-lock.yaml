@@ -274,7 +274,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/aws-appsync-nodejs:
     dependencies:
@@ -305,7 +305,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/carlin:
     dependencies:
@@ -448,7 +448,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
       typescript:
         specifier: ~5.2.2
         version: 5.2.2
@@ -473,7 +473,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/cloudformation:
     dependencies:
@@ -559,7 +559,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/config:
     dependencies:
@@ -611,7 +611,7 @@ importers:
         version: 29.7.0(@types/node@20.10.4)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/eslint-config:
     dependencies:
@@ -732,7 +732,7 @@ importers:
         version: 0.16.1(@emotion/react@11.11.1)(react@18.2.0)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/google-maps:
     dependencies:
@@ -766,7 +766,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/graphql-api:
     dependencies:
@@ -862,9 +862,12 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@18.16.2)
+      supertest:
+        specifier: ^6.3.3
+        version: 6.3.3
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/i18n-cli:
     dependencies:
@@ -883,7 +886,7 @@ importers:
         version: link:../config
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/landing-pages:
     dependencies:
@@ -923,7 +926,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/layouts:
     devDependencies:
@@ -950,7 +953,7 @@ importers:
         version: 18.2.0
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/logger:
     devDependencies:
@@ -959,7 +962,7 @@ importers:
         version: link:../config
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/monorepo:
     dependencies:
@@ -984,7 +987,7 @@ importers:
         version: 17.0.32
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/react-auth:
     dependencies:
@@ -1036,7 +1039,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/react-hooks:
     dependencies:
@@ -1058,7 +1061,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/react-i18n:
     dependencies:
@@ -1089,7 +1092,7 @@ importers:
         version: 29.7.0(@types/node@18.16.2)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/react-icons:
     dependencies:
@@ -1117,7 +1120,7 @@ importers:
         version: 18.2.0
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/react-notifications:
     dependencies:
@@ -1148,7 +1151,7 @@ importers:
         version: 18.2.0
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/relay-amplify:
     devDependencies:
@@ -1169,7 +1172,7 @@ importers:
         version: 16.0.0
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/test-utils:
     dependencies:
@@ -1264,7 +1267,7 @@ importers:
         version: 0.16.1(@emotion/react@11.11.1)(react@18.2.0)
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   packages/ui:
     dependencies:
@@ -1310,10 +1313,13 @@ importers:
         version: 18.2.0
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   terezinha-farm/api:
     dependencies:
+      '@graphql-tools/executor-http':
+        specifier: ^1.0.5
+        version: 1.0.5(@types/node@18.16.2)(graphql@16.8.1)
       '@terezinha-farm/config':
         specifier: workspace:^
         version: link:../config
@@ -1323,9 +1329,6 @@ importers:
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../../packages/graphql-api
-      graphql:
-        specifier: ^16.8.1
-        version: 16.8.1
       graphql-shield:
         specifier: ^7.6.5
         version: 7.6.5(graphql-middleware@6.1.35)(graphql@16.8.1)
@@ -1449,7 +1452,7 @@ importers:
         version: link:../../packages/config
       tsup:
         specifier: ^8.0.1
-        version: 8.0.1(typescript@5.2.2)
+        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
 
   terezinha-farm/iam:
     dependencies:
@@ -4100,13 +4103,6 @@ packages:
       '@aws-sdk/types': 3.6.1
       tslib: 1.14.1
 
-  /@babel/code-frame@7.22.13:
-    resolution: {integrity: sha512-XktuhWlJ5g+3TJXc5upd9Ks1HutSArik6jf2eAjYFyIOf4ej3RN+184cZbzDvbPnuTJIUhPKKJE3cIsYTiAT3w==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      '@babel/highlight': 7.23.4
-      chalk: 2.4.2
-
   /@babel/code-frame@7.23.4:
     resolution: {integrity: sha512-r1IONyb6Ia+jYR2vvIDhdWdlTGhqbBoFqLTQidzZ4kepUFH15ejXvFHxCVbtl7BOXIudsIubf4E81xeA3h3IXA==}
     engines: {node: '>=6.9.0'}
@@ -4123,7 +4119,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@ampproject/remapping': 2.2.1
-      '@babel/code-frame': 7.22.13
+      '@babel/code-frame': 7.23.4
       '@babel/generator': 7.23.4
       '@babel/helper-compilation-targets': 7.22.15
       '@babel/helper-module-transforms': 7.23.3(@babel/core@7.23.3)
@@ -5399,7 +5395,7 @@ packages:
       babel-plugin-polyfill-corejs2: 0.4.6(@babel/core@7.23.3)
       babel-plugin-polyfill-corejs3: 0.8.6(@babel/core@7.23.3)
       babel-plugin-polyfill-regenerator: 0.5.3(@babel/core@7.23.3)
-      core-js-compat: 3.31.1
+      core-js-compat: 3.33.3
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -7728,6 +7724,24 @@ packages:
       graphql: 16.8.1
       tslib: 2.4.1
       value-or-promise: 1.0.11
+
+  /@graphql-tools/executor-http@1.0.5(@types/node@18.16.2)(graphql@16.8.1):
+    resolution: {integrity: sha512-roQyDLOAywyaCTPOhwXiT/WDr0bfuVhqOXjECsnrIl/1TMPDUYjiT2sW6Gz6pqnYMmokdhyvlV6D5d7WtIrKsA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+    dependencies:
+      '@graphql-tools/utils': 10.0.6(graphql@16.8.1)
+      '@repeaterjs/repeater': 3.0.5
+      '@whatwg-node/fetch': 0.9.14
+      extract-files: 11.0.0
+      graphql: 16.8.1
+      meros: 1.3.0(@types/node@18.16.2)
+      tslib: 2.6.2
+      value-or-promise: 1.0.12
+    transitivePeerDependencies:
+      - '@types/node'
+    dev: false
 
   /@graphql-tools/executor@1.2.0(graphql@16.8.1):
     resolution: {integrity: sha512-SKlIcMA71Dha5JnEWlw4XxcaJ+YupuXg0QCZgl2TOLFz4SkGCwU/geAsJvUJFwK2RbVLpQv/UMq67lOaBuwDtg==}
@@ -14245,7 +14259,7 @@ packages:
     dependencies:
       '@babel/core': 7.23.3
       '@jest/transform': 29.7.0
-      '@types/babel__core': 7.20.3
+      '@types/babel__core': 7.20.5
       babel-plugin-istanbul: 6.1.1
       babel-preset-jest: 29.6.3(@babel/core@7.23.3)
       chalk: 4.1.2
@@ -14330,7 +14344,7 @@ packages:
     dependencies:
       '@babel/template': 7.22.15
       '@babel/types': 7.23.4
-      '@types/babel__core': 7.20.3
+      '@types/babel__core': 7.20.5
       '@types/babel__traverse': 7.18.3
     dev: true
 
@@ -14704,16 +14718,6 @@ packages:
       esbuild: '>=0.17'
     dependencies:
       esbuild: 0.19.7
-      load-tsconfig: 0.2.5
-    dev: true
-
-  /bundle-require@4.0.1(esbuild@0.19.9):
-    resolution: {integrity: sha512-9NQkRHlNdNpDBGmLpngF3EFDcwodhMUuLz9PaWYciVcQF9SE4LFjM2DB/xV1Li5JiuDMv7ZUWuC3rGbqR0MAXQ==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    peerDependencies:
-      esbuild: '>=0.17'
-    dependencies:
-      esbuild: 0.19.9
       load-tsconfig: 0.2.5
     dev: true
 
@@ -15546,6 +15550,10 @@ packages:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
 
+  /cookiejar@2.1.4:
+    resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
+    dev: true
+
   /cookies@0.8.0:
     resolution: {integrity: sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==}
     engines: {node: '>= 0.8'}
@@ -15587,11 +15595,6 @@ packages:
       serialize-javascript: 6.0.1
       webpack: 5.89.0
     dev: false
-
-  /core-js-compat@3.31.1:
-    resolution: {integrity: sha512-wIDWd2s5/5aJSdpOJHfSibxNODxoGoWOBHt8JSPB41NOE94M7kuTPZCYLOlTtuoXTsBPKobpJ6T+y0SSy5L9SA==}
-    dependencies:
-      browserslist: 4.22.1
 
   /core-js-compat@3.33.3:
     resolution: {integrity: sha512-cNzGqFsh3Ot+529GIXacjTJ7kegdt5fPXxCBVS1G0iaZpuo/tBz399ymceLJveQhFFZ8qThHiP3fzuoQjKN2ow==}
@@ -16712,6 +16715,13 @@ packages:
     dependencies:
       dequal: 2.0.3
     dev: false
+
+  /dezalgo@1.0.4:
+    resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
+    dependencies:
+      asap: 2.0.6
+      wrappy: 1.0.2
+    dev: true
 
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -18348,6 +18358,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /extract-files@11.0.0:
+    resolution: {integrity: sha512-FuoE1qtbJ4bBVvv94CC7s0oTnKUGvQs+Rjf1L2SJFfS+HTVVjhPFtehPdQ0JiGPqVNfSSZvL5yzHHQq2Z4WNhQ==}
+    engines: {node: ^12.20 || >= 14.13}
+    dev: false
+
   /extract-zip@1.7.0:
     resolution: {integrity: sha512-xoh5G1W/PB0/27lXgMQyIhP5DSY/LhoCsOyZgb+6iMmRtCwVBo55uKaMoEYrDCKQhWvqEip5ZPKAc6eFNyf/MA==}
     hasBin: true
@@ -18420,6 +18435,10 @@ packages:
     dependencies:
       fast-decode-uri-component: 1.0.1
     dev: false
+
+  /fast-safe-stringify@2.1.1:
+    resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
+    dev: true
 
   /fast-shallow-equal@1.0.0:
     resolution: {integrity: sha512-HPtaa38cPgWvaCFmRNhlc6NG7pv6NUHqjPgVAkWGoB9mQMwYB27/K0CvOM5Czy+qpT3e8XJ6Q4aPAnzpNpzNaw==}
@@ -18810,7 +18829,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: false
 
   /format@0.2.2:
     resolution: {integrity: sha512-wzsgA6WOq+09wrU1tsJ09udeR/YZRaeArL9e1wPbFg3GG2yDnC2ldKpxs4xunpFF9DgqCqOIra3bc1HWrJ37Ww==}
@@ -18822,6 +18840,15 @@ packages:
     engines: {node: '>=12.20.0'}
     dependencies:
       fetch-blob: 3.2.0
+    dev: true
+
+  /formidable@2.1.2:
+    resolution: {integrity: sha512-CM3GuJ57US06mlpQ47YcunuUZ9jpm8Vx+P2CGt2j7HpgkKZO/DJYQ0Bobim8G6PFQmK5lOqOOdUXboU+h73A4g==}
+    dependencies:
+      dezalgo: 1.0.4
+      hexoid: 1.0.0
+      once: 1.4.0
+      qs: 6.11.1
     dev: true
 
   /forwarded@0.2.0:
@@ -19725,6 +19752,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       source-map: 0.7.4
+
+  /hexoid@1.0.0:
+    resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
+    engines: {node: '>=8'}
+    dev: true
 
   /history@4.10.1:
     resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
@@ -22851,6 +22883,18 @@ packages:
       web-worker: 1.2.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /meros@1.3.0(@types/node@18.16.2):
+    resolution: {integrity: sha512-2BNGOimxEz5hmjUG2FwoxCt5HN7BXdaWyFqEwxPTrJzVdABtrL4TiHTcsWSFAxPQ/tOnEaQEJh3qWq71QRMY+w==}
+    engines: {node: '>=13'}
+    peerDependencies:
+      '@types/node': '>=13'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+    dependencies:
+      '@types/node': 18.16.2
     dev: false
 
   /methods@1.1.2:
@@ -28257,6 +28301,34 @@ packages:
   /sudo-prompt@9.2.1:
     resolution: {integrity: sha512-Mu7R0g4ig9TUuGSxJavny5Rv0egCEtpZRNMrZaYS1vxkiIxGiGUwoezU3LazIQ+KE04hTrTfNPgxU5gzi7F5Pw==}
 
+  /superagent@8.1.2:
+    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
+    engines: {node: '>=6.4.0 <13 || >=14'}
+    dependencies:
+      component-emitter: 1.3.0
+      cookiejar: 2.1.4
+      debug: 4.3.4
+      fast-safe-stringify: 2.1.1
+      form-data: 4.0.0
+      formidable: 2.1.2
+      methods: 1.1.2
+      mime: 2.6.0
+      qs: 6.11.1
+      semver: 7.5.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /supertest@6.3.3:
+    resolution: {integrity: sha512-EMCG6G8gDu5qEqRQ3JjjPs6+FYT1a7Hv5ApHvtSghmOFJYtsU5S+pSb6Y2EUeCEY3CmEL3mmQ8YWlPOzQomabA==}
+    engines: {node: '>=6.4.0'}
+    dependencies:
+      methods: 1.1.2
+      superagent: 8.1.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -28862,45 +28934,6 @@ packages:
     dev: false
 
   /tsup@8.0.1(ts-node@10.9.2)(typescript@5.2.2):
-    resolution: {integrity: sha512-hvW7gUSG96j53ZTSlT4j/KL0q1Q2l6TqGBFc6/mu/L46IoNWqLLUzLRLP1R8Q7xrJTmkDxxDoojV5uCVs1sVOg==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      '@microsoft/api-extractor': ^7.36.0
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.5.0'
-    peerDependenciesMeta:
-      '@microsoft/api-extractor':
-        optional: true
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.0.1(esbuild@0.19.9)
-      cac: 6.7.14
-      chokidar: 3.5.3
-      debug: 4.3.4
-      esbuild: 0.19.9
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss-load-config: 4.0.1(ts-node@10.9.2)
-      resolve-from: 5.0.0
-      rollup: 4.5.1
-      source-map: 0.8.0-beta.0
-      sucrase: 3.32.0
-      tree-kill: 1.2.2
-      typescript: 5.2.2
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
-
-  /tsup@8.0.1(typescript@5.2.2):
     resolution: {integrity: sha512-hvW7gUSG96j53ZTSlT4j/KL0q1Q2l6TqGBFc6/mu/L46IoNWqLLUzLRLP1R8Q7xrJTmkDxxDoojV5uCVs1sVOg==}
     engines: {node: '>=18'}
     hasBin: true

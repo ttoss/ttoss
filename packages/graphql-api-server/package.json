@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "echo jest"
+    "schema": "ttoss-graphql-api build-schema",
+    "test": "jest"
   },
   "sideEffects": false,
   "typings": "dist/index.d.ts",
@@ -45,6 +46,7 @@
     "@types/koa-bodyparser": "^4.3.12",
     "graphql": "^16.8.1",
     "jest": "^29.7.0",
+    "supertest": "^6.3.3",
     "tsup": "^8.0.1"
   },
   "keywords": [

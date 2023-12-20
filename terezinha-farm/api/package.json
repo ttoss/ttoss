@@ -8,10 +8,10 @@
     "schema": "ttoss-graphql-api build-schema"
   },
   "dependencies": {
+    "@graphql-tools/executor-http": "^1.0.5",
     "@terezinha-farm/config": "workspace:^",
     "@ttoss/appsync-api": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
-    "graphql": "^16.8.1",
     "graphql-shield": "^7.6.5"
   },
   "devDependencies": {
