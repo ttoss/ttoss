@@ -3,9 +3,9 @@
   "name": "@terezinha-farm/api",
   "version": "0.10.0",
   "scripts": {
+    "build-schema": "ttoss-graphql-api build-schema",
     "deploy": "carlin deploy",
-    "dev": "tsx watch ./server/server.ts",
-    "schema": "ttoss-graphql-api build-schema"
+    "dev": "tsx watch ./server/server.ts"
   },
   "dependencies": {
     "@graphql-tools/executor-http": "^1.0.5",

@@ -4,25 +4,17 @@ import {
   schemaComposer,
 } from '@ttoss/graphql-api';
 
-const BasqueteTeam = schemaComposer.createObjectTC({
-  name: 'BasqueteTeam',
+const AuthorTC = schemaComposer.createObjectTC({
+  name: 'Author',
   fields: {
-    id: 'ID!',
+    id: 'Int!',
     name: 'String!',
   },
 });
 
-BasqueteTeam.addResolver({
-  name: 'findById',
-  type: BasqueteTeam,
-  args: {
-    id: 'ID!',
-  },
-});
-
-BasqueteTeam.addResolver({
+AuthorTC.addResolver({
   name: 'findMany',
-  type: BasqueteTeam,
+  type: AuthorTC,
   resolve: async ({
     args,
     rawQuery,
@@ -33,11 +25,11 @@ BasqueteTeam.addResolver({
           const id = Number(rawQuery.id.$lt || 0) - index - 1;
           return {
             id,
-            name: `BasqueteTeam ${id}`,
+            name: `Author ${id}`,
           };
         })
-        .filter((basquete) => {
-          return basquete.id > 0;
+        .filter((author) => {
+          return author.id > 0;
         });
     }
 
@@ -46,16 +38,16 @@ BasqueteTeam.addResolver({
         const id = index + 1 + Number(rawQuery.id?.$gt || 0);
         return {
           id,
-          name: `BasqueteTeam ${id}`,
+          name: `Author ${id}`,
         };
       })
-      .filter((basquete) => {
-        return basquete.id < 100;
+      .filter((author) => {
+        return author.id < 100;
       });
   },
 });
 
-BasqueteTeam.addResolver({
+AuthorTC.addResolver({
   name: 'count',
   type: 'Int!',
   resolve: async () => {
@@ -63,9 +55,9 @@ BasqueteTeam.addResolver({
   },
 });
 
-composeWithConnection(BasqueteTeam, {
-  findManyResolver: BasqueteTeam.getResolver('findMany'),
-  countResolver: BasqueteTeam.getResolver('count'),
+composeWithConnection(AuthorTC, {
+  findManyResolver: AuthorTC.getResolver('findMany'),
+  countResolver: AuthorTC.getResolver('count'),
   defaultLimit: 10,
   sort: {
     ID_ASC: {
@@ -90,5 +82,7 @@ composeWithConnection(BasqueteTeam, {
 });
 
 schemaComposer.Query.addFields({
-  basquete: BasqueteTeam.getResolver('connection'),
+  author: AuthorTC.getResolver('connection'),
 });
+
+export { schemaComposer };

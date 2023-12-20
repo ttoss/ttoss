@@ -19,7 +19,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "schema": "ttoss-graphql-api build-schema",
     "test": "jest"
   },
   "sideEffects": false,

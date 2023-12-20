@@ -1,5 +1,5 @@
 import { CreateServerInput, createServer } from '../src/index';
-import { schemaComposer } from '../src/schemaComposer';
+import { schemaComposer } from './schemaComposer';
 import request from 'supertest';
 
 const serverOptions: CreateServerInput = {
@@ -17,7 +17,7 @@ describe('GraphQL Server Tests', () => {
 
   test('should execute a sample query', async () => {
     const query = `
-    query{farms {
+    query{author {
       edges {
         node {
           id
@@ -33,15 +33,15 @@ describe('GraphQL Server Tests', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('data');
-    expect(response.body.data).toHaveProperty('farms');
+    expect(response.body.data).toHaveProperty('author');
   });
 
   test('should execute a sample mutation', async () => {
     const mutation = `
     mutation {
-      createFarmId(input: {
+      createAuthor(input: {
         id: "20"
-        name: "fazenda da tereza"
+        name: "author 20"
       }) {
         id
         name
