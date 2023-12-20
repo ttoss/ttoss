@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.10.7...@ttoss/cloud-auth@0.11.0) (2023-12-19)
+
+### Features
+
+- **@ttoss/cloud-auth:** accept roles arn ([#459](https://github.com/ttoss/ttoss/issues/459)) ([29afe56](https://github.com/ttoss/ttoss/commit/29afe56cc1e16cf54e5876a579703ff4ccf6d9a2))
+
 ## [0.10.7](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.10.6...@ttoss/cloud-auth@0.10.7) (2023-12-12)
 
 ### Bug Fixes
