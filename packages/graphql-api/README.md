@@ -391,14 +391,20 @@ As Relay needs an introspection query to work, this package provides a way to bu
 ttoss-graphl-api build-schema
 ```
 
-You can add the `build` script to your `package.json`:
+You can add the `schema` script to your `package.json`:
 
 ```json
 {
   "scripts": {
-    "build": "ttoss-graphl-api build-schema"
+    "build-schema": "ttoss-graphl-api build-schema"
   }
 }
+```
+
+If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
+
+```bash
+ttoss-graphl-api build-schema -d tests
 ```
 
 ## How to Create Tests
