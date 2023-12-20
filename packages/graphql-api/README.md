@@ -391,7 +391,7 @@ As Relay needs an introspection query to work, this package provides a way to bu
 ttoss-graphl-api build-schema
 ```
 
-You can add the `schema` script to your `package.json`:
+You can add the `build-schema` script to your `package.json`:
 
 ```json
 {
