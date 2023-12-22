@@ -8,7 +8,6 @@
     "dev": "tsx watch ./server/server.ts"
   },
   "dependencies": {
-    "@graphql-tools/executor-http": "^1.0.5",
     "@terezinha-farm/config": "workspace:^",
     "@ttoss/appsync-api": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
