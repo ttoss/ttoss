@@ -81,8 +81,42 @@ composeWithConnection(AuthorTC, {
   },
 });
 
+schemaComposer.Mutation.addFields({
+  createAuthor: {
+    type: AuthorTC,
+    args: {
+      id: 'ID!',
+      name: 'String!',
+    },
+  },
+});
+
+AuthorTC.addResolver({
+  name: 'createAuthor',
+  type: AuthorTC,
+  args: {
+    id: 'ID!', // Defina os tipos dos argumentos conforme necessário
+    name: 'String!',
+  },
+  resolve: async ({
+    args,
+  }: ResolverResolveParams<unknown, unknown, { id: string; name: string }>) => {
+    const { id, name } = args;
+    const newAuthor = {
+      id,
+      name,
+    };
+
+    return newAuthor;
+  },
+});
+
 schemaComposer.Query.addFields({
   author: AuthorTC.getResolver('connection'),
+});
+
+schemaComposer.Mutation.addFields({
+  createAuthor: AuthorTC.getResolver('createAuthor'),
 });
 
 export { schemaComposer };

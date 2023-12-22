@@ -822,6 +822,9 @@ importers:
       '@koa/router':
         specifier: ^12.0.1
         version: 12.0.1
+      '@types/supertest':
+        specifier: ^2.0.16
+        version: 2.0.16
       aws-jwt-verify:
         specifier: ^4.0.0
         version: 4.0.0
@@ -12279,6 +12282,10 @@ packages:
   /@types/cookie@0.3.3:
     resolution: {integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==}
 
+  /@types/cookiejar@2.1.5:
+    resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
+    dev: false
+
   /@types/cookies@0.7.7:
     resolution: {integrity: sha512-h7BcvPUogWbKCzBR2lY4oqaZbO3jXZksexYJVFvkrFeLgbZjQkU4x8pRq6eg2MHXQhY0McQdqmmsxRWlVAHooA==}
     dependencies:
@@ -12805,6 +12812,19 @@ packages:
     resolution: {integrity: sha512-+dyGs2n2o6QStsexh87NeaRmXYnKOnEe7iOEkcYOwKwI5a1gFL0+Mt/hZKi+4KD1qDMkLkGb0lpDrffb/vSkDQ==}
     dependencies:
       csstype: 3.1.2
+
+  /@types/superagent@4.1.24:
+    resolution: {integrity: sha512-mEafCgyKiMFin24SDzWN7yAADt4gt6YawFiNMp0QS5ZPboORfyxFt0s3VzJKhTaKg9py/4FUmrHLTNfJKt9Rbw==}
+    dependencies:
+      '@types/cookiejar': 2.1.5
+      '@types/node': 20.10.4
+    dev: false
+
+  /@types/supertest@2.0.16:
+    resolution: {integrity: sha512-6c2ogktZ06tr2ENoZivgm7YnprnhYE4ZoXGMY+oA7IuAf17M8FWvujXZGmxLv8y0PTyts4x5A+erSwVUFA8XSg==}
+    dependencies:
+      '@types/superagent': 4.1.24
+    dev: false
 
   /@types/testing-library__jest-dom@5.14.9:
     resolution: {integrity: sha512-FSYhIjFlfOpGSRyVoMBMuS3ws5ehFQODymf3vlI7U1K8c7PHwWwFY7VREfmsuzHSOnoKs/9/Y983ayOs7eRzqw==}

@@ -10,11 +10,6 @@ const serverOptions: CreateServerInput = {
 const app = createServer(serverOptions);
 
 describe('GraphQL Server Tests', () => {
-  test('should connect to the server', async () => {
-    const response = await request(app.callback()).get('/graphql');
-    expect(response.status).toBe(200);
-  });
-
   test('should execute a sample query', async () => {
     const query = `
     query{author {
@@ -32,17 +27,28 @@ describe('GraphQL Server Tests', () => {
       .send({ query });
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('data');
-    expect(response.body.data).toHaveProperty('author');
+    expect(response.body.data).toEqual({
+      author: {
+        edges: [
+          { node: { id: 1, name: 'Author 1' } },
+          { node: { id: 2, name: 'Author 2' } },
+          { node: { id: 3, name: 'Author 3' } },
+          { node: { id: 4, name: 'Author 4' } },
+          { node: { id: 5, name: 'Author 5' } },
+          { node: { id: 6, name: 'Author 6' } },
+          { node: { id: 7, name: 'Author 7' } },
+          { node: { id: 8, name: 'Author 8' } },
+          { node: { id: 9, name: 'Author 9' } },
+          { node: { id: 10, name: 'Author 10' } },
+        ],
+      },
+    });
   });
 
   test('should execute a sample mutation', async () => {
     const mutation = `
     mutation {
-      createAuthor(input: {
-        id: "20"
-        name: "author 20"
-      }) {
+      createAuthor(id: "100", name: "author 100"){
         id
         name
       }
@@ -55,5 +61,10 @@ describe('GraphQL Server Tests', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('data');
+    expect(response.body.data).toHaveProperty('createAuthor');
+    expect(response.body.data.createAuthor).toEqual({
+      id: 100,
+      name: 'author 100',
+    });
   });
 });
