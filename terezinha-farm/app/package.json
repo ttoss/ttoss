@@ -11,7 +11,7 @@
     "dev": "vite",
     "i18n": "ttoss-i18n",
     "preview": "vite preview",
-    "prerelay": "pnpm run --filter=@terezinha-farm/api schema",
+    "prerelay": "pnpm run --filter=@terezinha-farm/api build-schema",
     "relay": "relay-compiler"
   },
   "dependencies": {
