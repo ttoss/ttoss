@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.10.1...@terezinha-farm/api@0.11.0) (2023-12-22)
+
+### Features
+
+- migrate helix to yoga ([#457](https://github.com/ttoss/ttoss/issues/457)) ([d692b6c](https://github.com/ttoss/ttoss/commit/d692b6c741fef924d2ca09c1b1e0d1a757f4eea4))
+
 ## [0.10.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.10.0...@terezinha-farm/api@0.10.1) (2023-12-20)
 
 **Note:** Version bump only for package @terezinha-farm/api
