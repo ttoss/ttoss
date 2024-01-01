@@ -172,7 +172,7 @@ export const createApiTemplate = ({
           Layers: getPeerDependenciesLambdaLayers(),
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
-          Runtime: 'nodejs18.x',
+          Runtime: 'nodejs20.x',
           /**
            * https://docs.aws.amazon.com/general/latest/gr/appsync.html
            * Request execution time for mutations, queries, and subscriptions: 30 seconds
