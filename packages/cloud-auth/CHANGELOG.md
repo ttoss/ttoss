@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.11.0...@ttoss/cloud-auth@0.12.0) (2024-01-02)
+
+### Features
+
+- principal tag mapping ([#468](https://github.com/ttoss/ttoss/issues/468)) ([cb9a135](https://github.com/ttoss/ttoss/commit/cb9a1355a179e65939aa8b215dfa0d624268b2b0))
+
 # [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.10.7...@ttoss/cloud-auth@0.11.0) (2023-12-19)
 
 ### Features
