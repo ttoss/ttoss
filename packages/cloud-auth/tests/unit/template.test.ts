@@ -1,4 +1,5 @@
 import { createAuthTemplate } from '../../src';
+import { defaultPrincipalTags } from '../../src/template';
 
 describe('user pool', () => {
   test('do not add schema if not provided', () => {
@@ -75,6 +76,83 @@ describe('user pool', () => {
 });
 
 describe('identity pool', () => {
+  test.each([
+    {
+      principalTags: undefined,
+    },
+    {
+      principalTags: true,
+    },
+  ])(
+    'should map principal tags by default or if principalTags is true',
+    ({ principalTags }) => {
+      const template = createAuthTemplate({
+        identityPool: {
+          enabled: true,
+          principalTags,
+        },
+      });
+
+      expect(template.Resources.CognitoIdentityPoolPrincipalTag).toEqual({
+        Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
+        Properties: {
+          IdentityPoolId: {
+            Ref: createAuthTemplate.CognitoIdentityPoolLogicalId,
+          },
+          IdentityProviderName: {
+            'Fn::GetAtt': [
+              createAuthTemplate.CognitoUserPoolLogicalId,
+              'ProviderName',
+            ],
+          },
+          PrincipalTags: defaultPrincipalTags,
+          UseDefaults: false,
+        },
+      });
+    }
+  );
+
+  test('should not map principal tags if principalTags is false', () => {
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        principalTags: false,
+      },
+    });
+
+    expect(template.Resources.CognitoIdentityPoolPrincipalTag).toBeUndefined();
+  });
+
+  test('should map custom principal tags if provided', () => {
+    const principalTags = {
+      customTag: 'customValue',
+    };
+
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        principalTags,
+      },
+    });
+
+    expect(template.Resources.CognitoIdentityPoolPrincipalTag).toEqual({
+      Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
+      Properties: {
+        IdentityPoolId: {
+          Ref: createAuthTemplate.CognitoIdentityPoolLogicalId,
+        },
+        IdentityProviderName: {
+          'Fn::GetAtt': [
+            createAuthTemplate.CognitoUserPoolLogicalId,
+            'ProviderName',
+          ],
+        },
+        PrincipalTags: principalTags,
+        UseDefaults: false,
+      },
+    });
+  });
+
   test.each([false, undefined])(
     'should not have identity pool by default or false: %p',
     (enabled) => {
