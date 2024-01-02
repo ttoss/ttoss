@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.11.1...@terezinha-farm/api@0.11.2) (2024-01-02)
+
+### Bug Fixes
+
+- terezinha farm api deploy ([a674ab7](https://github.com/ttoss/ttoss/commit/a674ab7f737f7994a3593ffc6d76a3cecd43bba0))
+
 ## [0.11.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.11.0...@terezinha-farm/api@0.11.1) (2024-01-02)
 
 **Note:** Version bump only for package @terezinha-farm/api
