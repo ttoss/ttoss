@@ -1326,6 +1326,9 @@ importers:
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../../packages/graphql-api
+      graphql:
+        specifier: ^16.8.1
+        version: 16.8.1
       graphql-shield:
         specifier: ^7.6.5
         version: 7.6.5(graphql-middleware@6.1.35)(graphql@16.8.1)
