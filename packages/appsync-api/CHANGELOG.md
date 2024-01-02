@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.12](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.11...@ttoss/appsync-api@0.17.12) (2024-01-02)
+
+### Bug Fixes
+
+- appsync enum substitution ([#466](https://github.com/ttoss/ttoss/issues/466)) ([d557568](https://github.com/ttoss/ttoss/commit/d557568937d08218bcaf46c3844d20a0781588ce))
+
 ## [0.17.11](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.10...@ttoss/appsync-api@0.17.11) (2023-12-20)
 
 **Note:** Version bump only for package @ttoss/appsync-api
