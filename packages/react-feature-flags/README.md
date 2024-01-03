@@ -23,7 +23,7 @@ import {
  */
 const loadFeatures = async () => {
   const response = await fetch('https://...');
-  const features = await response.json();
+  const { features } = await response.json();
   return features; // string[]
 };
 
@@ -89,7 +89,7 @@ const MyComponent = () => {
   const { updateFeatures } = useFeatureFlags();
   const handleClick = async () => {
     const response = await fetch('https://...');
-    const features = await response.json();
+    const { features } = await response.json();
     updateFeatures(features);
   };
   return <button onClick={handleClick}>Update features</button>;
