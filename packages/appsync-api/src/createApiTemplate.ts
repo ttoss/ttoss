@@ -1,6 +1,4 @@
 import { type SchemaComposer, graphql } from '@ttoss/graphql-api';
-import { getPackageLambdaLayerStackName } from 'carlin/src/deploy/lambdaLayer/getPackageLambdaLayerStackName';
-import packageJson from '../package.json';
 
 /**
  * Absolute path to avoid:
@@ -44,11 +42,15 @@ export const createApiTemplate = ({
   dataSource,
   lambdaFunction,
   userPoolConfig,
+  customDomain,
 }: {
   additionalAuthenticationProviders?: AuthenticationType[];
   authenticationType?: AuthenticationType;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  schemaComposer: SchemaComposer<any>;
+  customDomain?: {
+    domainName: string;
+    certificateArn: string;
+    hostedZoneName?: string;
+  };
   dataSource: {
     roleArn: StringOrImport;
   };
@@ -56,8 +58,12 @@ export const createApiTemplate = ({
     environment?: {
       variables: Record<string, string>;
     };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    layers?: any;
     roleArn: StringOrImport;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schemaComposer: SchemaComposer<any>;
   userPoolConfig?: {
     appIdClientRegex: StringOrImport;
     awsRegion: StringOrImport;
@@ -101,26 +107,6 @@ export const createApiTemplate = ({
       });
     })
     .filter(Boolean) as Array<{ fieldName: string; typeName: string }>;
-
-  const getPeerDependenciesLambdaLayers = () => {
-    const { peerDependencies } = packageJson;
-
-    const lambdaLayerStackNames = Object.entries(peerDependencies)
-      .filter(([dependencyName]) => {
-        return ['graphql'].includes(dependencyName);
-      })
-      .map(([dependencyName, dependencyVersion]) => {
-        return getPackageLambdaLayerStackName(
-          [dependencyName, dependencyVersion].join('@')
-        );
-      });
-
-    return lambdaLayerStackNames.map((lambdaLayerStackName) => {
-      return {
-        'Fn::ImportValue': lambdaLayerStackName,
-      };
-    });
-  };
 
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
@@ -169,7 +155,7 @@ export const createApiTemplate = ({
             S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
           },
           Handler: 'index.handler',
-          Layers: getPeerDependenciesLambdaLayers(),
+          Layers: lambdaFunction.layers,
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
           Runtime: 'nodejs20.x',
@@ -298,6 +284,76 @@ export const createApiTemplate = ({
       {
         Variables: lambdaFunction.environment.variables,
       };
+  }
+
+  if (customDomain) {
+    const AppSyncDomainNameLogicalId = 'AppSyncDomainName';
+
+    /**
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-domainname.html
+     */
+    template.Resources[AppSyncDomainNameLogicalId] = {
+      Type: 'AWS::AppSync::DomainName',
+      Properties: {
+        CertificateArn: customDomain.certificateArn,
+        Description: 'Custom domain for AppSync API',
+        DomainName: customDomain.domainName,
+      },
+    };
+
+    if (customDomain.hostedZoneName) {
+      const hostedZoneName = customDomain.hostedZoneName.endsWith('.')
+        ? customDomain.hostedZoneName
+        : `${customDomain.hostedZoneName}.`;
+
+      /**
+       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html
+       */
+      template.Resources.AppSyncDomainNameRoute53RecordSet = {
+        Type: 'AWS::Route53::RecordSet',
+        Properties: {
+          HostedZoneName: hostedZoneName,
+          Name: customDomain.domainName,
+          ResourceRecords: [
+            {
+              'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'AppSyncDomainName'],
+            },
+          ],
+          TTL: '900',
+          Type: 'CNAME',
+        },
+      };
+    }
+
+    template.Resources.AppSyncDomainNameApiAssociation = {
+      Type: 'AWS::AppSync::DomainNameApiAssociation',
+      Properties: {
+        ApiId: {
+          'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'],
+        },
+        DomainName: {
+          'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'DomainName'],
+        },
+      },
+    };
+
+    if (!template.Outputs) {
+      template.Outputs = {};
+    }
+
+    template.Outputs.DomainName = {
+      Description: 'Custom domain name for AppSync API',
+      Value: {
+        'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'DomainName'],
+      },
+    };
+
+    template.Outputs.CloudFrontDomainName = {
+      Description: 'CloudFront domain name for AppSync API',
+      Value: {
+        'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'AppSyncDomainName'],
+      },
+    };
   }
 
   return template;
