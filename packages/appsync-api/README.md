@@ -98,3 +98,38 @@ export const handler = createAppSyncResolverHandler({
   middlewares: [permissions],
 });
 ```
+
+### Custom domain name
+
+You can add a custom domain name to your API using the `customDomain` option.
+
+```ts
+import { createApiTemplate } from '@ttoss/appsync-api';
+
+export const handler = createApiTemplate({
+  schemaComposer,
+  customDomain: {
+    domainName: 'api.example.com', // required
+    certificateArn: {
+      'Fn::ImportValue': 'AppSyncDomainCertificateArn',
+    }, // required
+  },
+});
+```
+
+If your domain is on Route53, you can use the option `customDomain.hostedZoneName` to create the required DNS records.
+
+```ts
+import { createApiTemplate } from '@ttoss/appsync-api';
+
+export const template = createApiTemplate({
+  schemaComposer,
+  customDomain: {
+    domainName: 'api.example.com', // required
+    certificateArn: {
+      'Fn::ImportValue': 'AppSyncDomainCertificateArn',
+    }, // required
+    hostedZoneName: 'example.com.', // optional
+  },
+});
+```
