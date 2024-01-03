@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.12...@ttoss/appsync-api@0.18.0) (2024-01-03)
+
+### Features
+
+- add custom domain appsync-api ([#470](https://github.com/ttoss/ttoss/issues/470)) ([cec0bac](https://github.com/ttoss/ttoss/commit/cec0bac1f54518b3217ab78f33e673c42fcecaa5))
+
 ## [0.17.12](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.17.11...@ttoss/appsync-api@0.17.12) (2024-01-02)
 
 ### Bug Fixes
