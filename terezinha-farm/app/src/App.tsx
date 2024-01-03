@@ -11,7 +11,7 @@ const markdown = '# ~Hi~, *Pluto*!';
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
 
-  const isNiceHiEnabled = useFeatureFlag('my-feature');
+  const isNiceHiEnabled = useFeatureFlag('nice-hi');
 
   const hi = isNiceHiEnabled ? 'Hi' : 'Hello';
 
