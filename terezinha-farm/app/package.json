@@ -17,6 +17,7 @@
   "dependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/react-auth": "workspace:^",
+    "@ttoss/react-feature-flags": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",

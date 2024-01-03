@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { App } from './App';
 import { AuthProvider } from '@ttoss/react-auth';
+import { FeatureFlagsProvider } from '@ttoss/react-feature-flags';
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
 import { RelayEnvironmentProvider } from 'react-relay';
@@ -21,16 +22,18 @@ const loadLocaleData: LoadLocaleData = async (locale) => {
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RelayEnvironmentProvider environment={environment}>
-      <ThemeProvider>
-        <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
-          <NotificationsProvider>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </NotificationsProvider>
-        </I18nProvider>
-      </ThemeProvider>
-    </RelayEnvironmentProvider>
+    <FeatureFlagsProvider>
+      <RelayEnvironmentProvider environment={environment}>
+        <ThemeProvider>
+          <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
+            <NotificationsProvider>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </NotificationsProvider>
+          </I18nProvider>
+        </ThemeProvider>
+      </RelayEnvironmentProvider>
+    </FeatureFlagsProvider>
   </React.StrictMode>
 );

@@ -1,15 +1,19 @@
 // import * as React from 'react';
 import { Auth, useAuth } from '@ttoss/react-auth';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
-import { Markdown } from '@ttoss/components';
-
 import { FarmCorrectPagination } from './modules/Farm/FarmCorrectPagination';
 import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
+import { Markdown } from '@ttoss/components';
+import { useFeatureFlag } from '@ttoss/react-feature-flags';
 
 const markdown = '# ~Hi~, *Pluto*!';
 
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
+
+  const isNiceHiEnabled = useFeatureFlag('my-feature');
+
+  const hi = isNiceHiEnabled ? 'Hi' : 'Hello';
 
   if (!isAuthenticated) {
     return <Auth />;
@@ -17,7 +21,7 @@ export const App = () => {
 
   return (
     <Stack>
-      <h1>oi</h1>
+      <h1>{hi}</h1>
       <p>{JSON.stringify(user, null, 2)}</p>
       <Button
         onClick={() => {
