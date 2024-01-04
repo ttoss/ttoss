@@ -45,6 +45,7 @@ const config = {
       'layouts',
       'logger',
       'monorepo',
+      'react-feature-flags',
       'react-i18n',
       'react-icons',
       'react-notifications',

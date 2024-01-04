@@ -29,6 +29,7 @@
     "@ttoss/graphql-api": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-feature-flags": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
