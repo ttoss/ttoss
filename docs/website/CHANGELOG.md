@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.43.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.38...@docs/website@1.43.0) (2024-01-04)
+
+### Features
+
+- feature flags ([#471](https://github.com/ttoss/ttoss/issues/471)) ([52dd078](https://github.com/ttoss/ttoss/commit/52dd078ba6df95fc345afcff5d4e61497b22da8a))
+
 ## [1.42.38](https://github.com/ttoss/ttoss/compare/@docs/website@1.42.37...@docs/website@1.42.38) (2024-01-03)
 
 **Note:** Version bump only for package @docs/website
