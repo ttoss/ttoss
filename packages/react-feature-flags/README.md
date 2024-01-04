@@ -24,7 +24,7 @@ import {
 const loadFeatures = async () => {
   const response = await fetch('https://...');
   const { features } = await response.json();
-  return features; // string[]
+  return features; // features is string[]
 };
 
 const App = () => {
