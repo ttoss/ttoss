@@ -192,6 +192,9 @@ importers:
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../../packages/i18n-cli
+      '@ttoss/react-feature-flags':
+        specifier: workspace:^
+        version: link:../../packages/react-feature-flags
       '@ttoss/react-i18n':
         specifier: workspace:^
         version: link:../../packages/react-i18n
