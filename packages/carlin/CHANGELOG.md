@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.8](https://github.com/ttoss/ttoss/compare/carlin@1.31.7...carlin@1.31.8) (2024-01-02)
+
+### Bug Fixes
+
+- appsync enum substitution ([#466](https://github.com/ttoss/ttoss/issues/466)) ([d557568](https://github.com/ttoss/ttoss/commit/d557568937d08218bcaf46c3844d20a0781588ce))
+
 ## [1.31.7](https://github.com/ttoss/ttoss/compare/carlin@1.31.6...carlin@1.31.7) (2023-12-12)
 
 ### Bug Fixes

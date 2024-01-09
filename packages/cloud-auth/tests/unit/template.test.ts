@@ -1,4 +1,5 @@
 import { createAuthTemplate } from '../../src';
+import { defaultPrincipalTags } from '../../src/template';
 
 describe('user pool', () => {
   test('do not add schema if not provided', () => {
@@ -55,6 +56,7 @@ describe('user pool', () => {
 
   test.each([[], null, false])(
     'should have autoVerifiedAttributes undefined: %p',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (autoVerifiedAttributes: any) => {
       const template = createAuthTemplate({ autoVerifiedAttributes });
       expect(
@@ -74,6 +76,83 @@ describe('user pool', () => {
 });
 
 describe('identity pool', () => {
+  test.each([
+    {
+      principalTags: undefined,
+    },
+    {
+      principalTags: true,
+    },
+  ])(
+    'should map principal tags by default or if principalTags is true',
+    ({ principalTags }) => {
+      const template = createAuthTemplate({
+        identityPool: {
+          enabled: true,
+          principalTags,
+        },
+      });
+
+      expect(template.Resources.CognitoIdentityPoolPrincipalTag).toEqual({
+        Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
+        Properties: {
+          IdentityPoolId: {
+            Ref: createAuthTemplate.CognitoIdentityPoolLogicalId,
+          },
+          IdentityProviderName: {
+            'Fn::GetAtt': [
+              createAuthTemplate.CognitoUserPoolLogicalId,
+              'ProviderName',
+            ],
+          },
+          PrincipalTags: defaultPrincipalTags,
+          UseDefaults: false,
+        },
+      });
+    }
+  );
+
+  test('should not map principal tags if principalTags is false', () => {
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        principalTags: false,
+      },
+    });
+
+    expect(template.Resources.CognitoIdentityPoolPrincipalTag).toBeUndefined();
+  });
+
+  test('should map custom principal tags if provided', () => {
+    const principalTags = {
+      customTag: 'customValue',
+    };
+
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        principalTags,
+      },
+    });
+
+    expect(template.Resources.CognitoIdentityPoolPrincipalTag).toEqual({
+      Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
+      Properties: {
+        IdentityPoolId: {
+          Ref: createAuthTemplate.CognitoIdentityPoolLogicalId,
+        },
+        IdentityProviderName: {
+          'Fn::GetAtt': [
+            createAuthTemplate.CognitoUserPoolLogicalId,
+            'ProviderName',
+          ],
+        },
+        PrincipalTags: principalTags,
+        UseDefaults: false,
+      },
+    });
+  });
+
   test.each([false, undefined])(
     'should not have identity pool by default or false: %p',
     (enabled) => {
@@ -101,4 +180,117 @@ describe('identity pool', () => {
     });
     expect(template.Resources.CognitoIdentityPoolRoleAttachment).toBeDefined();
   });
+
+  test('should set identity pool name if provided', () => {
+    const identityPoolName = 'identity-pool-name';
+
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        name: identityPoolName,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPool.Properties.IdentityPoolName
+    ).toEqual(identityPoolName);
+  });
+
+  test('should create identity pool authenticated role if authenticatedRoleArn is not defined', () => {
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+        .authenticated
+    ).toEqual({
+      'Fn::GetAtt': [
+        createAuthTemplate.IdentityPoolAuthenticatedIAMRoleLogicalId,
+        'Arn',
+      ],
+    });
+  });
+
+  test('should create identity pool unauthenticated role if unauthenticatedRoleArn is not defined', () => {
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+        .unauthenticated
+    ).toEqual({
+      'Fn::GetAtt': [
+        createAuthTemplate.IdentityPoolUnauthenticatedIAMRoleLogicalId,
+        'Arn',
+      ],
+    });
+  });
+
+  test('should set authenticatedRoleArn if provided', () => {
+    const authenticatedRoleArn = 'arn:aws:iam::123456789012:role/AuthRole';
+
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        authenticatedRoleArn,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+        .authenticated
+    ).toEqual(authenticatedRoleArn);
+  });
+
+  test('should set unauthenticatedRoleArn if provided', () => {
+    const unauthenticatedRoleArn = 'arn:aws:iam::123456789012:role/UnauthRole';
+
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+        unauthenticatedRoleArn,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+        .unauthenticated
+    ).toEqual(unauthenticatedRoleArn);
+  });
+
+  test("don't allow unauthenticated identities by default", () => {
+    const template = createAuthTemplate({
+      identityPool: {
+        enabled: true,
+      },
+    });
+
+    expect(
+      template.Resources.CognitoIdentityPool.Properties
+        .AllowUnauthenticatedIdentities
+    ).toEqual(false);
+  });
+
+  test.each([true, false])(
+    'should allow unauthenticated identities if provided: %p',
+    (allowUnauthenticatedIdentities) => {
+      const template = createAuthTemplate({
+        identityPool: {
+          enabled: true,
+          allowUnauthenticatedIdentities,
+        },
+      });
+
+      expect(
+        template.Resources.CognitoIdentityPool.Properties
+          .AllowUnauthenticatedIdentities
+      ).toEqual(allowUnauthenticatedIdentities);
+    }
+  );
 });

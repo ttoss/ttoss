@@ -206,7 +206,7 @@ The resolver `connection` has the following arguments based on the [Relay Connec
 - `before`: the cursor to start the query.
 - `limit`: the limit of nodes to return. It's the `first` or `last` argument plus one. It's used to know if there are more nodes to return to set `hasNextPage` or `hasPreviousPage` [PageInfo](https://relay.dev/graphql/connections.htm#sec-undefined.PageInfo) fields. For example, if `first` is `10`, `limit` will be `11`. If the resolver returns `11` nodes, the resolver will return `10` but it knows there are more nodes to return, so `hasNextPage` will be `true`.
 - `skip`: it's the `count` minus `last`. It only works on [backward pagination](https://relay.dev/graphql/connections.htm#sec-Backward-pagination-arguments).
-- `sort`: the sort option to use. It's the keys of the `sort` object. In our example, it's `ASC` and `DESC`.
+- `sort`: the sort option to use. It's the `value` of the `sort` object. In our example, it's `{ scanIndexForward: true }` for `ASC` and `{ scanIndexForward: false }`, for `DESC`.
 - `filter`: the filter to use. It'll exist if you add the `filter` to `findManyResolver` for example, the implementation below will add the `filter` argument with the `name` and `book` fields:
 
   ```ts
@@ -290,7 +290,7 @@ The resolver that will be used to count the nodes.
 
 It's an object that defines the sort options. Each key is the sort name and the value is an object with the following properties:
 
-- `value`: and object that the resolver will receive as the `sort` argument.
+- `value`: and object that the `args` resolver will receive as the `sort` argument. It'll also be the values of the sort enum composer created (check the implementation details [here](https://github.com/graphql-compose/graphql-compose-connection/blob/master/src/types/sortInputType.ts).)
 - `cursorFields`: an array of fields that will be used to create the cursor.
 - `beforeCursorQuery` and `afterCursorQuery`: methods that will be used to create the `rawQuery` object for the `findManyResolver`. They receive the following arguments:
 
@@ -391,14 +391,20 @@ As Relay needs an introspection query to work, this package provides a way to bu
 ttoss-graphl-api build-schema
 ```
 
-You can add the `build` script to your `package.json`:
+You can add the `build-schema` script to your `package.json`:
 
 ```json
 {
   "scripts": {
-    "build": "ttoss-graphl-api build-schema"
+    "build-schema": "ttoss-graphl-api build-schema"
   }
 }
+```
+
+If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
+
+```bash
+ttoss-graphl-api build-schema -d tests
 ```
 
 ## How to Create Tests

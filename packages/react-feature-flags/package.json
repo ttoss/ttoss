@@ -1,0 +1,43 @@
+{
+  "name": "@ttoss/react-feature-flags",
+  "version": "0.1.0",
+  "description": "React Feature Flags",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-feature-flags"
+  },
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "typings": "dist/index.d.ts",
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@types/react": "^18.2.39",
+    "jest": "^29.7.0",
+    "tsup": "^8.0.1"
+  },
+  "keywords": [
+    "feature-flags",
+    "react"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

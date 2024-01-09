@@ -1,8 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AUTHORS, schemaComposer } from '../schemaComposer';
 import { allow, deny, shield } from 'graphql-shield';
 import { createAppSyncResolverHandler } from '../../src';
 import { encodeCredentials } from '@ttoss/relay-amplify';
 import { toGlobalId } from '@ttoss/graphql-api';
+
+test.each([
+  {
+    sort: undefined,
+    expected: ['Amanda', 'Bob', 'Charlie', 'David', 'Eve'],
+  },
+  {
+    sort: 'SK_ASC',
+    expected: ['Amanda', 'Bob', 'Charlie', 'David', 'Eve'],
+  },
+  {
+    sort: 'SK_DESC',
+    expected: ['Eve', 'David', 'Charlie', 'Bob', 'Amanda'],
+  },
+])('should return enum values as args', async ({ sort, expected }) => {
+  const handler = createAppSyncResolverHandler({ schemaComposer });
+
+  const event = {
+    info: {
+      parentTypeName: 'Query',
+      fieldName: 'authors',
+    },
+    arguments: { sort },
+    source: {},
+  } as any;
+
+  const context = {} as any;
+
+  const callback = jest.fn();
+
+  const response = await handler(event, context, callback);
+
+  const skOrder = response.edges.map((edge: any) => {
+    return edge.node.sk;
+  });
+
+  expect(skOrder).toEqual(expected);
+});
 
 test('lambda handler should call author resolver correctly', async () => {
   const handler = createAppSyncResolverHandler({ schemaComposer });

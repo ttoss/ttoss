@@ -142,7 +142,15 @@ AuthorTC.addResolver({
     last: 'Int',
     before: 'String',
   },
-  resolve: async () => {
+  resolve: async ({ args }: any) => {
+    if (args.sort.order === 'ASC') {
+      return AUTHORS;
+    }
+
+    if (args.sort.order === 'DESC') {
+      return AUTHORS.reverse();
+    }
+
     return AUTHORS;
   },
 });
@@ -181,20 +189,40 @@ composeWithConnection(AuthorTC, {
   findManyResolver: AuthorTC.getResolver('findMany'),
   countResolver: AuthorTC.getResolver('count'),
   sort: {
-    ASC: {
+    SK_ASC: {
       value: {
-        scanIndexForward: true,
+        order: 'ASC',
       },
-      cursorFields: ['id'],
+      cursorFields: ['sk'],
       // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
-        if (!rawQuery.id) rawQuery.id = {};
-        rawQuery.id.$lt = cursorData.id;
+        if (!rawQuery.sk) {
+          rawQuery.sk = {};
+        }
       },
       // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
-        if (!rawQuery.id) rawQuery.id = {};
-        rawQuery.id.$gt = cursorData.id;
+        if (!rawQuery.sk) {
+          rawQuery.sk = {};
+        }
+      },
+    },
+    SK_DESC: {
+      value: {
+        order: 'DESC',
+      },
+      cursorFields: ['sk'],
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.sk) {
+          rawQuery.sk = {};
+        }
+      },
+      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
+        if (!rawQuery.sk) {
+          rawQuery.sk = {};
+        }
       },
     },
   },
@@ -279,12 +307,16 @@ composeWithConnection(BookTC, {
       cursorFields: ['id'],
       // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
-        if (!rawQuery.id) rawQuery.id = {};
+        if (!rawQuery.id) {
+          rawQuery.id = {};
+        }
         rawQuery.id.$lt = cursorData.id;
       },
       // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
-        if (!rawQuery.id) rawQuery.id = {};
+        if (!rawQuery.id) {
+          rawQuery.id = {};
+        }
         rawQuery.id.$gt = cursorData.id;
       },
     },

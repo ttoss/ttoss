@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.8.2...@terezinha-farm/app@0.9.0) (2024-01-04)
+
+### Features
+
+- feature flags ([#471](https://github.com/ttoss/ttoss/issues/471)) ([52dd078](https://github.com/ttoss/ttoss/commit/52dd078ba6df95fc345afcff5d4e61497b22da8a))
+
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.8.1...@terezinha-farm/app@0.8.2) (2024-01-02)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.8.0...@terezinha-farm/app@0.8.1) (2024-01-02)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.7.1...@terezinha-farm/app@0.8.0) (2023-12-22)
+
+### Features
+
+- migrate helix to yoga ([#457](https://github.com/ttoss/ttoss/issues/457)) ([d692b6c](https://github.com/ttoss/ttoss/commit/d692b6c741fef924d2ca09c1b1e0d1a757f4eea4))
+
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.7.0...@terezinha-farm/app@0.7.1) (2023-12-19)
+
+**Note:** Version bump only for package @terezinha-farm/app
+
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.21...@terezinha-farm/app@0.7.0) (2023-12-14)
+
+### Features
+
+- eslint config fast refresh rules ([#456](https://github.com/ttoss/ttoss/issues/456)) ([27b6cbf](https://github.com/ttoss/ttoss/commit/27b6cbf9e4d231252a35b6f2e589dd60b009e482))
+
 ## [0.6.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.6.20...@terezinha-farm/app@0.6.21) (2023-12-14)
 
 **Note:** Version bump only for package @terezinha-farm/app

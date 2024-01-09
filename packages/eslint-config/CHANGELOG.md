@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.23.0...@ttoss/eslint-config@1.24.0) (2023-12-14)
+
+### Features
+
+- eslint config fast refresh rules ([#456](https://github.com/ttoss/ttoss/issues/456)) ([27b6cbf](https://github.com/ttoss/ttoss/commit/27b6cbf9e4d231252a35b6f2e589dd60b009e482))
+
 # [1.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.22.8...@ttoss/eslint-config@1.23.0) (2023-12-12)
 
 ### Features
