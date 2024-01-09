@@ -514,6 +514,9 @@ importers:
       '@theme-ui/css':
         specifier: ^0.16.1
         version: 0.16.1(@emotion/react@11.11.1)
+      '@ttoss/react-hooks':
+        specifier: workspace:^
+        version: link:../react-hooks
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
