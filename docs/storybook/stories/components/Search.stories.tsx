@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SearchInput } from '@ttoss/components';
+import { Search } from '@ttoss/components';
 import { Text } from '@ttoss/ui';
 
 export default {
-  title: 'Components/SearchInput',
+  title: 'Components/Search',
 } as Meta;
 
 const sleep = (timeout: number) => {
@@ -27,7 +27,7 @@ const Template: Story = () => {
 
   return (
     <>
-      <SearchInput
+      <Search
         defaultValue={debouncedValue}
         loading={loading}
         onChange={(value) => {
