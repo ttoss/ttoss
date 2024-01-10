@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.29.32 (2024-01-10)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [1.29.31](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.29.30...@ttoss/components@1.29.31) (2023-12-12)
 
 ### Bug Fixes
