@@ -13,7 +13,7 @@ This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908
 ### Install @ttoss/components
 
 ```shell
-pnpm add @ttoss/components @ttoss/ui @emotion/react
+pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
 ```
 
 ## Components
@@ -121,3 +121,37 @@ const Component = () => {
   );
 };
 ```
+
+### Search
+
+`Search` is a component that integrates an input field with debouncing functionality, making it ideal for search bars where you want to limit the rate of search queries based on user input.
+
+It uses the `useDebounce` hook from `@ttoss/react-hooks` to delay the search action until the user has stopped typing for a specified duration, which helps to prevent unnecessary or excessive queries.
+
+```tsx
+import React, { useState } from 'react';
+import { Search } from '@ttoss/components';
+import { Box } from '@ttoss/ui';
+
+const SearchComponent = () => {
+  const [searchText, setSearchText] = useState('');
+
+  const handleSearchChange = (newValue) => {
+    setSearchText(newValue);
+    // Perform search or update logic here
+  };
+
+  return (
+    <Box>
+      <Search
+        value={searchText}
+        onChange={handleSearchChange}
+        loading={/* loading state here */}
+        debounce={500} // Adjust the debounce time as needed
+      />
+    </Box>
+  );
+};
+```
+
+In this example, the `Search` component receives the current search text and a handler function to update this text. The `loading` prop can be used to display a loading indicator, and the `debounce` prop controls the debounce delay.
