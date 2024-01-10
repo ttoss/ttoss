@@ -2,19 +2,19 @@ import * as React from 'react';
 import { Input, type InputProps } from '@ttoss/ui';
 import { useDebounce } from '@ttoss/react-hooks';
 
-export type SearchInputProps = Omit<InputProps, 'onChange'> & {
+export type SearchProps = Omit<InputProps, 'onChange'> & {
   loading?: boolean;
   debounce?: number;
   onChange: (value?: string | number | readonly string[]) => void;
 };
 
-export const SearchInput = ({
+export const Search = ({
   value,
   defaultValue,
   loading,
   onChange,
   ...props
-}: SearchInputProps) => {
+}: SearchProps) => {
   const [text, setText] = React.useState(value ?? defaultValue);
 
   const debouncedValue = useDebounce(text, 500);

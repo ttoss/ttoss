@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SearchInput } from '../../src/components/SearchInput';
+import { Search } from '../../src/components/Search';
 import { act, fireEvent, render } from '@ttoss/test-utils'; // Ajuste o caminho do import conforme necessário
 
 jest.mock('@ttoss/react-hooks', () => {
@@ -10,17 +10,17 @@ jest.mock('@ttoss/react-hooks', () => {
   };
 });
 
-describe('SearchInput', () => {
+describe('Search', () => {
   jest.useFakeTimers();
 
   test('should render correctly', () => {
-    const { getByRole } = render(<SearchInput onChange={() => {}} />);
+    const { getByRole } = render(<Search onChange={() => {}} />);
     expect(getByRole('textbox')).toBeInTheDocument();
   });
 
   test('should call onChange with the debounced value', async () => {
     const handleChange = jest.fn();
-    const { getByRole } = render(<SearchInput onChange={handleChange} />);
+    const { getByRole } = render(<Search onChange={handleChange} />);
 
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'test' } });
@@ -34,7 +34,7 @@ describe('SearchInput', () => {
 
   test('should show loading icon when loading is true', () => {
     const { getByTestId } = render(
-      <SearchInput onChange={() => {}} loading={true} />
+      <Search onChange={() => {}} loading={true} />
     );
     expect(getByTestId('iconify-icon')).toBeInTheDocument();
     expect(getByTestId('iconify-icon')).toHaveAttribute('icon', 'loading');
