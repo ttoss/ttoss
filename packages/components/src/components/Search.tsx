@@ -5,7 +5,7 @@ import { useDebounce } from '@ttoss/react-hooks';
 export type SearchProps = Omit<InputProps, 'onChange'> & {
   loading?: boolean;
   debounce?: number;
-  onChange: (value?: string | number | readonly string[]) => void;
+  onChange: (value?: InputProps['value']) => void;
 };
 
 export const Search = ({
