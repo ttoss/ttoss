@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.4.0...@ttoss/graphql-api-server@0.5.0) (2024-01-12)
+
+### Features
+
+- create tests to graphql server ([#474](https://github.com/ttoss/ttoss/issues/474)) ([86d5a89](https://github.com/ttoss/ttoss/commit/86d5a89491f52abec3564a72da50fde488274b2b))
+
 # [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.3.8...@ttoss/graphql-api-server@0.4.0) (2023-12-22)
 
 ### Features
