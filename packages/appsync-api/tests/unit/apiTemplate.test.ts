@@ -118,6 +118,14 @@ test('create api key', () => {
 test('should import @ttoss/appsync-api lambda layer', () => {
   const template = createApiTemplate({
     ...createApiTemplateInput,
+    lambdaFunction: {
+      ...createApiTemplateInput.lambdaFunction,
+      layers: [
+        {
+          'Fn::ImportValue': 'LambdaLayer-Graphql-16-6-0',
+        },
+      ],
+    },
     schemaComposer,
   });
 
@@ -189,5 +197,73 @@ test('should add resolvers to template', () => {
     });
 
     expect(resource).toBeDefined();
+  });
+});
+
+describe('custom domain name', () => {
+  test('should add custom domain name resources to template', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Resources.AppSyncDomainName).toMatchObject({
+      Type: 'AWS::AppSync::DomainName',
+      Properties: {
+        CertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+        DomainName: 'example.com',
+      },
+    });
+
+    expect(template.Resources.AppSyncDomainNameApiAssociation).toMatchObject({
+      Type: 'AWS::AppSync::DomainNameApiAssociation',
+      Properties: {
+        ApiId: {
+          'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'],
+        },
+        DomainName: {
+          'Fn::GetAtt': ['AppSyncDomainName', 'DomainName'],
+        },
+      },
+    });
+  });
+
+  test.each([
+    {
+      hostedZoneName: 'example.com',
+    },
+    {
+      hostedZoneName: 'example.com.',
+    },
+  ])('should add record set to Route 53', ({ hostedZoneName }) => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'www.example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+        hostedZoneName,
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Resources.AppSyncDomainNameRoute53RecordSet).toMatchObject({
+      Type: 'AWS::Route53::RecordSet',
+      Properties: {
+        HostedZoneName: 'example.com.',
+        Name: 'www.example.com',
+        Type: 'CNAME',
+        ResourceRecords: [
+          {
+            'Fn::GetAtt': ['AppSyncDomainName', 'AppSyncDomainName'],
+          },
+        ],
+      },
+    });
   });
 });

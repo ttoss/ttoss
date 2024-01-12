@@ -24,10 +24,22 @@ export const buildLambdaSingleFile = async ({
     },
     bundle: true,
     entryPoints: [path.resolve(process.cwd(), lambdaInput)],
-    external: ['aws-sdk', '@aws-sdk/*', ...builtins, ...lambdaExternals],
+    external: [
+      /**
+       * Only AWS SDK v3 on Node.js 18.x or higher.
+       * https://aws.amazon.com/blogs/compute/node-js-18-x-runtime-now-available-in-aws-lambda/
+       */
+      '@aws-sdk/*',
+      ...builtins,
+      ...lambdaExternals,
+    ],
+    /**
+     * https://esbuild.github.io/api/#minify
+     */
+    minifySyntax: true,
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
-    target: 'node18',
+    target: 'node20',
     treeShaking: true,
   });
 

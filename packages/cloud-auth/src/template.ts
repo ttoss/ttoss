@@ -19,6 +19,11 @@ export const DenyStatement = {
   Resource: ['*'],
 };
 
+export const defaultPrincipalTags = {
+  appClientId: 'aud',
+  userId: 'sub',
+};
+
 export const createAuthTemplate = ({
   autoVerifiedAttributes = ['email'],
   identityPool,
@@ -34,6 +39,7 @@ export const createAuthTemplate = ({
     authenticatedPolicies?: Policy[];
     unauthenticatedRoleArn?: string;
     unauthenticatedPolicies?: Policy[];
+    principalTags?: Record<string, string> | boolean;
   };
   /**
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-schemaattribute.html
@@ -308,6 +314,40 @@ export const createAuthTemplate = ({
     } else {
       template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles.unauthenticated =
         identityPool.unauthenticatedRoleArn;
+    }
+
+    /**
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolprincipaltag.html
+     */
+    if (
+      identityPool.principalTags ||
+      identityPool.principalTags === undefined
+    ) {
+      const PrincipalTags = (() => {
+        if (typeof identityPool.principalTags === 'boolean') {
+          return defaultPrincipalTags;
+        }
+
+        if (identityPool.principalTags === undefined) {
+          return defaultPrincipalTags;
+        }
+
+        return identityPool.principalTags;
+      })();
+
+      template.Resources.CognitoIdentityPoolPrincipalTag = {
+        Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
+        Properties: {
+          IdentityPoolId: {
+            Ref: CognitoIdentityPoolLogicalId,
+          },
+          IdentityProviderName: {
+            'Fn::GetAtt': [CognitoUserPoolLogicalId, 'ProviderName'],
+          },
+          PrincipalTags,
+          UseDefaults: false,
+        },
+      };
     }
 
     if (!template.Outputs) {

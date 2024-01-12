@@ -8,4 +8,4 @@ export const AWS_DEFAULT_REGION = 'us-east-1';
  */
 export const CLOUDFRONT_REGION = 'us-east-1';
 
-export const NODE_RUNTIME = 'nodejs16.x';
+export const NODE_RUNTIME = 'nodejs20.x';

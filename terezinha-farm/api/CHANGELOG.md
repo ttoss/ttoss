@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.11.2...@terezinha-farm/api@0.12.0) (2024-01-03)
+
+### Features
+
+- add custom domain appsync-api ([#470](https://github.com/ttoss/ttoss/issues/470)) ([cec0bac](https://github.com/ttoss/ttoss/commit/cec0bac1f54518b3217ab78f33e673c42fcecaa5))
+
+## [0.11.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.11.1...@terezinha-farm/api@0.11.2) (2024-01-02)
+
+### Bug Fixes
+
+- terezinha farm api deploy ([a674ab7](https://github.com/ttoss/ttoss/commit/a674ab7f737f7994a3593ffc6d76a3cecd43bba0))
+
+## [0.11.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.11.0...@terezinha-farm/api@0.11.1) (2024-01-02)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.10.1...@terezinha-farm/api@0.11.0) (2023-12-22)
+
+### Features
+
+- migrate helix to yoga ([#457](https://github.com/ttoss/ttoss/issues/457)) ([d692b6c](https://github.com/ttoss/ttoss/commit/d692b6c741fef924d2ca09c1b1e0d1a757f4eea4))
+
 ## [0.10.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.10.0...@terezinha-farm/api@0.10.1) (2023-12-20)
 
 **Note:** Version bump only for package @terezinha-farm/api
