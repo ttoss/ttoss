@@ -42,6 +42,7 @@ const config = {
       'graphql-api',
       'graphql-api-server',
       'i18n-cli',
+      'ids',
       'layouts',
       'logger',
       'monorepo',
