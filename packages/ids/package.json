@@ -1,0 +1,41 @@
+{
+  "name": "@ttoss/ids",
+  "version": "0.0.1",
+  "description": "A library to handle the different ids used in the ttoss ecosystem applications",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/ids"
+  },
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "sideEffects": false,
+  "typings": "dist/index.d.ts",
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "jest": "^29.7.0",
+    "tsup": "^8.0.1"
+  },
+  "keywords": [
+    "api",
+    "ids"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
