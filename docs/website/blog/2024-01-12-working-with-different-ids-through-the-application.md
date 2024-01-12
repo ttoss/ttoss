@@ -2,7 +2,7 @@
 title: Working with different ids through the application
 description: An entity can have different ids through the application, from database to the frontend. For example, a user can have an id in the database, another id in the frontend because the GraphQL Global Object Identification Specification that Relay specifies.
 authors:
-  - pedro
+  - arantespp
 tags:
   - graphql
   - database
@@ -95,3 +95,7 @@ const getRecordId = (globalId) => {
   return recordId.join(':');
 };
 ```
+
+## @ttoss/ids
+
+To help you with the ids, we created a package called `@ttoss/ids`. It has some functions to help you with the ids. You can see the documentation of the package [here](/docs/modules/packages/ids/).
