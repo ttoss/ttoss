@@ -2,7 +2,7 @@
 
 This package provides a opinionated way to work with different ids in the application.
 
-Check the [blog post](https://ttoss.dev/blog/2024/01/12/working-with-different-ids) for more information.
+Check the [blog post](https://ttoss.dev/blog/2024/01/12/working-with-different-ids-through-the-application) for more information.
 
 ## Installation
 

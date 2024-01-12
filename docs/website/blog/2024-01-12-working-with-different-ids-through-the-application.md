@@ -1,6 +1,6 @@
 ---
-title: Working with different ids
-description: An entity can have different ids through the application, from database to the frontend.
+title: Working with different ids through the application
+description: An entity can have different ids through the application, from database to the frontend. For example, a user can have an id in the database, another id in the frontend because the GraphQL Global Object Identification Specification that Relay specifies.
 authors:
   - pedro
 tags:
@@ -66,13 +66,15 @@ The record id is not enough to identify an entity through the application. We ne
 
 ```typescript
 const getGlobalId = (itemFromPostgreSQL) => {
-  return `User:${itemFromPostgreSQL.id}`;
+  return encode(`User:${itemFromPostgreSQL.id}`);
 };
 
 // or
 
 const getGlobalId = (itemFromDynamoDB) => {
-  return `User:${itemFromDynamoDB.partitionKey}:${itemFromDynamoDB.sortKey}`;
+  return encode(
+    `User:${itemFromDynamoDB.partitionKey}:${itemFromDynamoDB.sortKey}`
+  );
 };
 ```
 
@@ -88,7 +90,7 @@ Also, you have to respect the order from the [global id](#global-id) and the [da
 
 ```typescript
 const getRecordId = (globalId) => {
-  const [type, ...recordId] = globalId.split(':');
+  const [type, ...recordId] = decode(globalId).split(':');
 
   return recordId.join(':');
 };
