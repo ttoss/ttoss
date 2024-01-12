@@ -29,7 +29,6 @@ export const createServer = ({
           'userPoolConfig is required when using AMAZON_COGNITO_USER_POOLS authenticationType'
         );
       }
-
       return CognitoJwtVerifier.create({
         tokenUse: 'access',
         ...userPoolConfig,
@@ -47,20 +46,25 @@ export const createServer = ({
       query: ctx.request.query,
     };
 
-    //console.log(request);
+    if (
+      request.method !== 'GET' &&
+      request.headers.referer !== 'http://localhost:4000/graphql'
+    ) {
+      try {
+        if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
+          const token = request.headers.authorization?.replace('Bearer ', '');
+          const identity = await jwtVerifier.verify(token || '');
 
-    try {
-      if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
-        const token = request.headers.authorization?.replace('Bearer ', '');
-        const identity = await jwtVerifier.verify(token || '');
-        ctx.identity = identity;
+          ctx.identity = identity;
+        }
+      } catch {
+        ctx.status = 401;
+        ctx.body = 'Unauthorized';
+        return;
       }
-    } catch {
-      ctx.status = 401;
-      ctx.body = 'Unauthorized';
-      return;
     }
 
+    //console.log(ctx.identity);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const operationName = request.body;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,7 +84,9 @@ export const createServer = ({
 
     // Set headers
     for (const [key, value] of response.headers.entries()) {
-      ctx.append(key, value);
+      if (ctx.status != 401) {
+        ctx.append(key, value);
+      }
     }
 
     ctx.body = response.body;
