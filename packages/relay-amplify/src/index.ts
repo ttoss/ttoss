@@ -1,4 +1,5 @@
-import { API, Auth, graphqlOperation } from 'aws-amplify';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import { API, Auth, graphqlOperation } from 'aws-amplify';
 import {
   Environment,
   FetchFunction,
@@ -7,6 +8,8 @@ import {
   Store,
 } from 'relay-runtime';
 import { encodeCredentials } from './encodeCredentials';
+import { fetchAuthSession } from 'aws-amplify/auth';
+import { post } from 'aws-amplify/api';
 
 export {
   encodeCredentials,
@@ -18,9 +21,22 @@ export const fetchQuery: FetchFunction = async (operation, variables) => {
   let credentials: string | undefined;
 
   try {
-    const currentCredentials = await Auth.currentCredentials();
+    const authSession = await fetchAuthSession();
 
-    credentials = encodeCredentials(currentCredentials);
+    if (
+      authSession.credentials &&
+      authSession.identityId &&
+      authSession.credentials?.sessionToken
+    ) {
+      credentials = encodeCredentials({
+        accessKeyId: authSession.credentials?.accessKeyId,
+        identityId: authSession.identityId,
+        sessionToken: authSession.credentials?.sessionToken,
+        secretAccessKey: authSession.credentials?.secretAccessKey,
+        expiration: authSession.credentials?.expiration,
+        authenticated: true,
+      });
+    }
   } catch (err: any) {
     // eslint-disable-next-line no-console
     console.error(err?.message);
@@ -34,10 +50,14 @@ export const fetchQuery: FetchFunction = async (operation, variables) => {
       headers['x-credentials'] = credentials;
     }
 
-    const response = await API.graphql(
-      graphqlOperation(operation.text, variables),
-      headers
-    );
+    const response = await post({
+      apiName: operation.name,
+      path: operation.text ?? '',
+      options: {
+        headers,
+        body: JSON.stringify({ variables }),
+      },
+    });
 
     return response as any;
   } catch (error: any) {
