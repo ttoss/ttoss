@@ -7,3 +7,14 @@ export const FarmTC = schemaComposer.createObjectTC({
     name: 'String!',
   },
 });
+
+export const UserTC = schemaComposer.createObjectTC({
+  name: 'User',
+  fields: {
+    sub: 'String!',
+    iss: 'String!',
+    token_use: 'String!',
+    client_id: 'String!',
+    username: 'String!',
+  },
+});

@@ -12,6 +12,17 @@ const AuthorTC = schemaComposer.createObjectTC({
   },
 });
 
+export const UserTC = schemaComposer.createObjectTC({
+  name: 'User',
+  fields: {
+    sub: 'String!',
+    iss: 'String!',
+    token_use: 'String!',
+    client_id: 'String!',
+    username: 'String!',
+  },
+});
+
 AuthorTC.addResolver({
   name: 'findMany',
   type: AuthorTC,
@@ -111,12 +122,63 @@ AuthorTC.addResolver({
   },
 });
 
+UserTC.addResolver({
+  name: 'findById',
+  type: UserTC,
+  args: {
+    token: 'String!',
+  },
+  resolve: async ({
+    args,
+  }: ResolverResolveParams<
+    unknown,
+    unknown,
+    { sub: string; token_use: string; client_id: string; username: string }
+  >) => {
+    const mockUserData = {
+      sub: args.sub,
+      token_use: args.token_use,
+      client_id: args.client_id,
+      username: args.username,
+    };
+
+    return mockUserData;
+  },
+});
+
+UserTC.addResolver({
+  name: 'findById',
+  type: UserTC,
+  resolve: async ({
+    context,
+  }: ResolverResolveParams<
+    unknown,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any,
+    { sub: string; token_use: string; client_id: string; username: string }
+  >) => {
+    const mockUserData = {
+      sub: context.identity.sub,
+      iss: context.identity.iss,
+      token_use: context.identity.token_use,
+      client_id: context.identity.client_id,
+      username: context.identity.username,
+    };
+
+    return mockUserData;
+  },
+});
+
 schemaComposer.Query.addFields({
   author: AuthorTC.getResolver('connection'),
 });
 
 schemaComposer.Mutation.addFields({
   createAuthor: AuthorTC.getResolver('createAuthor'),
+});
+
+schemaComposer.Query.addFields({
+  getUser: UserTC.getResolver('findById'),
 });
 
 export { schemaComposer };

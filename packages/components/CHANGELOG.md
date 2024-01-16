@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.30.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.29.32...@ttoss/components@1.30.0) (2024-01-12)
+
+### Features
+
+- create tests to graphql server ([#474](https://github.com/ttoss/ttoss/issues/474)) ([86d5a89](https://github.com/ttoss/ttoss/commit/86d5a89491f52abec3564a72da50fde488274b2b))
+
 ## 1.29.32 (2024-01-10)
 
 **Note:** Version bump only for package @ttoss/components

@@ -1,4 +1,4 @@
-import { FarmTC } from './FarmTC';
+import { FarmTC, UserTC } from './FarmTC';
 import { QueryfarmsArgs } from '../../../schema/types';
 import {
   ResolverResolveParams,
@@ -30,7 +30,6 @@ FarmTC.addResolver({
           return farm.id > 0;
         });
     }
-
     return [...new Array(args.limit)]
       .map((_, index) => {
         const id = index + 1 + Number(rawQuery.id?.$gt || 0);
@@ -79,6 +78,33 @@ composeWithConnection(FarmTC, {
   },
 });
 
+UserTC.addResolver({
+  name: 'findById',
+  type: UserTC,
+  resolve: async ({
+    context,
+  }: ResolverResolveParams<
+    unknown,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any,
+    { sub: string; token_use: string; client_id: string; username: string }
+  >) => {
+    const mockUserData = {
+      sub: context.identity.sub,
+      iss: context.identity.iss,
+      token_use: context.identity.token_use,
+      client_id: context.identity.client_id,
+      username: context.identity.username,
+    };
+
+    return mockUserData;
+  },
+});
+
 schemaComposer.Query.addFields({
   farms: FarmTC.getResolver('connection'),
+});
+
+schemaComposer.Query.addFields({
+  getUser: UserTC.getResolver('findById'),
 });
