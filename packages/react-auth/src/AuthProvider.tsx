@@ -1,5 +1,13 @@
+/* eslint-disable no-console */
 import * as React from 'react';
-import { Auth, Hub } from 'aws-amplify';
+
+import { Hub } from 'aws-amplify/utils';
+import {
+  signOut as awsSignOut,
+  fetchAuthSession,
+  fetchUserAttributes,
+  getCurrentUser,
+} from 'aws-amplify/auth';
 
 type User = {
   id: string;
@@ -14,10 +22,11 @@ type Tokens = {
 } | null;
 
 const signOut = () => {
-  return Auth.signOut();
+  return awsSignOut();
 };
 
 const AuthContext = React.createContext<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   signOut: () => Promise<any>;
   isAuthenticated: boolean;
   user: User;
@@ -42,18 +51,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     const updateUser = () => {
-      Auth.currentAuthenticatedUser()
-        .then(({ attributes, signInUserSession }) => {
+      getCurrentUser()
+        .then(async ({ userId, username }) => {
+          const session = await fetchAuthSession();
+          const idToken = session.tokens?.idToken?.toString();
+          const accessToken = session.tokens?.accessToken.toString();
+
+          console.log('userId::', userId);
+          console.log('session::', session);
+
+          const user = await fetchUserAttributes();
+          console.log('user::', user);
+
           setAuthState({
             user: {
-              id: attributes.sub,
-              email: attributes.email,
-              emailVerified: attributes['email_verified'],
+              id: userId,
+              email: username,
+              emailVerified: user.email_verified ?? '',
             },
             tokens: {
-              idToken: signInUserSession.idToken.jwtToken,
-              accessToken: signInUserSession.accessToken.jwtToken,
-              refreshToken: signInUserSession.refreshToken.token,
+              idToken: idToken ?? '',
+              accessToken: accessToken ?? '',
+              refreshToken: '',
             },
             isAuthenticated: true,
           });
