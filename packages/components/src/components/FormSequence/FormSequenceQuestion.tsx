@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@ttoss/ui';
+import { Flex, Text } from '@ttoss/ui';
 import {
   FormSequenceFormFields,
   FormSequenceFormFieldsProps,
@@ -7,13 +7,11 @@ import {
 type FormSequenceQuestionProps = {
   question: string;
   fields: FormSequenceFormFieldsProps[];
-  onNext: () => void;
 };
 
 export const FormSequenceQuestion = ({
   fields,
   question,
-  onNext,
 }: FormSequenceQuestionProps) => {
   return (
     <Flex sx={{ flexDirection: 'column' }}>
@@ -29,14 +27,6 @@ export const FormSequenceQuestion = ({
           );
         })}
       </Flex>
-
-      <Button
-        sx={{ justifyContent: 'center', marginTop: '2xl' }}
-        rightIcon="arrow-right"
-        onClick={onNext}
-      >
-        Continuar
-      </Button>
     </Flex>
   );
 };
