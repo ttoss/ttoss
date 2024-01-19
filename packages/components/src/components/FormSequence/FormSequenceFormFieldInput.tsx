@@ -1,4 +1,4 @@
-import { Flex, Input, Label } from '@ttoss/ui';
+import { FormFieldInput } from '@ttoss/forms';
 import { FormSequenceFormFieldsBase } from './types';
 
 export type FormSequenceFormFieldInputProps = FormSequenceFormFieldsBase & {
@@ -13,14 +13,10 @@ export const FormSequenceFormFieldInput = ({
   fieldName,
 }: FormSequenceFormFieldInputProps) => {
   return (
-    <Flex sx={{ flexDirection: 'column' }}>
-      <Label>{label}</Label>
-
-      <Input
-        sx={{ width: '100%' }}
-        defaultValue={defaultValue}
-        name={fieldName}
-      />
-    </Flex>
+    <FormFieldInput
+      defaultValue={defaultValue}
+      name={fieldName}
+      label={label}
+    />
   );
 };

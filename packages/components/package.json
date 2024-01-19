@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

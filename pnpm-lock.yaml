@@ -548,6 +548,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/forms':
+        specifier: workspace:^
+        version: link:../forms
       '@ttoss/react-hooks':
         specifier: workspace:^
         version: link:../react-hooks

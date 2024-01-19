@@ -1,4 +1,4 @@
-import { Flex, Label, Radio } from '@ttoss/ui';
+import { FormFieldRadio } from '@ttoss/forms';
 import { FormSequenceFormFieldsBase } from './types';
 
 export type FormSequenceFormFieldRadioProps = FormSequenceFormFieldsBase & {
@@ -17,27 +17,10 @@ export const FormSequenceFormFieldRadio = ({
   fieldName,
 }: FormSequenceFormFieldRadioProps) => {
   return (
-    <Flex
-      sx={{
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        gap: 'xl',
-        marginTop: 'lg',
-      }}
-    >
-      {options.map((option) => {
-        return (
-          <Label key={option.value}>
-            <Radio
-              defaultChecked={!!defaultValue && defaultValue === option.value}
-              disabled={option.disabled}
-              value={option.value}
-              name={fieldName}
-            />
-            {option.label}
-          </Label>
-        );
-      })}
-    </Flex>
+    <FormFieldRadio
+      name={fieldName}
+      options={options}
+      defaultValue={defaultValue}
+    />
   );
 };

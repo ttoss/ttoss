@@ -1,6 +1,10 @@
 import * as React from 'react';
-import { Flex } from '@ttoss/ui';
-import { FormSequenceFlowMessage } from './FormSequenceFlowMessage';
+import { Button, Flex } from '@ttoss/ui';
+import { Form, useForm } from '@ttoss/forms';
+import {
+  FormSequenceFlowMessage,
+  FormSequenceFlowMessageProps,
+} from './FormSequenceFlowMessage';
 import { FormSequenceFormFieldsProps } from './FormSequenceFormFields';
 import {
   FormSequenceHeader,
@@ -8,11 +12,13 @@ import {
 } from './FormSequenceHeader';
 import { FormSequenceNavigation } from './FormSequenceNavigation';
 import { FormSequenceQuestion } from './FormSequenceQuestion';
+import { useDebounce } from '@ttoss/react-hooks';
 
 export type FormSequenceProps = {
   header: FormSequenceHeaderLogoProps;
   steps: {
     question: string;
+    flowMessage: FormSequenceFlowMessageProps;
     fields: FormSequenceFormFieldsProps[];
   }[];
 };
@@ -20,6 +26,10 @@ export type FormSequenceProps = {
 export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
   const amountOfSteps = steps.length;
   const [currentStep, setCurrentStep] = React.useState(1);
+
+  const isLastStep = useDebounce(currentStep === amountOfSteps);
+
+  const formMethods = useForm();
 
   const nextStep = () => {
     if (currentStep < amountOfSteps) {
@@ -41,31 +51,49 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
     <Flex sx={{ flexDirection: 'column', maxWidth: '390px' }}>
       <FormSequenceHeader {...header} />
 
-      {steps.map((step, stepIndex) => {
-        return (
-          <Flex
-            key={`form-step-${step.question}`}
-            sx={{
-              flexDirection: 'column',
-              display: stepIndex + 1 === currentStep ? 'flex' : 'none',
-            }}
-          >
-            <FormSequenceFlowMessage />
+      <Form
+        {...formMethods}
+        sx={{ display: 'flex', flexDirection: 'column' }}
+        onSubmit={(data: unknown) => {
+          alert(JSON.stringify(data));
+        }}
+      >
+        {steps.map((step, stepIndex) => {
+          return (
+            <Flex
+              key={`form-step-${step.question}`}
+              sx={{
+                flexDirection: 'column',
+                display: stepIndex + 1 === currentStep ? 'flex' : 'none',
+              }}
+            >
+              <FormSequenceFlowMessage {...step.flowMessage} />
 
-            <FormSequenceQuestion
-              fields={step.fields}
-              question={step.question}
-              onNext={nextStep}
-            />
-          </Flex>
-        );
-      })}
+              <FormSequenceQuestion
+                fields={step.fields}
+                question={step.question}
+              />
+            </Flex>
+          );
+        })}
 
-      <FormSequenceNavigation
-        amountOfSteps={steps.length}
-        currentStepNumber={1}
-        onBack={backStep}
-      />
+        <Button
+          sx={{ justifyContent: 'center', marginTop: '2xl' }}
+          rightIcon="arrow-right"
+          onClick={nextStep}
+          type={isLastStep ? 'submit' : 'button'}
+        >
+          Continuar
+        </Button>
+      </Form>
+
+      {currentStep > 1 && (
+        <FormSequenceNavigation
+          amountOfSteps={steps.length}
+          currentStepNumber={currentStep}
+          onBack={backStep}
+        />
+      )}
     </Flex>
   );
 };

@@ -1,4 +1,8 @@
 import {
+  FormSequenceFormFieldCurrency,
+  FormSequenceFormFieldCurrencyProps,
+} from './FormSequenceFormFieldCurrency';
+import {
   FormSequenceFormFieldInput,
   FormSequenceFormFieldInputProps,
 } from './FormSequenceFormFieldInput';
@@ -9,7 +13,8 @@ import {
 
 export type FormSequenceFormFieldsProps =
   | FormSequenceFormFieldRadioProps
-  | FormSequenceFormFieldInputProps;
+  | FormSequenceFormFieldInputProps
+  | FormSequenceFormFieldCurrencyProps;
 
 export const FormSequenceFormFields = (props: FormSequenceFormFieldsProps) => {
   if (props.type === 'radio') {
@@ -18,6 +23,10 @@ export const FormSequenceFormFields = (props: FormSequenceFormFieldsProps) => {
 
   if (props.type === 'input') {
     return <FormSequenceFormFieldInput {...props} />;
+  }
+
+  if (props.type === 'currency') {
+    return <FormSequenceFormFieldCurrency {...props} />;
   }
 
   return null;
