@@ -14,7 +14,13 @@ export const FormSequenceQuestion = ({
   question,
 }: FormSequenceQuestionProps) => {
   return (
-    <Flex sx={{ flexDirection: 'column' }}>
+    <Flex
+      sx={{
+        flexDirection: 'column',
+        paddingY: 'xl',
+        paddingX: '2xl',
+      }}
+    >
       <Text sx={{ textAlign: 'center', fontSize: 'lg' }}>{question}</Text>
 
       <Flex sx={{ flexDirection: 'column' }}>

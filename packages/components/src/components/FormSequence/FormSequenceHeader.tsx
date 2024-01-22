@@ -56,17 +56,25 @@ const FormSequenceHeaderTitled = ({
   rightIconClick,
 }: FormSequenceHeaderTitledProps) => {
   return (
-    <Flex>
+    <Flex
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingX: 'xl',
+        paddingY: 'lg',
+        alignItems: 'center',
+      }}
+    >
       <Icon icon={leftIcon} onClick={leftIconClick} />
 
-      <Text>{title}</Text>
+      <Text sx={{ fontWeight: 'bold', fontSize: 'lg' }}>{title}</Text>
 
       <Icon icon={rightIcon} onClick={rightIconClick} />
     </Flex>
   );
 };
 
-type FormSequenceHeaderProps =
+export type FormSequenceHeaderProps =
   | FormSequenceHeaderLogoProps
   | FormSequenceHeaderTitledProps;
 
@@ -74,6 +82,9 @@ export const FormSequenceHeader = (props: FormSequenceHeaderProps) => {
   if (props.variant === 'logo') {
     return <FormSequenceHeaderLogo {...props} />;
   }
+  if (props.variant === 'titled') {
+    return <FormSequenceHeaderTitled {...props} />;
+  }
 
-  return <FormSequenceHeaderTitled {...props} />;
+  return null;
 };

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Flex, Image, Text } from '@ttoss/ui';
 import { FormSequenceFlowMessageBase } from './types';
 
@@ -5,7 +6,7 @@ export type FormSequenceFlowMessageImageTextProps =
   FormSequenceFlowMessageBase & {
     variant: 'image-text';
     src: string;
-    description: string;
+    description: string | React.ReactNode;
   };
 
 export const FormSequenceFlowMessageImageText = ({

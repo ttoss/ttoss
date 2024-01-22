@@ -5,17 +5,18 @@ import {
   FormSequenceFlowMessage,
   FormSequenceFlowMessageProps,
 } from './FormSequenceFlowMessage';
+import { FormSequenceFooter } from './FormSequenceFooter';
 import { FormSequenceFormFieldsProps } from './FormSequenceFormFields';
 import {
   FormSequenceHeader,
-  type FormSequenceHeaderLogoProps,
+  FormSequenceHeaderProps,
 } from './FormSequenceHeader';
 import { FormSequenceNavigation } from './FormSequenceNavigation';
 import { FormSequenceQuestion } from './FormSequenceQuestion';
 import { useDebounce } from '@ttoss/react-hooks';
 
 export type FormSequenceProps = {
-  header: FormSequenceHeaderLogoProps;
+  header: FormSequenceHeaderProps;
   steps: {
     question: string;
     flowMessage: FormSequenceFlowMessageProps;
@@ -48,12 +49,21 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
   };
 
   return (
-    <Flex sx={{ flexDirection: 'column', maxWidth: '390px' }}>
+    <Flex
+      sx={{
+        flexDirection: 'column',
+        maxWidth: '390px',
+        background: '#fff',
+      }}
+    >
       <FormSequenceHeader {...header} />
 
       <Form
         {...formMethods}
-        sx={{ display: 'flex', flexDirection: 'column' }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
         onSubmit={(data: unknown) => {
           alert(JSON.stringify(data));
         }}
@@ -78,8 +88,13 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
         })}
 
         <Button
-          sx={{ justifyContent: 'center', marginTop: '2xl' }}
-          rightIcon="arrow-right"
+          sx={{
+            justifyContent: 'center',
+            marginTop: '2xl',
+            marginBottom: 'xl',
+            marginX: '2xl',
+          }}
+          rightIcon="nav-right"
           onClick={nextStep}
           type={isLastStep ? 'submit' : 'button'}
         >
@@ -94,6 +109,8 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
           onBack={backStep}
         />
       )}
+
+      <FormSequenceFooter />
     </Flex>
   );
 };

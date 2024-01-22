@@ -13,14 +13,21 @@ export const FormSequenceNavigation = ({
   onBack,
 }: FormSequenceNavigationProps) => {
   return (
-    <Flex sx={{ justifyContent: 'space-between' }}>
-      <Flex onClick={onBack} sx={{ alignItems: 'center' }}>
-        <Icon icon="arrow-left" />
-
-        <Text>Item Anterior</Text>
+    <Flex
+      sx={{
+        justifyContent: 'space-between',
+        marginX: '2xl',
+        marginY: 'xl',
+      }}
+    >
+      <Flex onClick={onBack} sx={{ alignItems: 'center', cursor: 'pointer' }}>
+        <Text sx={{ color: '#ACADB7', display: 'flex' }}>
+          <Icon icon="nav-left" />
+        </Text>
+        <Text sx={{ color: '#ACADB7' }}>Propriedade</Text>
       </Flex>
 
-      <Text sx={{ alignItems: 'center' }}>
+      <Text sx={{ alignItems: 'center', color: '#ACADB7' }}>
         {currentStepNumber}/{amountOfSteps}
       </Text>
     </Flex>
