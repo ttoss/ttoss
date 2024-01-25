@@ -2,7 +2,7 @@ import { FormFieldCurrencyInput } from '@ttoss/forms';
 import { FormSequenceFormFieldsBase } from './types';
 
 export type FormSequenceFormFieldCurrencyProps = FormSequenceFormFieldsBase & {
-  type: 'currency';
+  variant: 'currency';
   label: string;
   defaultValue?: number;
 };

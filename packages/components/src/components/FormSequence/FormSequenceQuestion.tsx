@@ -17,17 +17,19 @@ export const FormSequenceQuestion = ({
     <Flex
       sx={{
         flexDirection: 'column',
-        paddingY: 'xl',
+        paddingTop: 'xl',
         paddingX: '2xl',
       }}
     >
-      <Text sx={{ textAlign: 'center', fontSize: 'lg' }}>{question}</Text>
+      <Text sx={{ textAlign: 'center', fontSize: 'lg', marginBottom: 'xl' }}>
+        {question}
+      </Text>
 
-      <Flex sx={{ flexDirection: 'column' }}>
+      <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
         {fields.map((field) => {
           return (
             <FormSequenceFormFields
-              key={`field-${field.type}-${field.fieldName}`}
+              key={`field-${field.variant}-${field.fieldName}`}
               {...field}
             />
           );

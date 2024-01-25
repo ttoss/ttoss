@@ -10,23 +10,32 @@ import {
   FormSequenceFormFieldRadio,
   FormSequenceFormFieldRadioProps,
 } from './FormSequenceFormFieldRadio';
+import {
+  FormSequenceFormFieldRadioImage,
+  FormSequenceFormFieldRadioImageProps,
+} from './FormSequenceFormFieldRadioImage';
 
 export type FormSequenceFormFieldsProps =
   | FormSequenceFormFieldRadioProps
   | FormSequenceFormFieldInputProps
-  | FormSequenceFormFieldCurrencyProps;
+  | FormSequenceFormFieldCurrencyProps
+  | FormSequenceFormFieldRadioImageProps;
 
 export const FormSequenceFormFields = (props: FormSequenceFormFieldsProps) => {
-  if (props.type === 'radio') {
+  if (props.variant === 'radio') {
     return <FormSequenceFormFieldRadio {...props} />;
   }
 
-  if (props.type === 'input') {
+  if (props.variant === 'input') {
     return <FormSequenceFormFieldInput {...props} />;
   }
 
-  if (props.type === 'currency') {
+  if (props.variant === 'currency') {
     return <FormSequenceFormFieldCurrency {...props} />;
+  }
+
+  if (props.variant === 'radio-image') {
+    return <FormSequenceFormFieldRadioImage {...props} />;
   }
 
   return null;

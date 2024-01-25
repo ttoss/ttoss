@@ -15,16 +15,24 @@ import { FormSequenceNavigation } from './FormSequenceNavigation';
 import { FormSequenceQuestion } from './FormSequenceQuestion';
 import { useDebounce } from '@ttoss/react-hooks';
 
-export type FormSequenceProps = {
-  header: FormSequenceHeaderProps;
-  steps: {
-    question: string;
-    flowMessage: FormSequenceFlowMessageProps;
-    fields: FormSequenceFormFieldsProps[];
-  }[];
+export type FormSequenceStep = {
+  question: string;
+  flowMessage: FormSequenceFlowMessageProps;
+  label: string;
+  fields: FormSequenceFormFieldsProps[];
 };
 
-export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
+export type FormSequenceProps = {
+  header: FormSequenceHeaderProps;
+  steps: FormSequenceStep[];
+  onSubmit: (data: unknown) => void;
+};
+
+export const FormSequence = ({
+  header,
+  steps = [],
+  onSubmit,
+}: FormSequenceProps) => {
   const amountOfSteps = steps.length;
   const [currentStep, setCurrentStep] = React.useState(1);
 
@@ -64,9 +72,7 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
           display: 'flex',
           flexDirection: 'column',
         }}
-        onSubmit={(data: unknown) => {
-          alert(JSON.stringify(data));
-        }}
+        onSubmit={onSubmit}
       >
         {steps.map((step, stepIndex) => {
           return (
@@ -107,6 +113,9 @@ export const FormSequence = ({ header, steps = [] }: FormSequenceProps) => {
           amountOfSteps={steps.length}
           currentStepNumber={currentStep}
           onBack={backStep}
+          stepsLabel={steps.map((step) => {
+            return step.label;
+          })}
         />
       )}
 

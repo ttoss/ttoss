@@ -2,7 +2,7 @@ import { FormFieldInput } from '@ttoss/forms';
 import { FormSequenceFormFieldsBase } from './types';
 
 export type FormSequenceFormFieldInputProps = FormSequenceFormFieldsBase & {
-  type: 'input';
+  variant: 'input';
   label: string;
   defaultValue?: string;
 };
