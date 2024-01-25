@@ -155,3 +155,117 @@ const SearchComponent = () => {
 ```
 
 In this example, the `Search` component receives the current search text and a handler function to update this text. The `loading` prop can be used to display a loading indicator, and the `debounce` prop controls the debounce delay.
+
+### FormSequence
+
+`FormSequence` is a versatile component designed to handle multi-step forms, making it an ideal choice for guiding users through a series of questions or data entry steps. It's built to be flexible, allowing for various types of fields and custom content at each step.
+
+#### How FormSequence Works
+
+`FormSequence` provides a structured way to present a series of steps within a form. Each step can have its unique fields, questions, and informational content, guiding the user seamlessly from one step to the next.
+
+#### Implementing FormSequence
+
+Here’s how you can implement `FormSequence`:
+
+```tsx
+import React from 'react';
+import { FormSequence, FormSequenceHeader } from '@ttoss/components';
+
+// Define your steps array here
+const steps = [
+  // ...your step objects
+];
+
+// Define your custom header props
+const headerProps = {
+  variant: 'logo', // or 'titled'
+  // Other props based on the chosen variant
+};
+
+const MyFormSequenceComponent = () => {
+  // Define form submission handler
+  const handleSubmit = (formData) => {
+    console.log('Form Data:', formData);
+    // Handle form submission
+  };
+
+  return (
+    <FormSequence header={headerProps} steps={steps} onSubmit={handleSubmit} />
+  );
+};
+```
+
+In this example, `FormSequence` takes in an array of step objects, each representing a different part of the form. The `onSubmit` prop is a function that handles the submission of the entire form sequence.
+
+#### Customizing Steps
+
+Each step in the `FormSequence` can be customized with different fields, flow messages, and more. Here's an example structure of a step object:
+
+```tsx
+const step = {
+  label: 'Step Label',
+  question: 'What is your question?',
+  flowMessage: {
+    variant: 'image-text', // or other variants
+    src: 'path-to-image',
+    description: 'A brief description or additional content',
+  },
+  fields: [
+    // Define your fields here (input, radio, etc.)
+  ],
+};
+```
+
+#### Customizing Headers
+
+1. **Logo Header:**
+
+   ```tsx
+   const logoHeaderProps = {
+     variant: 'logo',
+     src: 'path-to-your-logo-image',
+     onClose: () => console.log('Close button clicked'),
+   };
+   ```
+
+2. **Titled Header:**
+   ```tsx
+   const titledHeaderProps = {
+     variant: 'titled',
+     title: 'Your Title',
+     leftIcon: 'icon-type',
+     rightIcon: 'icon-type',
+     leftIconClick: () => console.log('Left icon clicked'),
+     rightIconClick: () => console.log('Right icon clicked'),
+   };
+   ```
+
+#### Props
+
+- `header`: An object representing the header configuration. It can be either `FormSequenceHeaderLogoProps` or `FormSequenceHeaderTitledProps`.
+- `steps`: An array of step objects, each representing a step in the form sequence.
+- `onSubmit`: A function that handles the submission of the form.
+
+##### Header Props
+
+- **For Logo Header (`FormSequenceHeaderLogoProps`):**
+
+  - `variant`: Set to `'logo'`.
+  - `src`: The source URL for the logo image.
+  - `onClose`: A function to handle the close button click event.
+
+- **For Titled Header (`FormSequenceHeaderTitledProps`):**
+  - `variant`: Set to `'titled'`.
+  - `title`: The title text.
+  - `leftIcon` and `rightIcon`: Icon types for left and right icons.
+  - `leftIconClick` and `rightIconClick`: Functions to handle clicks on left and right icons.
+
+Each step object typically contains:
+
+- `label`: A label for the step.
+- `question`: A question or title for the step.
+- `flowMessage`: An object that provides additional information or content related to the step.
+- `fields`: An array of field objects for collecting user input.
+
+By using `FormSequence`, you can create complex, multi-step forms with ease, guiding users through each step with clarity and precision.
