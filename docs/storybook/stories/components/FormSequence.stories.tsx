@@ -27,15 +27,20 @@ const options = [
   { value: 'Comércio', label: 'Comércio' },
   { value: 'Agronegócio', label: 'Agronegócio', disabled: true },
   { value: 'Indústria', label: 'Indústria' },
-  { value: 'Condomínio Área Comum', label: 'Condomínio Área Comum' },
+  {
+    value: 'Condomínio Área Comum',
+    label: 'Condomínio Área Comum',
+    disabled: true,
+  },
 ];
 
 const steps: FormSequenceProps['steps'] = [
   {
+    label: 'Propriedade',
     question: 'Qual tipo de contrato está buscando?',
     flowMessage: {
       variant: 'image-text',
-      src: 'https://s.glbimg.com/jo/g1/f/original/2011/05/17/qrcode.jpg',
+      src: 'https://placehold.co/400',
       description:
         'Estamos aqui para ajudá-lo com o seu projeto solar. Vamos iniciar a sua cotação.',
     },
@@ -43,16 +48,17 @@ const steps: FormSequenceProps['steps'] = [
       {
         fieldName: 'contractType',
         options,
-        type: 'radio',
+        variant: 'radio',
         defaultValue: options[3].value,
       },
     ],
   },
   {
+    label: 'Conta de Energia',
     question: 'Qual é a média mensal de sua conta de energia elétrica?',
     flowMessage: {
       variant: 'image-text',
-      src: 'https://s.glbimg.com/jo/g1/f/original/2011/05/17/qrcode.jpg',
+      src: 'https://placehold.co/400',
       description: (
         <>
           Vamos descobrir o número ideal de{' '}
@@ -67,15 +73,16 @@ const steps: FormSequenceProps['steps'] = [
       {
         fieldName: 'energyValue',
         label: 'Conta de Luz',
-        type: 'currency',
+        variant: 'currency',
       },
     ],
   },
   {
+    label: 'Endereço',
     question: 'Para qual endereço é a instalação?',
     flowMessage: {
       variant: 'image-text',
-      src: 'https://s.glbimg.com/jo/g1/f/original/2011/05/17/qrcode.jpg',
+      src: 'https://placehold.co/400',
       description: (
         <>
           Vamos ver quanta{' '}
@@ -90,15 +97,16 @@ const steps: FormSequenceProps['steps'] = [
       {
         fieldName: 'address',
         label: 'Endereço',
-        type: 'input',
+        variant: 'input',
       },
     ],
   },
   {
+    label: 'Telhado',
     question: 'Qual o tipo de telhado do local de instalação?',
     flowMessage: {
       variant: 'image-text',
-      src: 'https://s.glbimg.com/jo/g1/f/original/2011/05/17/qrcode.jpg',
+      src: 'https://placehold.co/400',
       description: (
         <>
           Vamos analisar a viabilidade de{' '}
@@ -109,13 +117,52 @@ const steps: FormSequenceProps['steps'] = [
         </>
       ),
     },
-    fields: [],
+    fields: [
+      {
+        variant: 'radio-image',
+        fieldName: 'installType',
+        defaultValue: 'label-3',
+        options: [
+          {
+            label: 'Label 1',
+            src: 'https://placehold.co/400',
+            value: 'label-1',
+          },
+          {
+            label: 'Label 2',
+            src: 'https://placehold.co/400',
+            value: 'label-2',
+          },
+          {
+            label: 'Label 3',
+            src: 'https://placehold.co/400',
+            value: 'label-3',
+          },
+          {
+            label: 'Label 4',
+            src: 'https://placehold.co/400',
+            value: 'label-4',
+          },
+          {
+            label: 'Label 5',
+            src: 'https://placehold.co/400',
+            value: 'label-5',
+          },
+          {
+            label: 'Label 6',
+            src: 'https://placehold.co/400',
+            value: 'label-6',
+          },
+        ],
+      },
+    ],
   },
   {
+    label: 'Contato',
     question: 'Para onde podemos enviar uma cópia da cotação?',
     flowMessage: {
       variant: 'image-text',
-      src: 'https://s.glbimg.com/jo/g1/f/original/2011/05/17/qrcode.jpg',
+      src: 'https://placehold.co/400',
       description: (
         <>
           Sua cotação está pronta na{' '}
@@ -125,7 +172,18 @@ const steps: FormSequenceProps['steps'] = [
         </>
       ),
     },
-    fields: [],
+    fields: [
+      {
+        variant: 'input',
+        fieldName: 'name',
+        label: 'Nome',
+      },
+      {
+        variant: 'input',
+        fieldName: 'email',
+        label: 'Email',
+      },
+    ],
   },
 ];
 
@@ -133,10 +191,11 @@ export const HeaderLogo: Story = {
   args: {
     header: {
       variant: 'logo',
-      src: 'https://i.pinimg.com/564x/65/cd/13/65cd130e271845aa86c46af153c8a83b.jpg',
+      src: 'https://placehold.co/115',
       onClose: action('onClose'),
     },
     steps,
+    onSubmit: action('onSubmit'),
   },
 };
 
@@ -151,5 +210,6 @@ export const HeaderTitled: Story = {
       rightIconClick: action('rightIconClick'),
     },
     steps,
+    onSubmit: action('onSubmit'),
   },
 };
