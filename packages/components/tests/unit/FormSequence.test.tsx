@@ -185,11 +185,7 @@ describe('FormSequence', () => {
     const nextButton = screen.getByText('Continuar');
     fireEvent.click(nextButton);
 
-    expect(
-      screen.getByText(
-        'Qual é a média mensal de sua conta de energia elétrica?'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(step2.question)).toBeInTheDocument();
   });
 
   test('navigates through all steps correctly', () => {
