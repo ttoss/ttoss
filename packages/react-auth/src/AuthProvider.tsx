@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
 import * as React from 'react';
-
 import { Hub } from 'aws-amplify/utils';
 import {
   signOut as awsSignOut,
@@ -57,11 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const idToken = session.tokens?.idToken?.toString();
           const accessToken = session.tokens?.accessToken.toString();
 
-          console.log('userId::', userId);
-          console.log('session::', session);
-
           const user = await fetchUserAttributes();
-          console.log('user::', user);
 
           setAuthState({
             user: {
@@ -77,7 +71,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isAuthenticated: true,
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error(e);
           setAuthState({
             user: null,
             tokens: null,

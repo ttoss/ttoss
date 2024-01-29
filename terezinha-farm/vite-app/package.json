@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@terezinha-farm/app",
+  "name": "@terezinha-farm/vite-app",
   "version": "0.9.3",
   "type": "module",
   "scripts": {
@@ -31,6 +31,7 @@
     "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
+    "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.39",
