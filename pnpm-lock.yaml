@@ -1522,6 +1522,9 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(babel-plugin-relay@16.1.0)(vite@5.0.3)
     devDependencies:
+      '@terezinha-farm/api':
+        specifier: workspace:^
+        version: link:../api
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../packages/config

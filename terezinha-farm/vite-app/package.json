@@ -31,6 +31,7 @@
     "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
+    "@terezinha-farm/api": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
