@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@terezinha-farm/app",
+  "name": "@terezinha-farm/vite-app",
   "version": "0.9.3",
   "type": "module",
   "scripts": {
@@ -21,7 +21,7 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "aws-amplify": "^5.3.11",
+    "aws-amplify": "^6.0.12",
     "babel-plugin-relay": "^16.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,6 +31,7 @@
     "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
+    "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.39",

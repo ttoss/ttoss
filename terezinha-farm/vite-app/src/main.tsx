@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { App } from './App';
+import { App } from './App.tsx';
 import { AuthProvider } from '@ttoss/react-auth';
 import { FeatureFlagsProvider } from '@ttoss/react-feature-flags';
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
 import { RelayEnvironmentProvider } from 'react-relay';
 import { ThemeProvider } from '@ttoss/ui';
-import { environment } from './RelayEnvironment';
+import { environment } from './RelayEnvironment.ts';
 import ReactDOM from 'react-dom/client';
 import './amplify.ts';
 

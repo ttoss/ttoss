@@ -26,7 +26,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.470.0",
+    "@aws-sdk/client-cloudformation": "^3.501.0",
     "@octokit/webhooks": "^12.0.10",
     "@slack/webhook": "^7.0.1",
     "@ttoss/cloudformation": "workspace:^",

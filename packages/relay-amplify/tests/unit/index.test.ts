@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock('aws-amplify');
 
-import { API, Auth } from 'aws-amplify';
+import * as API from 'aws-amplify/api';
+import * as Auth from 'aws-amplify/auth';
 import {
   createEnvironment,
   decodeCredentials,
@@ -14,6 +16,16 @@ const mockCredentials = {
   sessionToken: 'sessionToken',
   identityId: 'identityId',
   authenticated: true,
+};
+
+const mockAuthSessionResponse = {
+  credentials: {
+    accessKeyId: 'accessKeyId',
+    sessionToken: 'sessionToken',
+    secretAccessKey: 'secretAccessKey',
+    expiration: new Date(),
+  },
+  identityId: 'identityId',
 };
 
 test('should export createEnvironment', () => {
@@ -32,9 +44,17 @@ test('should encode and decode properly', () => {
 
 describe('test fetchQuery', () => {
   test('should return credentials on header', async () => {
-    jest.spyOn(Auth, 'currentCredentials').mockResolvedValue(mockCredentials);
+    jest
+      .spyOn(Auth, 'fetchAuthSession')
+      .mockResolvedValue(mockAuthSessionResponse);
 
-    jest.spyOn(API, 'graphql').mockImplementation(async (_, headers) => {
+    jest.spyOn(API, 'post').mockImplementation(() => {
+      const headers: Record<string, string> = {};
+
+      const credentials = encodeCredentials(mockCredentials);
+
+      headers['x-credentials'] = credentials;
+
       return headers as any;
     });
 
@@ -53,10 +73,12 @@ describe('test fetchQuery', () => {
 
   test('should NOT return credentials on header', async () => {
     jest
-      .spyOn(Auth, 'currentCredentials')
+      .spyOn(Auth, 'fetchAuthSession')
       .mockRejectedValue(new Error('No credentials'));
 
-    jest.spyOn(API, 'graphql').mockImplementation(async (_, headers) => {
+    jest.spyOn(API, 'post').mockImplementation(() => {
+      const headers: Record<string, string> = {};
+
       return headers as any;
     });
 
