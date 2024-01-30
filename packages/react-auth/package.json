@@ -50,7 +50,7 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^18.2.39",
+    "@types/react": "^18.2.48",
     "aws-amplify": "^6.0.12",
     "jest": "^29.7.0",
     "tsup": "^8.0.1"
