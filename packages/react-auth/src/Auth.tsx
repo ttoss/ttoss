@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Auth as AmplifyAuth } from 'aws-amplify';
 import { AuthConfirmSignUp } from './AuthConfirmSignUp';
 import { AuthForgotPassword } from './AuthForgotPassword';
 import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPassword';
@@ -8,6 +7,14 @@ import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp } from './AuthSignUp';
 import { LogoContextProps, LogoProvider } from './AuthCard';
 import { assign, createMachine } from 'xstate';
+import {
+  confirmResetPassword,
+  confirmSignUp,
+  resendSignUpCode,
+  resetPassword,
+  signIn,
+  signUp,
+} from 'aws-amplify/auth';
 import { useAuth } from './AuthProvider';
 import { useMachine } from '@xstate/react';
 import { useNotifications } from '@ttoss/react-notifications';
@@ -136,13 +143,13 @@ const AuthLogic = () => {
     async ({ email, password }) => {
       try {
         setLoading(true);
-        await AmplifyAuth.signIn(email, password);
+        await signIn({ username: email, password });
         // toast('Signed In');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         switch (error.code) {
           case 'UserNotConfirmedException':
-            await AmplifyAuth.resendSignUp(email);
+            await resendSignUpCode({ username: email });
             send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email });
             break;
           default:
@@ -160,10 +167,14 @@ const AuthLogic = () => {
     async ({ email, password }) => {
       try {
         setLoading(true);
-        await AmplifyAuth.signUp({
+        await signUp({
           username: email,
           password,
-          attributes: { email },
+          options: {
+            userAttributes: {
+              email,
+            },
+          },
         });
         // toast('Signed Up');
         send({ type: 'SIGN_UP_CONFIRM', email });
@@ -182,7 +193,7 @@ const AuthLogic = () => {
     async ({ email, code }) => {
       try {
         setLoading(true);
-        await AmplifyAuth.confirmSignUp(email, code);
+        await confirmSignUp({ confirmationCode: code, username: email });
         // toast('Confirmed Signed In');
         send({ type: 'SIGN_UP_CONFIRMED', email });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,7 +215,7 @@ const AuthLogic = () => {
     async ({ email }) => {
       try {
         setLoading(true);
-        await AmplifyAuth.forgotPassword(email);
+        await resetPassword({ username: email });
         // toast('Forgot Password');
         send({ type: 'FORGOT_PASSWORD_RESET_PASSWORD', email });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -223,7 +234,11 @@ const AuthLogic = () => {
       async ({ email, code, newPassword }) => {
         try {
           setLoading(true);
-          await AmplifyAuth.forgotPasswordSubmit(email, code, newPassword);
+          await confirmResetPassword({
+            confirmationCode: code,
+            username: email,
+            newPassword,
+          });
           // toast('Forgot Password Reset Password');
           send({ type: 'FORGOT_PASSWORD_CONFIRMED', email });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

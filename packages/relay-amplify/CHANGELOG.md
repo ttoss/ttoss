@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.5.5 (2024-01-29)
+
+**Note:** Version bump only for package @ttoss/relay-amplify
+
 ## [0.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.5.3...@ttoss/relay-amplify@0.5.4) (2023-12-12)
 
 **Note:** Version bump only for package @ttoss/relay-amplify
