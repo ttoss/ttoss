@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "pnpm workspace @docs/storybook run dev",
+    "dev": "pnpm -r --filter=@docs/storybook run dev",
     "test": "jest"
   },
   "sideEffects": false,
