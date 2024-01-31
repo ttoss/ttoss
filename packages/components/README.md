@@ -156,21 +156,21 @@ const SearchComponent = () => {
 
 In this example, the `Search` component receives the current search text and a handler function to update this text. The `loading` prop can be used to display a loading indicator, and the `debounce` prop controls the debounce delay.
 
-### FormSequence
+### Multistep
 
-`FormSequence` is a versatile component designed to handle multi-step forms, making it an ideal choice for guiding users through a series of questions or data entry steps. It's built to be flexible, allowing for various types of fields and custom content at each step.
+`Multistep` is a versatile component designed to handle multi-step forms, making it an ideal choice for guiding users through a series of questions or data entry steps. It's built to be flexible, allowing for various types of fields and custom content at each step.
 
-#### How FormSequence Works
+#### How Multistep Works
 
-`FormSequence` provides a structured way to present a series of steps within a form. Each step can have its unique fields, questions, and informational content, guiding the user seamlessly from one step to the next.
+`Multistep` provides a structured way to present a series of steps within a form. Each step can have its unique fields, questions, and informational content, guiding the user seamlessly from one step to the next.
 
-#### Implementing FormSequence
+#### Implementing Multistep
 
-Here’s how you can implement `FormSequence`:
+Here’s how you can implement `Multistep`:
 
 ```tsx
 import React from 'react';
-import { FormSequence, FormSequenceHeader } from '@ttoss/components';
+import { Multistep, MultistepHeader } from '@ttoss/components';
 
 // Define your steps array here
 const steps = [
@@ -183,7 +183,7 @@ const headerProps = {
   // Other props based on the chosen variant
 };
 
-const MyFormSequenceComponent = () => {
+const MyMultistepComponent = () => {
   // Define form submission handler
   const handleSubmit = (formData) => {
     console.log('Form Data:', formData);
@@ -191,16 +191,16 @@ const MyFormSequenceComponent = () => {
   };
 
   return (
-    <FormSequence header={headerProps} steps={steps} onSubmit={handleSubmit} />
+    <Multistep header={headerProps} steps={steps} onSubmit={handleSubmit} />
   );
 };
 ```
 
-In this example, `FormSequence` takes in an array of step objects, each representing a different part of the form. The `onSubmit` prop is a function that handles the submission of the entire form sequence.
+In this example, `Multistep` takes in an array of step objects, each representing a different part of the form. The `onSubmit` prop is a function that handles the submission of the entire form sequence.
 
 #### Customizing Steps
 
-Each step in the `FormSequence` can be customized with different fields, flow messages, and more. Here's an example structure of a step object:
+Each step in the `Multistep` can be customized with different fields, flow messages, and more. Here's an example structure of a step object:
 
 ```tsx
 const step = {
@@ -243,19 +243,19 @@ const step = {
 
 #### Props
 
-- `header`: An object representing the header configuration. It can be either `FormSequenceHeaderLogoProps` or `FormSequenceHeaderTitledProps`.
+- `header`: An object representing the header configuration. It can be either `MultistepHeaderLogoProps` or `MultistepHeaderTitledProps`.
 - `steps`: An array of step objects, each representing a step in the form sequence.
 - `onSubmit`: A function that handles the submission of the form.
 
 ##### Header Props
 
-- **For Logo Header (`FormSequenceHeaderLogoProps`):**
+- **For Logo Header (`MultistepHeaderLogoProps`):**
 
   - `variant`: Set to `'logo'`.
   - `src`: The source URL for the logo image.
   - `onClose`: A function to handle the close button click event.
 
-- **For Titled Header (`FormSequenceHeaderTitledProps`):**
+- **For Titled Header (`MultistepHeaderTitledProps`):**
   - `variant`: Set to `'titled'`.
   - `title`: The title text.
   - `leftIcon` and `rightIcon`: Icon types for left and right icons.
@@ -268,4 +268,4 @@ Each step object typically contains:
 - `flowMessage`: An object that provides additional information or content related to the step.
 - `fields`: An array of field objects for collecting user input.
 
-By using `FormSequence`, you can create complex, multi-step forms with ease, guiding users through each step with clarity and precision.
+By using `Multistep`, you can create complex, multi-step forms with ease, guiding users through each step with clarity and precision.

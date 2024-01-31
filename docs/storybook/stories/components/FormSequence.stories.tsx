@@ -2,8 +2,8 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { FormSequence, FormSequenceProps } from '@ttoss/components';
 import { Link, ThemeUIStyleObject } from '@ttoss/ui';
+import { Multistep, MultistepProps } from '@ttoss/components';
 
 const sxLinks: ThemeUIStyleObject = {
   cursor: 'pointer',
@@ -12,13 +12,13 @@ const sxLinks: ThemeUIStyleObject = {
 };
 
 const meta = {
-  title: 'Components/FormSequence',
-  component: FormSequence,
-} satisfies Meta<typeof FormSequence>;
+  title: 'Components/Multistep',
+  component: Multistep,
+} satisfies Meta<typeof Multistep>;
 
 export default meta;
 
-type Story = StoryObj<typeof FormSequence>;
+type Story = StoryObj<typeof Multistep>;
 
 const options = [
   { value: 'Residência', label: 'Residência' },
@@ -34,7 +34,7 @@ const options = [
   },
 ];
 
-const steps: FormSequenceProps['steps'] = [
+const steps: MultistepProps['steps'] = [
   {
     label: 'Propriedade',
     question: 'Qual tipo de contrato está buscando?',

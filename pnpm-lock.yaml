@@ -1025,6 +1025,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils

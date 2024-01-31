@@ -1,18 +1,17 @@
 import * as React from 'react';
 import { Flex, Image, Text } from '@ttoss/ui';
-import { FormSequenceFlowMessageBase } from './types';
+import { MultistepFlowMessageBase } from './types';
 
-export type FormSequenceFlowMessageImageTextProps =
-  FormSequenceFlowMessageBase & {
-    variant: 'image-text';
-    src: string;
-    description: string | React.ReactNode;
-  };
+export type MultistepFlowMessageImageTextProps = MultistepFlowMessageBase & {
+  variant: 'image-text';
+  src: string;
+  description: string | React.ReactNode;
+};
 
-export const FormSequenceFlowMessageImageText = ({
+export const MultistepFlowMessageImageText = ({
   src,
   description,
-}: FormSequenceFlowMessageImageTextProps) => {
+}: MultistepFlowMessageImageTextProps) => {
   return (
     <Flex
       sx={{

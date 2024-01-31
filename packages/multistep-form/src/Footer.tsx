@@ -1,6 +1,6 @@
 import { Flex, Text } from '@ttoss/ui';
 
-export const FormSequenceFooter = () => {
+export const Footer = ({ footer }: { footer: string }) => {
   return (
     <Flex sx={{ display: 'flex', justifyContent: 'center' }}>
       <Text
@@ -11,7 +11,7 @@ export const FormSequenceFooter = () => {
           marginX: '2xl',
         }}
       >
-        TT modules v1.0
+        {footer}
       </Text>
     </Flex>
   );

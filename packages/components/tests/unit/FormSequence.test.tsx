@@ -1,4 +1,4 @@
-import { FormSequence, type FormSequenceStep } from '../../src';
+import { Multistep, type MultistepStep } from '../../src';
 import { fireEvent, render, screen } from '@ttoss/test-utils';
 
 const options = [
@@ -11,7 +11,7 @@ const options = [
   { value: 'common-area-condominium', label: 'Common Area Condominium' },
 ];
 
-const step1: FormSequenceStep = {
+const step1: MultistepStep = {
   label: 'Property',
   question: 'What type of contract are you looking for?',
   flowMessage: {
@@ -30,7 +30,7 @@ const step1: FormSequenceStep = {
   ],
 };
 
-const step2: FormSequenceStep = {
+const step2: MultistepStep = {
   label: 'Energy Bill',
   question: 'What is the monthly average of your electricity bill?',
   flowMessage: {
@@ -53,7 +53,7 @@ const step2: FormSequenceStep = {
   ],
 };
 
-const step3: FormSequenceStep = {
+const step3: MultistepStep = {
   label: 'Address',
   question: 'What is the installation address?',
   flowMessage: {
@@ -75,7 +75,7 @@ const step3: FormSequenceStep = {
   ],
 };
 
-const step4: FormSequenceStep = {
+const step4: MultistepStep = {
   label: 'Roof',
   question: 'What is the type of roof at the installation site?',
   flowMessage: {
@@ -130,7 +130,7 @@ const step4: FormSequenceStep = {
   ],
 };
 
-const step5: FormSequenceStep = {
+const step5: MultistepStep = {
   label: 'Contact',
   question: 'Where can we send a copy of the quote?',
   flowMessage: {
@@ -157,15 +157,15 @@ const step5: FormSequenceStep = {
   ],
 };
 
-const mockSteps: FormSequenceStep[] = [step1, step2, step3, step4, step5];
+const mockSteps: MultistepStep[] = [step1, step2, step3, step4, step5];
 
 const onClose = jest.fn();
 const onSubmit = jest.fn();
 
-describe('FormSequence', () => {
+describe('Multistep', () => {
   test('renders the first step correctly', () => {
     render(
-      <FormSequence
+      <Multistep
         header={{ variant: 'logo', src: 'logo.png', onClose }}
         steps={mockSteps}
         onSubmit={onSubmit}
@@ -176,7 +176,7 @@ describe('FormSequence', () => {
 
   test('navigates to the next step correctly', () => {
     render(
-      <FormSequence
+      <Multistep
         header={{ variant: 'logo', src: 'logo.png', onClose }}
         steps={mockSteps}
         onSubmit={onSubmit}
@@ -190,7 +190,7 @@ describe('FormSequence', () => {
 
   test('navigates through all steps correctly', () => {
     render(
-      <FormSequence
+      <Multistep
         header={{ variant: 'logo', src: 'logo.png', onClose }}
         steps={mockSteps}
         onSubmit={onSubmit}

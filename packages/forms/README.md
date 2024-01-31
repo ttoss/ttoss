@@ -9,6 +9,8 @@ pnpm i @ttoss/forms @ttoss/react-i18n @ttoss/ui @emotion/react
 pnpm i --save-dev @ttoss/i18n-cli
 ```
 
+Check the [@ttoss/react-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) docs to see how to configure the i18n.
+
 ## Quickstart
 
 ```tsx
@@ -154,7 +156,7 @@ const RenderForm = () => {
 };
 ```
 
-## Yup Validation
+### Yup Validation
 
 You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`
 

@@ -1,17 +1,17 @@
 import { CloseButton, Flex, Image } from '@ttoss/ui';
 
-import { BaseFormSequenceHeaderProps } from './types';
+import { BaseMultistepHeaderProps } from './types';
 
-export type FormSequenceHeaderLogoProps = BaseFormSequenceHeaderProps & {
+export type MultistepHeaderLogoProps = BaseMultistepHeaderProps & {
   variant: 'logo';
   src: string;
   onClose: () => void;
 };
 
-export const FormSequenceHeaderLogo = ({
+export const MultistepHeaderLogo = ({
   onClose,
   src,
-}: FormSequenceHeaderLogoProps) => {
+}: MultistepHeaderLogoProps) => {
   return (
     <Flex
       sx={{

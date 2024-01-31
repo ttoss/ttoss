@@ -1,8 +1,8 @@
 import { Button, Flex, Label, Radio } from '@ttoss/ui';
 import { FormField } from '@ttoss/forms';
-import { FormSequenceFormFieldsBase } from './types';
+import { MultistepFormFieldsBase } from './types';
 
-export type FormSequenceFormFieldRadioProps = FormSequenceFormFieldsBase & {
+export type MultistepFormFieldRadioProps = MultistepFormFieldsBase & {
   variant: 'radio';
   defaultValue?: string;
   options: {
@@ -12,11 +12,11 @@ export type FormSequenceFormFieldRadioProps = FormSequenceFormFieldsBase & {
   }[];
 };
 
-export const FormSequenceFormFieldRadio = ({
+export const MultistepFormFieldRadio = ({
   options,
   defaultValue,
   fieldName,
-}: FormSequenceFormFieldRadioProps) => {
+}: MultistepFormFieldRadioProps) => {
   return (
     <FormField
       name={fieldName}
