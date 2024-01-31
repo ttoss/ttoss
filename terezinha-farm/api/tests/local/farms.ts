@@ -2,10 +2,15 @@ import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
 import { config } from '@terezinha-farm/config';
 
 const query = /* GraphQL */ `
-  query user($id: ID!) {
-    user(id: $id) {
-      id
-      name
+  query farms {
+    farms {
+      edges {
+        cursor
+        node {
+          id
+          name
+        }
+      }
     }
   }
 `;
@@ -14,11 +19,11 @@ const query = /* GraphQL */ `
  * Using API Key
  */
 appSyncClient.setConfig({
-  apiEndpoint: config.API_ENDPOINT as string,
+  endpoint: config.API_ENDPOINT as string,
   apiKey: config.API_KEY as string,
 });
 
-appSyncClient.query(query, { id: '1' }).then((result) => {
+appSyncClient.query(query).then((result) => {
   // eslint-disable-next-line no-console
   console.log(result);
 });
@@ -27,10 +32,11 @@ appSyncClient.query(query, { id: '1' }).then((result) => {
  * Using IAM
  */
 appSyncClient.setConfig({
-  apiEndpoint: config.API_ENDPOINT as string,
+  endpoint: config.API_ENDPOINT as string,
+  region: config.REGION,
 });
 
-appSyncClient.query(query, { id: '1' }).then((result) => {
+appSyncClient.query(query).then((result) => {
   // eslint-disable-next-line no-console
   console.log(result);
 });

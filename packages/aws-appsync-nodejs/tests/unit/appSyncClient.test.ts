@@ -2,10 +2,10 @@ import { Config, appSyncClient } from '../../src';
 
 test.each<Config>([
   {
-    apiEndpoint: 'https://api.example.com/graphql',
+    endpoint: 'https://api.example.com/graphql',
   },
   {
-    apiEndpoint: 'https://api.example.com/graphql',
+    endpoint: 'https://api.example.com/graphql',
     apiKey: 'da2-1234567890abcdef1234567890abcdef',
   },
 ])('config %#', (config) => {
@@ -15,7 +15,7 @@ test.each<Config>([
 
 test('query with API key', async () => {
   const config: Config = {
-    apiEndpoint: 'https://api.example.com/graphql',
+    endpoint: 'https://api.example.com/graphql',
     apiKey: 'da2-1234567890abcdef1234567890abcdef',
   };
 
@@ -32,7 +32,7 @@ test('query with API key', async () => {
 
     if (
       body === JSON.stringify({ query, variables }) &&
-      url === config.apiEndpoint &&
+      url === config.endpoint &&
       xApiKey === config.apiKey
     ) {
       return {
