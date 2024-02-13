@@ -160,8 +160,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(eslint@8.56.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)
       '@mdx-js/react':
-        specifier: 3.0.0
-        version: 3.0.0(@types/react@18.2.48)(react@18.2.0)
+        specifier: 3.0.1
+        version: 3.0.1(@types/react@18.2.48)(react@18.2.0)
       '@ttoss/appsync-api':
         specifier: workspace:^
         version: link:../../packages/appsync-api
@@ -234,13 +234,13 @@ importers:
         version: 3.1.1(react-dom@18.2.0)(react@18.2.0)
       docusaurus-plugin-typedoc:
         specifier: ^0.22.0
-        version: 0.22.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.7)
+        version: 0.22.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.8)
       typedoc:
-        specifier: ^0.25.7
-        version: 0.25.7(typescript@5.2.2)
+        specifier: ^0.25.8
+        version: 0.25.8(typescript@5.2.2)
       typedoc-plugin-markdown:
         specifier: ^3.17.1
-        version: 3.17.1(typedoc@0.25.7)
+        version: 3.17.1(typedoc@0.25.8)
       typescript:
         specifier: ~5.2.2
         version: 5.2.2
@@ -5186,7 +5186,7 @@ packages:
       '@docusaurus/utils': 3.1.1(@docusaurus/types@3.1.1)
       '@docusaurus/utils-common': 3.1.1(@docusaurus/types@3.1.1)
       '@docusaurus/utils-validation': 3.1.1(@docusaurus/types@3.1.1)
-      '@mdx-js/react': 3.0.0(@types/react@18.2.48)(react@18.2.0)
+      '@mdx-js/react': 3.0.1(@types/react@18.2.48)(react@18.2.0)
       clsx: 2.0.0
       copy-text-to-clipboard: 3.2.0
       infima: 0.2.0-alpha.43
@@ -7116,8 +7116,8 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@mdx-js/react@3.0.0(@types/react@18.2.48)(react@18.2.0):
-    resolution: {integrity: sha512-nDctevR9KyYFyV+m+/+S4cpzCWHqj+iHDHq3QrsWezcC+B17uZdIWgCguESUkwFhM3n/56KxWVE3V6EokrmONQ==}
+  /@mdx-js/react@3.0.1(@types/react@18.2.48)(react@18.2.0):
+    resolution: {integrity: sha512-9ZrPIU4MGf6et1m1ov3zKf+q9+deetI51zprKB1D/z3NOb+rUxxtEl3mCjW5wTGh6VhRdwPueh1oRzi6ezkA8A==}
     peerDependencies:
       '@types/react': '>=16'
       react: '>=16'
@@ -14056,14 +14056,14 @@ packages:
     dependencies:
       esutils: 2.0.3
 
-  /docusaurus-plugin-typedoc@0.22.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.7):
+  /docusaurus-plugin-typedoc@0.22.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.8):
     resolution: {integrity: sha512-5q+oT+iq3g9DvsMin11pSSmqHRw0i62csHBzkWVtgmsqN/BwGDHnxDiTbHhhkBNQpmRIRgltyNdMnO5x+JUK8Q==}
     peerDependencies:
       typedoc: '>=0.24.0'
       typedoc-plugin-markdown: '>=3.15.0'
     dependencies:
-      typedoc: 0.25.7(typescript@5.2.2)
-      typedoc-plugin-markdown: 3.17.1(typedoc@0.25.7)
+      typedoc: 0.25.8(typescript@5.2.2)
+      typedoc-plugin-markdown: 3.17.1(typedoc@0.25.8)
     dev: true
 
   /dom-accessibility-api@0.5.16:
@@ -24624,17 +24624,17 @@ packages:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
     dev: true
 
-  /typedoc-plugin-markdown@3.17.1(typedoc@0.25.7):
+  /typedoc-plugin-markdown@3.17.1(typedoc@0.25.8):
     resolution: {integrity: sha512-QzdU3fj0Kzw2XSdoL15ExLASt2WPqD7FbLeaqwT70+XjKyTshBnUlQA5nNREO1C2P8Uen0CDjsBLMsCQ+zd0lw==}
     peerDependencies:
       typedoc: '>=0.24.0'
     dependencies:
       handlebars: 4.7.7
-      typedoc: 0.25.7(typescript@5.2.2)
+      typedoc: 0.25.8(typescript@5.2.2)
     dev: true
 
-  /typedoc@0.25.7(typescript@5.2.2):
-    resolution: {integrity: sha512-m6A6JjQRg39p2ZVRIN3NKXgrN8vzlHhOS+r9ymUYtcUP/TIQPvWSq7YgE5ZjASfv5Vd5BW5xrir6Gm2XNNcOow==}
+  /typedoc@0.25.8(typescript@5.2.2):
+    resolution: {integrity: sha512-mh8oLW66nwmeB9uTa0Bdcjfis+48bAjSH3uqdzSuSawfduROQLlXw//WSNZLYDdhmMVB7YcYZicq6e8T0d271A==}
     engines: {node: '>= 16'}
     hasBin: true
     peerDependencies:
