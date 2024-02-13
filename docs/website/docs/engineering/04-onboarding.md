@@ -2,42 +2,39 @@
 title: Onboarding
 ---
 
-Welcome to the team! This page is a guide to help you get started with the engineering team and the company.
+Welcome to the team! This page is a guide to help you get started with the engineering team.
 
 We have two main goals for this page. The first is to help you get started with the team and the company, get access with the tools we use, present our workflow and our culture. The second is that you can setup your environment and start contributing to the team since the first day.
 
 :::tip
 
-If you have any questions, don't hesitate to ask. We're here to help you. Don't forget it ;)
+If you have any questions, don't hesitate to ask. We're here to help you.
 
 :::
+
+## Our main goal
+
+**Our main goal with this guide is to help you submit your first pull request to the team repository.**
 
 ## Tools
 
 You need to get access to the following apps:
 
-### Slack
+| App         | Description                                                                                           | Checklist                                        |
+| ----------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Discord     | Our main chat App for the team.                                                                       | -                                                |
+| GitHub      | Where we store the codebase.                                                                          | - Be a member of Engineering team.               |
+| ClickUp     | Project management tool.                                                                              | - Be a member of Product team.                   |
+| AWS Sandbox | We have a sandbox AWS account that we use to develop our projects and deploy the Staging environment. | - Have access to [AWS SSO](#aws-single-sign-on). |
 
-Our main chat App for the team.
+### AWS Single Sign-On
 
-### GitHub
+We use [AWS Single Sign-On](https://aws.amazon.com/single-sign-on/) to manage the access to our AWS organization, so all AWS accounts. The main advantage of this method is that you can access all AWS accounts with a single login.
 
-Where we store the code of our projects.
+## Coding
 
-### ClickUp
+Once you have access to the tools, you can start coding. Your [tech lead](/docs/engineering/career/roles#tech-lead) will help you to setup your environment and guide you through the first steps of our [workflow](/docs/product/workflow).
 
-As a cross-functional team, we use the **ClickUp** platform to manage the project stories and tasks.
+## Improving our process
 
-### AWS
-
-AWS is our official cloud provider. For each project, we have a dedicated AWS account that handle the cloud infrastructure of the project. Depending on your level of expertise or your participation in a specific project, you can access the production AWS account as a **developer** or as a read-only **viewer**.
-
-We also have a sandbox AWS account that we use to develop our projects and deploy the Staging environment. You should have access to this account if you belong to the engineering team.
-
-#### User and Password
-
-For the sandbox account, you'll have this type of access. The advantage of this method compared with [AWS Single Sign-On](#aws-single-sign-on) is that you can sing in once and can save the AWS credentials in your computer.
-
-#### AWS Single Sign-On
-
-We use [AWS Single Sign-On](https://aws.amazon.com/single-sign-on/) to manage the access to our AWS organization—then all AWS accounts. The main advantage of this method is that you need to have a single account in the organization, and you can access to all AWS accounts that you have access to. The disadvantage is that you to sign in every time if you want to access the Console or get the AWS credentials.
+We are always looking for ways to improve our process. If you have any suggestions, don't hesitate to share them with the team.
