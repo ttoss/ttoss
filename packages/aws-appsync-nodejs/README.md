@@ -5,7 +5,7 @@ This package implements a AWS AppSync client for Node.js. We've followed the [AW
 ## Installation
 
 ```bash
-yarn add @ttoss/aws-appsync-nodejs
+pnpm add @ttoss/aws-appsync-nodejs
 ```
 
 ## Quickstart
@@ -14,7 +14,7 @@ yarn add @ttoss/aws-appsync-nodejs
 import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
 
 appSyncClient.setConfig({
-  apiEndpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+  endpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
   apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
 });
 
@@ -34,13 +34,13 @@ appSyncClient.query(query, { id: '1' }).then((result) => {
 
 ## Config
 
-You need to configure the client with `apiEndpoint` (required), `apiKey` (optional) and `awsCredentials` (optional).
+You need to configure the client with `endpoint` (required), `apiKey` (optional) and `credentials` (optional).
 
-1. If you don't provide `apiKey` or `awsCredentials`, the client will try to use the AWS credentials from the environment variables of your system—local computer, AWS Lambda, EC2.
+1. If you don't provide `apiKey` or `credentials`, the client will try to use the AWS credentials from the environment variables of your system—local computer, AWS Lambda, EC2.
 
 ```typescript
 appSyncClient.setConfig({
-  apiEndpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+  endpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
 });
 ```
 
@@ -48,17 +48,31 @@ appSyncClient.setConfig({
 
 ```typescript
 appSyncClient.setConfig({
-  apiEndpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+  endpoint: 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
   apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
 });
 ```
 
-3. If you provide `awsCredentials`, the client will use the credentials to authenticate.
+3. If you provide `credentials`, the client will use the credentials to authenticate.
 
 ```typescript
 appSyncClient.setConfig({
-  apiEndpoint,
-  awsCredentials: {
+  endpoint,
+  credentials: {
+    accessKeyId: // access key id,
+    secretAccessKey: // secret access key,
+    sessionToken: // optional session token,
+  },
+});
+```
+
+If you provide the default endpoint (`https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql`), the client will retrieve the region from the endpoint. If you provide the endpoint with the custom domain (`https://custom-domain.com`), you need to provide the region as well.
+
+```typescript
+appSyncClient.setConfig({
+  endpoint: 'https://custom-domain.com',
+  region: 'us-east-1',
+  credentials: {
     accessKeyId: // access key id,
     secretAccessKey: // secret access key,
     sessionToken: // optional session token,

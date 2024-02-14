@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.7...@terezinha-farm/vite-app@0.9.8) (2024-02-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.7](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.6...@terezinha-farm/vite-app@0.9.7) (2024-01-31)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.6](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.5...@terezinha-farm/vite-app@0.9.6) (2024-01-30)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.4...@terezinha-farm/vite-app@0.9.5) (2024-01-29)
+
+### Bug Fixes
+
+- change terezinha farm vite alias ([865d82e](https://github.com/ttoss/ttoss/commit/865d82e36021935bb34a35cfa7ad8862834d4dea))
+- terezinha farm app depends on api ([da84b14](https://github.com/ttoss/ttoss/commit/da84b1422d7075949e13acb0113bbc8fe46f28b3))
+
+## 0.9.4 (2024-01-29)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.9.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/app@0.9.2...@terezinha-farm/app@0.9.3) (2024-01-12)
 
 **Note:** Version bump only for package @terezinha-farm/app

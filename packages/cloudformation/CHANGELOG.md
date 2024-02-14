@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.9.0 (2024-01-30)
+
+### Features
+
+- principal tag mapping ([#468](https://github.com/ttoss/ttoss/issues/468)) ([cb9a135](https://github.com/ttoss/ttoss/commit/cb9a1355a179e65939aa8b215dfa0d624268b2b0))
+
 ## [0.8.7](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.8.6...@ttoss/cloudformation@0.8.7) (2023-12-12)
 
 ### Bug Fixes

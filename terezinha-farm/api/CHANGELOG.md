@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.13.3...@terezinha-farm/api@0.13.4) (2024-01-31)
+
+### Bug Fixes
+
+- update aws-appsync-packages ([#480](https://github.com/ttoss/ttoss/issues/480)) ([68637a9](https://github.com/ttoss/ttoss/commit/68637a96543f96722553aeb0063b23e45bf8c323))
+
+## [0.13.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.13.2...@terezinha-farm/api@0.13.3) (2024-01-30)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.13.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.13.1...@terezinha-farm/api@0.13.2) (2024-01-29)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## [0.13.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.13.0...@terezinha-farm/api@0.13.1) (2024-01-12)
 
 **Note:** Version bump only for package @terezinha-farm/api

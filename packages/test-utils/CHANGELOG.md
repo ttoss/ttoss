@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.1.0 (2024-01-30)
+
+### Features
+
+- principal tag mapping ([#468](https://github.com/ttoss/ttoss/issues/468)) ([cb9a135](https://github.com/ttoss/ttoss/commit/cb9a1355a179e65939aa8b215dfa0d624268b2b0))
+
 ## [2.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.0.3...@ttoss/test-utils@2.0.4) (2023-12-12)
 
 ### Bug Fixes

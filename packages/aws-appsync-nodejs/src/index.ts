@@ -3,15 +3,16 @@
  * documentation: https://docs.amplify.aws/lib/graphqlapi/graphql-from-nodejs/q/platform/js/
  */
 import { AwsCredentialIdentity } from '@aws-sdk/types';
-import { HttpRequest } from '@aws-sdk/protocol-http';
+import { HttpRequest } from '@smithy/protocol-http';
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { SignatureV4 } from '@aws-sdk/signature-v4';
+import { SignatureV4 } from '@smithy/signature-v4';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
 
 export type Config = {
-  apiEndpoint: string;
+  endpoint: string;
+  region?: string;
   apiKey?: string;
-  awsCredentials?: AwsCredentialIdentity;
+  credentials?: AwsCredentialIdentity;
 };
 
 let _config: Config;
@@ -22,18 +23,19 @@ const setConfig = (config: Config) => {
 
 export type Query = (
   query: string,
-  variables: Record<string, unknown>
+  variables?: Record<string, unknown>
 ) => Promise<{
   data: Record<string, unknown> | null;
   errors?: {
     message: string;
     path: string | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     locations: any[];
   }[];
 }>;
 
 const queryWithApiKey: Query = async (query, variables) => {
-  const { apiEndpoint, apiKey } = _config;
+  const { endpoint, apiKey } = _config;
 
   if (!apiKey) {
     throw new Error('No API Key set');
@@ -47,7 +49,7 @@ const queryWithApiKey: Query = async (query, variables) => {
     body: JSON.stringify({ query, variables }),
   };
 
-  const request = new Request(apiEndpoint, options);
+  const request = new Request(endpoint, options);
 
   const response = await fetch(request);
 
@@ -67,14 +69,12 @@ const getRegionFromEndpoint = (endpoint: string): string => {
 };
 
 const queryWithCredentials: Query = async (query, variables) => {
-  const { apiEndpoint, awsCredentials } = _config;
+  const endpoint = new URL(_config.endpoint);
 
-  const endpoint = new URL(apiEndpoint);
-
-  const region = getRegionFromEndpoint(apiEndpoint);
+  const region = _config.region || getRegionFromEndpoint(_config.endpoint);
 
   const signer = new SignatureV4({
-    credentials: awsCredentials || defaultProvider(),
+    credentials: _config.credentials || defaultProvider(),
     region,
     service: 'appsync',
     sha256: Sha256,
@@ -89,6 +89,7 @@ const queryWithCredentials: Query = async (query, variables) => {
     hostname: endpoint.host,
     body: JSON.stringify({ query, variables }),
     path: endpoint.pathname,
+    protocol: endpoint.protocol,
   });
 
   const signed = await signer.sign(requestToBeSigned);

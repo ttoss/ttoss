@@ -17,7 +17,7 @@ This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908
 ### Install
 
 ```shell
-$ yarn add @ttoss/auth @ttoss/react-notifications
+$ yarn add @ttoss/auth @ttoss/react-notifications aws-amplify
 ```
 
 ## Examples of use
@@ -25,32 +25,58 @@ $ yarn add @ttoss/auth @ttoss/react-notifications
 ### Amplify config
 
 ```ts
-import Amplify from 'aws-amplify';
+import { Amplify, type ResourcesConfig } from 'aws-amplify';
+import {
+  CookieStorage,
+  KeyValueStorageInterface,
+  defaultStorage,
+  sessionStorage,
+} from 'aws-amplify/utils';
+import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 
-Amplify.configure({
-  Auth: {
-    // REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
-    identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
-
-    // REQUIRED - Amazon Cognito Region
-    region: 'XX-XXXX-X',
-
-    // OPTIONAL - Amazon Cognito Federated Identity Pool Region
-    // Required only if it's different from Amazon Cognito Region
-    identityPoolRegion: 'XX-XXXX-X',
+const authConfig: ResourcesConfig['Auth'] = {
+  Cognito: {
+    // REQUIRED Amazon Cognito User Pool Client ID (26-char alphanumeric string)
+    userPoolClientId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3',
 
     // OPTIONAL - Amazon Cognito User Pool ID
     userPoolId: 'XX-XXXX-X_abcd1234',
 
-    // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
-    userPoolWebClientId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3',
+    loginWith: {
+      // OPTIONAL - Hosted UI configuration
+      oauth: {
+        domain: 'your_cognito_domain',
+        scopes: [
+          'phone',
+          'email',
+          'profile',
+          'openid',
+          'aws.cognito.signin.user.admin',
+        ],
+        redirectSignIn: ['http://localhost:3000/'],
+        redirectSignOut: ['http://localhost:3000/'],
+        responseType: 'code', // or 'token', note that REFRESH token will only be generated when the responseType is code
+      },
+    },
+  },
+};
 
-    // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
-    mandatorySignIn: false,
+Amplify.configure({
+  Auth: authConfig,
+});
 
+// Browser Local Storage
+// In Amplify the localStorage is the default storage mechanism. It saves the tokens in the browser's localStorage.
+// This local storage will persist across browser sessions and tabs. You can explicitly set to this storage by calling:
+cognitoUserPoolsTokenProvider.setKeyValueStorage(defaultStorage);
+
+// Cookie Storage
+// CookieStorage saves the tokens in the browser's Cookies. The cookies will persist across browser sessions and tabs.
+// You can explicitly set to this storage by calling:
+cognitoUserPoolsTokenProvider.setKeyValueStorage(
+  new CookieStorage(
     // OPTIONAL - Configuration for cookie storage
-    // Note: if the secure flag is set to true, then the cookie transmission requires a secure protocol
-    cookieStorage: {
+    {
       // REQUIRED - Cookie domain (only required if cookieStorage is provided)
       domain: '.yourdomain.com',
       // OPTIONAL - Cookie path
@@ -58,37 +84,41 @@ Amplify.configure({
       // OPTIONAL - Cookie expiration in days
       expires: 365,
       // OPTIONAL - See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-      sameSite: 'strict' | 'lax',
+      sameSite: 'strict' | 'lax' | 'none',
       // OPTIONAL - Cookie secure flag
       // Either true or false, indicating if the cookie transmission requires a secure protocol (https).
       secure: true,
-    },
+    }
+  )
+);
 
-    // OPTIONAL - customized storage object
-    storage: MyStorage,
+// Browser Session Storage
+// sessionStorage saves the tokens in the browser's sessionStorage and these tokens will clear when a tab is closed.
+// The benefit to this storage mechanism is that the session only lasts as long as the browser is open and you
+// can sign out users when they close the tab. You can update to this storage by calling:
+cognitoUserPoolsTokenProvider.setKeyValueStorage(sessionStorage);
 
-    // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
-    authenticationFlowType: 'USER_PASSWORD_AUTH',
+// Custom Storage
+// You can implement your own custom storage mechanism by creating a class that implements the storage interface.
+// Here is an example that uses memory storage:
 
-    // OPTIONAL - Manually set key value pairs that can be passed to Cognito Lambda Triggers
-    clientMetadata: { myCustomKey: 'myCustomValue' },
+class MyCustomStorage implements KeyValueStorageInterface {
+  storageObject: Record<string, string> = {};
+  async setItem(key: string, value: string): Promise<void> {
+    this.storageObject[key] = value;
+  }
+  async getItem(key: string): Promise<string | null> {
+    return this.storageObject[key];
+  }
+  async removeItem(key: string): Promise<void> {
+    delete this.storageObject[key];
+  }
+  async clear(): Promise<void> {
+    this.storageObject = {};
+  }
+}
 
-    // OPTIONAL - Hosted UI configuration
-    oauth: {
-      domain: 'your_cognito_domain',
-      scope: [
-        'phone',
-        'email',
-        'profile',
-        'openid',
-        'aws.cognito.signin.user.admin',
-      ],
-      redirectSignIn: 'http://localhost:3000/',
-      redirectSignOut: 'http://localhost:3000/',
-      responseType: 'code', // or 'token', note that REFRESH token will only be generated when the responseType is code
-    },
-  },
-});
+cognitoUserPoolsTokenProvider.setKeyValueStorage(new MyCustomStorage());
 ```
 
 ### PrivateRoute component

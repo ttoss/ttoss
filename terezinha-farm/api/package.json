@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/api",
-  "version": "0.13.1",
+  "version": "0.13.4",
   "scripts": {
     "build-schema": "ttoss-graphql-api build-schema",
     "deploy": "carlin deploy",
@@ -15,6 +15,7 @@
     "graphql-shield": "^7.6.5"
   },
   "devDependencies": {
+    "@ttoss/aws-appsync-nodejs": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",

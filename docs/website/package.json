@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.44.2",
+  "version": "1.44.7",
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
     "clear": "docusaurus clear",
@@ -15,11 +15,11 @@
     "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.1.0",
-    "@docusaurus/module-type-aliases": "^3.1.0",
-    "@docusaurus/preset-classic": "^3.1.0",
-    "@docusaurus/theme-mermaid": "^3.1.0",
-    "@mdx-js/react": "3.0.0",
+    "@docusaurus/core": "^3.1.1",
+    "@docusaurus/module-type-aliases": "^3.1.1",
+    "@docusaurus/preset-classic": "^3.1.1",
+    "@docusaurus/theme-mermaid": "^3.1.1",
+    "@mdx-js/react": "3.0.1",
     "@ttoss/appsync-api": "workspace:^",
     "@ttoss/aws-appsync-nodejs": "workspace:^",
     "@ttoss/cloud-auth": "workspace:^",
@@ -37,17 +37,17 @@
     "@ttoss/ui": "workspace:^",
     "carlin": "workspace:^",
     "jsdoc-api": "^8.0.0",
-    "markdown-to-jsx": "^7.4.0",
+    "markdown-to-jsx": "^7.4.1",
     "prism-react-renderer": "^2.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.1.0",
-    "@docusaurus/tsconfig": "^3.1.0",
-    "@docusaurus/types": "^3.1.0",
+    "@docusaurus/module-type-aliases": "^3.1.1",
+    "@docusaurus/tsconfig": "^3.1.1",
+    "@docusaurus/types": "^3.1.1",
     "docusaurus-plugin-typedoc": "^0.22.0",
-    "typedoc": "^0.25.7",
+    "typedoc": "^0.25.8",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "~5.2.2"
   },

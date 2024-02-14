@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.22.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.22.0...@ttoss/forms@0.22.1) (2024-02-01)
+
+**Note:** Version bump only for package @ttoss/forms
+
+# 0.22.0 (2024-01-30)
+
+### Features
+
+- principal tag mapping ([#468](https://github.com/ttoss/ttoss/issues/468)) ([cb9a135](https://github.com/ttoss/ttoss/commit/cb9a1355a179e65939aa8b215dfa0d624268b2b0))
+
 ## [0.21.9](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.21.8...@ttoss/forms@0.21.9) (2023-12-12)
 
 ### Bug Fixes

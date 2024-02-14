@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.8.0 (2024-01-31)
+
+### Bug Fixes
+
+- update aws-appsync-packages ([#480](https://github.com/ttoss/ttoss/issues/480)) ([68637a9](https://github.com/ttoss/ttoss/commit/68637a96543f96722553aeb0063b23e45bf8c323))
+
+### Features
+
+- add custom domain appsync-api ([#470](https://github.com/ttoss/ttoss/issues/470)) ([cec0bac](https://github.com/ttoss/ttoss/commit/cec0bac1f54518b3217ab78f33e673c42fcecaa5))
+
 ## [1.7.4](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.7.3...@ttoss/aws-appsync-nodejs@1.7.4) (2023-12-12)
 
 ### Bug Fixes

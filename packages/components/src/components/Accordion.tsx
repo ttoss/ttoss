@@ -47,7 +47,8 @@ export const Accordion = ({
       },
     })(theme);
 
-    return createClassName(styles);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return createClassName(styles as any);
   }, [theme]);
 
   return (

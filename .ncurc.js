@@ -5,11 +5,16 @@ module.exports = {
      * Example https://github.com/testing-library/jest-dom/issues/546
      */
     '@testing-library/jest-dom',
-    'aws-amplify',
     /**
      * change-case v5 is ESM and carlin is CJS.
      */
     'change-case',
+    /**
+     * On 2024-01-29, updating to the 14.1.0 version of `next` will
+     * cause dev and build to fail.
+     * https://github.com/vercel/next.js/issues/61116
+     */
+    'next',
     /**
      * On 2023-11-22, updating to the 5.3 version of `typescript` will
      * cause some errors:
