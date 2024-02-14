@@ -1,24 +1,23 @@
 import { Flex, Grid, Image, Label, Radio, Text } from '@ttoss/ui';
 import { FormField } from '@ttoss/forms';
-import { FormSequenceFormFieldsBase } from './types';
+import { MultistepFormFieldsBase } from './types';
 
-export type FormSequenceFormFieldRadioImageProps =
-  FormSequenceFormFieldsBase & {
-    variant: 'radio-image';
-    defaultValue?: string;
-    options: {
-      label: string;
-      value: string;
-      disabled?: boolean;
-      src: string;
-    }[];
-  };
+export type MultistepFormFieldRadioImageProps = MultistepFormFieldsBase & {
+  variant: 'radio-image';
+  defaultValue?: string;
+  options: {
+    label: string;
+    value: string;
+    disabled?: boolean;
+    src: string;
+  }[];
+};
 
-export const FormSequenceFormFieldRadioImage = ({
+export const MultistepFormFieldRadioImage = ({
   options,
   defaultValue,
   fieldName,
-}: FormSequenceFormFieldRadioImageProps) => {
+}: MultistepFormFieldRadioImageProps) => {
   return (
     <FormField
       name={fieldName}

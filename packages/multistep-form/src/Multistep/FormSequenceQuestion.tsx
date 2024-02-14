@@ -1,18 +1,18 @@
 import { Flex, Text } from '@ttoss/ui';
 import {
-  FormSequenceFormFields,
-  FormSequenceFormFieldsProps,
-} from './FormSequenceFormFields';
+  MultistepFormFields,
+  MultistepFormFieldsProps,
+} from './MultistepFormFields';
 
-type FormSequenceQuestionProps = {
+type MultistepQuestionProps = {
   question: string;
-  fields: FormSequenceFormFieldsProps[];
+  fields: MultistepFormFieldsProps[];
 };
 
-export const FormSequenceQuestion = ({
+export const MultistepQuestion = ({
   fields,
   question,
-}: FormSequenceQuestionProps) => {
+}: MultistepQuestionProps) => {
   return (
     <Flex
       sx={{
@@ -28,7 +28,7 @@ export const FormSequenceQuestion = ({
       <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
         {fields.map((field) => {
           return (
-            <FormSequenceFormFields
+            <MultistepFormFields
               key={`field-${field.variant}-${field.fieldName}`}
               {...field}
             />

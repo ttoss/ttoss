@@ -1,17 +1,17 @@
 import { FormFieldCurrencyInput } from '@ttoss/forms';
-import { FormSequenceFormFieldsBase } from './types';
+import { MultistepFormFieldsBase } from './types';
 
-export type FormSequenceFormFieldCurrencyProps = FormSequenceFormFieldsBase & {
+export type MultistepFormFieldCurrencyProps = MultistepFormFieldsBase & {
   variant: 'currency';
   label: string;
   defaultValue?: number;
 };
 
-export const FormSequenceFormFieldCurrency = ({
+export const MultistepFormFieldCurrency = ({
   defaultValue,
   label,
   fieldName,
-}: FormSequenceFormFieldCurrencyProps) => {
+}: MultistepFormFieldCurrencyProps) => {
   return (
     <FormFieldCurrencyInput
       defaultValue={defaultValue}

@@ -1,10 +1,10 @@
 import { Flex, Text } from '@ttoss/ui';
 
-import { BaseFormSequenceHeaderProps } from './types';
+import { BaseMultistepHeaderProps } from './types';
 
 import { Icon, type IconType } from '@ttoss/react-icons';
 
-export type FormSequenceHeaderTitledProps = BaseFormSequenceHeaderProps & {
+export type MultistepHeaderTitledProps = BaseMultistepHeaderProps & {
   variant: 'titled';
   title: string;
   leftIcon: IconType;
@@ -13,13 +13,13 @@ export type FormSequenceHeaderTitledProps = BaseFormSequenceHeaderProps & {
   rightIconClick: () => void;
 };
 
-export const FormSequenceHeaderTitled = ({
+export const MultistepHeaderTitled = ({
   title,
   leftIcon,
   leftIconClick,
   rightIcon,
   rightIconClick,
-}: FormSequenceHeaderTitledProps) => {
+}: MultistepHeaderTitledProps) => {
   return (
     <Flex
       sx={{

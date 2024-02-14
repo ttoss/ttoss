@@ -1,17 +1,17 @@
 import { FormFieldInput } from '@ttoss/forms';
-import { FormSequenceFormFieldsBase } from './types';
+import { MultistepFormFieldsBase } from './types';
 
-export type FormSequenceFormFieldInputProps = FormSequenceFormFieldsBase & {
+export type MultistepFormFieldInputProps = MultistepFormFieldsBase & {
   variant: 'input';
   label: string;
   defaultValue?: string;
 };
 
-export const FormSequenceFormFieldInput = ({
+export const MultistepFormFieldInput = ({
   defaultValue,
   label,
   fieldName,
-}: FormSequenceFormFieldInputProps) => {
+}: MultistepFormFieldInputProps) => {
   return (
     <FormFieldInput
       defaultValue={defaultValue}

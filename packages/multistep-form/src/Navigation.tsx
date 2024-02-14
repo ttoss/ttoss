@@ -1,19 +1,19 @@
 import { Flex, Text } from '@ttoss/ui';
 import { Icon } from '@ttoss/react-icons';
 
-type FormSequenceNavigationProps = {
+export type NavigationProps = {
   amountOfSteps: number;
   currentStepNumber: number;
   onBack: () => void;
   stepsLabel: string[];
 };
 
-export const FormSequenceNavigation = ({
+export const Navigation = ({
   amountOfSteps,
   currentStepNumber,
   onBack,
   stepsLabel,
-}: FormSequenceNavigationProps) => {
+}: NavigationProps) => {
   return (
     <Flex
       sx={{
