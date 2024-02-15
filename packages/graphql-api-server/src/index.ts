@@ -1,7 +1,10 @@
 import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { createYoga } from 'graphql-yoga';
 import Koa from 'koa';
+import Router from '@koa/router';
+
+export { Router };
 
 export type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS';
 
