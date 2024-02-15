@@ -1,46 +1,46 @@
 import * as React from 'react';
 import { Flex } from '@ttoss/ui';
-// import { Form, useForm } from '@ttoss/forms';
-// import {
-//   MultistepFlowMessage,
-//   MultistepFlowMessageProps,
-// } from './Multistep/MultistepFlowMessage';
 import { Footer } from './Footer';
-// import { MultistepFormFieldsProps } from './MultistepFormFields';
 import { Header, type HeaderProps } from './Header';
+import { MultistepFlowMessageProps } from './Multistep/MultistepFlowMessage';
+import {
+  MultistepFormStepper,
+  type MultistepFormStepperProps,
+} from './Multistep/MultistepFormStepper';
 import { Navigation } from './Navigation';
-// import { MultistepQuestion } from './MultistepQuestion';
-// import { useDebounce } from '@ttoss/react-hooks';
 
-// export type MultistepStep = {
-//   question: string;
-//   // flowMessage: MultistepFlowMessageProps;
-//   label: string;
-//   fields: MultistepFormFieldsProps[];
-// };
+export type MultistepStep = {
+  question: string;
+  flowMessage: MultistepFlowMessageProps;
+  label: string;
+  fields: React.ReactNode | React.ReactNode[];
+  schema?: MultistepFormStepperProps['schema'];
+  defaultValues?: MultistepFormStepperProps['defaultValues'];
+};
 
 export type MultistepFormProps<FormValues = unknown> = {
   header: HeaderProps;
-  // steps: MultistepStep[];
+  steps: MultistepStep[];
   footer?: string;
   onSubmit: (data: FormValues) => void;
 };
 
 export const MultistepForm = (props: MultistepFormProps) => {
-  // const amountOfSteps = steps.length;
+  const amountOfSteps = props.steps.length;
   const [currentStep, setCurrentStep] = React.useState(1);
 
-  // const isLastStep = useDebounce(currentStep === amountOfSteps);
+  const isLastStep = currentStep === amountOfSteps;
 
-  // const formMethods = useForm();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [form, setForm] = React.useState<any>({});
 
-  // const nextStep = () => {
-  //   if (currentStep < amountOfSteps) {
-  //     setCurrentStep((step) => {
-  //       return step + 1;
-  //     });
-  //   }
-  // };
+  const nextStep = () => {
+    if (currentStep < amountOfSteps) {
+      setCurrentStep((step) => {
+        return step + 1;
+      });
+    }
+  };
 
   const backStep = () => {
     if (currentStep > 1) {
@@ -59,55 +59,45 @@ export const MultistepForm = (props: MultistepFormProps) => {
       }}
     >
       <Header {...props.header} />
-
-      {/* <Form
-        {...formMethods}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-        onSubmit={onSubmit}
-      >
-        {steps.map((step, stepIndex) => {
-          return (
-            <Flex
-              key={`form-step-${step.question}`}
-              sx={{
-                flexDirection: 'column',
-                display: stepIndex + 1 === currentStep ? 'flex' : 'none',
+      {props.steps.map((step, stepIndex) => {
+        return (
+          <Flex
+            sx={{
+              flexDirection: 'column',
+              display: stepIndex + 1 === currentStep ? 'flex' : 'none',
+            }}
+            key={`form-step-${step.question}`}
+          >
+            <MultistepFormStepper
+              flowMessage={step.flowMessage}
+              isLastStep={isLastStep}
+              fields={step.fields}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onSubmit={(data: any) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setForm((prev: any) => {
+                  return { ...prev, ...data };
+                });
+                nextStep();
+                props.onSubmit({ ...form, ...data });
               }}
-            >
-              <MultistepFlowMessage {...step.flowMessage} />
-
-              <MultistepQuestion
-                fields={step.fields}
-                question={step.question}
-              />
-            </Flex>
-          );
-        })}
-
-        <Button
-          sx={{
-            justifyContent: 'center',
-            marginTop: '2xl',
-            marginBottom: 'xl',
-            marginX: '2xl',
-          }}
-          rightIcon="nav-right"
-          onClick={nextStep}
-          type={isLastStep ? 'submit' : 'button'}
-        >
-          Continuar
-        </Button>
-      </Form> */}
+              defaultValues={step.defaultValues}
+              schema={step.schema}
+              question={step.question}
+              submitLabel={isLastStep ? 'Enviar' : 'Continuar'}
+            />
+          </Flex>
+        );
+      })}
 
       {currentStep > 1 && (
         <Navigation
-          amountOfSteps={2}
+          amountOfSteps={amountOfSteps}
           currentStepNumber={currentStep}
           onBack={backStep}
-          stepsLabel={[]}
+          stepsLabel={props.steps.map((s) => {
+            return s.label;
+          })}
         />
       )}
 

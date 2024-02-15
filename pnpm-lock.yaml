@@ -74,6 +74,9 @@ importers:
       '@ttoss/layouts':
         specifier: workspace:^
         version: link:../../packages/layouts
+      '@ttoss/multistep-form':
+        specifier: workspace:^
+        version: link:../../packages/multistep-form
       '@ttoss/react-auth':
         specifier: workspace:^
         version: link:../../packages/react-auth
@@ -1018,6 +1021,12 @@ importers:
 
   packages/multistep-form:
     dependencies:
+      '@ttoss/forms':
+        specifier: workspace:^
+        version: link:../forms
+      '@ttoss/react-hooks':
+        specifier: workspace:^
+        version: link:../react-hooks
       react:
         specifier: '>=16.8.0'
         version: 18.2.0

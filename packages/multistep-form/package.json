@@ -24,6 +24,8 @@
   },
   "typings": "dist/index.d.ts",
   "peerDependencies": {
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"

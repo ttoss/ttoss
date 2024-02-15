@@ -19,6 +19,7 @@
     "@ttoss/forms": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
+    "@ttoss/multistep-form": "workspace:^",
     "@ttoss/react-auth": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",

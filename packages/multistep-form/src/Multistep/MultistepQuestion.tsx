@@ -1,12 +1,9 @@
+import * as React from 'react';
 import { Flex, Text } from '@ttoss/ui';
-import {
-  MultistepFormFields,
-  MultistepFormFieldsProps,
-} from './MultistepFormFields';
 
 type MultistepQuestionProps = {
   question: string;
-  fields: MultistepFormFieldsProps[];
+  fields: React.ReactNode | React.ReactNode[];
 };
 
 export const MultistepQuestion = ({
@@ -25,16 +22,7 @@ export const MultistepQuestion = ({
         {question}
       </Text>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
-        {fields.map((field) => {
-          return (
-            <MultistepFormFields
-              key={`field-${field.variant}-${field.fieldName}`}
-              {...field}
-            />
-          );
-        })}
-      </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>{fields}</Flex>
     </Flex>
   );
 };
