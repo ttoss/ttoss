@@ -24,13 +24,11 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@koa/cors": "^4.0.0",
+    "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.1",
-    "@types/supertest": "^6.0.2",
-    "aws-jwt-verify": "^4.0.0",
-    "graphql-helix": "^1.13.0",
-    "graphql-yoga": "^5.0.2",
-    "koa": "^2.14.2",
+    "@ttoss/auth-core": "workspace:^",
+    "graphql-yoga": "^5.1.1",
+    "koa": "^2.15.0",
     "koa-bodyparser": "^4.4.1"
   },
   "peerDependencies": {
@@ -40,13 +38,14 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
-    "@types/koa": "^2.13.12",
-    "@types/koa__cors": "^4.0.3",
+    "@types/koa": "^2.14.0",
+    "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.4",
     "@types/koa-bodyparser": "^4.3.12",
+    "@types/supertest": "^6.0.2",
     "graphql": "^16.8.1",
     "jest": "^29.7.0",
-    "supertest": "^6.3.3",
+    "supertest": "^6.3.4",
     "tsup": "^8.0.1"
   },
   "keywords": [

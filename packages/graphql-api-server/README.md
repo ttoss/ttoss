@@ -5,7 +5,7 @@ This package provides a Koa server to run your [`@ttoss/graphql-api` API](https:
 ## Installation
 
 ```bash
-yarn add @ttoss/graphql-api-server @ttoss/graphql-api graphql
+pnpm add @ttoss/graphql-api-server @ttoss/graphql-api graphql
 ```
 
 ## Quickstart

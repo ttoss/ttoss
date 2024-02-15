@@ -1,9 +1,9 @@
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
-import { CreateServerInput, createServer } from '../src/index';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
+import { CreateServerInput, Router, createServer } from '../src/index';
 import { schemaComposer } from './schemaComposer';
 import request from 'supertest';
 
-jest.mock('aws-jwt-verify');
+jest.mock('@ttoss/auth-core/amazon-cognito');
 
 const serverOptions: CreateServerInput = {
   schemaComposer,
@@ -250,4 +250,8 @@ describe('Amazon Cognito Authentication Tests', () => {
     expect(response.status).toBe(401);
     expect(response.body.data).toEqual(undefined);
   });
+});
+
+test('should export Router', () => {
+  expect(Router).toBeDefined();
 });
