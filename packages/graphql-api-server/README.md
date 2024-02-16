@@ -8,7 +8,7 @@ This package provides a Koa server to run your [`@ttoss/graphql-api` API](https:
 pnpm add @ttoss/graphql-api-server @ttoss/graphql-api graphql
 ```
 
-## Quickstart
+## Getting Started
 
 You can use the `createServer` method to create your server.
 
@@ -60,7 +60,7 @@ server.listen(3000, () => {
 });
 ```
 
-### Middlewares
+## Middlewares
 
 You can add middlewares compatible with [`graphql-middleware`](https://github.com/dimatill/graphql-middleware) to the server using the `middlewares` option.
 
@@ -95,5 +95,63 @@ const permissions = shield(
 const server = createServer({
   schemaComposer,
   middlewares: [permissions],
+});
+```
+
+## Handling Other Routes
+
+If you want to handle other routes than `/graphql`, you can use the `Router` class from `koa` and add it to the server.
+
+### Serving a SPA
+
+```ts
+import { createServer } from '@ttoss/graphql-api-server';
+import { schemaComposer } from './schemaComposer';
+import mount from 'koa-mount';
+import * as path from 'path';
+
+const server = createServer({
+  schemaComposer,
+  graphiql: true,
+});
+
+const APP_DIR = path.resolve(__dirname, '../../app/dist');
+
+server.use(mount('/', serve(APP_DIR)));
+
+/**
+ * Serve a SPA—redirect all requests to index.html
+ * https://dejanvasic.wordpress.com/2020/08/22/serving-react-spa-in-koa/
+ */
+server.use(async (ctx, next) => {
+  return await serve(APP_DIR)(Object.assign(ctx, { path: 'index.html' }), next);
+});
+
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+```
+
+### Serving Another Endpoint
+
+```ts
+import { Router, createServer } from '@ttoss/graphql-api-server';
+import { schemaComposer } from './schemaComposer';
+
+const server = createServer({
+  schemaComposer,
+  graphiql: true,
+});
+
+const router = new Router();
+
+router.get('/health', (ctx: any) => {
+  ctx.body = 'OK';
+});
+
+server.use(router.routes()).use(router.allowedMethods());
+
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
 });
 ```
