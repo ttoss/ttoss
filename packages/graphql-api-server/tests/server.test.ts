@@ -12,6 +12,14 @@ const serverOptions: CreateServerInput = {
 
 const app = createServer(serverOptions);
 
+const route = new Router();
+
+route.get('/test', (ctx) => {
+  ctx.body = 'Test route response';
+});
+
+app.use(route.routes());
+
 describe('GraphQL Server Tests', () => {
   test('should execute a sample query', async () => {
     const query = `
@@ -254,4 +262,10 @@ describe('Amazon Cognito Authentication Tests', () => {
 
 test('should export Router', () => {
   expect(Router).toBeDefined();
+});
+
+test("should handle '/test' route", async () => {
+  const response = await request(app.callback()).get('/test');
+  expect(response.status).toBe(200);
+  expect(response.text).toBe('Test route response');
 });
