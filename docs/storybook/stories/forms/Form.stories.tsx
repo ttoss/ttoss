@@ -1,4 +1,4 @@
-import { Box, Button, Flex } from '@ttoss/ui/src';
+import { Box, Button, Flex } from '@ttoss/ui';
 import {
   Form,
   FormFieldCheckbox,
@@ -10,7 +10,7 @@ import {
   useForm,
   yup,
   yupResolver,
-} from '@ttoss/forms/src';
+} from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
