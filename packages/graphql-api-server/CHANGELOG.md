@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.1...@ttoss/graphql-api-server@0.5.2) (2024-02-16)
+
+### Bug Fixes
+
+- handle another endpoints ([#485](https://github.com/ttoss/ttoss/issues/485)) ([c61ebd3](https://github.com/ttoss/ttoss/commit/c61ebd32f2248404a3e92e799d4753d3af88d3f2))
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.0...@ttoss/graphql-api-server@0.5.1) (2024-02-15)
+
+### Bug Fixes
+
+- graphql api server export router ([#483](https://github.com/ttoss/ttoss/issues/483)) ([80a1bb1](https://github.com/ttoss/ttoss/commit/80a1bb11f8f19735035f0cebe29c70f05b2f96d6))
+
 # [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.4.0...@ttoss/graphql-api-server@0.5.0) (2024-01-12)
 
 ### Features

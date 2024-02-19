@@ -1,7 +1,10 @@
 import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { createYoga } from 'graphql-yoga';
 import Koa from 'koa';
+import Router from '@koa/router';
+
+export { Router };
 
 export type AuthenticationType = 'AMAZON_COGNITO_USER_POOLS';
 
@@ -18,9 +21,20 @@ export type CreateServerInput = {
 export const createServer = ({
   authenticationType,
   userPoolConfig,
+  graphiql,
   ...buildSchemaInput
 }: CreateServerInput): Koa => {
   const app = new Koa();
+
+  /**
+   * https://the-guild.dev/graphql/yoga-server/docs/integrations/integration-with-koa
+   */
+  const yoga = createYoga<Koa.ParameterizedContext>({
+    schema: buildSchema(buildSchemaInput),
+    graphiql,
+    landingPage: false,
+    logging: false,
+  });
 
   const jwtVerifier = (() => {
     if (authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
@@ -38,23 +52,27 @@ export const createServer = ({
     return null;
   })();
 
-  app.use(async (ctx) => {
-    const request = {
-      body: ctx.request.body,
-      headers: ctx.headers,
-      method: ctx.method,
-      query: ctx.request.query,
-    };
+  app.use(async (ctx, next) => {
+    /**
+     * Check if the request is for the GraphQL endpoint.
+     * If not, pass it to the next middleware.
+     */
+    if (ctx.path !== '/graphql') {
+      return next();
+    }
 
-    if (
-      request.method !== 'GET' &&
-      request.headers.referer !== 'http://localhost:4000/graphql'
-    ) {
+    const isGraphiqlRequest =
+      ctx.headers.accept?.includes('text/html') && graphiql;
+
+    /**
+     * If the request is not a GraphiQL request, verify the JWT token, else
+     * set Unauthorized status code and return.
+     */
+    if (!isGraphiqlRequest) {
       try {
         if (authenticationType === 'AMAZON_COGNITO_USER_POOLS' && jwtVerifier) {
-          const token = request.headers.authorization?.replace('Bearer ', '');
+          const token = ctx.headers.authorization?.replace('Bearer ', '');
           const identity = await jwtVerifier.verify(token || '');
-
           ctx.identity = identity;
         }
       } catch {
@@ -64,25 +82,16 @@ export const createServer = ({
       }
     }
 
-    //console.log(ctx.identity);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const operationName = request.body;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const query = request.headers;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const variables = request.method;
-
-    const yoga = createYoga<Koa.ParameterizedContext>({
-      schema: buildSchema(buildSchemaInput),
-      logging: false,
-    });
-
     const response = await yoga.handleNodeRequest(ctx.req, ctx);
 
-    // Set status code
+    /**
+     * Set status code
+     */
     ctx.status = response.status;
 
-    // Set headers
+    /**
+     * Set headers
+     */
     for (const [key, value] of response.headers.entries()) {
       if (ctx.status != 401) {
         ctx.append(key, value);

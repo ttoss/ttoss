@@ -1,9 +1,9 @@
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
-import { CreateServerInput, createServer } from '../src/index';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
+import { CreateServerInput, Router, createServer } from '../src/index';
 import { schemaComposer } from './schemaComposer';
 import request from 'supertest';
 
-jest.mock('aws-jwt-verify');
+jest.mock('@ttoss/auth-core/amazon-cognito');
 
 const serverOptions: CreateServerInput = {
   schemaComposer,
@@ -11,6 +11,14 @@ const serverOptions: CreateServerInput = {
 };
 
 const app = createServer(serverOptions);
+
+const route = new Router();
+
+route.get('/test', (ctx) => {
+  ctx.body = 'Test route response';
+});
+
+app.use(route.routes());
 
 describe('GraphQL Server Tests', () => {
   test('should execute a sample query', async () => {
@@ -250,4 +258,14 @@ describe('Amazon Cognito Authentication Tests', () => {
     expect(response.status).toBe(401);
     expect(response.body.data).toEqual(undefined);
   });
+});
+
+test('should export Router', () => {
+  expect(Router).toBeDefined();
+});
+
+test("should handle '/test' route", async () => {
+  const response = await request(app.callback()).get('/test');
+  expect(response.status).toBe(200);
+  expect(response.text).toBe('Test route response');
 });
