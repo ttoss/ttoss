@@ -224,3 +224,114 @@ const ComponentForm = () => {
   // ...
 };
 ```
+
+# @ttoss/forms/multistep
+
+The `@ttoss/forms/multistep` module from the **@ttoss/forms** library provides an efficient and flexible way to create multistep forms in React. This component is ideal for scenarios where filling out a lengthy form needs to be divided into several smaller steps, improving user experience.
+
+## How to Use
+
+To use the `MultistepForm`, you first need to define the steps of the form, each with its own fields, validations, and messages. Here's a basic example of assembling a multistep form:
+
+```tsx
+import React from 'react';
+import { MultistepForm, FormFieldInput, yup } from '@ttoss/forms/multistep';
+
+// Define your steps
+const steps = [
+  {
+    label: 'Step 1',
+    question: 'What is your name?',
+    fields: <FormFieldInput name="name" label="Name" />,
+    schema: yup.object({
+      name: yup.string().required('Name is required'),
+    }),
+  },
+  {
+    label: 'Step 2',
+    question: 'How old are you?',
+    fields: <FormFieldInput type="number" name="age" label="Age" />,
+    defaultValues: {
+      age: 18,
+    },
+    schema: yup.object({
+      age: yup
+        .number()
+        .min(18, 'Min required age is 18')
+        .required('Age is required'),
+    }),
+  },
+  // Add more steps as needed
+];
+
+const MyMultistepForm = () => {
+  return (
+    <MultistepForm
+      // ...other props
+      steps={steps}
+      // submit the full form on submit
+      onSubmit={(data) => console.log(data)}
+    />
+  );
+};
+```
+
+### Customizing Headers
+
+1. **Logo Header:**
+
+```tsx
+const logoHeaderProps = {
+  variant: 'logo',
+  src: 'path-to-your-logo-image',
+  onClose: () => console.log('Close button clicked'),
+};
+```
+
+2. **Titled Header:**
+
+```tsx
+const titledHeaderProps = {
+  variant: 'titled',
+  title: 'Your Title',
+  leftIcon: 'icon-type',
+  rightIcon: 'icon-type',
+  leftIconClick: () => console.log('Left icon clicked'),
+  rightIconClick: () => console.log('Right icon clicked'),
+};
+```
+
+### Props
+
+The `MultistepForm` component accepts the following props:
+
+- `steps`: An array of objects representing each step of the form.
+- `onSubmit`: A function that is called when the form is completely filled and submitted.
+- `footer`: An string with the text to show on form's footer.
+- `header`: [Header Props](#header-props)
+
+Each step can have the following properties:
+
+- `label`: The label of the step (used for navigation).
+- `question`: The question or instruction presented to the user at this step.
+- `fields`: The form fields for this step.
+- `schema`: A `yup` schema for validating the fields at this step.
+- `defaultValues`: An optional object with default values to this step.
+
+### Header-Props
+
+- **For Logo Header (`FormSequenceHeaderLogoProps`):**
+
+  - `variant`: Set to `'logo'`.
+  - `src`: The source URL for the logo image.
+  - `onClose`: A function to handle the close button click event.
+
+- **For Titled Header (`FormSequenceHeaderTitledProps`):**
+  - `variant`: Set to `'titled'`.
+  - `title`: The title text.
+  - `leftIcon` and `rightIcon`: Icon types for left and right icons.
+  - `leftIconClick` and `rightIconClick`: Functions to handle clicks on left and right icons.
+
+## Conclusion
+
+By utilizing the `MultistepForm` from `@ttoss/forms/multistep`, you can create complex, multi-step forms in a simple and efficient manner, significantly improving the form-filling experience for users. With support for integrated validations and style customizations, this tool offers everything you need to implement robust multistep forms in your React applications.
