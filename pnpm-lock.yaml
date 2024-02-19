@@ -74,9 +74,6 @@ importers:
       '@ttoss/layouts':
         specifier: workspace:^
         version: link:../../packages/layouts
-      '@ttoss/multistep-form':
-        specifier: workspace:^
-        version: link:../../packages/multistep-form
       '@ttoss/react-auth':
         specifier: workspace:^
         version: link:../../packages/react-auth
@@ -1019,40 +1016,6 @@ importers:
       '@types/yargs':
         specifier: ^17.0.32
         version: 17.0.32
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
-
-  packages/multistep-form:
-    dependencies:
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../forms
-      '@ttoss/react-hooks':
-        specifier: workspace:^
-        version: link:../react-hooks
-      react:
-        specifier: '>=16.8.0'
-        version: 18.2.0
-    devDependencies:
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
-      '@ttoss/react-icons':
-        specifier: workspace:^
-        version: link:../react-icons
-      '@ttoss/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
-      '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../ui
-      '@types/react':
-        specifier: ^18.2.48
-        version: 18.2.48
-      jest:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@20.10.4)(ts-node@10.9.2)
       tsup:
         specifier: ^8.0.1
         version: 8.0.1(ts-node@10.9.2)(typescript@5.2.2)
