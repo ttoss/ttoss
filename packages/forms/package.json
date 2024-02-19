@@ -10,6 +10,10 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/forms"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./multistep-form": "./src/multistep-form/index.ts"
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
   "files": [
@@ -38,6 +42,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.11",

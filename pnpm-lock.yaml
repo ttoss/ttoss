@@ -721,6 +721,9 @@ importers:
       '@ttoss/react-i18n':
         specifier: workspace:^
         version: link:../react-i18n
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
