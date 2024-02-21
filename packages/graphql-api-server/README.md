@@ -155,3 +155,19 @@ server.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
 ```
+
+## CORS
+
+You can enable CORS by setting the `cors` option. You can check the available options on [@koa/cors package](https://github.com/koajs/cors?tab=readme-ov-file#corsoptions).
+
+```ts
+import { createServer } from '@ttoss/graphql-api-server';
+
+const server = createServer({
+  schemaComposer,
+  cors: {
+    origin: '*',
+    allowMethods: ['GET', 'POST'],
+  },
+});
+```
