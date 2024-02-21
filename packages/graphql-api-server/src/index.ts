@@ -39,6 +39,10 @@ export const createServer = ({
     graphiql,
     landingPage: false,
     logging: false,
+    /**
+     * Disable CORS, as it's handled by Koa middleware
+     */
+    cors: false,
   });
 
   const jwtVerifier = (() => {
