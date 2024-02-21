@@ -838,9 +838,6 @@ importers:
 
   packages/graphql-api-server:
     dependencies:
-      '@koa/cors':
-        specifier: ^5.0.0
-        version: 5.0.0
       '@koa/router':
         specifier: ^12.0.1
         version: 12.0.1
@@ -863,9 +860,6 @@ importers:
       '@types/koa':
         specifier: ^2.14.0
         version: 2.14.0
-      '@types/koa__cors':
-        specifier: ^5.0.0
-        version: 5.0.0
       '@types/koa__router':
         specifier: ^12.0.4
         version: 12.0.4
@@ -6821,13 +6815,6 @@ packages:
     resolution: {integrity: sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==}
     dev: false
 
-  /@koa/cors@5.0.0:
-    resolution: {integrity: sha512-x/iUDjcS90W69PryLDIMgFyV21YLTnG9zOpPXS7Bkt2b8AsY3zZsIpOLBkYr9fBcF3HbkKaER5hOBZLfpLgYNw==}
-    engines: {node: '>= 14.0.0'}
-    dependencies:
-      vary: 1.1.2
-    dev: false
-
   /@koa/router@12.0.1:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
@@ -10267,12 +10254,6 @@ packages:
       '@types/keygrip': 1.0.2
       '@types/koa-compose': 3.2.5
       '@types/node': 20.10.4
-    dev: true
-
-  /@types/koa__cors@5.0.0:
-    resolution: {integrity: sha512-LCk/n25Obq5qlernGOK/2LUwa/2YJb2lxHUkkvYFDOpLXlVI6tKcdfCHRBQnOY4LwH6el5WOLs6PD/a8Uzau6g==}
-    dependencies:
-      '@types/koa': 2.14.0
     dev: true
 
   /@types/koa__router@12.0.4:

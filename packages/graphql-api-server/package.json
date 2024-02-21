@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-server",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "GraphQL API Server",
   "author": "ttoss",
   "contributors": [
@@ -24,7 +24,6 @@
   "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.1",
     "@ttoss/auth-core": "workspace:^",
     "graphql-yoga": "^5.1.1",
@@ -38,7 +37,6 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "@types/koa": "^2.14.0",
-    "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.4",
     "@types/supertest": "^6.0.2",
     "graphql": "^16.8.1",
