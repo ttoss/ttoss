@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Badge, BadgeProps, Flex } from '@ttoss/ui';
 import { ComponentMeta, Story } from '@storybook/react';
 
@@ -7,6 +8,21 @@ export default {
 } as ComponentMeta<typeof Badge>;
 
 const Template: Story<BadgeProps> = (args) => {
+  const [chips, setChips] = React.useState([
+    'Chip 1',
+    'Chip 2',
+    'Chip 3',
+    'Chip 4',
+  ]);
+
+  const handleDelete = (chip: string) => {
+    return setChips((prev) => {
+      return prev.filter((c) => {
+        return c !== chip;
+      });
+    });
+  };
+
   return (
     <Flex
       sx={{
@@ -19,6 +35,21 @@ const Template: Story<BadgeProps> = (args) => {
       <Badge {...args} icon="radio-not-selected">
         Label
       </Badge>
+
+      {chips.map((chip) => {
+        return (
+          <Badge
+            {...args}
+            key={chip}
+            chip
+            onDelete={() => {
+              return handleDelete(chip);
+            }}
+          >
+            {chip}
+          </Badge>
+        );
+      })}
     </Flex>
   );
 };
