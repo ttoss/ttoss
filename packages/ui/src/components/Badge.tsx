@@ -1,9 +1,6 @@
-import {
-  type BadgeProps as BadgePropsUi,
-  Badge as BadgeUi,
-  Text,
-} from 'theme-ui';
+import { type BadgeProps as BadgePropsUi, Badge as BadgeUi } from 'theme-ui';
 import { Icon, IconType } from '@ttoss/react-icons';
+import { Text } from '../components/Text';
 
 export type BadgeProps = BadgePropsUi & {
   icon?: IconType;
