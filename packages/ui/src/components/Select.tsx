@@ -152,7 +152,8 @@ const SelectContainer = ({
   const { sx, css } = props.selectProps as unknown as SelectProps;
 
   return (
-    <Box sx={sx} css={css}>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <Box sx={sx as any} css={css}>
       <components.SelectContainer {...props}>
         {children}
       </components.SelectContainer>

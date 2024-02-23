@@ -12,16 +12,8 @@
     "directory": "packages/theme"
   },
   "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./Bruttal": {
-      "import": "./dist/esm/themes/Bruttal/Bruttal.js",
-      "require": "./dist/themes/Bruttal/Bruttal.js",
-      "types": "./dist/themes/Bruttal/Bruttal.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
   },
   "files": [
     "dist",
@@ -47,12 +39,24 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^29.7.0",
-    "theme-ui": "^0.16.1",
-    "tsup": "^8.0.1"
+    "theme-ui": "^0.16.2",
+    "tsup": "^8.0.2"
   },
   "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./Bruttal": {
+        "import": "./dist/esm/themes/Bruttal/Bruttal.js",
+        "require": "./dist/themes/Bruttal/Bruttal.js",
+        "types": "./dist/themes/Bruttal/Bruttal.d.ts"
+      }
+    },
     "provenance": true
   }
 }

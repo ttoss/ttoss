@@ -24,7 +24,7 @@
   "typings": "dist/index.d.ts",
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [],
   "publishConfig": {

@@ -34,9 +34,9 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.48",
+    "@types/react": "^18.2.58",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "publishConfig": {
     "access": "public",

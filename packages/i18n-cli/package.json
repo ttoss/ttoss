@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "publishConfig": {
     "access": "public",
