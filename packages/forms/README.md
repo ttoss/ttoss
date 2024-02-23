@@ -225,17 +225,18 @@ const ComponentForm = () => {
 };
 ```
 
-## @ttoss/forms/multistep
+## @ttoss/forms/multistep-form
 
-The `@ttoss/forms/multistep` module from the **@ttoss/forms** library provides an efficient and flexible way to create multistep forms in React. This component is ideal for scenarios where filling out a lengthy form needs to be divided into several smaller steps, improving user experience.
+The `@ttoss/forms/multistep-form` module from the **@ttoss/forms** library provides an efficient and flexible way to create multistep forms in React. This component is ideal for scenarios where filling out a lengthy form needs to be divided into several smaller steps, improving user experience. With support for integrated validations and style customizations, this tool offers everything you need to implement robust multistep forms in your React applications.
 
 ### How to Use
 
 To use the `MultistepForm`, you first need to define the steps of the form, each with its own fields, validations, and messages. Here's a basic example of assembling a multistep form:
 
 ```tsx
-import React from 'react';
-import { MultistepForm, FormFieldInput, yup } from '@ttoss/forms/multistep';
+import * as React from 'react';
+import { FormFieldInput, yup } from '@ttoss/forms';
+import { MultistepForm } from '@ttoss/forms/multistep-form';
 
 // Define your steps
 const steps = [
@@ -295,17 +296,17 @@ Each step can have the following properties:
 
 #### Header-Props
 
-- **For Logo Header (`FormSequenceHeaderLogoProps`):**
+- **For Logo Header (`MultistepFormHeaderLogoProps`):**
 
   - `variant`: Set to `'logo'`.
   - `src`: The source URL for the logo image.
   - `onClose`: A function to handle the close button click event.
 
-- **For Titled Header (`FormSequenceHeaderTitledProps`):**
+- **For Titled Header (`MultistepFormTitledProps`):**
   - `variant`: Set to `'titled'`.
   - `title`: The title text.
   - `leftIcon` and `rightIcon`: Icon types for left and right icons.
-  - `leftIconClick` and `rightIconClick`: Functions to handle clicks on left and right icons.
+  - `onLeftIconClick` and `onRightIconClick`: Functions to handle clicks on left and right icons.
 
 #### Customizing Headers
 
@@ -327,11 +328,7 @@ const titledHeaderProps = {
   title: 'Your Title',
   leftIcon: 'icon-type',
   rightIcon: 'icon-type',
-  leftIconClick: () => console.log('Left icon clicked'),
-  rightIconClick: () => console.log('Right icon clicked'),
+  onLeftIconClick: () => console.log('Left icon clicked'),
+  onRightIconClick: () => console.log('Right icon clicked'),
 };
 ```
-
-## Conclusion
-
-By utilizing the `MultistepForm` from `@ttoss/forms/multistep`, you can create complex, multi-step forms in a simple and efficient manner, significantly improving the form-filling experience for users. With support for integrated validations and style customizations, this tool offers everything you need to implement robust multistep forms in your React applications.
