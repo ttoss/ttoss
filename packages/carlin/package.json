@@ -13,9 +13,6 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "bin": {
     "carlin": "./bin/carlin"
   },

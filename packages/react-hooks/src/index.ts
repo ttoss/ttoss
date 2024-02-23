@@ -1,2 +1,2 @@
-export { useScript, ScriptStatus } from './useScript';
+export { useScript, type ScriptStatus } from './useScript';
 export { useDebounce } from './useDebounce';

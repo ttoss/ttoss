@@ -4,7 +4,7 @@
   "pipeline": {
     "//#build:config": {
       "dependsOn": [],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "//#lint": {
       "dependsOn": ["//#build:config"],
@@ -15,11 +15,11 @@
       "outputs": []
     },
     "i18n": {
-      "dependsOn": ["//#lint"],
+      "dependsOn": ["//#lint", "^build"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["//#lint", "//#syncpack:list", "i18n"],
+      "dependsOn": ["//#lint", "//#syncpack:list", "^build", "i18n"],
       "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
     },
     "test": {
@@ -33,7 +33,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["i18n", "build", "test", "^deploy"],
+      "dependsOn": ["i18n", "carlin#build", "build", "test", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }

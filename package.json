@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "build:config": "pnpm run --filter=@ttoss/config build && pnpm i",
+    "build:config": "pnpm run --filter=@ttoss/config build",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet --no-stash",
     "monorepo:update": "ttoss-monorepo setup",

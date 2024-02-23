@@ -251,15 +251,15 @@ importers:
         specifier: workspace:^
         version: link:../cloudformation
     devDependencies:
+      '@ttoss/auth-core':
+        specifier: workspace:^
+        version: link:../auth-core
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../graphql-api
-      '@ttoss/relay-amplify':
-        specifier: workspace:^
-        version: link:../relay-amplify
       '@types/aws-lambda':
         specifier: ^8.10.130
         version: 8.10.130
