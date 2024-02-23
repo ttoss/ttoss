@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/cloud-roles"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -21,7 +22,6 @@
     "build": "tsup",
     "test": "jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@ttoss/cloudformation": "workspace:^"
   },
@@ -35,6 +35,13 @@
   "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

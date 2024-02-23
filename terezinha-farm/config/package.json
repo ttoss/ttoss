@@ -2,12 +2,12 @@
   "private": true,
   "name": "@terezinha-farm/config",
   "version": "0.4.4",
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsup"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "dotenv": "^16.3.1"
   },

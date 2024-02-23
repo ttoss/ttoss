@@ -11,8 +11,13 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/config"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "src",
@@ -23,7 +28,6 @@
     "build": "tsup-node",
     "test": "jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",

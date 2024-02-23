@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/landing-pages"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -22,7 +23,6 @@
     "dev": "pnpm workspace @docs/storybook run dev",
     "test": "echo jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@iconify/react": "^4.1.1",
     "react-collapse": "^5.1.1"
@@ -49,6 +49,13 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   },
   "gitHead": "e2b509ee8717f07f7365191b651dcbb5f080e05a"

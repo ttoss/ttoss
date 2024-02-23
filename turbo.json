@@ -15,15 +15,15 @@
       "outputs": []
     },
     "i18n": {
-      "dependsOn": ["//#lint", "^build"],
+      "dependsOn": ["//#lint"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["//#lint", "//#syncpack:list", "i18n", "^build"],
+      "dependsOn": ["//#lint", "//#syncpack:list", "i18n"],
       "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["i18n"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -33,7 +33,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["build", "^deploy"],
+      "dependsOn": ["i18n", "build", "test", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }

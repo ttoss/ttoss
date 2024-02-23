@@ -12,21 +12,9 @@
     "directory": "packages/test-utils"
   },
   "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./faker": {
-      "import": "./dist/esm/faker.js",
-      "require": "./dist/faker.js",
-      "types": "./dist/faker.d.ts"
-    },
-    "./relay": {
-      "import": "./dist/esm/relay.js",
-      "require": "./dist/relay.js",
-      "types": "./dist/relay.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./faker": "./src/faker.ts",
+    "./relay": "./src/relay.ts"
   },
   "files": [
     "dist",
@@ -36,7 +24,6 @@
     "build": "tsup",
     "test": "jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/jest": "^11.11.0",
     "@faker-js/faker": "^8.3.1",
@@ -73,19 +60,23 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./faker": {
+        "import": "./dist/esm/faker.js",
+        "require": "./dist/faker.js",
+        "types": "./dist/faker.d.ts"
+      },
+      "./relay": {
+        "import": "./dist/esm/relay.js",
+        "require": "./dist/relay.js",
+        "types": "./dist/relay.d.ts"
+      }
+    },
     "provenance": true
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "faker": [
-        "./dist/faker.d.ts"
-      ],
-      "relay": [
-        "./dist/relay.d.ts"
-      ]
-    }
   }
 }

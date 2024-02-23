@@ -11,7 +11,10 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/eslint-config"
   },
-  "main": "index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./next": "./src/next.js"
+  },
   "files": [
     "config.js",
     "next.js"
