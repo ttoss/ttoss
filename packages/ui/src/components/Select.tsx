@@ -117,8 +117,6 @@ const DropdownIndicator = (
 
 const IndicatorsContainer = ({
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ...props
 }: IndicatorsContainerProps<SelectOption, IsMulti>) => {
   return (
     <Box
