@@ -1,22 +1,22 @@
 import { CloseButton, Flex, Image, Text } from '@ttoss/ui';
 import { Icon, type IconType } from '@ttoss/react-icons';
 
-type HeaderTitledProps = {
+type MultistepHeaderTitledProps = {
   variant: 'titled';
   title: string;
   leftIcon: IconType;
   rightIcon: IconType;
-  leftIconClick: () => void;
-  rightIconClick: () => void;
+  onLeftIconClick: () => void;
+  onRightIconClick: () => void;
 };
 
-const HeaderTitled = ({
+const MultistepHeaderTitled = ({
   title,
   leftIcon,
-  leftIconClick,
+  onLeftIconClick,
   rightIcon,
-  rightIconClick,
-}: HeaderTitledProps) => {
+  onRightIconClick,
+}: MultistepHeaderTitledProps) => {
   return (
     <Flex
       sx={{
@@ -27,20 +27,20 @@ const HeaderTitled = ({
         alignItems: 'center',
       }}
     >
-      <Icon icon={leftIcon} onClick={leftIconClick} />
+      <Icon icon={leftIcon} onClick={onLeftIconClick} />
       <Text sx={{ fontWeight: 'bold', fontSize: 'lg' }}>{title}</Text>
-      <Icon icon={rightIcon} onClick={rightIconClick} />
+      <Icon icon={rightIcon} onClick={onRightIconClick} />
     </Flex>
   );
 };
 
-type HeaderLogoProps = {
+type MultistepHeaderLogoProps = {
   variant: 'logo';
   src: string;
   onClose?: () => void;
 };
 
-const HeaderLogo = ({ onClose, src }: HeaderLogoProps) => {
+const MultistepHeaderLogo = ({ onClose, src }: MultistepHeaderLogoProps) => {
   return (
     <Flex
       sx={{
@@ -61,15 +61,17 @@ const HeaderLogo = ({ onClose, src }: HeaderLogoProps) => {
   );
 };
 
-export type HeaderProps = HeaderLogoProps | HeaderTitledProps;
+export type MultistepHeaderProps =
+  | MultistepHeaderLogoProps
+  | MultistepHeaderTitledProps;
 
-export const Header = (props: HeaderProps) => {
+export const MultistepHeader = (props: MultistepHeaderProps) => {
   if (props.variant === 'logo') {
-    return <HeaderLogo {...props} />;
+    return <MultistepHeaderLogo {...props} />;
   }
 
   if (props.variant === 'titled') {
-    return <HeaderTitled {...props} />;
+    return <MultistepHeaderTitled {...props} />;
   }
 
   return null;

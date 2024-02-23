@@ -1,6 +1,6 @@
 import { Flex, Text } from '@ttoss/ui';
 
-export const Footer = ({ footer }: { footer: string }) => {
+export const MultistepFooter = ({ footer }: { footer: string }) => {
   return (
     <Flex sx={{ display: 'flex', justifyContent: 'center' }}>
       <Text

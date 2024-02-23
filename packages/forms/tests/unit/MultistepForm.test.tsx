@@ -1,8 +1,8 @@
-import { FormFieldInput, yup } from '@ttoss/forms';
+import { FormFieldInput, yup } from '../../src';
 import {
   MultistepForm,
   type MultistepFormProps,
-} from '../../src/multistep-form';
+} from '../../src/MultistepForm';
 import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 
 const HEADERS = {
@@ -11,8 +11,8 @@ const HEADERS = {
     title: 'title',
     leftIcon: 'arrowLeft',
     rightIcon: 'arrowRight',
-    leftIconClick: jest.fn(),
-    rightIconClick: jest.fn(),
+    onLeftIconClick: jest.fn(),
+    onRightIconClick: jest.fn(),
   },
   logo: {
     variant: 'logo' as const,

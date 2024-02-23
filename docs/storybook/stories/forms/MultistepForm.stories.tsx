@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryObj } from '@storybook/react';
-
 import {
   Flex,
   Grid,
@@ -20,6 +17,8 @@ import {
   yup,
 } from '@ttoss/forms';
 import { MultistepForm, MultistepFormProps } from '@ttoss/forms/multistep-form';
+import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
 
 const sxLinks: ThemeUIStyleObject = {
   cursor: 'pointer',
@@ -316,8 +315,8 @@ export const HeaderTitled: Story = {
       title: 'Teste',
       leftIcon: 'radio-not-selected',
       rightIcon: 'radio-not-selected',
-      leftIconClick: action('leftIconClick'),
-      rightIconClick: action('rightIconClick'),
+      onLeftIconClick: action('leftIconClick'),
+      onRightIconClick: action('rightIconClick'),
     },
     steps,
     onSubmit: action('onSubmit'),

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Flex } from '@ttoss/ui';
-import { Footer } from './Footer';
-import { Header, type HeaderProps } from './Header';
 import { MultistepFlowMessageProps } from './MultistepFlowMessage';
+import { MultistepFooter } from './MultistepFooter';
 import {
   MultistepFormStepper,
   type MultistepFormStepperProps,
 } from './MultistepFormStepper';
-import { Navigation } from './Navigation';
+import { MultistepHeader, type MultistepHeaderProps } from './MultistepHeader';
+import { MultistepNavigation } from './MultistepNavigation';
 
 export type MultistepStep = {
   question: string;
@@ -19,7 +19,7 @@ export type MultistepStep = {
 };
 
 export type MultistepFormProps<FormValues = unknown> = {
-  header: HeaderProps;
+  header: MultistepHeaderProps;
   steps: MultistepStep[];
   footer?: string;
   onSubmit: (data: FormValues) => void;
@@ -62,7 +62,7 @@ export const MultistepForm = ({
         background: '#fff',
       }}
     >
-      <Header {...props.header} />
+      <MultistepHeader {...props.header} />
       {props.steps.map((step, stepIndex) => {
         const isLastStep = stepIndex + 1 === amountOfSteps;
         const isCurrentStep = stepIndex + 1 === currentStep;
@@ -101,7 +101,7 @@ export const MultistepForm = ({
       })}
 
       {currentStep > 1 && (
-        <Navigation
+        <MultistepNavigation
           amountOfSteps={amountOfSteps}
           currentStepNumber={currentStep}
           onBack={backStep}
@@ -111,7 +111,7 @@ export const MultistepForm = ({
         />
       )}
 
-      {props.footer && <Footer footer={props.footer} />}
+      {props.footer && <MultistepFooter footer={props.footer} />}
     </Flex>
   );
 };

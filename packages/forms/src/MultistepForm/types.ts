@@ -5,9 +5,3 @@ export type MultistepFlowMessageVariant =
 export type MultistepFlowMessageBase = {
   variant: MultistepFlowMessageVariant;
 };
-
-type MultistepHeaderVariant = 'logo' | 'titled';
-
-export type BaseMultistepHeaderProps = {
-  variant: MultistepHeaderVariant;
-};
