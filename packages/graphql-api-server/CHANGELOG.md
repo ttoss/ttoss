@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.3...@ttoss/graphql-api-server@0.5.4) (2024-02-21)
+
+### Bug Fixes
+
+- double cors handling ([#490](https://github.com/ttoss/ttoss/issues/490)) ([e9c7660](https://github.com/ttoss/ttoss/commit/e9c766073bd5013efb1d2c2ecf818a904a963357))
+
+## [0.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.2...@ttoss/graphql-api-server@0.5.3) (2024-02-21)
+
+### Bug Fixes
+
+- issue 487 ([#488](https://github.com/ttoss/ttoss/issues/488)) ([4c0dbd4](https://github.com/ttoss/ttoss/commit/4c0dbd4322d07eed2fec9ec9ce78f41c0a5f2c81))
+
 ## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.1...@ttoss/graphql-api-server@0.5.2) (2024-02-16)
 
 ### Bug Fixes

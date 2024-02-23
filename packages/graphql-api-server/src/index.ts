@@ -3,6 +3,7 @@ import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { createYoga } from 'graphql-yoga';
 import Koa from 'koa';
 import Router from '@koa/router';
+import cors from '@koa/cors';
 
 export { Router };
 
@@ -16,15 +17,19 @@ export type CreateServerInput = {
     tokenUse?: 'access' | 'id';
     clientId: string;
   };
+  cors?: cors.Options;
 } & BuildSchemaInput;
 
 export const createServer = ({
   authenticationType,
   userPoolConfig,
   graphiql,
+  cors: corsOptions,
   ...buildSchemaInput
 }: CreateServerInput): Koa => {
   const app = new Koa();
+
+  app.use(cors(corsOptions));
 
   /**
    * https://the-guild.dev/graphql/yoga-server/docs/integrations/integration-with-koa
@@ -34,6 +39,10 @@ export const createServer = ({
     graphiql,
     landingPage: false,
     logging: false,
+    /**
+     * Disable CORS, as it's handled by Koa middleware
+     */
+    cors: false,
   });
 
   const jwtVerifier = (() => {
