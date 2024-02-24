@@ -1,4 +1,4 @@
-import { Box, Stack } from '@ttoss/ui/src';
+import { Box, Stack } from '@ttoss/ui';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Stack> = {

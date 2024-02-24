@@ -1,4 +1,4 @@
-import { Label } from '@ttoss/ui/src';
+import { Label } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 

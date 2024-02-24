@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui/src';
+import { Button, Flex } from '@ttoss/ui';
 import {
   Form,
   FormFieldPatternFormat,

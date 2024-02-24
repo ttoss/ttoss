@@ -12,16 +12,8 @@
     "directory": "packages/auth-core"
   },
   "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./amazon-cognito": {
-      "import": "./dist/esm/AmazonCognito/index.js",
-      "require": "./dist/AmazonCognito/index.js",
-      "types": "./dist/AmazonCognito/index.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./amazon-cognito": "./src/AmazonCognito/index.ts"
   },
   "files": [
     "dist",
@@ -38,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "auth",
@@ -48,6 +40,18 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./amazon-cognito": {
+        "import": "./dist/esm/AmazonCognito/index.js",
+        "require": "./dist/AmazonCognito/index.js",
+        "types": "./dist/AmazonCognito/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

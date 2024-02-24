@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui/src';
+import { Button } from '@ttoss/ui';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 

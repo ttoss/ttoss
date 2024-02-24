@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Flex,
-  Grid,
-  Label,
-  Select,
-  Slider,
-  Text,
-  useTheme,
-} from '@ttoss/ui/src';
+import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
 import { Icon, type IconType, addIcon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
 

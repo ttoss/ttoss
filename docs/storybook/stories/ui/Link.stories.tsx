@@ -1,4 +1,4 @@
-import { Link } from '@ttoss/ui/src';
+import { Link } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 
 type Story = StoryObj<typeof Link>;

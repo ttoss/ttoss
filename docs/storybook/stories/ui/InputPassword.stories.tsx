@@ -1,4 +1,4 @@
-import { InputPassword } from '@ttoss/ui/src';
+import { InputPassword } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 

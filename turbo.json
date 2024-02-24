@@ -4,7 +4,7 @@
   "pipeline": {
     "//#build:config": {
       "dependsOn": [],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "//#lint": {
       "dependsOn": ["//#build:config"],
@@ -14,16 +14,20 @@
       "dependsOn": ["//#build:config"],
       "outputs": []
     },
+    "topo": {
+      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"],
+      "outputs": []
+    },
     "i18n": {
-      "dependsOn": ["//#lint", "^build"],
+      "dependsOn": ["topo", "^build"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["//#lint", "//#syncpack:list", "i18n", "^build"],
-      "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
+      "dependsOn": ["topo", "i18n"],
+      "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["topo", "i18n"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -33,7 +37,15 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["build", "^deploy"],
+      "dependsOn": [
+        "topo",
+        "i18n",
+        "build",
+        "test",
+        "carlin#build",
+        "carlin#test",
+        "^deploy"
+      ],
       "outputs": [".carlin/**"]
     }
   }

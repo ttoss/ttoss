@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui/src';
+import { Button } from '@ttoss/ui';
 import {
   Form,
   FormFieldCurrencyInput,

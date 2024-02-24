@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Flex, Heading } from '@ttoss/ui';
-import { Label, Select, useTheme } from '@ttoss/ui/src';
+import { Label, Select, useTheme } from '@ttoss/ui';
 import { Meta, StoryFn } from '@storybook/react';
 
 export default {

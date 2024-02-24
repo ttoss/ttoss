@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { type GraphQLObjectType } from 'graphql';
-import { decodeCredentials } from '@ttoss/relay-amplify/src/encodeCredentials';
+import { decode } from '@ttoss/auth-core';
 import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
 
 export type AppSyncResolverHandler<
@@ -29,7 +29,7 @@ export const createAppSyncResolverHandler = ({
         return null;
       }
 
-      return decodeCredentials(headersCredentials);
+      return decode(headersCredentials);
     })();
 
     const schema = buildSchema(buildSchemaInput);

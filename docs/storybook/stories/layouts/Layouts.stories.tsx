@@ -1,4 +1,4 @@
-import { Layout, StackedLayout } from '@ttoss/layouts/src';
+import { Layout, StackedLayout } from '@ttoss/layouts';
 import { Meta, StoryObj } from '@storybook/react';
 
 type Story = StoryObj<typeof Layout>;

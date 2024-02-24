@@ -1,4 +1,4 @@
-import { Label, Radio, RadioProps } from '@ttoss/ui/src';
+import { Label, Radio, RadioProps } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 
 type Story = StoryObj<typeof Radio>;

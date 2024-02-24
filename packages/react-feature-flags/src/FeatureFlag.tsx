@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useFeatureFlag } from './useFeatureFlag';
 
 export interface FeatureFlagProps {
-  name: string;
+  name: FeatureFlags;
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
