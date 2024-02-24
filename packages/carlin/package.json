@@ -21,7 +21,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup --splitting",
     "test": "jest"
   },
   "dependencies": {
