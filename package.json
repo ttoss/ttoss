@@ -21,7 +21,7 @@
     "lint": "lint-staged --diff main --quiet --no-stash",
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
-    "storybook": "pnpm --filter @ttoss/storybook run storybook",
+    "storybook": "pnpm --filter @docs/storybook run storybook",
     "syncpack:fix": "syncpack fix-mismatches",
     "syncpack:list": "syncpack list-mismatches"
   },
