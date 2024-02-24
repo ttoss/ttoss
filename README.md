@@ -11,7 +11,7 @@ The "hello world" of this repository is running [ttoss Storybook](https://storyb
    pnpm install
    ```
 
-1. Build [config package](https://ttoss.dev/docs/modules/packages/config/)
+1. Build [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/)
 
    ```sh
    pnpm build:config
@@ -26,6 +26,10 @@ The "hello world" of this repository is running [ttoss Storybook](https://storyb
 If everything goes well, you should see the Storybook running in your browser.
 
 ## FAQ
+
+### Why doesn't packages/config have a `build` script?
+
+It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The others packages uses [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because the other packages would try to use `@ttoss/config` package before it was built.
 
 ### Do I need to build packages before importing them?
 

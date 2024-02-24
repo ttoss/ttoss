@@ -337,9 +337,6 @@ importers:
       '@slack/webhook':
         specifier: ^7.0.1
         version: 7.0.1
-      '@ttoss/cloudformation':
-        specifier: workspace:^
-        version: link:../cloudformation
       adm-zip:
         specifier: ^0.5.10
         version: 0.5.10
@@ -401,6 +398,9 @@ importers:
         specifier: ^17.7.2
         version: 17.7.2
     devDependencies:
+      '@ttoss/cloudformation':
+        specifier: workspace:^
+        version: link:../cloudformation
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
@@ -446,6 +446,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.11.20)(ts-node@10.9.2)
+      tsup:
+        specifier: ^8.0.2
+        version: 8.0.2(ts-node@10.9.2)(typescript@5.2.2)
       typescript:
         specifier: ~5.2.2
         version: 5.2.2

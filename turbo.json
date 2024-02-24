@@ -24,7 +24,7 @@
     },
     "build": {
       "dependsOn": ["topo", "i18n"],
-      "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
+      "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {
       "dependsOn": ["topo", "i18n"],
@@ -37,7 +37,15 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["i18n", "build", "test", "carlin#build", "^deploy"],
+      "dependsOn": [
+        "topo",
+        "i18n",
+        "build",
+        "test",
+        "carlin#build",
+        "carlin#test",
+        "^deploy"
+      ],
       "outputs": [".carlin/**"]
     }
   }
