@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "ts-node": "^10.9.2",
     "tsup": "^8.0.2"
   },
   "publishConfig": {

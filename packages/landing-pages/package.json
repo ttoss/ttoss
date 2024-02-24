@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "pnpm workspace @docs/storybook run dev",
+    "dev": "pnpm --filter @docs/storybook run dev",
     "test": "echo jest"
   },
   "dependencies": {

@@ -16,15 +16,14 @@
     "url": "https://github.com/ttoss/ttoss/issues"
   },
   "scripts": {
-    "build": "turbo run build",
-    "build:config": "pnpm run --filter=@ttoss/config build",
+    "build:config": "pnpm --filter @ttoss/config run build:config",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet --no-stash",
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
+    "storybook": "pnpm --filter @ttoss/storybook run storybook",
     "syncpack:fix": "syncpack fix-mismatches",
-    "syncpack:list": "syncpack list-mismatches",
-    "test": "turbo run test"
+    "syncpack:list": "syncpack list-mismatches"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",

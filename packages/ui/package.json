@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "dev": "pnpm --filter @docs/storybook run dev",
     "test": "jest"
   },
   "sideEffects": false,

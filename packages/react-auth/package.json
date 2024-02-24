@@ -23,7 +23,7 @@
   "scripts": {
     "build": "tsup",
     "i18n": "ttoss-i18n",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "jest"
   },
   "sideEffects": false,
   "dependencies": {

@@ -14,16 +14,20 @@
       "dependsOn": ["//#build:config"],
       "outputs": []
     },
+    "topo": {
+      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"],
+      "outputs": []
+    },
     "i18n": {
-      "dependsOn": ["//#lint", "^build"],
+      "dependsOn": ["topo", "^build"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["//#lint", "//#syncpack:list", "^build", "i18n"],
+      "dependsOn": ["topo", "i18n"],
       "outputs": ["build/**", "dist/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["i18n"],
+      "dependsOn": ["topo", "i18n"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -33,7 +37,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["i18n", "carlin#build", "build", "test", "^deploy"],
+      "dependsOn": ["i18n", "build", "test", "carlin#build", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }
