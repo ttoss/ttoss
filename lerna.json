@@ -16,5 +16,10 @@
     }
   },
   "ignoreChanges": ["**/__fixtures__/**", "**/tests/**", "**/*.md"],
-  "packages": ["docs/*", "packages/*", "terezinha-farm/*"]
+  "packages": [
+    "challenge/packages/*",
+    "docs/*",
+    "packages/*",
+    "terezinha-farm/*"
+  ]
 }

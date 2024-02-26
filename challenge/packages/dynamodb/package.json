@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "@ttoss-challenge/dynamodb",
+  "version": "0.1.0",
+  "scripts": {
+    "challenge-deploy": "carlin deploy"
+  },
+  "dependencies": {
+    "carlin": "workspace:^"
+  }
+}
