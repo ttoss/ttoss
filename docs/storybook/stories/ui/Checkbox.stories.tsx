@@ -13,6 +13,13 @@ const Template: Story<CheckboxProps> = (args) => {
 
 export const Example = Template.bind({});
 
+export const ExampleIndeterminated = Template.bind({});
+
+ExampleIndeterminated.args = {
+  disabled: false,
+  checked: false,
+};
+
 export const ExampleDisabled = Template.bind({});
 
 ExampleDisabled.args = {
