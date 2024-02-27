@@ -4,18 +4,36 @@ import {
   CheckboxProps as CheckboxPropsUi,
 } from 'theme-ui';
 
-export interface CheckboxProps extends CheckboxPropsUi {
+export interface CheckboxProps extends Omit<CheckboxPropsUi, 'onChange'> {
   indeterminate?: boolean;
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    indeterminate: boolean
+  ) => void;
 }
 
-export const Checkbox = ({ indeterminate = false, ...rest }: CheckboxProps) => {
+export const Checkbox = ({
+  indeterminate = false,
+  onChange,
+  ...rest
+}: CheckboxProps) => {
   const ref = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (ref.current) {
-      ref.current.indeterminate = !rest.checked && indeterminate;
+      ref.current.indeterminate = indeterminate;
     }
-  }, [ref, indeterminate, rest.checked]);
+  }, [indeterminate]);
 
-  return <CheckBoxUi ref={ref} {...rest} />;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    const newState = target.checked;
+    const newIndeterminate = newState ? false : indeterminate;
+
+    if (onChange) {
+      onChange(event, newIndeterminate);
+    }
+  };
+
+  return <CheckBoxUi ref={ref} onChange={handleChange} {...rest} />;
 };
