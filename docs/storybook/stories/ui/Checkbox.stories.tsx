@@ -16,8 +16,7 @@ export const Example = Template.bind({});
 export const ExampleIndeterminated = Template.bind({});
 
 ExampleIndeterminated.args = {
-  disabled: false,
-  checked: false,
+  indeterminate: true,
 };
 
 export const ExampleDisabled = Template.bind({});

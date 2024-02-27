@@ -6,39 +6,16 @@ import {
 
 export interface CheckboxProps extends CheckboxPropsUi {
   indeterminate?: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string;
 }
 
-export const Checkbox: React.FC<CheckboxProps> = ({
-  indeterminate = false,
-  className = '',
-  onChange,
-  checked,
-  ...rest
-}) => {
+export const Checkbox = ({ indeterminate = false, ...rest }: CheckboxProps) => {
   const ref = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (ref.current) {
-      ref.current.indeterminate = indeterminate;
+      ref.current.indeterminate = !rest.checked && indeterminate;
     }
-  }, [indeterminate]);
+  }, [ref, indeterminate, rest.checked]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (onChange) {
-      onChange(event);
-    }
-  };
-
-  return (
-    <CheckBoxUi
-      type="checkbox"
-      ref={ref}
-      onChange={handleChange}
-      checked={checked}
-      className={className + ' cursor-pointer'}
-      {...rest}
-    />
-  );
+  return <CheckBoxUi ref={ref} {...rest} />;
 };
