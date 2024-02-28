@@ -54,11 +54,50 @@ importers:
         specifier: ~5.2.2
         version: 5.2.2
 
-  challenge/packages/dynamodb:
+  challenge/packages/app-vite-with-graphql-api:
+    dependencies:
+      '@ttoss/layouts':
+        specifier: workspace:^
+        version: link:../../../packages/layouts
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../../../packages/react-icons
+      '@ttoss/ui':
+        specifier: workspace:^
+        version: link:../../../packages/ui
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../../../packages/config
+      '@types/react':
+        specifier: ^18.2.58
+        version: 18.2.58
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      '@vitejs/plugin-react':
+        specifier: ^4.2.1
+        version: 4.2.1(vite@5.1.4)
+      typescript:
+        specifier: ~5.2.2
+        version: 5.2.2
+      vite:
+        specifier: ^5.1.4
+        version: 5.1.4(@types/node@20.11.20)
+
+  challenge/packages/db-dynamodb:
     dependencies:
       carlin:
         specifier: workspace:^
         version: link:../../../packages/carlin
+
+  challenge/packages/seed: {}
 
   docs/storybook:
     dependencies:
@@ -1493,8 +1532,8 @@ importers:
         specifier: ^18.2.58
         version: 18.2.58
       '@types/react-dom':
-        specifier: ^18.2.17
-        version: 18.2.17
+        specifier: ^18.2.19
+        version: 18.2.19
       typescript:
         specifier: ~5.2.2
         version: 5.2.2
@@ -1542,7 +1581,7 @@ importers:
         version: 16.1.0
       vite-plugin-relay:
         specifier: ^2.0.0
-        version: 2.0.0(babel-plugin-relay@16.1.0)(vite@5.0.3)
+        version: 2.0.0(babel-plugin-relay@16.1.0)(vite@5.1.4)
     devDependencies:
       '@terezinha-farm/api':
         specifier: workspace:^
@@ -1560,8 +1599,8 @@ importers:
         specifier: ^18.2.58
         version: 18.2.58
       '@types/react-dom':
-        specifier: ^18.2.17
-        version: 18.2.17
+        specifier: ^18.2.19
+        version: 18.2.19
       '@types/react-relay':
         specifier: ^16.0.5
         version: 16.0.5
@@ -1569,8 +1608,8 @@ importers:
         specifier: ^14.1.19
         version: 14.1.19
       '@vitejs/plugin-react':
-        specifier: ^4.2.0
-        version: 4.2.0(vite@5.0.3)
+        specifier: ^4.2.1
+        version: 4.2.1(vite@5.1.4)
       carlin:
         specifier: workspace:^
         version: link:../../packages/carlin
@@ -1587,8 +1626,8 @@ importers:
         specifier: ~5.2.2
         version: 5.2.2
       vite:
-        specifier: ^5.0.3
-        version: 5.0.3(@types/node@20.11.20)
+        specifier: ^5.1.4
+        version: 5.1.4(@types/node@20.11.20)
 
 packages:
 
@@ -5056,7 +5095,7 @@ packages:
       '@docusaurus/react-loadable': 5.5.2(react@18.2.0)
       '@docusaurus/types': 3.1.1(react-dom@18.2.0)(react@18.2.0)
       '@types/history': 4.7.11
-      '@types/react': 18.2.48
+      '@types/react': 18.2.58
       '@types/react-router-config': 5.0.7
       '@types/react-router-dom': 5.3.3
       react: 18.2.0
@@ -5605,7 +5644,7 @@ packages:
     dependencies:
       '@mdx-js/mdx': 3.0.0
       '@types/history': 4.7.11
-      '@types/react': 18.2.48
+      '@types/react': 18.2.58
       commander: 5.1.0
       joi: 17.11.0
       react: 18.2.0
@@ -10308,7 +10347,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.4
       '@testing-library/dom': 9.3.3
-      '@types/react-dom': 18.2.17
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -10913,8 +10952,8 @@ packages:
       '@types/react': 18.2.58
     dev: true
 
-  /@types/react-dom@18.2.17:
-    resolution: {integrity: sha512-rvrT/M7Df5eykWFxn6MYt5Pem/Dbyc1N8Y0S9Mrkw2WFCRiqUgw9P7ul2NpwsXCSM1DVdENzdG9J5SreqfAIWg==}
+  /@types/react-dom@18.2.19:
+    resolution: {integrity: sha512-aZvQL6uUbIJpjZk4U8JZGbau9KDeAwMfmhyWorxgBkqDIEf6ROjRozcmPIicqsUwPUjbkDfHKgGee1Lq65APcA==}
     dependencies:
       '@types/react': 18.2.58
 
@@ -10958,13 +10997,6 @@ packages:
     dependencies:
       '@types/react': 18.2.58
     dev: false
-
-  /@types/react@18.2.48:
-    resolution: {integrity: sha512-qboRCl6Ie70DQQG9hhNREz81jqC1cs9EVNcjQ1AU+jH6NFfSAhVVbrrY/+nSF+Bsk4AOwm9Qa61InvMCyV+H3w==}
-    dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.3
-      csstype: 3.1.2
 
   /@types/react@18.2.58:
     resolution: {integrity: sha512-TaGvMNhxvG2Q0K0aYxiKfNDS5m5ZsoIBBbtfUorxdH4NGSXIlYvZxLJI+9Dd3KjeB3780bciLyAb7ylO8pLhPw==}
@@ -11594,8 +11626,8 @@ packages:
       ts-morph: 12.0.0
     dev: false
 
-  /@vitejs/plugin-react@4.2.0(vite@5.0.3):
-    resolution: {integrity: sha512-+MHTH/e6H12kRp5HUkzOGqPMksezRMmW+TNzlh/QXfI8rRf6l2Z2yH/v12no1UvTwhZgEDMuQ7g7rrfMseU6FQ==}
+  /@vitejs/plugin-react@4.2.1(vite@5.1.4):
+    resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
@@ -11605,7 +11637,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.9)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 5.0.3(@types/node@20.11.20)
+      vite: 5.1.4(@types/node@20.11.20)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -20904,6 +20936,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  /nanoid@3.3.7:
+    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -22218,6 +22255,14 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
+      picocolors: 1.0.0
+      source-map-js: 1.0.2
+
+  /postcss@8.4.35:
+    resolution: {integrity: sha512-u5U8qYpBCpN13BsiEB0CbR1Hhh4Gc0zLFuedrHJKMctHCHAGrMdG0PRM/KErzAL3CU6/eckEtmHNB3x6e3c0vA==}
+    engines: {node: ^10 || ^12 || >=14}
+    dependencies:
+      nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
@@ -26011,7 +26056,7 @@ packages:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  /vite-plugin-relay@2.0.0(babel-plugin-relay@16.1.0)(vite@5.0.3):
+  /vite-plugin-relay@2.0.0(babel-plugin-relay@16.1.0)(vite@5.1.4):
     resolution: {integrity: sha512-xiNFD+XY6JcLwwQXmb+PQYeNCAUbvyKnH5aYYQsj+5SxNg28Ss4bGaJ5REmK5MMFdF8NgmYp/N95NKidoVgegg==}
     peerDependencies:
       babel-plugin-relay: ^14.1.0
@@ -26019,13 +26064,13 @@ packages:
     dependencies:
       '@babel/core': 7.23.9
       babel-plugin-relay: 16.1.0
-      vite: 5.0.3(@types/node@20.11.20)
+      vite: 5.1.4(@types/node@20.11.20)
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /vite@5.0.3(@types/node@20.11.20):
-    resolution: {integrity: sha512-WgEq8WEKpZ8c0DL4M1+E+kBZEJyjBmGVrul6z8Ljfhv+PPbNF4aGq014DwNYxGz2FGq6NKL0N8usdiESWd2l2w==}
+  /vite@5.1.4(@types/node@20.11.20):
+    resolution: {integrity: sha512-n+MPqzq+d9nMVTKyewqw6kSt+R3CkvF9QAKY8obiQn8g1fwTscKxyfaYnC632HtBXAQGc1Yjomphwn1dtwGAHg==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -26054,7 +26099,7 @@ packages:
     dependencies:
       '@types/node': 20.11.20
       esbuild: 0.19.9
-      postcss: 8.4.31
+      postcss: 8.4.35
       rollup: 4.5.1
     optionalDependencies:
       fsevents: 2.3.3

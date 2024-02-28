@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "name": "@ttoss-challenge/seed",
+  "exports": {
+    ".": "./index.ts"
+  }
+}
