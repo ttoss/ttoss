@@ -564,6 +564,9 @@ importers:
       '@ttoss/react-hooks':
         specifier: workspace:^
         version: link:../react-hooks
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
