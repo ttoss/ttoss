@@ -6,17 +6,9 @@ import {
 
 export interface CheckboxProps extends Omit<CheckboxPropsUi, 'onChange'> {
   indeterminate?: boolean;
-  onChange?: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    indeterminate: boolean
-  ) => void;
 }
 
-export const Checkbox = ({
-  indeterminate = false,
-  onChange,
-  ...rest
-}: CheckboxProps) => {
+export const Checkbox = ({ indeterminate = false, ...rest }: CheckboxProps) => {
   const ref = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -25,15 +17,5 @@ export const Checkbox = ({
     }
   }, [indeterminate]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const target = event.target as HTMLInputElement;
-    const newState = target.checked;
-    const newIndeterminate = newState ? false : indeterminate;
-
-    if (onChange) {
-      onChange(event, newIndeterminate);
-    }
-  };
-
-  return <CheckBoxUi ref={ref} onChange={handleChange} {...rest} />;
+  return <CheckBoxUi ref={ref} {...rest} />;
 };
