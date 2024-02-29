@@ -21,14 +21,5 @@ export const Checkbox = ({ indeterminate = false, ...rest }: CheckboxProps) => {
     return <input type="checkbox" ref={ref} {...rest} />;
   }
 
-  return (
-    <CheckBoxUi
-      ref={ref}
-      sx={{
-        borderBlock: false,
-        borderRadius: '50%',
-      }}
-      {...rest}
-    />
-  );
+  return <CheckBoxUi ref={ref} {...rest} />;
 };
