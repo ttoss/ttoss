@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { type GraphQLObjectType } from 'graphql';
-import { decode } from '@ttoss/auth-core';
 import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
 
 export type AppSyncResolverHandler<
@@ -13,24 +12,21 @@ export type AppSyncResolverHandler<
 export const createAppSyncResolverHandler = ({
   ...buildSchemaInput
 }: BuildSchemaInput): AppSyncResolverHandler<any, any, any> => {
-  return async (event, context) => {
+  return async (event, appSyncHandlerContext) => {
     const { schemaComposer } = buildSchemaInput;
 
+    /**
+     * https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html
+     */
     const { info, arguments: args, source, request } = event;
 
     const { parentTypeName, fieldName } = info;
 
-    const headers = request?.headers || {};
-
-    const credentials = (() => {
-      const headersCredentials = headers?.['x-credentials'];
-
-      if (!headersCredentials) {
-        return null;
-      }
-
-      return decode(headersCredentials);
-    })();
+    const context = {
+      handler: appSyncHandlerContext,
+      request,
+      identity: event.identity,
+    };
 
     const schema = buildSchema(buildSchemaInput);
 
@@ -86,7 +82,7 @@ export const createAppSyncResolverHandler = ({
     const response = await resolver(
       source,
       argsWithEnumValues,
-      { ...context, identity: event.identity, credentials, headers },
+      context,
       info as any
     );
 

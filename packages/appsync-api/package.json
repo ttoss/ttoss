@@ -31,7 +31,6 @@
     "graphql": "^16.6.0"
   },
   "devDependencies": {
-    "@ttoss/auth-core": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "@types/aws-lambda": "^8.10.130",

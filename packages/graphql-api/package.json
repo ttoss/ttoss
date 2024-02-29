@@ -28,8 +28,8 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@graphql-codegen/core": "^4.0.0",
-    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/core": "^4.0.2",
+    "@graphql-codegen/typescript": "^4.0.6",
     "graphql-compose": "^9.0.10",
     "graphql-compose-connection": "^8.2.1",
     "graphql-middleware": "^6.1.35",

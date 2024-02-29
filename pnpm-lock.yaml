@@ -54,6 +54,22 @@ importers:
         specifier: ~5.2.2
         version: 5.2.2
 
+  challenge/packages/api-graphql-with-dynamodb:
+    dependencies:
+      '@ttoss/graphql-api':
+        specifier: workspace:^
+        version: link:../../../packages/graphql-api
+      '@ttoss/graphql-api-server':
+        specifier: workspace:^
+        version: link:../../../packages/graphql-api-server
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../../../packages/config
+      tsx:
+        specifier: ^4.6.2
+        version: 4.6.2
+
   challenge/packages/app-vite-with-graphql-api:
     dependencies:
       '@ttoss/layouts':
