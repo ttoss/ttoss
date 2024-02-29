@@ -54,6 +54,12 @@ importers:
         specifier: ~5.2.2
         version: 5.2.2
 
+  challenge/packages/dynamodb:
+    dependencies:
+      carlin:
+        specifier: workspace:^
+        version: link:../../../packages/carlin
+
   docs/storybook:
     dependencies:
       '@iconify-icons/mdi-light':
@@ -1391,9 +1397,6 @@ importers:
       graphql:
         specifier: ^16.8.1
         version: 16.8.1
-      graphql-shield:
-        specifier: ^7.6.5
-        version: 7.6.5(graphql-middleware@6.1.35)(graphql@16.8.1)
     devDependencies:
       '@ttoss/aws-appsync-nodejs':
         specifier: workspace:^

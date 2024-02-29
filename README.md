@@ -2,22 +2,27 @@
 
 ## Getting Started
 
-The "hello world" of this repository is running [ttoss Storybook](https://storybook.ttoss.dev/) in your local machine. To do so, follow the steps below:
+The "hello world" of this repository is running [ttoss Storybook](https://storybook.ttoss.dev/) in your local machine. To do so, clone [the repository](https://github.com/ttoss/ttoss) and run the following commands on the root folder:
 
-1. Clone [the repository](https://github.com/ttoss/ttoss)
-1. Install the dependencies
+1. Install the dependencies:
 
    ```sh
    pnpm install
    ```
 
-1. Build [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/)
+1. Build [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/):
 
    ```sh
    pnpm build:config
    ```
 
-1. Run the Storybook
+1. Build i18n languages (for more information, see [@ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/):
+
+   ```sh
+   pnpm turbo run i18n
+   ```
+
+1. Run the Storybook:
 
    ```sh
    pnpm storybook

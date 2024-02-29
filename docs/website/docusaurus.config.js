@@ -129,6 +129,12 @@ const config = {
             label: 'Engineering',
           },
           {
+            type: 'docSidebar',
+            position: 'left',
+            sidebarId: 'challenge',
+            label: 'Challenge',
+          },
+          {
             to: '/blog',
             label: 'Blog',
             position: 'left',

@@ -1,4 +1,5 @@
 packages:
+  - 'challenge/packages/*'
   - 'docs/*'
   - 'packages/*'
   - 'terezinha-farm/*'
