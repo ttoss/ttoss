@@ -7,6 +7,8 @@
     "dev": "tsx watch ./src/server.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.525.0",
+    "@aws-sdk/lib-dynamodb": "^3.525.0",
     "@ttoss/graphql-api": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^"
   },

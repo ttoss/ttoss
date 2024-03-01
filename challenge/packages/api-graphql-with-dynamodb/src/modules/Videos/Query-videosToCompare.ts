@@ -12,21 +12,9 @@ const VideosToCompareTC = schemaComposer.createObjectTC({
 VideoTC.addResolver({
   name: 'videosToCompare',
   type: VideosToCompareTC.NonNull,
+  description: 'Get two videos to compare.',
   resolve: async () => {
-    return {
-      video0: {
-        id: '1',
-        title: 'Naruto And Sasuke Vs Momoshiki Full Fight Hd [ ENGLISH DUB ]',
-        src: 'https://www.youtube.com/embed/W5zHwWRILRI?si=Mn3IfZMMued1Du0q',
-        rating: 3000,
-      },
-      video1: {
-        id: '2',
-        title: 'Tony Anderson - Finding Your Heart',
-        src: 'https://www.youtube.com/embed/5fbBxegAN-g?si=S55wJECH9wN0che6',
-        rating: 1230,
-      },
-    };
+    return {};
   },
 });
 
