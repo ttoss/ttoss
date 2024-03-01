@@ -6,20 +6,26 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "relay": "relay-compiler",
+    "schema": "cp ../api-graphql-with-dynamodb/schema/schema.graphql ./schema/schema.graphql"
   },
   "dependencies": {
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-relay": "^16.0.0",
+    "relay-runtime": "^16.0.0",
+    "vite-plugin-relay": "^2.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/react": "^18.2.58",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "relay-compiler": "^16.0.0",
     "typescript": "~5.2.2",
     "vite": "^5.1.4"
   }
