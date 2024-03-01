@@ -548,6 +548,9 @@ importers:
       react-modal:
         specifier: ^3.16.1
         version: 3.16.1(react-dom@18.2.0)(react@18.2.0)
+      react-modern-drawer:
+        specifier: ^1.2.2
+        version: 1.2.2(react@18.2.0)
       react-toastify:
         specifier: ^9.1.3
         version: 9.1.3(react-dom@18.2.0)(react@18.2.0)
@@ -22027,6 +22030,15 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
+    dev: false
+
+  /react-modern-drawer@1.2.2(react@18.2.0):
+    resolution: {integrity: sha512-SXUNjofHzeoEas0kdMWWafuF2+vwdtbQD1cpkHxo7oyFj3v+2l2CMeJjc/GodYsnxVhSiYj75xosMJXXed9ykQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>16.0.0'
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-number-format@5.3.1(react-dom@18.2.0)(react@18.2.0):
