@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Flex, Link } from '@ttoss/ui';
+import { Box, Flex, Link } from '@ttoss/ui';
 import { Menu } from '@ttoss/components';
 import { Meta, Story } from '@storybook/react';
 
@@ -8,7 +8,7 @@ export default {
 } as Meta;
 
 const Template: Story = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(true);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const handleClose = () => {
     setIsMenuOpen(false);
@@ -16,19 +16,14 @@ const Template: Story = () => {
 
   return (
     <>
-      <Button
-        onClick={() => {
+      <Menu
+        onOpen={() => {
           setIsMenuOpen(true);
         }}
-      >
-        Open Menu
-      </Button>
-
-      <Menu
         srcLogo="https://placehold.co/600x400"
         isOpen={isMenuOpen}
         onClose={() => {
-          return setIsMenuOpen(false);
+          setIsMenuOpen(false);
         }}
       >
         <Flex
