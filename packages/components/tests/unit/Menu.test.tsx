@@ -10,7 +10,14 @@ describe('Menu', () => {
 
   test('should call onClose when close icon is clicked', () => {
     render(
-      <Menu isOpen={true} onClose={mockOnClose} srcLogo="logo.png">
+      <Menu
+        onOpen={() => {
+          return null;
+        }}
+        isOpen={true}
+        onClose={mockOnClose}
+        srcLogo="logo.png"
+      >
         <div>Menu Content</div>
       </Menu>
     );
@@ -22,7 +29,14 @@ describe('Menu', () => {
   test('should display the logo when srcLogo is provided', () => {
     const logoSrc = 'logo.png';
     render(
-      <Menu isOpen={true} onClose={mockOnClose} srcLogo={logoSrc}>
+      <Menu
+        onOpen={() => {
+          return null;
+        }}
+        isOpen={true}
+        onClose={mockOnClose}
+        srcLogo={logoSrc}
+      >
         <div>Menu Content</div>
       </Menu>
     );
@@ -32,7 +46,13 @@ describe('Menu', () => {
 
   test('should render children correctly', () => {
     render(
-      <Menu isOpen={true} onClose={mockOnClose}>
+      <Menu
+        onOpen={() => {
+          return null;
+        }}
+        isOpen={true}
+        onClose={mockOnClose}
+      >
         <div>Child Component</div>
       </Menu>
     );
