@@ -1,13 +1,12 @@
 import * as React from 'react';
+import { Button, Heading, HelpText } from '@ttoss/ui';
+import { FarmWrongPaginationQuery } from './__generated__/FarmWrongPaginationQuery.graphql';
 import {
   PreloadedQuery,
   graphql,
   usePreloadedQuery,
   useQueryLoader,
 } from 'react-relay';
-
-import { Button, Heading, HelpText } from '@ttoss/ui';
-import { FarmWrongPaginationQuery } from './__generated__/FarmWrongPaginationQuery.graphql';
 
 const farmQuery = graphql`
   query FarmWrongPaginationQuery($first: Int!) {

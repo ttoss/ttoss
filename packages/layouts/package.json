@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/layouts",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "Layout components for React",
   "author": "ttoss",
   "contributors": [
@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/layouts"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -22,7 +23,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "peerDependencies": {
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
@@ -31,17 +31,24 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/jest": "^29.5.11",
-    "@types/react": "^18.2.48",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.58",
     "jest": "^29.7.0",
     "react": "^18.2.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "React"
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

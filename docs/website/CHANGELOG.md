@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.45.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.0...@docs/website@1.45.1) (2024-02-29)
+
+**Note:** Version bump only for package @docs/website
+
+# [1.45.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.44.14...@docs/website@1.45.0) (2024-02-26)
+
+### Features
+
+- challenge first version ([#495](https://github.com/ttoss/ttoss/issues/495)) ([d7ef71d](https://github.com/ttoss/ttoss/commit/d7ef71d0605910d46710d572ce022d627e17d8cd))
+
+## [1.44.14](https://github.com/ttoss/ttoss/compare/@docs/website@1.44.13...@docs/website@1.44.14) (2024-02-24)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.44.13](https://github.com/ttoss/ttoss/compare/@docs/website@1.44.12...@docs/website@1.44.13) (2024-02-23)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.44.12](https://github.com/ttoss/ttoss/compare/@docs/website@1.44.11...@docs/website@1.44.12) (2024-02-22)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.44.11](https://github.com/ttoss/ttoss/compare/@docs/website@1.44.10...@docs/website@1.44.11) (2024-02-21)
 
 **Note:** Version bump only for package @docs/website

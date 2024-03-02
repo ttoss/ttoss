@@ -1,4 +1,4 @@
-import { CloseButton, type CloseButtonProps, Flex } from '@ttoss/ui/src';
+import { CloseButton, type CloseButtonProps, Flex } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 

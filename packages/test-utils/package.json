@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "author": "ttoss",
   "contributors": [
@@ -12,21 +12,9 @@
     "directory": "packages/test-utils"
   },
   "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./faker": {
-      "import": "./dist/esm/faker.js",
-      "require": "./dist/faker.js",
-      "types": "./dist/faker.d.ts"
-    },
-    "./relay": {
-      "import": "./dist/esm/relay.js",
-      "require": "./dist/relay.js",
-      "types": "./dist/relay.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./faker": "./src/faker.ts",
+    "./relay": "./src/relay.ts"
   },
   "files": [
     "dist",
@@ -36,7 +24,6 @@
     "build": "tsup",
     "test": "jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@emotion/jest": "^11.11.0",
     "@faker-js/faker": "^8.3.1",
@@ -56,14 +43,14 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/jest": "^29.5.11",
-    "@types/node": "^20.10.4",
-    "@types/react": "^18.2.48",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.20",
+    "@types/react": "^18.2.58",
     "jest": "^29.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "Jest",
@@ -73,19 +60,23 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./faker": {
+        "import": "./dist/esm/faker.js",
+        "require": "./dist/faker.js",
+        "types": "./dist/faker.d.ts"
+      },
+      "./relay": {
+        "import": "./dist/esm/relay.js",
+        "require": "./dist/relay.js",
+        "types": "./dist/relay.d.ts"
+      }
+    },
     "provenance": true
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ],
-      "faker": [
-        "./dist/faker.d.ts"
-      ],
-      "relay": [
-        "./dist/relay.d.ts"
-      ]
-    }
   }
 }

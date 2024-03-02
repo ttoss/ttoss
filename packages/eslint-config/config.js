@@ -50,11 +50,26 @@ module.exports = {
   ],
   rules: {
     /**
-     * 3 parameters because some array methods as reduce, map, filter
-     * can have 3 parameters.
+     * https://stackoverflow.com/a/76818791/8786986
      */
-    'max-params': ['error', 3],
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          'React.FC':
+            'Useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
+          'React.FunctionComponent':
+            'Useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
+          'React.FunctionalComponent':
+            'Preact specific, useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
+        },
+      },
+    ],
     '@typescript-eslint/no-non-null-assertion': 'error',
+    /**
+     * https://eslint.org/docs/latest/rules/curly#all
+     */
+    curly: 'error',
     /**
      * https://formatjs.io/docs/tooling/linter
      */
@@ -68,6 +83,12 @@ module.exports = {
     'formatjs/no-offset': 'error',
     'formatjs/no-id': 'error',
     'formatjs/no-complex-selectors': 'error',
+    'import/no-default-export': 'error',
+    /**
+     * 3 parameters because some array methods as reduce, map, filter
+     * can have 3 parameters.
+     */
+    'max-params': ['error', 3],
     'no-console': 'error',
     'no-use-before-define': ['error'],
     'object-shorthand': ['error', 'always'],
@@ -102,11 +123,6 @@ module.exports = {
         memberSyntaxSortOrder: ['all', 'multiple', 'single', 'none'],
       },
     ],
-    'import/no-default-export': 'error',
-    /**
-     * https://eslint.org/docs/latest/rules/curly#all
-     */
-    curly: 'error',
   },
   overrides: [
     {

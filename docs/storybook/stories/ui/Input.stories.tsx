@@ -1,4 +1,4 @@
-import { Flex, Input, InputProps } from '@ttoss/ui/src';
+import { Flex, Input, InputProps } from '@ttoss/ui';
 import { Meta, StoryFn } from '@storybook/react';
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
 

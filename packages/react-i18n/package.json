@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "1.26.0",
+  "version": "1.26.1",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
@@ -11,21 +11,21 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-i18n"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "pnpm workspace @ttoss/storybook run dev",
+    "dev": "pnpm --filter @docs/storybook run dev",
     "i18n": "ttoss-i18n --pattern './tests/**/*.test.tsx'",
     "pretest": "pnpm run i18n",
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "react-intl": "^6.5.5"
   },
@@ -37,9 +37,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^18.2.48",
+    "@types/react": "^18.2.58",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "React",
@@ -48,6 +48,13 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

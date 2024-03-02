@@ -1,7 +1,7 @@
-import { InputNumber, InputNumberProps } from '@ttoss/ui/src';
+import * as React from 'react';
+import { InputNumber, InputNumberProps } from '@ttoss/ui';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import React from 'react';
 
 type Story = StoryObj<typeof InputNumber>;
 

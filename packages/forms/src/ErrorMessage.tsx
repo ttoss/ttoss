@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   FieldError,
-  FieldErrors,
   FieldName,
   FieldValues,
   useFormContext,
@@ -40,10 +40,13 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
         return (
           <HelpText negative disabled={disabled}>
             {(() => {
-              if (typeof message === 'string') return message;
+              if (typeof message === 'string') {
+                return message;
+              }
 
-              if (isMessageDescriptor(message))
+              if (isMessageDescriptor(message)) {
                 return <FormattedMessage {...message} />;
+              }
 
               return JSON.stringify(message);
             })()}

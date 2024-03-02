@@ -1,5 +1,5 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldInput, FormGroup, useForm } from '@ttoss/forms/src';
+import { Form, FormFieldInput, FormGroup, useForm } from '@ttoss/forms';
 import { Meta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 

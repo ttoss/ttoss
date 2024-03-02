@@ -2,7 +2,7 @@
 import { AUTHORS, schemaComposer } from '../schemaComposer';
 import { allow, deny, shield } from 'graphql-shield';
 import { createAppSyncResolverHandler } from '../../src';
-import { encodeCredentials } from '@ttoss/relay-amplify';
+import { encode } from '@ttoss/auth-core';
 import { toGlobalId } from '@ttoss/graphql-api';
 
 test.each([
@@ -251,7 +251,7 @@ describe('testing headers', () => {
     request: {
       headers: {
         ...headers,
-        'x-credentials': encodeCredentials(mockCredentials as any),
+        'x-credentials': encode(mockCredentials as any),
       },
     },
     source: {},

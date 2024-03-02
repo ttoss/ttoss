@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A library for building GraphQL APIs using ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
@@ -12,16 +12,8 @@
     "directory": "packages/graphql-api"
   },
   "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./shield": {
-      "import": "./dist/esm/shield.js",
-      "require": "./dist/shield.js",
-      "types": "./dist/shield.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./shield": "./src/shield.ts"
   },
   "bin": {
     "ttoss-graphql-api": "./bin/cli.js"
@@ -54,7 +46,7 @@
     "@types/yargs": "^17.0.32",
     "graphql": "^16.8.1",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "api",
@@ -62,6 +54,18 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./shield": {
+        "import": "./dist/esm/shield.js",
+        "require": "./dist/shield.js",
+        "types": "./dist/shield.d.ts"
+      }
+    },
     "provenance": true
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-roles",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Create CloudFormation templates for roles with TypeScript.",
   "author": "ttoss",
   "contributors": [
@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/cloud-roles"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -21,20 +22,26 @@
     "build": "tsup",
     "test": "jest"
   },
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@ttoss/cloudformation": "workspace:^"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

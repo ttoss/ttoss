@@ -1,11 +1,5 @@
-import { Button } from '@ttoss/ui/src';
-import {
-  Form,
-  FormFieldSelect,
-  useForm,
-  yup,
-  yupResolver,
-} from '@ttoss/forms/src';
+import { Button } from '@ttoss/ui';
+import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Simple environment agnostic logger",
   "license": "MIT",
   "contributors": [
@@ -11,7 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/logger"
   },
-  "main": "dist/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "module": "dist/esm/index.js",
   "files": [
     "dist",
@@ -21,14 +23,20 @@
     "build": "tsup"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

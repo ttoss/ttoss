@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.18.3",
+  "version": "0.18.4",
   "description": "A library for building GraphQL APIs for AWS AppSync.",
   "author": "ttoss",
   "contributors": [
@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/appsync-api"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -22,7 +23,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "dependencies": {
     "@ttoss/cloudformation": "workspace:^"
   },
@@ -31,15 +31,15 @@
     "graphql": "^16.6.0"
   },
   "devDependencies": {
+    "@ttoss/auth-core": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
-    "@ttoss/relay-amplify": "workspace:^",
     "@types/aws-lambda": "^8.10.130",
     "carlin": "workspace:^",
     "graphql": "^16.8.1",
     "graphql-shield": "^7.6.5",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "api",
@@ -49,6 +49,13 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

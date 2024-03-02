@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ids",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A library to handle the different ids used in the ttoss ecosystem applications",
   "author": "ttoss",
   "contributors": [
@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/ids"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -22,11 +23,10 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^29.7.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [
     "api",
@@ -34,6 +34,13 @@
   ],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }

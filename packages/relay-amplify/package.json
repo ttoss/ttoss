@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/relay-amplify",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "",
   "author": "ttoss",
   "contributors": [
@@ -11,8 +11,9 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/relay-amplify"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "files": [
     "dist",
     "src"
@@ -22,7 +23,6 @@
     "test": "jest"
   },
   "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "peerDependencies": {
     "aws-amplify": "^6.0.0",
     "relay-runtime": "^14.1.0"
@@ -33,11 +33,18 @@
     "aws-amplify": "^6.0.12",
     "jest": "^29.7.0",
     "relay-runtime": "^16.0.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.2"
   },
   "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
     "provenance": true
   }
 }
