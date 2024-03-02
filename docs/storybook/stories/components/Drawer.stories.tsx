@@ -6,23 +6,23 @@ import { Meta, StoryObj } from '@storybook/react';
 type Story = StoryObj<typeof Drawer>;
 
 const Component = (args: DrawerProps) => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   const handleClose = () => {
-    setIsMenuOpen(false);
+    setIsDrawerOpen(false);
   };
 
   return (
     <>
       <Button
         onClick={() => {
-          setIsMenuOpen(true);
+          setIsDrawerOpen(true);
         }}
       >
-        Open Menu
+        Open Drawer
       </Button>
 
-      <Drawer {...args} open={isMenuOpen}>
+      <Drawer {...args} open={isDrawerOpen}>
         <Flex
           sx={{
             flexDirection: 'column',
