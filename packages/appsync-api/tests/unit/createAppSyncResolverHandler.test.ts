@@ -2,7 +2,6 @@
 import { AUTHORS, schemaComposer } from '../schemaComposer';
 import { allow, deny, shield } from 'graphql-shield';
 import { createAppSyncResolverHandler } from '../../src';
-import { encode } from '@ttoss/auth-core';
 import { toGlobalId } from '@ttoss/graphql-api';
 
 test.each([
@@ -227,8 +226,25 @@ describe('testing headers', () => {
 
   newSchemaComposer.Query.addFields({ mockedAuthor: resolver });
 
+  const encode = (credentials: any) => {
+    return Buffer.from(JSON.stringify(credentials)).toString('base64');
+  };
+
+  const decode = (credentials: string) => {
+    return JSON.parse(Buffer.from(credentials, 'base64').toString('utf-8'));
+  };
+
   const handler = createAppSyncResolverHandler({
     schemaComposer: newSchemaComposer,
+    middlewares: [
+      // eslint-disable-next-line max-params
+      (resolver, source, args, context, info) => {
+        const { headers } = context.request;
+        const credentials = decode(headers['x-credentials']);
+        const newContext = { ...context, headers, credentials };
+        return resolver(source, args, newContext, info);
+      },
+    ],
   });
 
   const mockCredentials = {
