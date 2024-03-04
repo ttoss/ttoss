@@ -12,6 +12,8 @@ Resources:
           AttributeType: 'S'
         - AttributeName: 'sk'
           AttributeType: 'S'
+        - AttributeName: 'rating'
+          AttributeType: 'N'
       BillingMode: 'PAY_PER_REQUEST'
       DeletionProtectionEnabled: true
       KeySchema:
@@ -19,6 +21,15 @@ Resources:
           KeyType: 'HASH'
         - AttributeName: 'sk'
           KeyType: 'RANGE'
+      GlobalSecondaryIndexes:
+        - IndexName: 'ratingIndex'
+          KeySchema:
+            - AttributeName: 'sk'
+              KeyType: 'HASH'
+            - AttributeName: 'rating'
+              KeyType: 'RANGE'
+          Projection:
+            ProjectionType: KEYS_ONLY
 
 Outputs:
   DynamoDBTableArn:

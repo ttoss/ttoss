@@ -1,6 +1,6 @@
 # ttoss Challenge - Engineering
 
-Given the description of [the project The Best YouTube Video of All Time](https://ttoss.dev/docs/challenge/the-project), the engineering challenge consists of building a web application from database architecture, API design, and front-end development and deployment.
+Given [the project The Best YouTube Video of All Time](https://ttoss.dev/docs/challenge/the-project), the engineering challenge consists of building a web application from database architecture, API design, front-end development and deployment.
 
 ## Requirements
 
@@ -10,7 +10,7 @@ A characteristic of this challenge is that it is open-ended. We'll provide the r
 
 The database should store the information about the videos and their ranking. You can use:
 
-- Use a DynamoDB table with [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/).
+- Use a DynamoDB table with [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/) ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/db-dynamodb)).
 - Use a PostgreSQL database with a schema that you think is best for the project.
 - Any other database that you think is best for the project.
 
@@ -18,12 +18,12 @@ The database should store the information about the videos and their ranking. Yo
 
 The API should provide at least the following resources:
 
-- Get a list of videos with pagination, sorted by their ranking.
+- Get a list of videos sorted by their ranking.
 - Get two videos for the user to vote.
 - A mutation to register the user's vote and update the ranking.
 - Any other resource that you think is best for the project.
 
-You can implement the API using REST or GraphQL, but it should use Node.js.
+You can implement the API using REST or GraphQL ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/api-graphql-with-dynamodb)), but it should use Node.js.
 
 ### Front-end
 
@@ -33,7 +33,7 @@ The front-end should have at least the following features:
 - A section to show the ranking of the videos.
 - Any other feature that you think is best for the project.
 
-You need to use React to build the front-end.
+You need to use React to build the front-end. We have a [boilerplate using Vite.js and consuming a GraphQL API](https://github.com/ttoss/ttoss/tree/main/challenge/packages/app-vite-with-graphql-api). You can use it as a starting point or build the front-end from scratch.
 
 ### Deployment
 
