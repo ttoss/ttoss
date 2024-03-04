@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   GraphQLInputObjectType,
   GraphQLInt,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql-compose/lib/graphql';
-import { fromGlobalId } from '../../../../src';
+import { fromGlobalId } from '@ttoss/ids';
 import { schemaComposer } from 'graphql-compose';
 
 export const UserType = new GraphQLObjectType({

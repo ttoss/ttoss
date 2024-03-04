@@ -36,15 +36,15 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/react": "^18.2.58",
-    "@types/react-dom": "^18.2.17",
+    "@types/react-dom": "^18.2.19",
     "@types/react-relay": "^16.0.5",
     "@types/relay-runtime": "^14.1.19",
-    "@vitejs/plugin-react": "^4.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "carlin": "workspace:^",
     "relay-compiler": "^16.0.0",
     "rollup-plugin-visualizer": "^5.9.3",
     "serve": "^14.2.1",
     "typescript": "~5.2.2",
-    "vite": "^5.0.3"
+    "vite": "^5.1.4"
   }
 }

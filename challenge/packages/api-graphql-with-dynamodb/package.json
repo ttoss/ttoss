@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "name": "@ttoss-challenge/api-graphql-with-dynamodb",
+  "version": "0.0.0",
+  "scripts": {
+    "build-schema": "ttoss-graphql-api build-schema",
+    "dev": "tsx watch ./src/server.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.525.0",
+    "@aws-sdk/lib-dynamodb": "^3.525.0",
+    "@ttoss/graphql-api": "workspace:^",
+    "@ttoss/graphql-api-server": "workspace:^",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "tsx": "^4.6.2"
+  }
+}

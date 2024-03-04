@@ -3,10 +3,9 @@ import {
   ResolverResolveParams,
   composeWithConnection,
   composeWithRelay,
-  fromGlobalId,
   schemaComposer,
-  toGlobalId,
 } from '../src';
+import { fromGlobalId, toGlobalId } from '@ttoss/ids';
 
 type Book = {
   id: string;

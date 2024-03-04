@@ -1,16 +1,19 @@
 import { type GraphQLSchema } from 'graphql';
 import {
-  type IMiddleware,
-  type IMiddlewareGenerator,
+  type IMiddleware as Middleware,
+  type IMiddlewareGenerator as MiddlewareGenerator,
   applyMiddleware,
 } from 'graphql-middleware';
 import { type SchemaComposer } from 'graphql-compose';
 
-export type { IMiddleware, IMiddlewareGenerator };
+export type { Middleware, MiddlewareGenerator };
 
-export type BuildSchemaInput<TContext = any> = {
+export type BuildSchemaInput<TContext = unknown> = {
   schemaComposer: SchemaComposer<TContext>;
-  middlewares?: (IMiddleware | IMiddlewareGenerator<any, TContext, any>)[];
+  middlewares?: (
+    | Middleware
+    | MiddlewareGenerator<unknown, TContext, unknown>
+  )[];
 };
 
 export const buildSchema = ({
@@ -30,10 +33,13 @@ export const buildSchema = ({
         /**
          * https://github.com/dimatill/graphql-middleware/issues/433#issuecomment-1170187160
          */
-        if ((middleware as IMiddlewareGenerator<any, any, any>).generate) {
-          return (middleware as IMiddlewareGenerator<any, any, any>).generate(
-            schema
-          );
+        if (
+          (middleware as MiddlewareGenerator<unknown, unknown, unknown>)
+            .generate
+        ) {
+          return (
+            middleware as MiddlewareGenerator<unknown, unknown, unknown>
+          ).generate(schema);
         }
 
         return middleware;

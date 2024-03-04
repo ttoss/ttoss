@@ -1,9 +1,9 @@
-import { fromGlobalId, toGlobalId } from '../../../src';
+import { fromGlobalId, toGlobalId } from '@ttoss/ids';
 
 describe('globalId', () => {
   test('should have correct method toGlobalId()', () => {
     expect(toGlobalId('User', '789')).toBe('VXNlcjo3ODk=');
-    expect(toGlobalId('Article', 22)).toBe('QXJ0aWNsZToyMg==');
+    expect(toGlobalId('Article', '22')).toBe('QXJ0aWNsZToyMg==');
   });
 
   test('should have correct method fromGlobalId()', () => {

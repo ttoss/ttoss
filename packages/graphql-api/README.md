@@ -369,9 +369,28 @@ const permissions = shield(
   }
 );
 
+/**
+ * Apply middlewares to all resolvers.
+ */
+const logInput = async (resolve, source, args, context, info) => {
+  console.log(`1. logInput: ${JSON.stringify(args)}`)
+  const result = await resolve(source, args, context, info)
+  console.log(`5. logInput`)
+  return result
+}
+
+/**
+ * Apply middlewares only to a specific resolver.
+ */
+const logOnQueryMe = {
+  Query: {
+    me: logInput
+  }
+}
+
 const schema = buildSchema({
   schemaComposer,
-  middlewares; [permissions],
+  middlewares; [permissions, logInput, logOnQueryMe],
 })
 ```
 

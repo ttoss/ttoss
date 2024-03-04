@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ObjectTypeComposer } from 'graphql-compose';
 import { getNodeFieldConfig } from './nodeFieldConfig';
 import { getNodeInterface } from './nodeInterface';
-import { toGlobalId } from './globalId';
+import { toGlobalId } from '@ttoss/ids';
 
 // all wrapped typeComposers with Relay, stored in this variable
 // for futher type resolving via NodeInterface.resolveType method
@@ -56,7 +57,7 @@ export const composeWithRelay = <TContext>(
       type: 'ID!',
       description: 'The globally unique ID among all types',
       resolve: (source) => {
-        return toGlobalId(tc.getTypeName(), tc.getRecordId(source));
+        return toGlobalId(tc.getTypeName(), tc.getRecordId(source).toString());
       },
     },
   });
