@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jest/no-mocks-import */
 import {
   GraphQLInterfaceType,
@@ -7,7 +8,8 @@ import {
 } from 'graphql-compose/lib/graphql';
 import { ObjectTypeComposer, schemaComposer } from 'graphql-compose';
 import { UserTC } from './__mocks__/UserTC';
-import { composeWithRelay, toGlobalId } from '../../../src';
+import { composeWithRelay } from '../../../src';
+import { toGlobalId } from '@ttoss/ids';
 
 describe('composeWithRelay', () => {
   const userComposer = composeWithRelay(UserTC);
@@ -66,13 +68,13 @@ describe('composeWithRelay', () => {
         query: queryTC.getType(),
       });
       const query = `{
-        user(id: "${toGlobalId('User', 1)}") {
+        user(id: "${toGlobalId('User', '1')}") {
           id
           name
         }
       }`;
       const result: any = await graphql({ schema, source: query });
-      expect(result.data.user.id).toBe(toGlobalId('User', 1));
+      expect(result.data.user.id).toBe(toGlobalId('User', '1'));
       expect(result.data.user.name).toBe('Pavel');
     });
 
@@ -82,7 +84,7 @@ describe('composeWithRelay', () => {
         query: queryTC.getType(),
       });
       const query = `{
-        node(id: "${toGlobalId('User', 1)}") {
+        node(id: "${toGlobalId('User', '1')}") {
           ...user
         }
       }
@@ -91,7 +93,7 @@ describe('composeWithRelay', () => {
         name
       }`;
       const result: any = await graphql({ schema, source: query });
-      expect(result.data.node.id).toBe(toGlobalId('User', 1));
+      expect(result.data.node.id).toBe(toGlobalId('User', '1'));
       expect(result.data.node.name).toBe('Pavel');
     });
   });

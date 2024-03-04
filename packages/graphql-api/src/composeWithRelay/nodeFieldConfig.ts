@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type InterfaceTypeComposer,
   type ObjectTypeComposerFieldConfigDefinition,
   getProjectionFromAST,
 } from 'graphql-compose';
-import { fromGlobalId } from './globalId';
+import { fromGlobalId } from '@ttoss/ids';
 import type { GraphQLResolveInfo } from 'graphql-compose/lib/graphql';
 import type { ObjectTypeComposer, Resolver } from 'graphql-compose';
 
@@ -29,6 +30,7 @@ export const getNodeFieldConfig = (
         description: 'The globally unique ID among all types',
       },
     },
+    // eslint-disable-next-line max-params
     resolve: (
       source: any,
       args: { [argName: string]: any },
@@ -70,7 +72,9 @@ export const getNodeFieldConfig = (
             projection,
           })
           .then((res: any) => {
-            if (!res) return res;
+            if (!res) {
+              return res;
+            }
             res.__nodeType = graphqlType;
             return res;
           });

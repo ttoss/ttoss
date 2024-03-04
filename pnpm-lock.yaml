@@ -357,6 +357,9 @@ importers:
       '@ttoss/graphql-api':
         specifier: workspace:^
         version: link:../graphql-api
+      '@ttoss/ids':
+        specifier: workspace:^
+        version: link:../ids
       '@types/aws-lambda':
         specifier: ^8.10.130
         version: 8.10.130
@@ -904,6 +907,9 @@ importers:
       '@graphql-codegen/typescript':
         specifier: ^4.0.6
         version: 4.0.6(graphql@16.8.1)
+      '@ttoss/ids':
+        specifier: workspace:^
+        version: link:../ids
       graphql-compose:
         specifier: ^9.0.10
         version: 9.0.10(graphql@16.8.1)

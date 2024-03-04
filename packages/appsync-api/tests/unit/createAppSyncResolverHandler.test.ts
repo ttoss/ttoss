@@ -2,7 +2,7 @@
 import { AUTHORS, schemaComposer } from '../schemaComposer';
 import { allow, deny, shield } from 'graphql-shield';
 import { createAppSyncResolverHandler } from '../../src';
-import { toGlobalId } from '@ttoss/graphql-api';
+import { toGlobalId } from '@ttoss/ids';
 
 test.each([
   {
