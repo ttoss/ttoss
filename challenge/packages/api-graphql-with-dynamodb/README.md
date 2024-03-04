@@ -30,6 +30,6 @@ Once the server is running, you can access the API playground at [http://localho
 
 Some tasks you can do to complete this challenge:
 
-- [ ] Retrieve and configure AWS credentials and table info to server connect with DynamoDB (_file: [src/modules/DynamoDB/dynamodb.ts](./src/modules/DynamoDB/dynamodb.ts)_)
-- [ ] Retrieve two videos from the database to comparison (_file: [src/modules/Videos/Query-videosToCompare.ts](./src/modules/Videos/Query-videosToCompare.ts)_)
-- [ ] Create a mutation to vote on a video (_file: [src/modules/Videos/Mutation-voteVideo.ts](./src/modules/Videos/Mutation-voteVideo.ts)_)
+- [ ] Retrieve and configure AWS credentials and table info to server connect with DynamoDB (_file: [./src/modules/DynamoDB/dynamodb.ts](./src/modules/DynamoDB/dynamodb.ts)_)
+- [ ] Create a query that returns two videos to compare (_file: [./src/modules/Videos/Query-videosToCompare.ts](./src/modules/Videos/Query-videosToCompare.ts)_)
+- [ ] Create a mutation to vote on a video (_file: [./src/modules/Videos/Mutation-voteVideo.ts](./src/modules/Videos/Mutation-voteVideo.ts)_)

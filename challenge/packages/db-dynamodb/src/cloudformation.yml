@@ -22,14 +22,14 @@ Resources:
         - AttributeName: 'sk'
           KeyType: 'RANGE'
       GlobalSecondaryIndexes:
-        - IndexName: 'ratingIndex'
+        - IndexName: 'sk-rating-index'
           KeySchema:
             - AttributeName: 'sk'
               KeyType: 'HASH'
             - AttributeName: 'rating'
               KeyType: 'RANGE'
           Projection:
-            ProjectionType: KEYS_ONLY
+            ProjectionType: ALL
 
 Outputs:
   DynamoDBTableArn:

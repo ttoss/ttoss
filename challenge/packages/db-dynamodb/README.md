@@ -29,13 +29,12 @@ If everything goes well, you'll see a message with some created item.
 - Partition key: `pk` (string)
 - Sort key: `sk` (string)
 
-| pk         | sk     | title    | url    | src    | rating    |
-| ---------- | ------ | -------- | ------ | ------ | --------- |
-| ${videoId} | VIDEO  | ${title} | ${url} | ${src} | -         |
-| ${videoId} | RATING | -        | -      | -      | ${rating} |
+| pk         | sk    | title    | url    | src    | rating    |
+| ---------- | ----- | -------- | ------ | ------ | --------- |
+| ${videoId} | VIDEO | ${title} | ${url} | ${src} | ${rating} |
 
 ### Indexes
 
-- `rankingIndex` ([GSI](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html))
+- `sk-rating-index` ([GSI](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html))
   - Partition key: `sk` (string)
   - Sort key: `rating` (number)

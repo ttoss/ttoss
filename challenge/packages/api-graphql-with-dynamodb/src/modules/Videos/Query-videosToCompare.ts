@@ -14,6 +14,9 @@ VideoTC.addResolver({
   type: VideosToCompareTC.NonNull,
   description: 'Get two videos to compare.',
   resolve: async () => {
+    /**
+     * TODO: Implement the resolver to get two videos to compare.
+     */
     return {};
   },
 });

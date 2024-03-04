@@ -26,24 +26,14 @@ const dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);
         const videoInfoItem = {
           pk: id,
           sk: 'INFO',
-          ...videoItem,
-        };
-
-        const videoRatingItem = {
-          pk: id,
-          sk: 'RATING',
           rating: 1200,
+          ...videoItem,
         };
 
         return [
           {
             PutRequest: {
               Item: videoInfoItem,
-            },
-          },
-          {
-            PutRequest: {
-              Item: videoRatingItem,
             },
           },
         ];

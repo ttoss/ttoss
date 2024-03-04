@@ -5,6 +5,7 @@ export const VideoTC = schemaComposer.createObjectTC({
   fields: {
     id: 'ID!',
     title: 'String!',
+    url: 'String!',
     src: 'String!',
     rating: 'Int!',
   },

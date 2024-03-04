@@ -10,7 +10,8 @@
     "@aws-sdk/client-dynamodb": "^3.525.0",
     "@aws-sdk/lib-dynamodb": "^3.525.0",
     "@ttoss/graphql-api": "workspace:^",
-    "@ttoss/graphql-api-server": "workspace:^"
+    "@ttoss/graphql-api-server": "workspace:^",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
