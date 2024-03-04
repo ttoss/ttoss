@@ -2,7 +2,7 @@
 
 This is a challenge to create a DynamoDB table with a single-table design. This project has an CloudFormation template with a DynamoDB table, and a seed script to populate the table with some data. Your task is to create the table and add the seed data. You may need to modify the table design to fit the requirements of the challenge.
 
-![DynamoDB items](./images/dynamodb-items.png)
+![DynamoDB items](./images/table-items.png)
 
 ## Getting Started
 
@@ -21,8 +21,6 @@ pnpm run seed-table
 If everything goes well, you'll see a message with some created item.
 
 ## Table Design
-
-### Key Schema
 
 ### Items
 
