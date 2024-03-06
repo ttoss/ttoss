@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.22.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.22.5...@ttoss/forms@0.22.6) (2024-03-06)
+
+### Bug Fixes
+
+- react-hook-form exports ([#506](https://github.com/ttoss/ttoss/issues/506)) ([14c1446](https://github.com/ttoss/ttoss/commit/14c1446ef9a8d871835193f22cde4ea7b502029a))
+
 ## [0.22.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.22.4...@ttoss/forms@0.22.5) (2024-02-29)
 
 **Note:** Version bump only for package @ttoss/forms
