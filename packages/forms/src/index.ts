@@ -1,8 +1,6 @@
 import './i18n';
 
 export { yupResolver } from '@hookform/resolvers/yup';
-export * from 'react-hook-form';
-export { useForm } from 'react-hook-form';
 export * as yup from 'yup';
 
 export { Form } from './Form';
@@ -18,3 +16,21 @@ export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
+
+/**
+ * Export everything from react-hook-form without using export *
+ * https://github.com/evanw/esbuild/issues/1737
+ */
+export {
+  useForm,
+  useFormContext,
+  useWatch,
+  useFieldArray,
+  useController,
+  useFormState,
+  Controller,
+  FormProvider,
+} from 'react-hook-form';
+
+// Export types
+export * from 'react-hook-form';
