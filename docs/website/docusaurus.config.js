@@ -10,7 +10,7 @@ const darkTheme = themes.dracula;
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ttoss',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'ttoss are cool',
   url: 'https://ttoss.dev',
   baseUrl: '/',
   onBrokenLinks: 'warn',
