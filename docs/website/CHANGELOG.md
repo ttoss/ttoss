@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.45.5](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.4...@docs/website@1.45.5) (2024-03-07)
+
+### Bug Fixes
+
+- configure spa ([#508](https://github.com/ttoss/ttoss/issues/508)) ([74d3dca](https://github.com/ttoss/ttoss/commit/74d3dcaa3a1e396a5af08d57d39b71c664f722d8))
+
 ## [1.45.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.3...@docs/website@1.45.4) (2024-03-07)
 
 **Note:** Version bump only for package @docs/website
