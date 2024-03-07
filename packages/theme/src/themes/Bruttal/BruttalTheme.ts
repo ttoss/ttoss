@@ -272,7 +272,6 @@ export const BruttalTheme: Theme = {
       ':is(:focus-within, :hover):not(:disabled)': {
         color: 'onHighlight',
         backgroundColor: 'highlight',
-        border: 'highlight',
         borderColor: 'highlight',
       },
     },

@@ -7,6 +7,8 @@ test.each([
   componentsModule.ToastContainer,
   componentsModule.toast,
   componentsModule.Markdown,
+  componentsModule.Menu,
+  componentsModule.Drawer,
 ])('should export components %#', (Component) => {
   expect(Component).toBeDefined();
 });
