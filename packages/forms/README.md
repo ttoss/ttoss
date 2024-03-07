@@ -45,6 +45,10 @@ export const FormComponent = () => {
 
 **WARNING:** I18n is necessary as `Forms` module has some integrations with it.
 
+## React Hook Form
+
+It exposes all the API from react-hook-form, so you can use all the methods and properties from it. Check the [React Hook Form](https://react-hook-form.com/docs) documentation for more details.
+
 ## FormFieldSelect support for Default Value
 
 FormFieldSelect has support for default values, by assigning the first option defined or the value passed to it in the parameter `defaultValue`.

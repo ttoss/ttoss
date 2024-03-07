@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jest/no-mocks-import */
 import { InterfaceTypeComposer, schemaComposer } from 'graphql-compose';
 import { UserTC, findByIdResolver } from './__mocks__/UserTC';
 import { getNodeFieldConfig } from '../../../src/composeWithRelay/nodeFieldConfig';
 import { getNodeInterface } from '../../../src/composeWithRelay/nodeInterface';
-import { toGlobalId } from '../../../src';
+import { toGlobalId } from '@ttoss/ids';
 
 describe('nodeFieldConfig', () => {
   const typeToFindByIdMap = {
@@ -43,7 +44,7 @@ describe('nodeFieldConfig', () => {
 
   test('should return null if findById not defined for type', () => {
     const source = {};
-    const args = { id: toGlobalId('UnexistedType', 1) };
+    const args = { id: toGlobalId('UnexistedType', '1') };
     const context = {};
     const info = {};
     expect(config.resolve(source, args, context, info)).toBeNull();
@@ -51,7 +52,7 @@ describe('nodeFieldConfig', () => {
 
   test('should return Promise if type exists, but id not exist', () => {
     const source = {};
-    const args = { id: toGlobalId('User', 666) };
+    const args = { id: toGlobalId('User', '666') };
     const context = {};
     const info = {};
     expect(config.resolve(source, args, context, info)).toBeInstanceOf(Promise);
@@ -59,7 +60,7 @@ describe('nodeFieldConfig', () => {
 
   test('should return Promise with user data', async () => {
     const source = {};
-    const args = { id: toGlobalId('User', 1) };
+    const args = { id: toGlobalId('User', '1') };
     const context = {};
     const info = {};
     const res: any = await config.resolve(source, args, context, info);

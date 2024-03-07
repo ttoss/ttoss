@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.3](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.24.2...@ttoss/eslint-config@1.24.3) (2024-03-06)
+
+### Bug Fixes
+
+- add index.js to files ([#502](https://github.com/ttoss/ttoss/issues/502)) ([dcdbec0](https://github.com/ttoss/ttoss/commit/dcdbec0329e75af51a4d2f4e785ed071e66daaf0))
+
 ## [1.24.2](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.24.1...@ttoss/eslint-config@1.24.2) (2024-02-26)
 
 ### Bug Fixes

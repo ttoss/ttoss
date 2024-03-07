@@ -5,10 +5,10 @@ This package provides a opinionated way to create an AppSync API using [`@ttoss/
 ## Installation
 
 ```bash
-yarn add @ttoss/appsync-api @ttoss/graphql-api graphql
+pnpm add @ttoss/appsync-api @ttoss/graphql-api graphql
 ```
 
-## Quickstart
+## Getting Started
 
 You can create and deploy an AppSync API in four steps:
 
@@ -59,45 +59,15 @@ Now you can deploy your API using `carlin deploy`:
 carlin deploy
 ```
 
-## Advanced Usage
+## API
 
-### Middlewares
+### Resolvers Context
 
-You can add middlewares compatible with [`graphql-middleware`](https://github.com/dimatill/graphql-middleware) to the server using the `middlewares` option.
+The `createAppSyncResolverHandler` function adds the `context` object to the resolvers. This object contains the following properties:
 
-```ts
-import { createAppSyncResolverHandler } from '@ttoss/appsync-api';
-import { schemaComposer } from './schemaComposer';
-import { allow, deny, shield } from 'graphql-shield';
-
-const NotAuthorizedError = new Error('Not authorized!');
-/**
- * The error name is the same value `errorType` on GraphQL errors response.
- */
-NotAuthorizedError.name = 'NotAuthorizedError';
-
-const permissions = shield(
-  {
-    Query: {
-      '*': deny,
-      author: allow,
-    },
-    Author: {
-      id: allow,
-      name: allow,
-    },
-  },
-  {
-    fallbackRule: deny,
-    fallbackError: NotAuthorizedError,
-  }
-);
-
-export const handler = createAppSyncResolverHandler({
-  schemaComposer,
-  middlewares: [permissions],
-});
-```
+- `handler` - [AWS Lambda context object](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html).
+- `request` - AppSync request object (see [Request section](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html)).
+- `identity` - AppSync identity object (see [Identity section](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html)).
 
 ### Custom domain name
 
