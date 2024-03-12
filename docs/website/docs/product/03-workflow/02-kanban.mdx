@@ -4,44 +4,17 @@ title: Kanban
 
 We use the [Kanban](https://arantespp.com/zettel/kanban) framework to manage our workflow and ensure that we deliver high-quality products to our customers on time and on budget. Kanban is a visual and flexible approach to task management that enables us to optimize our workflow, reduce waste, and increase efficiency.
 
-In this document, we'll provide an overview of the Kanban framework and explain how we use it to manage our workflow. We'll also describe our [Workflow Phases](#workflow-phases) and the different [Statuses](#statuses) that tasks can go through, as well as provide tips and best practices for using Kanban effectively.
-
-## Workflow Phases
-
-As a team, we have organized our workflow into different high-level phases, which we call Workflow Phases. These phases represent the different stages that a task can go through, from ideation to completion. We use these phases to track progress, identify bottlenecks, and optimize our processes for efficiency and quality.
-
-Our Workflow Phases consist of [Discovery](#discovery), [Preparation](#preparation), [Execution](#execution), [Transition](#transition), and [Closure](#closure). By organizing our workflow into these different phases, we can more easily track the progress of tasks and ensure that everyone on the team is on the same page. We can also identify areas for improvement and make changes to our processes to increase efficiency and quality.
-
-### Discovery
-
-This group focuses on capturing new ideas and requirements, documenting them in the backlog, and prioritizing them for further consideration.
-
-### Preparation
-
-This group focuses on planning, sorting, and preparing tasks for execution, including defining requirements, assigning tasks, and developing timelines.
-
-### Execution
-
-This group focuses on executing tasks, acceptance, monitoring progress, and addressing any issues that arise during the execution phase. This group also includes tasks that require additional input or support from external stakeholders, which are tracked in the BLOCKED status.
-
-### Transition
-
-This group focuses on preparing tasks for handoff, coordinating with external stakeholders as necessary, and collecting feedback and metrics to validate the success of the task.
-
-### Closure
-
-This group focuses on closing out completed tasks, analyzing the outcomes and results, and identifying areas for improvement in future iterations of the workflow. This group also includes tasks that have been canceled, which may require additional analysis or documentation to understand the reasons for cancellation.
+In this document, we'll provide an overview of the Kanban framework and explain how we use it to manage our workflow. We'll also describe the [Statuses](#statuses) that tasks can go through, as well as provide tips and best practices for using Kanban effectively.
 
 ## Statuses
 
-In this section, we'll provide an overview of the different Kanban statuses and their descriptions. Each status represents a different stage of the [Workflow Phases](#workflow-phases) and indicates the progress of the task towards completion.
+In this section, we'll provide an overview of the different Kanban statuses and their descriptions.
 
-| Status         | Workflow Phase              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| -------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BACKLOG        | [Discovery](#discovery)     | It represents a list of tasks or items that need to be completed in the future. These items are typically prioritized based on their importance and urgency, and they are added to the backlog as they are identified.                                                                                                                                                                                                                                                 |
-| READY TO START | [Preparation](#preparation) | It indicates the tasks that the team already planned and is ready to begin working on them. The tasks in this status are ordered by priority or urgency.                                                                                                                                                                                                                                                                                                               |
-| WORKING        | [Execution](#execution)     | it represents tasks that are currently being worked on by team members, including review and tests activities.                                                                                                                                                                                                                                                                                                                                                         |
-| BLOCKED        | [Execution](#execution)     | If a task in the WORKING status encounters an issue or requires external help that the product team cannot resolve, the team moves the task to BLOCKED status. While in the BLOCKED status, the team seeks help or input from external stakeholders, such as subject matter experts or the customer, to address the issue or complete the task. Once the product team receives the external help and they can resume the task, it is moved back to the WORKING status. |
-| HANDOFF        | [Transition](#transition)   | It represents the completed handoff of a task to the next stage of the workflow. At this stage, the task has been moved into production and is undergoing validation to ensure it meets the necessary criteria and standards before proceeding to completion.                                                                                                                                                                                                          |
-| CANCELED       | [Closure](#closure)         | It is used to indicate that a task has been canceled or abandoned for some reason. The reason for the cancellation may be recorded for future reference.                                                                                                                                                                                                                                                                                                               |
-| COMPLETED      | [Closure](#closure)         | It represents tasks that have been successfully completed and delivered to the customer or end-user.                                                                                                                                                                                                                                                                                                                                                                   |
+| Status         | Description                                                                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BACKLOG        | This status represents a list of tasks or items awaiting execution in the future. Tasks in the backlog are prioritized based on their importance, urgency, and dependencies. They serve as a reservoir of work to be pulled into active development as capacity allows.                                                        |
+| READY TO START | Indicating tasks that have been planned and are prepared for immediate execution. Tasks in this status are prioritized and ready to be picked up by team members for implementation. They are typically ordered based on business value, dependencies, or other criteria determined by the team.                               |
+| WORKING        | Tasks in this status are actively being worked on by team members. This includes implementation, review, and testing activities. Work progresses through this stage until it is completed or encounters a blocking issue.                                                                                                      |
+| BLOCKED        | When a task encounters an impediment that prevents progress, it is moved into the BLOCKED status. This may occur due to dependencies, resource constraints, or unresolved issues. Team members actively seek resolutions to unblock tasks, often involving collaboration with external stakeholders or subject matter experts. |
+| CANCELED       | This status indicates that a task has been terminated or abandoned for various reasons. The decision to cancel a task may stem from changes in priorities, feasibility concerns, or shifting business requirements. The reason for cancellation is typically documented for reference and future analysis.                     |
+| COMPLETED      | Tasks in this status have been successfully executed and delivered to the customer or end-user. They have passed all quality checks and meet the specified criteria for completion. Completed tasks may undergo further evaluation or feedback gathering to inform future iterations or improvements.                          |
