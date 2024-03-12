@@ -18,3 +18,13 @@ In this section, we'll provide an overview of the different Kanban statuses and 
 | BLOCKED        | When a task encounters an impediment that prevents progress, it is moved into the BLOCKED status. This may occur due to dependencies, resource constraints, or unresolved issues. Team members actively seek resolutions to unblock tasks, often involving collaboration with external stakeholders or subject matter experts. |
 | CANCELED       | This status indicates that a task has been terminated or abandoned for various reasons. The decision to cancel a task may stem from changes in priorities, feasibility concerns, or shifting business requirements. The reason for cancellation is typically documented for reference and future analysis.                     |
 | COMPLETED      | Tasks in this status have been successfully executed and delivered to the customer or end-user. They have passed all quality checks and meet the specified criteria for completion. Completed tasks may undergo further evaluation or feedback gathering to inform future iterations or improvements.                          |
+
+## FAQ
+
+### How to handle tasks that the team have deployed in production and are waiting for feedback?
+
+Tasks that have been deployed to production and are awaiting feedback from customers or end-users should be moved to the BLOCKED status. This indicates that the task is not yet complete and is pending further validation or acceptance. Once feedback is received and any necessary adjustments are made, the task can be moved to the COMPLETED status.
+
+### What to do when a task is blocked?
+
+When a task is blocked, team members should actively seek to resolve the impediment. This may involve collaborating with other team members, seeking assistance from external stakeholders, or escalating the issue to management. The goal is to unblock the task as quickly as possible to minimize delays and maintain a steady workflow. **It's more important to unblock a task than to start a new one.**
