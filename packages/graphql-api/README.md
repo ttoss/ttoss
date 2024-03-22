@@ -18,6 +18,21 @@ pnpm add @ttoss/graphql-api graphql
 
 This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-export all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
 
+## On `tsconfig.json` Schema
+
+This library uses the `tsconfig.json` file from the target package it is being applied on. In order to interpret the path aliases that it relies on, it uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that uses such paths. Therefore, the `tsconfig.json` file must have the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) and the [`paths`](https://www.typescriptlang.org/tsconfig#paths) properties filled accordingly. An example that follows such recommendations is given below:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    }
+  }
+}
+```
+
 ### Type Creation
 
 For more examples about how to create types, check the [`graphql-compose`](https://graphql-compose.github.io/docs/basics/understanding-types.html) documentation.
