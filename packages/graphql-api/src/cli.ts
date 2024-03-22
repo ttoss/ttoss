@@ -14,17 +14,19 @@ const logPrefix = 'graphql-api';
 const tsConfig = require(path.resolve(process.cwd(), 'tsconfig.json'));
 let cleanup = () => {};
 try {
-  const baseUrl = tsConfig.compilerOptions.baseUrl;
-  const paths = tsConfig.compilerOptions.paths;
+  const baseUrl = tsConfig?.compilerOptions?.baseUrl;
+  const paths = tsConfig?.compilerOptions?.paths;
   if ((baseUrl && !paths) || (!baseUrl && paths)) {
     throw new Error(
       "tsconfig.json must have 'baseUrl' and 'paths' properties."
     );
   }
-  cleanup = registerTsPaths({
-    baseUrl: tsConfig.compilerOptions.baseUrl,
-    paths: tsConfig.compilerOptions.paths,
-  });
+  if (baseUrl && paths) {
+    cleanup = registerTsPaths({
+      baseUrl: tsConfig.compilerOptions.baseUrl,
+      paths: tsConfig.compilerOptions.paths,
+    });
+  }
 } catch (error: unknown) {
   error instanceof Error && log.error(logPrefix, error.message);
   process.exit(1);
