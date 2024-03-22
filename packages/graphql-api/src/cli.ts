@@ -5,11 +5,17 @@ import { codegen } from '@graphql-codegen/core';
 import { hideBin } from 'yargs/helpers';
 import { parse } from 'graphql';
 import { register } from 'ts-node';
+import { register as registerTsPaths } from 'tsconfig-paths';
 import log from 'npmlog';
 import yargs from 'yargs';
 
 const logPrefix = 'graphql-api';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tsConfig = require(path.resolve(process.cwd(), 'tsconfig.json'));
+const cleanup = registerTsPaths({
+  baseUrl: tsConfig.compilerOptions.baseUrl,
+  paths: tsConfig.compilerOptions.paths,
+});
 register({
   transpileOnly: true,
   compilerOptions: {
@@ -77,7 +83,7 @@ const buildSchema = async ({ directory }: { directory: string }) => {
     'schema/types.ts',
     `${typesOutputIgnore}\n${typesOutput}`
   );
-
+  cleanup();
   log.info(logPrefix, 'Schema and types generated!');
 };
 
