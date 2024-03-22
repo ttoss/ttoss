@@ -12,6 +12,19 @@ import yargs from 'yargs';
 const logPrefix = 'graphql-api';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const tsConfig = require(path.resolve(process.cwd(), 'tsconfig.json'));
+try {
+  const baseUrl = tsConfig.compilerOptions.baseUrl;
+  const paths = tsConfig.compilerOptions.paths;
+  if (!baseUrl || !paths) {
+    throw new Error(
+      "tsconfig.json must have 'baseUrl' and 'paths' properties."
+    );
+  }
+} catch (error: unknown) {
+  error instanceof Error && log.error(logPrefix, error.message);
+  process.exit(1);
+}
+
 const cleanup = registerTsPaths({
   baseUrl: tsConfig.compilerOptions.baseUrl,
   paths: tsConfig.compilerOptions.paths,
