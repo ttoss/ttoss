@@ -64,6 +64,11 @@
         "import": "./dist/esm/MultistepForm/index.js",
         "require": "./dist/MultistepForm/index.js",
         "types": "./dist/MultistepForm/index.d.ts"
+      },
+      "./brazil": {
+        "import": "./dist/esm/Brazil/index.js",
+        "require": "./dist/Brazil/index.js",
+        "types": "./dist/Brazil/index.d.ts"
       }
     },
     "provenance": true
