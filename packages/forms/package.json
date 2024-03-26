@@ -12,7 +12,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./multistep-form": "./src/MultistepForm/index.ts"
+    "./multistep-form": "./src/MultistepForm/index.ts",
+    "./brazil": "./src/Brazil/index.ts"
   },
   "files": [
     "dist",

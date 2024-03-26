@@ -1,5 +1,6 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldCEP, useForm, yup, yupResolver } from '../../src';
+import { Form, useForm, yup, yupResolver } from '../../src';
+import { FormFieldCEP } from '../../src/Brazil';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
 test('call onSubmit with correct data', async () => {

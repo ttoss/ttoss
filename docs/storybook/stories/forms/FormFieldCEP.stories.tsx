@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Flex } from '@ttoss/ui';
-import { Form, FormFieldCEP, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
+import { FormFieldCEP } from '@ttoss/forms/brazil';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -27,10 +28,10 @@ const Template: Story = () => {
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCEP name="cep" label="CNPJ:" />
+        <FormFieldCEP name="cep" label="cep:" />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCEP name="cepDesabled" label="CNPJ:" disabled />
+        <FormFieldCEP name="cepDesabled" label="cep:" disabled />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit

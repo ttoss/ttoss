@@ -16,9 +16,6 @@ export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
-export { FormFieldCNPJ } from './Brazil/FormFieldCNPJ';
-export { FormFieldPhone } from './Brazil/FormFieldPhone';
-export { FormFieldCEP } from './Brazil/FormFieldCEP';
 
 /**
  * Export everything from react-hook-form without using export *

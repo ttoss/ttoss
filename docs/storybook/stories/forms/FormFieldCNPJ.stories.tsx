@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Flex } from '@ttoss/ui';
-import { Form, FormFieldCNPJ, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
+import { FormFieldCNPJ } from '@ttoss/forms/brazil';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
