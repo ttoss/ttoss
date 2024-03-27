@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.25...@docs/storybook@2.1.0) (2024-03-27)
+
+### Features
+
+- create formFieldInputs Brazil version ([#512](https://github.com/ttoss/ttoss/issues/512)) ([a67499b](https://github.com/ttoss/ttoss/commit/a67499bdd32bfc507726c3477842e10ee94867e7))
+
 ## [2.0.25](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.24...@docs/storybook@2.0.25) (2024-03-07)
 
 **Note:** Version bump only for package @docs/storybook
