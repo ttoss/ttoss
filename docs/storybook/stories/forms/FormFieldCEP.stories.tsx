@@ -12,7 +12,6 @@ export default {
 
 const schema = yup.object({
   cep: yup.string().required('Value is required'),
-  cepDesabled: yup.string(),
 });
 
 const Template: Story = () => {
@@ -28,10 +27,10 @@ const Template: Story = () => {
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCEP name="cep" label="cep:" />
+        <FormFieldCEP name="cep" label="CEP:" />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCEP name="cepDesabled" label="cep:" disabled />
+        <FormFieldCEP name="cepDisabled" label="CEP:" disabled />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit

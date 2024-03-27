@@ -1,25 +1,41 @@
-import {
-  FormFieldPatternFormat,
-  FormFieldPatternFormatProps,
-} from '../FormFieldPatternFormat';
+import { FormField } from '../FormField';
+import { Input } from '@ttoss/ui';
+
+import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 export type FormFieldPhoneProps = {
   label: string;
   name: string;
-} & Partial<FormFieldPatternFormatProps>;
+} & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
   label,
   name,
-  ...formFieldPatternFormatProps
+  ...patternFormatProps
 }: FormFieldPhoneProps) => {
   return (
-    <FormFieldPatternFormat
+    <FormField
       name={name}
       label={label}
-      format={'(##) #####-####' || '(##) ####-#####'}
-      placeholder="(11) 91234-1234"
-      {...formFieldPatternFormatProps}
+      render={({ field }) => {
+        const format =
+          field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';
+
+        return (
+          <PatternFormat
+            name={field.name}
+            value={field.value}
+            onBlur={field.onBlur}
+            onValueChange={(values) => {
+              field.onChange(values.value);
+            }}
+            format={format}
+            customInput={Input}
+            placeholder="(11) 91234-1234"
+            {...patternFormatProps}
+          />
+        );
+      }}
     />
   );
 };

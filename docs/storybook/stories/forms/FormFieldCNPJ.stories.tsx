@@ -12,7 +12,6 @@ export default {
 
 const schema = yup.object({
   cnpj: yup.string().required('Value is required'),
-  cnpjdisabled: yup.string(),
 });
 
 const Template: Story = () => {
@@ -31,7 +30,7 @@ const Template: Story = () => {
         <FormFieldCNPJ name="cnpj" label="CNPJ:" />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCNPJ name="cnpjdisabled" label="CNPJ:" disabled />
+        <FormFieldCNPJ name="cnpjDisabled" label="CNPJ:" disabled />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit

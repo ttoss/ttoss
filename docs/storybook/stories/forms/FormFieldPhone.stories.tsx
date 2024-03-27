@@ -12,7 +12,6 @@ export default {
 
 const schema = yup.object({
   phone: yup.string().required('Value is required'),
-  phoneDisabled: yup.string(),
 });
 
 const Template: Story = () => {
@@ -28,10 +27,10 @@ const Template: Story = () => {
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldPhone name="phone" label="telefone:" />
+        <FormFieldPhone name="phone" label="Telefone:" />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldPhone name="phoneDisabled" label="telefone:" disabled />
+        <FormFieldPhone name="phoneDisabled" label="Telefone:" disabled />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit
