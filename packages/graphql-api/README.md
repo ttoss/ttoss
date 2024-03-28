@@ -34,6 +34,19 @@ const UserTC = schemaComposer.createObjectTC({
 });
 ```
 
+This library uses the `tsconfig.json` file from the target package it is being applied on. If you are using relative imports in your package you can skip this section, but, if you use path aliases in your typescript code by leveraging the [`paths`](https://www.typescriptlang.org/tsconfig#paths) property, the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) must be filled accordingly.This is needed because in order to interpret the path aliases, `ts-node` uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that uses this config, and `tsconfig-paths` needs both `baseUrl` and `paths` values to be non-null. A `tsconfig.json` example that follows such recommendations is given below:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    }
+  }
+}
+```
+
 ### Resolvers
 
 ### Integrate All Modules

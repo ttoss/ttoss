@@ -37,6 +37,7 @@
     "graphql-shield": "^7.6.5",
     "npmlog": "^7.0.1",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {
