@@ -21,12 +21,12 @@ export const Search = ({
 
   React.useEffect(() => {
     onChange(debouncedValue);
-  }, [debouncedValue]);
+  }, [debouncedValue, onChange]);
 
   return (
     <Input
       leadingIcon={loading ? 'loading' : 'search'}
-      value={text}
+      defaultValue={text}
       onChange={(e) => {
         return setText(e.target.value);
       }}
