@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.1.0...@docs/storybook@2.2.0) (2024-04-02)
+
+### Features
+
+- add components table ([#514](https://github.com/ttoss/ttoss/issues/514)) ([958f79c](https://github.com/ttoss/ttoss/commit/958f79c6ee7301b6c7b3671f7c846a1f6a2c7b03))
+
 # [2.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.0.25...@docs/storybook@2.1.0) (2024-03-27)
 
 ### Features
