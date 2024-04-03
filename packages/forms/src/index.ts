@@ -1,4 +1,5 @@
 import './i18n';
+import './yup';
 
 export { yupResolver } from '@hookform/resolvers/yup';
 export * as yup from 'yup';

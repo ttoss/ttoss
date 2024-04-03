@@ -4,20 +4,20 @@ import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCNPJ } from '@ttoss/forms/brazil';
 import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { isCnpjValid } from '@ttoss/forms/brazil';
 
 export default {
   title: 'Forms/FormFieldCNPJ',
   component: FormFieldCNPJ,
 } as Meta;
 
+// yup.addMethod(yup.string, 'cnpj', function () {
+//   return this.test('valid-cnpj', 'Invalid CNPJ', (value) => {
+//     return isCnpjValid(value);
+//   });
+// });
+
 const schema = yup.object().shape({
-  cnpj: yup
-    .string()
-    .required('value is required')
-    .test('valid-cnpj', 'Invalid CNPJ', (value) => {
-      return isCnpjValid(value);
-    }),
+  cnpj: yup.string().required('value is required').cnpj(),
 });
 
 const Template: Story = () => {
