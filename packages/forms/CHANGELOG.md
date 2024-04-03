@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.22.7...@ttoss/forms@0.23.0) (2024-03-27)
+
+### Features
+
+- create formFieldInputs Brazil version ([#512](https://github.com/ttoss/ttoss/issues/512)) ([a67499b](https://github.com/ttoss/ttoss/commit/a67499bdd32bfc507726c3477842e10ee94867e7))
+
 ## [0.22.7](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.22.6...@ttoss/forms@0.22.7) (2024-03-07)
 
 **Note:** Version bump only for package @ttoss/forms
