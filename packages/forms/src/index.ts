@@ -1,8 +1,5 @@
-import './i18n';
-import './yup';
-
 export { yupResolver } from '@hookform/resolvers/yup';
-export * as yup from 'yup';
+export { yup } from './yup/yup';
 
 export { Form } from './Form';
 export { FormField } from './FormField';
