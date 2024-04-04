@@ -23,11 +23,7 @@
     "build": "tsup",
     "test": "jest"
   },
-  "sideEffects": [
-    "./src/yup/i18n.ts",
-    "./src/yup/schema.ts",
-    "./src/yup/typings.d.ts"
-  ],
+  "sideEffects": true,
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.3.4",
