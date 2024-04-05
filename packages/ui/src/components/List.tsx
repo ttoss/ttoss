@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export interface ListProps extends HTMLProps<HTMLUListElement> {
+export interface ListProps extends React.HTMLProps<HTMLUListElement> {
   children: React.ReactNode;
 }
 
