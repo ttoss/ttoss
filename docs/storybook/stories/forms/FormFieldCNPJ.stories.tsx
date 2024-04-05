@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Flex } from '@ttoss/ui';
 import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCNPJ } from '@ttoss/forms/brazil';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 export default {
@@ -10,11 +10,11 @@ export default {
   component: FormFieldCNPJ,
 } as Meta;
 
-const schema = yup.object({
-  cnpj: yup.string().required('Value is required'),
+const schema = yup.object().shape({
+  cnpj: yup.string().required('value is required').cnpj(),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
