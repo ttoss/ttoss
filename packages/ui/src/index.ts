@@ -48,6 +48,8 @@ export { CloseButton, type CloseButtonProps } from './components/CloseButton';
 export { InputNumber, type InputNumberProps } from './components/InputNumber';
 export { Stack, type StackProps } from './components/Stack';
 export { Paragraph, type ParagraphProps } from './components/Paragraph';
+export { List, type ListProps } from './components/List';
+export { ListItem, type ListItemProps } from './components/ListItem';
 export {
   InputPassword,
   type InputPasswordProps,
