@@ -1,6 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 
-import { List, ListItem } from '@ttoss/ui';
+import { List, ListItem } from '@ttoss/components';
 
 export default {
   title: 'Components/List',
