@@ -14,6 +14,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./list": "./src/components/List/index.ts",
     "./table": "./src/components/Table.tsx"
   },
   "files": [
@@ -68,6 +69,10 @@
       ".": {
         "types": "./dist/index.d.ts",
         "import": "./dist/esm/index.js"
+      },
+      "./list": {
+        "types": "./dist/List.d.ts",
+        "import": "./dist/esm/List.js"
       },
       "./table": {
         "types": "./dist/components/Table.d.ts",
