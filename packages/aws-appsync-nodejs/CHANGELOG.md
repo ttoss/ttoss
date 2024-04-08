@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.8.2 (2024-04-08)
+
+### Bug Fixes
+
+- react-hook-form exports ([#506](https://github.com/ttoss/ttoss/issues/506)) ([14c1446](https://github.com/ttoss/ttoss/commit/14c1446ef9a8d871835193f22cde4ea7b502029a))
+
 ## [1.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.0...@ttoss/aws-appsync-nodejs@1.8.1) (2024-02-24)
 
 **Note:** Version bump only for package @ttoss/aws-appsync-nodejs
