@@ -67,3 +67,6 @@ Furthermore, we configure `publishConfig` to point to the `dist` folder, so when
 ### Why does `i18n` command on `turbo.json` depends on `^build`?
 
 The `i18n` command depends on `^build` because it uses the [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) package to extract the translations from the source code and generate the translation files, so it needs to be built before running the `i18n` command. You can't add `@ttoss/i18n-cli#build` as a dependency of `i18n` because it would create a circular dependency.
+
+### Why doesn't TypeScript find components exported using `exports`?
+
