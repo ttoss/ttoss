@@ -158,7 +158,7 @@ In this example, the `Search` component receives the current search text and a h
 
 ### List
 
-The `List` component is a React component that renders an unordered list (<ul>) and accepts
+The `List` component is a React component that renders an unordered list `(<ul>)` and accepts
 `ListItem` as its children. Each ListItem can contain any React content, including other components.
 
 ```tsx
@@ -177,7 +177,7 @@ const MyComponent = () => (
 );
 ```
 
-In this example, `List` is used to render an <ul> list with four items. The last item contains a custom React component (CustomComponent), demonstrating that ListItem can receive any React content as its children.
+In this example, `List` is used to render an `<ul>` list with four items. The last item contains a custom React component (CustomComponent), demonstrating that ListItem can receive any React content as its children.
 
 This is a basic example of how to use the `List` component with `ListItem`. You can customize the content and styles as needed to fit your project requirements.
 
