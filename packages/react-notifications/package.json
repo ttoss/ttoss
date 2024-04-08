@@ -43,9 +43,6 @@
     "React",
     "notifications"
   ],
-  "engines": {
-    "node": ">=16"
-  },
   "publishConfig": {
     "access": "public",
     "exports": {

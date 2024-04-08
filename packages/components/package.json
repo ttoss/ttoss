@@ -60,9 +60,6 @@
     "React",
     "components"
   ],
-  "engines": {
-    "node": ">=16"
-  },
   "publishConfig": {
     "access": "public",
     "exports": {

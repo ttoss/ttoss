@@ -20,8 +20,5 @@
     "@ttoss/graphql-api-server": "workspace:^",
     "carlin": "workspace:^",
     "tsx": "^4.6.2"
-  },
-  "engines": {
-    "node": ">=20.0.0"
   }
 }
