@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.45.11](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.10...@docs/website@1.45.11) (2024-04-08)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.45.10](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.9...@docs/website@1.45.10) (2024-04-05)
 
 **Note:** Version bump only for package @docs/website
