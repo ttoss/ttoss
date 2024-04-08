@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/forms",
-  "version": "0.22.7",
+  "version": "0.23.1",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -12,7 +12,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./multistep-form": "./src/MultistepForm/index.ts"
+    "./multistep-form": "./src/MultistepForm/index.ts",
+    "./brazil": "./src/Brazil/index.ts"
   },
   "files": [
     "dist",
@@ -26,9 +27,9 @@
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.3.4",
-    "react-hook-form": "^7.51.0",
-    "react-number-format": "^5.3.3",
-    "yup": "^1.3.3"
+    "react-hook-form": "^7.51.2",
+    "react-number-format": "^5.3.4",
+    "yup": "^1.4.0"
   },
   "peerDependencies": {
     "@ttoss/react-i18n": "workspace:^",
@@ -49,7 +50,7 @@
     "react-error-boundary": "^4.0.13",
     "theme-ui": "^0.16.2",
     "tsup": "^8.0.2",
-    "yup": "^1.3.3"
+    "yup": "^1.4.0"
   },
   "publishConfig": {
     "access": "public",
@@ -63,6 +64,11 @@
         "import": "./dist/esm/MultistepForm/index.js",
         "require": "./dist/MultistepForm/index.js",
         "types": "./dist/MultistepForm/index.d.ts"
+      },
+      "./brazil": {
+        "import": "./dist/esm/Brazil/index.js",
+        "require": "./dist/Brazil/index.js",
+        "types": "./dist/Brazil/index.d.ts"
       }
     },
     "provenance": true

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "1.30.6",
+  "version": "1.31.0",
   "description": "React components for ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
@@ -15,7 +15,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./List": "./src/components/List.tsx",
-    "./ListItem": "./src/components/ListItem.tsx"
+    "./ListItem": "./src/components/ListItem.tsx",
+    "./table": "./src/components/Table.tsx"
   },
   "files": [
     "dist",
@@ -29,6 +30,7 @@
   "sideEffects": false,
   "dependencies": {
     "@emotion/css": "^11.11.2",
+    "@tanstack/react-table": "^8.15.3",
     "@theme-ui/css": "^0.16.2",
     "@types/react-modal": "^3.16.3",
     "react-accessible-accordion": "^5.0.0",
@@ -72,6 +74,10 @@
       "./list": {
         "types": "./dist/List.d.ts",
         "import": "./dist/esm/List.js"
+      },
+      "./table": {
+        "types": "./dist/components/Table.d.ts",
+        "import": "./dist/esm/components/Table.js"
       }
     },
     "provenance": true
