@@ -163,7 +163,7 @@ The `List` component is a React component that renders an unordered list `(<ul>)
 
 ```tsx
 import React from 'react';
-import { List, ListItem } from '@ttoss/components';
+import { List, ListItem } from '@ttoss/components/List';
 
 const MyComponent = () => (
   <List>
