@@ -14,7 +14,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./List": "./src/components/List/index.ts",
+    "./List": "./src/components/list/index.ts",
     "./table": "./src/components/Table.tsx"
   },
   "files": [

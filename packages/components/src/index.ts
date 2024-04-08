@@ -6,4 +6,3 @@ export * from './components/Markdown';
 export * from './components/Search';
 export * from './components/Menu';
 export * from './components/Drawer';
-export * from './components/List/index';

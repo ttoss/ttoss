@@ -20,6 +20,31 @@ pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
 
 You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/components).
 
+### List
+
+The `List` component is a React component that renders an unordered list `(<ul>)` and accepts
+`ListItem` as its children. Each ListItem can contain any React content, including other components.
+
+```tsx
+import React from 'react';
+import { List, ListItem } from '@ttoss/components/List';
+
+const MyComponent = () => (
+  <List>
+    <ListItem>Item 1</ListItem>
+    <ListItem>Item 2</ListItem>
+    <ListItem>Item 3</ListItem>
+    <ListItem>
+      <CustomComponent />
+    </ListItem>
+  </List>
+);
+```
+
+In this example, `List` is used to render an `<ul>` list with four items. The last item contains a custom React component (CustomComponent), demonstrating that ListItem can receive any React content as its children.
+
+This is a basic example of how to use the `List` component with `ListItem`. You can customize the content and styles as needed to fit your project requirements.
+
 ### Markdown
 
 Markdown uses [react-markdown](https://remarkjs.github.io/react-markdown/) under the hood, so the props are the same. You can update the elements as you want. Ex:
@@ -155,31 +180,6 @@ const SearchComponent = () => {
 ```
 
 In this example, the `Search` component receives the current search text and a handler function to update this text. The `loading` prop can be used to display a loading indicator, and the `debounce` prop controls the debounce delay.
-
-### List
-
-The `List` component is a React component that renders an unordered list `(<ul>)` and accepts
-`ListItem` as its children. Each ListItem can contain any React content, including other components.
-
-```tsx
-import React from 'react';
-import { List, ListItem } from '@ttoss/components/List';
-
-const MyComponent = () => (
-  <List>
-    <ListItem>Item 1</ListItem>
-    <ListItem>Item 2</ListItem>
-    <ListItem>Item 3</ListItem>
-    <ListItem>
-      <CustomComponent />
-    </ListItem>
-  </List>
-);
-```
-
-In this example, `List` is used to render an `<ul>` list with four items. The last item contains a custom React component (CustomComponent), demonstrating that ListItem can receive any React content as its children.
-
-This is a basic example of how to use the `List` component with `ListItem`. You can customize the content and styles as needed to fit your project requirements.
 
 ### Table
 
