@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.31.13 (2024-04-09)
+
+### Bug Fixes
+
+- export list [#520](https://github.com/ttoss/ttoss/issues/520) ([#521](https://github.com/ttoss/ttoss/issues/521)) ([43d992d](https://github.com/ttoss/ttoss/commit/43d992de61a9c834bfdc62b20a164c264d3c94b4))
+
 ## [1.31.12](https://github.com/ttoss/ttoss/compare/carlin@1.31.11...carlin@1.31.12) (2024-02-24)
 
 **Note:** Version bump only for package carlin
