@@ -5,6 +5,7 @@ jest.mock('../../src/utils', () => {
     ...jest.requireActual('../../src/utils'),
     getEnvironment: jest.fn().mockReturnValue(undefined),
     getProjectName: jest.fn().mockReturnValue(projectName),
+    getCurrentBranch: jest.fn().mockReturnValue('main'),
   };
 });
 
@@ -13,12 +14,71 @@ import {
   addDefaults,
 } from '../../src/deploy/addDefaults.cloudformation';
 import { CloudFormationTemplate } from '../../src/utils/cloudFormationTemplate';
-import { getEnvironment, getProjectName } from '../../src/utils';
+import {
+  getEnvironment,
+  getProjectName,
+  getCurrentBranch,
+} from '../../src/utils';
 
 beforeEach(() => {
   (getEnvironment as jest.Mock).mockReturnValue(undefined);
   (getProjectName as jest.Mock).mockReturnValue(projectName);
+  (getCurrentBranch as jest.Mock).mockReturnValue('main');
 });
+
+test.each([
+  {
+    originalBranchName: 'main',
+    finalBranchName: 'main',
+  },
+  {
+    originalBranchName: 'feature/branch/with/slashes',
+    finalBranchName: 'feature/branch/with/slashes',
+  },
+  {
+    originalBranchName: 'fix_export_table_#520',
+    finalBranchName: 'fix_export_table_520',
+  },
+])(
+  'should add defaults to parameters and tags',
+  async ({ originalBranchName, finalBranchName }) => {
+    (getCurrentBranch as jest.Mock).mockReturnValue(originalBranchName);
+
+    const params = {
+      StackName: 'stackName',
+      Parameters: [],
+      Tags: [],
+    };
+
+    const newParams = await addDefaults({
+      params,
+      template: {
+        AWSTemplateFormatVersion: '2010-09-09',
+        Resources: {},
+      },
+    });
+
+    expect(newParams.params).toEqual({
+      StackName: 'stackName',
+      Parameters: [
+        {
+          ParameterKey: 'Project',
+          ParameterValue: projectName,
+        },
+      ],
+      Tags: [
+        {
+          Key: 'Branch',
+          Value: finalBranchName,
+        },
+        {
+          Key: 'Project',
+          Value: projectName,
+        },
+      ],
+    });
+  }
+);
 
 test('should have critical resources types', () => {
   expect(CRITICAL_RESOURCES_TYPES).toContain('AWS::Cognito::UserPool');
