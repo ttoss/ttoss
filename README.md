@@ -70,3 +70,18 @@ The `i18n` command depends on `^build` because it uses the [`@ttoss/i18n-cli`](h
 
 ### Why doesn't TypeScript find components exported using `exports`?
 
+
+With the introduction of the new bundler value for moduleResolution, TypeScript 5.0+ supports resolution features that can be interpreted natively by TypeScript, allowing exports and imports to be enabled and disabled in package.json. To use these new definitions, it is necessary to configure TypeScript in tsconfig.json as follows:
+
+tsconfig.json
+
+```
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "moduleResolution": "bundler"
+    }
+}
+```
+This configuration requires TypeScript 4.7+ and Node.js 16+. ttoss uses exports, which implies using moduleResolution as bundler. Therefore, when importing components into projects using ttoss, it is important to note these points.
+
