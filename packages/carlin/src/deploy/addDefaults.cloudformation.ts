@@ -32,6 +32,11 @@ const addDefaultsParametersAndTagsToParams = async (
   const packageVersion = await getPackageVersion();
   const projectName = await getProjectName();
 
+  /**
+   * https://docs.aws.amazon.com/directoryservice/latest/devguide/API_Tag.html
+   */
+  const tagValuePattern = /[^a-zA-Z0-9_.:/=+\-@]/g;
+
   return {
     ...params,
     Parameters: [
@@ -48,9 +53,19 @@ const addDefaultsParametersAndTagsToParams = async (
       { Key: 'Package', Value: packageName },
       { Key: 'Project', Value: projectName },
       { Key: 'Version', Value: packageVersion },
-    ].filter(({ Value }) => {
-      return !!Value;
-    }),
+    ]
+      .filter(({ Value }) => {
+        return !!Value;
+      })
+      /**
+       * Remove invalid characters from tags values.
+       */
+      .map(({ Key, Value }) => {
+        return {
+          Key,
+          Value: Value.replace(tagValuePattern, ''),
+        };
+      }),
   };
 };
 

@@ -68,8 +68,8 @@
         "import": "./dist/esm/index.js"
       },
       "./list": {
-        "types": "./dist/List.d.ts",
-        "import": "./dist/esm/List.js"
+        "types": "./dist/components/List/index.d.ts",
+        "import": "./dist/esm/components/List/index.js"
       },
       "./table": {
         "types": "./dist/components/Table.d.ts",
