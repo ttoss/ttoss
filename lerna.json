@@ -15,7 +15,7 @@
       "message": "chore(release): publish packages"
     }
   },
-  "ignoreChanges": ["**/__fixtures__/**", "**/tests/**"],
+  "ignoreChanges": ["**/__fixtures__/**", "**/tests/**", "**/*.md"],
   "packages": [
     "challenge/packages/*",
     "docs/*",
