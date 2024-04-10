@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/next-app",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "scripts": {
     "build": "next build",
     "dev": "next dev",

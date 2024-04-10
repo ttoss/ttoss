@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "1.31.2",
+  "version": "1.31.3",
   "description": "React components for ttoss ecosystem.",
   "author": "ttoss",
   "contributors": [
@@ -68,8 +68,8 @@
         "import": "./dist/esm/index.js"
       },
       "./list": {
-        "types": "./dist/List.d.ts",
-        "import": "./dist/esm/List.js"
+        "types": "./dist/components/List/index.d.ts",
+        "import": "./dist/esm/components/List/index.js"
       },
       "./table": {
         "types": "./dist/components/Table.d.ts",
