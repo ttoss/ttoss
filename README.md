@@ -34,11 +34,11 @@ If everything goes well, you should see the Storybook running in your browser.
 
 ### Why doesn't packages/config have a `build` script?
 
-It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The others packages uses [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because the other packages would try to use `@ttoss/config` package before it was built.
+It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The other packages use [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As the `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because the other packages would try to use `@ttoss/config` package before it was built.
 
 ### Do I need to build packages before importing them?
 
-No. We use the [`exports` field](https://nodejs.org/api/packages.html#package-entry-points) to specify the package entry points of the packages, and points it to the `src` folder. For example,
+No. We use the [`exports` field](https://nodejs.org/api/packages.html#package-entry-points) to specify the package entry points of the packages and point them to the `src` folder. For example,
 
 ```json
 {
@@ -64,18 +64,16 @@ Furthermore, we configure `publishConfig` to point to the `dist` folder, so when
 }
 ```
 
-### Why does `i18n` command on `turbo.json` depends on `^build`?
+### Why does `i18n` command on `turbo.json` depend on `^build`?
 
 The `i18n` command depends on `^build` because it uses the [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) package to extract the translations from the source code and generate the translation files, so it needs to be built before running the `i18n` command. You can't add `@ttoss/i18n-cli#build` as a dependency of `i18n` because it would create a circular dependency.
 
-### Why doesn't TypeScript find components exported using `exports`?
+### Why doesn't TypeScript find components from ttoss libs?
 
 
-With the introduction of the new bundler value for moduleResolution, TypeScript 5.0+ supports resolution features that can be interpreted natively by TypeScript, allowing exports and imports to be enabled and disabled in package.json. To use these new definitions, it is necessary to configure TypeScript in tsconfig.json as follows:
+With the introduction of the new [`--moduleResolution` bundler](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0-beta/#moduleresolution-bundler), TypeScript 4.7+ supports resolution features that can be interpreted natively by TypeScript, allowing exports and imports to be enabled and disabled in package.json. Because ttoss libraries use [`exports` as package entry points](https://nodejs.org/api/packages.html#package-entry-points), you need to set `moduleResolution` as `bundler` in your project tsconfig.json if it uses webpack, rollup, or other bundlers:
 
-tsconfig.json
-
-```
+```json
 {
     "compilerOptions": {
         "target": "esnext",
@@ -83,5 +81,5 @@ tsconfig.json
     }
 }
 ```
-This configuration requires TypeScript 4.7+ and Node.js 16+. ttoss uses exports, which implies using moduleResolution as bundler. Therefore, when importing components into projects using ttoss, it is important to note these points.
 
+If your application uses Node.js without a bundler, set `moduleResolution` to `NodeNext`.
