@@ -50,22 +50,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   React.useEffect(() => {
     const updateUser = () => {
       getCurrentUser()
-        .then(async ({ userId, username }) => {
-          const session = await fetchAuthSession();
-          const idToken = session.tokens?.idToken?.toString();
-          const accessToken = session.tokens?.accessToken.toString();
+        .then(async ({ userId }) => {
+          const [session, user] = await Promise.all([
+            fetchAuthSession(),
+            fetchUserAttributes(),
+          ]);
 
-          const user = await fetchUserAttributes();
+          const idToken = session.tokens?.idToken?.toString() ?? '';
+          const accessToken = session.tokens?.accessToken.toString() ?? '';
 
           setAuthState({
             user: {
               id: userId,
-              email: username,
+              email: user.email ?? '',
               emailVerified: user.email_verified ?? '',
             },
             tokens: {
-              idToken: idToken ?? '',
-              accessToken: accessToken ?? '',
+              idToken,
+              accessToken,
               refreshToken: '',
             },
             isAuthenticated: true,
