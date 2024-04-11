@@ -21,30 +21,30 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "aws-amplify": "^6.0.12",
-    "babel-plugin-relay": "^16.0.0",
+    "aws-amplify": "^6.0.28",
+    "babel-plugin-relay": "^16.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-relay": "^16.0.0",
-    "react-router-dom": "^6.20.1",
-    "relay-runtime": "^16.0.0",
-    "vite-plugin-relay": "^2.0.0"
+    "react-relay": "^16.2.0",
+    "react-router-dom": "^6.22.3",
+    "relay-runtime": "^16.2.0",
+    "vite-plugin-relay": "^2.1.0"
   },
   "devDependencies": {
     "@terezinha-farm/api": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^18.2.58",
-    "@types/react-dom": "^18.2.19",
-    "@types/react-relay": "^16.0.5",
-    "@types/relay-runtime": "^14.1.19",
+    "@types/react": "^18.2.76",
+    "@types/react-dom": "^18.2.25",
+    "@types/react-relay": "^16.0.6",
+    "@types/relay-runtime": "^14.1.23",
     "@vitejs/plugin-react": "^4.2.1",
     "carlin": "workspace:^",
-    "relay-compiler": "^16.0.0",
-    "rollup-plugin-visualizer": "^5.9.3",
+    "relay-compiler": "^16.2.0",
+    "rollup-plugin-visualizer": "^5.12.0",
     "serve": "^14.2.1",
     "typescript": "~5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.2.8"
   }
 }
