@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.40](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.39...@ttoss/react-auth@1.7.40) (2024-04-11)
+
+### Bug Fixes
+
+- return correct user email ([#523](https://github.com/ttoss/ttoss/issues/523)) ([0db4935](https://github.com/ttoss/ttoss/commit/0db493553f8b9c748b7edf4cd47bdbeeb5f53ee0))
+
 ## [1.7.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.38...@ttoss/react-auth@1.7.39) (2024-04-09)
 
 **Note:** Version bump only for package @ttoss/react-auth

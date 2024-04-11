@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.31.3...@ttoss/components@1.31.4) (2024-04-11)
+
+### Bug Fixes
+
+- return correct user email ([#523](https://github.com/ttoss/ttoss/issues/523)) ([0db4935](https://github.com/ttoss/ttoss/commit/0db493553f8b9c748b7edf4cd47bdbeeb5f53ee0))
+
 ## [1.31.3](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.31.2...@ttoss/components@1.31.3) (2024-04-09)
 
 ### Bug Fixes

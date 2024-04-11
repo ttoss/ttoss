@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.1.5 (2024-04-11)
+
+### Bug Fixes
+
+- return correct user email ([#523](https://github.com/ttoss/ttoss/issues/523)) ([0db4935](https://github.com/ttoss/ttoss/commit/0db493553f8b9c748b7edf4cd47bdbeeb5f53ee0))
+
 ## [4.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@4.1.3...@ttoss/ui@4.1.4) (2024-03-07)
 
 **Note:** Version bump only for package @ttoss/ui
