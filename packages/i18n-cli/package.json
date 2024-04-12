@@ -22,11 +22,12 @@
   },
   "dependencies": {
     "@formatjs/cli-lib": "^6.3.3",
-    "glob": "^10.3.10",
+    "fast-glob": "^3.3.2",
     "minimist": "^1.2.8"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@types/minimist": "^1.2.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2"
   },
