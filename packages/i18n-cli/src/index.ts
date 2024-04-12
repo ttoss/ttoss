@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as glob from 'glob';
+import fg from 'fast-glob';
 import * as path from 'path';
 import { compile, extract } from '@formatjs/cli-lib';
 import minimist from 'minimist';
@@ -25,7 +25,6 @@ const getTtossExtractedTranslations = async () => {
   );
 
   const packageJson = JSON.parse(packageJsonAsString.toString());
-
   /**
    * Get all dependencies and devDependencies that start with "@ttoss"
    */
@@ -51,7 +50,6 @@ const getTtossExtractedTranslations = async () => {
     .filter((dependency, index, array) => {
       return array.indexOf(dependency) === index;
     });
-
   /**
    * For each package, read the i18n/lang/en.json file and merge them.
    */
@@ -71,31 +69,16 @@ const getTtossExtractedTranslations = async () => {
 
       const requirePath = (() => {
         if (checkIfDependencyIsSymlink) {
-          return path.join(
-            dependencyPathFromCwd,
-            /**
-             * We need to go up one level because the symlink is pointing to
-             * the folder that lists dependencies, not the actual dependency.
-             * For example, `dependencyPathFromCwd` is
-             * /ttoss/terezinha-farm/app/node_modules/@ttoss/react-auth and
-             * `checkIfDependencyIsSymlink` is ../../../../packages/react-auth.
-             * If we don't go up one level, we will get:
-             * /ttoss/terezinha-farm/packages/react-auth/i18n/lang/en.json
-             * instead of:
-             * /ttoss/packages/react-auth/i18n/lang/en.json
-             */
-            '..',
-            checkIfDependencyIsSymlink,
-            EXTRACT_FILE
-          );
+          // Resolves symlink path to get absolute path
+          const symlinkPath = path.resolve(dependencyPathFromCwd, checkIfDependencyIsSymlink);
+          return path.join(symlinkPath, EXTRACT_FILE);
+        } else {
+          // If it's not a symlink, just use the default path
+          return path.join(dependencyPathFromCwd, EXTRACT_FILE);
         }
-
-        return path.join(dependency, EXTRACT_FILE);
       })();
-
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const extractedTranslations = require(requirePath);
-
       /**
        * Add "module: dependency" to the extracted translations
        */
@@ -132,7 +115,7 @@ const getTtossExtractedTranslations = async () => {
 
   const ignore = argv.ignore || ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'];
 
-  const extractedDataAsString = await extract(glob.sync(pattern, { ignore }), {
+  const extractedDataAsString = await extract(fg.sync(pattern, { ignore }), {
     idInterpolationPattern: '[sha512:contenthash:base64:6]',
   });
 
@@ -166,7 +149,7 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Compile
    */
-  const translations = glob.sync(EXTRACT_DIR + '/*.json');
+  const translations = fg.sync('**/*.json', { cwd: EXTRACT_DIR, absolute: true });
 
   await fs.promises.mkdir(COMPILE_DIR, {
     recursive: true,
@@ -186,7 +169,6 @@ const getTtossExtractedTranslations = async () => {
       );
     }
   }
-
   /**
    * Missing
    */
