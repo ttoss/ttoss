@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm --filter @docs/storybook run dev",
-    "i18n": "ttoss-i18n --pattern './tests/**/*.test.tsx'",
+    "i18n": "ttoss-i18n --pattern 'tests/**/*.test.{ts,tsx}'",
     "pretest": "pnpm run i18n",
     "test": "jest"
   },
