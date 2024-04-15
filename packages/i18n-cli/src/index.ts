@@ -62,21 +62,7 @@ const getTtossExtractedTranslations = async () => {
         'node_modules',
         dependency
       );
-
-      const checkIfDependencyIsSymlink = await fs.promises.readlink(
-        dependencyPathFromCwd
-      );
-
-      const requirePath = (() => {
-        if (checkIfDependencyIsSymlink) {
-          // Resolves symlink path to get absolute path
-          const symlinkPath = path.resolve(dependencyPathFromCwd, checkIfDependencyIsSymlink);
-          return path.join(symlinkPath, EXTRACT_FILE);
-        } else {
-          // If it's not a symlink, just use the default path
-          return path.join(dependencyPathFromCwd, EXTRACT_FILE);
-        }
-      })();
+      const requirePath = path.join(dependencyPathFromCwd, EXTRACT_FILE);
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const extractedTranslations = require(requirePath);
       /**
