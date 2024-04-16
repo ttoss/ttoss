@@ -1,11 +1,6 @@
 module.exports = {
   reject: [
     /**
-     * @testing-library/jest-dom v6 breaks TypeScript custom matchers.
-     * Example https://github.com/testing-library/jest-dom/issues/546
-     */
-    '@testing-library/jest-dom',
-    /**
      * change-case v5 is ESM and carlin is CJS.
      */
     'change-case',
