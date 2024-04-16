@@ -19,12 +19,5 @@ module.exports = {
      * https://github.com/vercel/next.js/issues/61116
      */
     'next',
-    /**
-     * On 2023-11-22, updating to the 5.3 version of `typescript` will
-     * cause some errors:
-     * - extends `@ttoss/config/tsconfig.json` will cause an error.
-     * - tests with userEvent.setup will fail.
-     */
-    'typescript',
   ],
 };

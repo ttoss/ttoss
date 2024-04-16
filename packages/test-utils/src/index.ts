@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
-import { RenderOptions, render, renderHook } from '@testing-library/react';
+import { type RenderOptions, render, renderHook } from '@testing-library/react';
 import { createSerializer, matchers } from '@emotion/jest';
 import ResizeObserver from 'resize-observer-polyfill';
 import './assignWindowProperties';
@@ -34,9 +34,7 @@ expect.addSnapshotSerializer(createSerializer());
 /**
  * Custom render options.
  */
-let options_: {
-  wrapper?: any;
-} = {};
+let options_: any = {};
 
 export type { RenderOptions };
 
@@ -46,16 +44,7 @@ export const setOptions = (options: RenderOptions) => {
 
 export * from '@testing-library/react';
 
-const customRender = (
-  ui: React.ReactElement,
-  options?: RenderOptions
-): /**
- * Any as return to avoid the erro:
- * The inferred type of 'customRender' cannot be named without a reference to
- * node_modules/@testing-library/dom/types/queries'.
- * This is likely not portable. A type annotation is necessary.
- */
-any => {
+const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
   return render(ui, { ...options_, ...options });
 };
 
