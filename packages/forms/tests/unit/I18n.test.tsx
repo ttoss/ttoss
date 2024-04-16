@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Button, HelpText, Text } from '@ttoss/ui';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
@@ -9,7 +10,6 @@ import {
   yupResolver,
 } from '../../src';
 import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
-import { JSXElementConstructor, PropsWithChildren, useMemo } from 'react';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 import { setLocale } from 'yup';
 
@@ -37,7 +37,7 @@ describe('test i18n messages', () => {
     );
   };
 
-  const TestErrorBoundary = ({ children }: PropsWithChildren) => {
+  const TestErrorBoundary = ({ children }: React.PropsWithChildren) => {
     return (
       <ErrorBoundary fallback={<HelpText>An error ocurred</HelpText>}>
         {children}
@@ -48,7 +48,7 @@ describe('test i18n messages', () => {
   const mixed_requiredMessage = 'Campo obrigatório';
   const string_minMessage = 'Precisa de mais caracteres';
 
-  const CustomI18nProvider = ({ children }: PropsWithChildren) => {
+  const CustomI18nProvider = ({ children }: React.PropsWithChildren) => {
     return (
       <I18nProvider
         locale="pt-BR"
@@ -74,13 +74,8 @@ describe('test i18n messages', () => {
     );
   };
 
-  const renderForm = (
-    wrapper = true,
-    customProvider?: JSXElementConstructor<{
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      children: React.ReactElement<any, string | JSXElementConstructor<any>>;
-    }>
-  ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderForm = (wrapper = true, customProvider?: any) => {
     render(<I18nForm />, {
       wrapper: wrapper
         ? customProvider
@@ -208,7 +203,7 @@ describe('test i18n messages', () => {
         intl: { formatMessage },
       } = useI18n();
 
-      const schema = useMemo(() => {
+      const schema = React.useMemo(() => {
         return yup.object({
           name: yup.string().required(
             formatMessage({
