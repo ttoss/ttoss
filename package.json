@@ -34,7 +34,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
-    "eslint": "^9.0.0",
+    "eslint": "^8.57.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
@@ -45,6 +45,6 @@
   "keywords": [],
   "engines": {
     "node": "^20.0.0",
-    "pnpm": ">=8.6.0"
+    "pnpm": "^9.0.0"
   }
 }
