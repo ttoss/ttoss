@@ -1,5 +1,4 @@
 import { InputPassword } from '../../src';
-import { Providers } from '../setupTests';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
 test('should hide password by default if prop showPasswordByDefault is not passed', () => {
@@ -36,7 +35,7 @@ test('should change type visibility when click on icon', async () => {
     );
   };
 
-  render(<RenderComponent />, { wrapper: Providers });
+  render(<RenderComponent />);
 
   expect(screen.getByLabelText('Password')).toHaveAttribute('type', 'password');
 
