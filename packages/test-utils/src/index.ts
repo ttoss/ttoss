@@ -45,7 +45,13 @@ export const setOptions = (options: RenderOptions) => {
 export * from '@testing-library/react';
 
 const customRender = (ui: React.ReactElement, options?: RenderOptions) => {
-  return render(ui, { ...options_, ...options });
+  /**
+   * as any to avoid the error:
+   * The inferred type of 'customRender' cannot be named without a reference to
+   * '.pnpm/@testing-library+dom@10.0.0/node_modules/@testing-library/dom/types/queries'.
+   * This is likely not portable. A type annotation is necessary.
+   */
+  return render(ui, { ...options_, ...options }) as any;
 };
 
 const customRenderHook: typeof renderHook = (callback, options) => {
