@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.6.0 (2024-04-17)
+
+### Features
+
+- add components table ([#514](https://github.com/ttoss/ttoss/issues/514)) ([958f79c](https://github.com/ttoss/ttoss/commit/958f79c6ee7301b6c7b3671f7c846a1f6a2c7b03))
+
 ## [0.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.5.6...@ttoss/graphql-api-server@0.5.7) (2024-03-28)
 
 **Note:** Version bump only for package @ttoss/graphql-api-server
