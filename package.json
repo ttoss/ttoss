@@ -26,25 +26,25 @@
     "syncpack:list": "syncpack list-mismatches"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.1",
-    "@lerna-lite/changed": "^3.3.2",
-    "@lerna-lite/cli": "^3.3.2",
-    "@lerna-lite/list": "^3.3.2",
-    "@lerna-lite/version": "^3.3.2",
+    "@commitlint/cli": "^19.2.2",
+    "@lerna-lite/changed": "^3.3.3",
+    "@lerna-lite/cli": "^3.3.3",
+    "@lerna-lite/list": "^3.3.3",
+    "@lerna-lite/version": "^3.3.3",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
-    "eslint": "^9.0.0",
+    "eslint": "^8.57.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "syncpack": "^12.3.0",
     "turbo": "^1.13.2",
-    "typescript": "~5.2.2"
+    "typescript": "~5.4.5"
   },
   "keywords": [],
   "engines": {
     "node": "^20.0.0",
-    "pnpm": ">=8.6.0"
+    "pnpm": "^9.0.0"
   }
 }

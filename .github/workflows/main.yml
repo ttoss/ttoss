@@ -40,7 +40,7 @@ jobs:
         id: pnpm-install
         with:
           run_install: false
-          version: 8
+          version: 9
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
