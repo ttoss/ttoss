@@ -1,5 +1,5 @@
 import { jestConfig } from '@ttoss/config';
-import coverageThreshold from './jest.coverageThreshold';
+import coverageThreshold from './jest.coverageThreshold.cjs';
 
 const config = jestConfig({
   collectCoverage: true,

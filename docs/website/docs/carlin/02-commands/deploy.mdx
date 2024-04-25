@@ -1,0 +1,16 @@
+---
+title: deploy
+---
+
+import { Carlin } from '../../../src/components/Carlin';
+import { OptionAliasesInline } from '../../../src/components/OptionAliasesInline';
+
+import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deployCommandOptions';
+
+## Overview
+
+```bash
+carlin deploy
+```
+
+This command deploys the AWS cloud resources. <Carlin /> takes the template path defined by <OptionAliasesInline options={deployCommandOptions} option="template-path" to="/docs/api-reference/deploy#template-path" /> option. If this option has no value, the algorithm will search for these files to be used as template:

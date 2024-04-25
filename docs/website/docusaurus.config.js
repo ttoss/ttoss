@@ -31,7 +31,7 @@ const config = {
   },
 
   plugins: [
-    path.resolve(__dirname, 'lifecycle/carlin'),
+    path.resolve(__dirname, 'plugins/carlin'),
     ...[
       'appsync-api',
       'aws-appsync-nodejs',

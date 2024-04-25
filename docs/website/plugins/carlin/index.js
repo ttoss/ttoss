@@ -174,9 +174,24 @@
 //   };
 // };
 
+import * as deployCommand from 'carlin/src/deploy/command';
+
 // eslint-disable-next-line import/no-default-export
 export default () => {
   return {
     name: 'carlin',
+    loadContent: async () => {
+      return {
+        deployCommandOptions: deployCommand.options,
+      };
+    },
+    contentLoaded: async ({ actions, content }) => {
+      Object.entries(content).forEach(async ([key, value]) => {
+        await actions.createData(
+          `${key}.js`,
+          `export const ${key} = ${JSON.stringify(value, null, 2)}`
+        );
+      });
+    },
   };
 };

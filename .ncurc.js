@@ -1,9 +1,9 @@
 module.exports = {
   reject: [
     /**
-     * change-case v5 is ESM and carlin is CJS.
+     * It breaks carlin build.
      */
-    'change-case',
+    '@octokit/webhooks',
     /**
      * Waiting for https://github.com/ttoss/ttoss/issues/526
      */

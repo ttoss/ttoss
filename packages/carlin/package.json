@@ -13,6 +13,7 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
+  "type": "module",
   "bin": {
     "carlin": "./bin/carlin"
   },
@@ -21,7 +22,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsup --splitting",
+    "build": "tsup",
     "test": "jest"
   },
   "dependencies": {
