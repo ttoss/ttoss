@@ -1,4 +1,4 @@
-import { CodeBuild } from 'aws-sdk';
+import AWS from 'aws-sdk';
 import log from 'npmlog';
 
 const logPrefix = 'codebuild';
@@ -15,7 +15,7 @@ export const waitCodeBuildFinish = async ({
   buildId: string;
   name?: string;
 }) => {
-  const codeBuild = new CodeBuild();
+  const codeBuild = new AWS.CodeBuild();
 
   let result;
 
@@ -24,13 +24,15 @@ export const waitCodeBuildFinish = async ({
       .batchGetBuilds({ ids: [buildId] })
       .promise();
 
-    return new Promise<CodeBuild.Build | undefined>((resolve, reject) => {
+    return new Promise<AWS.CodeBuild.Build | undefined>((resolve, reject) => {
       setTimeout(() => {
-        const executedBuild = builds?.find(({ id }) => id === buildId);
+        const executedBuild = builds?.find(({ id }) => {
+          return id === buildId;
+        });
 
         log.info(
           logPrefix,
-          `Build status of ${name || buildId}: ${executedBuild?.buildStatus}`,
+          `Build status of ${name || buildId}: ${executedBuild?.buildStatus}`
         );
 
         if (executedBuild && executedBuild.currentPhase === 'COMPLETED') {
@@ -61,7 +63,7 @@ export const startCodeBuildBuild = async ({
 }: {
   projectName: string;
 }) => {
-  const codeBuild = new CodeBuild();
+  const codeBuild = new AWS.CodeBuild();
 
   const { build } = await codeBuild.startBuild({ projectName }).promise();
 

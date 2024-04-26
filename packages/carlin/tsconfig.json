@@ -1,15 +1,12 @@
 {
   "extends": "@ttoss/config/tsconfig.json",
   "compilerOptions": {
-    "incremental": false, // Do not create tsconfig.tsbuildinfo
-    "outDir": "dist",
+    "outDir": "build",
     "noEmit": false,
     "declaration": false,
     "downlevelIteration": true,
     "sourceMap": false,
-    "allowJs": true,
-    "module": "Node16",
-    "moduleResolution": "Node16"
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]

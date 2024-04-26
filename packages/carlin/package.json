@@ -13,15 +13,16 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
+  "type": "module",
   "bin": {
-    "carlin": "./bin/carlin"
+    "carlin": "./bin/carlin.js"
   },
   "files": [
     "bin/",
     "dist/"
   ],
   "scripts": {
-    "build": "tsup --splitting",
+    "build": "tsc && tsup",
     "test": "jest"
   },
   "dependencies": {

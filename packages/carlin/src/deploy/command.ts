@@ -50,12 +50,12 @@ const describeDeployCommand: CommandModule = {
 
 export const options = {
   'aws-account-id': {
-    description: 'AWS account id associated with the deployment.',
+    describe: 'AWS account id associated with the deployment.',
     type: 'string',
   },
   destroy: {
     default: false,
-    description:
+    describe:
       'Destroy the deployment. You cannot destroy a deploy with "environment" is defined.',
     type: 'boolean',
   },

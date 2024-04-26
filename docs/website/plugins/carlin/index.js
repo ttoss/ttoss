@@ -71,7 +71,7 @@
 //             'deploy/staticApp/removeOldVersions.js',
 //             'removeOldVersions',
 //           ],
-//           destroyComment: ['deploy/cloudformation.js', 'destroy'],
+//           ,
 //           assignSecurityHeadersComment: [
 //             'deploy/staticApp/staticApp.template.js',
 //             'assignSecurityHeaders',
@@ -114,7 +114,7 @@
 //           )[1]
 //         ),
 
-//         deployExamples: require('carlin/dist/deploy/command').examples,
+//
 
 //         lambdaLayerBuildspec: getBuildSpec(),
 //         lambdaLayerBuildspecCommands: yaml.dump(
@@ -128,7 +128,6 @@
 //           packageName: 'PACKAGE@X.Y.Z.zip',
 //         }),
 
-//         cliOptions: require('carlin/dist/cli').options,
 //         deployOptions: require('carlin/dist/deploy/command').options,
 //         deployStaticAppOptions: require('carlin/dist/deploy/staticApp/command')
 //           .options,
@@ -174,9 +173,50 @@
 //   };
 // };
 
+import * as deployCommand from 'carlin/src/deploy/command';
+import { options as cliOptions } from 'carlin/src/cli';
+import { defaultTemplatePaths } from 'carlin/src/deploy/cloudformation';
+import { getComment, getCommentsAsHTML, toHTML } from './getComments';
+
 // eslint-disable-next-line import/no-default-export
 export default () => {
   return {
     name: 'carlin',
+    loadContent: async () => {
+      const comments = await getCommentsAsHTML({
+        deployComment: ['deploy/cloudformation.core.js', 'deploy'],
+        deployLambdaCodeComment: [
+          'deploy/lambda/deployLambdaCode.js',
+          'deployLambdaCode',
+        ],
+        destroyComment: ['deploy/cloudformation.js', 'destroy'],
+      });
+
+      const [stackNameComment, stackNameWarningComment] = (
+        await getComment(['deploy/stackName.js', 'getStackName'])
+      )
+        .split('CAUTION!!!')
+        .map((comment) => {
+          return toHTML(comment);
+        });
+
+      return {
+        ...comments,
+        cliOptions,
+        defaultTemplatePaths,
+        deployCommandExamples: deployCommand.examples,
+        deployCommandOptions: deployCommand.options,
+        stackNameComment,
+        stackNameWarningComment,
+      };
+    },
+    contentLoaded: async ({ actions, content }) => {
+      Object.entries(content).forEach(async ([key, value]) => {
+        await actions.createData(
+          `${key}.js`,
+          `export const ${key} = ${JSON.stringify(value, null, 2)}`
+        );
+      });
+    },
   };
 };

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-import { S3 } from 'aws-sdk';
 import { glob } from 'glob';
+import AWS from 'aws-sdk';
 import fs from 'fs';
 import log from 'npmlog';
 import mime from 'mime-types';
@@ -9,7 +9,7 @@ import path from 'path';
 
 const logPrefix = 's3';
 
-export const s3 = new S3({ apiVersion: '2006-03-01' });
+export const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
 export const getBucketKeyUrl = ({
   bucket,
@@ -38,7 +38,7 @@ export const uploadFileToS3 = async ({
     throw new Error('file or filePath must be defined');
   }
 
-  let params: S3.PutObjectRequest = {
+  let params: AWS.S3.PutObjectRequest = {
     Bucket: bucket,
     Key: key.split(path.sep).join('/'),
   };

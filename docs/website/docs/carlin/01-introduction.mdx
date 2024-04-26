@@ -4,8 +4,20 @@ sidebar_position: 1
 slug: ./
 ---
 
-This project has been built since 2018 as helpers scripts that we in our
-engineering processes, from making AWS deployments to handling environment
-variables. We created the first scripts to deploy CloudFormation templates as
-we've started performing numerous deployments along with staging, production and
-development environments.
+import { Carlin } from '../../src/components/Carlin';
+
+# Introduction
+
+The project has been built since 2018 as helper scripts that we use in our engineering processes, from making AWS deployments to handling environment variables. We created the first scripts to deploy CloudFormation templates as we started performing numerous deployments along with Staging, Production, and Development (temporary) environments.
+
+After a while, we realized that we could pack all these scripts into a single CLI tool, which we named <Carlin />.
+
+Since then, we have been improving and adding more scripts to help us with our daily tasks, from handling environment variables (`carlin env`) to deploying Next.js applications on Vercel (`carlin deploy vercel`).
+
+# Installation
+
+To install <Carlin />, you can use the following command:
+
+```bash
+pnpm add carlin
+```

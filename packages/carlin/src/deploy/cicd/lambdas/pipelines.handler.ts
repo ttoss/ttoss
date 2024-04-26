@@ -1,13 +1,13 @@
 import * as fs from 'fs';
-import { CodePipeline, S3 } from 'aws-sdk';
 import { CodePipelineEvent, CodePipelineHandler } from 'aws-lambda';
 import { Pipeline, getMainCommands, getTagCommands } from '../pipelines';
 import { executeTasks } from './executeTasks';
 import { putApprovalResultManualTask } from './putApprovalResultManualTask';
 import { shConditionalCommands } from './shConditionalCommands';
+import AWS from 'aws-sdk';
 import AdmZip from 'adm-zip';
 
-const codepipeline = new CodePipeline();
+const codepipeline = new AWS.CodePipeline();
 
 const getUserParameters = (event: CodePipelineEvent) => {
   const [pipeline, stage] =
@@ -25,7 +25,7 @@ export const getJobDetailsFilename = (jobId: string) => {
 export const getJobDetails = async (event: CodePipelineEvent) => {
   const jobId = event['CodePipeline.job'].id;
 
-  const s3 = new S3({
+  const s3 = new AWS.S3({
     credentials: event['CodePipeline.job'].data.artifactCredentials,
   });
 
@@ -44,6 +44,7 @@ export const getJobDetails = async (event: CodePipelineEvent) => {
 
   const filename = getJobDetailsFilename(jobId);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await fs.promises.writeFile(filename, Body as any, {});
 
   const zip = new AdmZip(filename);
@@ -51,6 +52,7 @@ export const getJobDetails = async (event: CodePipelineEvent) => {
   const file = zip.readAsText(getUserParameters(event).pipeline);
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return JSON.parse(file) as { payload: any };
   } catch {
     throw new Error(`Job details is not a valid json. ${file}`);
@@ -141,6 +143,7 @@ export const pipelinesHandler: CodePipelineHandler = async (event) => {
     await executeTasks(executeTasksInput);
 
     await codepipeline.putJobSuccessResult({ jobId }).promise();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (pipelineName) {
       await putApprovalResultManualTask({

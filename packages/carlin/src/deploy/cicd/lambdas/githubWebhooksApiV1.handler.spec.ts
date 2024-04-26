@@ -1,32 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable turbo/no-undeclared-env-vars */
 // const putObjectMock = jest.fn().mockReturnValue({ promise: jest.fn() });
 
-jest.mock('aws-sdk', () => ({
-  ECS: jest.fn(),
-  S3: jest.fn().mockReturnValue({
-    putObject: jest.fn().mockReturnValue({ promise: jest.fn() }),
-  }),
-}));
+jest.mock('aws-sdk', () => {
+  return {
+    ECS: jest.fn(),
+    S3: jest.fn().mockReturnValue({
+      putObject: jest.fn().mockReturnValue({ promise: jest.fn() }),
+    }),
+  };
+});
 
 // const executeTasksMock = jest.fn();
 
-jest.mock('./executeTasks', () => ({
-  executeTasks: jest.fn(),
-  shConditionalCommands: jest.fn(),
-}));
+jest.mock('./executeTasks', () => {
+  return {
+    executeTasks: jest.fn(),
+    shConditionalCommands: jest.fn(),
+  };
+});
 
-import { S3 } from 'aws-sdk';
 import { executeTasks } from './executeTasks';
 import {
   githubWebhooksApiV1Handler,
   webhooks,
 } from './githubWebhooksApiV1.handler';
+import AWS from 'aws-sdk';
 
 const context = {} as any;
 
 const callback = jest.fn();
 
-const handler = (event: any) =>
-  githubWebhooksApiV1Handler(event, context, callback);
+const handler = (event: any) => {
+  return githubWebhooksApiV1Handler(event, context, callback);
+};
 
 const xGitHubDelivery = 'xGitHubDelivery';
 
@@ -36,7 +43,7 @@ const xHubSignature = 'xHubSignature';
 
 const webhooksReceiveMock = jest.spyOn(webhooks, 'receive');
 
-const s3 = new S3();
+const s3 = new AWS.S3();
 
 beforeEach(() => {
   delete process.env.PIPELINES_JSON;
