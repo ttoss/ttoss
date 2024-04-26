@@ -1,11 +1,11 @@
-import { CodePipeline } from 'aws-sdk';
+import AWS from 'aws-sdk';
 
 import {
   PIPELINE_ECS_TASK_EXECUTION_MANUAL_APPROVAL_ACTION_NAME,
   PIPELINE_ECS_TASK_EXECUTION_STAGE_NAME,
 } from '../config';
 
-const codepipeline = new CodePipeline();
+const codepipeline = new AWS.CodePipeline();
 
 const FIVE_SECONDS = 5 * 1000;
 
@@ -17,8 +17,8 @@ const getApprovalActionToken = ({
   actionName: string;
   stageName: string;
   pipelineName: string;
-}) =>
-  new Promise<string>((resolve, reject) => {
+}) => {
+  return new Promise<string>((resolve, reject) => {
     setTimeout(() => {
       codepipeline.getPipelineState(
         { name: pipelineName },
@@ -27,16 +27,18 @@ const getApprovalActionToken = ({
             return reject(err);
           }
 
-          const approvalStageState = stageStates.find(
-            (s) => s.stageName === stageName,
-          );
+          const approvalStageState = stageStates.find((s) => {
+            return s.stageName === stageName;
+          });
 
           if (!approvalStageState) {
             throw new Error('ApprovalStageStateIsUndefined');
           }
 
           const approvalActionState = approvalStageState.actionStates?.find(
-            (a) => a.actionName === actionName,
+            (a) => {
+              return a.actionName === actionName;
+            }
           );
 
           if (!approvalActionState) {
@@ -55,22 +57,23 @@ const getApprovalActionToken = ({
                 actionName,
                 stageName,
                 pipelineName,
-              }),
+              })
             );
           } catch (error) {
             return reject(error);
           }
-        },
+        }
       );
     }, FIVE_SECONDS);
   });
+};
 
 export const putApprovalResultManualTask = async ({
   pipelineName,
   result,
 }: {
   pipelineName: string;
-  result: CodePipeline.ApprovalResult;
+  result: AWS.CodePipeline.ApprovalResult;
 }) => {
   const actionName = PIPELINE_ECS_TASK_EXECUTION_MANUAL_APPROVAL_ACTION_NAME;
 

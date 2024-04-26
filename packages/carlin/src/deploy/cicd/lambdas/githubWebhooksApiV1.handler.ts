@@ -1,14 +1,14 @@
 import { Pipeline, getClosedPrCommands, getPrCommands } from '../pipelines';
 import { ProxyHandler } from 'aws-lambda';
-import { S3 } from 'aws-sdk';
 import { Webhooks } from '@octokit/webhooks';
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
 import { getTriggerPipelinesObjectKey } from '../getTriggerPipelineObjectKey';
 import { shConditionalCommands } from './shConditionalCommands';
+import AWS from 'aws-sdk';
 import AdmZip from 'adm-zip';
 
-const s3 = new S3();
+const s3 = new AWS.S3();
 
 /**
  * When this file is saved on S3, a CodePipeline pipeline is started.
@@ -18,6 +18,7 @@ const putJobDetails = async ({
   details,
 }: {
   pipeline: Pipeline;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   details: any;
 }) => {
   const prefix = getProcessEnvVariable('TRIGGER_PIPELINES_OBJECT_KEY_PREFIX');
@@ -44,6 +45,7 @@ export const webhooks = new Webhooks({ secret: '123' });
 
 const getPipelines = () => {
   const pipelines: Pipeline[] = JSON.parse(
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
     process.env.PIPELINES_JSON || JSON.stringify([])
   );
 
@@ -172,12 +174,14 @@ export const githubWebhooksApiV1Handler: ProxyHandler = async (
      */
     await webhooks.receive({
       id: xGitHubDelivery,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       name: xGitHubEvent as any,
       // signature: xHubSignature,
       payload: JSON.parse(body),
     });
 
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return { statusCode: error.status || 500, body: error.message };
   }

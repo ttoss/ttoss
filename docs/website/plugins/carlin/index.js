@@ -174,7 +174,7 @@
 // };
 
 import * as deployCommand from 'carlin/src/deploy/command';
-import { options as cliOptions } from 'carlin/dist/cli';
+import { options as cliOptions } from 'carlin/src/cli';
 import { defaultTemplatePaths } from 'carlin/src/deploy/cloudformation';
 import { getComment, getCommentsAsHTML, toHTML } from './getComments';
 

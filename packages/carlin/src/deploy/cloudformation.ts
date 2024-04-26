@@ -1,4 +1,3 @@
-import { CloudFormation } from 'aws-sdk';
 import { CloudFormationTemplate, getEnvironment } from '../utils';
 import {
   canDestroyStack,
@@ -13,6 +12,7 @@ import { emptyS3Directory } from './s3';
 import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
 import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
+import AWS from 'aws-sdk';
 import log from 'npmlog';
 
 const logPrefix = 'cloudformation';
@@ -96,7 +96,7 @@ export const deployCloudFormation = async ({
     const params = {
       StackName: stackName,
       Parameters:
-        parameters?.map<CloudFormation.Parameter>((parameter) => {
+        parameters?.map<AWS.CloudFormation.Parameter>((parameter) => {
           return {
             ParameterKey: parameter.key,
             ParameterValue: parameter.value,

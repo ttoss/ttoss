@@ -1,9 +1,9 @@
 import { AWS_DEFAULT_REGION } from '../../config';
-import { CodeBuild } from 'aws-sdk';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { getPackageVersion, waitCodeBuildFinish } from '../../utils';
+import AWS from 'aws-sdk';
 
-const codeBuild = new CodeBuild({ region: AWS_DEFAULT_REGION });
+const codeBuild = new AWS.CodeBuild({ region: AWS_DEFAULT_REGION });
 
 export const uploadCodeToECR = async ({
   bucket,

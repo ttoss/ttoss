@@ -1,8 +1,8 @@
-import { ECS } from 'aws-sdk';
 import { compileCommands } from './shConditionalCommands';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
+import AWS from 'aws-sdk';
 
-const ecs = new ECS({ apiVersion: '2014-11-13', maxRetries: 3 });
+const ecs = new AWS.ECS({ apiVersion: '2014-11-13', maxRetries: 3 });
 
 export const executeTasks = async ({
   commands = [],

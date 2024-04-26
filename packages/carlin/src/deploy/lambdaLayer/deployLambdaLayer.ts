@@ -1,10 +1,10 @@
 import { CloudFormationTemplate, waitCodeBuildFinish } from '../../utils';
-import { CodeBuild } from 'aws-sdk';
 import { NODE_RUNTIME } from '../../config';
 import { deploy, doesStackExist } from '../cloudformation.core';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { getPackageLambdaLayerStackName } from './getPackageLambdaLayerStackName';
 import { handleDeployError } from '../utils';
+import AWS from 'aws-sdk';
 import log from 'npmlog';
 
 const logPrefix = 'lambda-layer';
@@ -18,7 +18,7 @@ const createLambdaLayerZipFile = async ({
 }) => {
   log.info(logPrefix, `Creating zip file for package ${packageName}...`);
 
-  const codeBuild = new CodeBuild();
+  const codeBuild = new AWS.CodeBuild();
 
   const { build } = await codeBuild
     .startBuild({

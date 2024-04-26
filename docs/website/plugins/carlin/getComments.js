@@ -7,12 +7,12 @@ export const toHTML = (comment) => {
   return renderToString(compiler(comment));
 };
 
-export const getComment = async ([pathFromDist, longname]) => {
+export const getComment = async ([pathFromBuild, longname]) => {
   const res = await jsdoc.explain({
     files: path.resolve(
       process.cwd(),
-      '../../packages/carlin/dist',
-      pathFromDist
+      '../../packages/carlin/build',
+      pathFromBuild
     ),
   });
 

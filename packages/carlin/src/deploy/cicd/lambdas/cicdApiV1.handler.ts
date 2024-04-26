@@ -1,9 +1,9 @@
-import { CodeBuild } from 'aws-sdk';
 import { ProxyHandler } from 'aws-lambda';
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
+import AWS from 'aws-sdk';
 
-const codebuild = new CodeBuild({ apiVersion: '2016-10-06' });
+const codebuild = new AWS.CodeBuild({ apiVersion: '2016-10-06' });
 
 /**
  * The CI/CD REST API is responsible to update the image of the repository and
@@ -122,6 +122,7 @@ export const cicdApiV1Handler: ProxyHandler = async (event) => {
       statusCode: 403,
       body: 'Execute access forbidden',
     };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return {
       statusCode: 400,

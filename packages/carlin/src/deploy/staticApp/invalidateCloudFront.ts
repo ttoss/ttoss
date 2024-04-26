@@ -1,4 +1,4 @@
-import { CloudFormation, CloudFront } from 'aws-sdk';
+import AWS from 'aws-sdk';
 import log from 'npmlog';
 
 const CLOUDFRONT_DISTRIBUTION_ID = 'CloudFrontDistributionId';
@@ -8,7 +8,7 @@ const logPrefix = 'static-app';
 export const invalidateCloudFront = async ({
   outputs,
 }: {
-  outputs?: CloudFormation.Outputs;
+  outputs?: AWS.CloudFormation.Outputs;
 }) => {
   log.info(logPrefix, 'Invalidating CloudFront...');
 
@@ -17,14 +17,14 @@ export const invalidateCloudFront = async ({
     return;
   }
 
-  const cloudFrontDistributionIDOutput = outputs.find(
-    (output) => output.OutputKey === CLOUDFRONT_DISTRIBUTION_ID
-  );
+  const cloudFrontDistributionIDOutput = outputs.find((output) => {
+    return output.OutputKey === CLOUDFRONT_DISTRIBUTION_ID;
+  });
 
   if (cloudFrontDistributionIDOutput?.OutputValue) {
     const distributionId = cloudFrontDistributionIDOutput.OutputValue;
 
-    const params: CloudFront.CreateInvalidationRequest = {
+    const params: AWS.CloudFront.CreateInvalidationRequest = {
       DistributionId: distributionId,
       InvalidationBatch: {
         CallerReference: new Date().toISOString(),
@@ -35,7 +35,7 @@ export const invalidateCloudFront = async ({
       },
     };
 
-    const cloudFront = new CloudFront();
+    const cloudFront = new AWS.CloudFront();
 
     try {
       await cloudFront.createInvalidation(params).promise();
@@ -43,6 +43,7 @@ export const invalidateCloudFront = async ({
         logPrefix,
         `CloudFront Distribution ID ${distributionId} invalidated with success.`
       );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       log.error(
         logPrefix,
