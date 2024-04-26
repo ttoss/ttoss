@@ -1,6 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { deployLambdaLayer } from '../lambdaLayer/deployLambdaLayer';
 import log from 'npmlog';
-import path from 'path';
 
 const logPrefix = 'lambda';
 
@@ -22,7 +23,10 @@ export const deployLambdaLayers = async ({
 
   const { dependencies = {} } = (() => {
     try {
-      return require(path.resolve(process.cwd(), 'package.json')) || {};
+      return JSON.parse(
+        fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       log.error(
         logPrefix,
