@@ -85,35 +85,45 @@ Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Ke
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
-  ```ts
-  {
-    // ...
-    Parameters: {
-      LambdaS3Bucket: {
-        Type: 'String',
-        Description: 'The S3 bucket where the Lambda code is stored.',
+
+    ```ts
+    {
+      // ...
+      Parameters: {
+        LambdaS3Bucket: {
+          Type: 'String',
+          Description: 'The S3 bucket where the Lambda code is stored.',
+        },
+        LambdaS3Key: {
+          Type: 'String',
+          Description: 'The S3 key where the Lambda code is stored.',
+        },
+        LambdaS3ObjectVersion: {
+          Type: 'String',
+          Description: 'The S3 object version of the Lambda code.',
+        },
       },
-      LambdaS3Key: {
-        Type: 'String',
-        Description: 'The S3 key where the Lambda code is stored.',
-      },
-      LambdaS3ObjectVersion: {
-        Type: 'String',
-        Description: 'The S3 object version of the Lambda code.',
-      },
-    },
-  };
-  ```
+    };
+    ```
+
   </TabItem>
 
-{' '}
-<TabItem value="yaml" label="Yaml">
-  ```yml Parameters: LambdaS3Bucket: Type: String Description: The S3 bucket
-  where the Lambda code is stored. LambdaS3Key: Type: String Description: The S3
-  key where the Lambda code is stored. LambdaS3ObjectVersion: Type: String
-  Description: The S3 object version of the Lambda code. ```
-</TabItem>
-
+  <TabItem value="yaml" label="Yaml">
+    
+    ```yml
+    Parameters:
+      LambdaS3Bucket:
+        Type: String
+        Description: The S3 bucket where the Lambda code is stored.
+      LambdaS3Key:
+        Type: String
+        Description: The S3 key where the Lambda code is stored.
+      LambdaS3ObjectVersion:
+        Type: String
+        Description: The S3 object version of the Lambda code. 
+    ```
+    
+  </TabItem>
 </Tabs>
 
 With those paramenters defined, you can set the [`Code`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
@@ -123,55 +133,70 @@ of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverle
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
-  ```ts
-  {
-    // ...
-    Resources: {
-      LambdaFunction: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: {
-              Ref: 'LambdaS3Bucket',
+
+    ```ts
+    {
+      // ...
+      Resources: {
+        LambdaFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: {
+                Ref: 'LambdaS3Bucket',
+              },
+              S3Key: {
+                Ref: 'LambdaS3Key',
+              },
+              S3ObjectVersion: {
+                Ref: 'LambdaS3ObjectVersion',
+              },
             },
-            S3Key: {
-              Ref: 'LambdaS3Key',
-            },
-            S3ObjectVersion: {
-              Ref: 'LambdaS3ObjectVersion',
+          },
+        },
+        ServerlessFunction: {
+          Type: 'AWS::Serverless::Function',
+          Properties: {
+            CodeUri: {
+              Bucket: {
+                Ref: 'LambdaS3Bucket',
+              },
+              Key: {
+                Ref: 'LambdaS3Key',
+              },
+              Version: {
+                Ref: 'LambdaS3ObjectVersion',
+              },
             },
           },
         },
       },
-      ServerlessFunction: {
-        Type: 'AWS::Serverless::Function',
-        Properties: {
-          CodeUri: {
-            Bucket: {
-              Ref: 'LambdaS3Bucket',
-            },
-            Key: {
-              Ref: 'LambdaS3Key',
-            },
-            Version: {
-              Ref: 'LambdaS3ObjectVersion',
-            },
-          },
-        },
-      },
-    },
-  };
-  ```
+    };
+    ```
+
   </TabItem>
 
-{' '}
-<TabItem value="yaml" label="Yaml">
-  ```yml Resources: LambdaFunction: Type: AWS::Lambda::Function Properties:
-  Code: S3Bucket: !Ref LambdaS3Bucket S3Key: !Ref LambdaS3Key S3ObjectVersion:
-  !Ref LambdaS3ObjectVersion ServerlessFunction: Type: AWS::Serverless::Function
-  Properties: CodeUri: Bucket: !Ref LambdaS3Bucket Key: !Ref LambdaS3Key
-  Version: !Ref LambdaS3ObjectVersion ```
-</TabItem>
+  <TabItem value="yaml" label="Yaml">
+
+    ```yml
+    Resources:
+      LambdaFunction:
+        Type: AWS::Lambda::Function
+        Properties:
+          Code:
+            S3Bucket: !Ref LambdaS3Bucket
+            S3Key: !Ref LambdaS3Key
+            S3ObjectVersion: !Ref LambdaS3ObjectVersion
+      ServerlessFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+          CodeUri:
+            Bucket: !Ref LambdaS3Bucket
+            Key: !Ref LambdaS3Key
+            Version: !Ref LambdaS3ObjectVersion
+    ```
+
+  </TabItem>
 
 </Tabs>
 
