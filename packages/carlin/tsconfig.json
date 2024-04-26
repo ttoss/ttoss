@@ -6,9 +6,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "sourceMap": false,
-    "allowJs": true,
-    "module": "Node16",
-    "moduleResolution": "Node16"
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts"]

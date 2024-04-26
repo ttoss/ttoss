@@ -162,6 +162,35 @@ export const deployCloudFormation = async ({
               ParameterValue: versionId,
             }
           );
+
+          /**
+           * Add `Code` property to every AWS::Lambda::Function resource or
+           * `CodeUri` property to every AWS::Serverless::Function resource if
+           * they are NOT already defined.
+           */
+          Object.keys(cloudFormationTemplate.Resources).forEach((key) => {
+            const resource = cloudFormationTemplate.Resources[key];
+
+            if (resource.Type === 'AWS::Lambda::Function') {
+              if (!resource.Properties.Code) {
+                resource.Properties.Code = {
+                  S3Bucket: { Ref: 'LambdaS3Bucket' },
+                  S3Key: { Ref: 'LambdaS3Key' },
+                  S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
+                };
+              }
+            }
+
+            if (resource.Type === 'AWS::Serverless::Function') {
+              if (!resource.Properties.CodeUri) {
+                resource.Properties.CodeUri = {
+                  Bucket: { Ref: 'LambdaS3Bucket' },
+                  Key: { Ref: 'LambdaS3Key' },
+                  Version: { Ref: 'LambdaS3ObjectVersion' },
+                };
+              }
+            }
+          });
         }
       }
     };
@@ -212,10 +241,10 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
 };
 
 /**
- * 1. Check if `environment` is defined. If defined, return. It doesn't destroy
- * stacks with defined `environment`.
+ * 1. Check if `environment` is defined. If defined, do nothing. It doesn't
+ * destroy stacks with defined `environment`.
  * 1. Check if termination protection is disabled.
- * 1. If the stack deployed buckets, empty all buckets.
+ * 1. Empty all buckets in the stack (if any).
  * 1. Delete the stack.
  */
 const destroy = async ({ stackName }: { stackName: string }) => {

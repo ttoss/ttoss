@@ -49,7 +49,7 @@ import {
   deployCloudFormation,
 } from '../../src/deploy/cloudformation';
 
-const mockStackName = faker.random.word();
+const mockStackName = faker.word.sample();
 
 beforeAll(() => {
   (getStackName as jest.Mock).mockReturnValue(mockStackName);
@@ -62,10 +62,10 @@ test('all templates paths should start with .src', () => {
 });
 
 describe('testing deployCloudFormation method', () => {
-  const lambdaInput = faker.random.word();
+  const lambdaInput = faker.word.sample();
 
   const lambdaExternals = [...new Array(5)].map(() => {
-    return faker.random.word();
+    return faker.word.sample();
   });
 
   test('return working cloudformation template if passed via template', async () => {
@@ -85,11 +85,11 @@ describe('testing deployCloudFormation method', () => {
     });
   });
 
-  test('adding Lambda S3 properties', async () => {
+  test('add Lambda S3 Parameters on CloudFormation template', async () => {
     const deployLambdaCodeResponse = {
-      bucket: faker.random.word(),
-      key: faker.random.word(),
-      versionId: faker.random.word(),
+      bucket: faker.lorem.word(),
+      key: faker.lorem.word(),
+      versionId: faker.lorem.word(),
     };
 
     (deployLambdaCode as jest.Mock).mockResolvedValueOnce(
@@ -144,9 +144,353 @@ describe('testing deployCloudFormation method', () => {
     });
   });
 
+  test('add Code properties to AWS::Lambda::Function resource', async () => {
+    const deployLambdaCodeResponse = {
+      bucket: faker.lorem.word(),
+      key: faker.lorem.word(),
+      versionId: faker.lorem.word(),
+    };
+
+    (deployLambdaCode as jest.Mock).mockResolvedValueOnce(
+      deployLambdaCodeResponse
+    );
+
+    const template = {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        LambdaFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {},
+        },
+      },
+    };
+
+    await deployCloudFormation({
+      lambdaInput,
+      lambdaExternals,
+      template,
+    });
+
+    expect(deploy).toHaveBeenCalledWith({
+      params: {
+        Parameters: [
+          {
+            ParameterKey: 'LambdaS3Bucket',
+            ParameterValue: deployLambdaCodeResponse.bucket,
+          },
+          {
+            ParameterKey: 'LambdaS3Key',
+            ParameterValue: deployLambdaCodeResponse.key,
+          },
+          {
+            ParameterKey: 'LambdaS3ObjectVersion',
+            ParameterValue: deployLambdaCodeResponse.versionId,
+          },
+        ],
+        StackName: mockStackName,
+      },
+      template: {
+        ...mockWorkingCloudFormationTemplate,
+        Parameters: {
+          LambdaS3Bucket: {
+            Type: 'String',
+          },
+          LambdaS3Key: {
+            Type: 'String',
+          },
+          LambdaS3ObjectVersion: {
+            Type: 'String',
+          },
+        },
+        Resources: {
+          LambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: {
+                  Ref: 'LambdaS3Bucket',
+                },
+                S3Key: {
+                  Ref: 'LambdaS3Key',
+                },
+                S3ObjectVersion: {
+                  Ref: 'LambdaS3ObjectVersion',
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('do not change existing Code properties on AWS::Lambda::Function resource', async () => {
+    const deployLambdaCodeResponse = {
+      bucket: faker.lorem.word(),
+      key: faker.lorem.word(),
+      versionId: faker.lorem.word(),
+    };
+
+    (deployLambdaCode as jest.Mock).mockResolvedValueOnce(
+      deployLambdaCodeResponse
+    );
+
+    const template = {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        LambdaFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: {
+                Ref: 'OtherLambdaS3Bucket',
+              },
+              S3Key: {
+                Ref: 'OtherLambdaS3Key',
+              },
+              S3ObjectVersion: {
+                Ref: 'OtherLambdaS3ObjectVersion',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await deployCloudFormation({
+      lambdaInput,
+      lambdaExternals,
+      template,
+    });
+
+    expect(deploy).toHaveBeenCalledWith({
+      params: {
+        Parameters: [
+          {
+            ParameterKey: 'LambdaS3Bucket',
+            ParameterValue: deployLambdaCodeResponse.bucket,
+          },
+          {
+            ParameterKey: 'LambdaS3Key',
+            ParameterValue: deployLambdaCodeResponse.key,
+          },
+          {
+            ParameterKey: 'LambdaS3ObjectVersion',
+            ParameterValue: deployLambdaCodeResponse.versionId,
+          },
+        ],
+        StackName: mockStackName,
+      },
+      template: {
+        ...mockWorkingCloudFormationTemplate,
+        Parameters: {
+          LambdaS3Bucket: {
+            Type: 'String',
+          },
+          LambdaS3Key: {
+            Type: 'String',
+          },
+          LambdaS3ObjectVersion: {
+            Type: 'String',
+          },
+        },
+        Resources: {
+          LambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Bucket: {
+                  Ref: 'OtherLambdaS3Bucket',
+                },
+                S3Key: {
+                  Ref: 'OtherLambdaS3Key',
+                },
+                S3ObjectVersion: {
+                  Ref: 'OtherLambdaS3ObjectVersion',
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('add CodeUri properties to AWS::Serverless::Function resource', async () => {
+    const deployLambdaCodeResponse = {
+      bucket: faker.lorem.word(),
+      key: faker.lorem.word(),
+      versionId: faker.lorem.word(),
+    };
+
+    (deployLambdaCode as jest.Mock).mockResolvedValueOnce(
+      deployLambdaCodeResponse
+    );
+
+    const template = {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        ServerlessFunction: {
+          Type: 'AWS::Serverless::Function',
+          Properties: {},
+        },
+      },
+    };
+
+    await deployCloudFormation({
+      lambdaInput,
+      lambdaExternals,
+      template,
+    });
+
+    expect(deploy).toHaveBeenCalledWith({
+      params: {
+        Parameters: [
+          {
+            ParameterKey: 'LambdaS3Bucket',
+            ParameterValue: deployLambdaCodeResponse.bucket,
+          },
+          {
+            ParameterKey: 'LambdaS3Key',
+            ParameterValue: deployLambdaCodeResponse.key,
+          },
+          {
+            ParameterKey: 'LambdaS3ObjectVersion',
+            ParameterValue: deployLambdaCodeResponse.versionId,
+          },
+        ],
+        StackName: mockStackName,
+      },
+      template: {
+        ...mockWorkingCloudFormationTemplate,
+        Parameters: {
+          LambdaS3Bucket: {
+            Type: 'String',
+          },
+          LambdaS3Key: {
+            Type: 'String',
+          },
+          LambdaS3ObjectVersion: {
+            Type: 'String',
+          },
+        },
+        Resources: {
+          ServerlessFunction: {
+            Type: 'AWS::Serverless::Function',
+            Properties: {
+              CodeUri: {
+                Bucket: {
+                  Ref: 'LambdaS3Bucket',
+                },
+                Key: {
+                  Ref: 'LambdaS3Key',
+                },
+                Version: {
+                  Ref: 'LambdaS3ObjectVersion',
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('do not change existing CodeUri properties on AWS::Serverless::Function resource', async () => {
+    const deployLambdaCodeResponse = {
+      bucket: faker.lorem.word(),
+      key: faker.lorem.word(),
+      versionId: faker.lorem.word(),
+    };
+
+    (deployLambdaCode as jest.Mock).mockResolvedValueOnce(
+      deployLambdaCodeResponse
+    );
+
+    const template = {
+      ...mockWorkingCloudFormationTemplate,
+      Resources: {
+        ServerlessFunction: {
+          Type: 'AWS::Serverless::Function',
+          Properties: {
+            CodeUri: {
+              Bucket: {
+                Ref: 'OtherLambdaS3Bucket',
+              },
+              Key: {
+                Ref: 'OtherLambdaS3Key',
+              },
+              Version: {
+                Ref: 'OtherLambdaS3ObjectVersion',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    await deployCloudFormation({
+      lambdaInput,
+      lambdaExternals,
+      template,
+    });
+
+    expect(deploy).toHaveBeenCalledWith({
+      params: {
+        Parameters: [
+          {
+            ParameterKey: 'LambdaS3Bucket',
+            ParameterValue: deployLambdaCodeResponse.bucket,
+          },
+          {
+            ParameterKey: 'LambdaS3Key',
+            ParameterValue: deployLambdaCodeResponse.key,
+          },
+          {
+            ParameterKey: 'LambdaS3ObjectVersion',
+            ParameterValue: deployLambdaCodeResponse.versionId,
+          },
+        ],
+        StackName: mockStackName,
+      },
+      template: {
+        ...mockWorkingCloudFormationTemplate,
+        Parameters: {
+          LambdaS3Bucket: {
+            Type: 'String',
+          },
+          LambdaS3Key: {
+            Type: 'String',
+          },
+          LambdaS3ObjectVersion: {
+            Type: 'String',
+          },
+        },
+        Resources: {
+          ServerlessFunction: {
+            Type: 'AWS::Serverless::Function',
+            Properties: {
+              CodeUri: {
+                Bucket: {
+                  Ref: 'OtherLambdaS3Bucket',
+                },
+                Key: {
+                  Ref: 'OtherLambdaS3Key',
+                },
+                Version: {
+                  Ref: 'OtherLambdaS3ObjectVersion',
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('adding Lambda image properties', async () => {
     const deployLambdaCodeResponse = {
-      imageUri: faker.random.word(),
+      imageUri: faker.word.sample(),
     };
 
     (deployLambdaCode as jest.Mock).mockResolvedValueOnce(

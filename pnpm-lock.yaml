@@ -313,12 +313,6 @@ importers:
       carlin:
         specifier: workspace:^
         version: link:../../packages/carlin
-      jsdoc-api:
-        specifier: ^8.0.0
-        version: 8.0.0
-      markdown-to-jsx:
-        specifier: ^7.4.7
-        version: 7.4.7(react@18.2.0)
       prism-react-renderer:
         specifier: ^2.3.1
         version: 2.3.1(react@18.2.0)
@@ -338,6 +332,12 @@ importers:
       docusaurus-plugin-typedoc:
         specifier: ^0.22.0
         version: 0.22.0(typedoc-plugin-markdown@3.17.1(typedoc@0.25.13(typescript@5.4.5)))(typedoc@0.25.13(typescript@5.4.5))
+      jsdoc-api:
+        specifier: ^8.0.0
+        version: 8.0.0
+      markdown-to-jsx:
+        specifier: ^7.4.7
+        version: 7.4.7(react@18.2.0)
       typedoc:
         specifier: ^0.25.13
         version: 0.25.13(typescript@5.4.5)
@@ -549,9 +549,6 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))
-      tsup:
-        specifier: ^8.0.2
-        version: 8.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))(typescript@5.4.5)
       typescript:
         specifier: ~5.4.5
         version: 5.4.5
