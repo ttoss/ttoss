@@ -5,7 +5,7 @@ import {
   getPackageName,
   setEnvVar,
 } from '../utils';
-import { paramCase, pascalCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 
 /**
  * Used by CLI set stack name when it is defined.
@@ -80,7 +80,7 @@ export const getStackName = async () => {
     }
 
     if (currentBranch) {
-      return paramCase(currentBranch);
+      return kebabCase(currentBranch);
     }
 
     return undefined;

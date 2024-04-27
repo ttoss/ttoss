@@ -5,7 +5,7 @@ import {
 } from './stackName';
 import { faker } from '@ttoss/test-utils/faker';
 import { getCurrentBranch, getEnvironment, getPackageName } from '../utils';
-import { paramCase, pascalCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 
 const mockMath = Object.create(global.Math);
 const randomNumber = 0.12345;
@@ -75,7 +75,7 @@ describe('testing getStackName', () => {
       (getPackageName as jest.Mock).mockReturnValueOnce(packageName);
       const stackName = await getStackName();
       expect(stackName).toEqual(
-        `${pascalCase(packageName)}-${paramCase(branchName)}`
+        `${pascalCase(packageName)}-${kebabCase(branchName)}`
       );
     });
 
@@ -103,7 +103,7 @@ describe('testing getStackName', () => {
       (getPackageName as jest.Mock).mockReturnValueOnce(undefined);
       const stackName = await getStackName();
       expect(stackName).toEqual(
-        `Stack-${randomNumber * 100000}-${paramCase(branchName)}`
+        `Stack-${randomNumber * 100000}-${kebabCase(branchName)}`
       );
     });
 

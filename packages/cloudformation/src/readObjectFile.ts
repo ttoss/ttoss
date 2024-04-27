@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+import { createRequire } from 'node:module';
+import { register } from 'ts-node';
 import fs from 'fs';
 import yaml from 'js-yaml';
 
@@ -12,10 +14,12 @@ export const readObjectFile = ({ path }: { path: string }) => {
     return {};
   }
 
+  const require = createRequire(import.meta.url);
+
   const extension = path.split('.').pop();
 
   if (extension === 'ts') {
-    require('ts-node').register({
+    register({
       compilerOptions: { moduleResolution: 'node', module: 'commonjs' },
       moduleTypes: {
         'carlin.*': 'cjs',
