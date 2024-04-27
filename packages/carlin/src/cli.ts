@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import { AWS_DEFAULT_REGION, NAME } from './config';
 import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
-import { constantCase, paramCase } from 'change-case';
+import { constantCase, kebabCase } from 'change-case';
 import { deployCommand } from './deploy/command';
 import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
 import { generateEnvCommand } from './generateEnv/generateEnvCommand';
@@ -193,13 +193,13 @@ export const cli = () => {
              * - Case 3 if the two above are falsy.
              */
             const isKeyFromCli = (() => {
-              const paramCaseKey = paramCase(key);
+              const kebabCaseKey = kebabCase(key);
 
               /**
                * Case 1.
                * Fixes #16 https://github.com/ttoss/carlin/issues/16
                */
-              if (parsed?.defaulted?.[paramCaseKey]) {
+              if (parsed?.defaulted?.[kebabCaseKey]) {
                 return false;
               }
 

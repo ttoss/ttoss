@@ -8,6 +8,14 @@ export const defaultConfig: any = {
     ['@babel/preset-react', { runtime: 'automatic' }],
   ],
   plugins: [
+    /**
+     * Carlin is full ESM and jest doesn't support import.meta.url from
+     * @ttoss/cloudformation. This plugin is needed to transform import.meta.url
+     *
+     * More reference about pure ESM packages:
+     * https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+     */
+    'babel-plugin-transform-import-meta',
     [
       'formatjs',
       {

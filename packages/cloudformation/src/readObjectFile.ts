@@ -4,8 +4,6 @@ import { register } from 'ts-node';
 import fs from 'fs';
 import yaml from 'js-yaml';
 
-const require = createRequire(import.meta.url);
-
 export const readYaml = ({ path }: { path: string }) => {
   const template = fs.readFileSync(path, 'utf8') || JSON.stringify({});
   return yaml.load(template);
@@ -15,6 +13,8 @@ export const readObjectFile = ({ path }: { path: string }) => {
   if (!fs.existsSync(path)) {
     return {};
   }
+
+  const require = createRequire(import.meta.url);
 
   const extension = path.split('.').pop();
 
