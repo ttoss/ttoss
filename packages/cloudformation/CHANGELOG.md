@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.5](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.9.4...@ttoss/cloudformation@0.9.5) (2024-04-27)
+
+### Bug Fixes
+
+- remove require from carlin scripts ([#533](https://github.com/ttoss/ttoss/issues/533)) ([4d053c1](https://github.com/ttoss/ttoss/commit/4d053c1c0cbd8707c4af6aea450c7ebfa86b483b))
+
 ## [0.9.4](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.9.3...@ttoss/cloudformation@0.9.4) (2024-04-17)
 
 **Note:** Version bump only for package @ttoss/cloudformation

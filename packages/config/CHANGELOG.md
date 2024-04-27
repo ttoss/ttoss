@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.32.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.1...@ttoss/config@1.32.2) (2024-04-27)
+
+### Bug Fixes
+
+- remove require from carlin scripts ([#533](https://github.com/ttoss/ttoss/issues/533)) ([4d053c1](https://github.com/ttoss/ttoss/commit/4d053c1c0cbd8707c4af6aea450c7ebfa86b483b))
+
 ## [1.32.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.0...@ttoss/config@1.32.1) (2024-04-17)
 
 **Note:** Version bump only for package @ttoss/config
