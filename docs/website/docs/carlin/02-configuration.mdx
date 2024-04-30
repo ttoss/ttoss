@@ -1,0 +1,61 @@
+---
+title: Configuration
+---
+
+import { Carlin } from '../../src/components/Carlin';
+import { InnerHTML } from '../../src/components/InnerHTML';
+import { OptionAliasesInline } from '../../src/components/OptionAliasesInline';
+import { OptionsTable } from '../../src/components/OptionsTable';
+
+import { cliConfigFileComment } from '../../.docusaurus/carlin/default/cliConfigFileComment';
+import { cliEnvironmentVariablesComment } from '../../.docusaurus/carlin/default/cliEnvironmentVariablesComment';
+import { cliMultipleEnvironmentsComment } from '../../.docusaurus/carlin/default/cliMultipleEnvironmentsComment';
+import { cliOptions } from '../../.docusaurus/carlin/default/cliOptions';
+
+# Configuration
+
+## Setting Options
+
+You can set the [<Carlin /> commands](/docs/carlin/commands) options in different ways, such as using the command line, environment variables, or a configuration file.
+
+### Command Line
+
+You can set the <Carlin /> commands options using the command line. For example, to set the <OptionAliasesInline
+  options={cliOptions}
+  option="environment"
+  to="/docs/carlin/configuration#global-options"
+/> option, you can use the following command:
+
+```bash
+carlin deploy --environment=Production
+```
+
+### package.json
+
+You can also provide the options creating a property name `carlin` in your `package.json`.
+
+```json
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "carlin": {
+    "environment": "Production"
+  }
+}
+```
+
+### Environment Variables
+
+<InnerHTML html={cliEnvironmentVariablesComment} />
+
+### Configuration File
+
+<InnerHTML html={cliConfigFileComment} />
+
+## Multiple environments
+
+<InnerHTML html={cliMultipleEnvironmentsComment} />
+
+## Global Options
+
+<OptionsTable options={cliOptions} />

@@ -26,4 +26,4 @@ Don't forget that we'll always provide you with the tools, support, and environm
 
 - **Write code.** Write code with quality, following our [guidelines](/docs/engineering/guidelines), with tests, and documentation when necessary.
 - **Review Pull Requests.** Review your teammates' code and provide feedback to improve the code quality.
-- **Follow the entire [task cycle](/docs/engineering/workflow/kanban#teams-high-level-routine).** From the moment you receive a task until the moment you deliver it to production, you must follow and guarantee its whole cycle.
+- **Follow the entire task cycle.** From the moment you receive a task until the moment you deliver it to production, you must follow and guarantee its whole cycle.

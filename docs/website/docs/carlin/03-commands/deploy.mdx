@@ -81,7 +81,7 @@ If <code children={deployCommandOptions['lambda-input'].default} /> or any file 
 
 :::
 
-Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html) to the CloudFormation template:
+Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html), the S3 bucket parameters that the Lambda code was stored, to the CloudFormation template:
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
@@ -126,10 +126,10 @@ Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Ke
   </TabItem>
 </Tabs>
 
-With those paramenters defined, you can set the [`Code`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
+Once defined as parameters, you can reference them in your CloudFormation template using the [intrinsic function `Ref`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html). For example, you can set the [`Code`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
 property of the [AWS::Lambda::Function resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html)
 or [`CodeUri`](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html) property
-of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html), referencing the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` parameters in your template. If `Code` or `CodeUri` is not set, <Carlin /> will automatically set them to the values of the parameters, as shown in the following example (if `Code` or `CodeUri` is defined in the template, <Carlin /> won't modify them):
+of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html), referencing the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` parameters. For example, you can set the `Code` or `CodeUri` properties as shown in the following example:
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
@@ -200,6 +200,8 @@ of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverle
 
 </Tabs>
 
+If `Code` or `CodeUri` is not set, <Carlin /> will automatically set them to the values of the parameters, as shown in the example above (if `Code` or `CodeUri` is defined, <Carlin /> won't modify them).
+
 ## Destroy
 
 To destroy the stack, just pass the option <OptionAliasesInline options={deployCommandOptions} option="destroy" to="/docs/carlin/commands/deploy#options" /> to the deploy command:
@@ -219,7 +221,7 @@ The destroy algorithm is the following:
 :::danger
 
 This operation is irreversible. You must pay attention because you may destroy resources that contains your App data, like DynamoDB, using this command.
-To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/commands/deploy#global-options" /> isn't defined.
+To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/configuration#global-options" /> isn't defined.
 
 :::
 
@@ -237,7 +239,3 @@ To overcome this problem, destroy will only delete the resources if termination 
 ### Options
 
 <OptionsTable options={deployCommandOptions} />
-
-### Global Options
-
-<OptionsTable options={cliOptions} />

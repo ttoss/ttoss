@@ -57,17 +57,17 @@ export const options = {
 
 /**
  * You can also provide the options creating a property name `carlin`
- * inside your `package.json`. [See Yargs reference](https://yargs.js.org/docs/#api-reference-pkgconfkey-cwd).
+ * inside your `package.json`.
  */
 const getPkgConfig = () => {
   return NAME;
 };
 
 /**
- * All options can be passed as environment variables matching the prefix
- * `CARLIN`. See [Yargs reference](https://yargs.js.org/docs/#api-reference-envprefix).
- * Example, we may use `carlin deploy --stack-name StackName` or
- * `CARLIN_STACK_NAME=StackName carlin deploy`.
+ * You can set the options as environment variables matching the prefix
+ * `CARLIN`.
+ * Example, you can use `carlin deploy --stack-name MyStackName` or
+ * `CARLIN_STACK_NAME=MyStackName carlin deploy`.
  */
 const getEnv = () => {
   return constantCase(NAME);
@@ -86,10 +86,10 @@ export const cli = () => {
    * If `--config` isn't provided, the algorithm will search for any of these
    * files and use it to retrieve the options:
    *
-   * - `carlin.js`
    * - `carlin.ts`
-   * - `carlin.yaml`
+   * - `carlin.js`
    * - `carlin.yml`
+   * - `carlin.yaml`
    * - `carlin.json`
    *
    * The algorithm also make a find up path to search for other config files
@@ -123,7 +123,7 @@ export const cli = () => {
    * ```
    */
   const getConfig = () => {
-    const names = ['js', 'yml', 'yaml', 'json', 'ts'].map((ext) => {
+    const names = ['ts', 'js', 'yml', 'yaml', 'json'].map((ext) => {
       return `${NAME}.${ext}`;
     });
     const paths: string[] = [];
@@ -151,6 +151,106 @@ export const cli = () => {
     return finalConfig;
   };
 
+  /**
+   * We architected Carlin to work with multiple environments. The
+   * `environments` option is an object that contains specific values for
+   * each environment. For instance, you may have a `Production` and a
+   * `Staging` environment with different values for the same option,
+   * like `awsAccountId`. The `environment` option is a string that
+   * represents the current environment. The `environments` option is an
+   * object that contains the values for each environment. The values of
+   * the current environment will be merged with the default values.
+   *
+   * For example, if you have the following config file:
+   *
+   * ```yaml
+   * awsAccountId: 111111111111
+   *
+   * environments:
+   *  Production:
+   *    awsAccountId: 222222222222
+   *
+   *  Staging:
+   *    awsAccountId: 333333333333
+   * ```
+   *
+   * And you run the following command:
+   *
+   * ```sh
+   * carlin deploy --environment Production
+   * ```
+   *
+   * The final `awsAccountId` value will be `222222222222`. If you run the
+   * following command:
+   *
+   * ```sh
+   * carlin deploy --environment Staging
+   * ```
+   *
+   * The final `awsAccountId` value will be `333333333333`. If you run the
+   * deploy command without the `--environment` option, the final value
+   * will be `111111111111`.
+   *
+   * `environments` is great to work on CI/CD pipelines. You can set the
+   * `environment` value as an environment variable and Carlin will use the
+   * values from the config file.
+   */
+  const handleEnvironments = (argv: any, { parsed }: any) => {
+    const { environment, environments } = argv;
+
+    if (environment && environments && environments[environment as string]) {
+      Object.entries(environments[environment]).forEach(([key, value]) => {
+        /**
+         * The case where argv[key] must not have the environment value is
+         * when such value is passed as option via CLI. For instance,
+         *
+         * $ carlin deploy --stack-name SomeName
+         *
+         * SomeName must be used as stack name independently of the
+         * environment values https://github.com/ttoss/carlin/issues/13.
+         *
+         * Three cases set argv:
+         *
+         * 1. Default.
+         * 2. Config file.
+         * 3. CLI
+         *
+         * - Case 1 we determine if the `parsed.defaulted` is true.
+         * - Case 2 we determine if `argv[key] === finalConfig[key]`.
+         * - Case 3 if the two above are falsy.
+         */
+        const isKeyFromCli = (() => {
+          const kebabCaseKey = kebabCase(key);
+
+          /**
+           * Case 1.
+           * Fixes #16 https://github.com/ttoss/carlin/issues/16
+           */
+          if (parsed?.defaulted?.[kebabCaseKey]) {
+            return false;
+          }
+
+          /**
+           * Case 2.
+           *
+           * Fixes #13 https://github.com/ttoss/carlin/issues/13
+           *
+           * Deep equal because arg can be an array or object.
+           */
+          if (deepEqual(argv[key], finalConfig[key])) {
+            return false;
+          }
+
+          return true;
+        })();
+
+        if (!isKeyFromCli) {
+          argv[key] = value;
+        }
+      });
+    }
+  };
+
   return (
     yargs(hideBin(process.argv))
       /**
@@ -159,72 +259,23 @@ export const cli = () => {
        */
       .strictCommands()
       .scriptName(NAME)
+      /**
+       * https://yargs.js.org/docs/#api-reference-envprefix
+       */
       .env(getEnv())
       .options(addGroupToOptions(options, 'Common Options'))
-      .middleware(((argv: any, { parsed }: any) => {
-        const { environment, environments } = argv;
-
-        /**
-         * Create final options with environment and environments.
-         */
-        if (
-          environment &&
-          environments &&
-          environments[environment as string]
-        ) {
-          Object.entries(environments[environment]).forEach(([key, value]) => {
-            /**
-             * The case where argv[key] must not have the environment value is
-             * when such value is passed as option via CLI. For instance,
-             *
-             * $ carlin deploy --stack-name SomeName
-             *
-             * SomeName must be used as stack name independently of the
-             * environment values https://github.com/ttoss/carlin/issues/13.
-             *
-             * Three cases set argv:
-             *
-             * 1. Default.
-             * 2. Config file.
-             * 3. CLI
-             *
-             * - Case 1 we determine if the parsed.defaulted is true.
-             * - Case 2 we determine if `argv[key] === finalConfig[key]`.
-             * - Case 3 if the two above are falsy.
-             */
-            const isKeyFromCli = (() => {
-              const kebabCaseKey = kebabCase(key);
-
-              /**
-               * Case 1.
-               * Fixes #16 https://github.com/ttoss/carlin/issues/16
-               */
-              if (parsed?.defaulted?.[kebabCaseKey]) {
-                return false;
-              }
-
-              /**
-               * Case 2.
-               *
-               * Fixes #13 https://github.com/ttoss/carlin/issues/13
-               *
-               * Deep equal because arg can be an array or object.
-               */
-              if (deepEqual(argv[key], finalConfig[key])) {
-                return false;
-              }
-
-              return true;
-            })();
-
-            if (!isKeyFromCli) {
-              argv[key] = value;
-            }
-          });
-        }
-      }) as any)
+      .middleware(handleEnvironments as any)
       /**
        * Sometimes "environments" can be written as "environment" on config file.
+       * For instance, you may have a config file with the following content:
+       *
+       * ```yaml
+       * environment:
+       *  Production:
+       *    awsAccountId: 222222222222
+       * ```
+       *
+       * The middleware below will throw an error if that happens.
        */
       .middleware(({ environment }) => {
         if (!['string', 'undefined'].includes(typeof environment)) {
@@ -242,6 +293,9 @@ export const cli = () => {
         AWS.config.region = region;
         setEnvVar('REGION', region);
       })
+      /**
+       * https://yargs.js.org/docs/#api-reference-pkgconfkey-cwd
+       */
       .pkgConf(getPkgConfig())
       .config(getConfig())
       .config('config', (configPath: string) => {

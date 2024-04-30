@@ -1,6 +1,6 @@
 # @ttoss/appsync-api
 
-This package provides a opinionated way to create an AppSync API using [`@ttoss/graphql-api` API](./graphql-api/).
+This package provides a opinionated way to create an AppSync API using [`@ttoss/graphql-api` API](/docs/modules/packages/graphql-api/).
 
 ## Installation
 
