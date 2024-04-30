@@ -1,6 +1,6 @@
 # @ttoss/config
 
-**@ttoss/config** is an opinionated configuration library for [monorepo](#monorepo) and [packages](#packages). It contains a set of [default configurations](./defaults) that you can use on your projects.
+**@ttoss/config** is an opinionated configuration library for [monorepo](#monorepo) and [packages](#packages). It contains a set of default configurations that you can use on your projects.
 
 ## Install
 

@@ -15,7 +15,7 @@ pnpm add @ttoss/react-i18n
 pnpm add -D @ttoss/i18n-cli
 ```
 
-To extract and compile your translations, check the [ttoss/i18n-cli](./i18n-cli/) documentation.
+To extract and compile your translations, check the [ttoss/i18n-cli](/docs/modules/packages/i18n-cli/) documentation.
 
 ## Examples of use
 

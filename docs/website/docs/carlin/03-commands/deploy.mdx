@@ -12,6 +12,7 @@ import { InnerHTML } from '../../../src/components/InnerHTML';
 import { OptionAliasesInline } from '../../../src/components/OptionAliasesInline';
 import { OptionsTable } from '../../../src/components/OptionsTable';
 
+import { cliOptions } from '../../../.docusaurus/carlin/default/cliOptions';
 import { defaultTemplatePaths } from '../../../.docusaurus/carlin/default/defaultTemplatePaths';
 import { deployCommandExamples } from '../../../.docusaurus/carlin/default/deployCommandExamples';
 import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deployCommandOptions';
@@ -220,7 +221,7 @@ The destroy algorithm is the following:
 :::danger
 
 This operation is irreversible. You must pay attention because you may destroy resources that contains your App data, like DynamoDB, using this command.
-To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/commands/deploy#global-options" /> isn't defined.
+To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/configuration#global-options" /> isn't defined.
 
 :::
 
