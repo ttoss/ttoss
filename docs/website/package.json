@@ -47,6 +47,7 @@
     "docusaurus-plugin-typedoc": "^0.22.0",
     "jsdoc-api": "^8.0.0",
     "markdown-to-jsx": "^7.4.7",
+    "minimist": "^1.2.8",
     "typedoc": "^0.25.13",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "~5.4.5"

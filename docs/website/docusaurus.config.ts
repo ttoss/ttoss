@@ -2,6 +2,11 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config } from '@docusaurus/types';
 
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const environment = process.env.NODE_ENV;
+
+const isDevelopment = environment === 'development';
+
 const config: Config = {
   title: 'ttoss',
   tagline: 'ttoss are cool',
@@ -30,47 +35,53 @@ const config: Config = {
   },
 
   plugins: [
-    './plugins/carlin',
-    ...[
-      'appsync-api',
-      'aws-appsync-nodejs',
-      'cloud-auth',
-      'components',
-      'config',
-      'forms',
-      'graphql-api',
-      'graphql-api-server',
-      'i18n-cli',
-      'ids',
-      'layouts',
-      'logger',
-      'monorepo',
-      'react-feature-flags',
-      'react-i18n',
-      'react-icons',
-      'react-notifications',
-      'theme',
-      'ui',
-    ].map((pkg) => {
-      /**
-       * https://github.com/tgreyuk/typedoc-plugin-markdown/tree/master/packages/docusaurus-plugin-typedoc#multi-instance
-       */
-      return [
-        'docusaurus-plugin-typedoc',
-        {
-          id: pkg,
-          entryPoints: [`../../packages/${pkg}/src/index.ts`],
-          tsconfig: `../../packages/${pkg}/tsconfig.json`,
-          out: `modules/packages/${pkg}`,
-          sidebar: {
-            categoryLabel: `@ttoss/${pkg}`,
-          },
-          excludeExternals: true,
-          excludeNotDocumented: true,
-          excludeNotDocumentedKinds: ['Namespace'],
-        },
-      ];
-    }),
+    './plugins/carlin/index.mjs',
+    /**
+     * Only include these plugins in production. We remove them in development
+     * to speed up the build.
+     */
+    ...(isDevelopment
+      ? []
+      : [
+          'appsync-api',
+          'aws-appsync-nodejs',
+          'cloud-auth',
+          'components',
+          'config',
+          'forms',
+          'graphql-api',
+          'graphql-api-server',
+          'i18n-cli',
+          'ids',
+          'layouts',
+          'logger',
+          'monorepo',
+          'react-feature-flags',
+          'react-i18n',
+          'react-icons',
+          'react-notifications',
+          'theme',
+          'ui',
+        ].map((pkg) => {
+          /**
+           * https://github.com/tgreyuk/typedoc-plugin-markdown/tree/master/packages/docusaurus-plugin-typedoc#multi-instance
+           */
+          return [
+            'docusaurus-plugin-typedoc',
+            {
+              id: pkg,
+              entryPoints: [`../../packages/${pkg}/src/index.ts`],
+              tsconfig: `../../packages/${pkg}/tsconfig.json`,
+              out: `modules/packages/${pkg}`,
+              sidebar: {
+                categoryLabel: `@ttoss/${pkg}`,
+              },
+              excludeExternals: true,
+              excludeNotDocumented: true,
+              excludeNotDocumentedKinds: ['Namespace'],
+            },
+          ];
+        })),
   ],
 
   presets: [

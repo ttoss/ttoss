@@ -176,7 +176,7 @@
 import * as deployCommand from 'carlin/src/deploy/command';
 import { options as cliOptions } from 'carlin/src/cli';
 import { defaultTemplatePaths } from 'carlin/src/deploy/cloudformation';
-import { getComment, getCommentsAsHTML, toHTML } from './getComments';
+import { getComment, getCommentsAsHTML, toHTML } from './getComments.mjs';
 
 // eslint-disable-next-line import/no-default-export
 export default () => {
@@ -184,6 +184,9 @@ export default () => {
     name: 'carlin',
     loadContent: async () => {
       const comments = await getCommentsAsHTML({
+        cliEnvironmentVariablesComment: ['cli.js', 'getEnv'],
+        cliConfigFileComment: ['cli.js', 'cli~getConfig'],
+        cliMultipleEnvironmentsComment: ['cli.js', 'cli~handleEnvironments'],
         deployComment: ['deploy/cloudformation.core.js', 'deploy'],
         deployLambdaCodeComment: [
           'deploy/lambda/deployLambdaCode.js',
