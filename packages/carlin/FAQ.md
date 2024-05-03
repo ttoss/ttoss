@@ -10,12 +10,13 @@ We use [tsup]() to create a single file to avoid the error `Error [ERR_MODULE_NO
 
 You need to change the `exports` from `package.json` files of ttoss packages Carlin uses. You need to point to the built files instead of the source files, else you will get the error `.ts` extension not exists. So, instead of:
 
-````json
+```json
 {
   "exports": {
     ".": "./src/index.ts"
   }
 }
+```
 
 Use:
 
@@ -26,7 +27,7 @@ Use:
       "import": "./dist/esm/index.js",
       "types": "./dist/index.d.ts"
     }
-  },
+  }
 }
 ```
 
@@ -49,4 +50,3 @@ After you finish testing, you can unlink the package using the [pnpm unlink](htt
 # In the target project
 pnpm unlink
 ```
-````
