@@ -7,7 +7,7 @@ import { deployCommand } from './deploy/command';
 import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
 import { generateEnvCommand } from './generateEnv/generateEnvCommand';
 import { hideBin } from 'yargs/helpers';
-import { unstable_readObjectFile } from '@ttoss/cloudformation';
+import { readConfigFileSync } from '@ttoss/read-config-file';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
@@ -139,7 +139,7 @@ export const cli = () => {
     } while (findUpPath);
 
     const configs = paths.map((p) => {
-      return unstable_readObjectFile({ path: p }) || {};
+      return readConfigFileSync({ configFilePath: p }) || {};
     });
 
     /**
@@ -298,8 +298,8 @@ export const cli = () => {
        */
       .pkgConf(getPkgConfig())
       .config(getConfig())
-      .config('config', (configPath: string) => {
-        return unstable_readObjectFile({ path: configPath });
+      .config('config', (configFilePath: string) => {
+        return readConfigFileSync<any>({ configFilePath });
       })
       .command({
         command: 'print-args',

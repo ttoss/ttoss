@@ -1,15 +1,15 @@
 {
-  "name": "@ttoss/cloudformation",
-  "version": "0.9.5",
-  "description": "CloudFormation utils.",
+  "name": "@ttoss/read-config-file",
+  "version": "1.0.0",
+  "description": "Read a configuration file",
   "author": "ttoss",
   "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/cloudformation"
+    "directory": "packages/read-config-file"
   },
   "type": "module",
   "exports": {
@@ -27,19 +27,24 @@
     "test": "jest"
   },
   "dependencies": {
-    "@ttoss/read-config-file": "workspace:^",
-    "js-yaml": "^4.1.0"
+    "config-file-ts": "0.2.8-rc1",
+    "glob": "^10.3.12",
+    "import-sync": "^2.2.2",
+    "js-yaml": "^4.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.4.5"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^29.5.12",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
     "jest": "^29.7.0",
     "tsup": "^8.0.2"
   },
-  "keywords": [],
+  "keywords": [
+    "config",
+    "read-config-file"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

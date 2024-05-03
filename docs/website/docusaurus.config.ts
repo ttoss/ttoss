@@ -60,6 +60,7 @@ const config: Config = {
           'react-i18n',
           'react-icons',
           'react-notifications',
+          'read-config-file',
           'theme',
           'ui',
         ].map((pkg) => {

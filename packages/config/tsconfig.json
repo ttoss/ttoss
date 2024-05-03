@@ -15,9 +15,12 @@
      * without a bundler, set `moduleResolution` to `NodeNext`.
      */
     "moduleResolution": "Bundler",
-    "target": "ESNext",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    /**
+     * `target` to `ES2021` because Node.js 20 supports ES2021 features.
+     * https://node.green/#ES2021
+     */
+    "target": "ES2021",
     "declaration": true,
     "sourceMap": true,
     "strict": true,

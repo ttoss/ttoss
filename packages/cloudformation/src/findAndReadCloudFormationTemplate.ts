@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { CloudFormationTemplate } from './CloudFormationTemplate';
 import { readCloudFormationYamlTemplate } from './readCloudFormationYamlTemplate';
-import { readObjectFile } from './readObjectFile';
+import { readConfigFile } from '@ttoss/read-config-file';
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   (extension) => {
@@ -10,11 +10,11 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   }
 );
 
-export const findAndReadCloudFormationTemplate = ({
+export const findAndReadCloudFormationTemplate = async ({
   templatePath: defaultTemplatePath,
 }: {
   templatePath?: string;
-}): CloudFormationTemplate => {
+}): Promise<CloudFormationTemplate> => {
   const templatePath =
     defaultTemplatePath ||
     defaultTemplatePaths
@@ -37,8 +37,6 @@ export const findAndReadCloudFormationTemplate = ({
 
   const extension = templatePath?.split('.').pop() as string;
 
-  const fullPath = path.resolve(process.cwd(), templatePath);
-
   /**
    * We need to read Yaml first because CloudFormation specific tags aren't
    * recognized when parsing a simple Yaml file. I.e., a possible error:
@@ -48,5 +46,7 @@ export const findAndReadCloudFormationTemplate = ({
     return readCloudFormationYamlTemplate({ templatePath });
   }
 
-  return readObjectFile({ path: fullPath });
+  const configFilePath = path.resolve(process.cwd(), templatePath);
+
+  return readConfigFile({ configFilePath });
 };

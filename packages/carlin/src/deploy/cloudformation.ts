@@ -51,7 +51,7 @@ export const deployCloudFormation = async ({
   try {
     const { stackName } = await handleDeployInitialization({ logPrefix });
 
-    const cloudFormationTemplate: CloudFormationTemplate = (() => {
+    const cloudFormationTemplate: CloudFormationTemplate = await (async () => {
       if (template) {
         return { ...template };
       }

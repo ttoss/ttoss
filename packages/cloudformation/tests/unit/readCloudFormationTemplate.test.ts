@@ -30,11 +30,11 @@ Resources:
       SubString: !SubString ${subStringPath}
     `;
 
-const templatePath = faker.random.word();
+const templatePath = faker.word.sample();
 
-const templatePathToReturnUndefined = `${templatePath}${faker.random.word()}`;
+const templatePathToReturnUndefined = `${templatePath}${faker.word.sample()}`;
 
-const defaultStringReturned = faker.random.word();
+const defaultStringReturned = faker.word.sample();
 
 beforeAll(() => {
   (fs.readFileSync as jest.Mock).mockImplementation((t: string) => {
