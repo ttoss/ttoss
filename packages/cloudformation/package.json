@@ -13,8 +13,7 @@
   },
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./*"
+    ".": "./src/index.ts"
   },
   "files": [
     "dist",
