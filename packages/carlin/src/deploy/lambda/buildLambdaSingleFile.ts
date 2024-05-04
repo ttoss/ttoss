@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild';
+import { typescriptConfig } from '@ttoss/config';
 import builtins from 'builtin-modules';
 import log from 'npmlog';
 import path from 'path';
@@ -33,13 +34,14 @@ export const buildLambdaSingleFile = async ({
       ...builtins,
       ...lambdaExternals,
     ],
+    format: 'esm',
     /**
      * https://esbuild.github.io/api/#minify
      */
     minifySyntax: true,
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
-    target: 'node20',
+    target: typescriptConfig.target,
     treeShaking: true,
   });
 

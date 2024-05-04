@@ -24,16 +24,15 @@
     "test": "jest"
   },
   "dependencies": {
-    "config-file-ts": "0.2.8-rc1",
-    "glob": "^10.3.12",
+    "esbuild": "^0.20.2",
     "import-sync": "^2.2.2",
-    "js-yaml": "^4.1.0",
-    "ts-node": "^10.9.2",
-    "typescript": "~5.4.5"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/read-config-file-test": "workspace:^",
     "@types/jest": "^29.5.12",
+    "@types/js-yaml": "^4.0.9",
     "@types/react": "^18.2.79",
     "jest": "^29.7.0",
     "tsup": "^8.0.2"

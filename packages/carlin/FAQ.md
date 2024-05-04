@@ -6,9 +6,9 @@ We need to build using TypeScript because it compiles to JavaScript files and ke
 
 We use [tsup]() to create a single file to avoid the error `Error [ERR_MODULE_NOT_FOUND]: Cannot find module` that happens when we use the `type: module` in the `package.json` file and the relative paths doesn't have `.js` extension. See [this solution](https://www.npmjs.com/package/ts-add-js-extension) for more information.
 
-## How to link Carlin to test the changes locally?
+## Why do some ttoss packages are `noExternal` on `tsup.config.ts`?
 
-You need to change the `exports` from `package.json` files of ttoss packages Carlin uses. You need to point to the built files instead of the source files, else you will get the error `.ts` extension not exists. So, instead of:
+The majority of ttoss packages exports a TypeScript file on `package.json` file to improve the developer experience.
 
 ```json
 {
@@ -18,35 +18,4 @@ You need to change the `exports` from `package.json` files of ttoss packages Car
 }
 ```
 
-Use:
-
-```json
-{
-  "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  }
-}
-```
-
-Build the Carlin package using the following command:
-
-```bash
-pnpm build
-```
-
-Then, to link Carlin to test the changes locally, you need to run the [pnpm link](https://pnpm.io/cli/link) command in the target project.
-
-```bash
-# In the target project
-pnpm link /path/to/carlin
-```
-
-After you finish testing, you can unlink the package using the [pnpm unlink](https://pnpm.io/cli/unlink) command.
-
-```bash
-# In the target project
-pnpm unlink
-```
+But on CI, the error `TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts" for /home/runner/work/ttoss/ttoss/packages/cloudformation/src/index.ts` occurs when Carlin starts the deploy process because it's resolving the `index.ts` file. To avoid this error, we need to add all ttoss packages as `noExternal` on `tsup.config.ts` file bundle them on Carlin final bundle.

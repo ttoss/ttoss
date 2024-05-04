@@ -37,3 +37,14 @@ test.each([
     },
   });
 });
+
+test('read config when importing package', async () => {
+  const configFilePath = path.resolve(
+    __dirname,
+    '../fixtures/importingPackage.ts'
+  );
+  const config = await readConfigFile({ configFilePath });
+  expect(config).toEqual({
+    sum: 20,
+  });
+});

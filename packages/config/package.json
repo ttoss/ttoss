@@ -23,6 +23,7 @@
     "build:config": "tsup-node",
     "test": "jest"
   },
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@babel/core": "^7.23.9",

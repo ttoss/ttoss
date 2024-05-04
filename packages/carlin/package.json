@@ -30,6 +30,7 @@
     "@octokit/webhooks": "^12.0.0",
     "@slack/webhook": "^7.0.2",
     "@ttoss/cloudformation": "workspace:^",
+    "@ttoss/config": "workspace:^",
     "@ttoss/read-config-file": "workspace:^",
     "adm-zip": "^0.5.12",
     "aws-sdk": "^2.1608.0",

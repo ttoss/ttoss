@@ -2,6 +2,7 @@ import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
 } from './config';
+import { NODE_VERSION } from '../../config';
 import { getIamPath } from '../../utils';
 
 const CODE_BUILD_PROJECT_LOGS_GROUP_LOGICAL_ID = `${BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME}LogsLogGroup`;
@@ -17,7 +18,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 12
+      nodejs: ${NODE_VERSION}
     commands:
       - npm i --no-bin-links --no-optional --no-package-lock --no-save --no-shrinkwrap $PACKAGE_NAME
       - mkdir nodejs

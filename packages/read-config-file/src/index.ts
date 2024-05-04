@@ -1,4 +1,4 @@
-import { loadTsConfig } from './tsCompile';
+import { loadConfig } from './loadConfig';
 import fs from 'fs';
 import yaml from 'js-yaml';
 
@@ -26,14 +26,14 @@ export const readConfigFileSync = <ConfigFile = unknown>({
   }
 
   if (extension === 'ts') {
-    let result = loadTsConfig(configFilePath);
+    let result = loadConfig(configFilePath);
     if (typeof result === 'function') {
       result = result();
     }
     return result as ConfigFile;
   }
 
-  throw new Error('Unsupported config file extension');
+  throw new Error('Unsupported config file extension: ' + extension);
 };
 
 export const readConfigFile = async <ConfigFile = unknown>({
@@ -42,7 +42,7 @@ export const readConfigFile = async <ConfigFile = unknown>({
   const extension = configFilePath.split('.').pop();
 
   if (extension === 'ts') {
-    let result = loadTsConfig(configFilePath);
+    let result = loadConfig(configFilePath);
     if (typeof result === 'function') {
       result = result();
     }
