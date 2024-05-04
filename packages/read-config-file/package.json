@@ -24,12 +24,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@ttoss/config": "workspace:^",
     "esbuild": "^0.20.2",
     "import-sync": "^2.2.2",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@ttoss/config": "workspace:^",
     "@ttoss/read-config-file-test": "workspace:^",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",

@@ -10,18 +10,15 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
 
   const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
 
-  const projectPackageJsonPath = path.resolve(process.cwd(), 'package.json');
-
-  const projectPackageJson = importSync(projectPackageJsonPath);
-
-  const projectDependencies = Object.keys(
-    projectPackageJson.dependencies || {}
-  );
-
   const result = esbuild.buildSync({
     bundle: true,
     entryPoints: [entryPoint],
-    external: projectDependencies,
+    /**
+     * ttoss packages cannot be market as external because it'd break the CI.
+     * On CI, ttoss packages point to the TS main file, not the compiled
+     * ones. See more details here https://github.com/ttoss/ttoss/issues/541.
+     */
+    external: [],
     format: 'cjs',
     outfile,
     platform: 'node',
