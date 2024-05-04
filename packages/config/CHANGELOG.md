@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.32.3](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.2...@ttoss/config@1.32.3) (2024-05-04)
+
+### Bug Fixes
+
+- read cloudformation template ([#539](https://github.com/ttoss/ttoss/issues/539)) ([6ad9027](https://github.com/ttoss/ttoss/commit/6ad90279d2bd7fb8be051134b73f61babd3637c7))
+
 ## [1.32.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.1...@ttoss/config@1.32.2) (2024-04-27)
 
 ### Bug Fixes

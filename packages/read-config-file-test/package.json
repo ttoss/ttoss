@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss/read-config-file-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "author": "ttoss",
   "type": "module",
