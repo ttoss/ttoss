@@ -1,13 +1,14 @@
 import * as esbuild from 'esbuild';
+import { typescriptConfig } from '@ttoss/config';
 import builtins from 'builtin-modules';
 import log from 'npmlog';
 import path from 'path';
 
 const logPrefix = 'lambda';
 
-const outFolder = 'dist';
+export const outFolder = 'dist';
 
-const outFile = 'index.js';
+export const outFile = 'index.js';
 
 export const buildLambdaSingleFile = async ({
   lambdaExternals,
@@ -34,12 +35,17 @@ export const buildLambdaSingleFile = async ({
       ...lambdaExternals,
     ],
     /**
+     * Some packages as `graphql` are not compatible with ESM yet.
+     * https://github.com/graphql/graphql-js/issues/3603
+     */
+    format: 'cjs',
+    /**
      * https://esbuild.github.io/api/#minify
      */
     minifySyntax: true,
     platform: 'node',
     outfile: path.join(process.cwd(), outFolder, outFile),
-    target: 'node20',
+    target: typescriptConfig.target,
     treeShaking: true,
   });
 

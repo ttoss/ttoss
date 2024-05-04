@@ -8,4 +8,11 @@ export const AWS_DEFAULT_REGION = 'us-east-1';
  */
 export const CLOUDFRONT_REGION = 'us-east-1';
 
-export const NODE_RUNTIME = 'nodejs20.x';
+/**
+ * Used by CodeBuild runtimes.
+ * https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html#linux-runtimes
+ * On Carlin, it's used to configure the runtime for the Lambda Layer Builder.
+ */
+export const NODE_VERSION = '20';
+
+export const NODE_RUNTIME = `nodejs${NODE_VERSION}.x`;

@@ -108,6 +108,7 @@ dist
 build/
 .build/
 dist/
+out/
 node_modules/
 .cache/
 tmp_*
