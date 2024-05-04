@@ -6,9 +6,9 @@ import path from 'path';
 
 const logPrefix = 'lambda';
 
-const outFolder = 'dist';
+export const outFolder = 'dist';
 
-const outFile = 'index.js';
+export const outFile = 'index.js';
 
 export const buildLambdaSingleFile = async ({
   lambdaExternals,
@@ -34,7 +34,11 @@ export const buildLambdaSingleFile = async ({
       ...builtins,
       ...lambdaExternals,
     ],
-    format: 'esm',
+    /**
+     * Some packages as `graphql` are not compatible with ESM yet.
+     * https://github.com/graphql/graphql-js/issues/3603
+     */
+    format: 'cjs',
     /**
      * https://esbuild.github.io/api/#minify
      */

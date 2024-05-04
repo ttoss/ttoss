@@ -19,3 +19,5 @@ The majority of ttoss packages exports a TypeScript file on `package.json` file 
 ```
 
 But on CI, the error `TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts" for /home/runner/work/ttoss/ttoss/packages/cloudformation/src/index.ts` occurs when Carlin starts the deploy process because it's resolving the `index.ts` file. To avoid this error, we need to add all ttoss packages as `noExternal` on `tsup.config.ts` file bundle them on Carlin final bundle.
+
+The drawback of this approach is that we need to install all ttoss packages dependencies on Carlin. For example, `import-sync` is a dependency of `ttoss/read-config-file` package, so we need to install it on Carlin to avoid the error `Error: Cannot find module 'import-sync'`.

@@ -115,7 +115,11 @@ export const getLambdaLayerBuilderTemplate = () => {
           },
           Environment: {
             ComputeType: 'BUILD_GENERAL1_SMALL',
-            Image: 'aws/codebuild/standard:3.0',
+            /**
+             * Image should match the runtime of the buildspec.
+             * https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+             */
+            Image: 'aws/codebuild/standard:7.0',
             Type: 'LINUX_CONTAINER',
           },
           LogsConfig: {

@@ -10,10 +10,19 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
 
   const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
 
+  const projectPackageJsonPath = path.resolve(process.cwd(), 'package.json');
+
+  const projectPackageJson = importSync(projectPackageJsonPath);
+
+  const projectDependencies = Object.keys(
+    projectPackageJson.dependencies || {}
+  );
+
   const result = esbuild.buildSync({
     bundle: true,
     entryPoints: [entryPoint],
-    format: 'esm',
+    external: projectDependencies,
+    format: 'cjs',
     outfile,
     platform: 'node',
     target: typescriptConfig.target,

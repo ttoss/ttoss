@@ -164,7 +164,7 @@ importers:
         version: 1.2.20
       '@storybook/test':
         specifier: ^8.0.5
-        version: 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))
+        version: 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))
       '@ttoss/components':
         specifier: workspace:^
         version: link:../../packages/components
@@ -210,7 +210,7 @@ importers:
         version: 8.0.8(@types/react@18.2.79)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@storybook/addon-interactions':
         specifier: ^8.0.5
-        version: 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))
+        version: 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))
       '@storybook/addon-links':
         specifier: ^8.0.5
         version: 8.0.8(react@18.2.0)
@@ -482,6 +482,9 @@ importers:
       glob:
         specifier: ^10.3.12
         version: 10.3.12
+      import-sync:
+        specifier: ^2.2.2
+        version: 2.2.2
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -790,13 +793,13 @@ importers:
         version: 3.6.1(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint-plugin-import@2.29.1)(eslint@8.57.0)
       eslint-plugin-formatjs:
         specifier: ^4.13.0
-        version: 4.13.0(eslint@8.57.0)(ts-jest@29.1.2(@babel/core@7.24.4)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.4))(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(typescript@5.4.5))
+        version: 4.13.0(eslint@8.57.0)(ts-jest@29.1.2(@babel/core@7.24.4)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.4))(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))(typescript@5.4.5))
       eslint-plugin-import:
         specifier: ^2.29.1
         version: 2.29.1(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jest:
         specifier: ^28.2.0
-        version: 28.2.0(@typescript-eslint/eslint-plugin@7.7.0(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(typescript@5.4.5)
+        version: 28.2.0(@typescript-eslint/eslint-plugin@7.7.0(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))(typescript@5.4.5)
       eslint-plugin-jest-dom:
         specifier: ^5.2.0
         version: 5.2.0(@testing-library/dom@10.0.0)(eslint@8.57.0)
@@ -18383,11 +18386,11 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/addon-interactions@8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))':
+  '@storybook/addon-interactions@8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))':
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/instrumenter': 8.0.8
-      '@storybook/test': 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))
+      '@storybook/test': 8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))
       '@storybook/types': 8.0.8
       polished: 4.3.1
       ts-dedent: 2.2.0
@@ -18955,7 +18958,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@storybook/test@8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))':
+  '@storybook/test@8.0.8(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))':
     dependencies:
       '@storybook/client-logger': 8.0.8
       '@storybook/core-events': 8.0.8
@@ -22626,7 +22629,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-formatjs@4.13.0(eslint@8.57.0)(ts-jest@29.1.2(@babel/core@7.24.4)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.4))(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(typescript@5.4.5)):
+  eslint-plugin-formatjs@4.13.0(eslint@8.57.0)(ts-jest@29.1.2(@babel/core@7.24.4)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.4))(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))(typescript@5.4.5)):
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.7.6
       '@formatjs/ts-transformer': 3.13.12(ts-jest@29.1.2(@babel/core@7.24.4)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.4))(esbuild@0.19.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(typescript@5.4.5))
@@ -22706,7 +22709,7 @@ snapshots:
     optionalDependencies:
       '@testing-library/dom': 10.0.0
 
-  eslint-plugin-jest@28.2.0(@typescript-eslint/eslint-plugin@7.7.0(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(typescript@5.4.5):
+  eslint-plugin-jest@28.2.0(@typescript-eslint/eslint-plugin@7.7.0(@typescript-eslint/parser@7.7.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0))(typescript@5.4.5):
     dependencies:
       '@typescript-eslint/utils': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
       eslint: 8.57.0

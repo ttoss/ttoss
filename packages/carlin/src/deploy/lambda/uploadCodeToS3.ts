@@ -1,4 +1,5 @@
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
+import { outFile, outFolder } from './buildLambdaSingleFile';
 import { uploadFileToS3 } from '../s3';
 import AdmZip from 'adm-zip';
 import fs from 'fs';
@@ -7,9 +8,7 @@ import path from 'path';
 
 const logPrefix = 'lambda';
 
-const outFolder = 'dist';
-
-const outFile = 'index.js';
+const zipFileName = 'lambda.zip';
 
 export const uploadCodeToS3 = async ({ stackName }: { stackName: string }) => {
   log.info(logPrefix, `Uploading code to S3...`);
@@ -18,13 +17,13 @@ export const uploadCodeToS3 = async ({ stackName }: { stackName: string }) => {
 
   const code = fs.readFileSync(path.join(process.cwd(), outFolder, outFile));
 
-  zip.addFile('index.js', code);
+  zip.addFile(outFile, code);
 
-  if (!fs.existsSync('dist')) {
-    fs.mkdirSync('dist');
+  if (!fs.existsSync(outFolder)) {
+    fs.mkdirSync(outFolder);
   }
 
-  zip.writeZip('dist/lambda.zip');
+  zip.writeZip(`${outFolder}/${zipFileName}`);
 
   const bucketName = await getBaseStackResource(
     'BASE_STACK_BUCKET_LOGICAL_NAME'
@@ -33,7 +32,7 @@ export const uploadCodeToS3 = async ({ stackName }: { stackName: string }) => {
   return uploadFileToS3({
     bucket: bucketName,
     contentType: 'application/zip',
-    key: `lambdas/${stackName}/lambda.zip`,
+    key: `lambdas/${stackName}/${zipFileName}`,
     file: zip.toBuffer(),
   });
 };
