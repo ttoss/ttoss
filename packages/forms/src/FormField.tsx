@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ErrorMessage } from './ErrorMessage';
 import {
   FieldPath,
   FieldPathValue,
@@ -8,6 +7,7 @@ import {
   useController,
 } from 'react-hook-form';
 import { Flex, Label, type SxProp } from '@ttoss/ui';
+import { FormErrorMessage } from './FormErrorMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -80,7 +80,7 @@ export const FormField = <
       css={css}
     >
       {memoizedRender}
-      <ErrorMessage name={name} />
+      <FormErrorMessage name={name} />
     </Flex>
   );
 };

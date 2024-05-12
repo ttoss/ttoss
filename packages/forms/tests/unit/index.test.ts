@@ -1,6 +1,6 @@
 import {
-  ErrorMessage,
   Form,
+  FormErrorMessage,
   FormField,
   FormFieldInput,
   FormFieldRadio,
@@ -9,8 +9,8 @@ import {
 } from '../../src';
 
 test('should be defined', () => {
-  expect(ErrorMessage).toBeDefined();
   expect(Form).toBeDefined();
+  expect(FormErrorMessage).toBeDefined();
   expect(FormField).toBeDefined();
   expect(FormFieldInput).toBeDefined();
   expect(FormFieldRadio).toBeDefined();
