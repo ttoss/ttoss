@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box, BoxProps, Flex, FlexProps, Text } from '@ttoss/ui';
+import { ErrorMessage } from './ErrorMessage';
 
 type FormGroupLevelsManagerContextType = {
   levelsLength: number;
@@ -56,6 +57,7 @@ export const useFormGroup = () => {
 };
 
 type FormGroupProps = {
+  name?: string;
   title?: string;
   direction?: 'column' | 'row';
 } & BoxProps;
@@ -64,6 +66,7 @@ const FormGroupWrapper = ({
   title,
   direction,
   children,
+  name,
   ...boxProps
 }: FormGroupProps) => {
   const { level } = useFormGroup();
@@ -109,6 +112,7 @@ const FormGroupWrapper = ({
         </Box>
       )}
       <Flex sx={childrenContainerSx}>{children}</Flex>
+      {name && <ErrorMessage name={name} />}
     </Box>
   );
 };

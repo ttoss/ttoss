@@ -1,6 +1,7 @@
 export { yupResolver } from '@hookform/resolvers/yup';
 export { yup } from './yup/yup';
 
+export { ErrorMessage } from './ErrorMessage';
 export { Form } from './Form';
 export { FormField } from './FormField';
 export { FormFieldCheckbox } from './FormFieldCheckbox';

@@ -1,5 +1,13 @@
 import { Button } from '@ttoss/ui';
-import { Form, FormFieldInput, FormGroup, useForm } from '@ttoss/forms';
+import {
+  Form,
+  FormFieldInput,
+  FormGroup,
+  useFieldArray,
+  useForm,
+  yup,
+  yupResolver,
+} from '@ttoss/forms';
 import { Meta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -126,6 +134,69 @@ export const FlexGrow = () => {
         </FormGroup>
       </FormGroup>
 
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+
+export const ErrorMessageOnGroup = () => {
+  const schema = yup.object().shape({
+    array: yup
+      .array()
+      .of(
+        yup.object().shape({
+          input: yup.string().required(),
+        })
+      )
+      .min(1)
+      .default([]),
+  });
+
+  const formMethods = useForm({
+    defaultValues: {
+      array: [],
+    },
+    resolver: yupResolver(schema),
+  });
+
+  const { append, fields, remove } = useFieldArray({
+    control: formMethods.control,
+    name: 'array',
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormGroup title="Group Array" direction="column" name="array">
+        {fields.map((field, index) => {
+          return (
+            <FormGroup
+              title={`Group ${index + 1}`}
+              key={field.id}
+              direction="row"
+            >
+              <FormFieldInput
+                name={`array[${index}].input`}
+                placeholder="input"
+                label="input"
+              />
+              <Button
+                onClick={() => {
+                  remove(index);
+                }}
+              >
+                Remove
+              </Button>
+            </FormGroup>
+          );
+        })}
+        <Button
+          onClick={() => {
+            append({ input: '' });
+          }}
+        >
+          Add
+        </Button>
+      </FormGroup>
       <Button type="submit">Submit</Button>
     </Form>
   );

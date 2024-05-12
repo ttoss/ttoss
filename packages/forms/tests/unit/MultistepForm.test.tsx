@@ -106,7 +106,7 @@ test('should show message error on try to go to the next step without fill out a
   const user = userEvent.setup({ delay: null });
 
   const nextStepButton = screen.getByLabelText(`btn-step-1`);
-  user.click(nextStepButton);
+  await user.click(nextStepButton);
 
   expect(await screen.findByText(requiredFieldMessage)).toBeInTheDocument();
 });
@@ -172,7 +172,7 @@ test('should render all steps and submit the form on last step', async () => {
     const user = userEvent.setup({ delay: null });
 
     const nextStepButton = screen.getByLabelText(`btn-step-${idx + 1}`);
-    user.click(nextStepButton);
+    await user.click(nextStepButton);
 
     if (idx < STEPS.length - 1) {
       await waitFor(() => {
