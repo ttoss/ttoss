@@ -214,9 +214,6 @@ importers:
       '@storybook/addon-links':
         specifier: ^8.0.10
         version: 8.0.10(react@18.2.0)
-      '@storybook/addon-mdx-gfm':
-        specifier: ^8.0.10
-        version: 8.0.10
       '@storybook/addon-webpack5-compiler-babel':
         specifier: ^3.0.3
         version: 3.0.3(webpack@5.91.0(esbuild@0.20.2))
@@ -4578,9 +4575,6 @@ packages:
     peerDependenciesMeta:
       react:
         optional: true
-
-  '@storybook/addon-mdx-gfm@8.0.10':
-    resolution: {integrity: sha512-o9dwt38fEfCWJTioVVqVWOc64sD5tGhHkPJH6UyYQfQdy0fa1KRhCu7x7pMZedWDZ6K5z+0WUw5m4XC6FVpe2g==}
 
   '@storybook/addon-measure@8.0.10':
     resolution: {integrity: sha512-quXQwmZJUhOxDIlbXTH6aKYQkwkDpL0UQRkUZn1xuZ2sVKJeaee73QSWqw8HDD4Rz9huS+OrAdVoq/Cz5FoC6A==}
@@ -18408,14 +18402,6 @@ snapshots:
       ts-dedent: 2.2.0
     optionalDependencies:
       react: 18.2.0
-
-  '@storybook/addon-mdx-gfm@8.0.10':
-    dependencies:
-      '@storybook/node-logger': 8.0.10
-      remark-gfm: 4.0.0
-      ts-dedent: 2.2.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@storybook/addon-measure@8.0.10':
     dependencies:
