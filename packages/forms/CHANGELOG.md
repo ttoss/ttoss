@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.24.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.24.0...@ttoss/forms@0.24.1) (2024-05-12)
+
+### Bug Fixes
+
+- change from ErrorMessage to FormErrorMessage ([#545](https://github.com/ttoss/ttoss/issues/545)) ([764e648](https://github.com/ttoss/ttoss/commit/764e648cae5741999125b51a132627590ed45968))
+
 # [0.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.23.7...@ttoss/forms@0.24.0) (2024-05-12)
 
 ### Features
