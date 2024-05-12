@@ -49,9 +49,82 @@ export const FormComponent = () => {
 
 It exposes all the API from react-hook-form, so you can use all the methods and properties from it. Check the [React Hook Form](https://react-hook-form.com/docs) documentation for more details.
 
-## FormFieldSelect support for Default Value
+## Yup Validation
 
-FormFieldSelect has support for default values, by assigning the first option defined or the value passed to it in the parameter `defaultValue`.
+You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`
+
+```tsx
+const FirstNameForm = () => {
+  const schema = yup.object({
+    firstName: yup.string().required(),
+  });
+
+  const formMethods = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={onSubmit}>
+      <FormField
+        name="firstName"
+        label="First Name"
+        defaultValue={''}
+        render={({ field }) => {
+          return <Input {...field} />;
+        }}
+      />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+```
+
+When field is invalid according with schema requirements, it gonna return the default. In this example, for required fields, it gonna be `Field is required`.
+
+You can translate the message or change the generic message by configuring the messages in the json i18n definition. To use this, please, refer to the docs on [React-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) and [i18n-CLI](https://ttoss.dev/docs/modules/packages/i18n-cli/).
+
+### Custom Error messages
+
+You can, also, pass custom error messages to the validation constraints in schema. It's really recommended that you use i18n pattern to create your custom message.
+
+```tsx
+const ComponentForm = () => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  const schema = useMemo(() => {
+    return yup.object({
+      name: yup.string().required(
+        formatMessage({
+          defaultMessage: 'Name must be not null',
+          description: 'Name required constraint',
+        })
+      ),
+      age: yup.number().min(
+        18,
+        formatMessage(
+          {
+            defaultMessage: 'You should be {age} years old or more',
+            description: 'Min Age Constriant message',
+          },
+          { age: 18 }
+        )
+      ),
+    });
+  }, [formatMessage]);
+
+  // ...
+};
+```
+
+## Components
+
+### FormFieldSelect
+
+#### FormFieldSelect support for Default Value
+
+`FormFieldSelect` has support for default values, by assigning the first option defined or the value passed to it in the parameter `defaultValue`.
 
 ```tsx
 const RADIO_OPTIONS = [
@@ -160,74 +233,35 @@ const RenderForm = () => {
 };
 ```
 
-### Yup Validation
+### FormGroup
 
-You can also use yup and all of API from react-hook-form importing `import { yup, useForm } from @ttoss/forms`
+`FormGroup` is a component that groups fields together. It's useful when you need to group fields that are related to each other.
 
 ```tsx
-const FirstNameForm = () => {
-  const schema = yup.object({
-    firstName: yup.string().required(),
-  });
-
-  const formMethods = useForm({
-    resolver: yupResolver(schema),
-  });
+const RenderForm = () => {
+  const formMethods = useForm();
 
   return (
     <Form {...formMethods} onSubmit={onSubmit}>
-      <FormField
-        name="firstName"
-        label="First Name"
-        defaultValue={''}
-        render={({ field }) => {
-          return <Input {...field} />;
-        }}
-      />
+      <FormGroup label="Personal Information" direction="row">
+        <FormField.Input name="firstName" label="First Name" />
+        <FormField.Input name="lastName" label="Last Name" />
+      </FormGroup>
+      <FormGroup label="Address">
+        <FormField.Input name="street" label="Street" />
+        <FormField.Input name="city" label="City" />
+      </FormGroup>
       <Button type="submit">Submit</Button>
     </Form>
   );
 };
 ```
 
-When field is invalid according with schema requirements, it gonna return the default. In this example, for required fields, it gonna be `Field is required`.
+#### Props
 
-You can translate the message or change the generic message by configuring the messages in the json i18n definition. To use this, please, refer to the docs on [React-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) and [i18n-CLI](https://ttoss.dev/docs/modules/packages/i18n-cli/).
-
-### Custom Error messages
-
-You can, also, pass custom error messages to the validation constraints in schema. It's really recommended that you use i18n pattern to create your custom message.
-
-```tsx
-const ComponentForm = () => {
-  const {
-    intl: { formatMessage },
-  } = useI18n();
-
-  const schema = useMemo(() => {
-    return yup.object({
-      name: yup.string().required(
-        formatMessage({
-          defaultMessage: 'Name must be not null',
-          description: 'Name required constraint',
-        })
-      ),
-      age: yup.number().min(
-        18,
-        formatMessage(
-          {
-            defaultMessage: 'You should be {age} years old or more',
-            description: 'Min Age Constriant message',
-          },
-          { age: 18 }
-        )
-      ),
-    });
-  }, [formatMessage]);
-
-  // ...
-};
-```
+- `title`: The label of the group.
+- `direction`: The direction of the group. It can be `row` or `column`.
+- `name`: The name of the group. It is used to render the group error message.
 
 ## @ttoss/forms/multistep-form
 

@@ -1,12 +1,14 @@
+import { Button, Text } from '@ttoss/ui';
 import {
   Form,
   FormFieldInput,
   FormGroup,
   useForm,
   useFormGroup,
+  yup,
+  yupResolver,
 } from '../../src';
-import { Text } from '@ttoss/ui';
-import { render, screen } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const RenderForm = () => {
   const formMethods = useForm();
@@ -212,4 +214,51 @@ test('should render group title', () => {
   );
 
   expect(screen.getByText('title')).toBeInTheDocument();
+});
+
+test('should render group error message', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const groupErrorMessage = 'array field must have at least 1 items';
+
+  const FormWithError = () => {
+    const schema = yup.object().shape({
+      array: yup
+        .array()
+        .of(
+          yup.object().shape({
+            input: yup.string().required(),
+          })
+        )
+        .min(1, groupErrorMessage)
+        .default([]),
+    });
+
+    const formMethods = useForm({
+      defaultValues: {
+        array: [],
+      },
+      resolver: yupResolver(schema),
+    });
+
+    return (
+      <Form
+        {...formMethods}
+        onSubmit={() => {
+          return;
+        }}
+      >
+        <FormGroup name="array">
+          <Text>Some text</Text>
+        </FormGroup>
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<FormWithError />);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(screen.getByText(groupErrorMessage)).toBeInTheDocument();
 });
