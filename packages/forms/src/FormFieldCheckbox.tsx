@@ -1,9 +1,9 @@
 import { Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
-import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
+import { FormErrorMessage } from './FormErrorMessage';
 
 export const FormFieldCheckbox = <
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 >({
   label,
   name,
@@ -16,6 +16,7 @@ export const FormFieldCheckbox = <
   const {
     field: { onChange, onBlur, value, ref },
     formState: { errors },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useController<any>({
     name,
     defaultValue: false,
@@ -42,7 +43,7 @@ export const FormFieldCheckbox = <
           {label}
         </Label>
       </Flex>
-      <ErrorMessage name={name} />
+      <FormErrorMessage name={name} />
     </Flex>
   );
 };

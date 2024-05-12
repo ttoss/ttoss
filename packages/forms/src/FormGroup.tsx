@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, BoxProps, Flex, FlexProps, Text } from '@ttoss/ui';
-import { ErrorMessage } from './ErrorMessage';
+import { FormErrorMessage } from './FormErrorMessage';
 
 type FormGroupLevelsManagerContextType = {
   levelsLength: number;
@@ -112,7 +112,7 @@ const FormGroupWrapper = ({
         </Box>
       )}
       <Flex sx={childrenContainerSx}>{children}</Flex>
-      {name && <ErrorMessage name={name} />}
+      {name && <FormErrorMessage name={name} />}
     </Box>
   );
 };

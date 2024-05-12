@@ -1,6 +1,6 @@
 import { Box, Flex, Label, Radio, type RadioProps } from '@ttoss/ui';
-import { ErrorMessage } from './ErrorMessage';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
+import { FormErrorMessage } from './FormErrorMessage';
 
 type FormRadioOption = {
   value: string | number;
@@ -20,6 +20,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
 } & RadioProps) => {
   const {
     field: { onChange, onBlur, value, ref },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useController<any>({
     name,
     defaultValue: '',
@@ -50,7 +51,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
         })}
       </Box>
 
-      <ErrorMessage name={name} />
+      <FormErrorMessage name={name} />
     </Flex>
   );
 };

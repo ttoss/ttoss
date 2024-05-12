@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ErrorMessage } from '@hookform/error-message';
 import {
   FieldError,
   FieldName,
@@ -7,7 +8,6 @@ import {
 } from 'react-hook-form';
 import { FormattedMessage, MessageDescriptor } from '@ttoss/react-i18n';
 import { HelpText } from '@ttoss/ui';
-import { ErrorMessage as HookformErrorMessage } from '@hookform/error-message';
 
 type ModifiedDescriptor = MessageDescriptor & { values?: any };
 
@@ -21,7 +21,9 @@ const isMessageDescriptor = (
   );
 };
 
-export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
+export const FormErrorMessage = <
+  TFieldValues extends FieldValues = FieldValues,
+>({
   name,
   disabled,
 }: {
@@ -33,7 +35,7 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
   } = useFormContext<TFieldValues>();
 
   return (
-    <HookformErrorMessage
+    <ErrorMessage
       name={name as any}
       errors={errors}
       render={({ message }: { message: FieldError | string }) => {
