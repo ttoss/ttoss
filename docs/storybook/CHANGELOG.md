@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.2.13...@docs/storybook@2.3.0) (2024-05-12)
+
+### Features
+
+- add name to fo FormGroup ([#544](https://github.com/ttoss/ttoss/issues/544)) ([5c9c3f6](https://github.com/ttoss/ttoss/commit/5c9c3f6fd9653ec587d1d4b2659ee8295659270c))
+
 ## [2.2.13](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.2.12...@docs/storybook@2.2.13) (2024-05-04)
 
 **Note:** Version bump only for package @docs/storybook

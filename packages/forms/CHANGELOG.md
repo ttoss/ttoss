@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.23.7...@ttoss/forms@0.24.0) (2024-05-12)
+
+### Features
+
+- add name to fo FormGroup ([#544](https://github.com/ttoss/ttoss/issues/544)) ([5c9c3f6](https://github.com/ttoss/ttoss/commit/5c9c3f6fd9653ec587d1d4b2659ee8295659270c))
+
 ## [0.23.7](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.23.6...@ttoss/forms@0.23.7) (2024-05-04)
 
 **Note:** Version bump only for package @ttoss/forms
