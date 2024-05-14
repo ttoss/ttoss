@@ -25,6 +25,10 @@ export const deployLambdaCode = async ({
   lambdaOutdir?: string;
   stackName: string;
 }) => {
+  if (!lambdaEntryPoints.length) {
+    return {};
+  }
+
   log.info(logPrefix, 'Deploying Lambda code...');
 
   for (const entryPoint of lambdaEntryPoints) {
