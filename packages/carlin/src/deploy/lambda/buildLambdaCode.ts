@@ -8,19 +8,19 @@ const logPrefix = 'lambda';
 
 export const buildLambdaCode = async ({
   lambdaEntryPoints,
-  lambdaEntryPointsBasePath,
-  lambdaExternal,
+  lambdaEntryPointsBaseDir = '.',
+  lambdaExternal = [],
   lambdaOutdir,
 }: {
   lambdaEntryPoints: string[];
-  lambdaEntryPointsBasePath: string;
-  lambdaExternal: string[];
+  lambdaEntryPointsBaseDir: string;
+  lambdaExternal?: string[];
   lambdaOutdir: string;
 }) => {
   log.info(logPrefix, 'Building Lambda single file...');
 
   const entryPoints = lambdaEntryPoints.map((entryPoint) => {
-    return path.resolve(process.cwd(), lambdaEntryPointsBasePath, entryPoint);
+    return path.resolve(process.cwd(), lambdaEntryPointsBaseDir, entryPoint);
   });
 
   const { errors } = esbuild.buildSync({
@@ -48,6 +48,7 @@ export const buildLambdaCode = async ({
      */
     minifySyntax: true,
     platform: 'node',
+    outbase: path.join(process.cwd(), lambdaEntryPointsBaseDir),
     outdir: path.join(process.cwd(), lambdaOutdir),
     target: typescriptConfig.target,
     treeShaking: true,

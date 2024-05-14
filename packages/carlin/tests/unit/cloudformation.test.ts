@@ -9,7 +9,7 @@ const mockWorkingCloudFormationTemplate: CloudFormationTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
   Resources: {
     SomeResource: {
-      Type: faker.random.word(),
+      Type: faker.lorem.word(),
       Properties: {},
     },
   },
@@ -62,9 +62,9 @@ test('all templates paths should start with .src', () => {
 });
 
 describe('testing deployCloudFormation method', () => {
-  const lambdaInput = faker.word.sample();
+  const lambdaEntryPoints = [faker.word.sample(), faker.word.sample()];
 
-  const lambdaExternals = [...new Array(5)].map(() => {
+  const lambdaExternal = [...new Array(5)].map(() => {
     return faker.word.sample();
   });
 
@@ -72,8 +72,11 @@ describe('testing deployCloudFormation method', () => {
     (deployLambdaCode as jest.Mock).mockResolvedValueOnce(undefined);
 
     await deployCloudFormation({
-      lambdaInput,
       template: mockWorkingCloudFormationTemplate,
+      lambdaEntryPoints: [],
+      lambdaEntryPointsBaseDir: 'src',
+      lambdaOutdir: 'dist',
+      lambdaExternal: [],
     });
 
     expect(deploy).toHaveBeenCalledWith({
@@ -97,15 +100,15 @@ describe('testing deployCloudFormation method', () => {
     );
 
     await deployCloudFormation({
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       template: mockWorkingCloudFormationTemplate,
     });
 
     expect(deployLambdaCode).toHaveBeenCalledWith({
-      lambdaExternals,
       lambdaImage: undefined,
-      lambdaInput,
+      lambdaEntryPoints,
+      lambdaExternal,
       stackName: mockStackName,
     });
 
@@ -155,19 +158,23 @@ describe('testing deployCloudFormation method', () => {
       deployLambdaCodeResponse
     );
 
+    const handler = `${faker.lorem.word()}.handler`;
+
     const template = {
       ...mockWorkingCloudFormationTemplate,
       Resources: {
         LambdaFunction: {
           Type: 'AWS::Lambda::Function',
-          Properties: {},
+          Properties: {
+            Handler: handler,
+          },
         },
       },
     };
 
     await deployCloudFormation({
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints: [],
+      lambdaExternal,
       template,
     });
 
@@ -217,6 +224,7 @@ describe('testing deployCloudFormation method', () => {
                   Ref: 'LambdaS3ObjectVersion',
                 },
               },
+              Handler: handler,
             },
           },
         },
@@ -258,8 +266,8 @@ describe('testing deployCloudFormation method', () => {
     };
 
     await deployCloudFormation({
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       template,
     });
 
@@ -338,8 +346,8 @@ describe('testing deployCloudFormation method', () => {
     };
 
     await deployCloudFormation({
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       template,
     });
 
@@ -430,8 +438,8 @@ describe('testing deployCloudFormation method', () => {
     };
 
     await deployCloudFormation({
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       template,
     });
 
@@ -499,15 +507,15 @@ describe('testing deployCloudFormation method', () => {
 
     await deployCloudFormation({
       lambdaImage: true,
-      lambdaInput,
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       template: mockWorkingCloudFormationTemplate,
     });
 
     expect(deployLambdaCode).toHaveBeenCalledWith({
-      lambdaExternals,
+      lambdaEntryPoints,
+      lambdaExternal,
       lambdaImage: true,
-      lambdaInput,
       stackName: mockStackName,
     });
 
@@ -545,7 +553,8 @@ describe('testing deployCloudFormation method', () => {
     ];
 
     await deployCloudFormation({
-      lambdaInput,
+      lambdaEntryPoints,
+      lambdaExternal,
       parameters,
       template: mockWorkingCloudFormationTemplate,
     });

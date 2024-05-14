@@ -43,7 +43,7 @@ test('create zip file properly', async () => {
   await buildLambdaCode({
     lambdaExternal: [],
     lambdaEntryPoints,
-    lambdaEntryPointsBasePath: 'tests/__fixtures__/lambdaCodeExample',
+    lambdaEntryPointsBaseDir: 'tests/__fixtures__/lambdaCodeExample',
     lambdaOutdir: outdir1,
   });
 
@@ -68,7 +68,7 @@ test('call uploadFileToS3 with the right parameters', async () => {
   await buildLambdaCode({
     lambdaExternal: [],
     lambdaEntryPoints,
-    lambdaEntryPointsBasePath: 'tests/__fixtures__/lambdaCodeExample',
+    lambdaEntryPointsBaseDir: 'tests/__fixtures__/lambdaCodeExample',
     lambdaOutdir: outdir2,
   });
 

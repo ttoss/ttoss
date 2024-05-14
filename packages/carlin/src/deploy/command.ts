@@ -77,9 +77,9 @@ export const options = {
     describe: 'External modules that will not be bundled in the Lambda code.',
     type: 'array',
   },
-  'lambda-entry-points-base-path': {
+  'lambda-entry-points-base-dir': {
     default: 'src',
-    describe: 'Base path for Lambda entry points.',
+    describe: 'Base directory for Lambda entry points.',
     type: 'string',
   },
   'lambda-entry-points': {

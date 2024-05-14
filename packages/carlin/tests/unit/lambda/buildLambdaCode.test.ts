@@ -15,7 +15,7 @@ test('build lambda code properly', () => {
   buildLambdaCode({
     lambdaExternal: [],
     lambdaEntryPoints,
-    lambdaEntryPointsBasePath: 'tests/__fixtures__/lambdaCodeExample',
+    lambdaEntryPointsBaseDir: 'tests/__fixtures__/lambdaCodeExample',
     lambdaOutdir,
   });
 

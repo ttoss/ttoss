@@ -1,41 +1,43 @@
 import { buildLambdaCode } from './buildLambdaCode';
 import { deployLambdaLayers } from './deployLambdaLayers';
-// import { uploadCodeToECR } from './uploadCodeToECR';
+import { uploadCodeToECR } from './uploadCodeToECR';
 import { uploadCodeToS3 } from './uploadCodeToS3';
-import fs from 'fs';
+import fs from 'node:fs';
 import log from 'npmlog';
+import path from 'node:path';
 
 const logPrefix = 'lambda';
 
 export const deployLambdaCode = async ({
-  // lambdaDockerfile,
-  lambdaExternal,
+  lambdaDockerfile,
+  lambdaExternal = [],
   lambdaImage,
   lambdaEntryPoints,
-  lambdaEntryPointsBasePath,
-  lambdaOutdir,
+  lambdaEntryPointsBaseDir = 'src',
+  lambdaOutdir = 'dist',
   stackName,
 }: {
   lambdaDockerfile?: string;
-  lambdaExternal: string[];
+  lambdaExternal?: string[];
   lambdaImage?: boolean;
   lambdaEntryPoints: string[];
-  lambdaEntryPointsBasePath: string;
-  lambdaOutdir: string;
+  lambdaEntryPointsBaseDir?: string;
+  lambdaOutdir?: string;
   stackName: string;
 }) => {
   log.info(logPrefix, 'Deploying Lambda code...');
 
   for (const entryPoint of lambdaEntryPoints) {
-    if (!fs.existsSync(entryPoint)) {
-      throw new Error(`Entry point ${entryPoint} does not exist.`);
+    const entryPointPath = path.resolve(lambdaEntryPointsBaseDir, entryPoint);
+    if (!fs.existsSync(entryPointPath)) {
+      throw new Error(`Entry point ${entryPointPath} does not exist.`);
     }
   }
 
   await buildLambdaCode({
     lambdaExternal,
     lambdaEntryPoints,
-    lambdaEntryPointsBasePath,
+    lambdaEntryPointsBaseDir,
     lambdaOutdir,
   });
 
@@ -49,17 +51,13 @@ export const deployLambdaCode = async ({
     return { bucket, key, versionId };
   }
 
-  log.info(logPrefix, 'Upload code to ECR is not implemented yet.');
+  const { imageUri } = await uploadCodeToECR({
+    bucket,
+    key,
+    versionId,
+    lambdaDockerfile,
+    lambdaExternal,
+  });
 
-  process.exit(1);
-
-  // const { imageUri } = await uploadCodeToECR({
-  //   bucket,
-  //   key,
-  //   versionId,
-  //   lambdaDockerfile,
-  //   lambdaExternal,
-  // });
-
-  // return { imageUri };
+  return { imageUri };
 };

@@ -29,20 +29,20 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
 export const deployCloudFormation = async ({
   lambdaDockerfile,
   lambdaEntryPoints,
-  lambdaEntryPointsBasePath,
+  lambdaEntryPointsBaseDir,
   lambdaImage,
-  lambdaExternal = [],
+  lambdaExternal,
   lambdaOutdir,
   parameters,
   template,
   templatePath,
 }: {
   lambdaDockerfile?: string;
-  lambdaEntryPoints: string[];
-  lambdaEntryPointsBasePath: string;
+  lambdaEntryPoints?: string[];
+  lambdaEntryPointsBaseDir?: string;
   lambdaImage?: boolean;
-  lambdaExternal: string[];
-  lambdaOutdir: string;
+  lambdaExternal?: string[];
+  lambdaOutdir?: string;
   parameters?: {
     key: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,7 +113,7 @@ export const deployCloudFormation = async ({
 
     const deployCloudFormationDeployLambdaCode = async () => {
       const finalLambdaEntryPoints = (() => {
-        if (lambdaEntryPoints.length > 0) {
+        if (lambdaEntryPoints && lambdaEntryPoints.length > 0) {
           return lambdaEntryPoints;
         }
 
@@ -124,19 +124,14 @@ export const deployCloudFormation = async ({
         lambdaDockerfile,
         lambdaExternal,
         lambdaEntryPoints: finalLambdaEntryPoints,
-        lambdaEntryPointsBasePath,
+        lambdaEntryPointsBaseDir,
         lambdaImage,
         lambdaOutdir,
         stackName,
       });
 
       if (response) {
-        const { bucket, key, versionId } = response;
-
-        /**
-         * TODO: Implement imageUri.
-         */
-        const imageUri = undefined;
+        const { bucket, key, versionId, imageUri } = response;
 
         if (imageUri) {
           cloudFormationTemplate.Parameters = {
