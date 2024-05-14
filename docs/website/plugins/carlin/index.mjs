@@ -188,10 +188,6 @@ export default () => {
         cliConfigFileComment: ['cli.js', 'cli~getConfig'],
         cliMultipleEnvironmentsComment: ['cli.js', 'cli~handleEnvironments'],
         deployComment: ['deploy/cloudformation.core.js', 'deploy'],
-        deployLambdaCodeComment: [
-          'deploy/lambda/deployLambdaCode.js',
-          'deployLambdaCode',
-        ],
         destroyComment: ['deploy/cloudformation.js', 'destroy'],
       });
 

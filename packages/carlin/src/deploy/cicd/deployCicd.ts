@@ -39,8 +39,8 @@ const deployCicdLambdas = async ({ stackName }: { stackName: string }) => {
   })();
 
   const s3 = await deployLambdaCode({
-    lambdaInput,
-    lambdaExternals: [],
+    lambdaEntryPoints: [lambdaInput],
+    lambdaExternal: [],
     /**
      * Needs stackName to define the S3 key.
      */

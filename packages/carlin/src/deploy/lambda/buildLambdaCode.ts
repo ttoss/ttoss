@@ -6,25 +6,29 @@ import path from 'path';
 
 const logPrefix = 'lambda';
 
-export const outFolder = 'dist';
-
-export const outFile = 'index.js';
-
-export const buildLambdaSingleFile = async ({
-  lambdaExternals,
-  lambdaInput,
+export const buildLambdaCode = async ({
+  lambdaEntryPoints,
+  lambdaEntryPointsBaseDir = '.',
+  lambdaExternal = [],
+  lambdaOutdir,
 }: {
-  lambdaExternals: string[];
-  lambdaInput: string;
+  lambdaEntryPoints: string[];
+  lambdaEntryPointsBaseDir: string;
+  lambdaExternal?: string[];
+  lambdaOutdir: string;
 }) => {
   log.info(logPrefix, 'Building Lambda single file...');
+
+  const entryPoints = lambdaEntryPoints.map((entryPoint) => {
+    return path.resolve(process.cwd(), lambdaEntryPointsBaseDir, entryPoint);
+  });
 
   const { errors } = esbuild.buildSync({
     banner: {
       js: '// Powered by carlin (https://ttoss.dev/docs/carlin/)',
     },
     bundle: true,
-    entryPoints: [path.resolve(process.cwd(), lambdaInput)],
+    entryPoints,
     external: [
       /**
        * Only AWS SDK v3 on Node.js 18.x or higher.
@@ -32,7 +36,7 @@ export const buildLambdaSingleFile = async ({
        */
       '@aws-sdk/*',
       ...builtins,
-      ...lambdaExternals,
+      ...lambdaExternal,
     ],
     /**
      * Some packages as `graphql` are not compatible with ESM yet.
@@ -44,7 +48,8 @@ export const buildLambdaSingleFile = async ({
      */
     minifySyntax: true,
     platform: 'node',
-    outfile: path.join(process.cwd(), outFolder, outFile),
+    outbase: path.join(process.cwd(), lambdaEntryPointsBaseDir),
+    outdir: path.join(process.cwd(), lambdaOutdir),
     target: typescriptConfig.target,
     treeShaking: true,
   });

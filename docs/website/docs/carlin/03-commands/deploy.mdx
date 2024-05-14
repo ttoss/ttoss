@@ -17,7 +17,6 @@ import { defaultTemplatePaths } from '../../../.docusaurus/carlin/default/defaul
 import { deployCommandExamples } from '../../../.docusaurus/carlin/default/deployCommandExamples';
 import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deployCommandOptions';
 import { deployComment } from '../../../.docusaurus/carlin/default/deployComment';
-import { deployLambdaCodeComment } from '../../../.docusaurus/carlin/default/deployLambdaCodeComment';
 import { destroyComment } from '../../../.docusaurus/carlin/default/destroyComment';
 import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
 import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
@@ -73,13 +72,9 @@ update or a delete is performed.
 
 ## Lambda
 
-If <code children={deployCommandOptions['lambda-input'].default} /> or any file defined by <OptionAliasesInline options={deployCommandOptions} option="lambda-input" to="/docs/carlin/commands/deploy#options" /> exists, <Carlin /> will deploy with the Lambda algorithm:
+If your template has Lambda functions, <Carlin /> will handle the Lambda code build and deploy. First, it analyzes the CloudFormation template to find all [`Handler`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-handler) properties in the [`AWS::Lambda::Function`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html) and [`AWS::Serverless::Function`](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html) resources. If there are no Lambda functions in the template, <Carlin /> will deploy the stack without the Lambda algorithm. If it finds Lambda functions in the template or if the <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points" to="/docs/carlin/commands/deploy#options" /> option is passed, <Carlin /> will build the Lambda code and upload it to an S3 bucket.
 
-:::note Algorithm
-
-<Algorithm algorithm={deployLambdaCodeComment} />
-
-:::
+Your [`Handler`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-handler) property must be in the format `path/to/my/file.myMethodHandler`, where `path/to/my/file` is the file path and `myMethodHandler` is the exported function name. For example, if you have a file named `src/Module/index.ts` with an export function named `getModuleProperty`, the `Handler` property must be `Module/index.getModuleProperty`. Note that `src` is the base directory and you can defined it in the <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points-base-dir" to="/docs/carlin/commands/deploy#options" /> option (default is `src`).
 
 Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html), the S3 bucket parameters that the Lambda code was stored, to the CloudFormation template:
 
