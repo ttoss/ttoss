@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.46.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.24...@docs/website@1.46.0) (2024-05-14)
+
+### Features
+
+- issue 546 ([#547](https://github.com/ttoss/ttoss/issues/547)) ([2d70a75](https://github.com/ttoss/ttoss/commit/2d70a75f4690a3daeaafa6a791b4e1de30bd95b1))
+
 ## [1.45.24](https://github.com/ttoss/ttoss/compare/@docs/website@1.45.23...@docs/website@1.45.24) (2024-05-12)
 
 **Note:** Version bump only for package @docs/website
