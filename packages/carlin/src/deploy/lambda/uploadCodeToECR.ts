@@ -8,14 +8,14 @@ const codeBuild = new AWS.CodeBuild({ region: AWS_DEFAULT_REGION });
 export const uploadCodeToECR = async ({
   bucket,
   key,
-  lambdaExternals,
+  lambdaExternal,
   lambdaDockerfile,
 }: {
   bucket: string;
   key: string;
   versionId: string;
   lambdaDockerfile?: string;
-  lambdaExternals: string[];
+  lambdaExternal: string[];
 }) => {
   const TEMP = 1;
 
@@ -43,7 +43,7 @@ export const uploadCodeToECR = async ({
         },
         {
           name: 'LAMBDA_EXTERNALS',
-          value: lambdaExternals.join(' '),
+          value: lambdaExternal.join(' '),
         },
         {
           name: 'IMAGE_TAG',

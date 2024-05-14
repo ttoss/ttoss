@@ -56,7 +56,7 @@ export const options = {
   destroy: {
     default: false,
     describe:
-      'Destroy the deployment. You cannot destroy a deploy with "environment" is defined.',
+      'Destroy the deployment. You cannot destroy a deploy when "environment" is defined.',
     type: 'boolean',
   },
   'lambda-dockerfile': {
@@ -72,15 +72,25 @@ export const options = {
     describe: 'A Lambda image will be created instead using S3.',
     type: 'boolean',
   },
-  'lambda-externals': {
+  'lambda-external': {
     default: [],
-    describe: 'Lambda external packages.',
+    describe: 'External modules that will not be bundled in the Lambda code.',
     type: 'array',
   },
-  'lambda-input': {
-    default: 'src/lambda.ts',
+  'lambda-entry-points-base-path': {
+    default: 'src',
+    describe: 'Base path for Lambda entry points.',
+    type: 'string',
+  },
+  'lambda-entry-points': {
+    default: [],
     describe:
-      'Lambda input file. This file export all handlers used by the Lambda Functions.',
+      'This is an array of files that each serve as an input to the bundling algorithm for Lambda functions.',
+    type: 'string',
+  },
+  'lambda-outdir': {
+    default: 'dist',
+    describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
   /**
@@ -104,15 +114,16 @@ export const options = {
   'skip-deploy': {
     alias: 'skip',
     default: false,
-    describe: 'Skip deploy.',
+    describe: 'Skip the deploy command.',
     type: 'boolean',
   },
   'stack-name': {
-    describe: 'CloudFormation Stack name.',
+    describe: 'Set the stack name.',
     type: 'string',
   },
   'template-path': {
     alias: 't',
+    describe: 'Path to the CloudFormation template.',
     type: 'string',
   },
 } as const;
@@ -124,7 +135,7 @@ export const examples: ReadonlyArray<[string, string?]> = [
   ],
   ['carlin deploy -e Production', 'Set environment.'],
   [
-    'carlin deploy --lambda-input src/lambda/index.ts --lambda-externals momentjs',
+    'carlin deploy --lambda-externals momentjs',
     "Lambda exists. Don't bundle momentjs.",
   ],
   [
@@ -193,6 +204,22 @@ export const deployCommand: CommandModule<
           );
           process.exit(0);
         }
+      })
+      /**
+       * Raise error if old options are used.
+       */
+      .middleware(({ lambdaExternals, lambdaInput }) => {
+        if (lambdaInput) {
+          throw new Error(
+            'Option "lambdaInput" was removed. Please use "lambdaEntryPoints" instead.'
+          );
+        }
+
+        if (lambdaExternals) {
+          throw new Error(
+            'Option "lambdaExternals" was removed. Please use "lambdaExternal" instead.'
+          );
+        }
       });
 
     const commands = [
@@ -208,7 +235,7 @@ export const deployCommand: CommandModule<
       choices: commands.map(({ command }) => {
         return command as string;
       }),
-      describe: 'Type of deployment.',
+      describe: 'Deploy command.',
       type: 'string',
     });
 

@@ -1,29 +1,39 @@
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
-import { outFile, outFolder } from './buildLambdaSingleFile';
 import { uploadFileToS3 } from '../s3';
 import AdmZip from 'adm-zip';
-import fs from 'fs';
+import fs from 'node:fs';
 import log from 'npmlog';
-import path from 'path';
 
 const logPrefix = 'lambda';
 
-const zipFileName = 'lambda.zip';
+export const zipFileName = 'lambda.zip';
 
-export const uploadCodeToS3 = async ({ stackName }: { stackName: string }) => {
+export const uploadCodeToS3 = async ({
+  stackName,
+  lambdaOutdir,
+}: {
+  stackName: string;
+  lambdaOutdir: string;
+}) => {
   log.info(logPrefix, `Uploading code to S3...`);
 
   const zip = new AdmZip();
 
-  const code = fs.readFileSync(path.join(process.cwd(), outFolder, outFile));
+  const zipFile = `${lambdaOutdir}/${zipFileName}`;
 
-  zip.addFile(outFile, code);
-
-  if (!fs.existsSync(outFolder)) {
-    fs.mkdirSync(outFolder);
+  /**
+   * Check if the zip file already exists and delete it before creating a new.
+   */
+  if (fs.existsSync(zipFile)) {
+    await fs.promises.rm(zipFile);
   }
 
-  zip.writeZip(`${outFolder}/${zipFileName}`);
+  /**
+   * Zip entire directory.
+   */
+  zip.addLocalFolder(lambdaOutdir);
+
+  zip.writeZip(`${lambdaOutdir}/${zipFileName}`);
 
   const bucketName = await getBaseStackResource(
     'BASE_STACK_BUCKET_LOGICAL_NAME'

@@ -1,56 +1,65 @@
-import { buildLambdaSingleFile } from './buildLambdaSingleFile';
+import { buildLambdaCode } from './buildLambdaCode';
 import { deployLambdaLayers } from './deployLambdaLayers';
-import { uploadCodeToECR } from './uploadCodeToECR';
+// import { uploadCodeToECR } from './uploadCodeToECR';
 import { uploadCodeToS3 } from './uploadCodeToS3';
 import fs from 'fs';
 import log from 'npmlog';
 
 const logPrefix = 'lambda';
 
-/**
- * 1. Build Lambda code using esbuild. The build process will create a single
- * file with all your code.
- *  1. The build will ignore packages on `lambda-externals` option.
- * 1. Zip the output file.
- * 1. Upload the zipped code to base stack bucket.
- * 1. Add the code bucket, key and version to the CloudFormation template as
- * parameters.
- */
 export const deployLambdaCode = async ({
-  lambdaDockerfile,
-  lambdaExternals,
+  // lambdaDockerfile,
+  lambdaExternal,
   lambdaImage,
-  lambdaInput,
+  lambdaEntryPoints,
+  lambdaEntryPointsBasePath,
+  lambdaOutdir,
   stackName,
 }: {
   lambdaDockerfile?: string;
-  lambdaExternals: string[];
+  lambdaExternal: string[];
   lambdaImage?: boolean;
-  lambdaInput: string;
+  lambdaEntryPoints: string[];
+  lambdaEntryPointsBasePath: string;
+  lambdaOutdir: string;
   stackName: string;
 }) => {
-  if (!fs.existsSync(lambdaInput)) {
-    return undefined;
-  }
-
   log.info(logPrefix, 'Deploying Lambda code...');
 
-  await buildLambdaSingleFile({ lambdaExternals, lambdaInput });
+  for (const entryPoint of lambdaEntryPoints) {
+    if (!fs.existsSync(entryPoint)) {
+      throw new Error(`Entry point ${entryPoint} does not exist.`);
+    }
+  }
 
-  const { bucket, key, versionId } = await uploadCodeToS3({ stackName });
+  await buildLambdaCode({
+    lambdaExternal,
+    lambdaEntryPoints,
+    lambdaEntryPointsBasePath,
+    lambdaOutdir,
+  });
+
+  const { bucket, key, versionId } = await uploadCodeToS3({
+    stackName,
+    lambdaOutdir,
+  });
 
   if (!lambdaImage) {
-    await deployLambdaLayers({ lambdaExternals });
+    await deployLambdaLayers({ lambdaExternal });
     return { bucket, key, versionId };
   }
 
-  const { imageUri } = await uploadCodeToECR({
-    bucket,
-    key,
-    versionId,
-    lambdaDockerfile,
-    lambdaExternals,
-  });
+  log.info(logPrefix, 'Upload code to ECR is not implemented yet.');
 
-  return { imageUri };
+  process.exit(1);
+
+  // const { imageUri } = await uploadCodeToECR({
+  //   bucket,
+  //   key,
+  //   versionId,
+  //   lambdaDockerfile,
+  //   lambdaExternal,
+  // });
+
+  // return { imageUri };
 };

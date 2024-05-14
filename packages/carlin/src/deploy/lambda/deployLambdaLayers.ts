@@ -6,17 +6,17 @@ import log from 'npmlog';
 const logPrefix = 'lambda';
 
 export const deployLambdaLayers = async ({
-  lambdaExternals = [],
+  lambdaExternal = [],
 }: {
-  lambdaExternals: string[];
+  lambdaExternal: string[];
 }) => {
-  if (lambdaExternals.length === 0) {
+  if (lambdaExternal.length === 0) {
     return;
   }
 
   log.info(
     logPrefix,
-    `--lambda-externals [${lambdaExternals.join(
+    `--lambda-externals [${lambdaExternal.join(
       ', '
     )}] was found. Creating other layers...`
   );
@@ -37,14 +37,12 @@ export const deployLambdaLayers = async ({
     }
   })();
 
-  const packages = lambdaExternals.map((lambdaExternal) => {
+  const packages = lambdaExternal.map((external) => {
     try {
-      const semver = dependencies[lambdaExternal].replace(/(~|\^)/g, '');
-      return `${lambdaExternal}@${semver}`;
+      const semver = dependencies[external].replace(/(~|\^)/g, '');
+      return `${external}@${semver}`;
     } catch {
-      throw new Error(
-        `Cannot find ${lambdaExternal} on package.json dependencies.`
-      );
+      throw new Error(`Cannot find ${external} on package.json dependencies.`);
     }
   });
 

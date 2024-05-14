@@ -10,6 +10,7 @@ import {
 import { deployLambdaCode } from './lambda/deployLambdaCode';
 import { emptyS3Directory } from './s3';
 import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
+import { getLambdaEntryPointsFromTemplate } from './lambda/getLambdaEntryPointsFromTemplate';
 import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
 import AWS from 'aws-sdk';
@@ -27,17 +28,21 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
 
 export const deployCloudFormation = async ({
   lambdaDockerfile,
-  lambdaInput,
+  lambdaEntryPoints,
+  lambdaEntryPointsBasePath,
   lambdaImage,
-  lambdaExternals = [],
+  lambdaExternal = [],
+  lambdaOutdir,
   parameters,
   template,
   templatePath,
 }: {
   lambdaDockerfile?: string;
-  lambdaInput: string;
+  lambdaEntryPoints: string[];
+  lambdaEntryPointsBasePath: string;
   lambdaImage?: boolean;
-  lambdaExternals?: string[];
+  lambdaExternal: string[];
+  lambdaOutdir: string;
   parameters?: {
     key: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,16 +112,31 @@ export const deployCloudFormation = async ({
     };
 
     const deployCloudFormationDeployLambdaCode = async () => {
+      const finalLambdaEntryPoints = (() => {
+        if (lambdaEntryPoints.length > 0) {
+          return lambdaEntryPoints;
+        }
+
+        return getLambdaEntryPointsFromTemplate(cloudFormationTemplate);
+      })();
+
       const response = await deployLambdaCode({
         lambdaDockerfile,
-        lambdaExternals,
-        lambdaInput,
+        lambdaExternal,
+        lambdaEntryPoints: finalLambdaEntryPoints,
+        lambdaEntryPointsBasePath,
         lambdaImage,
+        lambdaOutdir,
         stackName,
       });
 
       if (response) {
-        const { bucket, key, versionId, imageUri } = response;
+        const { bucket, key, versionId } = response;
+
+        /**
+         * TODO: Implement imageUri.
+         */
+        const imageUri = undefined;
 
         if (imageUri) {
           cloudFormationTemplate.Parameters = {
