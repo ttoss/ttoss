@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.32.1](https://github.com/ttoss/ttoss/compare/carlin@1.32.0...carlin@1.32.1) (2024-05-14)
+
+### Bug Fixes
+
+- carlin do not deploy lambda if entry points not exist ([#548](https://github.com/ttoss/ttoss/issues/548)) ([a02d8c1](https://github.com/ttoss/ttoss/commit/a02d8c18d1d51f047ebc80c35a6f8648fa487b83))
+
 # [1.32.0](https://github.com/ttoss/ttoss/compare/carlin@1.31.21...carlin@1.32.0) (2024-05-14)
 
 ### Features
