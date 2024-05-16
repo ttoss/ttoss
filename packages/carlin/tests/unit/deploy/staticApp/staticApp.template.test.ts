@@ -2,6 +2,7 @@ jest.mock('../../../src/utils', () => {
   const PACKAGE_VERSION = '10.40.23';
 
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(jest.requireActual('../../../src/utils') as any),
     getPackageVersion: jest.fn().mockReturnValue(PACKAGE_VERSION),
   };
@@ -13,7 +14,7 @@ import {
   ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID,
   STATIC_APP_BUCKET_LOGICAL_ID,
   getStaticAppTemplate,
-} from '../../../src/deploy/staticApp/staticApp.template';
+} from '../../../../src/deploy/staticApp/staticApp.template';
 import { faker } from '@ttoss/test-utils/faker';
 
 const region = faker.random.word();

@@ -12,12 +12,12 @@ jest.mock('../../../src/deploy/baseStack/getBaseStackResource', () => {
   };
 });
 
-import * as deployS3 from '../../../src/deploy/s3';
-import { buildLambdaCode } from '../../../src/deploy/lambda/buildLambdaCode';
+import * as deployS3 from '../../../../src/deploy/s3';
+import { buildLambdaCode } from '../../../../src/deploy/lambda/buildLambdaCode';
 import {
   uploadCodeToS3,
   zipFileName,
-} from '../../../src/deploy/lambda/uploadCodeToS3';
+} from '../../../../src/deploy/lambda/uploadCodeToS3';
 import AdmZip from 'adm-zip';
 import fs from 'node:fs';
 

@@ -1,11 +1,11 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 /* eslint-disable no-var */
-import { optionsFromConfigFiles, parseCli } from '../../testUtils';
+import { optionsFromConfigFiles, parseCli } from 'tests/testUtils';
 
-jest.mock('../../src/deploy/baseStack/deployBaseStack', () => {
+jest.mock('src/deploy/baseStack/deployBaseStack', () => {
   return {
     ...(jest.requireActual(
-      '../../src/deploy/baseStack/deployBaseStack'
+      'src/deploy/baseStack/deployBaseStack'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any),
     deployBaseStack: jest.fn(),
@@ -29,16 +29,16 @@ jest.mock('findup-sync', () => {
 });
 
 import * as deepmerge from 'deepmerge';
-import { AWS_DEFAULT_REGION } from '../../src/config';
-import { cloudformation } from '../../src/deploy/cloudformation.core';
-import { deployBaseStack } from '../../src/deploy/baseStack/deployBaseStack';
+import { AWS_DEFAULT_REGION } from 'src/config';
+import { cloudformation } from 'src/deploy/cloudformation.core';
+import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
 import { faker } from '@ttoss/test-utils/faker';
 import {
   getCurrentBranch,
   getEnvVar,
   getEnvironment,
   getProjectName,
-} from '../../src/utils';
+} from 'src/utils';
 import AWS from 'aws-sdk';
 
 beforeAll(() => {
@@ -79,7 +79,7 @@ describe('environment type', () => {
   test('throw error if it is an object', () => {
     return expect(() => {
       return parseCli(`print-args`, {
-        environment: { obj: faker.random.word() },
+        environment: { obj: faker.word.sample() },
       });
     }).rejects.toThrow();
   });
@@ -87,13 +87,13 @@ describe('environment type', () => {
   test('throw error if it is an array', () => {
     return expect(() => {
       return parseCli(`print-args`, {
-        environment: [faker.random.word()],
+        environment: [faker.word.sample()],
       });
     }).rejects.toThrow();
   });
 
   test("don't throw error if it is a string", async () => {
-    const environment = faker.random.word();
+    const environment = faker.word.sample();
     const argv = await parseCli(`print-args`, { environment });
     expect(argv.environment).toEqual(environment);
   });
@@ -108,16 +108,9 @@ describe('validating environment variables', () => {
   afterEach(() => {
     delete process.env.CARLIN_BRANCH;
     delete process.env.CARLIN_ENVIRONMENT;
+    delete process.env.ENVIRONMENT;
     delete process.env.CARLIN_PROJECT;
   });
-
-  const generateRandomVariables = () => {
-    return {
-      branch: faker.random.word(),
-      environment: faker.random.word(),
-      project: faker.random.word(),
-    };
-  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const testExpects = async ({ argv, branch, environment, project }: any) => {
@@ -133,7 +126,11 @@ describe('validating environment variables', () => {
 
   // eslint-disable-next-line jest/expect-expect
   test('passing by options', async () => {
-    const { branch, environment, project } = generateRandomVariables();
+    const { branch, environment, project } = {
+      branch: 'branch1',
+      environment: 'environment1',
+      project: 'project1',
+    };
 
     /**
      * Use options this way to coerce to work.
@@ -151,7 +148,11 @@ describe('validating environment variables', () => {
 
   // eslint-disable-next-line jest/expect-expect
   test('passing by process.env', async () => {
-    const { branch, environment, project } = generateRandomVariables();
+    const { branch, environment, project } = {
+      branch: 'branch2',
+      environment: 'environment2',
+      project: 'project2',
+    };
 
     process.env.CARLIN_BRANCH = branch;
     process.env.CARLIN_ENVIRONMENT = environment;
@@ -160,6 +161,50 @@ describe('validating environment variables', () => {
     const argv = await parseCli('print-args', {});
 
     await testExpects({ argv, branch, environment, project });
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  test('passing by process.env.ENVIRONMENT instead of CARLIN_ENVIRONMENT', async () => {
+    const { branch, environment, project } = {
+      branch: 'branch3',
+      environment: 'environment3',
+      project: 'project3',
+    };
+
+    process.env.CARLIN_BRANCH = branch;
+    process.env.ENVIRONMENT = environment;
+    process.env.CARLIN_PROJECT = project;
+
+    const testUtilsModule = await import('tests/testUtils');
+
+    const argv = await testUtilsModule.parseCli('print-args', {});
+
+    await testExpects({ argv, branch, environment, project });
+  });
+});
+
+describe('testing environment if process.env.ENVIRONMENT is defined', () => {
+  const environment = 'testing-environment-with-process-env-ENVIRONMENT';
+
+  beforeAll(() => {
+    process.env.ENVIRONMENT = environment;
+  });
+
+  test('environment must be defined', async () => {
+    const argv = await parseCli('print-args', {});
+    expect(argv.environment).toEqual(environment);
+  });
+
+  test('environment as option should take precedence', async () => {
+    const newEnvironment = 'new-environment';
+    const argv = await parseCli('print-args', {
+      environment: newEnvironment,
+    });
+    expect(argv.environment).toEqual(newEnvironment);
+  });
+
+  afterAll(() => {
+    delete process.env.ENVIRONMENT;
   });
 });
 
@@ -179,7 +224,7 @@ describe('handle merge config correctly', () => {
 
   test('argv must have the options passed to CLI', async () => {
     const options = {
-      region: faker.random.word(),
+      region: faker.word.sample(),
     };
     const argv = await parseCli('print-args', options);
     expect(argv.environment).toBeUndefined();
@@ -201,7 +246,7 @@ describe('handle merge config correctly', () => {
   });
 
   test('argv must have the CLI optionEnv', async () => {
-    const newOptionEnv = faker.random.word();
+    const newOptionEnv = faker.word.sample();
     const argv = await parseCli('print-args', {
       environment: 'Production',
       optionEnv: newOptionEnv,

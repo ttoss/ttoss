@@ -48,7 +48,6 @@ export const options = {
   },
   region: {
     alias: 'r',
-    // coerce: coerceSetEnvVar('REGION'),
     default: AWS_DEFAULT_REGION,
     describe: 'AWS region.',
     type: 'string',
@@ -65,16 +64,26 @@ const getPkgConfig = () => {
 
 /**
  * You can set the options as environment variables matching the prefix
- * `CARLIN`.
- * Example, you can use `carlin deploy --stack-name MyStackName` or
- * `CARLIN_STACK_NAME=MyStackName carlin deploy`.
+ * `CARLIN`. The examples below are equivalent:
+ *
+ * - `carlin deploy --stack-name MyStackName`
+ * - `CARLIN_STACK_NAME=MyStackName carlin deploy`
+ *
+ * `ENVIRONMENT` is a special case because it is used to set the `environment`
+ * option, as well `CARLIN_ENVIRONMENT`. The examples below are
+ * equivalent:
+ *
+ * - `carlin deploy --environment Production`
+ * - `CARLIN_ENVIRONMENT=Production carlin deploy`
+ * - `ENVIRONMENT=Production carlin deploy`
  */
 const getEnv = () => {
   return constantCase(NAME);
 };
 
 /**
- * Transformed to method because finalConfig was failing the tests.
+ * Transformed to method because finalConfig was failing the tests because as
+ * function we encapsulate the logic and it is not executed on the import.
  */
 export const cli = () => {
   /**
@@ -264,6 +273,22 @@ export const cli = () => {
        */
       .env(getEnv())
       .options(addGroupToOptions(options, 'Common Options'))
+      /**
+       * Middleware to set the `environment` option equals to the
+       * process.env.ENVIRONMENT if it exists and `environment` option
+       * is not provided.
+       */
+      .middleware((argv) => {
+        const finalEnvironment = argv.environment || process.env.ENVIRONMENT;
+        if (finalEnvironment) {
+          setEnvVar('ENVIRONMENT', finalEnvironment);
+          const envKeys = ['environment', ...options.environment.alias];
+          const envEntries = envKeys.map((key) => {
+            return [key, finalEnvironment];
+          });
+          Object.assign(argv, Object.fromEntries(envEntries));
+        }
+      })
       .middleware(handleEnvironments as any)
       /**
        * Sometimes "environments" can be written as "environment" on config file.

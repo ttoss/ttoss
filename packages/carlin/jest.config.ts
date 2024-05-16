@@ -13,6 +13,10 @@ const transformIgnorePatterns = [
 const config = jestConfig({
   collectCoverage: true,
   coverageThreshold,
+  moduleNameMapper: {
+    'src/(.*)': '<rootDir>/src/$1',
+    'tests/(.*)': '<rootDir>/tests/$1',
+  },
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
   silent: true,
   transformIgnorePatterns,

@@ -87,7 +87,7 @@ import {
   doesStackExist,
   getStackOutput,
   printStackOutputsAfterDeploy,
-} from '../../src/deploy/cloudformation.core';
+} from '../../../src/deploy/cloudformation.core';
 
 jest.mock('fs', () => {
   return {

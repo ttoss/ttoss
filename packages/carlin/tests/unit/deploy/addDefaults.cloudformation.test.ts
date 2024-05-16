@@ -12,13 +12,13 @@ jest.mock('../../src/utils', () => {
 import {
   CRITICAL_RESOURCES_TYPES,
   addDefaults,
-} from '../../src/deploy/addDefaults.cloudformation';
-import { CloudFormationTemplate } from '../../src/utils/cloudFormationTemplate';
+} from '../../../src/deploy/addDefaults.cloudformation';
+import { CloudFormationTemplate } from '../../../src/utils/cloudFormationTemplate';
 import {
+  getCurrentBranch,
   getEnvironment,
   getProjectName,
-  getCurrentBranch,
-} from '../../src/utils';
+} from '../../../src/utils';
 
 beforeEach(() => {
   (getEnvironment as jest.Mock).mockReturnValue(undefined);

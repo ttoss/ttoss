@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable turbo/no-undeclared-env-vars */
-import { parseCli } from '../../testUtils';
+import { parseCli } from '../../../testUtils';
 
 jest.mock('../../src/utils', () => {
   return {
@@ -30,7 +31,7 @@ const originalEnv = process.env;
 
 process.exit = jest.fn() as any;
 
-import { setEnvVar, spawn } from '../../src/utils';
+import { setEnvVar, spawn } from '../../../../src/utils';
 
 beforeEach(() => {
   setEnvVar('ENVIRONMENT', null);
