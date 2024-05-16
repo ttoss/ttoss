@@ -73,7 +73,7 @@ const config: Config = {
               id: pkg,
               entryPoints: [`../../packages/${pkg}/src/index.ts`],
               tsconfig: `../../packages/${pkg}/tsconfig.json`,
-              out: `modules/packages/${pkg}`,
+              out: `./docs/modules/packages/${pkg}`,
               sidebar: {
                 categoryLabel: `@ttoss/${pkg}`,
               },
