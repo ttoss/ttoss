@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.47.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.46.1...@docs/website@1.47.0) (2024-05-16)
+
+### Features
+
+- issue 549 ([#550](https://github.com/ttoss/ttoss/issues/550)) ([71514c4](https://github.com/ttoss/ttoss/commit/71514c4cffec1a2de18a8315b20a9458193ad1a1))
+- saves latest-deploy.json carlin ([#552](https://github.com/ttoss/ttoss/issues/552)) ([208fd44](https://github.com/ttoss/ttoss/commit/208fd443259b19938d5442c46abf120d2b767fc6))
+
 ## [1.46.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.46.0...@docs/website@1.46.1) (2024-05-14)
 
 **Note:** Version bump only for package @docs/website

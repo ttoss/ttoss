@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0](https://github.com/ttoss/ttoss/compare/carlin@1.32.1...carlin@1.33.0) (2024-05-16)
+
+### Bug Fixes
+
+- carlin tests ([16fd3d8](https://github.com/ttoss/ttoss/commit/16fd3d8f905c70c1138376af9f5d2db4111b480e))
+
+### Features
+
+- issue 549 ([#550](https://github.com/ttoss/ttoss/issues/550)) ([71514c4](https://github.com/ttoss/ttoss/commit/71514c4cffec1a2de18a8315b20a9458193ad1a1))
+- saves latest-deploy.json carlin ([#552](https://github.com/ttoss/ttoss/issues/552)) ([208fd44](https://github.com/ttoss/ttoss/commit/208fd443259b19938d5442c46abf120d2b767fc6))
+
 ## [1.32.1](https://github.com/ttoss/ttoss/compare/carlin@1.32.0...carlin@1.32.1) (2024-05-14)
 
 ### Bug Fixes
