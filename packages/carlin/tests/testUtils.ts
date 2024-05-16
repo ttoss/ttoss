@@ -28,8 +28,22 @@ export const optionsFromConfigFiles = {
   },
 };
 
-import { cli } from './src/cli';
+/**
+ * Every time we import parseCli, we need to mock `findup-sync`.
+ */
+jest.mock('findup-sync', () => {
+  return {
+    __esModule: true,
+    default: jest
+      .fn()
+      .mockReturnValueOnce('./some-dir')
+      .mockReturnValueOnce(undefined),
+  };
+});
 
+import { cli } from 'src/cli';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseCli = async (arg: any, context: any) => {
   return cli().strict(false).parse(arg, context);
 };

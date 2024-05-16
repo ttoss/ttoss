@@ -1,4 +1,4 @@
-export CARLIN_ENVIRONMENT=Production
+export ENVIRONMENT=Production
 
 # Fetch tags.
 git fetch --tags --quiet

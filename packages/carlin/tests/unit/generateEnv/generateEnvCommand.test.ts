@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { DEFAULT_ENVIRONMENT } from '../../../src/generateEnv/generateEnvCommand';
 import { faker } from '@ttoss/test-utils/faker';
-import { parseCli } from '../../../testUtils';
+import { parseCli } from '../../testUtils';
 
 jest.mock('findup-sync', () => {
   return {

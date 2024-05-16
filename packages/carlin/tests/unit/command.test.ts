@@ -23,7 +23,7 @@ import {
 import { readDockerfile } from '../../src/deploy/readDockerfile';
 import yargs from 'yargs';
 
-const cli = yargs.command(commandModule.deployCommand);
+const cli = yargs().command(commandModule.deployCommand);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse = (command: string, options: any = {}) => {
