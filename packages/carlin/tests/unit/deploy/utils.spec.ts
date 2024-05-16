@@ -1,8 +1,11 @@
-import { cache } from '../utils/environmentVariables';
+import { cache } from 'src/utils/environmentVariables';
 import { faker } from '@ttoss/test-utils/faker';
-import { handleDeployError, handleDeployInitialization } from './utils';
+import {
+  handleDeployError,
+  handleDeployInitialization,
+} from 'src/deploy/utils';
 
-const logPrefix = faker.random.word();
+const logPrefix = faker.lorem.word();
 
 test('testing handleDeployError', () => {
   /**
@@ -19,7 +22,7 @@ describe('testing handleDeployInitialization', () => {
     cache.clear();
   });
 
-  const stackName = faker.random.word();
+  const stackName = faker.lorem.word();
 
   test('return stack name with predefined stack name', async () => {
     const response = await handleDeployInitialization({ stackName, logPrefix });
