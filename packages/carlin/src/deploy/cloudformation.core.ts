@@ -18,7 +18,14 @@ import {
   ValidateTemplateCommand,
   ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
-import { CloudFormationTemplate, getEnvVar, getEnvironment } from '../utils';
+import {
+  CloudFormationTemplate,
+  getEnvVar,
+  getEnvironment,
+  getPackageName,
+  getProjectName,
+} from '../utils';
+import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 import { addDefaults } from './addDefaults.cloudformation';
 import { emptyS3Directory, uploadFileToS3 } from './s3';
 import { getBaseStackResource } from './baseStack/getBaseStackResource';
@@ -197,7 +204,12 @@ const saveEnvironmentOutput = async ({
   stackName: string;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const envFile: any = { stackName };
+  const envFile: any = {
+    stackName,
+    environment: getEnvironment(),
+    projectName: getProjectName(),
+    packageName: getPackageName(),
+  };
 
   envFile.outputs = outputs.reduce((acc, output) => {
     if (!output.OutputKey || !output) {
@@ -219,8 +231,29 @@ const saveEnvironmentOutput = async ({
   const filePath = path.join(dotCarlinFolderPath, `${stackName}.json`);
 
   await fs.promises.writeFile(filePath, JSON.stringify(envFile, null, 2));
+
+  const latestFilePath = path.join(
+    dotCarlinFolderPath,
+    LATEST_DEPLOY_OUTPUTS_FILENAME
+  );
+
+  await fs.promises.writeFile(latestFilePath, JSON.stringify(envFile, null, 2));
 };
 
+/**
+ * After deployment, Carlin prints the outputs defined in your CloudFormation
+ * template and saves them in two files:
+ *
+ * 1. `.carlin/$STACK_NAME.json` file.
+ * 1. `.carlin/latest-deploy.json` file.
+ *
+ * _Note: The `.carlin` folder is created in the root of your project._
+ *
+ * The `latest-deploy.json` file is used by tests and other packages that need
+ * to access the outputs of the last deployment, but don't have access to the
+ * stack name. It's useful for end-to-end tests that need to access the outputs
+ * of the last deployment and test the application.
+ */
 export const printStackOutputsAfterDeploy = async ({
   stackName,
 }: {

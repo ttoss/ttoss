@@ -187,6 +187,10 @@ export default () => {
         cliEnvironmentVariablesComment: ['cli.js', 'getEnv'],
         cliConfigFileComment: ['cli.js', 'cli~getConfig'],
         cliMultipleEnvironmentsComment: ['cli.js', 'cli~handleEnvironments'],
+        cloudFormationOutputsComment: [
+          'deploy/cloudformation.core.js',
+          'printStackOutputsAfterDeploy',
+        ],
         deployComment: ['deploy/cloudformation.core.js', 'deploy'],
         destroyComment: ['deploy/cloudformation.js', 'destroy'],
       });

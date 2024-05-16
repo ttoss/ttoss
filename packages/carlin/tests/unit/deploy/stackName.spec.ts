@@ -2,9 +2,9 @@ import {
   STACK_NAME_MAX_LENGTH,
   getStackName,
   setPreDefinedStackName,
-} from './stackName';
+} from 'src/deploy/stackName';
 import { faker } from '@ttoss/test-utils/faker';
-import { getCurrentBranch, getEnvironment, getPackageName } from '../utils';
+import { getCurrentBranch, getEnvironment, getPackageName } from 'src/utils';
 import { kebabCase, pascalCase } from 'change-case';
 
 const mockMath = Object.create(global.Math);
@@ -15,20 +15,20 @@ mockMath.random = () => {
 global.Math = mockMath;
 
 const branchName = [
-  faker.random.words(1),
-  faker.random.words(1),
-  faker.random.words(1),
-  faker.random.words(1),
+  faker.lorem.words(1),
+  faker.lorem.words(1),
+  faker.lorem.words(1),
+  faker.lorem.words(1),
 ].join('/');
 
-const environment = faker.random.word();
+const environment = faker.lorem.word();
 
-const packageName = `@${faker.random.word()}/${faker.random.word()}`;
+const packageName = `@${faker.lorem.word()}/${faker.random.word()}`;
 
-jest.mock('../utils', () => {
+jest.mock('src/utils', () => {
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(jest.requireActual('../utils') as any),
+    ...(jest.requireActual('src/utils') as any),
     getCurrentBranch: jest.fn(),
     getEnvironment: jest.fn(),
     getPackageName: jest.fn(),
@@ -36,7 +36,7 @@ jest.mock('../utils', () => {
 });
 
 test('limit stackName length', async () => {
-  const bigName = faker.random.words(2 * STACK_NAME_MAX_LENGTH);
+  const bigName = faker.lorem.words(2 * STACK_NAME_MAX_LENGTH);
   (getCurrentBranch as jest.Mock).mockReturnValueOnce(bigName);
   (getEnvironment as jest.Mock).mockReturnValueOnce(bigName);
   (getPackageName as jest.Mock).mockReturnValueOnce(bigName);

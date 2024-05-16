@@ -9,22 +9,22 @@ const MockDescribeStacksCommand = DescribeStacksCommand;
 const mockDescribeStacksOutput = {
   Stacks: [
     {
-      StackName: faker.random.word(),
+      StackName: faker.lorem.word(),
       CreationTime: faker.date.past(3),
       StackStatus: 'CREATE_COMPLETE',
       Outputs: [
         {
-          OutputKey: 'k0' + faker.random.word(),
-          OutputValue: 'v0' + faker.random.word(),
+          OutputKey: 'k0' + faker.lorem.word(),
+          OutputValue: 'v0' + faker.lorem.word(),
         },
         {
-          OutputKey: 'k1' + faker.random.word(),
-          OutputValue: 'v1' + faker.random.word(),
+          OutputKey: 'k1' + faker.lorem.word(),
+          OutputValue: 'v1' + faker.lorem.word(),
         },
       ],
     },
     {
-      StackName: faker.random.word(),
+      StackName: faker.lorem.word(),
       CreationTime: faker.date.past(3),
       StackStatus: 'CREATE_COMPLETE',
       Outputs: [],
@@ -87,7 +87,7 @@ import {
   doesStackExist,
   getStackOutput,
   printStackOutputsAfterDeploy,
-} from '../../../src/deploy/cloudformation.core';
+} from 'src/deploy/cloudformation.core';
 
 jest.mock('fs', () => {
   return {
@@ -120,6 +120,8 @@ describe('printStackOutputsAfterDeploy', () => {
 
     expect(JSON.parse(writeFileData)).toEqual({
       stackName,
+      packageName: '',
+      projectName: '',
       outputs: {
         [mockDescribeStacksOutput.Stacks[0].Outputs[0].OutputKey]:
           mockDescribeStacksOutput.Stacks[0].Outputs[0],
