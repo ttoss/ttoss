@@ -1,0 +1,182 @@
+---
+title: REST API
+---
+
+This document outlines the guidelines for building REST APIs.
+
+## AWS Serverless Application Model
+
+This guide is for building REST APIs with [AWS Serverless Application Model](https://aws.amazon.com/serverless/sam/).
+
+### Project Structure
+
+The project structure was inspired by [Next.js App Router routing](https://nextjs.org/docs/app/building-your-application/routing/route-handlers). We have a `src` directory that contains a folder named `api` where we define our API resources as folders and a file name `route.ts` ([following Next.js definition](https://nextjs.org/docs/app/api-reference/file-conventions/route)) that contains the methods for the resource .
+
+Consider an API that has a CRUD operation for users with the endpoints:
+
+- `GET /users` - Get all users
+- `POST /user` - Create a user
+- `GET /user/{id}` - Get a user by ID
+- `PUT /user/{id}` - Update a user by ID
+- `DELETE /user/{id}` - Delete a user by ID
+
+The project structure would look like this:
+
+```plaintext
+.
+├── src
+│   ├── api
+│   │   │   user
+│   │   │   ├── {id}
+│   │   │   │   ├── route.ts
+│   │   │   ├── route.ts
+│   │   ├── users
+│   │   │   ├── route.ts
+```
+
+Each `route.ts` file contains the methods for the resource.
+
+- `src/api/users/{id}/route.ts`
+
+  ```typescript
+  import type { APIGatewayProxyHandler } from 'aws-lambda';
+
+  export const GET: APIGatewayProxyHandler = async (event, context) => {
+    const id = event.pathParameters?.id;
+
+    // Get all users
+  };
+
+  export const PUT: APIGatewayProxyHandler = async (event, context) => {
+    const id = event.pathParameters?.id;
+    const body = JSON.parse(event.body || '{}');
+
+    // Update a user by ID
+  };
+
+  export const DELETE: APIGatewayProxyHandler = async (event, context) => {
+    const id = event.pathParameters?.id;
+
+    // Create a user
+  };
+  ```
+
+- `src/api/users/route.ts`
+
+  ```typescript
+  import type { APIGatewayProxyHandler } from 'aws-lambda';
+
+  export const GET: APIGatewayProxyHandler = async (event, context) => {
+    // Get all users
+  };
+  ```
+
+- `src/api/user/route.ts`
+
+  ```typescript
+  import type { APIGatewayProxyHandler } from 'aws-lambda';
+
+  export const POST: APIGatewayProxyHandler = async (event, context) => {
+    const body = JSON.parse(event.body || '{}');
+
+    // Create a user
+  };
+  ```
+
+### CloudFormation
+
+Following [Carlin instructions](/docs/carlin/commands/deploy#lambda) to deploy resources with Lambda, you need to create your [AWS::Serverless::Function](https://docs.aws.amazon.com/pt_br/serverless-application-model/latest/developerguide/sam-resource-function.html) as follows in your template:
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+
+Transform: 'AWS::Serverless-2016-10-31'
+
+# Define all the common properties for all functions
+Globals:
+  Function:
+    CodeUri:
+      Bucket: !Ref LambdaS3Bucket
+      Key: !Ref LambdaS3Key
+      Version: !Ref LambdaS3Version
+    Runtime: nodejs20.x
+
+Resources:
+  UsersGETFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: GET
+      Handler: api/users/route.GET
+
+  UserPOSTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /user
+            Method: POST
+      Handler: api/user/route.POST
+
+  UserIdGETFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /user/{id}
+            Method: GET
+      Handler: api/user/{id}/route.GET
+
+  UserIdPUTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        PutEvent:
+          Type: Api
+          Properties:
+            Path: /user/{id}
+            Method: PUT
+      Handler: api/user/{id}/route.PUT
+
+  UserIdDELETEFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        DeleteEvent:
+          Type: Api
+          Properties:
+            Path: /user/{id}
+            Method: DELETE
+      Handler: api/user/{id}/route.DELETE
+```
+
+:::note
+
+Some points to consider about Carlin algorithm (you can check the documentation [here](/docs/carlin/commands/deploy#lambda)):
+
+- The `LambdaS3Bucket`, `LambdaS3Key`, and `LambdaS3Version` are the S3 bucket, key, and version where Carlin uploads the Lambda code and adds them as [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html) in the CloudFormation template.
+
+- The `Handler` property in the `AWS::Serverless::Function` resource is the path to the method in the `route.ts` file from `src/` and the method name separated by a dot.
+
+:::
+
+### Patterns
+
+- Use the `src/api` directory to define your API resources.
+- Create folders brackets `{}` to define dynamic routes. For example, `src/api/user/{id}/route.ts` will be the route for `GET /user/{id}`.
+- Use the `route.ts` file to define the methods for the resource.
+- Name your methods with the HTTP method in uppercase. For example, `GET`, `POST`, `PUT`, `DELETE`.
+- Use the `APIGatewayProxyHandler` type from `aws-lambda` to define the method signature.
+  - Don't forget to install [`@types/aws-lambda`](https://www.npmjs.com/package/@types/aws-lambda).
+- Name your CloudFormation function resources with the following pattern: `{ResourceName}{HTTPMethod}Function`. Examples:
+  - `UsersGETFunction`: `GET /users`
+  - `UserIdGETFunction`: `GET /user/{id}`
+- Use the `Globals` property to define common properties for all functions.
