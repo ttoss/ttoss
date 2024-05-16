@@ -1,5 +1,7 @@
 # Carlin Plugin
 
+_Note: don't forget to build Carlin before running the scripts._
+
 Use the `printComments.js` script to print the comments of a built Carlin file. Examples:
 
 ```bash
@@ -20,5 +22,3 @@ Once you find the `longname` of the comment you found, you can add the `--longna
 ```bash
 node plugins/carlin/printComments.mjs --path cli.js --longname "cli~getConfig"
 ```
-
-NOTE: Don't forget to build Carlin if you change the code.
