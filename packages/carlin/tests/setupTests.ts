@@ -24,3 +24,10 @@ jest.mock('uglify-js', () => {
     }),
   };
 });
+
+/**
+ * Delete possible `process.env.ENVIRONMENT` defined. For example, GitHub
+ * Actions tag pipeline sets it to Production and fails some tests that
+ * expect it to be undefined.
+ */
+delete process.env.ENVIRONMENT;
