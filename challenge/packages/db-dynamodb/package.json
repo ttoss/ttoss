@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss-challenge/db-dynamodb",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "scripts": {
     "deploy-challenge": "carlin deploy",
     "seed-table": "tsx ./scripts/seedTable.ts"

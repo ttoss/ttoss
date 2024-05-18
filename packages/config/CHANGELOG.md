@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.32.4](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.3...@ttoss/config@1.32.4) (2024-05-18)
+
+### Bug Fixes
+
+- remove dist folder before build ([#554](https://github.com/ttoss/ttoss/issues/554)) ([df626b6](https://github.com/ttoss/ttoss/commit/df626b6010d7592ca340f97e6353afdaf2210a74))
+
 ## [1.32.3](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.2...@ttoss/config@1.32.3) (2024-05-04)
 
 ### Bug Fixes

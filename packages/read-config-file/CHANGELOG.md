@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/read-config-file@1.0.2...@ttoss/read-config-file@1.0.3) (2024-05-18)
+
+### Bug Fixes
+
+- remove dist folder before build ([#554](https://github.com/ttoss/ttoss/issues/554)) ([df626b6](https://github.com/ttoss/ttoss/commit/df626b6010d7592ca340f97e6353afdaf2210a74))
+
 ## [1.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/read-config-file@1.0.1...@ttoss/read-config-file@1.0.2) (2024-05-04)
 
 ### Bug Fixes

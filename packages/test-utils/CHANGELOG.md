@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.6...@ttoss/test-utils@2.1.7) (2024-05-18)
+
+### Bug Fixes
+
+- remove dist folder before build ([#554](https://github.com/ttoss/ttoss/issues/554)) ([df626b6](https://github.com/ttoss/ttoss/commit/df626b6010d7592ca340f97e6353afdaf2210a74))
+
 ## [2.1.6](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.5...@ttoss/test-utils@2.1.6) (2024-05-04)
 
 **Note:** Version bump only for package @ttoss/test-utils

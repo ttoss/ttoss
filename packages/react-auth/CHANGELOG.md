@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.49](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.48...@ttoss/react-auth@1.7.49) (2024-05-18)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [1.7.48](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.47...@ttoss/react-auth@1.7.48) (2024-05-12)
 
 **Note:** Version bump only for package @ttoss/react-auth
