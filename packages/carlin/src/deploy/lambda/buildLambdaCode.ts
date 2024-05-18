@@ -1,6 +1,6 @@
 import * as esbuild from 'esbuild';
+import { builtinModules } from 'node:module';
 import { typescriptConfig } from '@ttoss/config';
-import builtins from 'builtin-modules';
 import fs from 'node:fs';
 import log from 'npmlog';
 import path from 'node:path';
@@ -52,7 +52,7 @@ export const buildLambdaCode = async ({
        * https://aws.amazon.com/blogs/compute/node-js-18-x-runtime-now-available-in-aws-lambda/
        */
       '@aws-sdk/*',
-      ...builtins,
+      ...builtinModules,
       ...lambdaExternal,
     ],
     /**

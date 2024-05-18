@@ -34,7 +34,6 @@
     "@ttoss/read-config-file": "workspace:^",
     "adm-zip": "^0.5.12",
     "aws-sdk": "^2.1623.0",
-    "builtin-modules": "^4.0.0",
     "change-case": "^5.4.4",
     "deep-equal": "^2.2.3",
     "deepmerge": "^4.3.1",
