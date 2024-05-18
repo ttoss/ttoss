@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.48.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.47.1...@docs/website@1.48.0) (2024-05-18)
+
+### Features
+
+- add esm or cjs for format ([#553](https://github.com/ttoss/ttoss/issues/553)) ([1c554ed](https://github.com/ttoss/ttoss/commit/1c554ede0f62c49d1c5947562a46995a967cee93))
+
 ## [1.47.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.47.0...@docs/website@1.47.1) (2024-05-16)
 
 **Note:** Version bump only for package @docs/website

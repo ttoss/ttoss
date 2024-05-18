@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.45](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.44...@terezinha-farm/vite-app@0.9.45) (2024-05-18)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.9.44](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.43...@terezinha-farm/vite-app@0.9.44) (2024-05-16)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app
