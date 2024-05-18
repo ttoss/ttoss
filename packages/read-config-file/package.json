@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@ttoss/config": "workspace:^",
-    "esbuild": "^0.20.2",
+    "esbuild": "^0.21.3",
     "import-sync": "^2.2.2",
     "js-yaml": "^4.1.0"
   },

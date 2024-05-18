@@ -26,11 +26,11 @@
     "syncpack:list": "syncpack list-mismatches"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.2.2",
-    "@lerna-lite/changed": "^3.3.3",
-    "@lerna-lite/cli": "^3.3.3",
-    "@lerna-lite/list": "^3.3.3",
-    "@lerna-lite/version": "^3.3.3",
+    "@commitlint/cli": "^19.3.0",
+    "@lerna-lite/changed": "^3.4.0",
+    "@lerna-lite/cli": "^3.4.0",
+    "@lerna-lite/list": "^3.4.0",
+    "@lerna-lite/version": "^3.4.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
@@ -38,8 +38,8 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
-    "syncpack": "^12.3.0",
-    "turbo": "^1.13.2",
+    "syncpack": "^12.3.2",
+    "turbo": "^1.13.3",
     "typescript": "~5.4.5"
   },
   "keywords": [],

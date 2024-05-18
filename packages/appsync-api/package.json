@@ -34,7 +34,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "@ttoss/ids": "workspace:^",
-    "@types/aws-lambda": "^8.10.137",
+    "@types/aws-lambda": "^8.10.138",
     "carlin": "workspace:^",
     "graphql": "^16.8.1",
     "graphql-shield": "^7.6.5",
