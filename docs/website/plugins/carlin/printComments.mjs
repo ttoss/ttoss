@@ -3,7 +3,7 @@ import minimist from 'minimist';
 
 const args = minimist(process.argv.slice(2));
 
-const pathFromBuild = args.path;
+const pathFromBuild = args.path.replace('.ts', '.js');
 
 if (!pathFromBuild) {
   // eslint-disable-next-line no-console
@@ -20,6 +20,9 @@ if (!pathFromBuild) {
 
   if (longname) {
     res = await getComment([pathFromBuild, longname]);
+    res = res + '\n\n' + 'Copy comment code below to use in index.mjs:';
+    res =
+      res + '\n\n' + `${longname}Comment: ['${pathFromBuild}', '${longname}'],`;
   } else {
     res = await explain(pathFromBuild);
 

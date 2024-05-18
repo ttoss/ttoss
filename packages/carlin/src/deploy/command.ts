@@ -88,6 +88,12 @@ export const options = {
       'This is an array of files that each serve as an input to the bundling algorithm for Lambda functions.',
     type: 'string',
   },
+  'lambda-format': {
+    choices: ['esm', 'cjs'],
+    default: 'esm',
+    describe: 'Lambda code format.',
+    type: 'string',
+  },
   'lambda-outdir': {
     default: 'dist',
     describe: 'Output directory for built Lambda code.',
