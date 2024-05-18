@@ -56,7 +56,7 @@ test('create zip file properly', async () => {
 
   // match the files in the zip
   for (const entryPoint of lambdaEntryPoints) {
-    const filePath = `${entryPoint}`.replace('.ts', '.js');
+    const filePath = `${entryPoint}`.replace('.ts', '.mjs');
     const file = fs.readFileSync(`${outdir1}/${filePath}`);
     const zipFile = zip.getEntry(filePath);
     expect(zipFile).toBeTruthy();

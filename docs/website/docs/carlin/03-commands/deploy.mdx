@@ -14,6 +14,7 @@ import { OptionsTable } from '../../../src/components/OptionsTable';
 
 import { cliOptions } from '../../../.docusaurus/carlin/default/cliOptions';
 import { cloudFormationOutputsComment } from '../../../.docusaurus/carlin/default/cloudFormationOutputsComment';
+import { buildLambdaCodeComment } from '../../../.docusaurus/carlin/default/buildLambdaCodeComment';
 import { defaultTemplatePaths } from '../../../.docusaurus/carlin/default/defaultTemplatePaths';
 import { deployCommandExamples } from '../../../.docusaurus/carlin/default/deployCommandExamples';
 import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deployCommandOptions';
@@ -77,7 +78,7 @@ If your template has Lambda functions, <Carlin /> will handle the Lambda code bu
 
 Your [`Handler`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-handler) property must be in the format `path/to/my/file.myMethodHandler`, where `path/to/my/file` is the file path and `myMethodHandler` is the exported function name. For example, if you have a file named `src/Module/index.ts` with an export function named `getModuleProperty`, the `Handler` property must be `Module/index.getModuleProperty`. Note that `src` is the base directory and you can defined it in the <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points-base-dir" to="/docs/carlin/commands/deploy#options" /> option (default is `src`).
 
-Once <Carlin /> upload the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html), the S3 bucket parameters that the Lambda code was stored, to the CloudFormation template:
+Once <Carlin /> uploads the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html), the S3 bucket parameters that the Lambda code was stored, to the CloudFormation template:
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
@@ -197,6 +198,12 @@ of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverle
 </Tabs>
 
 If `Code` or `CodeUri` is not set, <Carlin /> will automatically set them to the values of the parameters, as shown in the example above (if `Code` or `CodeUri` is defined, <Carlin /> won't modify them).
+
+### Format
+
+<InnerHTML html={buildLambdaCodeComment} />
+
+Use the <OptionAliasesInline options={deployCommandOptions} option="lambda-format" to="/docs/carlin/commands/deploy#options" /> option to define the format of the Lambda code. The default is `esm`.
 
 ## Destroy
 

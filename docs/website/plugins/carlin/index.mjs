@@ -184,6 +184,10 @@ export default () => {
     name: 'carlin',
     loadContent: async () => {
       const comments = await getCommentsAsHTML({
+        buildLambdaCodeComment: [
+          'deploy/lambda/buildLambdaCode.js',
+          'buildLambdaCode',
+        ],
         cliEnvironmentVariablesComment: ['cli.js', 'getEnv'],
         cliConfigFileComment: ['cli.js', 'cli~getConfig'],
         cliMultipleEnvironmentsComment: ['cli.js', 'cli~handleEnvironments'],

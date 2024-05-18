@@ -102,59 +102,69 @@ Globals:
     Runtime: nodejs20.x
 
 Resources:
+  ApiV1:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+
   UsersGETFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        GetEvent:
+        ApiV1:
           Type: Api
           Properties:
             Path: /users
             Method: GET
+            RestApiId: !Ref ApiV1
       Handler: api/users/route.GET
 
   UserPOSTFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        PostEvent:
+        ApiV1:
           Type: Api
           Properties:
             Path: /user
             Method: POST
+            RestApiId: !Ref ApiV1
       Handler: api/user/route.POST
 
   UserIdGETFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        GetEvent:
+        ApiV1:
           Type: Api
           Properties:
             Path: /user/{id}
             Method: GET
+            RestApiId: !Ref ApiV1
       Handler: api/user/{id}/route.GET
 
   UserIdPUTFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        PutEvent:
+        ApiV1:
           Type: Api
           Properties:
             Path: /user/{id}
             Method: PUT
+            RestApiId: !Ref ApiV1
       Handler: api/user/{id}/route.PUT
 
   UserIdDELETEFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
-        DeleteEvent:
+        ApiV1:
           Type: Api
           Properties:
             Path: /user/{id}
             Method: DELETE
+            RestApiId: !Ref ApiV1
       Handler: api/user/{id}/route.DELETE
 ```
 
@@ -170,13 +180,69 @@ Some points to consider about Carlin algorithm (you can check the documentation 
 
 ### Patterns
 
-- Use the `src/api` directory to define your API resources.
-- Create folders brackets `{}` to define dynamic routes. For example, `src/api/user/{id}/route.ts` will be the route for `GET /user/{id}`.
-- Use the `route.ts` file to define the methods for the resource.
-- Name your methods with the HTTP method in uppercase. For example, `GET`, `POST`, `PUT`, `DELETE`.
-- Use the `APIGatewayProxyHandler` type from `aws-lambda` to define the method signature.
-  - Don't forget to install [`@types/aws-lambda`](https://www.npmjs.com/package/@types/aws-lambda).
-- Name your CloudFormation function resources with the following pattern: `{ResourceName}{HTTPMethod}Function`. Examples:
-  - `UsersGETFunction`: `GET /users`
-  - `UserIdGETFunction`: `GET /user/{id}`
-- Use the `Globals` property to define common properties for all functions.
+1. Use the `src/api` directory to define your API resources.
+
+1. Create folders brackets `{}` to define dynamic routes. For example, `src/api/user/{id}/route.ts` will be the route for `GET /user/{id}`.
+
+1. Use the `route.ts` file to define the methods for the resource.
+
+1. Name your methods with the HTTP method in uppercase. For example, `GET`, `POST`, `PUT`, `DELETE`.
+
+1. Use the `APIGatewayProxyHandler` type from `aws-lambda` to define the method signature.
+
+   1. Don't forget to install [`@types/aws-lambda`](https://www.npmjs.com/package/@types/aws-lambda).
+
+   1. It should be `APIGatewayProxyHandler` instead of `APIGatewayProxyHandlerV2` because of the [input format of a Lambda function for proxy integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format).
+
+1. Use the `Globals` property to define common properties for all functions.
+
+1. Name your CloudFormation function resources with the following pattern: `{ResourceName}{HTTPMethod}Function`. Examples:
+
+   1. `UsersGETFunction`: `GET /users`
+
+   1. `UserIdGETFunction`: `GET /user/{id}`
+
+1. Name your `AWS::Serverless::Api` resources with the following pattern: `Api{StageName}`.
+
+   For example, if you have a stage named `v1`, the resource name should be `ApiV1`.
+
+   ```yaml
+   Resources:
+     ApiV1:
+       Type: AWS::Serverless::Api
+       Properties:
+         StageName: v1
+   ```
+
+1. Name the `Events` property in the `AWS::Serverless::Function` resource with the name of your `AWS::Serverless::Api` resource. This is useful for cases in which you have multiple APIs in your template and want to use the same function for different APIs.
+
+   ```yaml
+   Resources:
+     ApiV1:
+       Type: AWS::Serverless::Api
+       Properties:
+         StageName: v1
+
+     ApiV2:
+       Type: AWS::Serverless::Api
+       Properties:
+         StageName: v2
+
+     UsersGETFunction:
+       Type: AWS::Serverless::Function
+       Properties:
+         Events:
+           ApiV1:
+             Type: Api
+             Properties:
+               Path: /users
+               Method: GET
+               RestApiId: !Ref ApiV1
+           ApiV2:
+             Type: Api
+             Properties:
+               Path: /users
+               Method: GET
+               RestApiId: !Ref ApiV2
+         Handler: api/users/route.GET
+   ```

@@ -14,6 +14,7 @@ export const deployLambdaCode = async ({
   lambdaImage,
   lambdaEntryPoints,
   lambdaEntryPointsBaseDir = 'src',
+  lambdaFormat,
   lambdaOutdir = 'dist',
   stackName,
 }: {
@@ -22,6 +23,7 @@ export const deployLambdaCode = async ({
   lambdaImage?: boolean;
   lambdaEntryPoints: string[];
   lambdaEntryPointsBaseDir?: string;
+  lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir?: string;
   stackName: string;
 }) => {
@@ -42,6 +44,7 @@ export const deployLambdaCode = async ({
     lambdaExternal,
     lambdaEntryPoints,
     lambdaEntryPointsBaseDir,
+    lambdaFormat,
     lambdaOutdir,
   });
 
