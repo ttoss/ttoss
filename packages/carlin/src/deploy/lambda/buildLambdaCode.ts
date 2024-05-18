@@ -1,6 +1,7 @@
 import * as esbuild from 'esbuild';
+import { builtinModules } from 'node:module';
 import { typescriptConfig } from '@ttoss/config';
-import builtins from 'builtin-modules';
+import fs from 'node:fs';
 import log from 'npmlog';
 import path from 'node:path';
 
@@ -27,6 +28,14 @@ export const buildLambdaCode = async ({
 }) => {
   log.info(logPrefix, 'Building Lambda single file...');
 
+  /**
+   * Remove the output directory if it exists to not mix old files with the
+   * new ones.
+   */
+  if (fs.existsSync(lambdaOutdir)) {
+    fs.rmSync(lambdaOutdir, { recursive: true });
+  }
+
   const entryPoints = lambdaEntryPoints.map((entryPoint) => {
     return path.resolve(process.cwd(), lambdaEntryPointsBaseDir, entryPoint);
   });
@@ -43,7 +52,7 @@ export const buildLambdaCode = async ({
        * https://aws.amazon.com/blogs/compute/node-js-18-x-runtime-now-available-in-aws-lambda/
        */
       '@aws-sdk/*',
-      ...builtins,
+      ...builtinModules,
       ...lambdaExternal,
     ],
     /**
