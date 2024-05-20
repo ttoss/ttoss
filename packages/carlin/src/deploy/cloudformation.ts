@@ -32,6 +32,7 @@ export const deployCloudFormation = async ({
   lambdaEntryPointsBaseDir,
   lambdaImage,
   lambdaExternal,
+  lambdaFormat,
   lambdaOutdir,
   parameters,
   template,
@@ -42,6 +43,7 @@ export const deployCloudFormation = async ({
   lambdaEntryPointsBaseDir?: string;
   lambdaImage?: boolean;
   lambdaExternal?: string[];
+  lambdaFormat?: 'esm' | 'cjs';
   lambdaOutdir?: string;
   parameters?: {
     key: string;
@@ -125,6 +127,7 @@ export const deployCloudFormation = async ({
         lambdaExternal,
         lambdaEntryPoints: finalLambdaEntryPoints,
         lambdaEntryPointsBaseDir,
+        lambdaFormat,
         lambdaImage,
         lambdaOutdir,
         stackName,
