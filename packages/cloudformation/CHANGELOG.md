@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.9.8...@ttoss/cloudformation@0.10.0) (2024-05-20)
+
+### Features
+
+- add environment variables to cloudformation template and config ([#556](https://github.com/ttoss/ttoss/issues/556)) ([2933524](https://github.com/ttoss/ttoss/commit/2933524b02dfad240acd4d0634e75520f44b018d))
+
 ## [0.9.8](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.9.7...@ttoss/cloudformation@0.9.8) (2024-05-18)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.35.0](https://github.com/ttoss/ttoss/compare/carlin@1.34.2...carlin@1.35.0) (2024-05-20)
+
+### Features
+
+- add environment variables to cloudformation template and config ([#556](https://github.com/ttoss/ttoss/issues/556)) ([2933524](https://github.com/ttoss/ttoss/commit/2933524b02dfad240acd4d0634e75520f44b018d))
+
 ## [1.34.2](https://github.com/ttoss/ttoss/compare/carlin@1.34.1...carlin@1.34.2) (2024-05-20)
 
 ### Bug Fixes
