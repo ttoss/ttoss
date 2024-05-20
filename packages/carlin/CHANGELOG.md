@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.34.2](https://github.com/ttoss/ttoss/compare/carlin@1.34.1...carlin@1.34.2) (2024-05-20)
+
+### Bug Fixes
+
+- pass lambdaFormat to deployLambdaCode ([#555](https://github.com/ttoss/ttoss/issues/555)) ([01551be](https://github.com/ttoss/ttoss/commit/01551be7fe3abb84ea1b3ac3434b7334f12379db))
+
 ## [1.34.1](https://github.com/ttoss/ttoss/compare/carlin@1.34.0...carlin@1.34.1) (2024-05-18)
 
 ### Bug Fixes
