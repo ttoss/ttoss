@@ -1,4 +1,9 @@
-import { CloudFormationTemplate, getEnvironment } from '../utils';
+import {
+  CloudFormationTemplate,
+  getEnvironment,
+  getPackageName,
+  getProjectName,
+} from '../utils';
 import {
   canDestroyStack,
   cloudFormationV2,
@@ -26,18 +31,44 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   }
 );
 
-export const deployCloudFormation = async ({
-  lambdaDockerfile,
-  lambdaEntryPoints,
-  lambdaEntryPointsBaseDir,
-  lambdaImage,
-  lambdaExternal,
-  lambdaFormat,
-  lambdaOutdir,
-  parameters,
-  template,
-  templatePath,
+/**
+ * When you use a method to generate your CloudFormation template, you can
+ * retrieve the options from the CLI plus the following variables after CLI
+ * validations and middlewares logic:
+ *
+ * - `stackName`
+ * - `environment`
+ * - `packageName`
+ * - `projectName`
+ *
+ * For example, in your `cloudformation.ts` file:
+ *
+ * ```typescript
+ * export default async ({ environment, region, stackName }) => {
+ *  // Do something with CLI options and the variables above.
+ * }
+ * ```
+ */
+const getCloudformationTemplateOptions = ({
+  cliOptions,
+  stackName,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  cliOptions: any;
+  stackName: string;
+}) => {
+  const options = {
+    ...cliOptions,
+    stackName,
+    environment: getEnvironment(),
+    packageName: getPackageName(),
+    projectName: getProjectName(),
+  };
+
+  return options;
+};
+
+export const deployCloudFormation = async (cliOptions: {
   lambdaDockerfile?: string;
   lambdaEntryPoints?: string[];
   lambdaEntryPointsBaseDir?: string;
@@ -56,6 +87,19 @@ export const deployCloudFormation = async ({
   template?: CloudFormationTemplate;
 }) => {
   try {
+    const {
+      lambdaDockerfile,
+      lambdaEntryPoints,
+      lambdaEntryPointsBaseDir,
+      lambdaImage,
+      lambdaExternal,
+      lambdaFormat,
+      lambdaOutdir,
+      parameters,
+      template,
+      templatePath,
+    } = cliOptions;
+
     const { stackName } = await handleDeployInitialization({ logPrefix });
 
     const cloudFormationTemplate: CloudFormationTemplate = await (async () => {
@@ -63,7 +107,10 @@ export const deployCloudFormation = async ({
         return { ...template };
       }
 
-      return findAndReadCloudFormationTemplate({ templatePath });
+      return findAndReadCloudFormationTemplate({
+        templatePath,
+        options: getCloudformationTemplateOptions({ stackName, cliOptions }),
+      });
     })();
 
     /**

@@ -4,10 +4,13 @@ import yaml from 'js-yaml';
 
 type ConfigInput = {
   configFilePath: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  options?: any;
 };
 
 export const readConfigFileSync = <ConfigFile = unknown>({
   configFilePath,
+  options,
 }: ConfigInput): ConfigFile => {
   const extension = configFilePath.split('.').pop();
 
@@ -28,7 +31,7 @@ export const readConfigFileSync = <ConfigFile = unknown>({
   if (extension === 'ts') {
     let result = loadConfig(configFilePath);
     if (typeof result === 'function') {
-      result = result();
+      result = result(options);
     }
     return result as ConfigFile;
   }
@@ -38,17 +41,18 @@ export const readConfigFileSync = <ConfigFile = unknown>({
 
 export const readConfigFile = async <ConfigFile = unknown>({
   configFilePath,
+  options,
 }: ConfigInput): Promise<ConfigFile> => {
   const extension = configFilePath.split('.').pop();
 
   if (extension === 'ts') {
     let result = loadConfig(configFilePath);
     if (typeof result === 'function') {
-      result = result();
+      result = result(options);
     }
     result = await Promise.resolve(result);
     return result as ConfigFile;
   }
 
-  return readConfigFileSync({ configFilePath });
+  return readConfigFileSync({ configFilePath, options });
 };

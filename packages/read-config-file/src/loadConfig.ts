@@ -1,5 +1,4 @@
 import * as esbuild from 'esbuild';
-import { typescriptConfig } from '@ttoss/config';
 import importSync from 'import-sync';
 import path from 'node:path';
 
@@ -22,7 +21,7 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
     format: 'cjs',
     outfile,
     platform: 'node',
-    target: typescriptConfig.target,
+    target: 'ES2021',
     treeShaking: true,
   });
 

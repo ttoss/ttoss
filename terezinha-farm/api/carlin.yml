@@ -1,4 +1,0 @@
-lambdaExternal:
-  - graphql
-
-lambdaFormat: cjs

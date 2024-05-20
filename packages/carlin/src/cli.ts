@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-param-reassign */
+import 'dotenv/config';
+
 import { AWS_DEFAULT_REGION, NAME } from './config';
 import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
 import { constantCase, kebabCase } from 'change-case';
@@ -129,6 +131,16 @@ export const cli = () => {
    * awsAccountId: 123456789012
    * stackName: MyMonorepoApp
    * region: us-east-2
+   * ```
+   *
+   * If you define your config file programmatically, you can use the
+   * your environment variables from a `.env` file if it exists. For example:
+   *
+   * ```ts
+   * export default {
+   *  environment: process.env.ENVIRONMENT,
+   *  region: process.env.REGION,
+   * }
    * ```
    */
   const getConfig = () => {

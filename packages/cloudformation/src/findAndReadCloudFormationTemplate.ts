@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { CloudFormationTemplate } from './CloudFormationTemplate';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { type CloudFormationTemplate } from './CloudFormationTemplate';
 import { readCloudFormationYamlTemplate } from './readCloudFormationYamlTemplate';
 import { readConfigFile } from '@ttoss/read-config-file';
 
@@ -12,8 +12,10 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
 
 export const findAndReadCloudFormationTemplate = async ({
   templatePath: defaultTemplatePath,
+  options = {},
 }: {
   templatePath?: string;
+  options?: unknown;
 }): Promise<CloudFormationTemplate> => {
   const templatePath =
     defaultTemplatePath ||
@@ -48,5 +50,5 @@ export const findAndReadCloudFormationTemplate = async ({
 
   const configFilePath = path.resolve(process.cwd(), templatePath);
 
-  return readConfigFile({ configFilePath });
+  return readConfigFile({ configFilePath, options });
 };

@@ -4,7 +4,9 @@ import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
 import { deploy } from 'src/deploy/cloudformation.core';
 import { deployLambdaCode } from 'src/deploy/lambda/deployLambdaCode';
 import { faker } from '@ttoss/test-utils/faker';
+import { generateTemplate } from 'tests/fixtures/templates/cloudformation';
 import { getStackName } from 'src/deploy/stackName';
+import path from 'node:path';
 
 const mockWorkingCloudFormationTemplate: CloudFormationTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -54,7 +56,7 @@ jest.mock('src/deploy/lambda/buildLambdaCode', () => {
 import {
   defaultTemplatePaths,
   deployCloudFormation,
-} from '../../../src/deploy/cloudformation';
+} from 'src/deploy/cloudformation';
 
 const mockStackName = faker.word.sample();
 
@@ -91,6 +93,32 @@ test('return working cloudformation template if passed via template', async () =
       StackName: mockStackName,
     },
     template: mockWorkingCloudFormationTemplate,
+  });
+});
+
+test('pass options to cloudformation template generator config', async () => {
+  (deployLambdaCode as jest.Mock).mockResolvedValueOnce({});
+
+  const templatePath = path.resolve(
+    __dirname,
+    '../../fixtures/templates/cloudformation.ts'
+  );
+
+  await deployCloudFormation({
+    lambdaEntryPoints,
+    lambdaExternal,
+    templatePath,
+  });
+
+  expect(deploy).toHaveBeenCalledWith({
+    params: {
+      Parameters: [],
+      StackName: mockStackName,
+    },
+    template: generateTemplate({
+      stackName: mockStackName,
+      templatePath,
+    }),
   });
 });
 
