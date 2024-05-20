@@ -197,6 +197,10 @@ export default () => {
         ],
         deployComment: ['deploy/cloudformation.core.js', 'deploy'],
         destroyComment: ['deploy/cloudformation.js', 'destroy'],
+        getCloudformationTemplateOptionsComment: [
+          'deploy/cloudformation.js',
+          'getCloudformationTemplateOptions',
+        ],
       });
 
       const [stackNameComment, stackNameWarningComment] = (

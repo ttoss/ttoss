@@ -17,7 +17,7 @@ test('build lambda code properly as esm', () => {
   buildLambdaCode({
     lambdaExternal: [],
     lambdaEntryPoints,
-    lambdaEntryPointsBaseDir: 'tests/__fixtures__/lambdaCodeExample',
+    lambdaEntryPointsBaseDir: 'tests/fixtures/lambdaCodeExample',
     lambdaOutdir: outDir,
   });
 
@@ -35,7 +35,7 @@ test('build lambda code properly as cjs', () => {
   buildLambdaCode({
     lambdaExternal: [],
     lambdaEntryPoints,
-    lambdaEntryPointsBaseDir: 'tests/__fixtures__/lambdaCodeExample',
+    lambdaEntryPointsBaseDir: 'tests/fixtures/lambdaCodeExample',
     lambdaFormat: 'cjs',
     lambdaOutdir: outDir,
   });

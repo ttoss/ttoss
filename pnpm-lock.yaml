@@ -1344,9 +1344,6 @@ importers:
 
   packages/read-config-file:
     dependencies:
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
       esbuild:
         specifier: ^0.21.3
         version: 0.21.3
@@ -1357,6 +1354,9 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
     devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
       '@ttoss/read-config-file-test':
         specifier: workspace:^
         version: link:../read-config-file-test

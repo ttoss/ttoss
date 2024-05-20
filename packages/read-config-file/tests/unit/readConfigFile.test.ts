@@ -1,5 +1,5 @@
 import { readConfigFile, readConfigFileSync } from '../../src';
-import path from 'path';
+import path from 'node:path';
 
 test.each([
   'config.js',
@@ -46,5 +46,22 @@ test('read config when importing package', async () => {
   const config = await readConfigFile({ configFilePath });
   expect(config).toEqual({
     sum: 20,
+  });
+});
+
+test('add options to config function', async () => {
+  const configFilePath = path.resolve(
+    __dirname,
+    '../fixtures/configFunctionWithOptions.ts'
+  );
+  const config = await readConfigFile({
+    configFilePath,
+    options: { foo: 'bar2', baz: 'qux2' },
+  });
+  expect(config).toEqual({
+    parameters: {
+      foo: 'bar2',
+      baz: 'qux2',
+    },
   });
 });
