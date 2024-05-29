@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.50.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.49.0...@docs/website@1.50.0) (2024-05-29)
+
+### Features
+
+- allow parameters as object ([#557](https://github.com/ttoss/ttoss/issues/557)) ([f1ab8a1](https://github.com/ttoss/ttoss/commit/f1ab8a1e0543fbad0b71c83aef2d4d598c766336))
+
 # [1.49.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.48.2...@docs/website@1.49.0) (2024-05-20)
 
 ### Features

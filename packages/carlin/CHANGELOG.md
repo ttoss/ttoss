@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.36.0](https://github.com/ttoss/ttoss/compare/carlin@1.35.0...carlin@1.36.0) (2024-05-29)
+
+### Features
+
+- allow parameters as object ([#557](https://github.com/ttoss/ttoss/issues/557)) ([f1ab8a1](https://github.com/ttoss/ttoss/commit/f1ab8a1e0543fbad0b71c83aef2d4d598c766336))
+
 # [1.35.0](https://github.com/ttoss/ttoss/compare/carlin@1.34.2...carlin@1.35.0) (2024-05-20)
 
 ### Features
