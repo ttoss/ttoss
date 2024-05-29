@@ -201,6 +201,7 @@ export default () => {
           'deploy/cloudformation.js',
           'getCloudformationTemplateOptions',
         ],
+        optionsParametersComment: ['deploy/command.js', 'options.parameters'],
       });
 
       const [stackNameComment, stackNameWarningComment] = (

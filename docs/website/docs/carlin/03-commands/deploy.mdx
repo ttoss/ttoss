@@ -10,7 +10,7 @@ import { Carlin } from '../../../src/components/Carlin';
 import { Examples } from '../../../src/components/Examples';
 import { InnerHTML } from '../../../src/components/InnerHTML';
 import { OptionAliasesInline } from '../../../src/components/OptionAliasesInline';
-import { OptionsTable } from '../../../src/components/OptionsTable';
+import { OptionsSection } from '../../../src/components/OptionsSection';
 
 import { cliOptions } from '../../../.docusaurus/carlin/default/cliOptions';
 import { cloudFormationOutputsComment } from '../../../.docusaurus/carlin/default/cloudFormationOutputsComment';
@@ -21,6 +21,7 @@ import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deploy
 import { deployComment } from '../../../.docusaurus/carlin/default/deployComment';
 import { destroyComment } from '../../../.docusaurus/carlin/default/destroyComment';
 import { getCloudformationTemplateOptionsComment } from '../../../.docusaurus/carlin/default/getCloudformationTemplateOptionsComment';
+import { optionsParametersComment } from '../../../.docusaurus/carlin/default/optionsParametersComment';
 import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
 import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
 
@@ -248,4 +249,8 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 ### Options
 
-<OptionsTable options={deployCommandOptions} />
+<OptionsSection options={deployCommandOptions}>
+  <OptionsSection.Option option="parameters">
+    <InnerHTML html={optionsParametersComment} />
+  </OptionsSection.Option>
+</OptionsSection>
