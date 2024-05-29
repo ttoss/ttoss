@@ -100,7 +100,7 @@ export const options = {
     type: 'string',
   },
   /**
-   * This option has the format:
+   * This option has the format to match [CloudFormation parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_Parameter.html).
    *
    * ```ts
    * {
@@ -110,9 +110,49 @@ export const options = {
    *  resolvedValue: string
    * }[]
    * ```
+   *
+   * For example:
+   *
+   * ```ts
+   * [
+   *  {
+   *    key: 'key1',
+   *    value: 'value1',
+   *  },
+   *  {
+   *    key: 'key2',
+   *    value: 'value2',
+   *  }
+   * ]
+   * ```
+   *
+   * If you want to simplify the usage, you can pass a object with key and value only:
+   *
+   * ```ts
+   * {
+   *  key1: 'value1',
+   *  key2: 'value2'
+   * }
+   * ```
    */
   parameters: {
     alias: 'p',
+    coerce: (arg: any) => {
+      if (Array.isArray(arg)) {
+        return arg;
+      }
+
+      if (typeof arg === 'object') {
+        return Object.entries(arg).map(([key, value]) => {
+          return {
+            key,
+            value,
+          };
+        });
+      }
+
+      return [];
+    },
     default: [],
     describe:
       'A list of parameters that will be passed to CloudFormation Parameters when deploying.',

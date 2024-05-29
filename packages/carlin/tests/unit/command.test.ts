@@ -138,6 +138,46 @@ describe('handlers', () => {
 
   test.each([
     {
+      parameters: [
+        {
+          key: 'key1',
+          value: 'value1',
+        },
+        {
+          key: 'key2',
+          value: 'value2',
+        },
+      ],
+    },
+    {
+      parameters: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+    },
+  ])(
+    'should call deployCloudFormation with parameters %#',
+    async ({ parameters }) => {
+      await parse('deploy', { parameters });
+      expect(deployCloudFormation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          parameters: [
+            {
+              key: 'key1',
+              value: 'value1',
+            },
+            {
+              key: 'key2',
+              value: 'value2',
+            },
+          ],
+        })
+      );
+    }
+  );
+
+  test.each([
+    {
       module: deployLambdaLayerModule,
       method: 'deployLambdaLayer',
       command: 'deploy lambda-layer --packages carlin@1.2.3',
