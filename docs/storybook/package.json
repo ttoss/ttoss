@@ -16,6 +16,16 @@
     "@iconify-icons/mdi-light": "^1.2.5",
     "@iconify/icons-carbon": "^1.2.20",
     "@storybook/test": "^8.0.10",
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/landing-pages": "workspace:^",
+    "@ttoss/layouts": "workspace:^",
+    "@ttoss/react-auth": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/theme": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {

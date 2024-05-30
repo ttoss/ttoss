@@ -20,6 +20,7 @@
     "@docusaurus/preset-classic": "^3.3.2",
     "@docusaurus/theme-mermaid": "^3.3.2",
     "@mdx-js/react": "3.0.1",
+    "@ttoss/ui": "workspace:^",
     "prism-react-renderer": "^2.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.2.0"
