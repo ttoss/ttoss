@@ -1169,12 +1169,9 @@ importers:
 
   packages/react-i18n:
     dependencies:
-      react:
-        specifier: '>=16.8.0'
-        version: 18.2.0
       react-intl:
         specifier: ^6.5.5
-        version: 6.6.5(react@18.2.0)(typescript@5.4.5)
+        version: 6.6.5(react@18.3.1)(typescript@5.4.5)
     devDependencies:
       '@formatjs/cli':
         specifier: ^6.2.4
@@ -1194,6 +1191,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.12.12)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5))
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5))(typescript@5.4.5)
@@ -28092,7 +28092,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  react-intl@6.6.5(react@18.2.0)(typescript@5.4.5):
+  react-intl@6.6.5(react@18.3.1)(typescript@5.4.5):
     dependencies:
       '@formatjs/ecma402-abstract': 1.18.2
       '@formatjs/icu-messageformat-parser': 2.7.6
@@ -28103,7 +28103,7 @@ snapshots:
       '@types/react': 18.3.3
       hoist-non-react-statics: 3.3.2
       intl-messageformat: 10.5.11
-      react: 18.2.0
+      react: 18.3.1
       tslib: 2.6.2
     optionalDependencies:
       typescript: 5.4.5
