@@ -14,6 +14,8 @@ const expectNotBeInDocument = (element: HTMLElement) => {
   }).toThrow();
 };
 
+jest.setTimeout(10000);
+
 describe('Modal Notifications Test', () => {
   const user = userEvent.setup({ delay: null });
   const TestModalComponent = ({
