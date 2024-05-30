@@ -42,7 +42,7 @@ if pnpm lerna changed; then
   # Test and build all packages since $LATEST_TAG
   # and all the workspaces that depends on them.
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-  pnpm turbo run build test --filter=...[$LATEST_TAG]
+  pnpm turbo run build test --filter=[$LATEST_TAG]
 
   # See description on the lint.sh file.
   sh "$(dirname "$0")/lint.sh" || exit 1
@@ -79,4 +79,4 @@ fi
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
-pnpm turbo run deploy --filter=...[$LATEST_TAG]
+pnpm turbo run deploy --filter=[$LATEST_TAG]
