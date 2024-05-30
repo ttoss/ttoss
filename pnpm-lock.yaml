@@ -165,36 +165,6 @@ importers:
       '@storybook/test':
         specifier: ^8.0.10
         version: 8.0.10(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.12)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5)))
-      '@ttoss/components':
-        specifier: workspace:^
-        version: link:../../packages/components
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../../packages/forms
-      '@ttoss/landing-pages':
-        specifier: workspace:^
-        version: link:../../packages/landing-pages
-      '@ttoss/layouts':
-        specifier: workspace:^
-        version: link:../../packages/layouts
-      '@ttoss/react-auth':
-        specifier: workspace:^
-        version: link:../../packages/react-auth
-      '@ttoss/react-i18n':
-        specifier: workspace:^
-        version: link:../../packages/react-i18n
-      '@ttoss/react-icons':
-        specifier: workspace:^
-        version: link:../../packages/react-icons
-      '@ttoss/react-notifications':
-        specifier: workspace:^
-        version: link:../../packages/react-notifications
-      '@ttoss/theme':
-        specifier: workspace:^
-        version: link:../../packages/theme
-      '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../../packages/ui
       react-json-view:
         specifier: ^1.21.3
         version: 1.21.3(@types/react@18.3.3)(encoding@0.1.13)(react-dom@18.2.0(react@18.3.1))(react@18.3.1)
@@ -223,18 +193,9 @@ importers:
       '@storybook/react-webpack5':
         specifier: ^8.0.10
         version: 8.0.10(encoding@0.1.13)(esbuild@0.20.2)(react-dom@18.2.0(react@18.3.1))(react@18.3.1)(typescript@5.4.5)
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../../packages/config
-      '@ttoss/i18n-cli':
-        specifier: workspace:^
-        version: link:../../packages/i18n-cli
       babel-loader:
         specifier: ^9.1.3
         version: 9.1.3(@babel/core@7.24.4)(webpack@5.91.0(esbuild@0.20.2))
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -262,54 +223,6 @@ importers:
       '@mdx-js/react':
         specifier: 3.0.1
         version: 3.0.1(@types/react@18.3.3)(react@18.3.1)
-      '@ttoss/appsync-api':
-        specifier: workspace:^
-        version: link:../../packages/appsync-api
-      '@ttoss/aws-appsync-nodejs':
-        specifier: workspace:^
-        version: link:../../packages/aws-appsync-nodejs
-      '@ttoss/cloud-auth':
-        specifier: workspace:^
-        version: link:../../packages/cloud-auth
-      '@ttoss/components':
-        specifier: workspace:^
-        version: link:../../packages/components
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../../packages/config
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../../packages/forms
-      '@ttoss/graphql-api':
-        specifier: workspace:^
-        version: link:../../packages/graphql-api
-      '@ttoss/graphql-api-server':
-        specifier: workspace:^
-        version: link:../../packages/graphql-api-server
-      '@ttoss/i18n-cli':
-        specifier: workspace:^
-        version: link:../../packages/i18n-cli
-      '@ttoss/ids':
-        specifier: workspace:^
-        version: link:../../packages/ids
-      '@ttoss/react-feature-flags':
-        specifier: workspace:^
-        version: link:../../packages/react-feature-flags
-      '@ttoss/react-i18n':
-        specifier: workspace:^
-        version: link:../../packages/react-i18n
-      '@ttoss/react-icons':
-        specifier: workspace:^
-        version: link:../../packages/react-icons
-      '@ttoss/react-notifications':
-        specifier: workspace:^
-        version: link:../../packages/react-notifications
-      '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../../packages/ui
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
       prism-react-renderer:
         specifier: ^2.3.1
         version: 2.3.1(react@18.3.1)
