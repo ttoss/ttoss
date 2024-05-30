@@ -1079,10 +1079,7 @@ importers:
         version: link:../forms
       '@xstate/react':
         specifier: ^3.2.2
-        version: 3.2.2(@types/react@18.3.3)(react@18.2.0)(xstate@4.38.3)
-      react:
-        specifier: '>=16.8.0'
-        version: 18.2.0
+        version: 3.2.2(@types/react@18.3.3)(react@18.3.1)(xstate@4.38.3)
       xstate:
         specifier: ^4.38.3
         version: 4.38.3
@@ -1120,6 +1117,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.12.12)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5))
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.4.5))(typescript@5.4.5)
@@ -20872,11 +20872,11 @@ snapshots:
       '@whatwg-node/fetch': 0.9.17
       tslib: 2.6.2
 
-  '@xstate/react@3.2.2(@types/react@18.3.3)(react@18.2.0)(xstate@4.38.3)':
+  '@xstate/react@3.2.2(@types/react@18.3.3)(react@18.3.1)(xstate@4.38.3)':
     dependencies:
-      react: 18.2.0
-      use-isomorphic-layout-effect: 1.1.2(@types/react@18.3.3)(react@18.2.0)
-      use-sync-external-store: 1.2.0(react@18.2.0)
+      react: 18.3.1
+      use-isomorphic-layout-effect: 1.1.2(@types/react@18.3.3)(react@18.3.1)
+      use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:
       xstate: 4.38.3
     transitivePeerDependencies:
@@ -29994,12 +29994,6 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  use-isomorphic-layout-effect@1.1.2(@types/react@18.3.3)(react@18.2.0):
-    dependencies:
-      react: 18.2.0
-    optionalDependencies:
-      '@types/react': 18.3.3
-
   use-isomorphic-layout-effect@1.1.2(@types/react@18.3.3)(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -30013,9 +30007,9 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.3
 
-  use-sync-external-store@1.2.0(react@18.2.0):
+  use-sync-external-store@1.2.0(react@18.3.1):
     dependencies:
-      react: 18.2.0
+      react: 18.3.1
 
   util-deprecate@1.0.2: {}
 
