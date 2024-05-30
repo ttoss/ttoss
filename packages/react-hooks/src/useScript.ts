@@ -53,6 +53,7 @@ export const useScript = (src: string) => {
          * Store status in attribute on script.
          * This can be read by other instances of this hook.
          */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const setAttributeFromEvent = (event: any) => {
           if (script) {
             script.setAttribute(
@@ -77,6 +78,7 @@ export const useScript = (src: string) => {
        * Note: Even if the script already exists we still need to add
        * event handlers to update the state for *this* hook instance.
        */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const setStateFromEvent = (event: any) => {
         setStatus(event.type === 'load' ? 'ready' : 'error');
       };
