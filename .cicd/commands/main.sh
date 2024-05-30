@@ -27,7 +27,7 @@ echo NPM whoami: $(npm whoami)
 # when commiting changes. If we don't build this package, commit will fail
 # because pre-commit hook will run syncpack:list with default config, that
 # not works because of package version and "workspace:^" mismatch.
-pnpm turbo run build:config
+pnpm turbo run build:configs
 
 # Publish packages only if `pnpm lerna changed` is success. This happens when
 # exists an update on root and no packages changes. This way, `version` won't
