@@ -2,21 +2,29 @@
   "$schema": "https://turborepo.org/schema.json",
   "globalEnv": ["CARLIN_ENVIRONMENT", "ENVIRONMENT"],
   "pipeline": {
-    "//#build:configs": {
+    "//#build:config": {
       "dependsOn": [],
-      "outputs": ["dist/**"]
+      "outputs": ["packages/config/dist/**"]
     },
     "//#lint": {
-      "dependsOn": ["//#build:configs"],
-      "cache": false,
-      "outputs": []
+      "dependsOn": ["//#build:config"],
+      "cache": false
     },
     "//#syncpack:list": {
-      "dependsOn": ["//#build:configs"],
+      "dependsOn": [],
       "outputs": []
     },
+    "build-config": {
+      "dependsOn": ["//#build:config"],
+      "outputs": ["dist/**"]
+    },
     "topo": {
-      "dependsOn": ["//#build:configs", "//#lint", "//#syncpack:list"],
+      "dependsOn": [
+        "//#build:config",
+        "//#lint",
+        "//#syncpack:list",
+        "build-config"
+      ],
       "outputs": []
     },
     "i18n": {

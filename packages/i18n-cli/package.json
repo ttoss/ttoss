@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build:configs": "tsup-node"
+    "build-config": "tsup-node"
   },
   "dependencies": {
     "@formatjs/cli-lib": "^6.3.3",
