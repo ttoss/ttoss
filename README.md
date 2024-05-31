@@ -10,10 +10,10 @@ The "hello world" of this repository is running [ttoss Storybook](https://storyb
    pnpm install
    ```
 
-1. Build configs packages ([@ttoss/config](https://ttoss.dev/docs/modules/packages/config/), [@ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/)):
+1. Build [@ttoss/config](https://ttoss.dev/docs/modules/packages/config/) package:
 
    ```sh
-   pnpm build:configs
+   pnpm build:config
    ```
 
 1. Build i18n languages (for more information, see [@ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/)):
@@ -32,13 +32,13 @@ If everything goes well, you should see the Storybook running in your browser.
 
 ## FAQ
 
-### Why doesn't packages/config have a `build` script?
+### Why doesn't @ttoss/config (./packages/config) have a `build` script?
 
-It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The other packages use [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As the `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because the other packages would try to use `@ttoss/config` package before it was built.
+It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The other packages use [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As the `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because they would try to use `@ttoss/config` package before it was built.
 
-### What is `build:configs` command?
+### What is `build-config` command?
 
-`build:configs` is a command that builds some packages that are used in the configuration files of the other packages. It is used to build the [`@ttoss/config`](https://ttoss.dev/docs/modules/packages/config/) and [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) packages because they must be built before the other packages or running lint and i18n commands.
+`build-config` is a command that builds some packages that are used in the configuration files of the other packages. For example, it builds [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) package because it must be built before running i18n commands in the other packages.
 
 ### Do I need to build packages before importing them?
 
