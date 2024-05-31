@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { useGoogleMaps } from './GoogleMapsProvider';
 
 export const useGeocoder = () => {

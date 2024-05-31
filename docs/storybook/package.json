@@ -40,8 +40,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.1.3",
-    "carlin": "workspace:^",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "storybook": "^8.0.10"
   }

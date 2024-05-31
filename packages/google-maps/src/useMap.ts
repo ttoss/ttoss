@@ -9,9 +9,11 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
    */
   const [, forceUpdate] = React.useState(0);
 
-  const ref = useCallbackRef<HTMLDivElement>(null, () =>
-    forceUpdate((n) => n + 1)
-  );
+  const ref = useCallbackRef<HTMLDivElement>(null, () => {
+    return forceUpdate((n) => {
+      return n + 1;
+    });
+  });
 
   const { googleMaps } = useGoogleMaps();
 

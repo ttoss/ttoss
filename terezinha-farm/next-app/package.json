@@ -16,7 +16,7 @@
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.0.28",
     "next": "14.0.4",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/node": "^20.12.12",
-    "@types/react": "^18.2.79",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.25",
     "typescript": "~5.4.5"
   }

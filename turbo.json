@@ -4,22 +4,31 @@
   "pipeline": {
     "//#build:config": {
       "dependsOn": [],
-      "outputs": ["dist/**"]
+      "outputs": ["packages/config/dist/**"]
     },
     "//#lint": {
       "dependsOn": ["//#build:config"],
-      "outputs": []
+      "cache": false
     },
     "//#syncpack:list": {
-      "dependsOn": ["//#build:config"],
+      "dependsOn": [],
       "outputs": []
     },
+    "build-config": {
+      "dependsOn": ["//#build:config"],
+      "outputs": ["dist/**"]
+    },
     "topo": {
-      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"],
+      "dependsOn": [
+        "//#build:config",
+        "//#lint",
+        "//#syncpack:list",
+        "build-config"
+      ],
       "outputs": []
     },
     "i18n": {
-      "dependsOn": ["topo", "^build"],
+      "dependsOn": ["topo"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {

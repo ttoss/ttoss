@@ -8,14 +8,15 @@
 //   },
 // };
 
-import { act, render, screen } from '@ttoss/test-utils';
-
 import { GoogleMapsProvider, useGoogleMaps } from './';
+import { act, render, screen } from '@ttoss/test-utils';
 
 const mapObject = { map: 'object' };
 const googleMock = {
   maps: {
-    Map: jest.fn().mockImplementation(() => mapObject),
+    Map: jest.fn().mockImplementation(() => {
+      return mapObject;
+    }),
   },
 };
 
@@ -40,7 +41,7 @@ const loadEvent = new Event('load');
 
 const apiKey = 'apiKey';
 
-it('should display correct status', () => {
+test('should display correct status', () => {
   render(
     <GoogleMapsProvider apiKey={apiKey}>
       <RenderStatus />
@@ -56,7 +57,7 @@ it('should display correct status', () => {
   expect(screen.getByText('ready')).toBeInTheDocument();
 });
 
-it.each([
+test.each([
   [{ apiKey }, `https://maps.googleapis.com/maps/api/js?key=${apiKey}`],
   [
     { apiKey, language: 'pt-BR' },
@@ -72,6 +73,7 @@ it.each([
   ],
 ])('Google Maps API src %#', (props, src) => {
   render(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <GoogleMapsProvider {...(props as any)}>
       <RenderStatus />
     </GoogleMapsProvider>
