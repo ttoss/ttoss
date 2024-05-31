@@ -32,6 +32,9 @@ importers:
       '@ttoss/monorepo':
         specifier: workspace:^
         version: link:packages/monorepo
+      carlin:
+        specifier: workspace:^
+        version: link:packages/carlin
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -142,9 +145,6 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../../packages/config
-      carlin:
-        specifier: workspace:^
-        version: link:../../../packages/carlin
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -318,9 +318,6 @@ importers:
       '@types/aws-lambda':
         specifier: ^8.10.138
         version: 8.10.138
-      carlin:
-        specifier: workspace:^
-        version: link:../carlin
       graphql:
         specifier: ^16.8.1
         version: 16.8.1
@@ -1517,9 +1514,6 @@ importers:
       '@ttoss/graphql-api-server':
         specifier: workspace:^
         version: link:../../packages/graphql-api-server
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
       tsx:
         specifier: ^4.6.2
         version: 4.7.2
@@ -1529,10 +1523,6 @@ importers:
       '@ttoss/cloud-auth':
         specifier: workspace:^
         version: link:../../packages/cloud-auth
-    devDependencies:
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
 
   terezinha-farm/config:
     dependencies:
@@ -1552,10 +1542,6 @@ importers:
       '@ttoss/cloud-roles':
         specifier: workspace:^
         version: link:../../packages/cloud-roles
-    devDependencies:
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
 
   terezinha-farm/next-app:
     dependencies:
@@ -1678,9 +1664,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.2.1
         version: 4.2.1(vite@5.2.9(@types/node@20.12.12)(terser@5.30.3))
-      carlin:
-        specifier: workspace:^
-        version: link:../../packages/carlin
       relay-compiler:
         specifier: ^16.2.0
         version: 16.2.0

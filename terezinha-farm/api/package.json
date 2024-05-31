@@ -18,7 +18,6 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",
-    "carlin": "workspace:^",
     "tsx": "^4.6.2"
   }
 }

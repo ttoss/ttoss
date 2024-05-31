@@ -7,8 +7,5 @@
   },
   "dependencies": {
     "@ttoss/cloud-auth": "workspace:^"
-  },
-  "devDependencies": {
-    "carlin": "workspace:^"
   }
 }
