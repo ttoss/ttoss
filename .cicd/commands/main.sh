@@ -23,6 +23,12 @@ echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > ~/.npmrc
 # Print "NPM whoami" to check if the token is valid.
 echo NPM whoami: $(npm whoami)
 
+# Build @ttoss/config package to lerna version command works properly
+# when commiting changes. If we don't build this package, commit will fail
+# because pre-commit hook will run syncpack:list with default config, that
+# not works because of package version and "workspace:^" mismatch.
+pnpm turbo run build:config
+
 # Publish packages only if `pnpm lerna changed` is success. This happens when
 # exists an update on root and no packages changes. This way, `version` won't
 # create tags and `git diff HEAD^1 origin/main --quiet` will fail because
