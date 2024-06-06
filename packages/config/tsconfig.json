@@ -38,10 +38,6 @@
      */
     "preserveSymlinks": false,
     /**
-     * Set `allowJs` to `true` to import `babel.config.js` on src/babel.ts file.
-     */
-    "allowJs": true,
-    /**
      * Set `experimentalDecorators` and `emitDecoratorMetadata` to `true` to use
      * decorators in your application as we use with sequelize-typescript.
      */
