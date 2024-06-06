@@ -828,9 +828,6 @@ importers:
       react-error-boundary:
         specifier: ^4.0.13
         version: 4.0.13(react@18.3.1)
-      theme-ui:
-        specifier: ^0.16.2
-        version: 0.16.2(@emotion/react@11.11.4(react@18.3.1))(react@18.3.1)
       tsup:
         specifier: ^8.1.0
         version: 8.1.0(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
@@ -1264,11 +1261,11 @@ importers:
   packages/react-notifications:
     dependencies:
       '@ttoss/react-icons':
-        specifier: workspace:^
-        version: link:../react-icons
+        specifier: ^0
+        version: 0.3.8(react@18.3.1)
       '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../ui
+        specifier: ^4
+        version: 4.1.11(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@theme-ui/core@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1)))(@ttoss/react-icons@0.3.8(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@ttoss/components':
         specifier: workspace:^
@@ -5568,6 +5565,23 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@ttoss/react-icons@0.3.8':
+    resolution: {integrity: sha512-V1p8sw+feHX+YGbUEPr7qwW6VRJaowmMTX1e/tM82ZNmWnQ6tOUXpAOk1f5YBMAf6yy+RZSwux/g8Wqjgo/+dw==}
+    peerDependencies:
+      react: '>=16.8.0'
+
+  '@ttoss/theme@1.7.9':
+    resolution: {integrity: sha512-sSmfZykGTr+rlZsWGYq0Fy1IlpPzbRYPl46tgQa8pBff2JGigs7dCtpDjbVRpxlOrk+hmJ0BeTYEGWIIkS4W8g==}
+    peerDependencies:
+      '@ttoss/react-icons': ^0.3.8
+
+  '@ttoss/ui@4.1.11':
+    resolution: {integrity: sha512-96GYg/A4Zge7xXnQY7jglGwPR/gy9ymLU3KXTFubQRlg/SEGbi06i6HxNW3tYwdkyUuTHUKctfTr4K5qEz1wsg==}
+    peerDependencies:
+      '@emotion/react': ^11
+      '@ttoss/react-icons': ^0.3.8
+      react: '>=16.8.0'
 
   '@types/accepts@1.3.7':
     resolution: {integrity: sha512-Pay9fq2lM2wXPWbteBsRAGiWH2hig4ZE2asK+mm7kUzlxRTfL961rj89I6zV/E3PcIkDqyuBEcMxFT7rccugeQ==}
@@ -20694,6 +20708,32 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@ttoss/react-icons@0.3.8(react@18.3.1)':
+    dependencies:
+      '@iconify-icon/react': 2.1.0(react@18.3.1)
+      react: 18.3.1
+
+  '@ttoss/theme@1.7.9(@ttoss/react-icons@0.3.8(react@18.3.1))':
+    dependencies:
+      '@iconify/icons-carbon': 1.2.20
+      '@ttoss/react-icons': 0.3.8(react@18.3.1)
+      deepmerge: 4.3.1
+
+  '@ttoss/ui@4.1.11(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@theme-ui/core@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1)))(@ttoss/react-icons@0.3.8(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@emotion/react': 11.11.4(@types/react@18.3.3)(react@18.3.1)
+      '@theme-ui/match-media': 0.16.2(@theme-ui/core@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1)))(react@18.3.1)
+      '@ttoss/react-icons': 0.3.8(react@18.3.1)
+      '@ttoss/theme': 1.7.9(@ttoss/react-icons@0.3.8(react@18.3.1))
+      react: 18.3.1
+      react-select: 5.8.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      theme-ui: 0.16.2(@emotion/react@11.11.4(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - '@theme-ui/core'
+      - '@theme-ui/css'
+      - '@types/react'
+      - react-dom
 
   '@types/accepts@1.3.7':
     dependencies:

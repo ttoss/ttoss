@@ -24,7 +24,7 @@
   },
   "sideEffects": false,
   "peerDependencies": {
-    "@ttoss/ui": "workspace:^",
+    "@ttoss/ui": "^4",
     "react": ">=16.8.0"
   },
   "devDependencies": {

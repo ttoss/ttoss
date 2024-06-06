@@ -27,7 +27,7 @@
     "@ttoss/cloudformation": "workspace:^"
   },
   "peerDependencies": {
-    "@ttoss/graphql-api": "workspace:^",
+    "@ttoss/graphql-api": "^0",
     "graphql": "^16.6.0"
   },
   "devDependencies": {
