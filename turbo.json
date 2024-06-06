@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "globalEnv": ["CARLIN_ENVIRONMENT", "ENVIRONMENT"],
-  "pipeline": {
+  "tasks": {
     "//#build:config": {
       "dependsOn": [],
       "outputs": ["packages/config/dist/**"]
