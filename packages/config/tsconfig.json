@@ -36,6 +36,16 @@
      * Set `preserveSymlinks` to `false` else change-case package and @aws-sdk/*
      * packages will not be able to resolve their dependencies.
      */
-    "preserveSymlinks": false
+    "preserveSymlinks": false,
+    /**
+     * Set `allowJs` to `true` to import `babel.config.js` on src/babel.ts file.
+     */
+    "allowJs": true,
+    /**
+     * Set `experimentalDecorators` and `emitDecoratorMetadata` to `true` to use
+     * decorators in your application as we use with sequelize-typescript.
+     */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

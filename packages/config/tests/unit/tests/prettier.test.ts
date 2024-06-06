@@ -1,4 +1,4 @@
-import { defaultConfig, prettierConfig } from './prettier';
+import { defaultConfig, prettierConfig } from 'src/prettier';
 
 test('should return default configuration', () => {
   expect(prettierConfig()).toEqual(defaultConfig);

@@ -15,26 +15,26 @@
     "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.3.2",
-    "@docusaurus/module-type-aliases": "^3.3.2",
-    "@docusaurus/preset-classic": "^3.3.2",
-    "@docusaurus/theme-mermaid": "^3.3.2",
+    "@docusaurus/core": "^3.4.0",
+    "@docusaurus/module-type-aliases": "^3.4.0",
+    "@docusaurus/preset-classic": "^3.4.0",
+    "@docusaurus/theme-mermaid": "^3.4.0",
     "@mdx-js/react": "3.0.1",
     "@ttoss/ui": "workspace:^",
     "prism-react-renderer": "^2.3.1",
     "react": "^18.3.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.3.2",
-    "@docusaurus/tsconfig": "^3.3.2",
-    "@docusaurus/types": "^3.3.2",
+    "@docusaurus/module-type-aliases": "^3.4.0",
+    "@docusaurus/tsconfig": "^3.4.0",
+    "@docusaurus/types": "^3.4.0",
     "docusaurus-plugin-typedoc": "^1.0.1",
     "jsdoc-api": "^8.0.0",
     "markdown-to-jsx": "^7.4.7",
     "minimist": "^1.2.8",
     "typedoc": "^0.25.13",
-    "typedoc-plugin-markdown": "^4.0.2",
+    "typedoc-plugin-markdown": "^4.0.3",
     "typescript": "~5.4.5"
   },
   "browserslist": {

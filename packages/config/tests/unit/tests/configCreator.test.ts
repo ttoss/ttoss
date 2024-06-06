@@ -1,5 +1,6 @@
-import { configCreator } from './configCreator';
+import { configCreator } from 'src/configCreator';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const defaultConfig: any = {
   obj: { a: 1, b: 2 },
   arr: [1, 2, 3],

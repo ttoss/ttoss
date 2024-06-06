@@ -1,4 +1,4 @@
-import { defaultConfig, lintstagedConfig } from './lintstaged';
+import { defaultConfig, lintstagedConfig } from 'src/lintstaged';
 
 test('should return default configuration', () => {
   expect(lintstagedConfig()).toEqual(defaultConfig);
