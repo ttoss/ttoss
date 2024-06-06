@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.42](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.41...@ttoss/react-notifications@1.24.42) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+- remove workspace protocol from peerdeps ([31314d7](https://github.com/ttoss/ttoss/commit/31314d7a0c300751993f8558f21e37c8152f0483))
+
 ## [1.24.41](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.40...@ttoss/react-notifications@1.24.41) (2024-05-31)
 
 **Note:** Version bump only for package @ttoss/react-notifications

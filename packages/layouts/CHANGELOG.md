@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.12](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.2.11...@ttoss/layouts@0.2.12) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+- remove workspace protocol from peerdeps ([31314d7](https://github.com/ttoss/ttoss/commit/31314d7a0c300751993f8558f21e37c8152f0483))
+
 ## [0.2.11](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.2.10...@ttoss/layouts@0.2.11) (2024-05-31)
 
 **Note:** Version bump only for package @ttoss/layouts

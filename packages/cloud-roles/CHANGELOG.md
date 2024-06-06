@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.11](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.10...@ttoss/cloud-roles@0.8.11) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+
 ## [0.8.10](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.9...@ttoss/cloud-roles@0.8.10) (2024-05-31)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

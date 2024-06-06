@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.11](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.10...@ttoss-challenge/app-vite-with-graphql-api@0.0.11) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+
 ## [0.0.10](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.9...@ttoss-challenge/app-vite-with-graphql-api@0.0.10) (2024-05-31)
 
 **Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-feature-flags@0.1.9...@ttoss/react-feature-flags@0.1.10) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+
 ## [0.1.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-feature-flags@0.1.8...@ttoss/react-feature-flags@0.1.9) (2024-05-31)
 
 **Note:** Version bump only for package @ttoss/react-feature-flags

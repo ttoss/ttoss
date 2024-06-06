@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.24.6 (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+- remove dist folder before build ([#554](https://github.com/ttoss/ttoss/issues/554)) ([df626b6](https://github.com/ttoss/ttoss/commit/df626b6010d7592ca340f97e6353afdaf2210a74))
+
 ## [1.24.5](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.24.4...@ttoss/eslint-config@1.24.5) (2024-04-17)
 
 **Note:** Version bump only for package @ttoss/eslint-config

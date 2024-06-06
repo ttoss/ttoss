@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.4...@ttoss/logger@0.3.5) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+
 ## [0.3.4](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.3...@ttoss/logger@0.3.4) (2024-05-18)
 
 **Note:** Version bump only for package @ttoss/logger

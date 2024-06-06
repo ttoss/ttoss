@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.50.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.1...@docs/website@1.50.2) (2024-06-06)
+
+### Bug Fixes
+
+- decorators babel ([#560](https://github.com/ttoss/ttoss/issues/560)) ([cd2376a](https://github.com/ttoss/ttoss/commit/cd2376a67c37205b205ef4d7a64d8055c05531f1))
+
 ## [1.50.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.0...@docs/website@1.50.1) (2024-05-31)
 
 **Note:** Version bump only for package @docs/website
