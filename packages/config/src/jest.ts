@@ -1,11 +1,11 @@
 import { configCreator } from './configCreator';
-// import type { Config } from 'jest';
+import type { Config } from 'jest';
 
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
-export const defaultConfig = {
+export const defaultConfig: Config = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
@@ -31,3 +31,29 @@ export const defaultConfig = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const jestConfig = configCreator<any>(defaultConfig);
+
+export const jestRootConfig = configCreator({
+  projects: ['<rootDir>/tests'],
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const jestE2EConfig = configCreator<any>({
+  ...defaultConfig,
+  displayName: 'E2E Tests',
+  moduleNameMapper: {
+    'src/(.*)': '<rootDir>/../../src/$1',
+    'tests/(.*)': '<rootDir>/../$1',
+  },
+  roots: ['<rootDir>'],
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const jestUnitConfig = configCreator<any>({
+  ...defaultConfig,
+  displayName: 'Unit Tests',
+  moduleNameMapper: {
+    'src/(.*)': '<rootDir>/../../src/$1',
+    'tests/(.*)': '<rootDir>/../$1',
+  },
+  roots: ['<rootDir>'],
+});

@@ -65,7 +65,7 @@ const config: Config = {
           'ui',
         ].map((pkg) => {
           /**
-           * https://github.com/tgreyuk/typedoc-plugin-markdown/tree/master/packages/docusaurus-plugin-typedoc#multi-instance
+           * https://typedoc-plugin-markdown.org/plugins/docusaurus/quick-start#add-the-plugin-to-docusaurusconfigjs
            */
           return [
             'docusaurus-plugin-typedoc',

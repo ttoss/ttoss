@@ -1,4 +1,4 @@
-import { babelConfig, defaultConfig } from './babel';
+import { babelConfig, defaultConfig } from 'src/babel';
 
 test('should return default config', () => {
   expect(babelConfig()).toEqual(defaultConfig);

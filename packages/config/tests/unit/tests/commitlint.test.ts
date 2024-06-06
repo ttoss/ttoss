@@ -1,4 +1,4 @@
-import { commitlintConfig, defaultConfig } from './commitlint';
+import { commitlintConfig, defaultConfig } from 'src/commitlint';
 
 test('should return default configuration', () => {
   expect(commitlintConfig()).toEqual(defaultConfig);

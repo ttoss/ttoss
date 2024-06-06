@@ -25,7 +25,7 @@
   "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.0.2"
+    "tsup": "^8.1.0"
   },
   "keywords": [],
   "publishConfig": {

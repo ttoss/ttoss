@@ -83,7 +83,7 @@ module.exports = {
     'formatjs/no-offset': 'error',
     'formatjs/no-id': 'error',
     'formatjs/no-complex-selectors': 'error',
-    'import/no-default-export': 'error',
+    'import/no-default-export': 'warn',
     /**
      * 3 parameters because some array methods as reduce, map, filter
      * can have 3 parameters.

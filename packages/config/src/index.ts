@@ -1,6 +1,11 @@
 export { babelConfig } from './babel';
 export { commitlintConfig } from './commitlint';
-export { jestConfig } from './jest';
+export {
+  jestConfig,
+  jestE2EConfig,
+  jestRootConfig,
+  jestUnitConfig,
+} from './jest';
 export { lintstagedConfig } from './lintstaged';
 export { prettierConfig } from './prettier';
 export { syncpackConfig } from './syncpack';

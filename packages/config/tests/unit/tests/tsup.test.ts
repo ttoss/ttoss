@@ -1,4 +1,4 @@
-import { defaultConfig, tsupConfig } from './tsup';
+import { defaultConfig, tsupConfig } from 'src/tsup';
 
 test('should return default configuration', () => {
   expect(tsupConfig()).toEqual(defaultConfig);
