@@ -28,7 +28,7 @@
       "outputs": []
     },
     "i18n": {
-      "dependsOn": ["topo"],
+      "dependsOn": ["topo", "build-config"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
