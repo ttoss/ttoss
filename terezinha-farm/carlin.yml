@@ -2,4 +2,4 @@ skipDeploy: true
 
 environments:
   Production:
-    skipDeploy: false
+    skipDeploy: true
