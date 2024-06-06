@@ -14,21 +14,16 @@
       "dependsOn": [],
       "outputs": []
     },
+    "topo": {
+      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"],
+      "outputs": []
+    },
     "build-config": {
       "dependsOn": ["//#build:config"],
       "outputs": ["dist/**"]
     },
-    "topo": {
-      "dependsOn": [
-        "//#build:config",
-        "//#lint",
-        "//#syncpack:list",
-        "build-config"
-      ],
-      "outputs": []
-    },
     "i18n": {
-      "dependsOn": ["topo", "build-config"],
+      "dependsOn": ["^build-config"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
