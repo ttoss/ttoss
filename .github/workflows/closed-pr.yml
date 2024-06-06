@@ -37,6 +37,7 @@ jobs:
       - name: Run closed-pr command
         run: sh -e ./.cicd/commands/closed-pr.sh
         env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
