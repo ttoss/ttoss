@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.7](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.24.6...@ttoss/eslint-config@1.24.7) (2024-06-10)
+
+**Note:** Version bump only for package @ttoss/eslint-config
+
 ## 1.24.6 (2024-06-06)
 
 ### Bug Fixes
