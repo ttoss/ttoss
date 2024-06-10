@@ -58,7 +58,6 @@ const config: Config = {
           'layouts',
           'logger',
           'monorepo',
-          // 'react-auth',
           'react-feature-flags',
           'react-hooks',
           'react-i18n',

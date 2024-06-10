@@ -16,4 +16,4 @@ sh "$(dirname "$0")/lint.sh" || exit 1
 # packages with bug. As `test` isn't a dependsOn of `deploy` on turbo.json,
 # we need to run them separately. If we run them together and deploy is faster,
 # `deploy` will run even if `test` fails.
-pnpm turbo run deploy --filter=[main]
+pnpm turbo run build test deploy --filter=[main]

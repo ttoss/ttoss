@@ -4,7 +4,7 @@
     "AWS_REGION",
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
-    "CARLIN_ENVIRONMENT",
+    "CARLIN_*",
     "ENVIRONMENT"
   ],
   "tasks": {
@@ -14,15 +14,13 @@
     },
     "//#lint": {
       "dependsOn": ["//#build:config"],
-      "cache": false
+      "inputs": []
     },
     "//#syncpack:list": {
-      "dependsOn": [],
-      "outputs": []
+      "dependsOn": []
     },
     "topo": {
-      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"],
-      "outputs": []
+      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"]
     },
     "build-config": {
       "dependsOn": ["//#build:config"],
@@ -47,15 +45,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": [
-        "topo",
-        "i18n",
-        "build",
-        "test",
-        "carlin#build",
-        "carlin#test",
-        "^deploy"
-      ],
+      "dependsOn": ["topo", "i18n", "build", "carlin#build", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }

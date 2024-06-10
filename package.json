@@ -18,7 +18,7 @@
   "scripts": {
     "build:config": "pnpm --filter @ttoss/config run build:config",
     "preinstall": "npx only-allow pnpm",
-    "lint": "lint-staged --diff main --quiet --no-stash",
+    "lint": "lint-staged --diff main --quiet --no-stash --allow-empty",
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
     "storybook": "pnpm --filter @docs/storybook run storybook",
