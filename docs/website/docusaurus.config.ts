@@ -23,6 +23,7 @@ const config: Config = {
   organizationName: 'ttoss', // Usually your GitHub org/user name.
   projectName: 'ttoss', // Usually your repo name.
 
+  onBrokenAnchors: 'throw',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
 
@@ -44,6 +45,7 @@ const config: Config = {
       ? []
       : [
           'appsync-api',
+          'auth-core',
           'aws-appsync-nodejs',
           'cloud-auth',
           'components',
@@ -56,11 +58,14 @@ const config: Config = {
           'layouts',
           'logger',
           'monorepo',
+          // 'react-auth',
           'react-feature-flags',
+          'react-hooks',
           'react-i18n',
           'react-icons',
           'react-notifications',
           'read-config-file',
+          'test-utils',
           'theme',
           'ui',
         ].map((pkg) => {
@@ -91,17 +96,13 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/ttoss/ttoss/tree/main/docs/website/docs/',
         },
         blog: {
           showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/ttoss/ttoss/tree/main/docs/website/blog/',
         },
         theme: {
           customCss: './src/css/custom.css',

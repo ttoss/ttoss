@@ -7,32 +7,8 @@ This package provides re-exports utilities for testing using [Jest](https://jest
 We suggest installing the package at the root of your project:
 
 ```sh
-yarn add -DW @ttoss/test-utils
+pnpm add -D @ttoss/test-utils
 ```
-
-## How to Configure Your Project
-
-You configure your project following the instructions in the [Jest](https://jestjs.io/) documentation. Add Jest to the root to your project:
-
-```sh
-yarn add -DW jest
-```
-
-If you're working with TypeScript, you'll also need to configure Babel to handle the transpilation of the ES6 code, TypeScript, and JSX.
-
-```sh
-yarn add --DW @ttoss/config
-```
-
-Add `babel.config.js` (`touch babel.config.js`) on the package folder:
-
-```js title="babel.config.js"
-const { babelConfig } = require('@ttoss/config');
-
-module.exports = babelConfig();
-```
-
-You can read more about [`@ttoss/config` here](/docs/core/config#babel).
 
 ## Using the Package
 
