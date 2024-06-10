@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.50.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.3...@docs/website@1.50.4) (2024-06-10)
+
+### Bug Fixes
+
+- turbo config ([6217569](https://github.com/ttoss/ttoss/commit/6217569eb54518a74f6fa48bc0982fd0484d671b))
+
 ## [1.50.3](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.2...@docs/website@1.50.3) (2024-06-10)
 
 **Note:** Version bump only for package @docs/website
