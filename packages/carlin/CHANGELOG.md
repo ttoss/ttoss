@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.3](https://github.com/ttoss/ttoss/compare/carlin@1.36.2...carlin@1.36.3) (2024-06-28)
+
+### Bug Fixes
+
+- use babel coverage jest ([#562](https://github.com/ttoss/ttoss/issues/562)) ([62ff991](https://github.com/ttoss/ttoss/commit/62ff99192f072e19b8cae12729a882581f106042))
+
 ## [1.36.2](https://github.com/ttoss/ttoss/compare/carlin@1.36.1...carlin@1.36.2) (2024-06-06)
 
 ### Bug Fixes
