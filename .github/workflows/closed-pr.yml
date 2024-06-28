@@ -17,7 +17,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Checkout
         uses: actions/checkout@v4
-        with: {}
+        with:
+          fetch-depth: 1
+      - name: Fetch and merge most recent main
+        run: |-
+          git fetch origin main:main
+          git merge main --ff-only --no-edit
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
