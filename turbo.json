@@ -1,12 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": [
-    "AWS_REGION",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "CARLIN_*",
-    "ENVIRONMENT"
-  ],
+  "globalEnv": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
   "tasks": {
     "//#build:config": {
       "dependsOn": [],

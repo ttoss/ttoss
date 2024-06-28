@@ -1,6 +1,6 @@
-import { NotificationsProvider } from '../../src/Provider';
+import { NotificationsProvider } from 'src/Provider';
 import { act, render, renderHook, screen, userEvent } from '@ttoss/test-utils';
-import { useNotifications } from '../../src';
+import { useNotifications } from 'src/index';
 
 test('should set loading', () => {
   const { result } = renderHook(
@@ -49,7 +49,7 @@ test('should render progress bar', async () => {
 
   render(<Component />, { wrapper: NotificationsProvider });
 
-  expect(screen.queryByRole('progressbar')).toBeNull();
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
   await act(async () => {
     await user.click(await screen.findByText('click'));
