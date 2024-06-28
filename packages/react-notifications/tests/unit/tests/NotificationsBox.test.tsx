@@ -1,5 +1,5 @@
-import { NotificationsBox, useNotifications } from '../../src';
-import { NotificationsProvider, type NotifyParams } from '../../src/Provider';
+import { NotificationsBox, useNotifications } from 'src/index';
+import { NotificationsProvider, type NotifyParams } from 'src/Provider';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const NOTIFICATION_MESSAGE = 'notification message test';

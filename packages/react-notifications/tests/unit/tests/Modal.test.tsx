@@ -5,16 +5,14 @@ import {
   NotificationsProvider,
   NotifyParams,
   useNotifications,
-} from '../../src';
-import { act, render, screen, userEvent } from '@ttoss/test-utils';
+} from 'src/index';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const expectNotBeInDocument = (element: HTMLElement) => {
   expect(() => {
     expect(element).toBeInTheDocument();
   }).toThrow();
 };
-
-jest.setTimeout(10000);
 
 describe('Modal Notifications Test', () => {
   const user = userEvent.setup({ delay: null });
@@ -50,18 +48,14 @@ describe('Modal Notifications Test', () => {
       </NotificationsProvider>
     );
 
-    await act(async () => {
-      await user.click(await screen.findByText('Click me!!'));
-    });
+    await user.click(await screen.findByText('Click me!!'));
 
     const notification = await screen.findByText('Test Message');
 
     expect(notification).toBeInTheDocument();
 
     // expect to disappear after click
-    await act(async () => {
-      await user.click(notification);
-    });
+    await user.click(notification);
 
     expectNotBeInDocument(notification);
   });
@@ -75,9 +69,7 @@ describe('Modal Notifications Test', () => {
       </NotificationsProvider>
     );
 
-    await act(async () => {
-      await user.click(await screen.findByText('Click me!!'));
-    });
+    await user.click(await screen.findByText('Click me!!'));
 
     const buttons = await screen.findAllByTestId('iconify-icon');
 
@@ -94,12 +86,12 @@ describe('Modal Notifications Test', () => {
     expect(notification).toBeInTheDocument();
 
     // expect to disappear after click
-    await act(async () => {
-      if (modalClose) {
-        await user.click(modalClose);
-      }
-    });
+    if (modalClose) {
+      await user.click(modalClose);
+    }
+
     expectNotBeInDocument(notification);
+
     if (modalClose) {
       expectNotBeInDocument(modalClose);
     }
@@ -118,9 +110,7 @@ describe('Modal Notifications Test', () => {
       </NotificationsProvider>
     );
 
-    await act(async () => {
-      await user.click(await screen.findByText('Click me!!'));
-    });
+    await user.click(await screen.findByText('Click me!!'));
 
     const messages = await Promise.all([
       screen.findByText('Test 1'),
@@ -132,21 +122,15 @@ describe('Modal Notifications Test', () => {
       expect(message).toBeInTheDocument();
     });
 
-    await act(async () => {
-      await user.click(messages[0]);
-    });
+    await user.click(messages[0]);
 
     expectNotBeInDocument(messages[0]);
 
-    await act(async () => {
-      await user.click(messages[1]);
-    });
+    await user.click(messages[1]);
 
     expectNotBeInDocument(messages[1]);
 
-    await act(async () => {
-      await user.click(messages[2]);
-    });
+    await user.click(messages[2]);
 
     expectNotBeInDocument(messages[2]);
   });

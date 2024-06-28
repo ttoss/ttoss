@@ -9,12 +9,13 @@ export const defaultConfig: Config = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageProvider: 'v8',
+  coverageProvider: 'babel',
   /**
    * https://github.com/jestjs/jest/issues/13739#issuecomment-1517190965
    */
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   fakeTimers: {
+    advanceTimers: true,
     enableGlobally: true,
   },
   moduleNameMapper: {
@@ -39,8 +40,10 @@ export const jestRootConfig = configCreator({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const jestE2EConfig = configCreator<any>({
   ...defaultConfig,
+  collectCoverage: false,
   displayName: 'E2E Tests',
   moduleNameMapper: {
+    ...defaultConfig.moduleNameMapper,
     'src/(.*)': '<rootDir>/../../src/$1',
     'tests/(.*)': '<rootDir>/../$1',
   },
@@ -51,7 +54,13 @@ export const jestE2EConfig = configCreator<any>({
 export const jestUnitConfig = configCreator<any>({
   ...defaultConfig,
   displayName: 'Unit Tests',
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/../../src/**/*.{ts,tsx,js,jsx}',
+    '!<rootDir>/../../src/**/*.d.ts',
+  ],
   moduleNameMapper: {
+    ...defaultConfig.moduleNameMapper,
     'src/(.*)': '<rootDir>/../../src/$1',
     'tests/(.*)': '<rootDir>/../$1',
   },
