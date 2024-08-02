@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.51.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.5...@docs/website@1.51.0) (2024-08-02)
+
+### Features
+
+- create cloud vpc ([#565](https://github.com/ttoss/ttoss/issues/565)) ([612619c](https://github.com/ttoss/ttoss/commit/612619cfd28fdae2e63013c91f919a392d7ffa3a))
+
 ## [1.50.5](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.4...@docs/website@1.50.5) (2024-06-28)
 
 **Note:** Version bump only for package @docs/website

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.6.6...@ttoss/graphql-api@0.7.0) (2024-08-02)
+
+### Features
+
+- create cloud vpc ([#565](https://github.com/ttoss/ttoss/issues/565)) ([612619c](https://github.com/ttoss/ttoss/commit/612619cfd28fdae2e63013c91f919a392d7ffa3a))
+
 ## [0.6.6](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.6.5...@ttoss/graphql-api@0.6.6) (2024-06-28)
 
 **Note:** Version bump only for package @ttoss/graphql-api
