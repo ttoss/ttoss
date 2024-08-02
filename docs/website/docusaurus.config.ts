@@ -48,6 +48,7 @@ const config: Config = {
           'auth-core',
           'aws-appsync-nodejs',
           'cloud-auth',
+          'cloud-vpc',
           'components',
           'config',
           'forms',

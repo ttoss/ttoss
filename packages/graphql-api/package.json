@@ -23,7 +23,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsup",
+    "build-config": "tsup-node",
     "test": "jest"
   },
   "sideEffects": false,
