@@ -40,12 +40,12 @@ export const query = async <Rows extends QueryResultRow = any>(
       FunctionName: lambdaPostgresQueryFunction,
       Payload: JSON.stringify({ readOnly, ...pgParams }),
     };
-    console.error('No payload returned from lambda query', { input });
-    throw new Error('No payload returned from lambda query');
 
     const { Payload } = await lambdaClient.send(new InvokeCommand(input));
 
     if (!Payload) {
+      // eslint-disable-next-line no-console
+      console.error('No payload returned from lambda query', { input });
       throw new Error('No payload returned from lambda query');
     }
 

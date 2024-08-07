@@ -31,9 +31,8 @@ export const handler: Handler<QueryParams> = async (event) => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error running query', {
-      error: error.message,
-      stack: error.stack,
-      event
+      error,
+      event,
     });
     throw error;
   }
