@@ -25,16 +25,16 @@ export const query = async <Rows extends QueryResultRow = any>(
   params: QueryParams | string
 ) => {
   try {
-    const { readOnly, lambdaPostgresQueryFunction, ...pgParams } =
-      typeof params === 'string'
-        ? {
-            text: params,
-            readOnly: true,
-            lambdaPostgresQueryFunction:
-              // eslint-disable-next-line turbo/no-undeclared-env-vars
-              process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
-          }
-        : params;
+    const {
+      readOnly = true,
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      lambdaPostgresQueryFunction = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
+      ...pgParams
+    } = typeof params === 'string'
+      ? {
+          text: params,
+        }
+      : params;
 
     const input: InvokeCommandInput = {
       FunctionName: lambdaPostgresQueryFunction,
