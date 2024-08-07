@@ -1,7 +1,7 @@
-import { createLambdaQueryTemplate } from 'src/cloudformation';
+import { createLambdaPostgresQueryTemplate } from 'src/cloudformation';
 
 test('should create lambda query template', () => {
-  const template = createLambdaQueryTemplate();
+  const template = createLambdaPostgresQueryTemplate();
   expect(template).toEqual({
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'A Lambda function to query PostgreSQL.',
@@ -125,6 +125,20 @@ test('should create lambda query template', () => {
               Ref: 'SubnetIds',
             },
           },
+        },
+      },
+    },
+    Outputs: {
+      LambdaPostgresQueryFunction: {
+        Description: 'Lambda function to query PostgreSQL.',
+        Value: {
+          Ref: 'LambdaQueryFunction',
+        },
+      },
+      LambdaPostgresQueryFunctionArn: {
+        Description: 'Lambda function to query PostgreSQL ARN.',
+        Value: {
+          'Fn::GetAtt': ['LambdaQueryFunction', 'Arn'],
         },
       },
     },
