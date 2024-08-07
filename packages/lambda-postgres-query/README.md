@@ -1,6 +1,6 @@
 # @ttoss/lambda-postgres-query
 
-This package create an AWS Lambda function that can query a RDS Postgres database inside a private subnet of a VPC.
+This package creates an AWS Lambda function that can query an RDS Postgres database inside a private subnet of a VPC.
 
 The goal of this package is to provide a way to query a Postgres database from a Lambda function without exposing the database to the internet. If your project needs to query a Postgres database and access to the internet, you can follow two approaches:
 
