@@ -25,7 +25,11 @@ pnpm install @ttoss/lambda-postgres-query
 Create a `src/cloudformation.ts` file with the following content:
 
 ```typescript
-import { createLambdaQueryTemplate } from '@ttoss/lambda-postgres-query';
+import { createLambdaQueryTemplate } from '@ttoss/lambda-postgres-query/cloudformation';
+
+const template = createLambdaQueryTemplate();
+
+export default template;
 ```
 
 Create a `src/handler.ts` file with the following content:
@@ -62,6 +66,8 @@ Add the `deploy` script to the `package.json` file:
 ```bash
 pnpm deploy
 ```
+
+_**Note:** When deploying using carlin, you need to set `lambdaFormat: 'cjs'` because `pg` package doesn't support ESM format._
 
 It'll create the necessary resources to query the Postgres database and display the name of the Lambda function created.
 
