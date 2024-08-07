@@ -25,9 +25,9 @@ pnpm install @ttoss/lambda-postgres-query
 Create a `src/cloudformation.ts` file with the following content:
 
 ```typescript
-import { createLambdaQueryTemplate } from '@ttoss/lambda-postgres-query/cloudformation';
+import { createLambdaPostgresQueryTemplate } from '@ttoss/lambda-postgres-query/cloudformation';
 
-const template = createLambdaQueryTemplate();
+const template = createLambdaPostgresQueryTemplate();
 
 export default template;
 ```

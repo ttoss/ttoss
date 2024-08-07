@@ -8,7 +8,7 @@ export const MEMORY_SIZE_DEFAULT = 128;
 
 export const TIMEOUT_DEFAULT = 30;
 
-export const createLambdaQueryTemplate = ({
+export const createLambdaPostgresQueryTemplate = ({
   handler = HANDLER_DEFAULT,
   memorySize = 128,
   timeout = 30,
@@ -117,6 +117,16 @@ export const createLambdaQueryTemplate = ({
             SubnetIds: { Ref: 'SubnetIds' },
           },
         },
+      },
+    },
+    Outputs: {
+      LambdaPostgresQueryFunction: {
+        Description: 'Lambda function to query PostgreSQL.',
+        Value: { Ref: 'LambdaQueryFunction' },
+      },
+      LambdaPostgresQueryFunctionArn: {
+        Description: 'Lambda function to query PostgreSQL ARN.',
+        Value: { 'Fn::GetAtt': ['LambdaQueryFunction', 'Arn'] },
       },
     },
   };
