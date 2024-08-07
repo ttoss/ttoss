@@ -1,5 +1,7 @@
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
+export type { CloudFormationTemplate };
+
 export const HANDLER_DEFAULT = 'handler.handler';
 
 export const MEMORY_SIZE_DEFAULT = 128;

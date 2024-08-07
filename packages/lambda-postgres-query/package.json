@@ -53,7 +53,7 @@
       "./cloudformation": {
         "import": "./dist/esm/cloudformation.js",
         "require": "./dist/cloudformation.js",
-        "types": "./dist/cloudformation.d.ts"
+        "types": "./dist/cloudformation/index.d.ts"
       }
     },
     "provenance": true
