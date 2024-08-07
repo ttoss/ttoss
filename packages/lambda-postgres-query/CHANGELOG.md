@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.2...@ttoss/lambda-postgres-query@0.2.3) (2024-08-07)
+
+### Bug Fixes
+
+- exports ([34ccf28](https://github.com/ttoss/ttoss/commit/34ccf2807b676c017eb9431047e50857a316e7b5))
+
 ## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.1...@ttoss/lambda-postgres-query@0.2.2) (2024-08-07)
 
 ### Bug Fixes
