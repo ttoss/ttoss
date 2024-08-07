@@ -1,5 +1,5 @@
 {
-  "name": "@ttoss/lambda-query",
+  "name": "@ttoss/lambda-postgres-query",
   "version": "0.1.0",
   "description": "Create a Lambda function that queries a PostgreSQL database.",
   "author": "ttoss",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/lambda-query"
+    "directory": "packages/lambda-postgres-query"
   },
   "type": "module",
   "exports": {
