@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.1...@ttoss/lambda-postgres-query@0.2.2) (2024-08-07)
+
+### Bug Fixes
+
+- src/cloudformation/createLambdaQueryTemplate.ts types ([6213289](https://github.com/ttoss/ttoss/commit/6213289655bb9caba34d53c4e9849f30ef2d50af))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.0...@ttoss/lambda-postgres-query@0.2.1) (2024-08-07)
 
 ### Bug Fixes
