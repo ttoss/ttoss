@@ -94,5 +94,5 @@ This function queries the Postgres database using the environment variables prov
 
 It accepts all the [`QueryConfig` object from the `pg` package](https://node-postgres.com/apis/client#queryconfig) with the following additional properties:
 
-- `readOnly`: A boolean that indicates if the query should be executed on the read-only database, in the case you provided the `DATABASE_HOST_READ_ONLY` value. Default is `true`.
+- `readOnly`: A boolean that indicates if the query should be executed on the read-only database, in case you provided the `DATABASE_HOST_READ_ONLY` value. Default is `true`.
 - `lambdaPostgresQueryFunction`: The name of the Lambda function that queries the database. Default is the value of the `LAMBDA_POSTGRES_QUERY_FUNCTION` environment variable.
