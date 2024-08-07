@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.3...@ttoss/lambda-postgres-query@0.2.4) (2024-08-07)
+
+### Bug Fixes
+
+- cloudformation ([#568](https://github.com/ttoss/ttoss/issues/568)) ([fcb0101](https://github.com/ttoss/ttoss/commit/fcb0101e96f8a319cb2925e29e07727aebd77419))
+
 ## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.2...@ttoss/lambda-postgres-query@0.2.3) (2024-08-07)
 
 ### Bug Fixes
