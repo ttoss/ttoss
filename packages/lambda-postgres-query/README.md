@@ -43,6 +43,8 @@ DATABASE_PASSWORD=
 DATABASE_HOST=
 DATABASE_HOST_READ_ONLY=
 DATABASE_PORT=
+SECURITY_GROUP_IDS=
+SUBNET_IDS=
 ```
 
 Add the `deploy` script to the `package.json` file:

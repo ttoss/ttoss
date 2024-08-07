@@ -1,21 +1,8 @@
-import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import { createLambdaQueryTemplate } from 'src/cloudformation';
 
-export const HANDLER_DEFAULT = 'handler.handler';
-
-export const MEMORY_SIZE_DEFAULT = 128;
-
-export const TIMEOUT_DEFAULT = 30;
-
-export const createLambdaQueryTemplate = ({
-  handler = HANDLER_DEFAULT,
-  memorySize = 128,
-  timeout = 30,
-}: {
-  handler?: string;
-  memorySize?: number;
-  timeout?: number;
-} = {}): CloudFormationTemplate => {
-  return {
+test('should create lambda query template', () => {
+  const template = createLambdaQueryTemplate();
+  expect(template).toEqual({
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'A Lambda function to query PostgreSQL.',
     Parameters: {
@@ -91,31 +78,55 @@ export const createLambdaQueryTemplate = ({
         Type: 'AWS::Lambda::Function',
         Properties: {
           Code: {
-            S3Bucket: { Ref: 'LambdaS3Bucket' },
-            S3Key: { Ref: 'LambdaS3Key' },
-            S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
+            S3Bucket: {
+              Ref: 'LambdaS3Bucket',
+            },
+            S3Key: {
+              Ref: 'LambdaS3Key',
+            },
+            S3ObjectVersion: {
+              Ref: 'LambdaS3ObjectVersion',
+            },
           },
-          MemorySize: memorySize,
-          Timeout: timeout,
-          Handler: handler,
-          Role: { 'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'] },
+          MemorySize: 128,
+          Timeout: 30,
+          Handler: 'handler.handler',
+          Role: {
+            'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'],
+          },
           Runtime: 'nodejs20.x',
           Environment: {
             Variables: {
-              DATABASE_HOST: { Ref: 'DatabaseHost' },
-              DATABASE_HOST_READ_ONLY: { Ref: 'DatabaseHostReadOnly' },
-              DATABASE_NAME: { Ref: 'DatabaseName' },
-              DATABASE_USERNAME: { Ref: 'DatabaseUsername' },
-              DATABASE_PASSWORD: { Ref: 'DatabasePassword' },
-              DATABASE_PORT: { Ref: 'DatabasePort' },
+              DATABASE_HOST: {
+                Ref: 'DatabaseHost',
+              },
+              DATABASE_HOST_READ_ONLY: {
+                Ref: 'DatabaseHostReadOnly',
+              },
+              DATABASE_NAME: {
+                Ref: 'DatabaseName',
+              },
+              DATABASE_USERNAME: {
+                Ref: 'DatabaseUsername',
+              },
+              DATABASE_PASSWORD: {
+                Ref: 'DatabasePassword',
+              },
+              DATABASE_PORT: {
+                Ref: 'DatabasePort',
+              },
             },
           },
           VpcConfig: {
-            SecurityGroupIds: { Ref: 'SecurityGroupIds' },
-            SubnetIds: { Ref: 'SubnetIds' },
+            SecurityGroupIds: {
+              Ref: 'SecurityGroupIds',
+            },
+            SubnetIds: {
+              Ref: 'SubnetIds',
+            },
           },
         },
       },
     },
-  };
-};
+  });
+});
