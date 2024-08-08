@@ -1,5 +1,7 @@
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
+export type { CloudFormationTemplate };
+
 const NUMBER_OF_AVAILABILITY_ZONES = 3;
 
 const PUBLIC_ROUTER_TABLE_LOGICAL_ID = 'PublicRouteTable';
