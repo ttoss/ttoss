@@ -63,7 +63,8 @@ export const query = async <Rows extends QueryResultRow = any>(
       rows: result.rows.map((row) => {
         return {
           ...row,
-          ...camelcaseKeys(row, { deep: true }),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ...(camelcaseKeys(row, { deep: true }) as any),
         };
       }),
     };
