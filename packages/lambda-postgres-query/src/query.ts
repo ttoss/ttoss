@@ -3,6 +3,7 @@ import {
   type InvokeCommandInput,
   LambdaClient,
 } from '@aws-sdk/client-lambda';
+import camelcaseKeys from 'camelcase-keys';
 import type { QueryConfig, QueryResult, QueryResultRow } from 'pg';
 
 const lambdaClient = new LambdaClient();
@@ -57,7 +58,16 @@ export const query = async <Rows extends QueryResultRow = any>(
       throw result;
     }
 
-    return result;
+    return {
+      ...result,
+      rows: result.rows.map((row) => {
+        return {
+          ...row,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ...(camelcaseKeys(row, { deep: true }) as any),
+        };
+      }),
+    };
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error invoking Lambda: ', error);
