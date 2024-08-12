@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.6...@ttoss/lambda-postgres-query@0.2.7) (2024-08-12)
+
+### Bug Fixes
+
+- Camelcase pg return ([#571](https://github.com/ttoss/ttoss/issues/571)) ([32dd38e](https://github.com/ttoss/ttoss/commit/32dd38eccf0597227f569a22c7183e6ffc56138d))
+
 ## [0.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.5...@ttoss/lambda-postgres-query@0.2.6) (2024-08-12)
 
 ### Bug Fixes
