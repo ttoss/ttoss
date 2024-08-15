@@ -8,18 +8,29 @@ export interface CheckboxProps extends CheckboxPropsUi {
   indeterminate?: boolean;
 }
 
-export const Checkbox = ({ indeterminate = false, ...rest }: CheckboxProps) => {
-  const ref = React.useRef<HTMLInputElement>(null);
+export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+  ({ indeterminate = false, ...rest }, ref) => {
+    const innerRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
-    if (ref.current) {
-      ref.current.indeterminate = indeterminate;
+    /**
+     * https://stackoverflow.com/a/68163315/8786986
+     */
+    React.useImperativeHandle(ref, () => {
+      return innerRef.current as HTMLInputElement;
+    });
+
+    React.useEffect(() => {
+      if (innerRef.current) {
+        innerRef.current.indeterminate = indeterminate;
+      }
+    }, [indeterminate]);
+
+    if (indeterminate) {
+      return <input type="checkbox" ref={innerRef} {...rest} />;
     }
-  }, [indeterminate]);
 
-  if (indeterminate) {
-    return <input type="checkbox" ref={ref} {...rest} />;
+    return <CheckBoxUi ref={innerRef} {...rest} />;
   }
+);
 
-  return <CheckBoxUi ref={ref} {...rest} />;
-};
+Checkbox.displayName = 'Checkbox';
