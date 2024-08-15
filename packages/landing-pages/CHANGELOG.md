@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.11.14 (2024-08-15)
+
+### Bug Fixes
+
+- change package name ([223ac3c](https://github.com/ttoss/ttoss/commit/223ac3cebe0c047e9a91e464de2151fc06187eee))
+
 ## [0.11.13](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.11.12...@ttoss/landing-pages@0.11.13) (2024-06-28)
 
 **Note:** Version bump only for package @ttoss/landing-pages

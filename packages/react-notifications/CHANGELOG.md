@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.24.44 (2024-08-15)
+
+### Bug Fixes
+
+- change package name ([223ac3c](https://github.com/ttoss/ttoss/commit/223ac3cebe0c047e9a91e464de2151fc06187eee))
+
 ## [1.24.43](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.42...@ttoss/react-notifications@1.24.43) (2024-06-28)
 
 ### Bug Fixes

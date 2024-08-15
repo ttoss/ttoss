@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.51.1 (2024-08-15)
+
+### Bug Fixes
+
+- change package name ([223ac3c](https://github.com/ttoss/ttoss/commit/223ac3cebe0c047e9a91e464de2151fc06187eee))
+
 # [1.51.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.50.5...@docs/website@1.51.0) (2024-08-02)
 
 ### Features

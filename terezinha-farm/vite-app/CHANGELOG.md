@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.9.55 (2024-08-15)
+
+### Bug Fixes
+
+- change package name ([223ac3c](https://github.com/ttoss/ttoss/commit/223ac3cebe0c047e9a91e464de2151fc06187eee))
+
 ## [0.9.54](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.53...@terezinha-farm/vite-app@0.9.54) (2024-08-02)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app
