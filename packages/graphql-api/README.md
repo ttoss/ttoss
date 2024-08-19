@@ -14,7 +14,7 @@ This package provides an opinionated way to create an GraphQL API using ttoss ec
 pnpm add @ttoss/graphql-api graphql
 ```
 
-## Quickstart
+## Usage
 
 This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-export all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
 
@@ -49,6 +49,8 @@ This library uses the `tsconfig.json` file from the target package it is being a
 
 ### Resolvers
 
+TODO
+
 ### Integrate All Modules
 
 Once you've created all your types and resolvers, you can integrate all the modules to create the GraphQL schema.
@@ -73,7 +75,7 @@ Method `composeWithRelay` will handle the object identification for your `Object
 
 Method `composeWithRelay` only works if `ObjectTypeComposer` meets the following requirements:
 
-1. Has defined `recordIdFn`: returns the id for the globalId construction. For example, if you use DynamoDB, you could create id from hash and range keys:
+1. Has defined [`recordIdFn`](https://ttoss.dev/blog/2024/01/12/working-with-different-ids-through-the-application#record-id): returns the id for the [`globalId`](/blog/2024/01/12/working-with-different-ids-through-the-application#global-id) construction. For example, if you use DynamoDB, you could create id from hash and range keys:
 
    ```ts
    UserTC.setRecordIdFn((source) => {
@@ -81,7 +83,7 @@ Method `composeWithRelay` only works if `ObjectTypeComposer` meets the following
    });
    ```
 
-2. Have `findById` resolver: this resolver will be used by `RootQuery.node` to resolve the object by globalId. For example:
+1. Have `findById` resolver: this resolver will be used by `RootQuery.node` to resolve the object by [`globalId`](/blog/2024/01/12/working-with-different-ids-through-the-application#global-id). Also, add the `__typename` field is required by Relay to know the type of the object to the `node` field works. For example:
 
    ```ts
    UserTC.addResolver({
@@ -95,6 +97,12 @@ Method `composeWithRelay` only works if `ObjectTypeComposer` meets the following
        // find object
      },
    });
+   ```
+
+1. Call `composeWithRelay` method: this will add the `id` field and the `node` query. For example:
+
+   ```ts
+   composeWithRelay(UserTC);
    ```
 
 #### Example
@@ -134,9 +142,13 @@ UserTC.addResolver({
   args: {
     id: 'String!',
   },
-  resolve: ({ args }) => {
+  resolve: async ({ args }) => {
     const { type, recordId } = fromGlobalId(args.id);
-    // find object
+    const user = await query({ id: recordId });
+    return {
+      ...user,
+      __typename: UserTC.getTypeName(), // or 'User';
+    };
   },
 });
 
