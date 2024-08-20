@@ -36,8 +36,8 @@ export const defaultConfig: any = {
     {
       label: 'Use workspace protocol when developing local packages',
       dependencies: ['$LOCAL'],
-      dependencyTypes: ['dev', 'prod'],
-      pinVersion: 'workspace:*',
+      dependencyTypes: ['!local', 'prod', 'dev'],
+      pinVersion: 'workspace:^',
     },
   ],
 };

@@ -21,10 +21,5 @@ module.exports = {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
-    /**
-     * On 2024-08-20, updating syncpack causes the following error:
-     * lerna-lite ERR! ✘ @ttoss/components workspace:^ → ^1.31.14 docs/storybook/package.json > dependencies [HighestSemverMismatch]
-     */
-    'syncpack',
   ],
 };
