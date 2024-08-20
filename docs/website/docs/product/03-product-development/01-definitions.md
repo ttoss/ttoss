@@ -76,7 +76,7 @@ To calculate opportunity cost, follow these steps:
 
 ### Formula
 
-$ \text{Opportunity Cost} = \text{Value of Next Best Alternative} - \text{Value of Chosen Option} $
+$ \text\{Opportunity Cost\} = \text\{Value of Next Best Alternative\} - \text\{Value of Chosen Option\} $
 
 ### Examples
 
