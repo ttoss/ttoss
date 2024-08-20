@@ -3,6 +3,7 @@ import { configCreator } from './configCreator';
 /**
  * https://jamiemason.github.io/syncpack/config-file
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const defaultConfig: any = {
   dependencyTypes: [
     'dev',
@@ -31,7 +32,14 @@ export const defaultConfig: any = {
     'scripts',
   ],
   sortFirst: ['name', 'version', 'description', 'author'],
-  versionGroups: [],
+  versionGroups: [
+    {
+      label: 'use workspace protocol for local packages',
+      dependencies: ['$LOCAL'],
+      dependencyTypes: ['!local'],
+      pinVersion: 'workspace:^',
+    },
+  ],
 };
 
 export const syncpackConfig = configCreator(defaultConfig);
