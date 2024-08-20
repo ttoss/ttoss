@@ -21,5 +21,6 @@ module.exports = {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
+    '@types/node',
   ],
 };
