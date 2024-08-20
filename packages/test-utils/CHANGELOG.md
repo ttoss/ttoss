@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.12](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.11...@ttoss/test-utils@2.1.12) (2024-08-20)
+
+### Bug Fixes
+
+- types node ([#577](https://github.com/ttoss/ttoss/issues/577)) ([582ca6c](https://github.com/ttoss/ttoss/commit/582ca6cd01f169e612b19a9dec41da0e7d3c5417))
+
 ## 2.1.11 (2024-08-20)
 
 **Note:** Version bump only for package @ttoss/test-utils

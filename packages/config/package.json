@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/config",
-  "version": "1.32.7",
+  "version": "1.32.8",
   "description": "Default configuration for packages.",
   "author": "ttoss",
   "contributors": [

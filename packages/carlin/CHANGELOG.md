@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.5](https://github.com/ttoss/ttoss/compare/carlin@1.36.4...carlin@1.36.5) (2024-08-20)
+
+### Bug Fixes
+
+- types node ([#577](https://github.com/ttoss/ttoss/issues/577)) ([582ca6c](https://github.com/ttoss/ttoss/commit/582ca6cd01f169e612b19a9dec41da0e7d3c5417))
+
 ## 1.36.4 (2024-08-20)
 
 **Note:** Version bump only for package carlin
