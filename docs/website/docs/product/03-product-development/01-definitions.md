@@ -1,5 +1,7 @@
 ---
 title: Definitions
+toc_min_heading_level: 2
+toc_max_heading_level: 2
 ---
 
 Some definitions for product development.
@@ -58,6 +60,26 @@ Imagine a technology company is developing a new software product with two poten
 
 If the company prioritizes immediate revenue and lower risk, **Feature B** might be the better choice despite the lower potential revenue. However, if the company can afford the delay and is focused on maximizing long-term revenue, **Feature A** might be more beneficial despite its higher cost of delay.
 
+## Cycle Time
+
+Cycle time is the amount of time it takes to complete one cycle of a process from start to finish. In the context of software development or manufacturing, cycle time refers to the time it takes to produce a single unit or complete a single task, from the moment work begins until the task is finished and ready for delivery.
+
+### Key Aspects of Cycle Time
+
+1. **Start to Finish**: It includes the entire process, from the initiation of a task or production step to its completion.
+
+1. **Unit of Work**: In software development, a "unit of work" could be a user story, a feature, or even a bug fix. In manufacturing, it could be a single product or part.
+
+1. **Efficiency Indicator**: Shorter cycle times typically indicate more efficient processes, as tasks are being completed quickly. However, overly short cycle times can also indicate rushed or low-quality work.
+
+1. **Continuous Improvement**: Understanding and optimizing cycle time is key for improving processes, reducing waste, and increasing throughput.
+
+### Example in Software Development
+
+If a development team starts working on a new feature on Monday and completes it on Friday, the cycle time for that feature would be 5 days. The goal is often to reduce cycle time without compromising quality, allowing the team to deliver features faster and respond more quickly to market needs.
+
+In agile methodologies, cycle time is closely monitored to ensure that the team is working efficiently and can quickly adjust to changing requirements.
+
 ## Opportunity cost
 
 Opportunity cost is the value of the next best alternative that you give up when making a decision. It's what you sacrifice in order to pursue a particular course of action.
@@ -76,7 +98,9 @@ To calculate opportunity cost, follow these steps:
 
 ### Formula
 
-$ \text\{Opportunity Cost\} = \text\{Value of Next Best Alternative\} - \text\{Value of Chosen Option\} $
+$$
+\text{Opportunity Cost} = \text{Value of Next Best Alternative} - \text{Value of Chosen Option}
+$$
 
 ### Examples
 

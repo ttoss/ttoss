@@ -271,6 +271,12 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      rehype-katex:
+        specifier: '7'
+        version: 7.0.1
+      remark-math:
+        specifier: '6'
+        version: 6.0.0
     devDependencies:
       '@docusaurus/tsconfig':
         specifier: ^3.5.2
@@ -618,7 +624,7 @@ importers:
         version: 8.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@theme-ui/css':
         specifier: ^0.16.2
-        version: 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+        version: 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1495,7 +1501,7 @@ importers:
         version: 29.7.0(@types/node@22.4.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.4.1)(typescript@5.4.5))
       theme-ui:
         specifier: ^0.16.2
-        version: 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
+        version: 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
       tsup:
         specifier: ^8.2.4
         version: 8.2.4(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.4.5)(yaml@2.5.0)
@@ -1513,7 +1519,7 @@ importers:
         version: 5.8.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       theme-ui:
         specifier: ^0.16.2
-        version: 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
+        version: 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@emotion/react':
         specifier: ^11.11.4
@@ -5180,6 +5186,9 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
+  '@types/katex@0.16.7':
+    resolution: {integrity: sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==}
+
   '@types/keygrip@1.0.6':
     resolution: {integrity: sha512-lZuNAY9xeJt7Bx4t4dx0rYCDqGPW8RXhQZK1td7d4H6E9zYbLoOtjBvfwdTKpsyxQI/2jv+armjX/RW+ZNpXOQ==}
 
@@ -8559,6 +8568,15 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  hast-util-from-dom@5.0.0:
+    resolution: {integrity: sha512-d6235voAp/XR3Hh5uy7aGLbM3S4KamdW0WEgOaU1YoewnuYw4HXb5eRtv9g65m/RFGEfUY1Mw4UqCc5Y8L4Stg==}
+
+  hast-util-from-html-isomorphic@2.0.0:
+    resolution: {integrity: sha512-zJfpXq44yff2hmE0XmwEOzdWin5xwH+QIhMLOScpX91e/NSGPsAzNCvLQDIEPyO2TXi+lBmU6hjLIhV8MwP2kw==}
+
+  hast-util-from-html@2.0.1:
+    resolution: {integrity: sha512-RXQBLMl9kjKVNkJTIO6bZyb2n+cUH8LFaSSzo82jiLT6Tfc+Pt7VQCS+/h3YwG4jaNE2TA2sdJisGWR+aJrp0g==}
+
   hast-util-from-parse5@8.0.1:
     resolution: {integrity: sha512-Er/Iixbc7IEa7r/XLtuG52zoqn/b3Xng/w6aZQ0xGVxzhw5xUFxcRqdPzP6yFi/4HBYRaifaI5fQ1RH8n0ZeOQ==}
 
@@ -8585,6 +8603,9 @@ packages:
 
   hast-util-to-string@3.0.0:
     resolution: {integrity: sha512-OGkAxX1Ua3cbcW6EJ5pT/tslVb90uViVkcJ4ZZIMW/R33DX/AkcJcRrPebPwJkHYwlDHXz4aIwvAAaAdtrACFA==}
+
+  hast-util-to-text@4.0.2:
+    resolution: {integrity: sha512-KK6y/BN8lbaq654j7JgBydev7wuNMcID54lkRav1P0CaE1e47P72AWWPiGKXTJU271ooYzcvTAn/Zt0REnvc7A==}
 
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
@@ -9858,6 +9879,9 @@ packages:
   mdast-util-gfm@3.0.0:
     resolution: {integrity: sha512-dgQEX5Amaq+DuUqf26jJqSK9qgixgd6rYDHAv4aTBuA92cTknZlKpPfa86Z/s8Dj8xsAQpFfBmPUHWJBWqS4Bw==}
 
+  mdast-util-math@3.0.0:
+    resolution: {integrity: sha512-Tl9GBNeG/AhJnQM221bJR2HPvLOSnLE/T9cJI9tlc6zwQk2nPk/4f0cHkOdEixQPC/j8UtKDdITswvLAy1OZ1w==}
+
   mdast-util-mdx-expression@2.0.0:
     resolution: {integrity: sha512-fGCu8eWdKUKNu5mohVGkhBXCXGnOTLuFqOvGMvdikr+J1w7lDJgxThOKpwRWzzbyXAU2hhSwsmssOY4yTokluw==}
 
@@ -9966,6 +9990,9 @@ packages:
 
   micromark-extension-gfm@3.0.0:
     resolution: {integrity: sha512-vsKArQsicm7t0z2GugkCKtZehqUm31oeGBV/KVSorWSy8ZlNAv7ytjFhvaryUiCUJYqs+NoE6AFhpQvBTM6Q4w==}
+
+  micromark-extension-math@3.1.0:
+    resolution: {integrity: sha512-lvEqd+fHjATVs+2v/8kg9i5Q0AP2k85H0WUOwpIVvUML8BapsMvh1XAogmQjOCsLpoKRCVQqEkQBB3NhVBcsOg==}
 
   micromark-extension-mdx-expression@3.0.0:
     resolution: {integrity: sha512-sI0nwhUDz97xyzqJAbHQhp5TfaxEvZZZ2JDqUo+7NvyIYG6BZ5CPPqj2ogUoPJlmXHBnyZUzISg9+oUmU6tUjQ==}
@@ -11693,6 +11720,9 @@ packages:
   rehype-external-links@3.0.0:
     resolution: {integrity: sha512-yp+e5N9V3C6bwBeAC4n796kc86M4gJCdlVhiMTxIrJG5UHDMh+PJANf9heqORJbt1nrCbDwIlAZKjANIaVBbvw==}
 
+  rehype-katex@7.0.1:
+    resolution: {integrity: sha512-OiM2wrZ/wuhKkigASodFoo8wimG3H12LWQaH8qSPVJn9apWKFSH3YOCtbKpBorTVw/eI7cuT21XBbvwEswbIOA==}
+
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
 
@@ -11728,6 +11758,9 @@ packages:
 
   remark-gfm@4.0.0:
     resolution: {integrity: sha512-U92vJgBPkbw4Zfu/IiW2oTZLSL3Zpv+uI7My2eq8JxKgqraFdU8YUGicEJCEgSbeaG+QDFqIcwwfMTOEelPxuA==}
+
+  remark-math@6.0.0:
+    resolution: {integrity: sha512-MMqgnP74Igy+S3WwnhQ7kqGlEerTETXMvJhrUzDikVZ2/uogJCb+WHUg97hK9/jcfc0dkD73s3LN8zU49cTEtA==}
 
   remark-mdx@3.0.1:
     resolution: {integrity: sha512-3Pz3yPQ5Rht2pM5R+0J2MrGoBSrzf+tJG94N+t/ilfdh8YLyyKYtidAYwTveB20BoHAcwIopOUqhcmh2F7hGYA==}
@@ -12914,6 +12947,9 @@ packages:
   unique-string@3.0.0:
     resolution: {integrity: sha512-VGXBUVwxKMBUznyffQweQABPRRW1vHZAbadFZud4pLFAqRGvv/96vafgjWFqzourzr8YonlQiPgH0YCJfawoGQ==}
     engines: {node: '>=12'}
+
+  unist-util-find-after@5.0.0:
+    resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==}
 
   unist-util-is@6.0.0:
     resolution: {integrity: sha512-2qCTHimwdxLfz+YzdGfkqNlH0tLi9xjTnHddPmJwtIG9MGsdbutfTc4P+haPD7l7Cjxf/WZj+we5qfVPvvxfYw==}
@@ -18826,57 +18862,57 @@ snapshots:
     dependencies:
       '@testing-library/dom': 10.4.0
 
-  '@theme-ui/color-modes@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)':
+  '@theme-ui/color-modes@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       deepmerge: 4.3.1
       react: 18.3.1
 
-  '@theme-ui/components@0.16.2(@emotion/react@11.13.0(react@18.3.1))(@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1))(react@18.3.1)':
+  '@theme-ui/components@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
       '@styled-system/color': 5.1.2
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
-      '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
+      '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
       '@types/styled-system': 5.1.22
       react: 18.3.1
 
-  '@theme-ui/core@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)':
+  '@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       deepmerge: 4.3.1
       react: 18.3.1
 
-  '@theme-ui/css@0.16.2(@emotion/react@11.13.0(react@18.3.1))':
+  '@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
       csstype: 3.1.3
 
-  '@theme-ui/global@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)':
+  '@theme-ui/global@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       react: 18.3.1
 
   '@theme-ui/match-media@0.16.2(@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1)))(react@18.3.1)':
     dependencies:
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       react: 18.3.1
 
-  '@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)':
+  '@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
       react: 18.3.1
 
   '@tootallnate/once@2.0.0': {}
@@ -18917,7 +18953,7 @@ snapshots:
       '@ttoss/theme': 1.7.11(@ttoss/react-icons@0.3.10(react@18.3.1))
       react: 18.3.1
       react-select: 5.8.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      theme-ui: 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
+      theme-ui: 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - '@theme-ui/core'
       - '@theme-ui/css'
@@ -19134,6 +19170,8 @@ snapshots:
   '@types/json-stable-stringify@1.0.36': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/katex@0.16.7': {}
 
   '@types/keygrip@1.0.6': {}
 
@@ -23334,6 +23372,28 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hast-util-from-dom@5.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      hastscript: 8.0.0
+      web-namespaces: 2.0.1
+
+  hast-util-from-html-isomorphic@2.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      hast-util-from-dom: 5.0.0
+      hast-util-from-html: 2.0.1
+      unist-util-remove-position: 5.0.0
+
+  hast-util-from-html@2.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      devlop: 1.1.0
+      hast-util-from-parse5: 8.0.1
+      parse5: 7.1.2
+      vfile: 6.0.2
+      vfile-message: 4.0.2
+
   hast-util-from-parse5@8.0.1:
     dependencies:
       '@types/hast': 3.0.4
@@ -23427,6 +23487,13 @@ snapshots:
   hast-util-to-string@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
+
+  hast-util-to-text@4.0.2:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/unist': 3.0.3
+      hast-util-is-element: 3.0.0
+      unist-util-find-after: 5.0.0
 
   hast-util-whitespace@3.0.0:
     dependencies:
@@ -25028,6 +25095,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mdast-util-math@3.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      longest-streak: 3.1.0
+      mdast-util-from-markdown: 2.0.1
+      mdast-util-to-markdown: 2.1.0
+      unist-util-remove-position: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-mdx-expression@2.0.0:
     dependencies:
       '@types/estree-jsx': 1.0.5
@@ -25284,6 +25363,16 @@ snapshots:
       micromark-extension-gfm-tagfilter: 2.0.0
       micromark-extension-gfm-task-list-item: 2.1.0
       micromark-util-combine-extensions: 2.0.0
+      micromark-util-types: 2.0.0
+
+  micromark-extension-math@3.1.0:
+    dependencies:
+      '@types/katex': 0.16.7
+      devlop: 1.1.0
+      katex: 0.16.11
+      micromark-factory-space: 2.0.0
+      micromark-util-character: 2.1.0
+      micromark-util-symbol: 2.0.0
       micromark-util-types: 2.0.0
 
   micromark-extension-mdx-expression@3.0.0:
@@ -27247,6 +27336,16 @@ snapshots:
       space-separated-tokens: 2.0.2
       unist-util-visit: 5.0.0
 
+  rehype-katex@7.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/katex': 0.16.7
+      hast-util-from-html-isomorphic: 2.0.0
+      hast-util-to-text: 4.0.2
+      katex: 0.16.11
+      unist-util-visit-parents: 6.0.1
+      vfile: 6.0.2
+
   rehype-raw@7.0.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -27323,6 +27422,15 @@ snapshots:
       micromark-extension-gfm: 3.0.0
       remark-parse: 11.0.0
       remark-stringify: 11.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+
+  remark-math@6.0.0:
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-math: 3.0.0
+      micromark-extension-math: 3.1.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
@@ -28307,15 +28415,15 @@ snapshots:
 
   text-table@0.2.0: {}
 
-  theme-ui@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1):
+  theme-ui@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1):
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/components': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1))(react@18.3.1)
-      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
-      '@theme-ui/global': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-      '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
+      '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/components': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))
+      '@theme-ui/global': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
+      '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
   thenify-all@1.6.0:
@@ -28675,6 +28783,11 @@ snapshots:
   unique-string@3.0.0:
     dependencies:
       crypto-random-string: 4.0.0
+
+  unist-util-find-after@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.0
 
   unist-util-is@6.0.0:
     dependencies:
