@@ -60,7 +60,7 @@ export const defaultConfig: Options = {
   banner: {
     js: `/** Powered by @ttoss/config. https://ttoss.dev/docs/modules/packages/config/ */`,
   },
-  esbuildPlugins: [formatjsPlugin],
+  esbuildPlugins: [formatjsPlugin as Plugin],
   target: typescriptConfig.target,
 };
 
