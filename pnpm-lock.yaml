@@ -107,7 +107,7 @@ importers:
         version: 16.2.0(encoding@0.1.13)
       vite-plugin-relay:
         specifier: ^2.1.0
-        version: 2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6))
+        version: 2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6))
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
@@ -120,7 +120,7 @@ importers:
         version: 18.3.0
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.3.1(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6))
+        version: 4.3.1(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6))
       relay-compiler:
         specifier: ^16.2.0
         version: 16.2.0
@@ -129,7 +129,7 @@ importers:
         version: 5.5.4
       vite:
         specifier: ^5.2.8
-        version: 5.4.1(@types/node@22.4.1)(terser@5.31.6)
+        version: 5.4.2(@types/node@22.4.1)(terser@5.31.6)
 
   challenge/packages/db-dynamodb:
     devDependencies:
@@ -1700,7 +1700,7 @@ importers:
         version: 16.2.0(encoding@0.1.13)
       vite-plugin-relay:
         specifier: ^2.1.0
-        version: 2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6))
+        version: 2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6))
     devDependencies:
       '@terezinha-farm/api':
         specifier: workspace:^
@@ -1728,7 +1728,7 @@ importers:
         version: 14.1.24
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.3.1(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6))
+        version: 4.3.1(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6))
       relay-compiler:
         specifier: ^16.2.0
         version: 16.2.0
@@ -1743,7 +1743,7 @@ importers:
         version: 5.5.4
       vite:
         specifier: ^5.2.8
-        version: 5.4.1(@types/node@22.4.1)(terser@5.31.6)
+        version: 5.4.2(@types/node@22.4.1)(terser@5.31.6)
 
 packages:
 
@@ -3160,8 +3160,8 @@ packages:
   '@emotion/weak-memoize@0.4.0':
     resolution: {integrity: sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==}
 
-  '@envelop/core@5.0.1':
-    resolution: {integrity: sha512-wxA8EyE1fPnlbP0nC/SFI7uU8wSNf4YjxZhAPu0P63QbgIvqHtHsH4L3/u+rsTruzhk3OvNRgQyLsMfaR9uzAQ==}
+  '@envelop/core@5.0.2':
+    resolution: {integrity: sha512-tVL6OrMe6UjqLosiE+EH9uxh2TQC0469GwF4tE014ugRaDDKKVWwFwZe0TBMlcyHKh5MD4ZxktWo/1hqUxIuhw==}
     engines: {node: '>=18.0.0'}
 
   '@envelop/types@5.0.0':
@@ -7096,8 +7096,8 @@ packages:
   dataloader@2.1.0:
     resolution: {integrity: sha512-qTcEYLen3r7ojZNgVUaRggOI+KM7jrKxXeSHhogh/TWxYMeONEMqY+hmkobiYQozsGIyg9OYVzO4ZIfoB4I0pQ==}
 
-  dayjs@1.11.12:
-    resolution: {integrity: sha512-Rt2g+nTbLlDWZTwwrIXjy9MeiZmSDI375FvZs72ngxx8PDC6YXOeR3q5LAuPzjZQxhiWdRKac7RKV+YyQYfYIg==}
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   debounce@1.2.1:
     resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
@@ -13173,8 +13173,8 @@ packages:
       babel-plugin-relay: '>=14.1.0'
       vite: '>=2.0.0'
 
-  vite@5.4.1:
-    resolution: {integrity: sha512-1oE6yuNXssjrZdblI9AfBbHCC41nnyoVoEZxQnID6yvQZAFBzxxkqoFLtHUMkYunL8hwOLEjgTuxpkRxvba3kA==}
+  vite@5.4.2:
+    resolution: {integrity: sha512-dDrQTRHp5C1fTFzcSaMxjk6vdpKvT+2/mIdE07Gw2ykehT49O0z/VHS3zZ8iV/Gh8BJJKHWOe5RjaNrW5xf/GA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -16589,7 +16589,7 @@ snapshots:
 
   '@emotion/weak-memoize@0.4.0': {}
 
-  '@envelop/core@5.0.1':
+  '@envelop/core@5.0.2':
     dependencies:
       '@envelop/types': 5.0.0
       tslib: 2.6.3
@@ -19760,14 +19760,14 @@ snapshots:
       json-schema-to-ts: 1.6.4
       ts-morph: 12.0.0
 
-  '@vitejs/plugin-react@4.3.1(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6))':
+  '@vitejs/plugin-react@4.3.1(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.25.2)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.25.2)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.1(@types/node@22.4.1)(terser@5.31.6)
+      vite: 5.4.2(@types/node@22.4.1)(terser@5.31.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -21583,7 +21583,7 @@ snapshots:
 
   dataloader@2.1.0: {}
 
-  dayjs@1.11.12: {}
+  dayjs@1.11.13: {}
 
   debounce@1.2.1: {}
 
@@ -23301,7 +23301,7 @@ snapshots:
 
   graphql-yoga@5.7.0(graphql@16.9.0):
     dependencies:
-      '@envelop/core': 5.0.1
+      '@envelop/core': 5.0.2
       '@graphql-tools/executor': 1.3.1(graphql@16.9.0)
       '@graphql-tools/schema': 10.0.6(graphql@16.9.0)
       '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
@@ -25229,7 +25229,7 @@ snapshots:
       d3: 7.9.0
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.10
-      dayjs: 1.11.12
+      dayjs: 1.11.13
       dompurify: 3.1.6
       elkjs: 0.9.3
       katex: 0.16.11
@@ -29028,15 +29028,15 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  vite-plugin-relay@2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.1(@types/node@22.4.1)(terser@5.31.6)):
+  vite-plugin-relay@2.1.0(babel-plugin-relay@16.2.0)(vite@5.4.2(@types/node@22.4.1)(terser@5.31.6)):
     dependencies:
       '@babel/core': 7.25.2
       babel-plugin-relay: 16.2.0
-      vite: 5.4.1(@types/node@22.4.1)(terser@5.31.6)
+      vite: 5.4.2(@types/node@22.4.1)(terser@5.31.6)
     transitivePeerDependencies:
       - supports-color
 
-  vite@5.4.1(@types/node@22.4.1)(terser@5.31.6):
+  vite@5.4.2(@types/node@22.4.1)(terser@5.31.6):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.41
