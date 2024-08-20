@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-notifications",
-  "version": "1.24.44",
+  "version": "1.24.45",
   "description": "ttoss notifications module for React apps.",
   "author": "ttoss",
   "contributors": [
@@ -33,7 +33,9 @@
   "devDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "@types/react": "^18.3.3",
     "jest": "^29.7.0",
     "react": "^18.3.1",

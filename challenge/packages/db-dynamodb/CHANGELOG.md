@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.22 (2024-08-20)
+
+**Note:** Version bump only for package @ttoss-challenge/db-dynamodb
+
 ## [0.2.21](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-dynamodb@0.2.20...@ttoss-challenge/db-dynamodb@0.2.21) (2024-06-28)
 
 **Note:** Version bump only for package @ttoss-challenge/db-dynamodb

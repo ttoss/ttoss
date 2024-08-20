@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.32.7 (2024-08-20)
+
+### Bug Fixes
+
+- syncpack config ([7d3c93e](https://github.com/ttoss/ttoss/commit/7d3c93eac5c00efb204bdaa1c0b62778ef04935a))
+- syncpack error ([#576](https://github.com/ttoss/ttoss/issues/576)) ([c878d46](https://github.com/ttoss/ttoss/commit/c878d46893696d394d4952d2d4bcb26cd2bee733))
+
 ## [1.32.6](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.32.5...@ttoss/config@1.32.6) (2024-06-28)
 
 ### Bug Fixes

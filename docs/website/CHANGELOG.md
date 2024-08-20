@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.51.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.1...@docs/website@1.51.2) (2024-08-20)
+
+### Bug Fixes
+
+- syncpack error ([#576](https://github.com/ttoss/ttoss/issues/576)) ([c878d46](https://github.com/ttoss/ttoss/commit/c878d46893696d394d4952d2d4bcb26cd2bee733))
+
 ## 1.51.1 (2024-08-15)
 
 ### Bug Fixes

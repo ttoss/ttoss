@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.11 (2024-08-20)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
 ## [0.3.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.3.9...@ttoss/react-icons@0.3.10) (2024-06-28)
 
 **Note:** Version bump only for package @ttoss/react-icons
