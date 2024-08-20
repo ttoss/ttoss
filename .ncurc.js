@@ -21,6 +21,14 @@ module.exports = {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
-    '@types/node',
   ],
+  target: (name) => {
+    const minorPackages = ['typescript', '@types/node'];
+
+    if (minorPackages.includes(name)) {
+      return 'minor';
+    }
+
+    return 'latest';
+  },
 };
