@@ -87,6 +87,7 @@ const config: Config = {
               excludeExternals: true,
               excludeNotDocumented: true,
               excludeNotDocumentedKinds: ['Namespace'],
+              skipErrorChecking: true,
             },
           ];
         })),
