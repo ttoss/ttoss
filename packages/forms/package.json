@@ -32,8 +32,8 @@
     "yup": "^1.4.0"
   },
   "peerDependencies": {
-    "@ttoss/react-i18n": "^1",
-    "@ttoss/ui": "^4",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {

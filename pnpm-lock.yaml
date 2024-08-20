@@ -1326,11 +1326,11 @@ importers:
   packages/react-notifications:
     dependencies:
       '@ttoss/react-icons':
-        specifier: ^0
-        version: 0.3.10(react@18.3.1)
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/ui':
-        specifier: ^4
-        version: 4.1.14(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1)))(@ttoss/react-icons@0.3.10(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: workspace:^
+        version: link:../ui
     devDependencies:
       '@ttoss/components':
         specifier: workspace:^
@@ -4992,23 +4992,6 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
-
-  '@ttoss/react-icons@0.3.10':
-    resolution: {integrity: sha512-WV9hl71kdO1eY6nqDkwzywQwbKSipanSsrdAUzFQK5SnsedeNYgp3sNByx/rtnXivAqY7TbVElJyFwuAGh0v3w==}
-    peerDependencies:
-      react: '>=16.8.0'
-
-  '@ttoss/theme@1.7.11':
-    resolution: {integrity: sha512-0P43FsUYdM6CwK1tgTsJLLCCvBPEPzk6VUov5wzP/5Yw4bb0vhHU/K3S+DPGAJ2LsaHx8kdoim0DIqZiQ6mpjQ==}
-    peerDependencies:
-      '@ttoss/react-icons': ^0
-
-  '@ttoss/ui@4.1.14':
-    resolution: {integrity: sha512-XWpxJZqGgebDX9Mv2u0ISzcLYfWC7oTgEk3KOQRr3lK3lC4gXi5OrKSkb5DOzug0UTJxle8laKD3gsjeuGQzIA==}
-    peerDependencies:
-      '@emotion/react': ^11
-      '@ttoss/react-icons': ^0
-      react: '>=16.8.0'
 
   '@types/accepts@1.3.7':
     resolution: {integrity: sha512-Pay9fq2lM2wXPWbteBsRAGiWH2hig4ZE2asK+mm7kUzlxRTfL961rj89I6zV/E3PcIkDqyuBEcMxFT7rccugeQ==}
@@ -18951,33 +18934,6 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
-
-  '@ttoss/react-icons@0.3.10(react@18.3.1)':
-    dependencies:
-      '@iconify-icon/react': 2.1.0(react@18.3.1)
-      react: 18.3.1
-
-  '@ttoss/theme@1.7.11(@ttoss/react-icons@0.3.10(react@18.3.1))':
-    dependencies:
-      '@iconify/icons-carbon': 1.2.20
-      '@ttoss/react-icons': 0.3.10(react@18.3.1)
-      deepmerge: 4.3.1
-
-  '@ttoss/ui@4.1.14(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1)))(@ttoss/react-icons@0.3.10(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@theme-ui/match-media': 0.16.2(@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1)))(react@18.3.1)
-      '@ttoss/react-icons': 0.3.10(react@18.3.1)
-      '@ttoss/theme': 1.7.11(@ttoss/react-icons@0.3.10(react@18.3.1))
-      react: 18.3.1
-      react-select: 5.8.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      theme-ui: 0.16.2(@emotion/react@11.13.0(react@18.3.1))(react@18.3.1)
-    transitivePeerDependencies:
-      - '@theme-ui/core'
-      - '@theme-ui/css'
-      - '@types/react'
-      - react-dom
-      - supports-color
 
   '@types/accepts@1.3.7':
     dependencies:

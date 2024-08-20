@@ -32,9 +32,9 @@
     "xstate": "^4.38.3"
   },
   "peerDependencies": {
-    "@ttoss/react-i18n": "^1",
-    "@ttoss/react-notifications": "^1",
-    "@ttoss/ui": "^4",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.0.0",
     "react": ">=16.8.0"
   },

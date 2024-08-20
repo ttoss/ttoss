@@ -25,9 +25,9 @@
   },
   "sideEffects": false,
   "peerDependencies": {
-    "@ttoss/components": "^1",
-    "@ttoss/react-icons": "^0",
-    "@ttoss/ui": "^4",
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {

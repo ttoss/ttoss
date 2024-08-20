@@ -30,7 +30,7 @@
     "deepmerge": "^4.3.1"
   },
   "peerDependencies": {
-    "@ttoss/react-icons": "^0"
+    "@ttoss/react-icons": "workspace:^"
   },
   "devDependencies": {
     "@iconify/icons-eos-icons": "^1.2.6",

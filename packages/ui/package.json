@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "@emotion/react": "^11",
-    "@ttoss/react-icons": "^0",
+    "@ttoss/react-icons": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {

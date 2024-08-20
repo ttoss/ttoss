@@ -32,14 +32,7 @@ export const defaultConfig: any = {
     'scripts',
   ],
   sortFirst: ['name', 'version', 'description', 'author'],
-  versionGroups: [
-    {
-      label: 'Use workspace protocol when developing local packages',
-      dependencies: ['$LOCAL'],
-      dependencyTypes: ['!local', 'prod', 'dev'],
-      pinVersion: 'workspace:^',
-    },
-  ],
+  versionGroups: [],
 };
 
 export const syncpackConfig = configCreator(defaultConfig);

@@ -13,7 +13,8 @@
       "conventionalCommits": true,
       "createRelease": "github",
       "message": "chore(release): publish packages",
-      "syncWorkspaceLock": true
+      "syncWorkspaceLock": true,
+      "allowPeerDependenciesUpdate": true
     }
   },
   "ignoreChanges": ["**/__fixtures__/**", "**/tests/**", "**/*.md"],
