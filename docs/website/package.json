@@ -31,12 +31,13 @@
     "@docusaurus/module-type-aliases": "^3.5.2",
     "@docusaurus/tsconfig": "^3.5.2",
     "@docusaurus/types": "^3.5.2",
+    "carlin": "workspace:^",
     "docusaurus-plugin-typedoc": "^1.0.5",
-    "jsdoc-api": "^8.1.1",
+    "jsdoc-api": "^9.2.0",
     "markdown-to-jsx": "^7.5.0",
     "minimist": "^1.2.8",
     "typedoc": "^0.26.6",
-    "typedoc-plugin-markdown": "^4.2.5",
+    "typedoc-plugin-markdown": "^4.2.6",
     "typescript": "~5.5.4"
   },
   "browserslist": {
