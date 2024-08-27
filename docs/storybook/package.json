@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "2.3.15",
+  "version": "2.3.16",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
