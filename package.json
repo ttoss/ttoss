@@ -39,8 +39,8 @@
     "husky": "^9.1.5",
     "lint-staged": "^15.2.9",
     "prettier": "^3.3.3",
-    "syncpack": "12.3.2",
-    "turbo": "^2.0.14",
+    "syncpack": "13.0.0",
+    "turbo": "^2.1.0",
     "typescript": "~5.5.4"
   },
   "keywords": [],
@@ -48,5 +48,5 @@
     "node": "^20.0.0",
     "pnpm": "^9.0.0"
   },
-  "packageManager": "pnpm@9.7.1"
+  "packageManager": "pnpm@9.9.0"
 }
