@@ -11,6 +11,8 @@ tags:
 
 In modern web development, rendering rich content like videos within markdown files is a common requirement. This post demonstrates how to work with videos inside markdowns using React, utilizing a custom React component.
 
+<!-- truncate -->
+
 ## Setup
 
 Firstly, ensure you have a React project set up. In this demonstration, we're using a custom Markdown component from the `@ttoss/component` package, which is based on `react-markdown`.

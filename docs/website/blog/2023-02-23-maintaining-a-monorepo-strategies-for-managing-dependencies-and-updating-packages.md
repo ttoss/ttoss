@@ -12,6 +12,8 @@ tags:
 
 Maintaining a monorepo poses a significant challenge in the long term, particularly when it comes to keeping packages up-to-date. With a large number of packages in our monorepo in play (some is updated less frequently than others) and the fast-paced nature of the JavaScript ecosystem, some packages may be outdated easily. This can result in two major issues: firstly, the less frequently updated packages may contain outdated dependencies with known vulnerabilities, and secondly, updating these dependencies can prove to be a difficult task when we need to work on a package that relies on them.
 
+<!-- truncate -->
+
 To address these challenges, we have implemented a new workflow that enables us to update our packages incrementally and maintain the most recent versions of our dependencies. This approach is guided by the following principles:
 
 - Whenever we update a package within our monorepo, we ensure that all of its dependencies are updated to the latest version.

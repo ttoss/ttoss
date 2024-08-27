@@ -15,6 +15,8 @@ tags:
 
 An entity can have different ids through the application, from database to the frontend. For example, a user can have an id in the database, another id in the frontend because the [GraphQL Global Object Identification Specification](https://relay.dev/graphql/objectidentification.htm) that Relay specifies. And that is because the concept of node in in a [cursor-based pagination](https://graphql.org/learn/pagination/) that we need to have these different ids.
 
+<!-- truncate -->
+
 The concept of node in a GraphQL API is that you can retrieve any data from the database just by knowing the global id of the entity. For example, if you want to retrieve the user with id `1`, you can do it with the following query:
 
 ```graphql
