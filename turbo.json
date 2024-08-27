@@ -25,7 +25,7 @@
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["topo", "build-config", "i18n"],
+      "dependsOn": ["topo", "build-config", "i18n", "^build"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {

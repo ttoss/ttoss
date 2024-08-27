@@ -82,3 +82,7 @@ With the introduction of the new [`--moduleResolution` bundler](https://devblogs
 ```
 
 If your application uses Node.js without a bundler, set `moduleResolution` to `NodeNext`.
+
+### Why does the `turbo` `build` task include `^build` in `dependsOn`?
+
+[Using the `^` prefix in the `dependsOn` configuration](https://turbo.build/repo/docs/reference/configuration#dependson) instructs turbo to ensure that tasks in the package's dependencies are completed first. For instance, the `docs/website` depends on [`carlin`](https://ttoss.dev/docs/carlin/), so the `^build` ensures that [`carlin`](https://ttoss.dev/docs/carlin/) is built before `docs/website`, as the documentation generation relies on the built code from [`carlin`](https://ttoss.dev/docs/carlin/).
