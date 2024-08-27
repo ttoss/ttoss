@@ -14,6 +14,8 @@ tags:
 
 In a world where efficiency and performance of web applications are crucial, Relay emerges as a powerful solution for data management in React applications. Developed by Facebook, Relay is a JavaScript library that provides a robust abstraction layer over GraphQL, a popular data query language. The main goal of Relay is to facilitate the construction of client applications that interact with GraphQL APIs in an efficient and scalable manner.
 
+<!-- truncate -->
+
 ### What is Relay?
 
 Relay is a state and data management library for React applications that use GraphQL as a data query language. Unlike other state management approaches, Relay specifically focuses on optimizing interactions with GraphQL APIs, ensuring that data is loaded and manipulated efficiently.

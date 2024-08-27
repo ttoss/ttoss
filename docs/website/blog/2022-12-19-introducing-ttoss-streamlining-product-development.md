@@ -13,6 +13,8 @@ tags:
 
 Welcome to ttoss, a tech company we created to improve efficiency and effectiveness in product development. Building products can be complex and time-consuming, and we want to help your business remove waste and streamline its operations. We can help your business achieve its goals and succeed in today's competitive market by providing the right tools and resources.
 
+<!-- truncate -->
+
 To achieve this, we created a variety of products, including principles and proper processes for [operations departments](https://arantespp.com/zettel/operations-departments-of-a-tech-company); Modules, a library of modules for web application development; and carlin, a command-line interface (CLI) for easy app deployment and automation.
 
 It's important to note that they're highly opinionated solutions. By taking a narrower approach, we could provide targeted solutions that we designed to work together in harmony.

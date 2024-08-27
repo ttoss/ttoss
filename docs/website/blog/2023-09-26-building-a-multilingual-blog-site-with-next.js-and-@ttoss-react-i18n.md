@@ -14,6 +14,8 @@ tags:
 
 Internationalization (i18n) is an essential part of building modern websites, especially for those aiming to reach a global audience. In this tutorial, we will explore how to create a multilingual blog site using Next.js and the @ttoss/i18n library. This combination will allow us to provide an engaging reading experience for users in different languages.
 
+<!-- truncate -->
+
 ## Two Facets of i18n in Next.js
 
 Before we dive into the nitty-gritty, let's establish an essential distinction within Next.js's i18n capabilities:
