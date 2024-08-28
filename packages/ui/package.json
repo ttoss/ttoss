@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm --filter @docs/storybook run dev",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
@@ -58,7 +58,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },
