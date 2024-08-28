@@ -18,6 +18,7 @@ export const defaultConfig: Config = {
     advanceTimers: true,
     enableGlobally: true,
   },
+  moduleDirectories: ['node_modules', '<rootDir>/../..'],
   moduleNameMapper: {
     /**
      * Remove CSS import errors:
@@ -42,11 +43,6 @@ export const jestE2EConfig = configCreator<any>({
   ...defaultConfig,
   collectCoverage: false,
   displayName: 'E2E Tests',
-  moduleNameMapper: {
-    ...defaultConfig.moduleNameMapper,
-    'src/(.*)': '<rootDir>/../../src/$1',
-    'tests/(.*)': '<rootDir>/../$1',
-  },
   roots: ['<rootDir>'],
 });
 
@@ -59,10 +55,5 @@ export const jestUnitConfig = configCreator<any>({
     '<rootDir>/../../src/**/*.{ts,tsx,js,jsx}',
     '!<rootDir>/../../src/**/*.d.ts',
   ],
-  moduleNameMapper: {
-    ...defaultConfig.moduleNameMapper,
-    'src/(.*)': '<rootDir>/../../src/$1',
-    'tests/(.*)': '<rootDir>/../$1',
-  },
   roots: ['<rootDir>'],
 });
