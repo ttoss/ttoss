@@ -86,3 +86,15 @@ If your application uses Node.js without a bundler, set `moduleResolution` to `N
 ### Why does the `turbo` `build` task include `^build` in `dependsOn`?
 
 [Using the `^` prefix in the `dependsOn` configuration](https://turbo.build/repo/docs/reference/configuration#dependson) instructs turbo to ensure that tasks in the package's dependencies are completed first. For instance, the `docs/website` depends on [`carlin`](https://ttoss.dev/docs/carlin/), so the `^build` ensures that [`carlin`](https://ttoss.dev/docs/carlin/) is built before `docs/website`, as the documentation generation relies on the built code from [`carlin`](https://ttoss.dev/docs/carlin/).
+
+### How to version breaking changes?
+
+We use [@lerna-lite/version](https://github.com/lerna-lite/lerna-lite/tree/main/packages/version#readme) to bump version of packages changed since the last release. To version breaking changes, you need to add a `BREAKING CHANGE` section to the commit footer ([reference](https://github.com/lerna/lerna/issues/2668#issuecomment-1467902595)). For example:
+
+```markdown
+feat: add new feature
+
+BREAKING CHANGE: this is a breaking change
+```
+
+In a GitHub pull request, you can add the message to the commit message before merging it.
