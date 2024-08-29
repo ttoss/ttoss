@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.3.13...@ttoss/react-icons@0.4.0) (2024-08-29)
+
+### chore
+
+- packages esm only ([#580](https://github.com/ttoss/ttoss/issues/580)) ([6fb3f9b](https://github.com/ttoss/ttoss/commit/6fb3f9b859ceb1c2b89dd5a97465ac7d7dd4f3a2))
+
+### BREAKING CHANGES
+
+- react packages is esm only now
+
 ## [0.3.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.3.12...@ttoss/react-icons@0.3.13) (2024-08-28)
 
 **Note:** Version bump only for package @ttoss/react-icons

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.58...@ttoss/react-auth@2.0.0) (2024-08-29)
+
+### chore
+
+- packages esm only ([#580](https://github.com/ttoss/ttoss/issues/580)) ([6fb3f9b](https://github.com/ttoss/ttoss/commit/6fb3f9b859ceb1c2b89dd5a97465ac7d7dd4f3a2))
+
+### BREAKING CHANGES
+
+- react packages is esm only now
+
 ## [1.7.58](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@1.7.57...@ttoss/react-auth@1.7.58) (2024-08-28)
 
 **Note:** Version bump only for package @ttoss/react-auth

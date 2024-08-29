@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/lambda-postgres-query",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Create a Lambda function that queries a PostgreSQL database.",
   "author": "ttoss",
   "contributors": [
