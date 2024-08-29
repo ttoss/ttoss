@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/google-maps"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -20,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "dependencies": {
     "@ttoss/react-hooks": "workspace:^",
@@ -39,12 +40,16 @@
     "react": "^18.3.1",
     "tsup": "^8.2.4"
   },
+  "keywords": [
+    "Google",
+    "Maps",
+    "React"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

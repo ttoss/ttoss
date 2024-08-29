@@ -1,10 +1,8 @@
 # @ttoss/components
 
-## About
-
 <strong>@ttoss/components</strong> is a set of React components that you can use to build your apps using ttoss ecosystem.
 
-### ESM Only
+## ESM Only
 
 This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c) because [react-markdown](https://github.com/remarkjs/react-markdown).
 

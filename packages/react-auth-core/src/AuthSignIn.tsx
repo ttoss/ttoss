@@ -1,0 +1,161 @@
+import * as React from 'react';
+import { AuthCard } from './AuthCard';
+import { Button, Flex, Link, Text } from '@ttoss/ui';
+import {
+  Form,
+  FormFieldInput,
+  FormFieldPassword,
+  useForm,
+  yup,
+  yupResolver,
+} from '@ttoss/forms';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
+import { PASSWORD_MINIMUM_LENGTH } from './config';
+import { useI18n } from '@ttoss/react-i18n';
+import type { OnSignIn, OnSignInInput } from './types';
+
+export type AuthSignInProps = {
+  onSignIn: OnSignIn;
+  onSignUp: () => void;
+  onForgotPassword: () => void;
+  defaultValues?: Partial<OnSignInInput>;
+  urlLogo?: string;
+  passwordMinimumLength?: number;
+};
+
+export const AuthSignIn = ({
+  onSignIn,
+  onSignUp,
+  defaultValues,
+  onForgotPassword,
+  passwordMinimumLength = PASSWORD_MINIMUM_LENGTH,
+}: AuthSignInProps) => {
+  const { intl } = useI18n();
+  const { setNotifications } = useNotifications();
+
+  React.useEffect(() => {
+    setNotifications(undefined);
+  }, [setNotifications]);
+
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .required(
+        intl.formatMessage({
+          description: 'Email is a required field.',
+          defaultMessage: 'Enter your email address',
+        })
+      )
+      .email(
+        intl.formatMessage({
+          description: 'Invalid email.',
+          defaultMessage: 'Please, insert a valid e-mail',
+        })
+      ),
+    password: yup
+      .string()
+      .required(
+        intl.formatMessage({
+          description: 'Password is required.',
+          defaultMessage: 'Password field is required',
+        })
+      )
+      .min(
+        passwordMinimumLength,
+        intl.formatMessage(
+          {
+            description: 'Password must be at least {value} characters long.',
+            defaultMessage: 'Password requires {value} characters',
+          },
+          { value: passwordMinimumLength }
+        )
+      )
+      .trim(),
+    // remember: yup.boolean(),
+  });
+
+  const formMethods = useForm<OnSignInInput>({
+    defaultValues,
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmitForm = (data: OnSignInInput) => {
+    return onSignIn(data);
+  };
+
+  return (
+    <Form
+      sx={{ maxWidth: '390px', width: '100%' }}
+      {...formMethods}
+      onSubmit={onSubmitForm}
+    >
+      <AuthCard
+        title={intl.formatMessage({
+          description: 'Sign in title.',
+          defaultMessage: 'Log in',
+        })}
+        buttonLabel={intl.formatMessage({
+          description: 'Button label.',
+          defaultMessage: 'Log in',
+        })}
+        isValidForm={formMethods.formState.isValid}
+        extraButton={
+          <Button
+            type="button"
+            variant="secondary"
+            sx={{ textAlign: 'center', display: 'initial' }}
+            onClick={onSignUp}
+            aria-label="sign-up"
+          >
+            {intl.formatMessage({
+              description: 'Sign up',
+              defaultMessage: 'Sign up',
+            })}
+          </Button>
+        }
+      >
+        <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>
+          <FormFieldInput
+            name="email"
+            label={intl.formatMessage({
+              description: 'Email label.',
+              defaultMessage: 'Email',
+            })}
+          />
+          <FormFieldPassword
+            name="password"
+            label={intl.formatMessage({
+              description: 'Password label.',
+              defaultMessage: 'Password',
+            })}
+          />
+        </Flex>
+
+        <Flex sx={{ justifyContent: 'space-between', marginTop: 'lg' }}>
+          {/* TODO: temporally commented */}
+          {/* <FormFieldCheckbox
+            name="remember"
+            label={intl.formatMessage({
+              description: 'Remember',
+              defaultMessage: 'Remember',
+            })}
+          /> */}
+
+          <Text
+            sx={{ marginLeft: 'auto', cursor: 'pointer' }}
+            as={Link}
+            onClick={onForgotPassword}
+          >
+            {intl.formatMessage({
+              description: 'Forgot password?',
+              defaultMessage: 'Forgot password?',
+            })}
+          </Text>
+        </Flex>
+
+        <NotificationsBox />
+      </AuthCard>
+    </Form>
+  );
+};

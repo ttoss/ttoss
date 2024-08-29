@@ -10,3 +10,17 @@ yup.addMethod(yup.string, 'cnpj', function () {
     return isCnpjValid(value);
   });
 });
+
+yup.addMethod(
+  yup.string,
+  'password',
+  function ({ required }: { required?: boolean } = {}) {
+    const schema = this.trim();
+
+    if (required) {
+      schema.required('Password is required');
+    }
+
+    return schema.min(8, 'Password must be at least 8 characters long');
+  }
+);

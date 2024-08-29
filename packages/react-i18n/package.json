@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-i18n"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -23,7 +24,7 @@
     "dev": "pnpm --filter @docs/storybook run dev",
     "i18n": "ttoss-i18n --pattern 'tests/**/*.test.{ts,tsx}'",
     "pretest": "pnpm run i18n",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
@@ -52,7 +53,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },
