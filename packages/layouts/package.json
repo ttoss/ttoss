@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/layouts"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -20,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "peerDependencies": {
@@ -45,7 +46,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

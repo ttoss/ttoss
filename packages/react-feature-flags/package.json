@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-feature-flags"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -20,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -42,7 +43,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

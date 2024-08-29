@@ -335,7 +335,7 @@ importers:
         version: 7.6.5(graphql-middleware@6.1.35(graphql@16.9.0))(graphql@16.9.0)
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))
+        version: 29.7.0(@types/node@22.4.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.4.1)(typescript@5.5.4))
       tsup:
         specifier: ^8.2.4
         version: 8.2.4(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.5.4)(yaml@2.5.0)
@@ -351,7 +351,7 @@ importers:
         version: link:../config
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.4.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.4.1)(typescript@5.5.4))
+        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))
       tsup:
         specifier: ^8.2.4
         version: 8.2.4(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.5.4)(yaml@2.5.0)
@@ -16905,7 +16905,7 @@ snapshots:
       '@graphql-tools/utils': 8.9.0(graphql@16.9.0)
       dataloader: 2.1.0
       graphql: 16.9.0
-      tslib: 2.4.1
+      tslib: 2.6.3
       value-or-promise: 1.0.11
 
   '@graphql-tools/delegate@8.8.1(graphql@16.9.0)':

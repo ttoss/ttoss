@@ -10,6 +10,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/forms"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./multistep-form": "./src/MultistepForm/index.ts",
@@ -56,17 +57,14 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       },
       "./multistep-form": {
         "import": "./dist/esm/MultistepForm/index.js",
-        "require": "./dist/MultistepForm/index.js",
         "types": "./dist/MultistepForm/index.d.ts"
       },
       "./brazil": {
         "import": "./dist/esm/Brazil/index.js",
-        "require": "./dist/Brazil/index.js",
         "types": "./dist/Brazil/index.d.ts"
       }
     },

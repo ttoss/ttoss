@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "dependencies": {
     "esbuild": "^0.23.1",

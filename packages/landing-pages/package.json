@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/landing-pages"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -52,7 +53,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

@@ -2,6 +2,10 @@
 
 **@ttoss/ui** is a library of React low level components for building user interfaces and defining the design system of your application. It is built on top of [Theme UI: The Design Graph Framework](https://theme-ui.com/), so that you'll be able to consult the [Theme UI documentation](https://theme-ui.com/getting-started) to learn more about the design system and the components.
 
+## ESM Only
+
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
+
 ## Installation
 
 ```shell

@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-icons"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -20,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
@@ -47,7 +48,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

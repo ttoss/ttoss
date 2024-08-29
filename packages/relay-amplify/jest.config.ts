@@ -1,5 +1,3 @@
-import { jestConfig } from '@ttoss/config';
+import { jestRootConfig } from '@ttoss/config';
 
-const config = jestConfig({});
-
-export default config;
+export default jestRootConfig();

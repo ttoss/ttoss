@@ -7,7 +7,9 @@ This package is a simple utility to read a configuration file in multiple format
 - .js
 - .ts
 
-This package is ESM only.
+## ESM Only
+
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
 
 ## Installation
 
