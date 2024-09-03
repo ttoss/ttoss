@@ -33,9 +33,9 @@ By systematically assessing the economic implications, you ensure that your prod
 
 In strategic product decision-making, considering a range of economic indicators ensures a well-rounded analysis. Here are some of the key indicators you should evaluate:
 
-### 1. Cost of Delay
+### 1. Cost of Delay (CoD)
 
-Cost of Delay (CoD) measures the financial impact of postponing a product launch. It helps you understand the urgency of a release by quantifying potential revenue loss, missed market opportunities, and competitive disadvantages. By evaluating CoD, you can prioritize actions that minimize financial setbacks and maximize market capture.
+[Cost of Delay](/docs/product/product-development/definitions#cost-of-delay) measures the financial impact of postponing a product launch. It helps you understand the urgency of a release by quantifying potential revenue loss, missed market opportunities, and competitive disadvantages. By evaluating CoD, you can prioritize actions that minimize financial setbacks and maximize market capture.
 
 ### 2. Life-Cycle Profits
 
@@ -43,7 +43,7 @@ Life-cycle profits take into account the total profit a product is expected to g
 
 ### 3. Opportunity Cost
 
-Opportunity cost represents the benefits lost when one option is chosen over another. In product management, this could mean choosing to delay a launch for additional testing or opting for an early release. Understanding opportunity cost helps you weigh the trade-offs of each decision, ensuring that the chosen path delivers the greatest overall benefit.
+[Opportunity cost](/docs/product/product-development/definitions#opportunity-cost) represents the benefits lost when one option is chosen over another. In product management, this could mean choosing to delay a launch for additional testing or opting for an early release. Understanding opportunity cost helps you weigh the trade-offs of each decision, ensuring that the chosen path delivers the greatest overall benefit.
 
 ### 4. Return on Investment (ROI)
 
@@ -81,7 +81,7 @@ To effectively integrate economic considerations into your product decisions, im
 
 Begin by familiarizing yourself with the key components of an economic decision-making framework. This involves understanding economic concepts such as Cost of Delay, Life-Cycle Profits, Return on Investment (ROI), and Risk Management. An economic framework provides a structured approach to evaluating decisions based on their financial impact, ensuring that choices are made with a clear view of their economic implications.
 
-:::note
+:::info
 
 We're using the book [Principles of Product Development Flow](https://www.amazon.com/Principles-Product-Development-Flow-Second/dp/1935401009) as a reference for creating our [principles](/docs/product/product-development/principles) and framework for [product development](/docs/product/product-development).
 
@@ -105,6 +105,12 @@ Use this data to quantify the economic impact of each decision option. This may 
 ### 4. Evaluate Economic Indicators
 
 Apply economic indicators such as Cost of Delay, Life-Cycle Profits, and ROI to the data collected. Analyze how each decision option aligns with your defined criteria and objectives. For example, calculate the ROI for each potential investment and assess the Life-Cycle Profits to determine long-term profitability.
+
+:::note
+
+All values should be in the same currency and time frame ([Net Present Value](/docs/product/product-development/definitions#net-present-value-npv)) to ensure accurate comparisons.
+
+:::
 
 ### 5. Compare and Prioritize Options
 

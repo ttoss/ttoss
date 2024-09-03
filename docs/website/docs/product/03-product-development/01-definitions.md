@@ -80,6 +80,45 @@ If a development team starts working on a new feature on Monday and completes it
 
 In agile methodologies, cycle time is closely monitored to ensure that the team is working efficiently and can quickly adjust to changing requirements.
 
+## Net Present Value (NPV)
+
+Net Present Value (NPV) is a financial metric used to assess the profitability of an investment or project. It calculates the difference between the present value of cash inflows and the present value of cash outflows over a period of time. A positive NPV indicates that the projected earnings (in present currency) exceed the anticipated costs, making the investment or project potentially profitable. Conversely, a negative NPV suggests that the costs outweigh the benefits. NPV is commonly used in capital budgeting to evaluate the financial viability of long-term projects.
+
+### Formula
+
+The formula for calculating NPV is as follows:
+
+$$
+\text{NPV} = \sum_{t=0}^{n} \frac{R_t}{(1 + r)^t} - C_0
+$$
+
+Where:
+
+- $\text{NPV}$ = Net Present Value
+- $R_t$ = Net cash inflow during the period $t$
+- $r$ = Discount rate
+- $t$ = Time period
+- $n$ = Total number of time periods
+- $C_0$ = Initial investment or cost.
+
+### Example
+
+Imagine a company is considering investing in a new project that requires an initial investment of $100,000. The project is expected to generate the following cash inflows over the next three years:
+
+- Year 1: $50,000
+- Year 2: $60,000
+- Year 3: $70,000
+
+The company's cost of capital (discount rate) is 10% per year.
+
+The NPV of the project can be calculated as follows:
+
+$$
+\text{NPV} = \frac{50,000}{(1 + 0.10)^1} + \frac{60,000}{(1 + 0.10)^2} + \frac{70,000}{(1 + 0.10)^3} - 100,000 = 47,633
+$$
+
+The positive NPV of $47,633 indicates that the project is expected to generate more value than the initial investment, making it a potentially profitable venture.
+
 ## Opportunity cost
 
 Opportunity cost is the value of the next best alternative that you give up when making a decision. It's what you sacrifice in order to pursue a particular course of action.
