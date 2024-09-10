@@ -155,15 +155,15 @@ const config: Config = {
           label: 'Engineering',
         },
         {
-          type: 'docSidebar',
-          position: 'left',
-          sidebarId: 'challenge',
-          label: 'Challenge',
-        },
-        {
           to: '/blog',
           label: 'Blog',
           position: 'left',
+        },
+        {
+          type: 'docSidebar',
+          position: 'right',
+          sidebarId: 'challenge',
+          label: 'Challenge',
         },
         {
           type: 'docSidebar',
