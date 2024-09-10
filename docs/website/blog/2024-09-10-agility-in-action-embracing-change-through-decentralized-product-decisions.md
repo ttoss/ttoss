@@ -1,7 +1,7 @@
 ---
 title: 'Agility in Action: Embracing Change Through Decentralized Product Decisions'
 description: In the fast-paced world of product development, change is inevitable. This article explores the importance of initial planning while acknowledging that unforeseen challenges and opportunities will arise. It highlights how the dynamic nature of the market can render past data and assumptions obsolete, emphasizing the need for product teams to adapt quickly. By enabling decentralized decision-making, teams on the front lines—who often encounter new information first—can respond promptly to shifts in technology, customer needs, and competition. This approach allows organizations to stay agile, innovate, and turn unexpected challenges into strategic advantages.
-author:
+authors:
   - arantespp
 tags:
   - product-development
@@ -32,3 +32,9 @@ We're collecting a [set of principles that guide our product development process
 - [D1: The Second Perishability Principle: Decentralize Control for Problems and Opportunities that Age Poorly.](/docs/product/product-development/principles#d1-the-second-perishability-principle-decentralize-control-for-problems-and-opportunities-that-age-poorly)
 
 - [D2: The Scale Principle: Centralize Control for Problems that Are Infrequent, Large, or Have Significant Economies of Scale.](/docs/product/product-development/principles#d2-the-scale-principle-centralize-control-for-problems-that-are-infrequent-large-or-have-significant-economies-of-scale)
+
+## Conclusion: Finding the Right Balance
+
+The journey toward striking the perfect balance between centralized and decentralized decision-making in product development is ongoing. By collecting and applying [key principles](/docs/product/product-development/principles#achieving-decentralized-control), teams can begin to navigate the complexities of this balance. These two principles offer a starting point for identifying when it's essential to decentralize decision-making for fast-moving opportunities and when centralization is critical for managing large-scale, infrequent challenges.
+
+As we continue to evolve and refine our product development process, these guiding principles will help ensure that we stay agile and responsive without losing sight of our broader strategic goals. This is just the beginning of a framework that allows teams to adapt to market changes while maintaining the necessary alignment to drive long-term success.
