@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.0...@ttoss/components@2.0.1) (2024-09-11)
+
+### Bug Fixes
+
+- remove css import and theme change to esm only ([#583](https://github.com/ttoss/ttoss/issues/583)) ([8dd1192](https://github.com/ttoss/ttoss/commit/8dd1192d98d7fc1a18f5885dc1ec1d18ed10a0a5))
+
 # [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@1.31.16...@ttoss/components@2.0.0) (2024-08-29)
 
 ### chore

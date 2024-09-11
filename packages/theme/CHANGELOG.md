@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.16](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.15...@ttoss/theme@1.7.16) (2024-09-11)
+
+### Bug Fixes
+
+- remove css import and theme change to esm only ([#583](https://github.com/ttoss/ttoss/issues/583)) ([8dd1192](https://github.com/ttoss/ttoss/commit/8dd1192d98d7fc1a18f5885dc1ec1d18ed10a0a5))
+
 ## [1.7.15](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.14...@ttoss/theme@1.7.15) (2024-08-29)
 
 **Note:** Version bump only for package @ttoss/theme

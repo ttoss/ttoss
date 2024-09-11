@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.0...@ttoss/landing-pages@0.12.1) (2024-09-11)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 # [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.11.17...@ttoss/landing-pages@0.12.0) (2024-08-29)
 
 ### chore
