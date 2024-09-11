@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/theme"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
@@ -48,12 +49,10 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       },
       "./Bruttal": {
         "import": "./dist/esm/themes/Bruttal/Bruttal.js",
-        "require": "./dist/themes/Bruttal/Bruttal.js",
         "types": "./dist/themes/Bruttal/Bruttal.d.ts"
       }
     },
