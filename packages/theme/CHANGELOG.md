@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.17](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.16...@ttoss/theme@1.7.17) (2024-09-11)
+
+### Bug Fixes
+
+- import icons ([#584](https://github.com/ttoss/ttoss/issues/584)) ([a647c32](https://github.com/ttoss/ttoss/commit/a647c32182fd5fe4f771284111d9caaae7704170))
+
 ## [1.7.16](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.15...@ttoss/theme@1.7.16) (2024-09-11)
 
 ### Bug Fixes
