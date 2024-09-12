@@ -4,7 +4,7 @@ import path from 'node:path';
 import pkg from '../package.json';
 
 // eslint-disable-next-line no-console
-console.log('Updating package.json exports...', pkg);
+console.log('Updating package.json exports...');
 
 const newPkg = {
   ...pkg,
