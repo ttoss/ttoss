@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.3...@ttoss/components@2.0.4) (2024-09-12)
+
+### Bug Fixes
+
+- components toast export ([#587](https://github.com/ttoss/ttoss/issues/587)) ([813b870](https://github.com/ttoss/ttoss/commit/813b8703a0b28d17a5b2f6778fd85fb97fee8a17))
+
 ## [2.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.2...@ttoss/components@2.0.3) (2024-09-12)
 
 **Note:** Version bump only for package @ttoss/components
