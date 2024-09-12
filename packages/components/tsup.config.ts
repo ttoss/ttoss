@@ -13,7 +13,12 @@ export const components = [
   'Toast',
 ];
 
-const GROUP_SIZE = 3;
+/**
+ * Cannot set size in such a way that a group has only one component.
+ * If this happens, tsup won't create a folder for the component and
+ * the exports of the component will be in the root of the dist folder.
+ */
+const GROUP_SIZE = 5;
 
 /**
  * To avoid tsup build failing with ERR_WORKER_OUT_OF_MEMORY
@@ -38,7 +43,5 @@ const getConfigByGroup = (group: number) => {
 
 export const tsup0 = getConfigByGroup(0);
 export const tsup1 = getConfigByGroup(1);
-export const tsup2 = getConfigByGroup(2);
-export const tsup3 = getConfigByGroup(3);
 
-export default [tsup0, tsup1, tsup2, tsup3];
+export default [tsup0, tsup1];
