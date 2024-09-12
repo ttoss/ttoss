@@ -3,7 +3,7 @@ import { Auth, useAuth } from '@ttoss/react-auth';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
 import { FarmCorrectPagination } from './modules/Farm/FarmCorrectPagination';
 import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
-import { Markdown } from '@ttoss/components';
+import { Markdown } from '@ttoss/components/Markdown';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 
 const markdown = '# ~Hi~, *Pluto*!';
