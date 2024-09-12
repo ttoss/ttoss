@@ -1,4 +1,4 @@
-import { Drawer } from '../../src';
+import { Drawer } from '../../../src/components/Drawer';
 import { render, screen } from '@ttoss/test-utils';
 
 describe('Drawer', () => {

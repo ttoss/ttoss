@@ -11,7 +11,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from '../../src/components/Table';
+} from '../../../src/components/Table/Table';
 import { render, screen } from '@ttoss/test-utils';
 
 type Person = {

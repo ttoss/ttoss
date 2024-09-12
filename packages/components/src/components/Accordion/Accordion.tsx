@@ -67,7 +67,9 @@ export const Accordion = ({
   );
 };
 
-Accordion.Item = AccordionItem;
-Accordion.ItemButton = AccordionItemButton;
-Accordion.ItemHeading = AccordionItemHeading;
-Accordion.ItemPanel = AccordionItemPanel;
+export {
+  AccordionItem,
+  AccordionItemButton,
+  AccordionItemHeading,
+  AccordionItemPanel,
+};

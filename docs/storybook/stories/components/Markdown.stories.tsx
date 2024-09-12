@@ -1,5 +1,5 @@
 import { Box, Heading, Link } from '@ttoss/ui';
-import { Markdown } from '../../../../packages/components/src';
+import { Markdown } from '@ttoss/components/Markdown';
 import { Meta, StoryFn } from '@storybook/react';
 
 export default {

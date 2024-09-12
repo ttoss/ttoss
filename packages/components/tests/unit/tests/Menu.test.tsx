@@ -1,4 +1,4 @@
-import { Menu } from '../../src/components/Menu';
+import { Menu } from '../../../src/components/Menu';
 import { fireEvent, render, screen } from '@ttoss/test-utils';
 
 describe('Menu', () => {

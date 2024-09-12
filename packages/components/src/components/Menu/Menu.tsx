@@ -7,7 +7,7 @@ import {
   Text,
   useResponsiveValue,
 } from '@ttoss/ui';
-import { Drawer } from '..';
+import { Drawer } from '../Drawer';
 import { Icon, IconifyIcon } from '@ttoss/react-icons';
 
 export type MenuProps = {

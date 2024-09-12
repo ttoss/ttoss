@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Flex } from '@ttoss/ui';
-import { Drawer, DrawerProps } from '@ttoss/components';
+import { Drawer, DrawerProps } from '@ttoss/components/Drawer';
 import { Meta, StoryObj } from '@storybook/react';
 
 type Story = StoryObj<typeof Drawer>;

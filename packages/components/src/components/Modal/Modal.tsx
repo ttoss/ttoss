@@ -30,6 +30,7 @@ export const Modal = (props: ModalProps) => {
       alignItems: 'center',
       zIndex: 'modal',
       ...props.style?.overlay,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     })(theme) as any,
     content: transformStyleObject({
       /**
@@ -53,6 +54,7 @@ export const Modal = (props: ModalProps) => {
       maxHeight: '90%',
       maxWidth: '90%',
       ...props.style?.content,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     })(theme) as any,
   };
 
