@@ -335,7 +335,7 @@ importers:
         version: 7.6.5(graphql-middleware@6.1.35(graphql@16.9.0))(graphql@16.9.0)
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@22.4.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.4.1)(typescript@5.5.4))
+        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))
       tsup:
         specifier: ^8.2.4
         version: 8.2.4(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.5.4)(yaml@2.5.0)
@@ -620,11 +620,11 @@ importers:
   packages/components:
     dependencies:
       '@emotion/css':
-        specifier: ^11.11.2
+        specifier: ^11.13.0
         version: 11.13.0
       '@tanstack/react-table':
-        specifier: ^8.15.3
-        version: 8.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^8.20.5
+        version: 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@theme-ui/css':
         specifier: ^0.16.2
         version: 0.16.2(@emotion/react@11.13.0(react@18.3.1))
@@ -641,10 +641,10 @@ importers:
         specifier: ^3.16.1
         version: 3.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-modern-drawer:
-        specifier: ^1.2.2
+        specifier: ^1.4.0
         version: 1.4.0(react@18.3.1)
       react-toastify:
-        specifier: ^10.0.4
+        specifier: ^10.0.5
         version: 10.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rehype-raw:
         specifier: ^7.0.0
@@ -676,7 +676,7 @@ importers:
         version: 18.3.3
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))
+        version: 29.7.0(@types/node@22.4.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.4.1)(typescript@5.5.4))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -4870,15 +4870,15 @@ packages:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
 
-  '@tanstack/react-table@8.20.1':
-    resolution: {integrity: sha512-PJK+07qbengObe5l7c8vCdtefXm8cyR4i078acWrHbdm8JKw1ES7YpmOtVt9ALUVEEFAHscdVpGRhRgikgFMbQ==}
+  '@tanstack/react-table@8.20.5':
+    resolution: {integrity: sha512-WEHopKw3znbUZ61s9i0+i9g8drmDo6asTWbrQh8Us63DAk/M0FkmIqERew6P71HI75ksZ2Pxyuf4vvKh9rAkiA==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
 
-  '@tanstack/table-core@8.20.1':
-    resolution: {integrity: sha512-5Ly5TIRHnWH7vSDell9B/OVyV380qqIJVg7H7R7jU4fPEmOD4smqAX7VRflpYI09srWR8aj5OLD2Ccs1pI5mTg==}
+  '@tanstack/table-core@8.20.5':
+    resolution: {integrity: sha512-P9dF7XbibHph2PFRz8gfBKEXEY/HJPOhym8CHmjF8y3q5mWpKx9xtZapXQUWCgkqvsK0R46Azuz+VaxD4Xl+Tg==}
     engines: {node: '>=12'}
 
   '@testing-library/dom@10.1.0':
@@ -18816,13 +18816,13 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@tanstack/react-table@8.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-table@8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/table-core': 8.20.1
+      '@tanstack/table-core': 8.20.5
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@tanstack/table-core@8.20.1': {}
+  '@tanstack/table-core@8.20.5': {}
 
   '@testing-library/dom@10.1.0':
     dependencies:
