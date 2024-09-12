@@ -1,4 +1,4 @@
-import { List, ListItem } from '../../src/components/List';
+import { List, ListItem } from '../../../src/components/List';
 import { render } from '@ttoss/test-utils';
 
 describe('List component', () => {

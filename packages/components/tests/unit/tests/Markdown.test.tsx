@@ -1,4 +1,4 @@
-import { Markdown } from '../../src';
+import { Markdown } from '../../../src/components/Markdown';
 import { render, screen } from '@ttoss/test-utils';
 
 const HEADING_1 = 'HEADING_1';

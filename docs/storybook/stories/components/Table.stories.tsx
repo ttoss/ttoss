@@ -11,7 +11,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from '@ttoss/components/table';
+} from '@ttoss/components/Table';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta = {

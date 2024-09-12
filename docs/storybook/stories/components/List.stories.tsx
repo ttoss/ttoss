@@ -1,6 +1,5 @@
+import { List, ListItem } from '@ttoss/components/List';
 import { Meta, StoryFn } from '@storybook/react';
-
-import { List, ListItem } from '@ttoss/components/list';
 
 export default {
   title: 'Components/List',

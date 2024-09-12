@@ -13,9 +13,16 @@
   },
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./list": "./src/components/List/index.ts",
-    "./table": "./src/components/Table.tsx"
+    "./Accordion": "./src/components/Accordion/index.ts",
+    "./Drawer": "./src/components/Drawer/index.ts",
+    "./InstallPwa": "./src/components/InstallPwa/index.ts",
+    "./List": "./src/components/List/index.ts",
+    "./Markdown": "./src/components/Markdown/index.ts",
+    "./Menu": "./src/components/Menu/index.ts",
+    "./Modal": "./src/components/Modal/index.ts",
+    "./Search": "./src/components/Search/index.ts",
+    "./Table": "./src/components/Table/index.ts",
+    "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
     "dist",
@@ -23,20 +30,22 @@
   ],
   "scripts": {
     "build": "tsup",
+    "postbuild": "pnpm run update-package-json-exports",
     "dev": "pnpm -r --filter=@docs/storybook run dev",
-    "test": "jest"
+    "test": "jest --projects tests/unit",
+    "update-package-json-exports": "tsx scripts/updatePackageJsonExports.ts"
   },
   "sideEffects": false,
   "dependencies": {
-    "@emotion/css": "^11.11.2",
-    "@tanstack/react-table": "^8.15.3",
+    "@emotion/css": "^11.13.0",
+    "@tanstack/react-table": "^8.20.5",
     "@theme-ui/css": "^0.16.2",
     "@types/react-modal": "^3.16.3",
     "react-accessible-accordion": "^5.0.0",
     "react-markdown": "^9.0.1",
     "react-modal": "^3.16.1",
-    "react-modern-drawer": "^1.2.2",
-    "react-toastify": "^10.0.4",
+    "react-modern-drawer": "^1.4.0",
+    "react-toastify": "^10.0.5",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0"
   },
@@ -55,7 +64,8 @@
     "@types/react": "^18.3.3",
     "jest": "^29.7.0",
     "react": "^18.3.1",
-    "tsup": "^8.2.4"
+    "tsup": "^8.2.4",
+    "tsx": "^4.6.2"
   },
   "keywords": [
     "React",
@@ -64,17 +74,45 @@
   "publishConfig": {
     "access": "public",
     "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/esm/index.js"
+      "./Accordion": {
+        "types": "./dist/Accordion/index.d.ts",
+        "import": "./dist/esm/Accordion/index.js"
       },
-      "./list": {
-        "types": "./dist/components/List/index.d.ts",
-        "import": "./dist/esm/components/List/index.js"
+      "./Drawer": {
+        "types": "./dist/Drawer/index.d.ts",
+        "import": "./dist/esm/Drawer/index.js"
       },
-      "./table": {
-        "types": "./dist/components/Table.d.ts",
-        "import": "./dist/esm/components/Table.js"
+      "./InstallPwa": {
+        "types": "./dist/InstallPwa/index.d.ts",
+        "import": "./dist/esm/InstallPwa/index.js"
+      },
+      "./List": {
+        "types": "./dist/List/index.d.ts",
+        "import": "./dist/esm/List/index.js"
+      },
+      "./Markdown": {
+        "types": "./dist/Markdown/index.d.ts",
+        "import": "./dist/esm/Markdown/index.js"
+      },
+      "./Menu": {
+        "types": "./dist/Menu/index.d.ts",
+        "import": "./dist/esm/Menu/index.js"
+      },
+      "./Modal": {
+        "types": "./dist/Modal/index.d.ts",
+        "import": "./dist/esm/Modal/index.js"
+      },
+      "./Search": {
+        "types": "./dist/Search/index.d.ts",
+        "import": "./dist/esm/Search/index.js"
+      },
+      "./Table": {
+        "types": "./dist/Table/index.d.ts",
+        "import": "./dist/esm/Table/index.js"
+      },
+      "./Toast": {
+        "types": "./dist/Toast/index.d.ts",
+        "import": "./dist/esm/Toast/index.js"
       }
     },
     "provenance": true

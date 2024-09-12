@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
-import { Meta, Story } from '@storybook/react';
-import { Search } from '@ttoss/components';
+import { Meta, StoryFn } from '@storybook/react';
+import { Search } from '@ttoss/components/Search';
 import { Text } from '@ttoss/ui';
 
 export default {
@@ -14,7 +14,7 @@ const sleep = (timeout: number) => {
   });
 };
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const [debouncedValue, setDebouncedValue] = React.useState<any>('');
 
   const [loading, setLoading] = React.useState(false);

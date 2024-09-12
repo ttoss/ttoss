@@ -1,4 +1,4 @@
-import { Modal } from '../../src';
+import { Modal } from '../../../src/components/Modal';
 import { render, screen } from '@ttoss/test-utils';
 
 const modalMessage = 'This is a modal.';

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Search } from '../../src/components/Search';
-import { act, fireEvent, render } from '@ttoss/test-utils'; // Ajuste o caminho do import conforme necessário
+import { Search } from '../../../src/components/Search';
+import { act, fireEvent, render } from '@ttoss/test-utils';
 
 jest.mock('@ttoss/react-hooks', () => {
   return {

@@ -1,5 +1,5 @@
 import { Button } from '@ttoss/ui';
-import { Modal } from '@ttoss/components';
+import { Modal } from '@ttoss/components/Modal';
 import {
   NotificationsModal,
   NotificationsProvider,

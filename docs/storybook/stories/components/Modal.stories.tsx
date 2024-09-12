@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Button, Flex, Text } from '@ttoss/ui';
 import { Meta, StoryFn } from '@storybook/react';
-import { Modal } from '../../../../packages/components/src';
+import { Modal } from '@ttoss/components/Modal';
 import { action } from '@storybook/addon-actions';
 
 export default {

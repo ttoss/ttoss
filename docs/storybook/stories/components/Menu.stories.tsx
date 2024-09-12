@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Box, Flex, Link } from '@ttoss/ui';
-import { Menu } from '@ttoss/components';
-import { Meta, Story } from '@storybook/react';
+import { Menu } from '@ttoss/components/Menu';
+import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'Components/Menu',
 } as Meta;
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const handleClose = () => {
