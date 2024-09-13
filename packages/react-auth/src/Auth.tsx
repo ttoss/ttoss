@@ -143,7 +143,13 @@ const AuthLogic = () => {
     async ({ email, password }) => {
       try {
         setLoading(true);
-        await signIn({ username: email, password });
+        const result = await signIn({ username: email, password });
+        if (result.nextStep.signInStep === 'RESET_PASSWORD') {
+          setNotifications({
+            type: 'error',
+            message: `For your security, we have updated our system and you need to reset your password in 'forgot your password?' to proceed`,
+          });
+        }
         // toast('Signed In');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
