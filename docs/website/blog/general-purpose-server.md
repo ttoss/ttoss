@@ -307,6 +307,12 @@ Use Let's Encrypt staging server with the [caServer](https://doc.traefik.io/trae
 
 :::
 
+::: tip
+
+I suggest not adding the label `- 'traefik.http.routers.YOUR_SERVICE.tls.certresolver=tlschallenge'` to your service's `docker-compose.yaml` file until you make sure it is running properly with HTTP.
+
+:::
+
 Run the Traefik container:
 
 ```bash
@@ -441,4 +447,46 @@ Run the Traefik container:
 
 ```bash
 docker-compose up -d
+```
+
+Now, every time you want to add the middleware you defined in the `dynamic.yaml` file, you can add the middleware to the labels of the service you want. For example, to add the `secHeaders` and `autodetectContenttype` middleware to the Nginx service, you can add the following label:
+
+```yaml
+- 'traefik.http.routers.example1.middlewares=secHeaders@file, autodetectContenttype@file'
+```
+
+Restart the Nginx service:
+
+```bash
+docker-compose up -d
+```
+
+::: note
+
+Note that `@file` the key (`file`) of the provider of the file `/etc/traefik/dynamic.yaml` you defined in the `traefik.yaml` file.
+
+:::
+
+### Redirect to HTTPS
+
+Your Nginx service is accessible via HTTP and HTTPS. You can redirect all HTTP traffic to HTTPS by adding the following labels to the `traefik/config/dynamic.yaml` file:
+
+```yaml
+http:
+  # ... rest of the file
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+```
+
+Update the `docker-compose.yaml` file inside the `example1` folder to include the middleware:
+
+```yaml
+services:
+  nginx:
+    # ... rest of the file
+    labels:
+      # ... rest of the file
+      - 'traefik.http.routers.example1-insecure.middlewares=redirectToHttps@file'
 ```
