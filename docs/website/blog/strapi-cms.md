@@ -1,3 +1,7 @@
+---
+draft: true
+---
+
 # Setup a Strapi CMS in AWS
 
 First, you need to create a new Strapi project Follow the instructions in the [Strapi documentation](https://docs.strapi.io/dev-docs/setup-deployment) to create a new Strapi project.
