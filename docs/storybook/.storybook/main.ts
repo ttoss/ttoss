@@ -11,15 +11,13 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-interactions'),
-    '@storybook/addon-webpack5-compiler-babel',
+    getAbsolutePath("@storybook/addon-webpack5-compiler-babel"),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
   },
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
 };
 
 export default config;
