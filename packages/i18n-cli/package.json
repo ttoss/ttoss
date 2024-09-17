@@ -29,7 +29,7 @@
     "@ttoss/config": "workspace:^",
     "@types/minimist": "^1.2.5",
     "ts-node": "^10.9.2",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "publishConfig": {
     "access": "public",

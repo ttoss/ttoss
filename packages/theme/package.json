@@ -41,7 +41,7 @@
     "@ttoss/test-utils": "workspace:^",
     "jest": "^29.7.0",
     "theme-ui": "^0.16.2",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "keywords": [],
   "publishConfig": {
