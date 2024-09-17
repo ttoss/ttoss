@@ -38,11 +38,11 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/jest": "^29.5.12",
-    "@types/react": "^18.3.3",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^18.3.7",
     "@types/react-collapse": "^5.0.4",
     "jest": "^29.7.0",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "keywords": [
     "React",
