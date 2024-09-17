@@ -1,47 +1,47 @@
 import { IconifyIcon, addIcon } from '@ttoss/react-icons';
-import addFilledIcon from '@iconify/icons-carbon/add-filled.js';
-import arrowRightIcon from '@iconify/icons-carbon/arrow-right.js';
-import arrowUpRightIcon from '@iconify/icons-carbon/arrow-up-right.js';
-import attachmentIcon from '@iconify/icons-carbon/attachment.js';
-import calendarIcon from '@iconify/icons-carbon/calendar.js';
-import caretDownIcon from '@iconify/icons-carbon/caret-down.js';
-import caretUpIcon from '@iconify/icons-carbon/caret-up.js';
-import checkMarkIcon from '@iconify/icons-carbon/checkmark.js';
-import checkMarkOutlineIcon from '@iconify/icons-carbon/checkmark-outline.js';
-import checkboxCheckedFilled from '@iconify/icons-carbon/checkbox-checked-filled.js';
-import checkboxIcon from '@iconify/icons-carbon/checkbox.js';
-import checkboxIndeterminateFilledIcon from '@iconify/icons-carbon/checkbox-indeterminate-filled.js';
-import chevronDownIcon from '@iconify/icons-carbon/chevron-down.js';
-import chevronLeftIcon from '@iconify/icons-carbon/chevron-left.js';
-import chevronRightIcon from '@iconify/icons-carbon/chevron-right.js';
-import chevronUpIcon from '@iconify/icons-carbon/chevron-up.js';
-import closeFilledIcon from '@iconify/icons-carbon/close-filled.js';
-import closeIcon from '@iconify/icons-carbon/close.js';
-import copyIcon from '@iconify/icons-carbon/copy.js';
-import downloadIcon from '@iconify/icons-carbon/download.js';
-import editIcon from '@iconify/icons-carbon/edit.js';
-import emailIcon from '@iconify/icons-carbon/email.js';
-import errorFilledIcon from '@iconify/icons-carbon/error-filled.js';
-import informationFilledIcon from '@iconify/icons-carbon/information-filled.js';
-import languageIcon from '@iconify/icons-carbon/language.js';
-import loadingIcon from '@iconify/icons-eos-icons/loading.js';
-import menuIcon from '@iconify/icons-carbon/menu.js';
-import pasteIcon from '@iconify/icons-carbon/paste.js';
-import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked.js';
-import radioButtonIcon from '@iconify/icons-carbon/radio-button.js';
-import renewIcon from '@iconify/icons-carbon/renew.js';
-import searchIcon from '@iconify/icons-carbon/search.js';
-import shareIcon from '@iconify/icons-carbon/share.js';
-import successCircleIcon from '@iconify/icons-mdi/success-circle.js';
-import threeDotsLoadingIcon from '@iconify/icons-eos-icons/three-dots-loading.js';
-import timeIcon from '@iconify/icons-carbon/time.js';
-import trashCanIcon from '@iconify/icons-carbon/trash-can.js';
-import uploadIcon from '@iconify/icons-carbon/upload.js';
-import userAvatarFilledAltIcon from '@iconify/icons-carbon/user-avatar-filled-alt.js';
-import viewFilledIcon from '@iconify/icons-carbon/view-filled.js';
-import viewOffFilledIcon from '@iconify/icons-carbon/view-off-filled.js';
-import warningAltIcon from '@iconify/icons-carbon/warning-alt.js';
-import warningFilledIcon from '@iconify/icons-carbon/warning-filled.js';
+import addFilledIcon from '@iconify/icons-carbon/add-filled';
+import arrowRightIcon from '@iconify/icons-carbon/arrow-right';
+import arrowUpRightIcon from '@iconify/icons-carbon/arrow-up-right';
+import attachmentIcon from '@iconify/icons-carbon/attachment';
+import calendarIcon from '@iconify/icons-carbon/calendar';
+import caretDownIcon from '@iconify/icons-carbon/caret-down';
+import caretUpIcon from '@iconify/icons-carbon/caret-up';
+import checkMarkIcon from '@iconify/icons-carbon/checkmark';
+import checkMarkOutlineIcon from '@iconify/icons-carbon/checkmark-outline';
+import checkboxCheckedFilled from '@iconify/icons-carbon/checkbox-checked-filled';
+import checkboxIcon from '@iconify/icons-carbon/checkbox';
+import checkboxIndeterminateFilledIcon from '@iconify/icons-carbon/checkbox-indeterminate-filled';
+import chevronDownIcon from '@iconify/icons-carbon/chevron-down';
+import chevronLeftIcon from '@iconify/icons-carbon/chevron-left';
+import chevronRightIcon from '@iconify/icons-carbon/chevron-right';
+import chevronUpIcon from '@iconify/icons-carbon/chevron-up';
+import closeFilledIcon from '@iconify/icons-carbon/close-filled';
+import closeIcon from '@iconify/icons-carbon/close';
+import copyIcon from '@iconify/icons-carbon/copy';
+import downloadIcon from '@iconify/icons-carbon/download';
+import editIcon from '@iconify/icons-carbon/edit';
+import emailIcon from '@iconify/icons-carbon/email';
+import errorFilledIcon from '@iconify/icons-carbon/error-filled';
+import informationFilledIcon from '@iconify/icons-carbon/information-filled';
+import languageIcon from '@iconify/icons-carbon/language';
+import loadingIcon from '@iconify/icons-eos-icons/loading';
+import menuIcon from '@iconify/icons-carbon/menu';
+import pasteIcon from '@iconify/icons-carbon/paste';
+import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked';
+import radioButtonIcon from '@iconify/icons-carbon/radio-button';
+import renewIcon from '@iconify/icons-carbon/renew';
+import searchIcon from '@iconify/icons-carbon/search';
+import shareIcon from '@iconify/icons-carbon/share';
+import successCircleIcon from '@iconify/icons-mdi/success-circle';
+import threeDotsLoadingIcon from '@iconify/icons-eos-icons/three-dots-loading';
+import timeIcon from '@iconify/icons-carbon/time';
+import trashCanIcon from '@iconify/icons-carbon/trash-can';
+import uploadIcon from '@iconify/icons-carbon/upload';
+import userAvatarFilledAltIcon from '@iconify/icons-carbon/user-avatar-filled-alt';
+import viewFilledIcon from '@iconify/icons-carbon/view-filled';
+import viewOffFilledIcon from '@iconify/icons-carbon/view-off-filled';
+import warningAltIcon from '@iconify/icons-carbon/warning-alt';
+import warningFilledIcon from '@iconify/icons-carbon/warning-filled';
 
 const replicateIcon: IconifyIcon = {
   body: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +61,14 @@ const subtractIcon: IconifyIcon = {
   height: 48,
 };
 
-export const BrutalIcons = {
+export const BrutalIcons: Record<
+  string,
+  | IconifyIcon
+  | {
+      __esModule: true;
+      default: IconifyIcon;
+    }
+> = {
   add: addFilledIcon,
   'arrow-right': arrowRightIcon,
   attachment: attachmentIcon,
@@ -110,5 +117,14 @@ export const BrutalIcons = {
 };
 
 Object.entries(BrutalIcons).forEach(([key, icon]) => {
+  /**
+   * "It happens when an ES module imports a CommonJS module with the default property present and the __esModule property set to true."
+   * https://github.com/evanw/esbuild/issues/1719#issuecomment-953470495
+   */
+  if ('default' in icon) {
+    addIcon(key, icon.default);
+    return;
+  }
+
   addIcon(key, icon);
 });
