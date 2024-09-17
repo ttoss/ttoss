@@ -1479,13 +1479,13 @@ importers:
 
   packages/theme:
     dependencies:
-      '@iconify/icons-carbon':
-        specifier: ^1.2.20
-        version: 1.2.20
       deepmerge:
         specifier: ^4.3.1
         version: 4.3.1
     devDependencies:
+      '@iconify/icons-carbon':
+        specifier: ^1.2.20
+        version: 1.2.20
       '@iconify/icons-eos-icons':
         specifier: ^1.2.6
         version: 1.2.6
@@ -1621,6 +1621,9 @@ importers:
       '@ttoss/react-i18n':
         specifier: workspace:^
         version: link:../../packages/react-i18n
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../../packages/react-icons
       '@ttoss/react-notifications':
         specifier: workspace:^
         version: link:../../packages/react-notifications
