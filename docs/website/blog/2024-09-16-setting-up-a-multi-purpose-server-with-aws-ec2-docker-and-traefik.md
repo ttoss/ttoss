@@ -373,7 +373,7 @@ To add HTTPS to the Nginx service, add the following labels to the `docker-compo
 
 ```yaml
 - 'traefik.http.routers.example1.rule=Host(`example1.com`)'
-- 'traefik.http.routers.example1.entrypoints=web'
+- 'traefik.http.routers.example1.entrypoints=web-secure'
 - 'traefik.http.routers.example1.tls.certresolver=tlschallenge'
 ```
 
@@ -513,7 +513,7 @@ Your Nginx service is accessible via HTTP and HTTPS. You can redirect all HTTP t
 http:
   # ... rest of the file
   middlewares:
-    redirect-to-https:
+    redirectToHttps:
       redirectScheme:
         scheme: https
 ```

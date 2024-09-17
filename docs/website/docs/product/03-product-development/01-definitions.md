@@ -183,3 +183,7 @@ If the company chooses **Project B**, the opportunity cost is \$100,000, meaning
 The opportunity cost helps the company understand that choosing **Project B** would mean sacrificing $100,000 in potential revenue compared to **Project A**. Therefore, from a purely financial perspective, **Project A** would be the more beneficial choice.
 
 This example illustrates how opportunity cost can guide decision-making by highlighting the financial impact of forgoing one option in favor of another.
+
+## Round-Robin Scheduling
+
+Round-Robin Scheduling is a time-sharing method where each task is given a fixed time slice (quantum) to execute. When the time expires, the task is placed back in the queue, and the next task begins. This process repeats in a cycle until all tasks are completed. It ensures that no task monopolizes resources and that shorter tasks finish more quickly, even when the duration of each task is unknown.
