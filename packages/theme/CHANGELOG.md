@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.18...@ttoss/theme@1.7.19) (2024-09-17)
+
+### Bug Fixes
+
+- icons not displaying ([#593](https://github.com/ttoss/ttoss/issues/593)) ([56b1725](https://github.com/ttoss/ttoss/commit/56b17252ad30ec8151979983e2f67d644fe67b83))
+
 ## [1.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.17...@ttoss/theme@1.7.18) (2024-09-17)
 
 **Note:** Version bump only for package @ttoss/theme
