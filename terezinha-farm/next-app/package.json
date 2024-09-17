@@ -12,6 +12,7 @@
   "dependencies": {
     "@ttoss/react-auth": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.0.28",
