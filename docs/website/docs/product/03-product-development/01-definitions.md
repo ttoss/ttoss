@@ -184,6 +184,12 @@ The opportunity cost helps the company understand that choosing **Project B** wo
 
 This example illustrates how opportunity cost can guide decision-making by highlighting the financial impact of forgoing one option in favor of another.
 
+## Queue Capacity
+
+Queue capacity refers to the maximum number of items, tasks, or jobs that a queue can hold at any given time. It represents the limit beyond which new tasks cannot be added to the queue until space is made available, either by processing or removing existing tasks. Queue capacity is an important factor in managing workflow, as it influences system efficiency, wait times, and overall throughput.
+
+In practical terms, a queue with a large capacity can hold more tasks but may lead to longer wait times if the processing speed is slow, while a queue with a smaller capacity can reduce waiting but may cause bottlenecks if too many tasks arrive at once. Managing queue capacity helps balance load and maintain smooth flow in processes like manufacturing, computing, or service systems.
+
 ## Round-Robin Scheduling
 
 Round-Robin Scheduling is a time-sharing method where each task is given a fixed time slice (quantum) to execute. When the time expires, the task is placed back in the queue, and the next task begins. This process repeats in a cycle until all tasks are completed. It ensures that no task monopolizes resources and that shorter tasks finish more quickly, even when the duration of each task is unknown.

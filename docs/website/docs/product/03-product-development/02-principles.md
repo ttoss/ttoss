@@ -6,7 +6,7 @@ import TOCInline from '@theme/TOCInline';
 
 In this section, we list the principles that we follow when developing products. We use these principles as a base to create all processes, tools, guidelines, and workflows of all departments—[product](/docs/product), [design](/docs/engineering), and [engineering](/docs/engineering).
 
-_We based on the book [The Principles of Product Development Flow](https://www.amazon.com/Principles-Product-Development-Flow-Generation-ebook/dp/B00K7OWG7O) by Donald G. Reinertsen._
+_These principles are based on the book [The Principles of Product Development Flow](https://www.amazon.com/Principles-Product-Development-Flow-Generation-ebook/dp/B00K7OWG7O) by Donald G. Reinertsen._
 
 ## Table of Contents
 
@@ -31,6 +31,39 @@ You don't have business trading money for [cycle time](/docs/product/product-dev
 ### Q1: The Principle of Invisible Inventory: Product Development Inventory Is Physically and Financially Invisible
 
 Inventory in product development isn't physical objects but information. Then, it's virtually invisible, both physically and financially. Product development inventory's effects: increased [cycle time](/docs/product/product-development/definitions#cycle-time), delayed feedback, constantly shifting priorities, and status reporting.
+
+### Q4: The Principle of High-Queues States: Most of the Damage Done by a Queue Is Caused by High-Queues States
+
+Queues spend more time in low-queue states, but high-queue states cause the most harm. When a queue is overloaded, it delays more tasks, increases cycle times, and leads to greater economic waste. Even though high-queue states are less frequent, they have a much bigger impact on overall performance and efficiency.
+
+The State Probability of an $M/M/1/\infty$ queue to have $n$ jobs in the system is:
+
+$$
+\text{State Probability} = \frac{1-\rho}{\rho^n}
+$$
+
+For example, for a queue with at 75% utilization, the probabilities of having $n$ jobs in the system are:
+
+| Number of Jobs in the System | Probability |
+| ---------------------------- | ----------- |
+| 0                            | 25%         |
+| 1                            | 18.8%       |
+| 2                            | 14.1%       |
+| 3                            | 10.5%       |
+
+This means that the probability of having two jobs are 75% of the probability of having one job in the system. However, delaying two units creates twice the economic waste (see [The Hidden Costs of Queues in Product Development](/blog/2024/09/24/the-hidden-costs-of-queues-in-product-development) for more details) of delaying one unit.
+
+### Q8: The Principle of Linked Queues: Adjacent Queues See Arrival or Service Variability Depending on Loading
+
+In systems where one queue feeds into another, the output of one queue becomes the input for the next. The way each queue performs depends on how busy it is—its output may either mirror the rate at which tasks arrive or the speed at which they are completed.
+
+In a process with several linked queues, one queue usually slows down the entire system (the bottleneck). To improve the flow and speed up the whole process, it's important to reduce delays and unpredictability at the bottleneck by managing how tasks arrive from the previous queue. By controlling what happens before the bottleneck, you can improve the flow through it and make the system more efficient.
+
+### Q16: The Intervention Principle: We Cannot Rely on Randomness to Correct a Random Queue
+
+When a queue builds up into a sustained high-load state, it won't easily or quickly revert to a low-load state on its own. Just like flipping 10 heads in a row doesn’t increase the chance of flipping 10 tails to balance it out, randomness won’t fix the problem.
+
+You need to intervene quickly and decisively in such situations. Set limits on maximum queue size, and act before the system hits those limits. The more closely you monitor queues and intervene early, the less they will cost you in the long run.
 
 ## Controlling Flow Under Uncertainty
 
