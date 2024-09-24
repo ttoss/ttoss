@@ -10,7 +10,7 @@ tags:
   - agile
 ---
 
-In product development and process management, queues can silently become a significant source of economic waste. Queues delay progress, reduce efficiency, and create ripple effects that harm quality, motivation, and ultimately, business outcomes. This article explores seven critical forms of waste that queues generate: idle capacity, longer [cycle times](/docs/product/product-development/principles#cycle-time), increased risk, greater variability, more overhead, lower quality, and diminished motivation.
+In product development and process management, queues can silently become a significant source of economic waste. Queues delay progress, reduce efficiency, and create ripple effects that harm quality, motivation, and ultimately, business outcomes. This article explores seven critical forms of waste that queues generate: idle capacity, longer [cycle times](/docs/product/product-development/definitions#cycle-time), increased risk, greater variability, more overhead, lower quality, and diminished motivation.
 
 <!-- truncate -->
 
