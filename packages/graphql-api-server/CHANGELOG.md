@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.12](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.6.11...@ttoss/graphql-api-server@0.6.12) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
 ## 0.6.11 (2024-09-17)
 
 **Note:** Version bump only for package @ttoss/graphql-api-server

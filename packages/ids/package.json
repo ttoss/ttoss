@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ids",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "A library to handle the different ids used in the ttoss ecosystem applications",
   "author": "ttoss",
   "contributors": [

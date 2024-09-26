@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-feature-flags@0.2.1...@ttoss/react-feature-flags@0.2.2) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/react-feature-flags
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-feature-flags@0.2.0...@ttoss/react-feature-flags@0.2.1) (2024-09-17)
 
 **Note:** Version bump only for package @ttoss/react-feature-flags

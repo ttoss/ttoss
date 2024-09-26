@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Simple environment agnostic logger",
   "license": "MIT",
   "contributors": [
