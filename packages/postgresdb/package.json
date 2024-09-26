@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A library to handle PostgreSQL database connections and queries",
   "author": "ttoss",
   "contributors": [

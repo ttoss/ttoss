@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.0...@ttoss/postgresdb-cli@0.1.2) (2024-09-26)
+
+### Bug Fixes
+
+- package public config ([a1735e3](https://github.com/ttoss/ttoss/commit/a1735e390da93c2a25b1ad0752d57588ba12d347))
+
 # 0.1.0 (2024-09-26)
 
 ### Features
