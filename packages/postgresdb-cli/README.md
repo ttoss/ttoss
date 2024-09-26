@@ -10,7 +10,7 @@ pnpm add @ttoss/postgresdb-cli
 
 ## Usage
 
-First, you need to create define the `db` object in your project using the `@ttoss/postgresdb` package. Check [@ttoss/postgresdb documentation](../postgresdb/) for more information. The CLI will use this object to load the models and interact with the database.
+First, you need to create define the `db` object in your project using the `@ttoss/postgresdb` package. Check [@ttoss/postgresdb documentation](/docs/modules/packages/postgresdb/) for more information. The CLI will use this object to load the models and interact with the database.
 
 Second, you need to define the following environment variables to connect to the database:
 
