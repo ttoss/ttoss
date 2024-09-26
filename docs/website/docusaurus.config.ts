@@ -61,6 +61,8 @@ const config: Config = {
           'layouts',
           'logger',
           'monorepo',
+          'postgresdb',
+          'postgresdb-cli',
           'react-feature-flags',
           'react-hooks',
           'react-i18n',

@@ -152,6 +152,28 @@ importers:
         specifier: ^4.6.2
         version: 4.17.0
 
+  challenge/packages/db-postgresdb:
+    dependencies:
+      '@ttoss/postgresdb':
+        specifier: workspace:^
+        version: link:../../../packages/postgresdb
+    devDependencies:
+      '@ttoss-challenge/seed':
+        specifier: workspace:^
+        version: link:../seed
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../../../packages/config
+      '@ttoss/postgresdb-cli':
+        specifier: workspace:^
+        version: link:../../../packages/postgresdb-cli
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      tsx:
+        specifier: ^4.6.2
+        version: 4.17.0
+
   challenge/packages/seed: {}
 
   docs/storybook:
@@ -335,7 +357,7 @@ importers:
         version: 7.6.5(graphql-middleware@6.1.35(graphql@16.9.0))(graphql@16.9.0)
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.6.2))
+        version: 29.7.0(@types/node@22.5.5)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.5.5)(typescript@5.6.2))
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.6.2)(yaml@2.5.0)
@@ -627,7 +649,7 @@ importers:
         version: 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@theme-ui/css':
         specifier: ^0.16.2
-        version: 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+        version: 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1172,6 +1194,53 @@ importers:
       '@types/yargs':
         specifier: ^17.0.32
         version: 17.0.33
+      tsup:
+        specifier: ^8.3.0
+        version: 8.3.0(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.6.2)(yaml@2.5.0)
+
+  packages/postgresdb:
+    dependencies:
+      pg:
+        specifier: ^8.12.0
+        version: 8.12.0
+      sequelize:
+        specifier: ^6.37.3
+        version: 6.37.3(pg@8.12.0)
+      sequelize-typescript:
+        specifier: ^2.1.6
+        version: 2.1.6(@types/node@20.16.1)(@types/validator@13.12.2)(reflect-metadata@0.2.2)(sequelize@6.37.3(pg@8.12.0))
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.16.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.6.2))
+      tsup:
+        specifier: ^8.3.0
+        version: 8.3.0(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.6.2)(yaml@2.5.0)
+
+  packages/postgresdb-cli:
+    dependencies:
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      esbuild:
+        specifier: ^0.23.1
+        version: 0.23.1
+      sequelize-erd:
+        specifier: ^1.3.1
+        version: 1.3.1
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.5.5)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.5.5)(typescript@5.6.2))
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(jiti@1.21.6)(postcss@8.4.41)(tsx@4.17.0)(typescript@5.6.2)(yaml@2.5.0)
@@ -3898,6 +3967,7 @@ packages:
   '@koa/router@12.0.1':
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
+    deprecated: Use v12.0.2 or higher to fix the vulnerability issue
 
   '@kwsites/file-exists@1.1.1':
     resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
@@ -5350,6 +5420,9 @@ packages:
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+
+  '@types/validator@13.12.2':
+    resolution: {integrity: sha512-6SlHBzUW8Jhf3liqrGGXyTJSIFe4nqlJ5A5KaMZ2l/vbM3Wh3KSybots/wfWVzNLK4D1NZluDlSQIbIEPx6oyA==}
 
   '@types/wrap-ansi@3.0.0':
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
@@ -7319,6 +7392,9 @@ packages:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
     engines: {node: '>=12'}
 
+  dottie@2.0.6:
+    resolution: {integrity: sha512-iGCHkfUc5kFekGiqhe8B/mdaurD+lakO9txNnTvKtA6PISrw86LgqHvRzWYPyoE2Ph5aMIrCw9/uko6XHTKCwA==}
+
   dset@3.1.3:
     resolution: {integrity: sha512-20TuZZHCEZ2O71q9/+8BwKwZ0QtD9D8ObhrihJPr+vLLYlSuAU3/zL4cSlgbfeoGHTjCSJBa7NGcrF9/Bx/WJQ==}
     engines: {node: '>=4'}
@@ -8319,6 +8395,10 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
+  glob@7.2.0:
+    resolution: {integrity: sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
@@ -8789,6 +8869,10 @@ packages:
   infima@0.2.0-alpha.44:
     resolution: {integrity: sha512-tuRkUSO/lB3rEhLJk25atwAjgLuzq070+pOW8XcvpHky/YbENnRRdPd85IBkyeTgttmOy5ah+yHYsK1HhUd4lQ==}
     engines: {node: '>=12'}
+
+  inflection@1.13.4:
+    resolution: {integrity: sha512-6I/HUDeYFfuNCVS3td055BaXBwKYuzw7K3ExVMStBowKo9oOAMJIXIHvdyR3iboTCp1b+1i5DSkIZTcwIktuDw==}
+    engines: {'0': node >= 0.4.0}
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
@@ -10199,6 +10283,12 @@ packages:
   mnemonist@0.38.3:
     resolution: {integrity: sha512-2K9QYubXx/NAjv4VLq1d1Ly8pWNC5L3BrixtdkyTegXWJIqY+zLNDhhX/A+ZwWt70tB1S8H4BE8FLYEFyNoOBw==}
 
+  moment-timezone@0.5.45:
+    resolution: {integrity: sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==}
+
+  moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -11568,6 +11658,9 @@ packages:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
     engines: {node: '>=8'}
 
+  reflect-metadata@0.2.2:
+    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
+
   reflect.getprototypeof@1.0.6:
     resolution: {integrity: sha512-fmfw4XgoDke3kdI6h4xcUz1dG8uaiv5q9gcEwLS4Pnth2kxT+GZ7YehS1JTMGBQmtV7Y4GFGbs2re2NqhdozUg==}
     engines: {node: '>= 0.4'}
@@ -11752,6 +11845,9 @@ packages:
     resolution: {integrity: sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==}
     engines: {node: '>=18'}
 
+  retry-as-promised@7.0.4:
+    resolution: {integrity: sha512-XgmCoxKWkDofwH8WddD0w85ZfqYz+ZHlr5yo+3YUCfycWawU56T5ckWXsScsj5B8tqUcIG67DxXByo3VUgiAdA==}
+
   retry@0.12.0:
     resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
     engines: {node: '>= 4'}
@@ -11891,6 +11987,56 @@ packages:
 
   sentence-case@3.0.4:
     resolution: {integrity: sha512-8LS0JInaQMCRoQ7YUytAo/xUu5W2XnQxV2HI/6uM6U7CITS1RqPElr30V6uIqyMKM9lJGRVFy5/4CuzcixNYSg==}
+
+  sequelize-erd@1.3.1:
+    resolution: {integrity: sha512-w5/gNkj0WTp80KMvMxrrTp3HyIn1B8F5XmTXP6PXQNoWi1HKazXe9IvlbmGVP2yxx/YTtX+QWatcwkDk8HLK9Q==}
+    hasBin: true
+
+  sequelize-pool@7.1.0:
+    resolution: {integrity: sha512-G9c0qlIWQSK29pR/5U2JF5dDQeqqHRragoyahj/Nx4KOOQ3CPPfzxnfqFPCSB7x5UgjOgnZ61nSxz+fjDpRlJg==}
+    engines: {node: '>= 10.0.0'}
+
+  sequelize-typescript@2.1.6:
+    resolution: {integrity: sha512-Vc2N++3en346RsbGjL3h7tgAl2Y7V+2liYTAOZ8XL0KTw3ahFHsyAUzOwct51n+g70I1TOUDgs06Oh6+XGcFkQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      '@types/node': '*'
+      '@types/validator': '*'
+      reflect-metadata: '*'
+      sequelize: '>=6.20.1'
+
+  sequelize@6.37.3:
+    resolution: {integrity: sha512-V2FTqYpdZjPy3VQrZvjTPnOoLm0KudCRXfGWp48QwhyPPp2yW8z0p0sCYZd/em847Tl2dVxJJ1DR+hF+O77T7A==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      ibm_db: '*'
+      mariadb: '*'
+      mysql2: '*'
+      oracledb: '*'
+      pg: '*'
+      pg-hstore: '*'
+      snowflake-sdk: '*'
+      sqlite3: '*'
+      tedious: '*'
+    peerDependenciesMeta:
+      ibm_db:
+        optional: true
+      mariadb:
+        optional: true
+      mysql2:
+        optional: true
+      oracledb:
+        optional: true
+      pg:
+        optional: true
+      pg-hstore:
+        optional: true
+      snowflake-sdk:
+        optional: true
+      sqlite3:
+        optional: true
+      tedious:
+        optional: true
 
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
@@ -12492,6 +12638,9 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
+  toposort-class@1.0.1:
+    resolution: {integrity: sha512-OsLcGGbYF3rMjPUf8oKktyvCiUxSbqMMS39m33MAjLTC1DVIH6x3WSt63/M77ihI09+Sdfk1AXvfhCEeUmC7mg==}
+
   toposort@2.0.2:
     resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
 
@@ -13000,6 +13149,10 @@ packages:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  validator@13.12.0:
+    resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
+    engines: {node: '>= 0.10'}
+
   value-equal@1.0.1:
     resolution: {integrity: sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==}
 
@@ -13247,6 +13400,9 @@ packages:
 
   wildcard@2.0.1:
     resolution: {integrity: sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==}
+
+  wkx@0.5.0:
+    resolution: {integrity: sha512-Xng/d4Ichh8uN4l0FToV/258EjMGU9MGcA0HV2d9B/ZpZB3lqQm7nkOdZdm5GhKtLLhAE7PiVQwN4eN+2YJJUg==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -18314,7 +18470,7 @@ snapshots:
 
   '@storybook/core-webpack@8.3.1(storybook@8.3.1)':
     dependencies:
-      '@types/node': 22.4.1
+      '@types/node': 22.5.5
       storybook: 8.3.1
       ts-dedent: 2.2.0
 
@@ -18699,7 +18855,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.7)(react@18.3.1)
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       deepmerge: 4.3.1
       react: 18.3.1
 
@@ -18710,7 +18866,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
       '@types/styled-system': 5.1.22
       react: 18.3.1
@@ -18718,11 +18874,11 @@ snapshots:
   '@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.7)(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       deepmerge: 4.3.1
       react: 18.3.1
 
-  '@theme-ui/css@0.16.2(@emotion/react@11.13.0(react@18.3.1))':
+  '@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))':
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.7)(react@18.3.1)
       csstype: 3.1.3
@@ -18731,13 +18887,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.3.7)(react@18.3.1)
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       react: 18.3.1
 
   '@theme-ui/match-media@0.16.2(@theme-ui/core@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1))(@theme-ui/css@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1)))(react@18.3.1)':
     dependencies:
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       react: 18.3.1
 
   '@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)':
@@ -18745,7 +18901,7 @@ snapshots:
       '@emotion/react': 11.13.0(@types/react@18.3.7)(react@18.3.1)
       '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       react: 18.3.1
 
   '@tootallnate/once@2.0.0': {}
@@ -19200,6 +19356,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@types/uuid@9.0.8': {}
+
+  '@types/validator@13.12.2': {}
 
   '@types/wrap-ansi@3.0.0': {}
 
@@ -21381,7 +21539,7 @@ snapshots:
 
   debug@4.1.1:
     dependencies:
-      ms: 2.1.1
+      ms: 2.1.3
 
   debug@4.3.6:
     dependencies:
@@ -21621,6 +21779,8 @@ snapshots:
   dotenv@16.0.3: {}
 
   dotenv@16.4.5: {}
+
+  dottie@2.0.6: {}
 
   dset@3.1.3: {}
 
@@ -22928,6 +23088,15 @@ snapshots:
       package-json-from-dist: 1.0.0
       path-scurry: 2.0.0
 
+  glob@7.2.0:
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 3.1.2
+      once: 1.4.0
+      path-is-absolute: 1.0.1
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -23553,6 +23722,8 @@ snapshots:
   index-to-position@0.1.2: {}
 
   infima@0.2.0-alpha.44: {}
+
+  inflection@1.13.4: {}
 
   inflight@1.0.6:
     dependencies:
@@ -25622,6 +25793,12 @@ snapshots:
     dependencies:
       obliterator: 1.6.1
 
+  moment-timezone@0.5.45:
+    dependencies:
+      moment: 2.30.1
+
+  moment@2.30.1: {}
+
   mri@1.2.0: {}
 
   mrmime@2.0.0: {}
@@ -27052,6 +27229,8 @@ snapshots:
       indent-string: 4.0.0
       strip-indent: 3.0.0
 
+  reflect-metadata@0.2.2: {}
+
   reflect.getprototypeof@1.0.6:
     dependencies:
       call-bind: 1.0.7
@@ -27324,6 +27503,8 @@ snapshots:
       onetime: 7.0.0
       signal-exit: 4.1.0
 
+  retry-as-promised@7.0.4: {}
+
   retry@0.12.0: {}
 
   retry@0.13.1: {}
@@ -27491,6 +27672,44 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.6.3
       upper-case-first: 2.0.2
+
+  sequelize-erd@1.3.1:
+    dependencies:
+      commander: 2.20.3
+      lodash: 4.17.21
+
+  sequelize-pool@7.1.0: {}
+
+  sequelize-typescript@2.1.6(@types/node@20.16.1)(@types/validator@13.12.2)(reflect-metadata@0.2.2)(sequelize@6.37.3(pg@8.12.0)):
+    dependencies:
+      '@types/node': 20.16.1
+      '@types/validator': 13.12.2
+      glob: 7.2.0
+      reflect-metadata: 0.2.2
+      sequelize: 6.37.3(pg@8.12.0)
+
+  sequelize@6.37.3(pg@8.12.0):
+    dependencies:
+      '@types/debug': 4.1.12
+      '@types/validator': 13.12.2
+      debug: 4.3.6
+      dottie: 2.0.6
+      inflection: 1.13.4
+      lodash: 4.17.21
+      moment: 2.30.1
+      moment-timezone: 0.5.45
+      pg-connection-string: 2.6.4
+      retry-as-promised: 7.0.4
+      semver: 7.6.3
+      sequelize-pool: 7.1.0
+      toposort-class: 1.0.1
+      uuid: 8.3.2
+      validator: 13.12.0
+      wkx: 0.5.0
+    optionalDependencies:
+      pg: 8.12.0
+    transitivePeerDependencies:
+      - supports-color
 
   serialize-javascript@6.0.2:
     dependencies:
@@ -28148,7 +28367,7 @@ snapshots:
       '@theme-ui/color-modes': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
       '@theme-ui/components': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(@theme-ui/theme-provider@0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@theme-ui/core': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
-      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(react@18.3.1))
+      '@theme-ui/css': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))
       '@theme-ui/global': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
       '@theme-ui/theme-provider': 0.16.2(@emotion/react@11.13.0(@types/react@18.3.7)(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -28203,6 +28422,8 @@ snapshots:
   toidentifier@1.0.0: {}
 
   toidentifier@1.0.1: {}
+
+  toposort-class@1.0.1: {}
 
   toposort@2.0.2: {}
 
@@ -28730,6 +28951,8 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
+  validator@13.12.0: {}
+
   value-equal@1.0.1: {}
 
   value-or-promise@1.0.11: {}
@@ -29092,6 +29315,10 @@ snapshots:
       string-width: 5.1.2
 
   wildcard@2.0.1: {}
+
+  wkx@0.5.0:
+    dependencies:
+      '@types/node': 20.16.1
 
   word-wrap@1.2.5: {}
 
