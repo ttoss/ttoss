@@ -83,7 +83,7 @@ You can set the database connection parameters in two ways:
 
 ### Sync the database schema
 
-To [sync](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) the database schema with the models, use the [`sync` command](/docs/modules/packages/postgresdb-cli/):
+To [sync](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) the database schema with the models, use the [`sync` command](../postgresdb-cli/):
 
 ```bash
 pnpm dlx @ttoss/postgresdb-cli sync
