@@ -5,7 +5,8 @@ This package uses [Sequelize](https://sequelize.org/) to provide a simple framew
 ## Installation
 
 ```bash
-pnpm add @ttoss/{postgresdb,postgresdb-cli}
+pnpm add @ttoss/postgresdb
+pnpm add -D @ttoss/postgresdb-cli
 ```
 
 ## Usage

@@ -5,7 +5,7 @@ This package provides a CLI to interact with a PostgreSQL database using the [se
 ## Installation
 
 ```bash
-pnpm add @ttoss/postgresdb-cli
+pnpm add -D @ttoss/postgresdb-cli
 ```
 
 ## Usage
