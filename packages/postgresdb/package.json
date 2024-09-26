@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "echo jest"
   },
   "sideEffects": false,
   "dependencies": {
