@@ -11,6 +11,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/graphql-api-server"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -20,26 +21,20 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
-    "@koa/cors": "^5.0.0",
-    "@koa/router": "^12.0.1",
     "@ttoss/auth-core": "workspace:^",
-    "graphql-yoga": "^5.1.1",
-    "koa": "^2.15.0"
+    "@ttoss/graphql-api": "workspace:^",
+    "@ttoss/http-server": "workspace:^",
+    "graphql-yoga": "^5.1.1"
   },
   "peerDependencies": {
-    "@ttoss/graphql-api": "workspace:^",
     "graphql": "^16.6.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@ttoss/graphql-api": "workspace:^",
-    "@types/koa": "^2.14.0",
-    "@types/koa__cors": "^5.0.0",
-    "@types/koa__router": "^12.0.4",
     "@types/supertest": "^6.0.2",
     "graphql": "^16.8.1",
     "jest": "^29.7.0",
@@ -56,7 +51,6 @@
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },

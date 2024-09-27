@@ -6,7 +6,4 @@ const config = jestUnitConfig({
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
 });
 
-delete config.moduleNameMapper['src/(.*)'];
-
-// eslint-disable-next-line import/no-default-export
 export default config;

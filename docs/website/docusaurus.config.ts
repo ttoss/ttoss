@@ -56,6 +56,7 @@ const config: Config = {
           'forms',
           'graphql-api',
           'graphql-api-server',
+          'http-server',
           'i18n-cli',
           'ids',
           'layouts',
