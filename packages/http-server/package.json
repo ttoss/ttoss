@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "HTTP Server for ttoss environment",
   "author": "ttoss",
   "contributors": [

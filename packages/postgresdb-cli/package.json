@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A library to handle PostgreSQL database actions through the command line",
   "author": "ttoss",
   "contributors": [
