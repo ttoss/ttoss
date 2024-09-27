@@ -11,11 +11,13 @@ pnpm add @ttoss/http-server
 ## Usage
 
 ```typescript
-import { App, Router, cors } from '@ttoss/http-server';
+import { App, Router, bodyParser, cors } from '@ttoss/http-server';
 
 const app = new App();
 
 app.use(cors());
+
+app.use(bodyParser());
 
 const route = new Router();
 
@@ -38,4 +40,5 @@ Some methods are re-exports from other libraries:
 
 - `App` - [Koa application](https://github.com/koajs/koa)
 - `Router` - [Koa router](https://github.com/koajs/router)
-- `cors` - Koa CORS middleware
+- `bodyParser` - [Koa body parser](https://github.com/koajs/bodyparser)
+- `cors` - [Koa CORS](https://github.com/koajs/cors)
