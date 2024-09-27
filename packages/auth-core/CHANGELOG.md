@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.1.12...@ttoss/auth-core@0.2.0) (2024-09-27)
+
+### Features
+
+- add hash to auth-core ([#600](https://github.com/ttoss/ttoss/issues/600)) ([42a698c](https://github.com/ttoss/ttoss/commit/42a698c600b5a7c92f63b9a70b3bdaec154a546c))
+
 ## [0.1.12](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.1.11...@ttoss/auth-core@0.1.12) (2024-09-27)
 
 **Note:** Version bump only for package @ttoss/auth-core
