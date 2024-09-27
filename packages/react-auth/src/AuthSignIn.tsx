@@ -74,7 +74,7 @@ export const AuthSignIn = ({
 
   const formMethods = useForm<OnSignInInput>({
     defaultValues,
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: yupResolver(schema),
   });
 
