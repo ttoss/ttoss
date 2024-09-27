@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloudformation",
-  "version": "0.10.9",
+  "version": "0.10.10",
   "description": "CloudFormation utils.",
   "author": "ttoss",
   "contributors": [
