@@ -64,6 +64,7 @@ const config: Config = {
           'monorepo',
           'postgresdb',
           'postgresdb-cli',
+          'react-auth',
           'react-feature-flags',
           'react-hooks',
           'react-i18n',
