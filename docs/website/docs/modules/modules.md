@@ -3,8 +3,6 @@ sidebar_position: 1
 slug: ./
 ---
 
-import DocCardList from '@theme/DocCardList';
-
 # Modules
 
 **ttoss** (Terezinha Tech Operations) provides this library of modular solutions designed to enhance your product development process. These reusable [packages](/docs/modules/packages) simplify common challenges, allowing development teams to focus on delivering high-impact features efficiently.
