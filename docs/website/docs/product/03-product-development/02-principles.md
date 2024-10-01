@@ -93,6 +93,14 @@ However, in product development, goals constantly shift as better information em
 
 Recognizing when your goals are dynamic or stable is crucial, especially in the highly variable world of product development. For example, in developing a new software feature, user feedback may shift priorities, requiring the team to pivot and adjust the goal to meet evolving customer needs.
 
+### FF10: The First Agility Principle: We Don't Need Long Planning Horizons when We Have a Short Turning Radius
+
+In product development, agility is the ability to quickly shift focus or direction without needing to plan too far ahead. A smaller, more focused project is much easier to adapt than a large, rigid one. Just like turning a small object is easier than moving a massive one, agile teams can change direction quickly when they have fewer moving parts.
+
+To maintain this agility, it's important to have enough resources ready to make these changes as soon as needed. Organizations operating at full capacity often struggle because they can’t reallocate resources quickly enough. This delays response times and makes it harder to shift direction.
+
+When teams are set up to pivot quickly—by working on manageable projects and keeping resources flexible—they can move faster and more confidently, even in uncertain environments. This short "turning radius" means you don’t need to plan everything in detail far into the future, because you can make quick adjustments as new information emerges. This approach reduces the complexity of managing changes and allows teams to operate at a higher speed without losing control.
+
 ## Achieving Decentralized Control
 
 ### D1: The Second Perishability Principle: Decentralize Control for Problems and Opportunities that Age Poorly
@@ -146,3 +154,27 @@ In maneuver warfare, missions align teams through mission orders, which focus on
 When the intent is clear, those executing the mission can adapt to obstacles or opportunities, choosing the best course of action. A well-crafted mission statement is a powerful tool for maintaining coordination, with the "why" being its most crucial element.
 
 For example, in product development, rather than prescribing detailed features, a mission might be "create a seamless user experience that reduces churn by 20%." The team is free to explore the best solutions to achieve this goal, whether through UX improvements, better onboarding, or new product features. The key is the clear end state (reduce churn) and its purpose (improve retention), with minimal constraints on how to achieve it.
+
+### D9. The Principle of Boundaries: Establish Clear Roles and Boundaries
+
+In decentralized control, clearly defined roles and boundaries are crucial to avoid confusion. Too much overlap leads to inefficiency, while gaps leave tasks undone. In product development, unclear roles increase the need for communication and meetings. For instance, without clear roles, many people may need to approve simple decisions, slowing progress. Well-defined roles streamline teamwork. Additionally, it’s important to identify and address gaps between roles to ensure all tasks are covered.
+
+### D10. The Main Effort Principle: Designate a Main Effort and Subordinate Other Activities
+
+In product development, it’s essential to focus on the few key features that drive success. While customers may request hundreds of features, only a handful—typically four to six—truly influence their decision. These are the “main effort” of the project, where the team should concentrate the most resources. Other features should take a back seat, allowing the team to excel in the areas that really matter. By prioritizing these core features, you maximize the impact and effectiveness of the product, much like focusing on a key point in a mission.
+
+### D11. The Principle of Dynamic Alignment: The Main Effort May Shift Quickly when Conditions Change
+
+In product development, priorities can change as new information arises. Initially, one feature or aspect of the project may be the main focus, with all resources aligned to support it. However, as the project progresses, new insights may reveal better opportunities or shifts in market needs. When this happens, it's essential to be flexible and quickly redirect focus to areas that offer the greatest value. Adapting swiftly ensures that resources are always aligned with the most impactful objectives, optimizing the project's success.
+
+### D12. The Second Agility Principle: Develop the Ability to Quickly Shift Focus
+
+It's not enough to decide to change direction quickly—you must be able to execute that change rapidly. In product development, you can pivot faster by:
+
+- Having a small, skilled team instead of a large, slower one.
+- Focusing on a streamlined feature set rather than managing unnecessary features.
+- Maintaining some reserve capacity, as overworked teams struggle to adapt quickly.
+
+Additionally, designing flexible product architecture helps absorb changes. For example, segregating uncertainty into specific parts of the design allows for adjustments without affecting the entire system. This enables swift changes without disrupting overall progress.
+
+This ties directly into [Principle FF10: The First Agility Principle](#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius), which emphasizes that you don't need long-term planning when you can quickly adjust course. A short "turning radius" allows teams to adapt to changing conditions and maintain control, even at high speeds.
