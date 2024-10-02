@@ -54,6 +54,7 @@ const config: Config = {
           'components',
           'config',
           'forms',
+          'google-maps',
           'graphql-api',
           'graphql-api-server',
           'http-server',
