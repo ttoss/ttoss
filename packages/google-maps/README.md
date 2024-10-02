@@ -7,7 +7,7 @@
 Install `@ttoss/google-maps` in your project:
 
 ```shell
-$ pnpm install @ttoss/google-maps
+$ pnpm add @ttoss/google-maps
 ```
 
 If you use TypeScript, add the following to a declaration file (generally `typings.d.ts`):
@@ -16,7 +16,9 @@ If you use TypeScript, add the following to a declaration file (generally `typin
 /// <reference types="google.maps" />
 ```
 
-## Configuring `GoogleMapsProvider`
+## How to Use
+
+### Configuring `GoogleMapsProvider`
 
 At the root of your application, configure `GoogleMapsProvider` with your Google Maps API key. This way, the whole application can access the `google` variable.
 
@@ -34,7 +36,7 @@ const App = ({ children }) => {
 };
 ```
 
-## Rendering the Map
+### Rendering the Map
 
 At the component level, render Google Maps using `useMap` hook:
 
