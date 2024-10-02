@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallbackRef } from 'use-callback-ref';
-import { useGoogleMaps } from './GoogleMapsProvider';
+import { useGoogleMaps } from './useGoogleMaps';
 
 export const useMap = (options: google.maps.MapOptions = {}) => {
   /**
@@ -15,16 +15,16 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
     });
   });
 
-  const { googleMaps } = useGoogleMaps();
+  const { google } = useGoogleMaps();
 
   const map = React.useMemo(() => {
-    if (googleMaps && ref.current) {
-      return new googleMaps.Map(ref.current, options);
+    if (google?.maps && ref.current) {
+      return new google.maps.Map(ref.current, options);
     }
 
     return null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [googleMaps, ref.current]);
+  }, [google?.maps, ref.current]);
 
   /**
    * To avoid re-initializing the map because shallow object comparison.
@@ -44,11 +44,12 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
 
   return {
     /**
-     * asss
+     * Returns the map object which provides access to the [Google Maps API](https://developers.google.com/maps/documentation/javascript/overview).
      */
     map,
     /**
-     * hhhh
+     * Returns the ref object which provides access to the HTMLDivElement element
+     * that the map is rendered in.
      */
     ref,
   };

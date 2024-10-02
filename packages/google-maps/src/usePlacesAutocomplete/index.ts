@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useGoogleMaps } from './../GoogleMapsProvider';
+import * as React from 'react';
+import { useGoogleMaps } from './../useGoogleMaps';
 import _debounce from './debounce';
 import useLatest from './useLatest';
 
@@ -49,30 +49,34 @@ export const usePlacesAutocomplete = ({
   defaultValue = '',
   initOnMount = true,
 }: HookArgs = {}): HookReturn => {
-  const [ready, setReady] = useState(false);
-  const [value, setVal] = useState(defaultValue);
-  const [suggestions, setSuggestions] = useState<Suggestions>({
+  const [ready, setReady] = React.useState(false);
+  const [value, setVal] = React.useState(defaultValue);
+  const [suggestions, setSuggestions] = React.useState<Suggestions>({
     loading: false,
     status: '',
     data: [],
   });
-  const asRef = useRef<any>(null);
-  const requestOptionsRef = useLatest(requestOptions);
-  const { googleMaps } = useGoogleMaps();
 
-  const googleMapsRef = useLatest(googleMaps);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const asRef = React.useRef<any>(null);
+  const requestOptionsRef = useLatest(requestOptions);
+  const { google } = useGoogleMaps();
+
+  const googleMapsRef = useLatest(google.maps);
 
   const upaCacheKey = cacheKey ? `upa-${cacheKey}` : 'upa';
 
-  const init = useCallback(() => {
-    if (asRef.current) return;
+  const init = React.useCallback(() => {
+    if (asRef.current) {
+      return;
+    }
 
-    if (!googleMaps) {
+    if (!google.maps) {
       return;
     }
 
     const { current: gMaps } = googleMapsRef;
-    const placesLib = gMaps?.places || googleMaps.places;
+    const placesLib = gMaps?.places || google.maps.places;
 
     if (!placesLib) {
       return;
@@ -80,13 +84,13 @@ export const usePlacesAutocomplete = ({
 
     asRef.current = new placesLib.AutocompleteService();
     setReady(true);
-  }, [googleMaps]);
+  }, [google.maps]);
 
-  const clearSuggestions = useCallback(() => {
+  const clearSuggestions = React.useCallback(() => {
     setSuggestions({ loading: false, status: '', data: [] });
   }, []);
 
-  const clearCache = useCallback(() => {
+  const clearCache = React.useCallback(() => {
     try {
       sessionStorage.removeItem(upaCacheKey);
     } catch (error) {
@@ -94,14 +98,16 @@ export const usePlacesAutocomplete = ({
     }
   }, []);
 
-  const fetchPredictions = useCallback(
+  const fetchPredictions = React.useCallback(
     _debounce((val: string) => {
       if (!val) {
         clearSuggestions();
         return;
       }
 
-      setSuggestions((prevState) => ({ ...prevState, loading: true }));
+      setSuggestions((prevState) => {
+        return { ...prevState, loading: true };
+      });
 
       let cachedData: Record<string, { data: Suggestion[]; maxAge: number }> =
         {};
@@ -115,8 +121,9 @@ export const usePlacesAutocomplete = ({
       if (cache) {
         cachedData = Object.keys(cachedData).reduce(
           (acc: typeof cachedData, key) => {
-            if (cachedData[key].maxAge - Date.now() >= 0)
+            if (cachedData[key].maxAge - Date.now() >= 0) {
               acc[key] = cachedData[key];
+            }
             return acc;
           },
           {}
@@ -155,29 +162,37 @@ export const usePlacesAutocomplete = ({
     [debounce, clearSuggestions]
   );
 
-  const setValue: SetValue = useCallback(
+  const setValue: SetValue = React.useCallback(
     (val, shouldFetchData = true) => {
       setVal(val);
-      if (asRef.current && shouldFetchData) fetchPredictions(val);
+      if (asRef.current && shouldFetchData) {
+        fetchPredictions(val);
+      }
     },
     [fetchPredictions]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!initOnMount) {
       // eslint-disable-next-line react/display-name
-      return () => null;
+      return () => {
+        return null;
+      };
     }
 
-    if (!googleMapsRef.current && !googleMaps && callbackName) {
+    if (!googleMapsRef.current && !google.maps && callbackName) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any)[callbackName] = init;
     } else {
       init();
     }
 
     return () => {
-      if ((window as any)[callbackName as string])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((window as any)[callbackName as string]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         delete (window as any)[callbackName as string];
+      }
     };
   }, [callbackName, init]);
 

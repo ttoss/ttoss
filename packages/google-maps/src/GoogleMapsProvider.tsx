@@ -9,18 +9,24 @@ type LoadedMapsStatus = Extends<ScriptStatus, 'ready'>;
 
 type NotLoadedMapStatus = Extends<ScriptStatus, 'idle' | 'error' | 'loading'>;
 
-const GoogleMapsContext = React.createContext<
+export const GoogleMapsContext = React.createContext<
   | {
       status: LoadedMapsStatus;
-      googleMaps: GoogleMaps;
+      google: {
+        maps: GoogleMaps;
+      };
     }
   | {
       status: NotLoadedMapStatus;
-      googleMaps: null;
+      google: {
+        maps: null;
+      };
     }
 >({
   status: 'idle',
-  googleMaps: null,
+  google: {
+    maps: null,
+  },
 });
 
 type Libraries = 'places' | 'visualization' | 'drawing' | 'geometry';
@@ -55,40 +61,35 @@ export const GoogleMapsProvider = ({
 
   const { status } = useScript(src);
 
-  const googleMaps = React.useMemo(() => {
-    if (status === 'ready' && window.google.maps) {
-      return window.google.maps;
+  const google = React.useMemo(() => {
+    if (status === 'ready' && window.google) {
+      return window.google;
     }
 
     return null;
   }, [status]);
 
   const value = React.useMemo(() => {
-    if (status === 'ready' && googleMaps) {
+    if (status === 'ready' && google?.maps) {
       return {
         status,
-        googleMaps,
+        google: {
+          maps: google.maps,
+        },
       };
     }
 
     return {
       status: status as NotLoadedMapStatus,
-      googleMaps: null,
+      google: {
+        maps: null,
+      },
     };
-  }, [googleMaps, status]);
+  }, [google, status]);
 
   return (
     <GoogleMapsContext.Provider value={value}>
       {children}
     </GoogleMapsContext.Provider>
   );
-};
-
-/**
- *
- * @returns param.googleMaps: GoogleMaps - returns the google maps object which
- * provides access to the [Google Maps API](https://developers.google.com/maps/documentation/javascript/overview).
- */
-export const useGoogleMaps = () => {
-  return React.useContext(GoogleMapsContext);
 };

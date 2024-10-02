@@ -16,7 +16,7 @@ If you use TypeScript, add the following to a declaration file (generally `typin
 /// <reference types="google.maps" />
 ```
 
-## How to Use
+## Usage
 
 ### Configuring `GoogleMapsProvider`
 
@@ -48,7 +48,12 @@ const MyComponent = () => {
   const { ref, map } = useMap();
 
   React.useEffect(() => {
-    // You have access to every map methods, like `setOptions`, through `map`.
+    if (map) {
+      map.setOptions({
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 8,
+      });
+    }
   }, [map]);
 
   return (
@@ -59,3 +64,21 @@ const MyComponent = () => {
   );
 };
 ```
+
+If everything is set up correctly, you should see a map centered at the specified coordinates.
+
+### Retrieve `google.maps` object
+
+If you need to access the `google.maps` object, you can use the `useGoogleMaps` hook:
+
+```tsx
+import { useGoogleMaps } from '@ttoss/google-maps';
+
+const MyComponent = () => {
+  const { google } = useGoogleMaps();
+
+  return <Text>{google.maps.version}</Text>;
+};
+```
+
+With this, you can perform any operation that the `google.maps` object allows, such as creating markers, drawing polygons, etc.

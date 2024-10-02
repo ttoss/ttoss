@@ -1,6 +1,7 @@
 {
   "name": "@ttoss/google-maps",
   "version": "2.0.4",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)",
