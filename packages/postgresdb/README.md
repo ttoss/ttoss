@@ -122,3 +122,30 @@ All [Sequelize options](https://sequelize.org/api/v6/class/src/sequelize.js~sequ
 ### Sequelize decorators
 
 This package exports all decorators from [sequelize-typescript](https://www.npmjs.com/package/sequelize-typescript), i.e., `@Table`, `@Column`, `@ForeignKey`, etc.
+
+## Types
+
+### `ModelColumns<T>`
+
+A type that represents the columns of a model.
+
+```typescript
+import { Column, Model, type ModelColumns, Table } from '@ttoss/postgresdb';
+
+@Table
+class User extends Model<User> {
+  @Column
+  declare name?: string;
+
+  @Column
+  declare email: string;
+}
+
+/**
+ * UserColumns = {
+ *  name?: string;
+ *  email: string;
+ * }
+ */
+type UserColumns = ModelColumns<User>;
+```
