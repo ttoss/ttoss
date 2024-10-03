@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.18.34",
+  "version": "0.18.35",
   "description": "A library for building GraphQL APIs for AWS AppSync.",
   "license": "MIT",
   "author": "ttoss",

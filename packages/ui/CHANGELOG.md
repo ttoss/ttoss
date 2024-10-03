@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.0.7...@ttoss/ui@5.0.8) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## [5.0.7](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.0.6...@ttoss/ui@5.0.7) (2024-09-27)
 
 **Note:** Version bump only for package @ttoss/ui

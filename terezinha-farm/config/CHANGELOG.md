@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.13](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.5.12...@terezinha-farm/config@0.5.13) (2024-10-03)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
 ## [0.5.12](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.5.11...@terezinha-farm/config@0.5.12) (2024-09-27)
 
 **Note:** Version bump only for package @terezinha-farm/config

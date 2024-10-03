@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.13](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.12...@ttoss/logger@0.3.13) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/logger
+
 ## [0.3.12](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.11...@ttoss/logger@0.3.12) (2024-09-27)
 
 **Note:** Version bump only for package @ttoss/logger
