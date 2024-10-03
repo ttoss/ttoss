@@ -2,6 +2,7 @@
   "name": "@ttoss/relay-amplify",
   "version": "0.6.3",
   "description": "",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

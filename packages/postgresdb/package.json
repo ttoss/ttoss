@@ -2,6 +2,7 @@
   "name": "@ttoss/postgresdb",
   "version": "0.2.0",
   "description": "A library to handle PostgreSQL database connections and queries",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

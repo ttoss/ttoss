@@ -2,6 +2,7 @@
   "name": "@ttoss/http-server",
   "version": "0.1.0",
   "description": "HTTP Server for ttoss environment",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

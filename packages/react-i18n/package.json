@@ -1,6 +1,7 @@
 {
   "name": "@ttoss/react-i18n",
   "version": "2.0.3",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

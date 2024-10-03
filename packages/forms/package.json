@@ -1,6 +1,7 @@
 {
   "name": "@ttoss/forms",
   "version": "0.26.0",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -17,8 +18,7 @@
     "./brazil": "./src/Brazil/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

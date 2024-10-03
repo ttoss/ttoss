@@ -2,6 +2,7 @@
   "name": "@ttoss/cloudformation",
   "version": "0.10.10",
   "description": "CloudFormation utils.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

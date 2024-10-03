@@ -2,6 +2,7 @@
   "name": "@ttoss/ui",
   "version": "5.0.7",
   "description": "Primitive layout, typographic, and other components for styling applications.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -16,8 +17,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

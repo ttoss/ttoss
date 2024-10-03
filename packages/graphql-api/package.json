@@ -2,6 +2,7 @@
   "name": "@ttoss/graphql-api",
   "version": "0.7.6",
   "description": "A library for building GraphQL APIs using ttoss ecosystem.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -19,8 +20,7 @@
     "ttoss-graphql-api": "./bin/cli.js"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build-config": "tsup-node",

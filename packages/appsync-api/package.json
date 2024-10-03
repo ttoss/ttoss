@@ -2,6 +2,7 @@
   "name": "@ttoss/appsync-api",
   "version": "0.18.34",
   "description": "A library for building GraphQL APIs for AWS AppSync.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -15,8 +16,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

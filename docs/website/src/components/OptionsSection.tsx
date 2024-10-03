@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Text } from '@ttoss/ui';
 
 type Option = {
   alias?: string | string[];
@@ -59,13 +58,7 @@ export const OptionsSection = ({
                   <td>{aliasString}</td>
                   <td>{defaultValue}</td>
                   <td>
-                    <Text
-                      sx={{
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      {describe}
-                    </Text>
+                    <p>{describe}</p>
                     <br />
                     <br />
                     <>{optionChild}</>
