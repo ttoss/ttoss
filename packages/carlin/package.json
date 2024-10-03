@@ -2,7 +2,7 @@
   "name": "carlin",
   "version": "1.36.12",
   "description": "",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
   "homepage": "https://ttoss.dev/docs/carlin/",
   "repository": {
