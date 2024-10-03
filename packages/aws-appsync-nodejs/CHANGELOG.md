@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.17](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.16...@ttoss/aws-appsync-nodejs@1.8.17) (2024-10-03)
+
+### Bug Fixes
+
+- remove src from files npm publish ([a41050b](https://github.com/ttoss/ttoss/commit/a41050b605edb6effa71c4921bfe3a762116fcb0))
+
 ## [1.8.16](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.15...@ttoss/aws-appsync-nodejs@1.8.16) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/aws-appsync-nodejs
