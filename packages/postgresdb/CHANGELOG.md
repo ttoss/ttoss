@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.1...@ttoss/postgresdb@0.2.2) (2024-10-03)
+
+### Bug Fixes
+
+- model columns ([#604](https://github.com/ttoss/ttoss/issues/604)) ([20a67a9](https://github.com/ttoss/ttoss/commit/20a67a9967a067304d8e8f12b47793721ed8d325))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.0...@ttoss/postgresdb@0.2.1) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/postgresdb
