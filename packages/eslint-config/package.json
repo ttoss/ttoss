@@ -2,6 +2,7 @@
   "name": "@ttoss/eslint-config",
   "version": "1.24.8",
   "description": "ESLint config.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"

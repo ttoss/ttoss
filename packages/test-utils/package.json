@@ -2,6 +2,7 @@
   "name": "@ttoss/test-utils",
   "version": "2.1.16",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -17,8 +18,7 @@
     "./relay": "./src/relay.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

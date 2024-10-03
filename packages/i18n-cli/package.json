@@ -1,6 +1,7 @@
 {
   "name": "@ttoss/i18n-cli",
   "version": "0.7.21",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"

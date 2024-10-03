@@ -2,6 +2,7 @@
   "name": "@ttoss/auth-core",
   "version": "0.2.0",
   "description": "Core authentication library for ttoss",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,8 +17,7 @@
     "./amazon-cognito": "./src/AmazonCognito/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

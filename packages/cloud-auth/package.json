@@ -1,6 +1,7 @@
 {
   "name": "@ttoss/cloud-auth",
   "version": "0.12.21",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -10,8 +11,7 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

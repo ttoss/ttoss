@@ -2,6 +2,7 @@
   "name": "@ttoss/theme",
   "version": "1.7.22",
   "description": "Theme for packages.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Rayza Oliveira <rayza.ocr@gmail.com>"
@@ -17,9 +18,7 @@
     "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
   },
   "files": [
-    "dist",
-    "src",
-    "tsconfig.json"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

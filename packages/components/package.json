@@ -2,6 +2,7 @@
   "name": "@ttoss/components",
   "version": "2.0.9",
   "description": "React components for ttoss ecosystem.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -25,8 +26,7 @@
     "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
