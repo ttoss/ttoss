@@ -9,6 +9,16 @@ pnpm add @ttoss/postgresdb
 pnpm add -D @ttoss/postgresdb-cli
 ```
 
+### ESM only
+
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). Make sure to use it in an ESM environment.
+
+```json
+{
+  "type": "module"
+}
+```
+
 ## Usage
 
 ### Setup the database
@@ -106,6 +116,73 @@ const user = await db.User.create({
 ```
 
 All models are available in the `db` object.
+
+### Using in a monorepo
+
+If you want to use in a monorepo by sharing the models between packages, you need to create some configurations to make it work.
+
+#### On the `postgresdb` package
+
+1. Create your `postgresdb` package following the steps above.
+
+1. Exports your main file in the `package.json` file:
+
+   ```json
+   {
+     "type": "module",
+     "exports": "./src/index.ts"
+   }
+   ```
+
+1. Create a new file called `src/index.ts` with the following content to exports the `models` you've created:
+
+   ```typescript
+   export * as models from './models';
+   ```
+
+   _We recommend to not export the `db` object in this file because you may want to use different configurations in different packages._
+
+#### On the other packages
+
+1. Install `@ttoss/postgresdb` package:
+
+   ```bash
+   pnpm add @ttoss/postgresdb
+   ```
+
+1. Add your `postgresdb` package as a dependency. In the case you're using PNPM, you can use the [workspace protocol](https://pnpm.io/workspaces#workspace-protocol-workspace):
+
+   ```json
+   {
+     "dependencies": {
+       "@yourproject/postgresdb": "workspace:^"
+     }
+   }
+   ```
+
+1. Include the `postgresdb` package in the `include` field of the `tsconfig.json` file:
+
+   ```json
+   {
+     "include": ["src", "../postgresdb/src"]
+   }
+   ```
+
+   _This way, you can import the models using the `@yourproject/postgresdb` package._
+
+1. Create a new file called `src/db.ts` with the following content:
+
+   ```typescript
+   import { initialize } from '@ttoss/postgresdb';
+   import { models } from '@yourproject/postgresdb';
+
+   export const db = initialize({
+     models,
+     // other configurations
+   });
+   ```
+
+1. Use the `db` object to interact with the database.
 
 ## API
 
