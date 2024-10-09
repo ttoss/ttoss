@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.7...@ttoss/google-maps@2.0.8) (2024-10-09)
+
+### Bug Fixes
+
+- import react ([5074f3c](https://github.com/ttoss/ttoss/commit/5074f3c5c201096f681b494fe85fbdca3f68b1ae))
+
 ## [2.0.7](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.6...@ttoss/google-maps@2.0.7) (2024-10-09)
 
 ### Bug Fixes
