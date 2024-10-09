@@ -121,7 +121,7 @@ const App = ({ children }) => {
 
 #### Returns
 
-- `ref`: React.RefObject<HTMLDivElement> - Reference to the map container.
+- `ref`: `React.RefObject<HTMLDivElement>` - Reference to the map container.
 - `map`: google.maps.Map | null - Google Maps object.
 
 ### `useGoogleMaps`
