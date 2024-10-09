@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.8...@ttoss/google-maps@2.0.9) (2024-10-09)
+
+### Bug Fixes
+
+- google maps loading async ([#607](https://github.com/ttoss/ttoss/issues/607)) ([f9141a9](https://github.com/ttoss/ttoss/commit/f9141a9816eee3607c90fba04cccbf3708b3bfd9))
+
 ## [2.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.7...@ttoss/google-maps@2.0.8) (2024-10-09)
 
 ### Bug Fixes
