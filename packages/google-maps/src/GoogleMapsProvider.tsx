@@ -68,7 +68,7 @@ export const GoogleMapsProvider = ({
   onError?: (e: Error) => void;
 }) => {
   const src = (() => {
-    let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+    let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async`;
 
     if (libraries) {
       srcTemp = srcTemp + `&libraries=${libraries.join(',')}`;

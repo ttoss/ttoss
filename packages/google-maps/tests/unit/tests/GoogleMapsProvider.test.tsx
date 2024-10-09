@@ -58,18 +58,21 @@ test('should display correct status', () => {
 });
 
 test.each([
-  [{ apiKey }, `https://maps.googleapis.com/maps/api/js?key=${apiKey}`],
+  [
+    { apiKey },
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async`,
+  ],
   [
     { apiKey, language: 'pt-BR' },
-    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&language=pt-BR`,
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&language=pt-BR`,
   ],
   [
     { apiKey, language: 'pt-BR', libraries: ['places'] },
-    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=pt-BR`,
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places&language=pt-BR`,
   ],
   [
     { apiKey, language: 'pt-BR', libraries: ['places', 'geometry'] },
-    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&language=pt-BR`,
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places,geometry&language=pt-BR`,
   ],
 ])('Google Maps API src %#', (props, src) => {
   render(
