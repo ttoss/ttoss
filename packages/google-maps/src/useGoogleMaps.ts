@@ -9,7 +9,9 @@ import { GoogleMapsContext } from './GoogleMapsProvider';
  */
 export const useGoogleMaps = () => {
   const { status, google } = React.useContext(GoogleMapsContext);
+  const isReady = status === 'ready';
   return {
+    isReady,
     status,
     google,
     /**

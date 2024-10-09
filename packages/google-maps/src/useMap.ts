@@ -15,16 +15,29 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
     });
   });
 
-  const { google } = useGoogleMaps();
+  const { google, isReady } = useGoogleMaps();
 
-  const map = React.useMemo(() => {
-    if (google?.maps && ref.current) {
-      return new google.maps.Map(ref.current, options);
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+
+  React.useEffect(() => {
+    if (map) {
+      return;
     }
 
-    return null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [google?.maps, ref.current]);
+    if (!ref.current) {
+      return;
+    }
+
+    if (!isReady) {
+      return;
+    }
+
+    if (!google.maps) {
+      return;
+    }
+
+    setMap(new google.maps.Map(ref.current, options));
+  }, [map, isReady, ref, google.maps, options]);
 
   /**
    * To avoid re-initializing the map because shallow object comparison.

@@ -31,11 +31,31 @@ export const GoogleMapsContext = React.createContext<
 
 type Libraries = 'places' | 'visualization' | 'drawing' | 'geometry';
 
+type ScriptProps = {
+  src: string;
+  onReady: () => void;
+  onError?: (e: Error) => void;
+};
+
+const DefaultScript = ({ src, onReady }: ScriptProps) => {
+  const { status } = useScript(src);
+
+  React.useEffect(() => {
+    if (status === 'ready') {
+      onReady();
+    }
+  }, [status, onReady]);
+
+  return null;
+};
+
 export const GoogleMapsProvider = ({
   children,
   apiKey,
   libraries,
   language,
+  Script = DefaultScript,
+  onError,
 }: {
   children: React.ReactNode;
   apiKey: string;
@@ -44,6 +64,8 @@ export const GoogleMapsProvider = ({
    * https://developers.google.com/maps/faq#languagesupport
    */
   language?: string;
+  Script?: React.ComponentType<ScriptProps>;
+  onError?: (e: Error) => void;
 }) => {
   const src = (() => {
     let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
@@ -59,7 +81,7 @@ export const GoogleMapsProvider = ({
     return srcTemp;
   })();
 
-  const { status } = useScript(src);
+  const [status, setStatus] = React.useState<ScriptStatus>('loading');
 
   const google = React.useMemo(() => {
     if (status === 'ready' && window.google) {
@@ -88,8 +110,17 @@ export const GoogleMapsProvider = ({
   }, [google, status]);
 
   return (
-    <GoogleMapsContext.Provider value={value}>
-      {children}
-    </GoogleMapsContext.Provider>
+    <>
+      <Script
+        src={src}
+        onReady={() => {
+          return setStatus('ready');
+        }}
+        onError={onError}
+      />
+      <GoogleMapsContext.Provider value={value}>
+        {children}
+      </GoogleMapsContext.Provider>
+    </>
   );
 };

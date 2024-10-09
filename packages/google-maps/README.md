@@ -82,3 +82,52 @@ const MyComponent = () => {
 ```
 
 With this, you can perform any operation that the `google.maps` object allows, such as creating markers, drawing polygons, etc.
+
+### Using with Next.js (custom Script component)
+
+If you use Next.js, you can use the `GoogleMapsProvider` passing [Next.js `Script`](https://nextjs.org/docs/app/api-reference/components/script) component as a prop:
+
+```tsx
+import { GoogleMapsProvider } from '@ttoss/google-maps';
+import Script from 'next/script';
+
+const App = ({ children }) => {
+  return (
+    <OtherProviders>
+      <GoogleMapsProvider
+        apiKey={process.env.GOOGLE_MAPS_API_KEY}
+        Script={Script}
+      >
+        {children}
+      </GoogleMapsProvider>
+    </OtherProviders>
+  );
+};
+```
+
+## API
+
+### `GoogleMapsProvider`
+
+#### Props
+
+- `apiKey`: string - Google Maps API key.
+- `libraries`: string[] - [Libraries to load](https://developers.google.com/maps/documentation/javascript/libraries).
+- `language`: string - [Language](https://developers.google.com/maps/documentation/javascript/localization).
+- `Script`: React.ComponentType - Custom `Script` component to use.
+- `onError`: (error: Error) => void - Callback to handle script loading errors.
+
+### `useMap`
+
+#### Returns
+
+- `ref`: React.RefObject<HTMLDivElement> - Reference to the map container.
+- `map`: google.maps.Map | null - Google Maps object.
+
+### `useGoogleMaps`
+
+#### Returns
+
+- `google`: typeof google - `google.maps` object.
+- `status`: 'idle' | 'error' | 'loading' | 'ready' - Status of the script loading.
+- `isReady`: boolean - Whether the script is ready. The same as `status === 'ready'`.
