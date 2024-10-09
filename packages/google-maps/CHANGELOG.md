@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.7](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.6...@ttoss/google-maps@2.0.7) (2024-10-09)
+
+### Bug Fixes
+
+- google maps not loading map properly ([411bd6c](https://github.com/ttoss/ttoss/commit/411bd6c1eac551efb98a08927d6622e9bf6bfc90))
+
 ## [2.0.6](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.5...@ttoss/google-maps@2.0.6) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/google-maps
