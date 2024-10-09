@@ -91,26 +91,10 @@ module.exports = babelConfig();
 Install [Jest](https://jestjs.io/) and its types on your package:
 
 ```shell
-pnpm add -D jest @types/jest
+pnpm add -D jest @types/jest ts-node
 ```
 
-Create the `jest.config.ts` file on the package folder:
-
-```ts title="jest.config.ts"
-import { jestConfig } from '@ttoss/config';
-
-const config = jestConfig();
-
-export default config;
-```
-
-Configure the `test` script on `package.json` of your package:
-
-```json title="package.json"
-"scripts": {
-  "test": "jest",
-}
-```
+Follow our [tests guidelines](https://ttoss.dev/docs/engineering/guidelines/tests) to configure and run your tests.
 
 ### Tsup
 
