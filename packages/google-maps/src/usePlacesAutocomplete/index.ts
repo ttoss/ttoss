@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { useGoogleMaps } from './../useGoogleMaps';
+import { useLatest } from './useLatest';
 import _debounce from './debounce';
-import useLatest from './useLatest';
 
 export interface HookArgs {
   requestOptions?: Omit<google.maps.places.AutocompletionRequest, 'input'>;

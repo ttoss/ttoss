@@ -1,7 +1,7 @@
-import { RefObject, useRef } from 'react';
+import * as React from 'react';
 
-export default <T>(val: T): RefObject<T> => {
-  const ref = useRef(val);
+export const useLatest = <T>(val: T): React.RefObject<T> => {
+  const ref = React.useRef(val);
   ref.current = val;
   return ref;
 };
