@@ -52,6 +52,7 @@ const DefaultScript = ({ src, onReady }: ScriptProps) => {
 export const GoogleMapsProvider = ({
   children,
   apiKey,
+  loading = 'async',
   libraries,
   language,
   Script = DefaultScript,
@@ -64,11 +65,16 @@ export const GoogleMapsProvider = ({
    * https://developers.google.com/maps/faq#languagesupport
    */
   language?: string;
+  loading?: 'async' | false;
   Script?: React.ComponentType<ScriptProps>;
   onError?: (e: Error) => void;
 }) => {
   const src = (() => {
-    let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async`;
+    let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+
+    if (loading) {
+      srcTemp = srcTemp + `&loading=${loading}`;
+    }
 
     if (libraries) {
       srcTemp = srcTemp + `&libraries=${libraries.join(',')}`;

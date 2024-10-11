@@ -63,6 +63,13 @@ test.each([
     `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async`,
   ],
   [
+    {
+      apiKey,
+      loading: false,
+    },
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}`,
+  ],
+  [
     { apiKey, language: 'pt-BR' },
     `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&language=pt-BR`,
   ],
