@@ -169,7 +169,7 @@ const ParentComponent = () => {
 
 - `map`: google.maps.Map | null - Google Maps object.
 - `children`: React.ReactNode - Children to render.
-- `ref`: React.RefObject<HTMLDivElement> - Reference to the map container.
+- `ref`: `React.RefObject<HTMLDivElement>` - Reference to the map container.
 
 ### `useMap`
 
