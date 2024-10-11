@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.9...@ttoss/google-maps@2.1.0) (2024-10-11)
+
+### Features
+
+- create MapProvider ([#608](https://github.com/ttoss/ttoss/issues/608)) ([5cc7c05](https://github.com/ttoss/ttoss/commit/5cc7c0578a64df5d2686c8f7178db818f7de2b62))
+
 ## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.8...@ttoss/google-maps@2.0.9) (2024-10-09)
 
 ### Bug Fixes
