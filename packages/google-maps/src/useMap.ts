@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { MapContext } from './MapProvider';
 import { useCallbackRef } from 'use-callback-ref';
 import { useGoogleMaps } from './useGoogleMaps';
 
@@ -17,7 +18,9 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
 
   const { google, isReady } = useGoogleMaps();
 
-  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const mapContext = React.useContext(MapContext);
+
+  const [map, setMap] = React.useState<google.maps.Map | null>(mapContext.map);
 
   React.useEffect(() => {
     if (map) {
