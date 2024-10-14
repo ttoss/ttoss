@@ -132,7 +132,7 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
   }
 );
 
-export const AuthLogic = () => {
+const AuthLogic = () => {
   const { isAuthenticated } = useAuth();
 
   const [state, send] = useMachine(authMachine);
