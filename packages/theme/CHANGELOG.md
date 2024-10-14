@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.23](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.22...@ttoss/theme@1.7.23) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.7.22](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.21...@ttoss/theme@1.7.22) (2024-09-27)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.20...@ttoss/theme@1.7.21) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.7.20](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.19...@ttoss/theme@1.7.20) (2024-09-17)
+
+### Bug Fixes
+
+- import icons error ([#594](https://github.com/ttoss/ttoss/issues/594)) ([7f73852](https://github.com/ttoss/ttoss/commit/7f73852cc038050abcf08099fe71f4afd057f9c8))
+
+## [1.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.18...@ttoss/theme@1.7.19) (2024-09-17)
+
+### Bug Fixes
+
+- icons not displaying ([#593](https://github.com/ttoss/ttoss/issues/593)) ([56b1725](https://github.com/ttoss/ttoss/commit/56b17252ad30ec8151979983e2f67d644fe67b83))
+
+## [1.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.17...@ttoss/theme@1.7.18) (2024-09-17)
+
+**Note:** Version bump only for package @ttoss/theme
+
 ## [1.7.17](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.16...@ttoss/theme@1.7.17) (2024-09-11)
 
 ### Bug Fixes

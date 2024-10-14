@@ -1,21 +1,21 @@
 import * as React from 'react';
-import { useGoogleMaps } from './GoogleMapsProvider';
+import { useGoogleMaps } from './useGoogleMaps';
 
 export const useGeocoder = () => {
-  const { googleMaps } = useGoogleMaps();
+  const { google } = useGoogleMaps();
 
   const [isGeocoderInitialized, setIsGeocoderInitialized] =
     React.useState(false);
 
   const geocoder = React.useMemo(() => {
-    if (googleMaps) {
-      const googleMapsGeocoder = new googleMaps.Geocoder();
+    if (google.maps) {
+      const googleMapsGeocoder = new google.maps.Geocoder();
       setIsGeocoderInitialized(true);
       return googleMapsGeocoder;
     }
 
     return null;
-  }, [googleMaps]);
+  }, [google.maps]);
 
   return { geocoder, isGeocoderInitialized };
 };

@@ -1,4 +1,13 @@
-# ttoss - Terezinha Tech Operations
+# Terezinha Tech Operations (ttoss)
+
+<p align="center">
+  <img src="https://cdn.triangulos.tech/assets/terezinha_500x500_da67d70b65.webp" />
+  
+</p>
+
+## About
+
+Terezinha Tech Operations (ttoss) is a collection of modular solutions designed to empower product development teams.
 
 ## Getting Started
 

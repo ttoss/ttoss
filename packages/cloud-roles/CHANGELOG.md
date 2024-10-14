@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.20](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.19...@ttoss/cloud-roles@0.8.20) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.19](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.18...@ttoss/cloud-roles@0.8.19) (2024-09-27)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.18](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.17...@ttoss/cloud-roles@0.8.18) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.17](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.16...@ttoss/cloud-roles@0.8.17) (2024-09-17)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
 ## [0.8.16](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.15...@ttoss/cloud-roles@0.8.16) (2024-08-29)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

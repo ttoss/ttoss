@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.9...@ttoss/google-maps@2.1.0) (2024-10-11)
+
+### Features
+
+- create MapProvider ([#608](https://github.com/ttoss/ttoss/issues/608)) ([5cc7c05](https://github.com/ttoss/ttoss/commit/5cc7c0578a64df5d2686c8f7178db818f7de2b62))
+
+## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.8...@ttoss/google-maps@2.0.9) (2024-10-09)
+
+### Bug Fixes
+
+- google maps loading async ([#607](https://github.com/ttoss/ttoss/issues/607)) ([f9141a9](https://github.com/ttoss/ttoss/commit/f9141a9816eee3607c90fba04cccbf3708b3bfd9))
+
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.7...@ttoss/google-maps@2.0.8) (2024-10-09)
+
+### Bug Fixes
+
+- import react ([5074f3c](https://github.com/ttoss/ttoss/commit/5074f3c5c201096f681b494fe85fbdca3f68b1ae))
+
+## [2.0.7](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.6...@ttoss/google-maps@2.0.7) (2024-10-09)
+
+### Bug Fixes
+
+- google maps not loading map properly ([411bd6c](https://github.com/ttoss/ttoss/commit/411bd6c1eac551efb98a08927d6622e9bf6bfc90))
+
+## [2.0.6](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.5...@ttoss/google-maps@2.0.6) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## [2.0.5](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.4...@ttoss/google-maps@2.0.5) (2024-10-02)
+
+### Bug Fixes
+
+- add google.maps object ([2a0dc9e](https://github.com/ttoss/ttoss/commit/2a0dc9e6da5718b8828a9bea667ae7a33fa2b906))
+
+## [2.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.3...@ttoss/google-maps@2.0.4) (2024-10-02)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## [2.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.2...@ttoss/google-maps@2.0.3) (2024-09-27)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## [2.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.1...@ttoss/google-maps@2.0.2) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.0.0...@ttoss/google-maps@2.0.1) (2024-09-17)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
 # [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@1.25.22...@ttoss/google-maps@2.0.0) (2024-08-29)
 
 ### chore

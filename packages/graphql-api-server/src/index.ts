@@ -1,9 +1,7 @@
+import { App, Router, cors } from '@ttoss/http-server';
 import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { createYoga } from 'graphql-yoga';
-import Koa from 'koa';
-import Router from '@koa/router';
-import cors from '@koa/cors';
 
 export { Router };
 
@@ -26,15 +24,15 @@ export const createServer = ({
   graphiql,
   cors: corsOptions,
   ...buildSchemaInput
-}: CreateServerInput): Koa => {
-  const app = new Koa();
+}: CreateServerInput): App => {
+  const app = new App();
 
   app.use(cors(corsOptions));
 
   /**
    * https://the-guild.dev/graphql/yoga-server/docs/integrations/integration-with-koa
    */
-  const yoga = createYoga<Koa.ParameterizedContext>({
+  const yoga = createYoga<App.ParameterizedContext>({
     schema: buildSchema(buildSchemaInput),
     graphiql,
     landingPage: false,

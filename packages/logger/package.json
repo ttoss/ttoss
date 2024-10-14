@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.3.9",
+  "version": "0.3.13",
   "description": "Simple environment agnostic logger",
   "license": "MIT",
   "contributors": [
@@ -16,8 +16,7 @@
   },
   "module": "dist/esm/index.js",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup"
@@ -25,7 +24,7 @@
   "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "keywords": [],
   "publishConfig": {

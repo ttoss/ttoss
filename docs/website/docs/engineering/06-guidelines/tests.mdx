@@ -12,13 +12,33 @@ We use [Jest](https://jestjs.io/) as our test runner and [React Testing Library]
 
 We divide our tests into two categories: unit tests and e2e tests. Unit tests are for testing individual functions, and e2e tests are for testing the entire application.
 
-We write unit tests in the `tests/unit` folder and e2e tests in the `tests/e2e` folder.
+We write unit tests in the `tests/unit/tests` folder and e2e tests in the `tests/e2e/tests` folder, both ending with the `.test.ts` or `.test.tsx` extension.
+
+## File Structure
+
+The inital file structure for tests in your package should be as follows:
+
+```
+tests/
+  e2e/
+    tests/
+      myFunction.test.ts
+    babel.config.cjs
+    jest.config.ts
+  unit/
+    tests/
+      myOtherFunction.test.ts
+    babel.config.cjs
+    jest.config.ts
+  tsconfig.json
+jest.config.ts
+```
 
 ## Configuration
 
 1. Follow the installation instructions from [@ttoss/config](/docs/modules/packages/config/#jest) to set up Jest.
 
-1. Define the configuration for Jest in the `jest.config.ts` file at the root of the project. This configuration set up Jest [projects](https://jestjs.io/docs/configuration#projects-arraystring--projectconfig).
+1. Define the configuration for Jest in the `jest.config.ts` file at the root of the package. This configuration set up Jest [projects](https://jestjs.io/docs/configuration#projects-arraystring--projectconfig).
 
    ```ts
    import { jestRootConfig } from '@ttoss/config';
@@ -72,7 +92,7 @@ We write unit tests in the `tests/unit` folder and e2e tests in the `tests/e2e` 
    import { myFunction } from 'src/myFunction';
    ```
 
-1. Finnaly, add the following scripts to the `package.json` file:
+1. Add the following scripts to the `package.json` file:
 
    ```json
    {
@@ -83,20 +103,16 @@ We write unit tests in the `tests/unit` folder and e2e tests in the `tests/e2e` 
    }
    ```
 
-## File Structure
+1. Finnaly, write your tests in the `tests/unit/tests` and `tests/e2e/tests` folders.
 
-The inital file structure for tests should be:
+1. Run the unit tests with the following command:
 
-```
-tests/
-  e2e/
-    tests/
-    babel.config.cjs
-    jest.config.ts
-  unit/
-    tests/
-    babel.config.cjs
-    jest.config.ts
-  tsconfig.json
-jest.config.ts
-```
+   ```shell
+   pnpm test
+   ```
+
+   Or run only the e2e tests with:
+
+   ```shell
+   pnpm e2e
+   ```

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.24.9 (2024-10-03)
+
+### Bug Fixes
+
+- import icons error ([#594](https://github.com/ttoss/ttoss/issues/594)) ([7f73852](https://github.com/ttoss/ttoss/commit/7f73852cc038050abcf08099fe71f4afd057f9c8))
+
 ## [1.24.8](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.24.7...@ttoss/eslint-config@1.24.8) (2024-06-28)
 
 ### Bug Fixes

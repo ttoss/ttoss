@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.43](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.42...@terezinha-farm/auth@0.3.43) (2024-10-03)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.3.42](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.41...@terezinha-farm/auth@0.3.42) (2024-09-27)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.3.41](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.40...@terezinha-farm/auth@0.3.41) (2024-09-26)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.3.40](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.39...@terezinha-farm/auth@0.3.40) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.3.39](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.38...@terezinha-farm/auth@0.3.39) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
 ## [0.3.38](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.37...@terezinha-farm/auth@0.3.38) (2024-08-29)
 
 **Note:** Version bump only for package @terezinha-farm/auth

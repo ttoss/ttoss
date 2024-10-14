@@ -79,4 +79,4 @@ fi
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
-pnpm turbo run build test deploy --filter=[$LATEST_TAG]
+pnpm turbo run build test deploy --filter=[$LATEST_TAG] --filter=@docs/website

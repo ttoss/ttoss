@@ -18,6 +18,9 @@ export const defaultConfig: Config = {
     advanceTimers: true,
     enableGlobally: true,
   },
+  /**
+   * https://stackoverflow.com/a/64390115/8786986
+   */
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
   moduleNameMapper: {
     /**

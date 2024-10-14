@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "1.51.10",
+  "version": "1.53.5",
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
     "clear": "docusaurus clear",
@@ -17,11 +17,11 @@
   "dependencies": {
     "@docusaurus/core": "^3.5.2",
     "@docusaurus/module-type-aliases": "^3.5.2",
+    "@docusaurus/plugin-sitemap": "^3.5.2",
     "@docusaurus/preset-classic": "^3.5.2",
     "@docusaurus/theme-mermaid": "^3.5.2",
     "@mdx-js/react": "3.0.1",
-    "@ttoss/ui": "workspace:^",
-    "prism-react-renderer": "^2.3.1",
+    "prism-react-renderer": "^2.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rehype-katex": "7",
@@ -31,14 +31,17 @@
     "@docusaurus/module-type-aliases": "^3.5.2",
     "@docusaurus/tsconfig": "^3.5.2",
     "@docusaurus/types": "^3.5.2",
+    "autoprefixer": "^10.4.20",
     "carlin": "workspace:^",
     "docusaurus-plugin-typedoc": "^1.0.5",
-    "jsdoc-api": "^9.2.0",
+    "jsdoc-api": "^9.3.1",
     "markdown-to-jsx": "^7.5.0",
     "minimist": "^1.2.8",
-    "typedoc": "^0.26.6",
-    "typedoc-plugin-markdown": "^4.2.6",
-    "typescript": "~5.5.4"
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typedoc": "^0.26.7",
+    "typedoc-plugin-markdown": "^4.2.8",
+    "typescript": "~5.6.2"
   },
   "browserslist": {
     "production": [

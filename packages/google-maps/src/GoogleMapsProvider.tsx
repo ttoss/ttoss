@@ -9,27 +9,54 @@ type LoadedMapsStatus = Extends<ScriptStatus, 'ready'>;
 
 type NotLoadedMapStatus = Extends<ScriptStatus, 'idle' | 'error' | 'loading'>;
 
-const GoogleMapsContext = React.createContext<
+export const GoogleMapsContext = React.createContext<
   | {
       status: LoadedMapsStatus;
-      googleMaps: GoogleMaps;
+      google: {
+        maps: GoogleMaps;
+      };
     }
   | {
       status: NotLoadedMapStatus;
-      googleMaps: null;
+      google: {
+        maps: null;
+      };
     }
 >({
   status: 'idle',
-  googleMaps: null,
+  google: {
+    maps: null,
+  },
 });
 
 type Libraries = 'places' | 'visualization' | 'drawing' | 'geometry';
 
+type ScriptProps = {
+  src: string;
+  onReady: () => void;
+  onError?: (e: Error) => void;
+};
+
+const DefaultScript = ({ src, onReady }: ScriptProps) => {
+  const { status } = useScript(src);
+
+  React.useEffect(() => {
+    if (status === 'ready') {
+      onReady();
+    }
+  }, [status, onReady]);
+
+  return null;
+};
+
 export const GoogleMapsProvider = ({
   children,
   apiKey,
+  loading = 'async',
   libraries,
   language,
+  Script = DefaultScript,
+  onError,
 }: {
   children: React.ReactNode;
   apiKey: string;
@@ -38,9 +65,16 @@ export const GoogleMapsProvider = ({
    * https://developers.google.com/maps/faq#languagesupport
    */
   language?: string;
+  loading?: 'async' | false;
+  Script?: React.ComponentType<ScriptProps>;
+  onError?: (e: Error) => void;
 }) => {
   const src = (() => {
     let srcTemp = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+
+    if (loading) {
+      srcTemp = srcTemp + `&loading=${loading}`;
+    }
 
     if (libraries) {
       srcTemp = srcTemp + `&libraries=${libraries.join(',')}`;
@@ -53,42 +87,46 @@ export const GoogleMapsProvider = ({
     return srcTemp;
   })();
 
-  const { status } = useScript(src);
+  const [status, setStatus] = React.useState<ScriptStatus>('loading');
 
-  const googleMaps = React.useMemo(() => {
-    if (status === 'ready' && window.google.maps) {
-      return window.google.maps;
+  const google = React.useMemo(() => {
+    if (status === 'ready' && window.google) {
+      return window.google;
     }
 
     return null;
   }, [status]);
 
   const value = React.useMemo(() => {
-    if (status === 'ready' && googleMaps) {
+    if (status === 'ready' && google?.maps) {
       return {
         status,
-        googleMaps,
+        google: {
+          maps: google.maps,
+        },
       };
     }
 
     return {
       status: status as NotLoadedMapStatus,
-      googleMaps: null,
+      google: {
+        maps: null,
+      },
     };
-  }, [googleMaps, status]);
+  }, [google, status]);
 
   return (
-    <GoogleMapsContext.Provider value={value}>
-      {children}
-    </GoogleMapsContext.Provider>
+    <>
+      <Script
+        src={src}
+        onReady={() => {
+          return setStatus('ready');
+        }}
+        onError={onError}
+      />
+      <GoogleMapsContext.Provider value={value}>
+        {children}
+      </GoogleMapsContext.Provider>
+    </>
   );
-};
-
-/**
- *
- * @returns param.googleMaps: GoogleMaps - returns the google maps object which
- * provides access to the [Google Maps API](https://developers.google.com/maps/documentation/javascript/overview).
- */
-export const useGoogleMaps = () => {
-  return React.useContext(GoogleMapsContext);
 };

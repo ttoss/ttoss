@@ -1,7 +1,8 @@
 {
   "name": "@ttoss/auth-core",
-  "version": "0.1.9",
+  "version": "0.2.1",
   "description": "Core authentication library for ttoss",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
@@ -16,12 +17,11 @@
     "./amazon-cognito": "./src/AmazonCognito/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
-    "test": "echo jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^29.7.0",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "keywords": [
     "auth",

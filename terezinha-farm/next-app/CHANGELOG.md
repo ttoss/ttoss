@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.50](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.49...@terezinha-farm/next-app@0.1.50) (2024-10-03)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.1.49](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.48...@terezinha-farm/next-app@0.1.49) (2024-09-27)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.1.48](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.47...@terezinha-farm/next-app@0.1.48) (2024-09-26)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.1.47](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.46...@terezinha-farm/next-app@0.1.47) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.1.46](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.45...@terezinha-farm/next-app@0.1.46) (2024-09-17)
+
+### Bug Fixes
+
+- icons not displaying ([#593](https://github.com/ttoss/ttoss/issues/593)) ([56b1725](https://github.com/ttoss/ttoss/commit/56b17252ad30ec8151979983e2f67d644fe67b83))
+
+## [0.1.45](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.44...@terezinha-farm/next-app@0.1.45) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.1.44](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.43...@terezinha-farm/next-app@0.1.44) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
 ## [0.1.43](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.42...@terezinha-farm/next-app@0.1.43) (2024-09-12)
 
 **Note:** Version bump only for package @terezinha-farm/next-app

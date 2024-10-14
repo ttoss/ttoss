@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/next-app",
-  "version": "0.1.43",
+  "version": "0.1.50",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@ttoss/react-auth": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.0.28",
@@ -24,8 +25,8 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/node": "^20.16.1",
-    "@types/react": "^18.3.3",
+    "@types/react": "^18.3.7",
     "@types/react-dom": "^18.2.25",
-    "typescript": "~5.5.4"
+    "typescript": "~5.6.2"
   }
 }

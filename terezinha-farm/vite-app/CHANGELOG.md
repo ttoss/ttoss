@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.72](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.71...@terezinha-farm/vite-app@0.9.72) (2024-10-03)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.71](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.70...@terezinha-farm/vite-app@0.9.71) (2024-10-03)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.70](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.69...@terezinha-farm/vite-app@0.9.70) (2024-09-27)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.69](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.68...@terezinha-farm/vite-app@0.9.69) (2024-09-27)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.68](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.67...@terezinha-farm/vite-app@0.9.68) (2024-09-26)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.67](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.66...@terezinha-farm/vite-app@0.9.67) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.66](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.65...@terezinha-farm/vite-app@0.9.66) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.65](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.64...@terezinha-farm/vite-app@0.9.65) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.9.64](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.63...@terezinha-farm/vite-app@0.9.64) (2024-09-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.9.63](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.62...@terezinha-farm/vite-app@0.9.63) (2024-09-12)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

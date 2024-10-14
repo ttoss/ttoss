@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.53.5](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.4...@docs/website@1.53.5) (2024-10-09)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.53.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.3...@docs/website@1.53.4) (2024-10-03)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.53.3](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.2...@docs/website@1.53.3) (2024-10-03)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.53.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.1...@docs/website@1.53.2) (2024-10-02)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.53.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.0...@docs/website@1.53.1) (2024-10-01)
+
+**Note:** Version bump only for package @docs/website
+
+# [1.53.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.52.1...@docs/website@1.53.0) (2024-09-27)
+
+### Features
+
+- create http-server package ([#598](https://github.com/ttoss/ttoss/issues/598)) ([b285dc6](https://github.com/ttoss/ttoss/commit/b285dc6f976cdb8cef916306021d3343146d401e))
+
+## [1.52.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.52.0...@docs/website@1.52.1) (2024-09-26)
+
+**Note:** Version bump only for package @docs/website
+
+# [1.52.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.15...@docs/website@1.52.0) (2024-09-26)
+
+### Features
+
+- implement postgresdb packages ([#596](https://github.com/ttoss/ttoss/issues/596)) ([e1f770a](https://github.com/ttoss/ttoss/commit/e1f770a1f996ab34a66376e384188c65366bd5db))
+
+## [1.51.15](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.14...@docs/website@1.51.15) (2024-09-17)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.51.14](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.13...@docs/website@1.51.14) (2024-09-17)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.51.13](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.12...@docs/website@1.51.13) (2024-09-17)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.51.12](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.11...@docs/website@1.51.12) (2024-09-17)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.51.11](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.10...@docs/website@1.51.11) (2024-09-17)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.51.10](https://github.com/ttoss/ttoss/compare/@docs/website@1.51.9...@docs/website@1.51.10) (2024-09-11)
 
 **Note:** Version bump only for package @docs/website

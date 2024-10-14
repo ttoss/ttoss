@@ -1,7 +1,8 @@
 {
   "name": "@ttoss/components",
-  "version": "2.0.4",
+  "version": "2.0.10",
   "description": "React components for ttoss ecosystem.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
@@ -25,8 +26,7 @@
     "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
@@ -60,11 +60,11 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/jest": "^29.5.12",
-    "@types/react": "^18.3.3",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^18.3.7",
     "jest": "^29.7.0",
     "react": "^18.3.1",
-    "tsup": "^8.2.4",
+    "tsup": "^8.3.0",
     "tsx": "^4.6.2"
   },
   "keywords": [

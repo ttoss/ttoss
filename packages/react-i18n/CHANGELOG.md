@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.3...@ttoss/react-i18n@2.0.4) (2024-10-03)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [2.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.2...@ttoss/react-i18n@2.0.3) (2024-09-27)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [2.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.1...@ttoss/react-i18n@2.0.2) (2024-09-26)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.0...@ttoss/react-i18n@2.0.1) (2024-09-17)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 # [2.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@1.26.15...@ttoss/react-i18n@2.0.0) (2024-08-29)
 
 ### chore

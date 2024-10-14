@@ -1,7 +1,8 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.7.17",
+  "version": "1.7.23",
   "description": "Theme for packages.",
+  "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Rayza Oliveira <rayza.ocr@gmail.com>"
@@ -17,9 +18,7 @@
     "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
   },
   "files": [
-    "dist",
-    "src",
-    "tsconfig.json"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
@@ -27,13 +26,13 @@
   },
   "sideEffects": true,
   "dependencies": {
-    "@iconify/icons-carbon": "^1.2.20",
     "deepmerge": "^4.3.1"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^"
   },
   "devDependencies": {
+    "@iconify/icons-carbon": "^1.2.20",
     "@iconify/icons-eos-icons": "^1.2.6",
     "@iconify/icons-mdi": "^1.2.48",
     "@ttoss/config": "workspace:^",
@@ -41,7 +40,7 @@
     "@ttoss/test-utils": "workspace:^",
     "jest": "^29.7.0",
     "theme-ui": "^0.16.2",
-    "tsup": "^8.2.4"
+    "tsup": "^8.3.0"
   },
   "keywords": [],
   "publishConfig": {

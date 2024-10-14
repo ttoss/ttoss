@@ -1,0 +1,52 @@
+{
+  "name": "@ttoss/postgresdb",
+  "version": "0.2.3",
+  "description": "A library to handle PostgreSQL database connections and queries",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/postgresdb"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "echo jest"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "jest": "^29.7.0",
+    "tsup": "^8.3.0"
+  },
+  "keywords": [
+    "database",
+    "postgres",
+    "postgresql"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
+    "provenance": true
+  }
+}

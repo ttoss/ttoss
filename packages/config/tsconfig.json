@@ -42,7 +42,14 @@
      * decorators in your application as we use with sequelize-typescript.
      */
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    /**
+     * Set `strictPropertyInitialization` to `true` to ensure that each instance
+     * property of a class gets initialized in the constructor body, or by a
+     * property initializer.
+     * https://chatgpt.com/share/66f55e86-c3ec-8002-bf29-ba18c3af3d0e
+     */
+    "strictPropertyInitialization": true
   },
   "exclude": ["tests"]
 }
