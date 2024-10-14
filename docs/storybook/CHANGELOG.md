@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.30](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.3.29...@docs/storybook@2.3.30) (2024-10-14)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [2.3.29](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.3.28...@docs/storybook@2.3.29) (2024-10-03)
 
 **Note:** Version bump only for package @docs/storybook

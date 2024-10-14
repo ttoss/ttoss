@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.1.1...@ttoss/react-auth@2.2.0) (2024-10-14)
+
+### Features
+
+- add verify if sign in result is reset password ([#588](https://github.com/ttoss/ttoss/issues/588)) ([ab4f75c](https://github.com/ttoss/ttoss/commit/ab4f75cd14eb5bd9cd593e1c1abbba8aa4440165))
+
 ## [2.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.1.0...@ttoss/react-auth@2.1.1) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/react-auth
