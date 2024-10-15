@@ -36,30 +36,6 @@ These indicators can provide valuable insights into both short-term performance 
 
 These examples illustrate how companies can use a mix of leading and lagging indicators to not only respond to immediate challenges but also to evaluate and improve long-term strategies.
 
-## Case Studies: Applying Leading and Lagging Indicators in Practice
-
-To see how leading and lagging indicators work in a real-world context, let's explore two case studies that show their impact on decision-making and performance improvement.
-
-### Case Study 1: Launching a New Feature
-
-A SaaS startup decided to launch a new feature aimed at improving user collaboration. To anticipate its success, the team focused on leading indicators, such as:
-
-- **User Activation Rate**: How many users started using the feature within the first week of release. This metric provided early feedback on whether the feature was intuitive and valuable to users.
-- **Time Spent on the Feature**: The average time users spent interacting with the new feature. Higher engagement indicated that users found the feature useful, while low engagement prompted the team to investigate and refine the user experience.
-
-By monitoring these leading indicators, the team was able to quickly identify areas for improvement and make adjustments before the feature was fully scaled.
-
-### Case Study 2: Addressing Customer Retention Issues
-
-The startup noticed an increase in customer churn over the past quarter. Using lagging indicators like Churn Rate and Net Promoter Score (NPS), they assessed how previous changes in the product and support services impacted customer satisfaction. However, to take corrective action, they also focused on leading indicators:
-
-- **Onboarding Completion Rate**: They monitored how many new customers completed the onboarding process. A low rate indicated that customers might not be receiving adequate support or understanding the product's value.
-- **Support Ticket Response Time**: Tracking the average time taken to respond to customer support tickets provided insights into whether improving customer service could help retain users.
-
-By combining lagging and leading indicators, the team could not only understand the reasons behind the rising churn but also implement proactive strategies, such as improving onboarding processes and reducing response times, to retain more customers moving forward.
-
-These case studies highlight how a balanced approach using both types of indicators enables SaaS startups to react promptly to emerging challenges while also learning from past experiences to build a stronger, more adaptable product.
-
 ## Common Mistakes and Pitfalls When Using Leading and Lagging Indicators
 
 While leading and lagging indicators are valuable tools for startups, common mistakes can undermine their effectiveness. Here are some key pitfalls to avoid:
