@@ -61,7 +61,7 @@ In a process with several linked queues, one queue usually slows down the entire
 
 ### Q16: The Intervention Principle: We Cannot Rely on Randomness to Correct a Random Queue
 
-When a queue builds up into a sustained high-load state, it won't easily or quickly revert to a low-load state on its own. Just like flipping 10 heads in a row doesn’t increase the chance of flipping 10 tails to balance it out, randomness won’t fix the problem.
+When a queue builds up into a sustained high-load state, it won't easily or quickly revert to a low-load state on its own. Just like flipping 10 heads in a row doesn't increase the chance of flipping 10 tails to balance it out, randomness won't fix the problem.
 
 You need to intervene quickly and decisively in such situations. Set limits on maximum queue size, and act before the system hits those limits. The more closely you monitor queues and intervene early, the less they will cost you in the long run.
 
@@ -85,6 +85,24 @@ Similarly, if you anticipate needing to reallocate resources quickly, invest in 
 
 ## Using Fast Feedback
 
+### FF1: The Principle of Maximum Economic Influence: Focus control on project and process parameters with the highest economic influence
+
+Control measures that have the greatest impact on economic success. Use an economic framework to identify these parameters. For example, if a 10% increase in project expenses reduces profits by 1%, but a 10% increase in unit cost reduces profits by 50%, prioritize controlling unit cost over project expenses.
+
+### FF2: The Principle of Efficient Control: Control parameters that are both influential and efficient
+
+A parameter's strong economic influence does not guarantee efficient control. For instance, average sales price significantly impacts life cycle economics but is difficult to control directly. On the other hand, unit cost has a similar influence and is more manageable.
+
+To identify effective control variables, find the intersection of economic influence and control efficiency. Conduct sensitivity analysis to determine which proxy variables have economic impact, then rank these variables based on their control efficiency to identify the most effective ones.
+
+### FF3: The Principle of Leading Indicators: Select control variables that predict future system behavior
+
+[Leading indicators](/docs/product/product-development/definitions#leading-indicators) are valuable for efficient control because they enable early interventions, which are economically beneficial. As development progresses, intervention costs rise exponentially, while the value of acting early increases significantly. These combined effects make early interventions highly efficient.
+
+For instance, a manager focused on monitoring task start times instead of completion times. He observed a strong correlation: when the right person started a task on time, it usually finished on schedule. Conversely, tasks that started late or with incorrect resources often finished late. By using start times as a leading indicator, he could intervene early—adjusting resources or priorities—before delays became costly.
+
+However, these conditions—predictive [leading indicators](/docs/product/product-development/definitions#leading-indicators) and the potential for impactful early interventions—may not always be present. When absent, the benefits of using [leading indicators](/docs/product/product-development/definitions#leading-indicators) can diminish or even become counterproductive.
+
 ### FF5: The Moving Target Principle: Know When to Pursue a Dynamic Goal
 
 Many companies create harmful control systems by failing to distinguish between static and dynamic goals. They assume that following the plan is always correct and any deviation is negative. In stable environments, like manufacturing, this can be true, where frameworks like Six Sigma prevent deviations to optimize efficiency.
@@ -97,9 +115,9 @@ Recognizing when your goals are dynamic or stable is crucial, especially in the 
 
 In product development, agility is the ability to quickly shift focus or direction without needing to plan too far ahead. A smaller, more focused project is much easier to adapt than a large, rigid one. Just like turning a small object is easier than moving a massive one, agile teams can change direction quickly when they have fewer moving parts.
 
-To maintain this agility, it's important to have enough resources ready to make these changes as soon as needed. Organizations operating at full capacity often struggle because they can’t reallocate resources quickly enough. This delays response times and makes it harder to shift direction.
+To maintain this agility, it's important to have enough resources ready to make these changes as soon as needed. Organizations operating at full capacity often struggle because they can't reallocate resources quickly enough. This delays response times and makes it harder to shift direction.
 
-When teams are set up to pivot quickly—by working on manageable projects and keeping resources flexible—they can move faster and more confidently, even in uncertain environments. This short "turning radius" means you don’t need to plan everything in detail far into the future, because you can make quick adjustments as new information emerges. This approach reduces the complexity of managing changes and allows teams to operate at a higher speed without losing control.
+When teams are set up to pivot quickly—by working on manageable projects and keeping resources flexible—they can move faster and more confidently, even in uncertain environments. This short "turning radius" means you don't need to plan everything in detail far into the future, because you can make quick adjustments as new information emerges. This approach reduces the complexity of managing changes and allows teams to operate at a higher speed without losing control.
 
 ## Achieving Decentralized Control
 
@@ -157,11 +175,11 @@ For example, in product development, rather than prescribing detailed features, 
 
 ### D9. The Principle of Boundaries: Establish Clear Roles and Boundaries
 
-In decentralized control, clearly defined roles and boundaries are crucial to avoid confusion. Too much overlap leads to inefficiency, while gaps leave tasks undone. In product development, unclear roles increase the need for communication and meetings. For instance, without clear roles, many people may need to approve simple decisions, slowing progress. Well-defined roles streamline teamwork. Additionally, it’s important to identify and address gaps between roles to ensure all tasks are covered.
+In decentralized control, clearly defined roles and boundaries are crucial to avoid confusion. Too much overlap leads to inefficiency, while gaps leave tasks undone. In product development, unclear roles increase the need for communication and meetings. For instance, without clear roles, many people may need to approve simple decisions, slowing progress. Well-defined roles streamline teamwork. Additionally, it's important to identify and address gaps between roles to ensure all tasks are covered.
 
 ### D10. The Main Effort Principle: Designate a Main Effort and Subordinate Other Activities
 
-In product development, it’s essential to focus on the few key features that drive success. While customers may request hundreds of features, only a handful—typically four to six—truly influence their decision. These are the “main effort” of the project, where the team should concentrate the most resources. Other features should take a back seat, allowing the team to excel in the areas that really matter. By prioritizing these core features, you maximize the impact and effectiveness of the product, much like focusing on a key point in a mission.
+In product development, it's essential to focus on the few key features that drive success. While customers may request hundreds of features, only a handful—typically four to six—truly influence their decision. These are the “main effort” of the project, where the team should concentrate the most resources. Other features should take a back seat, allowing the team to excel in the areas that really matter. By prioritizing these core features, you maximize the impact and effectiveness of the product, much like focusing on a key point in a mission.
 
 ### D11. The Principle of Dynamic Alignment: The Main Effort May Shift Quickly when Conditions Change
 
