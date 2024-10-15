@@ -80,6 +80,28 @@ If a development team starts working on a new feature on Monday and completes it
 
 In agile methodologies, cycle time is closely monitored to ensure that the team is working efficiently and can quickly adjust to changing requirements.
 
+## Lagging Indicators
+
+Measure outcomes after an event has occurred or an activity has been completed. They are easier to measure because they rely on historical data and provide a clear view of what has already happened, making them useful for analyzing past performance.
+
+### Examples
+
+- Total revenue from last month.
+- Quarterly profit.
+- Customer churn rate.
+- Number of closed sales.
+
+## Leading Indicators
+
+These are metrics that precede events and can predict or influence future outcomes. They are harder to measure as they involve forecasting behaviors or future trends. They help adjust strategies before actual results are achieved.
+
+### Examples
+
+- Number of qualified leads (can predict future sales).
+- User engagement on a website or app (can indicate retention probability).
+- Customer satisfaction (can predict retention rate).
+- Click-through rates in marketing campaigns (can predict future conversions).
+
 ## Net Present Value (NPV)
 
 Net Present Value (NPV) is a financial metric used to assess the profitability of an investment or project. It calculates the difference between the present value of cash inflows and the present value of cash outflows over a period of time. A positive NPV indicates that the projected earnings (in present currency) exceed the anticipated costs, making the investment or project potentially profitable. Conversely, a negative NPV suggests that the costs outweigh the benefits. NPV is commonly used in capital budgeting to evaluate the financial viability of long-term projects.

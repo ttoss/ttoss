@@ -1,5 +1,3 @@
-spa: true
-
 environments:
   Production:
     aliases:
