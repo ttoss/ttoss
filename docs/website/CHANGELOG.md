@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.53.8](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.7...@docs/website@1.53.8) (2024-11-18)
+
+### Bug Fixes
+
+- issue 610 ([#612](https://github.com/ttoss/ttoss/issues/612)) ([721c1e5](https://github.com/ttoss/ttoss/commit/721c1e5cefb4467b9cadbd22ca34783de71236e0))
+
 ## [1.53.7](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.6...@docs/website@1.53.7) (2024-11-18)
 
 **Note:** Version bump only for package @docs/website
