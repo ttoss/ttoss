@@ -148,7 +148,7 @@ test('should add CloudFront Function that append index.html', () => {
 
   expect(
     template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
-      .DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations
+      .DistributionConfig.DefaultCacheBehavior.FunctionAssociations
   ).toEqual([
     {
       EventType: 'viewer-request',

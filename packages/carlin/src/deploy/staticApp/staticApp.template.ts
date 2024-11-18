@@ -378,7 +378,7 @@ const getCloudFrontTemplate = ({
   if (appendIndexHtml) {
     template.Resources[
       CLOUDFRONT_DISTRIBUTION_LOGICAL_ID
-    ].Properties.DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations =
+    ].Properties.DistributionConfig.DefaultCacheBehavior.FunctionAssociations =
       [
         /**
          * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-lambdafunctionassociation.html
