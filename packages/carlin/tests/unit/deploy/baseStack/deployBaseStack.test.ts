@@ -1,13 +1,14 @@
-jest.mock('../cloudformation.core');
+jest.mock('src/deploy/cloudformation.core');
 
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
+  BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME,
   BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
   BASE_STACK_NAME,
-} from './config';
-import { deploy } from '../cloudformation.core';
-import { deployBaseStack } from './deployBaseStack';
+} from 'src/deploy/baseStack/config';
+import { deploy } from 'src/deploy/cloudformation.core';
+import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
 
 test('should create base resources', async () => {
   await deployBaseStack();
@@ -17,11 +18,15 @@ test('should create base resources', async () => {
       AWSTemplateFormatVersion: '2010-09-09',
       Resources: expect.objectContaining({
         [BASE_STACK_BUCKET_LOGICAL_NAME]: expect.anything(),
+        [BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME]:
+          expect.anything(),
         [BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME]: expect.anything(),
         [BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME]: expect.anything(),
       }),
       Outputs: expect.objectContaining({
         [BASE_STACK_BUCKET_LOGICAL_NAME]: expect.anything(),
+        [BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME]:
+          expect.anything(),
         [BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME]: expect.anything(),
         [BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME]: expect.anything(),
       }),

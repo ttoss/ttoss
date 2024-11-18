@@ -1,20 +1,21 @@
-jest.mock('../../../src/utils', () => {
+jest.mock('src/utils', () => {
   const PACKAGE_VERSION = '10.40.23';
 
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(jest.requireActual('../../../src/utils') as any),
+    ...(jest.requireActual('src/utils') as any),
     getPackageVersion: jest.fn().mockReturnValue(PACKAGE_VERSION),
   };
 });
 
+import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME } from 'src/deploy/baseStack/config';
 import {
   CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
   CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
   ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID,
   STATIC_APP_BUCKET_LOGICAL_ID,
   getStaticAppTemplate,
-} from '../../../../src/deploy/staticApp/staticApp.template';
+} from 'src/deploy/staticApp/staticApp.template';
 import { faker } from '@ttoss/test-utils/faker';
 
 const region = faker.random.word();
@@ -136,4 +137,25 @@ test('should define Route53 RecordSetGroup', () => {
     template.Resources[ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID].Properties
       .RecordSets[0].Type
   ).toEqual('A');
+});
+
+test('should add CloudFront Function that append index.html', () => {
+  const template = getStaticAppTemplate({
+    region,
+    cloudfront: true,
+    appendIndexHtml: true,
+  });
+
+  expect(
+    template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations
+  ).toEqual([
+    {
+      EventType: 'viewer-request',
+      LambdaFunctionARN: {
+        'Fn::ImportValue':
+          BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME,
+      },
+    },
+  ]);
 });

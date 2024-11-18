@@ -1,16 +1,16 @@
-jest.mock('../cloudformation');
+jest.mock('src/deploy/cloudformation');
 
-jest.mock('./deployStaticApp');
+jest.mock('src/deploy/staticApp/deployStaticApp');
 
-import { CLOUDFRONT_REGION } from '../../config';
-import { deployStaticApp } from './deployStaticApp';
-import { deployStaticAppCommand } from './command';
-import { destroyCloudFormation } from '../cloudformation';
+import { CLOUDFRONT_REGION } from 'src/config';
+import { deployStaticApp } from 'src/deploy/staticApp/deployStaticApp';
+import { deployStaticAppCommand } from 'src/deploy/staticApp/command';
+import { destroyCloudFormation } from 'src/deploy/cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
 import AWS from 'aws-sdk';
 import yargs from 'yargs';
 
-const cli = yargs.command(deployStaticAppCommand);
+const cli = yargs().command(deployStaticAppCommand);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse = (options: any) => {
@@ -62,16 +62,19 @@ describe('aliases implies acm', () => {
 });
 
 describe('handling methods', () => {
-  test('should call deployStaticApp', async () => {
-    const options = {
-      acm: faker.random.word(),
-      aliases: [faker.random.word()],
+  test.each([
+    {
+      acm: faker.lorem.word(),
+      aliases: [faker.lorem.word()],
       cloudfront: true,
       spa: true,
-    };
-
+    },
+    {
+      cloudfront: true,
+      appendIndexHtml: true,
+    },
+  ])('should call deployStaticApp', async (options) => {
     await parse(options);
-
     expect(deployStaticApp).toHaveBeenCalledWith(
       expect.objectContaining(options)
     );
@@ -80,8 +83,8 @@ describe('handling methods', () => {
   test('should call destroyCloudFormation', async () => {
     const options = {
       destroy: true,
-      acm: faker.random.word(),
-      aliases: [faker.random.word()],
+      acm: faker.lorem.word(),
+      aliases: [faker.lorem.word()],
       cloudfront: true,
       spa: true,
     };
@@ -135,8 +138,8 @@ describe('should set cloudfront', () => {
         acm: 'some string',
       },
       {
-        acm: faker.random.word(),
-        aliases: [faker.random.word()],
+        acm: faker.lorem.word(),
+        aliases: [faker.lorem.word()],
       },
     ];
 

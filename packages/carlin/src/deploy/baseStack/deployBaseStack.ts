@@ -2,6 +2,7 @@ import { BASE_STACK_NAME } from './config';
 import { CloudFormationTemplate } from '../../utils';
 import { deploy } from '../cloudformation.core';
 import { getBucketTemplate } from './getBucketTemplate';
+import { getCloudFrontTemplate } from './getCloudFrontTemplate';
 import { getLambdaImageBuilderTemplate } from './getLambdaImageBuilderTemplate';
 import { getLambdaLayerBuilderTemplate } from './getLambdaLayerBuilderTemplate';
 import { getVpcTemplate } from './getVpcTemplate';
@@ -12,6 +13,7 @@ const logPrefix = 'base-stack';
 
 export const baseStackTemplate = deepmerge.all([
   getBucketTemplate(),
+  getCloudFrontTemplate(),
   getLambdaImageBuilderTemplate(),
   getLambdaLayerBuilderTemplate(),
   getVpcTemplate(),
@@ -28,6 +30,10 @@ export const baseStackTemplate = deepmerge.all([
  * size greater than [the limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html),
  * we need to upload the template to a S3 bucket in order to create/update the
  * stack.
+ *
+ * - **CloudFront function**. This resource is used to append the `index.html`
+ * to the request URI. This is useful when deploying a [Docusaurus](https://docusaurus.io/)
+ * website, for example.
  *
  * - **Lambda Layer builder**. This resource is a CodeBuild project that is
  * used to create Lambda Layers when [--lambda-externals](/docs/api-reference/deploy#lambda-externals)
