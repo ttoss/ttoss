@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.18](https://github.com/ttoss/ttoss/compare/carlin@1.36.17...carlin@1.36.18) (2024-11-18)
+
+### Bug Fixes
+
+- key function associations ([e1b0913](https://github.com/ttoss/ttoss/commit/e1b09133863ec6687df07998eeb660bb07afd7c7))
+
 ## [1.36.17](https://github.com/ttoss/ttoss/compare/carlin@1.36.16...carlin@1.36.17) (2024-11-18)
 
 ### Bug Fixes
