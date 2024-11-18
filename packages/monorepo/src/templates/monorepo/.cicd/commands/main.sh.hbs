@@ -1,0 +1,49 @@
+export ENVIRONMENT=Staging
+
+# Fetch tags
+git fetch --tags --quiet
+
+# git pull because a PR might have been merged since the beginning of the workflow
+# and push tags will fail if there are new commits.
+git pull origin main --ff-only --no-edit
+
+# https://stackoverflow.com/a/25742085/8786986
+pnpm lerna changed || { echo "No changes detected, exiting main workflow." && exit 0; }
+
+# If we're here, there are changes, so we need to run the main workflow
+
+# See pr.sh for more details.
+FILTERS=$(pnpm lerna changed | awk '{print "--filter=..."$1}' | tr '\n' ' ')
+
+pnpm lerna version --yes --no-push
+
+# Run the main workflow only on changed packages since the last release.
+# This way we don't execute the main workflow on all packages every time.
+pnpm turbo run build test $FILTERS
+
+# Undo all files that were changed by the build command—this happens because
+# the build can change files with different linting rules and `pnpm run lint`
+# fix them.
+# We don't want these changes because it will cause
+# turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+pnpm turbo run lint -- --allow-empty
+git diff --exit-code --quiet || { echo "Error: There are changed files."; git status; exit 1; }
+
+# Run deploy separately from `build` above because we don't want to deploy
+# packages with bug. This may happened when i18n is not updated.
+pnpm turbo run deploy e2e $FILTERS
+
+# Use Git to check for changes in the origin repository.
+#
+# 1. Fetch the latest changes from the origin/main repository.
+# 2. Compare the local and remote main branches using `git diff`.
+# 3. Check if there are any changes and stop the workflow if there are any.
+# 4. Exit and wait to the next main workflow starts because of the changes.
+
+# This is necessary else tags push will fail.
+git fetch
+
+# HEAD^1 because lerna version created a commit
+git diff HEAD^1 origin/main --quiet || { echo "Changes found before pushing tags. Workflow stopped." && exit 1; }
+
+git push --follow-tags

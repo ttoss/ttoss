@@ -1,0 +1,72 @@
+name: pr
+
+'on':
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: pr-$\{{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  pr:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    env:
+      CARLIN_BRANCH: $\{{ github.event.pull_request.head.ref }}
+      TURBO_TEAM: $\{{ vars.VERCEL_TEAM }}
+      TURBO_TOKEN: $\{{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: $\{{ secrets.SANDBOX_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: $\{{ secrets.SANDBOX_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Fetch and merge most recent main
+        run: |
+          git fetch origin main:main
+          git merge main --ff-only --no-edit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+          
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: $\{{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: $\{{ runner.os }}-pnpm-store-$\{{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            $\{{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run pr command
+        timeout-minutes: 20
+        run: sh -e ./.cicd/commands/pr.sh

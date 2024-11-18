@@ -1,0 +1,30 @@
+# I have a command "sh command" that lists some words separated with spaces. For example:
+#
+# projectX @project1/package1 @project1/package2 @project1/package3
+#
+# The number of packages can change every time I run the command.
+#
+# How can I use the "sh command" to get the words and generate the a line with the words with prefix "--filter=" and suffix "...". For example:
+#
+# --filter=...projectX --filter=...@project1/package1 --filter=...@project1/package2 --filter=...@project1/package3
+FILTERS=$(pnpm lerna changed | awk '{print "--filter=..."$1}' | tr '\n' ' ')
+
+# git pull because some other PR might have been merged since the beginning of the workflow
+git pull origin main --ff-only --no-edit
+
+# Skip the workflow if there are no changes in packages.
+# For example, if the only changes are in the README.md file.
+pnpm lerna changed || { echo "No changes detected, exiting pr workflow" && exit 0; }
+
+# Test and build only on changed packages since the last release
+# and all the workspaces that depends on them.
+# https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
+pnpm turbo run build test $FILTERS
+
+# See description on the main.sh file.
+pnpm turbo run lint
+git diff --exit-code --quiet || { echo "Error: There are changed files."; git status; exit 1; }
+
+# Run deploy separately from command above because we don't want to deploy
+# packages with bug. This may happened when i18n is not updated.
+pnpm turbo run deploy e2e $FILTERS

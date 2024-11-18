@@ -12,6 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/monorepo"
   },
+  "type": "module",
   "bin": {
     "ttoss-monorepo": "./bin/monorepo"
   },
@@ -20,18 +21,17 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsup-node && cp -r src/templates dist/esm",
+    "dev": "plop --plopfile ./dist/esm/plopfile.js",
     "test": "echo test"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
-    "npmlog": "^7.0.1",
-    "yargs": "^17.7.2"
+    "minimist": "^1.2.8",
+    "plop": "^4.0.1"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/npmlog": "^7.0.0",
-    "@types/yargs": "^17.0.32",
     "tsup": "^8.3.0"
   },
   "publishConfig": {

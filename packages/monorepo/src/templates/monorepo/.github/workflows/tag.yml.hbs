@@ -1,0 +1,71 @@
+name: tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+concurrency:
+  group: tag
+  # `cancel-in-progress: true` because we don't want to run the same job twice
+  # once multiple tags may be pushed at the same time.
+  cancel-in-progress: true
+
+jobs:
+  tag:
+    environment: Production
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: Production
+      TURBO_TEAM: $\{{ vars.VERCEL_TEAM }}
+      TURBO_TOKEN: $\{{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: $\{{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: $\{{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          token: $\{{ secrets.ARANTESPP_PAT }}
+
+      - name: Setup git user
+        run: |
+          git config user.email "arantespp@gmail.com"
+          git config user.name "arantespp"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: $\{{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: $\{{ runner.os }}-pnpm-store-$\{{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            $\{{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tag command
+        timeout-minutes: 30
+        run: sh -e ./.cicd/commands/tag.sh

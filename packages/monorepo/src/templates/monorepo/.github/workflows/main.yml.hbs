@@ -1,0 +1,70 @@
+name: main
+
+'on':
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: main
+  cancel-in-progress: false
+
+jobs:
+  main:
+    environment: Staging
+    runs-on: ubuntu-latest
+    # Run only if github.event.head_commit.message IS NOT "chore(release): publish packages"
+    if: $\{{ !contains(github.event.head_commit.message, 'chore(release):') }}
+    env:      
+      TURBO_TEAM: $\{{ vars.VERCEL_TEAM }}
+      TURBO_TOKEN: $\{{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: $\{{ secrets.SANDBOX_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: $\{{ secrets.SANDBOX_AWS_SECRET_ACCESS_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          token: $\{{ secrets.ARANTESPP_PAT }}
+
+      - name: Setup git user
+        run: |
+          git config user.email "arantespp@gmail.com"
+          git config user.name "arantespp"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+          
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: $\{{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: $\{{ runner.os }}-pnpm-store-$\{{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            $\{{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run main command
+        timeout-minutes: 30
+        run: sh -e ./.cicd/commands/main.sh

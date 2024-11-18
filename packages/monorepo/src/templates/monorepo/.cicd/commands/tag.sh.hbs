@@ -1,0 +1,6 @@
+export ENVIRONMENT=Production
+
+# Checkout the main branch to Lint not fail
+git checkout -b main
+
+pnpm turbo run build test deploy e2e
