@@ -19,6 +19,7 @@ const logPrefix = 'static-app';
 export const deployStaticApp = async ({
   acm,
   aliases,
+  appendIndexHtml,
   buildFolder,
   cloudfront,
   spa,
@@ -28,6 +29,7 @@ export const deployStaticApp = async ({
 }: {
   acm?: string;
   aliases?: string[];
+  appendIndexHtml?: boolean;
   buildFolder?: string;
   cloudfront?: boolean;
   spa?: boolean;
@@ -43,6 +45,7 @@ export const deployStaticApp = async ({
     const template = getStaticAppTemplate({
       acm,
       aliases,
+      appendIndexHtml,
       cloudfront,
       spa,
       hostedZoneName,
