@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.17](https://github.com/ttoss/ttoss/compare/carlin@1.36.16...carlin@1.36.17) (2024-11-18)
+
+### Bug Fixes
+
+- change FunctionARN key ([a2c25fd](https://github.com/ttoss/ttoss/commit/a2c25fdad7906e24f18cb312ac37309fd774c2d8))
+
 ## [1.36.16](https://github.com/ttoss/ttoss/compare/carlin@1.36.15...carlin@1.36.16) (2024-11-18)
 
 ### Bug Fixes
