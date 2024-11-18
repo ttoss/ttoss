@@ -1,4 +1,4 @@
-import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME } from '../baseStack/config';
+import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from '../baseStack/config';
 import {
   CloudFormationTemplate,
   Output,
@@ -375,6 +375,24 @@ const getCloudFrontTemplate = ({
     {}
   );
 
+  if (appendIndexHtml) {
+    template.Resources[
+      CLOUDFRONT_DISTRIBUTION_LOGICAL_ID
+    ].Properties.DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations =
+      [
+        /**
+         * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-lambdafunctionassociation.html
+         */
+        {
+          EventType: 'viewer-request',
+          LambdaFunctionARN: {
+            'Fn::ImportValue':
+              BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
+          },
+        },
+      ];
+  }
+
   /**
    * Add CloudFront Distribution ID and CloudFront URL to template.
    */
@@ -403,24 +421,6 @@ const getCloudFrontTemplate = ({
       Value: PACKAGE_VERSION,
     },
   };
-
-  if (appendIndexHtml) {
-    template.Resources[
-      CLOUDFRONT_DISTRIBUTION_LOGICAL_ID
-    ].Properties.DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations =
-      [
-        /**
-         * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-lambdafunctionassociation.html
-         */
-        {
-          EventType: 'viewer-request',
-          LambdaFunctionARN: {
-            'Fn::ImportValue':
-              BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME,
-          },
-        },
-      ];
-  }
 
   return template;
 };

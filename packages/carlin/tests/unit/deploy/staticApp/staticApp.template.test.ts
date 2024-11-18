@@ -8,7 +8,7 @@ jest.mock('src/utils', () => {
   };
 });
 
-import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME } from 'src/deploy/baseStack/config';
+import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from 'src/deploy/baseStack/config';
 import {
   CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
   CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
@@ -154,7 +154,7 @@ test('should add CloudFront Function that append index.html', () => {
       EventType: 'viewer-request',
       LambdaFunctionARN: {
         'Fn::ImportValue':
-          BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME,
+          BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
       },
     },
   ]);
