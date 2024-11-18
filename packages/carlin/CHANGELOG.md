@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.16](https://github.com/ttoss/ttoss/compare/carlin@1.36.15...carlin@1.36.16) (2024-11-18)
+
+### Bug Fixes
+
+- cloudfront funcion arn ([3254399](https://github.com/ttoss/ttoss/commit/3254399e1cb63f5d8f36747beca342268fae97a5))
+- update tests ([f6c4c25](https://github.com/ttoss/ttoss/commit/f6c4c25a48cdc8195d0b9d3a9f6e7d4c360a2ce5))
+
 ## [1.36.15](https://github.com/ttoss/ttoss/compare/carlin@1.36.14...carlin@1.36.15) (2024-11-18)
 
 ### Bug Fixes
