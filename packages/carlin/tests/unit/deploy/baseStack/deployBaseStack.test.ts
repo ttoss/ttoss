@@ -2,6 +2,7 @@ jest.mock('src/deploy/cloudformation.core');
 
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
+  BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN,
   BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME,
   BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
@@ -25,7 +26,7 @@ test('should create base resources', async () => {
       }),
       Outputs: expect.objectContaining({
         [BASE_STACK_BUCKET_LOGICAL_NAME]: expect.anything(),
-        [BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME]:
+        [BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN]:
           expect.anything(),
         [BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME]: expect.anything(),
         [BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME]: expect.anything(),
