@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.14](https://github.com/ttoss/ttoss/compare/carlin@1.36.13...carlin@1.36.14) (2024-11-18)
+
+### Bug Fixes
+
+- issue 610 ([#611](https://github.com/ttoss/ttoss/issues/611)) ([8069b79](https://github.com/ttoss/ttoss/commit/8069b79fdd44520611aec4d8b62c5ad413f6e349))
+
 ## [1.36.13](https://github.com/ttoss/ttoss/compare/carlin@1.36.12...carlin@1.36.13) (2024-10-03)
 
 ### Bug Fixes
