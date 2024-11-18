@@ -152,7 +152,7 @@ test('should add CloudFront Function that append index.html', () => {
   ).toEqual([
     {
       EventType: 'viewer-request',
-      LambdaFunctionARN: {
+      FunctionARN: {
         'Fn::ImportValue':
           BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
       },
