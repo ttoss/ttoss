@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.36.15](https://github.com/ttoss/ttoss/compare/carlin@1.36.14...carlin@1.36.15) (2024-11-18)
+
+### Bug Fixes
+
+- pass appendIndexHtml ([a52456d](https://github.com/ttoss/ttoss/commit/a52456d40d388a2da85f67f2a72c29f01322d1d1))
+
 ## [1.36.14](https://github.com/ttoss/ttoss/compare/carlin@1.36.13...carlin@1.36.14) (2024-11-18)
 
 ### Bug Fixes
