@@ -18,7 +18,7 @@ const config = jestConfig({
     'tests/(.*)': '<rootDir>/tests/$1',
   },
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
-  silent: true,
+  // silent: true,
   transformIgnorePatterns,
 });
 

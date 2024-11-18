@@ -19,6 +19,12 @@ export const options = {
     implies: ['acm'],
     type: 'array',
   },
+  'append-index-html': {
+    default: false,
+    describe:
+      'This option appends the `index.html` to the request URI. This is useful when deploying a Docusaurus website, for example.',
+    type: 'boolean',
+  },
   'build-folder': {
     describe: `The folder that will be uploaded. If not provided, it'll search for the folders "${defaultBuildFolders.join(
       ', '

@@ -14,6 +14,13 @@ export const BASE_STACK_BUCKET_LOGICAL_NAME = `${pascalCaseName}Bucket`;
 export const BASE_STACK_BUCKET_NAME_EXPORTED_NAME = `${pascalCaseName}BucketNameExportedName`;
 
 /**
+ * CloudFront.
+ */
+export const BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME = `${pascalCaseName}CloudFrontFunctionAppendIndexHtml`;
+
+export const BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_EXPORTED_NAME = `${pascalCaseName}CloudFrontFunctionAppendIndexHtmlExportedName`;
+
+/**
  * Lambda image builder.
  */
 export const BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME = `${pascalCaseName}LambdaImageBuilder`;
