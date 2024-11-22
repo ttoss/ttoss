@@ -1,4 +1,4 @@
-import { calcMultiplyingValues } from 'src/themes/Bruttal/helpers/geometricCalc';
+import { calcMultiplyingValues } from '../../../../src/themes/Bruttal/helpers/geometricCalc';
 
 const SIZE_TYPE = 'rem';
 

@@ -1,7 +1,7 @@
 import {
   calcDividingValues,
   calcMultiplyingValues,
-} from 'src/themes/Bruttal/helpers/geometricCalc';
+} from '../../../../src/themes/Bruttal/helpers/geometricCalc';
 
 const BASE = 100;
 
