@@ -1,7 +1,7 @@
 import {
   calcDividingValues,
   calcMultiplyingValues,
-} from '../helpers/geometricCalc';
+} from 'src/themes/Bruttal/helpers/geometricCalc';
 
 const SIZE_TYPE = 'rem';
 

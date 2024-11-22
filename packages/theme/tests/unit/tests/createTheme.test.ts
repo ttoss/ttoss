@@ -1,12 +1,12 @@
-import { BruttalTheme } from '../../src/themes/Bruttal/Bruttal';
-import { createTheme } from '../../src';
+import { BruttalTheme } from '../../../src/themes/Bruttal/Bruttal';
+import { createTheme } from '../../../src';
 
 test('should match BruttalTheme', () => {
-  expect(createTheme({})).toEqual(BruttalTheme);
+  expect(createTheme({}, BruttalTheme)).toEqual(BruttalTheme);
 });
 
 test('should change primary color', () => {
-  expect(createTheme({ colors: { primary: 'red' } })).toEqual({
+  expect(createTheme({ colors: { primary: 'red' } }, BruttalTheme)).toEqual({
     ...BruttalTheme,
     colors: {
       ...BruttalTheme.colors,
@@ -16,7 +16,7 @@ test('should change primary color', () => {
 });
 
 test('should extend colors', () => {
-  expect(createTheme({ colors: { red: 'red' } })).toEqual({
+  expect(createTheme({ colors: { red: 'red' } }, BruttalTheme)).toEqual({
     ...BruttalTheme,
     colors: {
       ...BruttalTheme.colors,

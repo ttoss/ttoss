@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": true,
   "dependencies": {

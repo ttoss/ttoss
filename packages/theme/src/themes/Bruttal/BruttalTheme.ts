@@ -1,10 +1,10 @@
 import { Theme } from 'theme-ui';
-import { fontSizes } from '../../tokens/fontSizes';
-import { fontWeights } from '../../tokens/fontWeights';
-import { letterSpacings } from '../../tokens/letterSpacings';
-import { lineHeights } from '../../tokens/lineHeights';
-import { space } from '../../tokens/space';
-import { zIndices } from '../../tokens/zIndices';
+import { fontSizes } from './tokens/fontSizes';
+import { fontWeights } from './tokens/fontWeights';
+import { letterSpacings } from './tokens/letterSpacings';
+import { lineHeights } from './tokens/lineHeights';
+import { space } from './tokens/space';
+import { zIndices } from './tokens/zIndices';
 
 const coreFonts = {
   main: '"Atkinson Hyperlegible", sans-serif',
