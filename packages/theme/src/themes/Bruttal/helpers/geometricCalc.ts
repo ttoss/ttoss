@@ -5,6 +5,7 @@ export const calcMultiplyingValues = (
   base: number,
   ratio: number,
   sizeType = SIZE_TYPE
+  // eslint-disable-next-line max-params
 ) => {
   const result = initialValue * Math.pow(base, ratio);
 
@@ -16,6 +17,7 @@ export const calcDividingValues = (
   base: number,
   ratio: number,
   sizeType = SIZE_TYPE
+  // eslint-disable-next-line max-params
 ) => {
   const result = initialValue / Math.pow(base, ratio);
 

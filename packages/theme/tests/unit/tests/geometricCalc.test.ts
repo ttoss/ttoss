@@ -1,7 +1,7 @@
 import {
   calcDividingValues,
   calcMultiplyingValues,
-} from '../../src/helpers/geometricCalc';
+} from '../../../src/themes/Bruttal/helpers/geometricCalc';
 
 test('should be defined', () => {
   expect(calcMultiplyingValues).toBeDefined();

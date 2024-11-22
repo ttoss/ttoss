@@ -1,0 +1,562 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bruttal theme snapshot 1`] = `
+{
+  "badges": {
+    "informative": {
+      "bg": "notice",
+      "color": "onNotice",
+    },
+    "muted": {
+      "bg": "muted",
+      "color": "onMuted",
+    },
+    "negative": {
+      "bg": "danger",
+      "color": "onDanger",
+    },
+    "neutral": {
+      "bg": "secondary",
+      "border": "muted",
+      "borderColor": "onMuted",
+      "color": "onSecondary",
+    },
+    "positive": {
+      "bg": "positive",
+      "color": "onPositive",
+    },
+  },
+  "borders": {
+    "danger": "2px solid",
+    "default": "1px solid",
+    "highlight": "2px solid",
+    "interaction": "2px solid",
+    "muted": "1px solid",
+    "secondary": "2px solid",
+  },
+  "buttons": {
+    "accent": {
+      ":disabled": {
+        "backgroundColor": "muted",
+        "borderColor": "muted",
+        "color": "onMuted",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "filter": "brightness(90%)",
+      },
+      "backgroundColor": "accent",
+      "borderColor": "accent",
+      "borderRadius": "action",
+      "color": "onAccent",
+    },
+    "actionButton": {
+      "accent": {
+        "backgroundColor": "accent",
+        "border": "none",
+        "color": "onAccent",
+      },
+      "default": {
+        ":is(:focus-within, :hover)": {
+          "backgroundColor": "highlight",
+          "borderColor": "highlight",
+          "color": "onHighlight",
+        },
+        "backgroundColor": "secondary",
+        "border": "default",
+        "borderColor": "onSecondary",
+        "color": "onSecondary",
+        "transition": "all 0.2s",
+      },
+      "quiet": {
+        "backgroundColor": "transparent",
+        "border": "none",
+        "borderColor": "transparent",
+        "color": "text",
+      },
+    },
+    "closeButton": {
+      ":disabled": {
+        "backgroundColor": "muted",
+        "border": "muted",
+        "borderColor": "onMuted",
+        "color": "onMuted",
+        "cursor": "not-allowed",
+      },
+      ":is(:focus-within, :hover):not(:disabled)": {
+        "backgroundColor": "highlight",
+        "borderColor": "highlight",
+        "color": "onHighlight",
+      },
+      "backgroundColor": "background",
+      "border": "default",
+      "borderColor": "primary",
+      "borderRadius": "action",
+      "color": "primary",
+    },
+    "destructive": {
+      ":disabled": {
+        "backgroundColor": "muted",
+        "borderColor": "muted",
+        "color": "onMuted",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "filter": "brightness(90%)",
+      },
+      "backgroundColor": "danger",
+      "color": "onDanger",
+    },
+    "primary": {
+      ":active": {
+        "backgroundColor": "primary",
+        "borderColor": "outline",
+        "color": "onPrimary",
+      },
+      ":disabled": {
+        "backgroundColor": "muted",
+        "borderColor": "muted",
+        "color": "onMuted",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "filter": "brightness(90%)",
+      },
+      "backgroundColor": "primary",
+      "borderColor": "primary",
+      "borderRadius": "action",
+      "color": "onPrimary",
+    },
+    "secondary": {
+      ":disabled": {
+        "backgroundColor": "muted",
+        "borderColor": "muted",
+        "color": "onMuted",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "filter": "brightness(90%)",
+      },
+      "backgroundColor": "secondary",
+      "border": "secondary",
+      "borderColor": "onSecondary",
+      "borderRadius": "action",
+      "color": "onSecondary",
+    },
+  },
+  "cards": {
+    "primary": {
+      "alignItems": "center",
+      "backgroundColor": "primary",
+      "border": "1px solid black",
+      "display": "flex",
+      "flexDirection": "column",
+      "padding": [
+        4,
+        5,
+      ],
+      "width": "fit-content",
+    },
+  },
+  "colors": {
+    "accent": "#0469E3",
+    "background": "#f4f3f3",
+    "contentHeader": "#dedede",
+    "danger": "#c62121",
+    "highlight": "#325C82",
+    "muted": "#dedede",
+    "mutedOutline": "#c4c4c4",
+    "neutral": "#325C82",
+    "notice": "#d97706",
+    "onAccent": "#ffffff",
+    "onContentHeader": "#000000",
+    "onDanger": "#ffffff",
+    "onHighlight": "#f4f3f3",
+    "onMuted": "#7a7a7a",
+    "onNeutral": "#F8F8F8",
+    "onNotice": "#ffffff",
+    "onPositive": "#ffffff",
+    "onPrimary": "#ffffff",
+    "onSecondary": "#000000",
+    "outline": "#929292",
+    "positive": "#0d9488",
+    "primary": "#292C2a",
+    "secondary": "#f9f9f9",
+    "surface": "#ffffff",
+    "text": "#000000",
+    "underemphasize": "#c4c4c4",
+  },
+  "fontSizes": {
+    "2xl": "2.37rem",
+    "2xs": "0.42rem",
+    "3xl": "3.16rem",
+    "4xl": "4.21rem",
+    "5xl": "5.61rem",
+    "6xl": "7.48rem",
+    "base": "1rem",
+    "lg": "1.33rem",
+    "sm": "0.75rem",
+    "xl": "1.78rem",
+    "xs": "0.56rem",
+  },
+  "fontWeights": {
+    "bold": 700,
+    "extrabold": 800,
+    "extralight": 200,
+    "light": 300,
+    "medium": 500,
+    "normal": 400,
+    "semibold": 600,
+    "thin": 100,
+  },
+  "fonts": {
+    "body": ""Atkinson Hyperlegible", sans-serif",
+    "caption": ""Atkinson Hyperlegible", sans-serif",
+    "contrast": ""Work Sans", sans-serif",
+    "highlight": ""Atkinson Hyperlegible", sans-serif",
+    "main": "#292C2a",
+  },
+  "forms": {
+    "checkbox": {
+      "&:is(svg, svg + svg)": {
+        "height": "1rem",
+        "width": "1rem",
+      },
+      "input:disabled ~ &": {
+        "color": "muted",
+      },
+      "input:disabled ~ & path": {
+        "backgroundColor": "onMuted",
+      },
+      "input:focus ~ &": {
+        "bg": "transparent",
+      },
+      "input:not(:checked) ~ &": {
+        "color": "primary",
+      },
+      "input[aria-invalid="true"] ~ &": {
+        "color": "danger",
+      },
+    },
+    "input": {
+      "&[aria-invalid="true"]": {
+        "borderColor": "danger",
+      },
+      "&[aria-invalid="true"] ~ span:has(iconify-icon)": {
+        "color": "danger",
+      },
+      "::placeholder": {
+        "color": "onMuted",
+      },
+      ":disabled": {
+        "backgroundColor": "muted",
+        "border": "muted",
+        "borderColor": "onMuted",
+        "color": "onMuted",
+      },
+      ":focus-within": {
+        "outlineColor": "neutral",
+      },
+      "backgroundColor": "surface",
+      "border": "interaction",
+      "borderColor": "onMuted",
+      "borderRadius": "action",
+      "color": "text",
+      "fontSize": "base",
+      "lineHeight": "base",
+    },
+    "inputNumber": {
+      "& ~ span:has(iconify-icon)": {
+        "fontSize": "base",
+      },
+      "&[aria-invalid="true"]": {
+        "border": "danger",
+        "borderColor": "danger",
+        "color": "danger",
+        "outlineColor": "danger",
+      },
+      "&[aria-invalid="true"] ~ span>iconify-icon": {
+        "color": "danger",
+      },
+      ":disabled": {
+        "border": "muted",
+        "borderColor": "onMuted",
+        "color": "muted",
+      },
+      ":disabled ~ span > iconify-icon": {
+        "color": "muted",
+        "cursor": "default",
+      },
+      ":focus-within": {
+        "outlineColor": "highlight",
+      },
+      ":not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover": {
+        "color": "highlight",
+      },
+      ":not(:disabled, [aria-invalid="true"]):hover": {
+        "borderColor": "highlight",
+      },
+      "border": "interaction",
+      "borderColor": "onMuted",
+      "borderRadius": "action",
+      "color": "text",
+    },
+    "label": {
+      "& > div:has(input[type="checkbox"]) > svg": {
+        "marginRight": 0,
+      },
+      "& > span[aria-label="tooltip"]": {
+        "fontSize": "sm",
+        "marginLeft": "2xs",
+      },
+      "&:has(div > input[type="radio"])": {
+        "alignItems": "center",
+      },
+      "&:has(div > input[type="radio"]:disabled)": {
+        "color": "muted",
+      },
+      "&:has(input[type="checkbox"])": {
+        "fontSize": "base",
+        "gap": "md",
+      },
+      "&:has(input[type="checkbox"]:disabled)": {
+        "color": "onMuted",
+      },
+      "&:is([aria-disabled="true"])": {
+        "color": "onMuted",
+      },
+      "color": "text",
+    },
+    "radio": {
+      "&:is(svg, svg + svg)": {
+        "height": "1rem",
+        "width": "1rem",
+      },
+      "color": "text",
+      "fontFamily": "body",
+      "fontSize": "lg",
+      "input:disabled ~ &": {
+        "color": "muted",
+      },
+      "input:focus ~ &": {
+        "bg": "transparent",
+      },
+      "input[aria-invalid="true"] ~ &": {
+        "color": "danger",
+      },
+    },
+    "select": {
+      "&[aria-invalid="true"]": {
+        "border": "danger",
+        "borderColor": "danger",
+        "outlineColor": "danger",
+      },
+      "&[aria-invalid="true"] ~ * > span.error-icon": {
+        "color": "danger",
+      },
+      ":disabled": {
+        "backgroundColor": "muted",
+        "border": "muted",
+        "borderColor": "onMuted",
+        "color": "onMuted",
+      },
+      ":disabled ~ * > span:has(iconify-icon)": {
+        "color": "onMuted",
+      },
+      "backgroundColor": "surface",
+      "border": "interaction",
+      "borderColor": "onMuted",
+      "borderRadius": "action",
+      "color": "text",
+    },
+    "textarea": {
+      "&[aria-invalid="true"]": {
+        "borderColor": "danger",
+        "outlineColor": "danger",
+      },
+      "&[aria-invalid="true"]+span>iconify-icon": {
+        "color": "danger",
+        "fontSize": "base",
+      },
+      ":disabled": {
+        "backgroundColor": "muted",
+        "border": "muted",
+        "borderColor": "onMuted",
+        "color": "onMuted",
+      },
+      ":disabled::placeholder": {
+        "color": "onMuted",
+      },
+      ":focus-within": {
+        "outlineColor": "primary",
+      },
+      "backgroundColor": "surface",
+      "border": "interaction",
+      "borderColor": "onMuted",
+      "borderRadius": "action",
+      "color": "text",
+    },
+  },
+  "letterSpacings": {
+    "regular": "0em",
+    "tight": "-0.025em",
+    "tighter": "-0.05em",
+    "wide": "0.05em",
+    "wider": "0.1em",
+    "widest": "0.5em",
+  },
+  "lineHeights": {
+    "2xl": "236.86%",
+    "2xs": "42.22%",
+    "base": "normal",
+    "flat": "100%",
+    "lg": "133.30%",
+    "sm": "75.02%",
+    "xl": "177.69%",
+    "xs": "56.28%",
+  },
+  "radii": {
+    "action": "4px",
+    "default": "4px",
+    "informative": "2px",
+  },
+  "space": {
+    "2xl": "2.12rem",
+    "2xs": "0.12rem",
+    "3xl": "3.43rem",
+    "4xl": "5.54rem",
+    "5xl": "8.97rem",
+    "6xl": "14.52rem",
+    "7xl": "23.49rem",
+    "lg": "0.81rem",
+    "md": "0.5rem",
+    "none": 0,
+    "sm": "0.31rem",
+    "xl": "1.31rem",
+    "xs": "0.19rem",
+  },
+  "styles": {
+    "a": {
+      "&.quiet:not(:hover)": {
+        "textDecorationLine": "none",
+      },
+      ":visited": {
+        "color": "highlight",
+      },
+      "color": "text",
+      "fontFamily": "body",
+      "lineHeight": "base",
+      "textDecorationLine": "underline",
+    },
+    "root": {
+      "backgroundColor": "background",
+      "fontFamily": "body",
+      "fontSize": "base",
+      "fontWeight": "normal",
+      "margin": 0,
+      "padding": 0,
+      "table": {
+        "borderCollapse": "collapse",
+      },
+      "td": {
+        "paddingX": "xl",
+        "paddingY": "md",
+      },
+      "th": {
+        "paddingX": "md",
+        "paddingY": "md",
+      },
+      "tr": {
+        "borderBottom": "default",
+      },
+      "zIndex": "base",
+    },
+  },
+  "text": {
+    "default": {
+      "color": "text",
+      "fontFamily": "body",
+    },
+    "h1": {
+      "fontFamily": "contrast",
+      "fontSize": "3xl",
+      "fontWeight": "extrabold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "h2": {
+      "fontFamily": "contrast",
+      "fontSize": "2xl",
+      "fontWeight": "bold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "h3": {
+      "fontFamily": "contrast",
+      "fontSize": "xl",
+      "fontWeight": "bold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "h4": {
+      "fontFamily": "contrast",
+      "fontSize": "lg",
+      "fontWeight": "semibold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "h5": {
+      "fontFamily": "contrast",
+      "fontSize": "base",
+      "fontWeight": "semibold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "headline": {
+      "fontFamily": "contrast",
+      "fontSize": "5xl",
+      "fontWeight": "bold",
+      "letterSpacing": "regular",
+      "lineHeight": "flat",
+    },
+    "help": {
+      "&[aria-disabled="true"]": {
+        "color": "onMuted",
+      },
+      "color": "text",
+      "negative": {
+        "&[aria-disabled="true"]": {
+          "color": "onMuted",
+        },
+        "color": "danger",
+      },
+    },
+    "subheadline": {
+      "fontFamily": "main",
+      "fontSize": "xl",
+      "fontWeight": "bold",
+      "letterSpacing": "regular",
+      "lineHeight": "base",
+    },
+    "title": {
+      "fontFamily": "heading",
+      "fontSize": 4,
+      "lineSpace": "3.5",
+    },
+  },
+  "zIndices": {
+    "auto": "auto",
+    "base": 0,
+    "behind": -1,
+    "deep": -9999,
+    "docked": 10,
+    "dropdown": 3000,
+    "modal": 2000,
+    "overlay": 1000,
+    "popover": 4000,
+    "sticky": 100,
+    "toast": 6000,
+    "tooltip": 5000,
+  },
+}
+`;
