@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.8.0 (2024-11-22)
+
+### Bug Fixes
+
+- docs ([37143b2](https://github.com/ttoss/ttoss/commit/37143b2dfb515479c825e8eb42542cb306beab10))
+- import ([75cb91e](https://github.com/ttoss/ttoss/commit/75cb91e818a8d173a59c8fb59cfc012dea6f815a))
+
+### Features
+
+- add default tokens ([#613](https://github.com/ttoss/ttoss/issues/613)) ([21a4256](https://github.com/ttoss/ttoss/commit/21a4256dd16a69bf3fa5ad90ae682ad1a44f6b0a))
+
 ## [1.7.23](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.7.22...@ttoss/theme@1.7.23) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/theme
