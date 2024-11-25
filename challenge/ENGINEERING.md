@@ -53,7 +53,7 @@ Your front-end doesn't need to implement sophisticated UI/UX designs but should 
 #### Implementation Notes:
 
 - Use [React](https://react.dev/) for front-end development.
-- You may use our boilerplate ([Vite.js + GraphQL API](<(https://github.com/ttoss/ttoss/tree/main/challenge/packages/app-vite-with-graphql-api)>)) or start from scratch.
+- You may use our boilerplate ([Vite.js + GraphQL API](https://github.com/ttoss/ttoss/tree/main/challenge/packages/app-vite-with-graphql-api)) or start from scratch.
 
 ## Deployment or Demo
 
