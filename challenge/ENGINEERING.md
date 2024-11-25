@@ -1,68 +1,90 @@
 # ttoss Challenge - Engineering
 
-Given [the project The Best YouTube Video of All Time](https://ttoss.dev/docs/challenge/the-project), the engineering challenge consists of building a web application from database architecture, API design, front-end development and deployment.
+As part of [The Best YouTube Video of All Time](https://ttoss.dev/docs/challenge/the-project) project, your challenge is to design and build a complete web application, encompassing database architecture, API design, front-end development, and deployment.
+
+## Challenge Overview
+
+This challenge is intentionally **open-ended**. We'll outline the main requirements and features, but you're free to choose the tools and technologies that best suit the project—except where specific technologies are mentioned.
+
+The goal is to demonstrate your ability to architect and implement a full-stack application while making thoughtful technical decisions.
+
+_**Note**: If you have other ways to demonstrate your skills—such as focusing on a specific part of the challenge or showcasing related past work—let us know. We're happy to discuss how you can best highlight your expertise._
 
 ## Requirements
 
-A characteristic of this challenge is that it is open-ended. We'll provide the requirements and the main features that the application should have, but you have the freedom to choose the technologies and tools that you think are best for the project, except when we specify them.
+Before diving into the technical requirements, keep in mind that this challenge values practicality and thoughtful design over perfection. Focus on delivering a functional and maintainable solution while considering basic performance and security practices. Advanced features or optimizations are welcome but not mandatory.
 
 ### Database
 
-The database should store the information about the videos and their ranking. You can use:
+The database must store information about the videos and their rankings. You can choose one of the following options:
 
-- Use a DynamoDB table with [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/) ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/db-dynamodb)).
-- Use a PostgreSQL database with a schema that you think is best for the project.
-- Any other database that you think is best for the project.
+- **DynamoDB**: Use a [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/) ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/db-dynamodb)).
+- **PostgreSQL**: Design a schema tailored for the project.
+- **Other**: Feel free to suggest and use another database that aligns with your vision.
+
+Your database design doesn't need to account for extremely large-scale systems but should be robust enough to handle a growing dataset of videos and votes. Focus on simplicity and logical organization of data.
 
 ### API
 
-The API should provide at least the following resources:
+The API should enable the following functionalities:
 
-- Get a list of videos sorted by their ranking.
-- Get two videos for the user to vote.
-- A mutation to register the user's vote and update the ranking.
-- Any other resource that you think is best for the project.
+- **Retrieve a ranked list of videos**.
+- **Fetch two videos for user voting**.
+- **Register a vote** and update the Elo ranking accordingly.
+- **Additional resources**: If you identify other useful endpoints, feel free to add them.
 
-You can implement the API using REST or GraphQL ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/api-graphql-with-dynamodb)), but it should use Node.js.
+While advanced API security (e.g., OAuth2, JWT expiration) is not required, ensure that your API is protected against basic threats like SQL Injection or unauthorized access. Focus on delivering the core functionalities efficiently and reliably.
+
+#### Implementation Notes:
+
+- Use [Node.js](https://nodejs.org/en) to build the API.
+- You can choose REST or GraphQL ([_initial example provided here_](https://github.com/ttoss/ttoss/tree/main/challenge/packages/api-graphql-with-dynamodb)).
 
 ### Front-end
 
-The front-end should have at least the following features:
+The front-end should provide an engaging user interface with at least the following features:
 
-- A section to show two videos for the user to vote.
-- A section to show the ranking of the videos.
-- Any other feature that you think is best for the project.
+- **Voting Page**: Display two videos for the user to vote on.
+- **Ranking Page**: Show a dynamically updated list of video rankings.
+- **Additional Features**: Any other functionality you think enhances the user experience.
 
-You need to use React to build the front-end. We have a [boilerplate using Vite.js and consuming a GraphQL API](https://github.com/ttoss/ttoss/tree/main/challenge/packages/app-vite-with-graphql-api). You can use it as a starting point or build the front-end from scratch.
+Your front-end doesn't need to implement sophisticated UI/UX designs but should be responsive and user-friendly. Ensure the application works seamlessly on both desktop and mobile devices.
 
-### Deployment
+#### Implementation Notes:
 
-The application should be deployed as a serverless application on AWS or in a virtual machine.
+- Use [React](https://react.dev/) for front-end development.
+- You may use our boilerplate ([Vite.js + GraphQL API](<(https://github.com/ttoss/ttoss/tree/main/challenge/packages/app-vite-with-graphql-api)>)) or start from scratch.
 
-## We can provide you with:
+## Deployment or Demo
 
-During this challenge, we can provide you with the following resources:
+To complete the challenge, your project should be accessible for evaluation. This involves:
 
-- A DynamoDB table.
-- A PostgreSQL database.
-- An AWS account.
-- A virtual machine.
-- Mentorship from our team to help you with the challenge.
+- **Publishing the code**: The complete source code should be hosted in a public or private web-based repository, such as GitHub, GitLab, or Bitbucket. Ensure the repository includes clear instructions on how to set up and run the project.
+- **Publishing the application**: Deploy the project to a live environment (e.g., AWS, Vercel, Netlify) so it is accessible via a URL.
+- **Providing a demo**: If publishing is not feasible, record a demo video showing the application in action and walk through its key features.
+
+## Support Provided
+
+During the challenge, we can provide the following resources:
+
+- **DynamoDB table** or **PostgreSQL database**.
+- Access to an **AWS account** or a **virtual machine**.
+- **Mentorship** from our team to guide you through technical decisions or questions.
 
 ## Evaluation Criteria
 
-The most important aspect of this challenge is to show **how much you know about building and deploying a fullstack web application**. Besides that, we will also evaluate your challenge based on the following criteria:
+We're primarily evaluating how well you can **design, implement, and deploy a full-stack web application**. In addition, we'll assess:
 
-- **Code quality**: the quality of your code, such as readability, maintainability, and best practices.
-- **Architecture**: the architecture of your application, such as the database schema, the API design, and the front-end structure.
-- **Documentation**: the documentation of your application, such as the README file and the comments in the code.
+- **Code Quality**: Readability, maintainability, and adherence to best practices.
+- **Architecture**: Thoughtfulness in database schema, API design, and front-end structure.
+- **Documentation**: Clear README and in-code comments explaining your decisions.
 
-_Note: if you have another ways to show your knowledge about building and deploying a fullstack web application, and you think that you don't need to do the entire challenge, please let us know and we can discuss it._
+We will not evaluate factors like highly optimized performance or advanced infrastructure automation. Instead, we value clear decision-making, maintainability, and adherence to the core requirements.
 
-## Other Features You Can Implement
+## Optional Features
 
-The following features are optional, but you can implement them if you want to show more of your skills and/or learn something new during the challenge:
+If you'd like to demonstrate additional skills or explore new concepts, consider implementing:
 
-1. **Admin**: you can implement an admin section to add or remove videos from the database.
-1. **I18n**: you can implement internationalization to translate the application to different languages.
-1. **Tests**: you can implement tests (unit, integration or e2e) for the API and the front-end.
+1. **Admin Interface**: Add functionality for managing videos (add/remove).
+1. **Internationalization (i18n)**: Support for multiple languages.
+1. **Testing**: Write unit, integration, or end-to-end tests for both the API and the front-end.
