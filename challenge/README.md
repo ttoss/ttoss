@@ -2,17 +2,19 @@
 
 ## Project: The Best YouTube Video of All Time
 
-You have to build a web application to find out what is the best YouTube video of all time. The application shows two videos at a time and the user has to choose which one they like the most. The system will then use this information to rank the videos using the [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system).
+Your challenge is to build an engaging web application to determine the best YouTube video of all time. The core functionality involves presenting users with two videos at a time, where they must choose their favorite. The system will then use the [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system) to rank the videos based on these choices.
 
-**The essential feature of the application is a page to vote and see the ranking of the videos**.
+**The essential feature of the application is a voting page where users can compare two videos and a ranking page to view the current standings**.
 
-Besides the essential feature, the application can have other features, such as:
+### Additional Features
 
-- A feature to add new videos to the system with user authentication.
-- Pagination of the ranking page.
-- Updatable ranking page in real-time.
-- A feature to see the details of a video.
+While the essential feature is critical, consider implementing the following enhancements to create a richer experience:
 
-Check the requirements below of each department for more details.
+- **User Authentication**: Allow authenticated users to add new videos to the system.
+- **Ranking Pagination**: Add pagination to the ranking page for better usability.
+- **Real-Time Updates**: Make the ranking page dynamic by updating it in real time.
+- **Video Details**: Provide a detailed view of each video, including metadata such as title, description, and upload date.
+
+### Requirements by Department
 
 - [Engineering](https://ttoss.dev/docs/challenge/engineering)
