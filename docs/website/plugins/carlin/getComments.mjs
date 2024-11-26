@@ -44,12 +44,12 @@ export const getComment = async ([pathFromBuild, longname]) => {
 };
 
 export const getCommentsAsHTML = async (commentsDir) => {
-  const allComments = await Promise.all(
-    Object.entries(commentsDir).map(async ([key, value]) => {
-      const comment = await getComment(value);
-      return [key, toHTML(comment)];
-    })
-  );
+  const allCommentsAsHtml = {};
 
-  return Object.fromEntries(allComments);
+  for (const [key, value] of Object.entries(commentsDir)) {
+    const comment = await getComment(value);
+    allCommentsAsHtml[key] = toHTML(comment);
+  }
+
+  return allCommentsAsHtml;
 };
