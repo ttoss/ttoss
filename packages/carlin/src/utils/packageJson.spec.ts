@@ -15,7 +15,7 @@ import { faker } from '@ttoss/test-utils/faker';
 import { getPackageName } from './packageJson';
 import { readFileSync } from 'fs';
 
-const name = `@${faker.random.word()}/${faker.random.word()}`;
+const name = `@${faker.word.words()}/${faker.word.words()}`;
 
 beforeAll(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

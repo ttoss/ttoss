@@ -19,9 +19,9 @@ import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
 
 const region = AWS_DEFAULT_REGION;
 
-const buildFolder = faker.random.word();
+const buildFolder = faker.word.words();
 
-const bucket = faker.random.word();
+const bucket = faker.word.words();
 
 test('should call uploadBuiltAppToS3 with correct parameters', async () => {
   const cloudfront = false;

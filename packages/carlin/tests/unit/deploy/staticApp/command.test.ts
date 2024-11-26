@@ -123,7 +123,7 @@ describe('should set cloudfront', () => {
   test('cloudfront must be false', () => {
     const options = [
       {
-        buildFolder: faker.random.word(),
+        buildFolder: faker.word.words(),
       },
       {
         cloudfront: false,

@@ -25,7 +25,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@types/node": "^20.17.8",
-    "@types/react": "^18.3.7",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.2.25",
     "typescript": "~5.7.2"
   }

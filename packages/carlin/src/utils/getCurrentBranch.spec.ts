@@ -1,14 +1,16 @@
-jest.mock('simple-git', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock('simple-git', () => {
+  return {
+    __esModule: true,
+    default: jest.fn(),
+  };
+});
 
 import { BRANCH_UNDEFINED, getCurrentBranch } from './getCurrentBranch';
 import { cache, setEnvVar } from './environmentVariables';
 import { faker } from '@ttoss/test-utils/faker';
 import simpleGit from 'simple-git';
 
-const branch = faker.random.word();
+const branch = faker.word.words();
 
 const branchMock = jest.fn().mockResolvedValue({ current: branch });
 
@@ -35,7 +37,7 @@ test('should return BRANCH_UNDEFINED if simple-git throw', () => {
 });
 
 test('should return branch from process.env.BRANCH', () => {
-  const newBranch = faker.random.word();
+  const newBranch = faker.word.words();
   setEnvVar('BRANCH', newBranch);
   return expect(getCurrentBranch()).resolves.toEqual(newBranch);
 });

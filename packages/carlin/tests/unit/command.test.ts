@@ -91,7 +91,7 @@ describe('stack name and cache', () => {
   });
 
   test('should save stack name on cache', async () => {
-    const stackName = faker.random.word();
+    const stackName = faker.word.words();
     const argv = await parse('deploy', { stackName });
     expect(argv.stackName).toEqual(stackName);
     expect(await getStackName()).toEqual(stackName);
@@ -115,7 +115,7 @@ describe('lambda-dockerfile', () => {
   });
 
   test('should return Dockerfile if default exists', async () => {
-    const dockerfile = faker.random.words();
+    const dockerfile = faker.word.words(5);
 
     (readDockerfile as jest.Mock).mockReturnValue(dockerfile);
 

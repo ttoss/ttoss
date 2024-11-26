@@ -7,8 +7,8 @@ import {
 import { faker } from '@ttoss/test-utils/faker';
 
 test('basic cache routines', () => {
-  const key = faker.random.word();
-  const value = faker.random.word();
+  const key = faker.word.words();
+  const value = faker.word.words();
 
   expect(cache.has(key)).toBeFalsy();
 
@@ -31,7 +31,7 @@ test.each(
     return [env];
   })
 )('%s', (key) => {
-  const value = faker.random.word();
+  const value = faker.word.words();
 
   expect(cache.has(key)).toBeFalsy();
 

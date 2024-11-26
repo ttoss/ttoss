@@ -7,13 +7,13 @@
 //   deploy: deployMock,
 // }));
 
-// const stackName = faker.random.word();
+// const stackName = faker.word.words();
 
 // jest.mock('./getStackName', () => ({
 //   getStackName: jest.fn().mockResolvedValue(stackName),
 // }));
 
-// const template = faker.random.word();
+// const template = faker.word.words();
 
 // jest.mock('./getCicdTemplate', () => ({
 //   getCicdTemplate: jest.fn().mockReturnValue(template),

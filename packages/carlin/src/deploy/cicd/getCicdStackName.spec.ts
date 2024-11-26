@@ -11,7 +11,7 @@ jest.mock('../../utils/getProjectName', () => {
 import { getCicdStackName } from './getCicdStackName';
 
 test('stack name should contain project name', () => {
-  const projectName = faker.random.word();
+  const projectName = faker.word.words();
   (getProjectName as jest.Mock).mockReturnValue(projectName);
   expect(getCicdStackName()).toContain(pascalCase(projectName));
 });
