@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 import { faker } from '@ttoss/test-utils/faker';
 import { getEcsTaskLogsUrl } from './ecsTaskReport.handler';
 
@@ -11,7 +12,7 @@ describe('testing getEcsTaskLogsUrl', () => {
     delete process.env.ECS_TASK_LOGS_LOG_GROUP;
   });
 
-  const taskId = faker.datatype.uuid();
+  const taskId = faker.string.uuid();
 
   const ecsTaskContainerName = 'ecsTaskContainerName';
 

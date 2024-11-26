@@ -11,21 +11,21 @@ afterEach(() => {
 });
 
 test('should return project name defined on cache', () => {
-  const projectName = faker.random.word();
+  const projectName = faker.word.words();
   cache.set('PROJECT', projectName);
   expect(getProjectName()).toEqual(projectName);
 });
 
 test('should return the scope of the package name', () => {
-  const scope = `${faker.random.word()}`;
+  const scope = `${faker.word.words()}`;
   (getPackageName as jest.Mock).mockReturnValue(
-    `@${scope}/${faker.random.word()}`
+    `@${scope}/${faker.word.words()}`
   );
   expect(getProjectName()).toEqual(pascalCase(scope));
 });
 
 test('should return the package name', () => {
-  const packageName = `${faker.random.word()}`;
+  const packageName = `${faker.word.words()}`;
   (getPackageName as jest.Mock).mockReturnValue(packageName);
   expect(getProjectName()).toEqual(pascalCase(packageName));
 });

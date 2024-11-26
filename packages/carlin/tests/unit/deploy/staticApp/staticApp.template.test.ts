@@ -18,7 +18,7 @@ import {
 } from 'src/deploy/staticApp/staticApp.template';
 import { faker } from '@ttoss/test-utils/faker';
 
-const region = faker.random.word();
+const region = faker.word.words();
 
 test.each([
   {

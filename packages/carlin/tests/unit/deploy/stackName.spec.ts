@@ -23,7 +23,7 @@ const branchName = [
 
 const environment = faker.lorem.word();
 
-const packageName = `@${faker.lorem.word()}/${faker.random.word()}`;
+const packageName = `@${faker.lorem.word()}/${faker.word.words()}`;
 
 jest.mock('src/utils', () => {
   return {
@@ -49,7 +49,7 @@ describe('testing getStackName', () => {
     (getCurrentBranch as jest.Mock).mockReturnValueOnce(branchName);
     (getEnvironment as jest.Mock).mockReturnValueOnce(environment);
     (getPackageName as jest.Mock).mockReturnValueOnce(packageName);
-    const preDefinedStackName = faker.random.word();
+    const preDefinedStackName = faker.word.words();
     setPreDefinedStackName(preDefinedStackName);
     const stackName = await getStackName();
     expect(stackName).toEqual(preDefinedStackName);

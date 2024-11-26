@@ -30,7 +30,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^29.7.0",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.5"
   },
   "keywords": [
     "auth",

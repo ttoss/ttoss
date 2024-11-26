@@ -5,7 +5,7 @@ import {
 } from './getPackageLambdaLayerStackName';
 
 const generateRandomPackageName = () => {
-  return `@${faker.random.word()}/${faker.random.word()}@${faker.datatype.number()}.${faker.datatype.number()}.${faker.datatype.number()}`;
+  return `@${faker.word.words()}/${faker.word.words()}@${faker.number.int()}.${faker.number.int()}.${faker.number.int()}`;
 };
 
 describe('testing getPackageLambdaLayerStackName', () => {
