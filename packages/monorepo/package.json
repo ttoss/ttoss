@@ -31,7 +31,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/npmlog": "^7.0.0",
-    "@types/yargs": "^17.0.32",
+    "@types/yargs": "^17.0.33",
     "tsup": "^8.3.5"
   },
   "publishConfig": {
