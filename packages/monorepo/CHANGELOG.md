@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.27.14 (2024-11-26)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
 ## [1.27.13](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.27.12...@ttoss/monorepo@1.27.13) (2024-10-03)
 
 **Note:** Version bump only for package @ttoss/monorepo
