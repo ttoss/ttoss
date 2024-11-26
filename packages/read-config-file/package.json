@@ -24,18 +24,18 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.24.0",
     "import-sync": "^2.2.2",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/read-config-file-test": "workspace:^",
-    "@types/jest": "^29.5.13",
+    "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^18.3.7",
     "jest": "^29.7.0",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.5"
   },
   "keywords": [
     "config",
