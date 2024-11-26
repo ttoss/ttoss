@@ -4,6 +4,14 @@ import { configCreator } from './configCreator';
 import { transformAsync } from '@babel/core';
 import type { Options } from 'tsup';
 
+/**
+ * This plugin is used to extract messages from source code and compile them,
+ * adding `id` to each message. This is necessary for the i18n library to
+ * correctly identify messages and translate them.
+ *
+ * Check [Automatic ID Generation](https://formatjs.github.io/docs/getting-started/message-extraction#automatic-id-generation)
+ * for more information.
+ */
 const formatjsPlugin: Plugin = {
   name: 'formatjs',
   setup: (build: PluginBuild) => {
