@@ -21,9 +21,14 @@ module.exports = {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
+    /**
+     * TypeDoc isn't always up to date with the latest TypeScript version.
+     * When this happens, docs/website can't be built.
+     */
+    'typescript',
   ],
   target: (name) => {
-    const minorPackages = ['typescript', '@types/node'];
+    const minorPackages = ['@types/node'];
 
     if (minorPackages.includes(name)) {
       return 'minor';

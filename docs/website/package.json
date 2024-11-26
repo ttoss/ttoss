@@ -15,12 +15,12 @@
     "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.5.2",
-    "@docusaurus/module-type-aliases": "^3.5.2",
-    "@docusaurus/plugin-sitemap": "^3.5.2",
-    "@docusaurus/preset-classic": "^3.5.2",
-    "@docusaurus/theme-mermaid": "^3.5.2",
-    "@mdx-js/react": "3.0.1",
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/plugin-sitemap": "^3.6.3",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@docusaurus/theme-mermaid": "^3.6.3",
+    "@mdx-js/react": "3.1.0",
     "prism-react-renderer": "^2.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -28,20 +28,20 @@
     "remark-math": "6"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.5.2",
-    "@docusaurus/tsconfig": "^3.5.2",
-    "@docusaurus/types": "^3.5.2",
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/tsconfig": "^3.6.3",
+    "@docusaurus/types": "^3.6.3",
     "autoprefixer": "^10.4.20",
     "carlin": "workspace:^",
     "docusaurus-plugin-typedoc": "^1.0.5",
-    "jsdoc-api": "^9.3.1",
-    "markdown-to-jsx": "^7.5.0",
+    "jsdoc-api": "^9.3.4",
+    "markdown-to-jsx": "^7.7.0",
     "minimist": "^1.2.8",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13",
-    "typedoc": "^0.26.7",
-    "typedoc-plugin-markdown": "^4.2.8",
-    "typescript": "~5.7.2"
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typedoc": "^0.26.11",
+    "typedoc-plugin-markdown": "^4.2.10",
+    "typescript": "~5.6.2"
   },
   "browserslist": {
     "production": [
