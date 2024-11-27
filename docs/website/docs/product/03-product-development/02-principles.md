@@ -65,6 +65,12 @@ When a queue builds up into a sustained high-load state, it won't easily or quic
 
 You need to intervene quickly and decisively in such situations. Set limits on maximum queue size, and act before the system hits those limits. The more closely you monitor queues and intervene early, the less they will cost you in the long run.
 
+## Reducing Batch Size
+
+### B17: The Proximity Principle: Proximity enables small batch sizes
+
+Proximity reduces the cost of transporting or communicating in small batches, making processes faster and more efficient. In manufacturing, close distances enable one-piece flow and greater flexibility, while in product development, colocated teams benefit from real-time, face-to-face communication. This eliminates delays inherent to asynchronous communication, unlocking the full advantages of small batch sizes and enhancing responsiveness to emerging needs.
+
 ## Controlling Flow Under Uncertainty
 
 ### F19: The Round-Robin Principle: When Task Duration Is Unknown, Share Time Among Tasks
@@ -103,7 +109,7 @@ For instance, a manager focused on monitoring task start times instead of comple
 
 However, these conditions—predictive [leading indicators](/docs/product/product-development/definitions#leading-indicators) and the potential for impactful early interventions—may not always be present. When absent, the benefits of using [leading indicators](/docs/product/product-development/definitions#leading-indicators) can diminish or even become counterproductive.
 
-### FF5: The Moving Target Principle: Know When to Pursue a Dynamic Goal
+### FF5: The Moving Target Principle: Know when to pursue a dynamic goal
 
 Many companies create harmful control systems by failing to distinguish between static and dynamic goals. They assume that following the plan is always correct and any deviation is negative. In stable environments, like manufacturing, this can be true, where frameworks like Six Sigma prevent deviations to optimize efficiency.
 
@@ -111,13 +117,25 @@ However, in product development, goals constantly shift as better information em
 
 Recognizing when your goals are dynamic or stable is crucial, especially in the highly variable world of product development. For example, in developing a new software feature, user feedback may shift priorities, requiring the team to pivot and adjust the goal to meet evolving customer needs.
 
-### FF10: The First Agility Principle: We Don't Need Long Planning Horizons when We Have a Short Turning Radius
+### FF7: The Queue Reduction Principle of Feedback: Fast feedback enables smaller queues
+
+Fast feedback loops not only provide insights more quickly but also reduce the need for work-in-progress (WIP) in a system. By rapidly addressing variability, these loops allow processes to operate with smaller buffers, minimizing delays caused by excessive WIP. Smaller WIP, in turn, reduces overall system delays, enabling even faster feedback. This creates a positive feedback cycle: faster feedback reduces WIP, which lowers delays, further accelerating feedback and improving system efficiency. This principle highlights the compounding benefits of designing systems with rapid feedback mechanisms.
+
+### FF8: The Fast-Learning Principle: Use fast feedback to make learning faster and more efficient
+
+Fast feedback is essential for accelerating learning and making it more precise. It achieves this by shortening the time between cause and effect, reducing noise, and improving clarity in the results. Investing in environments that enhance feedback, like Team New Zealand's (they designed the yacht that won the America's Cup) use of two boats for direct comparison, allows for more cycles of testing and better insights in each iteration. This approach demonstrates that faster feedback not only provides quicker answers but also leads to more efficient and reliable learning processes.
+
+### FF10: The First Agility Principle: We don't need long planning horizons when we have a short turning radius
 
 In product development, agility is the ability to quickly shift focus or direction without needing to plan too far ahead. A smaller, more focused project is much easier to adapt than a large, rigid one. Just like turning a small object is easier than moving a massive one, agile teams can change direction quickly when they have fewer moving parts.
 
 To maintain this agility, it's important to have enough resources ready to make these changes as soon as needed. Organizations operating at full capacity often struggle because they can't reallocate resources quickly enough. This delays response times and makes it harder to shift direction.
 
 When teams are set up to pivot quickly—by working on manageable projects and keeping resources flexible—they can move faster and more confidently, even in uncertain environments. This short "turning radius" means you don't need to plan everything in detail far into the future, because you can make quick adjustments as new information emerges. This approach reduces the complexity of managing changes and allows teams to operate at a higher speed without losing control.
+
+### FF19: The Principle of Colocation: Colocation improves almost all aspects of communication
+
+Colocation accelerates feedback by fostering real-time, face-to-face communication, which is more efficient and includes both verbal and nonverbal cues (the principle [B17: The Proximity Principle](#b17-the-proximity-principle-proximity-enables-small-batch-sizes) discussed the value of physical proximity). It reduces communication costs, enabling frequent, small-batch interactions and immediate issue resolution. Beyond speed, colocation strengthens team cohesion through informal, non-task-related interactions, helping team members see each other as complex individuals and reducing negative biases. This leads to more cohesive and effective teams. Despite its proven benefits, colocation remains underutilized, but it is one of the simplest and most impactful ways to boost team performance and development speed.
 
 ## Achieving Decentralized Control
 
