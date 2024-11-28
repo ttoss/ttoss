@@ -15,11 +15,20 @@ export const Example = Template.bind({});
 
 export const SideImageRight = Template.bind({});
 
+const SIDE_IMAGE_URL = 'https://cdn.triangulos.tech/assets/terezinha_500x500_da67d70b65.webp';
+
 SideImageRight.args = {
   layout: {
     fullScreen: true,
     sideImage: (
-      <Image src="https://cdn.triangulos.tech/assets/terezinha_500x500_da67d70b65.webp" />
+      <Image 
+        src={SIDE_IMAGE_URL}
+        alt="Terezinha"
+        onError={(e) => {
+          console.error('Failed to load side image');
+          e.currentTarget.style.display = 'none';
+        }}
+      />
     ),
   },
 };
@@ -30,7 +39,14 @@ SideImageLeft.args = {
   layout: {
     fullScreen: true,
     sideImage: (
-      <Image src="https://cdn.triangulos.tech/assets/terezinha_500x500_da67d70b65.webp" />
+      <Image 
+        src={SIDE_IMAGE_URL}
+        alt="Terezinha"
+        onError={(e) => {
+          console.error('Failed to load side image');
+          e.currentTarget.style.display = 'none';
+        }}
+      />
     ),
     sideImagePosition: 'left',
   },
