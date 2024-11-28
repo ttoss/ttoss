@@ -343,16 +343,19 @@ export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
               height: '100%',
               flexDirection:
                 layout.sideImagePosition === 'left' ? 'row' : 'row-reverse',
+              flexWrap: ['wrap', 'wrap', 'nowrap'],
             }}
           >
             <Flex
               sx={{
                 width: '100%',
                 height: '100%',
-                flex: [0, 0, 1],
+                flex: ['1 0 100%', '1 0 100%', '1 0 50%'],
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
+              role="complementary"
+              aria-label="Authentication side image"
             >
               {layout.sideImage}
             </Flex>
@@ -360,10 +363,11 @@ export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
               sx={{
                 width: '100%',
                 height: '100%',
-                flex: [1],
+                flex: ['1 0 100%', '1 0 100%', '1 0 50%'],
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
+              role="main"
             >
               {withLogoNode}
             </Flex>
