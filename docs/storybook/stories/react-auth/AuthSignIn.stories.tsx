@@ -4,7 +4,7 @@ import {
 } from '../../../../packages/react-auth/src/AuthSignIn';
 import { Box } from '@ttoss/ui';
 import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'React Auth/AuthSignIn',
@@ -25,11 +25,11 @@ const Logo = () => {
   );
 };
 
-export const Example: Story<AuthSignInProps> = (args) => {
+export const Example: StoryFn<AuthSignInProps> = (args) => {
   return <AuthSignIn {...args} />;
 };
 
-export const WithLogo: Story<AuthSignInProps> = (args) => {
+export const WithLogo: StoryFn<AuthSignInProps> = (args) => {
   return (
     <LogoProvider logo={<Logo />}>
       <AuthSignIn {...args} />

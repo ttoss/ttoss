@@ -4,7 +4,7 @@ import {
 } from '../../../../packages/react-auth/src/AuthForgotPassword';
 import { Box } from '@ttoss/ui';
 import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'React Auth/AuthForgotPassword',
@@ -25,13 +25,13 @@ const Logo = () => {
   );
 };
 
-const Template: Story<AuthForgotPasswordProps> = (args) => {
+const Template: StoryFn<AuthForgotPasswordProps> = (args) => {
   return <AuthForgotPassword {...args} />;
 };
 
 export const Example = Template.bind({});
 
-export const WithLogo: Story<AuthForgotPasswordProps> = (args) => {
+export const WithLogo: StoryFn<AuthForgotPasswordProps> = (args) => {
   return (
     <LogoProvider logo={<Logo />}>
       <AuthForgotPassword {...args} />
