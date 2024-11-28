@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.26.4](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.3...@ttoss/forms@0.26.4) (2024-11-28)
+
+### Bug Fixes
+
+- issue 574 ([#619](https://github.com/ttoss/ttoss/issues/619)) ([e3bd00c](https://github.com/ttoss/ttoss/commit/e3bd00c9ee1ad6b21318e5a6ff66c7efacfc4c0a))
+
 ## [0.26.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.2...@ttoss/forms@0.26.3) (2024-11-26)
 
 **Note:** Version bump only for package @ttoss/forms

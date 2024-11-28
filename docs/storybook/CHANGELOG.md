@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.4.0...@docs/storybook@2.4.1) (2024-11-28)
+
+### Bug Fixes
+
+- issue 574 ([#619](https://github.com/ttoss/ttoss/issues/619)) ([e3bd00c](https://github.com/ttoss/ttoss/commit/e3bd00c9ee1ad6b21318e5a6ff66c7efacfc4c0a))
+
 # [2.4.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.3.32...@docs/storybook@2.4.0) (2024-11-28)
 
 ### Features
