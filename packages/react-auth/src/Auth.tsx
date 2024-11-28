@@ -5,6 +5,7 @@ import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPasswo
 import { AuthFullScreen } from './AuthFullScreen';
 import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp } from './AuthSignUp';
+import { Flex } from '@ttoss/ui';
 import { LogoContextProps, LogoProvider } from './AuthCard';
 import { assign, createMachine } from 'xstate';
 import {
@@ -313,11 +314,17 @@ const AuthLogic = () => {
   );
 };
 
-type AuthProps = LogoContextProps & {
+type AuthLayout = {
   fullScreen?: boolean;
+  sideImage?: React.ReactNode;
+  sideImagePosition?: 'left' | 'right';
 };
 
-export const Auth = ({ logo, fullScreen = true }: AuthProps) => {
+export type AuthProps = LogoContextProps & {
+  layout?: AuthLayout;
+};
+
+export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
   const withLogoNode = React.useMemo(() => {
     return (
       <LogoProvider logo={logo}>
@@ -326,7 +333,45 @@ export const Auth = ({ logo, fullScreen = true }: AuthProps) => {
     );
   }, [logo]);
 
-  if (fullScreen) {
+  if (layout.fullScreen) {
+    if (layout.sideImage) {
+      return (
+        <AuthFullScreen>
+          <Flex
+            sx={{
+              width: '100%',
+              height: '100%',
+              flexDirection:
+                layout.sideImagePosition === 'left' ? 'row' : 'row-reverse',
+            }}
+          >
+            <Flex
+              sx={{
+                width: '100%',
+                height: '100%',
+                flex: [0, 0, 1],
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {layout.sideImage}
+            </Flex>
+            <Flex
+              sx={{
+                width: '100%',
+                height: '100%',
+                flex: [1],
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {withLogoNode}
+            </Flex>
+          </Flex>
+        </AuthFullScreen>
+      );
+    }
+
     return <AuthFullScreen>{withLogoNode}</AuthFullScreen>;
   }
 
