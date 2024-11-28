@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.2.2...@ttoss/react-auth@2.3.0) (2024-11-28)
+
+### Features
+
+- add side image react auth ([#618](https://github.com/ttoss/ttoss/issues/618)) ([9faf012](https://github.com/ttoss/ttoss/commit/9faf01222160213b844c21d2e739b561b50fbaa8))
+
 ## [2.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.2.1...@ttoss/react-auth@2.2.2) (2024-11-26)
 
 **Note:** Version bump only for package @ttoss/react-auth

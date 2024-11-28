@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.3.32...@docs/storybook@2.4.0) (2024-11-28)
+
+### Features
+
+- add side image react auth ([#618](https://github.com/ttoss/ttoss/issues/618)) ([9faf012](https://github.com/ttoss/ttoss/commit/9faf01222160213b844c21d2e739b561b50fbaa8))
+
 ## [2.3.32](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.3.31...@docs/storybook@2.3.32) (2024-11-26)
 
 **Note:** Version bump only for package @docs/storybook
