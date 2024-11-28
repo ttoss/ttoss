@@ -29,8 +29,8 @@ test('call onSubmit with correct data', async () => {
 });
 
 /**
- * If you want to fail this test, you can remove the part `Math.random()` from
- * the id generation in the FormFieldCheckbox component.
+ * If you want to fail this test, you can remove the part `uniqueId` from
+ * the id definition in the FormFieldCheckbox component.
  */
 test('multiples checkboxes cannot interfere with each other', async () => {
   const optimizationSchema = yup.object({
