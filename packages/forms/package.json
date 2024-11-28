@@ -27,9 +27,9 @@
   "sideEffects": true,
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
-    "@hookform/resolvers": "^3.3.4",
-    "react-hook-form": "^7.51.4",
-    "react-number-format": "^5.3.4",
+    "@hookform/resolvers": "^3.9.1",
+    "react-hook-form": "^7.53.2",
+    "react-number-format": "^5.4.2",
     "yup": "^1.4.0"
   },
   "peerDependencies": {
@@ -48,7 +48,7 @@
     "@types/react": "^18.3.12",
     "jest": "^29.7.0",
     "react": "^18.3.1",
-    "react-error-boundary": "^4.0.13",
+    "react-error-boundary": "^4.1.2",
     "tsup": "^8.3.5",
     "yup": "^1.4.0"
   },

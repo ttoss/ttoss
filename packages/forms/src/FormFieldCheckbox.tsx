@@ -22,7 +22,7 @@ export const FormFieldCheckbox = <
     defaultValue: false,
   });
 
-  const id = `form-field-checkbox-${name}`;
+  const id = checkboxProps.id || `form-field-checkbox-${name}-${Math.random()}`;
 
   const error = !!errors[name]?.message;
 
