@@ -28,6 +28,10 @@ test('call onSubmit with correct data', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true, checkbox2: false });
 });
 
+/**
+ * If you want to fail this test, you can remove the part `Math.random()` from
+ * the id generation in the FormFieldCheckbox component.
+ */
 test('multiples checkboxes cannot interfere with each other', async () => {
   const optimizationSchema = yup.object({
     isActivated: yup.boolean().default(false),
@@ -62,17 +66,17 @@ test('multiples checkboxes cannot interfere with each other', async () => {
     </>
   );
 
-  const checkboxes = screen.queryAllByLabelText('Is activated?');
+  const checkboxesTexts = screen.queryAllByText('Is activated?');
   const submitButtons = screen.queryAllByText('Submit');
 
-  await userEvent.click(checkboxes[0]);
+  await userEvent.click(checkboxesTexts[0]);
   await userEvent.click(submitButtons[0]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
   });
 
-  await userEvent.click(checkboxes[1]);
+  await userEvent.click(checkboxesTexts[1]);
   await userEvent.click(submitButtons[1]);
 
   expect(optimizationsData).toEqual({
@@ -83,28 +87,28 @@ test('multiples checkboxes cannot interfere with each other', async () => {
   /**
    * Changing one checkbox should not affect the other
    */
-  await userEvent.click(checkboxes[1]);
+  await userEvent.click(checkboxesTexts[1]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
     '1': { isActivated: false },
   });
 
-  await userEvent.click(checkboxes[1]);
+  await userEvent.click(checkboxesTexts[1]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
     '1': { isActivated: true },
   });
 
-  await userEvent.click(checkboxes[0]);
+  await userEvent.click(checkboxesTexts[0]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: false },
     '1': { isActivated: true },
   });
 
-  await userEvent.click(checkboxes[0]);
+  await userEvent.click(checkboxesTexts[0]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
