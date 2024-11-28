@@ -1,6 +1,6 @@
 import { Button } from '@ttoss/ui';
 import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 export default {
@@ -12,7 +12,7 @@ const schema = yup.object({
   car: yup.string().required('Car is required'),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm<{ car: string }>({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -38,7 +38,9 @@ const Template: Story = () => {
   );
 };
 
-const Template2: Story = () => {
+export const Example = Template.bind({});
+
+const Template2: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -64,5 +66,4 @@ const Template2: Story = () => {
   );
 };
 
-export const Example = Template.bind({});
 export const WithPlaceholder = Template2.bind({});

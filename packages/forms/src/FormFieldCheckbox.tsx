@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
 import { FormErrorMessage } from './FormErrorMessage';
@@ -22,7 +23,9 @@ export const FormFieldCheckbox = <
     defaultValue: false,
   });
 
-  const id = `form-field-checkbox-${name}`;
+  const uniqueId = React.useId();
+
+  const id = checkboxProps.id || `form-field-checkbox-${name}-${uniqueId}`;
 
   const error = !!errors[name]?.message;
 
