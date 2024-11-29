@@ -2,15 +2,15 @@ import * as esbuild from 'esbuild';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as typescriptPlugin from '@graphql-codegen/typescript';
+import { Command } from 'commander';
 import { codegen } from '@graphql-codegen/core';
-import { hideBin } from 'yargs/helpers';
 import { parse } from 'graphql';
 import log from 'npmlog';
-import yargs from 'yargs';
+import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';
 
-export const importSchemaComposer = async (schemaComposerPath: string) => {
+const importSchemaComposer = async (schemaComposerPath: string) => {
   const lastEntryPointName = schemaComposerPath.split('/').pop();
 
   const filename = lastEntryPointName?.split('.')[0] as string;
@@ -106,29 +106,24 @@ const buildSchema = async ({ directory }: { directory: string }) => {
     `${typesOutputIgnore}\n${typesOutput}`
   );
 
-  // cleanup();
-
   log.info(logPrefix, 'Schema and types generated!');
 };
 
-yargs(hideBin(process.argv))
-  .command(
-    'build-schema',
-    'fetch the contents of the URL',
-    (yargs) => {
-      return yargs.options({
-        directory: {
-          alias: ['d'],
-          type: 'string',
-          describe: 'Schema composer directory relative to the project root',
-          default: 'src',
-        },
-      });
-    },
-    (argv) => {
-      return buildSchema(argv);
-    }
-  )
-  .demandCommand(1)
-  .strictOptions()
-  .parse();
+const program = new Command();
+
+program
+  .name('ttoss-graphql-api')
+  .version(
+    pkg.version,
+    '-v, --version',
+    'Output the current version of the GraphQL API'
+  );
+
+program
+  .command('build-schema')
+  .option('-d, --directory <directory>', 'Schema composer directory', 'src')
+  .action((options) => {
+    return buildSchema(options);
+  });
+
+program.parse(process.argv);
