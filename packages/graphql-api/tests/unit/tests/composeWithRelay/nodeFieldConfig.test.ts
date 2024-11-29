@@ -2,8 +2,8 @@
 /* eslint-disable jest/no-mocks-import */
 import { InterfaceTypeComposer, schemaComposer } from 'graphql-compose';
 import { UserTC, findByIdResolver } from './__mocks__/UserTC';
-import { getNodeFieldConfig } from '../../../src/composeWithRelay/nodeFieldConfig';
-import { getNodeInterface } from '../../../src/composeWithRelay/nodeInterface';
+import { getNodeFieldConfig } from 'src/composeWithRelay/nodeFieldConfig';
+import { getNodeInterface } from 'src/composeWithRelay/nodeInterface';
 import { toGlobalId } from '@ttoss/ids';
 
 describe('nodeFieldConfig', () => {

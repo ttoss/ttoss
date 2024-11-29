@@ -1,5 +1,6 @@
-import { allow, deny, shield } from '../../src/shield';
-import { buildSchema } from '../../src';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { allow, deny, shield } from 'src/shield';
+import { buildSchema } from 'src/index';
 import { graphql } from 'graphql';
 import { schemaComposer } from '../schemaComposer';
 

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AUTHORS, BOOKS, schemaComposer } from '../schemaComposer';
-import { buildSchema } from '../../src';
+import { buildSchema } from 'src/index';
 import { graphql } from 'graphql';
 
 describe('authors query', () => {

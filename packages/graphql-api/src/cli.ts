@@ -1,44 +1,47 @@
+import * as esbuild from 'esbuild';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as typescriptPlugin from '@graphql-codegen/typescript';
 import { codegen } from '@graphql-codegen/core';
 import { hideBin } from 'yargs/helpers';
 import { parse } from 'graphql';
-import { register } from 'ts-node';
-import { register as registerTsPaths } from 'tsconfig-paths';
 import log from 'npmlog';
 import yargs from 'yargs';
 
 const logPrefix = 'graphql-api';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const tsConfig = require(path.resolve(process.cwd(), 'tsconfig.json'));
-let cleanup = () => {};
-try {
-  const baseUrl = tsConfig?.compilerOptions?.baseUrl;
-  const paths = tsConfig?.compilerOptions?.paths;
-  if ((baseUrl && !paths) || (!baseUrl && paths)) {
-    throw new Error(
-      "tsconfig.json must have 'baseUrl' and 'paths' properties."
-    );
-  }
-  if (baseUrl && paths) {
-    cleanup = registerTsPaths({
-      baseUrl: tsConfig.compilerOptions.baseUrl,
-      paths: tsConfig.compilerOptions.paths,
-    });
-  }
-} catch (error: unknown) {
-  error instanceof Error && log.error(logPrefix, error.message);
-  process.exit(1);
-}
 
-register({
-  transpileOnly: true,
-  compilerOptions: {
-    module: 'NodeNext',
-    moduleResolution: 'NodeNext',
-  },
-});
+export const importSchemaComposer = async (schemaComposerPath: string) => {
+  const lastEntryPointName = schemaComposerPath.split('/').pop();
+
+  const filename = lastEntryPointName?.split('.')[0] as string;
+
+  const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
+
+  const result = await esbuild.build({
+    bundle: true,
+    entryPoints: [schemaComposerPath],
+    external: [],
+    format: 'esm',
+    outfile,
+    platform: 'node',
+    target: 'ES2021',
+    treeShaking: true,
+  });
+
+  if (result.errors.length > 0) {
+    // eslint-disable-next-line no-console
+    console.error('Error building config file: ', filename);
+    throw result.errors;
+  }
+
+  try {
+    return await import(outfile);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed importing build config file: ', filename);
+    throw error;
+  }
+};
 
 const buildSchema = async ({ directory }: { directory: string }) => {
   log.info(logPrefix, 'Building schema...');
@@ -56,10 +59,13 @@ const buildSchema = async ({ directory }: { directory: string }) => {
     await fs.promises.writeFile('schema/types.ts', '');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { schemaComposer } = require(
-    path.resolve(process.cwd(), directory, 'schemaComposer.ts')
+  const schemaComposerPath = path.resolve(
+    process.cwd(),
+    directory,
+    'schemaComposer.ts'
   );
+
+  const { schemaComposer } = await importSchemaComposer(schemaComposerPath);
 
   const sdl = schemaComposer.toSDL();
 
@@ -99,7 +105,9 @@ const buildSchema = async ({ directory }: { directory: string }) => {
     'schema/types.ts',
     `${typesOutputIgnore}\n${typesOutput}`
   );
-  cleanup();
+
+  // cleanup();
+
   log.info(logPrefix, 'Schema and types generated!');
 };
 
