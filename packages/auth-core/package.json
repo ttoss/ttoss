@@ -12,6 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/auth-core"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./amazon-cognito": "./src/AmazonCognito/index.ts"
