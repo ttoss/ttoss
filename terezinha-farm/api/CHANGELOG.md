@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.17.17...@terezinha-farm/api@0.18.0) (2024-12-02)
+
+### Features
+
+- Graphql api esm ([#620](https://github.com/ttoss/ttoss/issues/620)) ([24c821b](https://github.com/ttoss/ttoss/commit/24c821bc5b8270f7d32d7f1a7784f876a86964a0))
+
 ## 0.17.17 (2024-11-26)
 
 **Note:** Version bump only for package @terezinha-farm/api
