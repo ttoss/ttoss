@@ -1,5 +1,5 @@
 export { composeWithRelay } from './composeWithRelay';
-export { default as composeWithConnection } from 'graphql-compose-connection';
+export { composeWithConnection } from 'graphql-compose-connection';
 export * from 'graphql-compose';
 export {
   buildSchema,

@@ -8,7 +8,7 @@ import {
 } from 'graphql-compose/lib/graphql';
 import { ObjectTypeComposer, schemaComposer } from 'graphql-compose';
 import { UserTC } from './__mocks__/UserTC';
-import { composeWithRelay } from '../../../src';
+import { composeWithRelay } from 'src/index';
 import { toGlobalId } from '@ttoss/ids';
 
 describe('composeWithRelay', () => {

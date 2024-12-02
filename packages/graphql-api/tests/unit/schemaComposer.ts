@@ -4,7 +4,7 @@ import {
   composeWithConnection,
   composeWithRelay,
   schemaComposer,
-} from '../src';
+} from '../../src';
 import { fromGlobalId, toGlobalId } from '@ttoss/ids';
 
 type Book = {

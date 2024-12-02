@@ -1,4 +1,4 @@
-import { fromGlobalId, fromRecordId, toGlobalId, toRecordId } from '../../src';
+import { fromGlobalId, fromRecordId, toGlobalId, toRecordId } from 'src/index';
 
 test('should convert a global id into a type and record id', () => {
   const globalId = 'VXNlcjox';

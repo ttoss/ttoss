@@ -1,12 +1,33 @@
 # @ttoss/graphql-api
 
-This package provides an opinionated way to create an GraphQL API using ttoss ecosystem modules. The main goal of this package is to provide a resilient way to create a complex GraphQL API to meet the following goals:
+This package offers an opinionated approach to building a GraphQL API using the **ttoss ecosystem modules**. It is designed to provide a resilient and scalable solution for creating complex GraphQL APIs while focusing on the following goals:
 
-1. **Modular**: you can create your GraphQL API using modules, so you can reduce the complexity of a big GraphQL API.
-1. **Relay**: ttoss uses Relay as the main GraphQL client, so this package implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/).
-1. **Build Schema**: as Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`.
-1. **Build TypeScript Types**: this package provides a way to build the TypeScript types for your GraphQL schema by running `ttoss-graphl-api build-schema`.
-1. **AppSync Support**: this package provides a way to create a GraphQL API that works with AWS AppSync, besides you can also create a local GraphQL API server.
+1. **Modular Design**:  
+   Build your GraphQL API using modules to simplify and organize the development of large, complex APIs.
+
+1. **Relay Compatibility**:  
+   As **Relay** is the primary GraphQL client in the ttoss ecosystem, this package implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/) for seamless client-server interaction.
+
+1. **Schema Building**:  
+   Generate the GraphQL schema required for Relay's introspection queries by running:
+
+   ```bash
+   ttoss-graphql-api build-schema
+   ```
+
+1. **TypeScript Types Generation**:
+   Automatically generate TypeScript types for your GraphQL schema with the same command:
+
+   ```bash
+   ttoss-graphql-api build-schema
+   ```
+
+1. **AWS AppSync Support**:
+   Create GraphQL APIs compatible with AWS AppSync. Additionally, this package includes support for running a local GraphQL API server for development and testing purposes.
+
+## ESM Only
+
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
 
 ## Installation
 
@@ -445,10 +466,22 @@ You can add the `build-schema` script to your `package.json`:
 }
 ```
 
+### Options
+
+#### `--directory`/`-d`
+
 If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
 
 ```bash
 ttoss-graphl-api build-schema -d tests
+```
+
+#### `--external`
+
+External dependencies to ignore during build. If you don't set this option, the `build-schema` command will use the `dependencies` and `devDependencies` from your `package.json` file.
+
+```bash
+ttoss-graphl-api build-schema --external graphql-compose,graphql
 ```
 
 ## How to Create Tests
