@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.2.3...@ttoss/auth-core@0.3.0) (2024-12-02)
+
+### Features
+
+- add type module to auth-core ([209427d](https://github.com/ttoss/ttoss/commit/209427dae2448ff568ccce688a9141f5c8791e96))
+
 ## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.2.2...@ttoss/auth-core@0.2.3) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/auth-core
