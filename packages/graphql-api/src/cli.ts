@@ -10,21 +10,33 @@ import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';
 
-const importSchemaComposer = async (schemaComposerPath: string) => {
+const importSchemaComposer = async ({
+  external,
+  schemaComposerPath,
+}: {
+  external?: string[];
+  schemaComposerPath: string;
+}) => {
   const lastEntryPointName = schemaComposerPath.split('/').pop();
 
   const filename = lastEntryPointName?.split('.')[0] as string;
 
   const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
 
+  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+
+  const packageJson = await fs.promises.readFile(packageJsonPath, 'utf-8');
+
+  const dependencies = Object.keys(JSON.parse(packageJson).dependencies);
+
   const result = await esbuild.build({
     bundle: true,
     entryPoints: [schemaComposerPath],
-    external: [],
+    external: external || dependencies,
     format: 'esm',
     outfile,
     platform: 'node',
-    target: 'ES2021',
+    target: 'ES2023',
     treeShaking: true,
   });
 
@@ -43,7 +55,13 @@ const importSchemaComposer = async (schemaComposerPath: string) => {
   }
 };
 
-const buildSchema = async ({ directory }: { directory: string }) => {
+const buildSchema = async ({
+  directory,
+  external,
+}: {
+  directory: string;
+  external?: string[];
+}) => {
   log.info(logPrefix, 'Building schema...');
 
   await fs.promises.mkdir('schema', { recursive: true });
@@ -65,7 +83,10 @@ const buildSchema = async ({ directory }: { directory: string }) => {
     'schemaComposer.ts'
   );
 
-  const { schemaComposer } = await importSchemaComposer(schemaComposerPath);
+  const { schemaComposer } = await importSchemaComposer({
+    external,
+    schemaComposerPath,
+  });
 
   const sdl = schemaComposer.toSDL();
 
@@ -122,6 +143,10 @@ program
 program
   .command('build-schema')
   .option('-d, --directory <directory>', 'Schema composer directory', 'src')
+  .option(
+    '--external <external...>',
+    'External dependencies to ignore during build'
+  )
   .action((options) => {
     return buildSchema(options);
   });

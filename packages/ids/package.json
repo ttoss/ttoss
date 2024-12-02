@@ -12,6 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/ids"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },

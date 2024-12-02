@@ -466,10 +466,22 @@ You can add the `build-schema` script to your `package.json`:
 }
 ```
 
+### Options
+
+#### `--directory`/`-d`
+
 If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
 
 ```bash
 ttoss-graphl-api build-schema -d tests
+```
+
+#### `--external`
+
+External dependencies to ignore during build. If you don't set this option, the `build-schema` command will use the `dependencies` and `devDependencies` from your `package.json` file.
+
+```bash
+ttoss-graphl-api build-schema --external graphql-compose,graphql
 ```
 
 ## How to Create Tests
