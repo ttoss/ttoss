@@ -29,6 +29,29 @@ If you already have a database, you can skip this step. If you don't, you can us
 docker run --name postgres-test -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 ```
 
+If you want to use [Docker Compose](https://docs.docker.com/compose/), you can create a `docker-compose.yml` file with the following content:
+
+```yaml
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+volumes:
+  db-data:
+```
+
+And run the following command:
+
+```bash
+docker compose up -d
+```
+
 ### Create a model
 
 Create a folder called `models` and add a new file called `User.ts` with the following content:
@@ -62,8 +85,10 @@ Create a new file called `src/db.ts` with the following content:
 import { initialize } from '@ttoss/postgresdb';
 import * as models from './models';
 
-export const db = initialize({ models });
+export const db = await initialize({ models });
 ```
+
+_Note: the script [`sync`](#sync-the-database-schema) will use the `db` object to sync the database schema with the models._
 
 ### Environment variables
 
@@ -92,6 +117,16 @@ You can set the database connection parameters in two ways:
 
    `@ttoss/postgresdb` will use them automatically if they are defined.
 
+   Here is an example of a `.env` file:
+
+   ```env
+   DB_NAME=postgres
+   DB_USERNAME=postgres
+   DB_PASSWORD=mysecretpassword
+   DB_HOST=localhost
+   DB_PORT=5432
+   ```
+
 ### Sync the database schema
 
 To [sync](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) the database schema with the models, use the [`sync` command](../postgresdb-cli/):
@@ -101,6 +136,8 @@ pnpm dlx @ttoss/postgresdb-cli sync
 ```
 
 By now, you should have a working database with a `User` table.
+
+This command works by importing the `db` object from the `src/db.ts` file and calling the `sync` method on it.
 
 ### CRUD operations
 
