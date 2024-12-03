@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.8](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.7...@ttoss/postgresdb@0.2.8) (2024-12-03)
+
+### Bug Fixes
+
+- sequelize-typescript l ([d03cdf0](https://github.com/ttoss/ttoss/commit/d03cdf0a5f65023563cf7ed8f207cfb11ecb607f))
+
 ## [0.2.7](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.6...@ttoss/postgresdb@0.2.7) (2024-12-03)
 
 ### Bug Fixes
