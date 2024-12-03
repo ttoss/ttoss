@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.5...@ttoss/postgresdb@0.2.6) (2024-12-03)
+
+### Bug Fixes
+
+- remove import star from sequelize-typescript ([#621](https://github.com/ttoss/ttoss/issues/621)) ([9c61aab](https://github.com/ttoss/ttoss/commit/9c61aab4688db13d25b2fedf4f925e4cb00618c3))
+
 ## [0.2.5](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.4...@ttoss/postgresdb@0.2.5) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/postgresdb
