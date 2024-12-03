@@ -12,12 +12,7 @@ export const getDbDynamically = async ({ dbPath }: { dbPath: string }) => {
   const result = esbuild.buildSync({
     bundle: true,
     entryPoints: [entryPoint],
-    /**
-     * ttoss packages cannot be market as external because it'd break the CI.
-     * On CI, ttoss packages point to the TS main file, not the compiled
-     * ones. See more details here https://github.com/ttoss/ttoss/issues/541.
-     */
-    external: ['pg', 'sequelize', 'sequelize-typescript'],
+    external: ['@ttoss/postgresdb'],
     format: 'esm',
     outfile,
     platform: 'node',
