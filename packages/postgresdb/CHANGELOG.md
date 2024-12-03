@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.9](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.8...@ttoss/postgresdb@0.2.9) (2024-12-03)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [0.2.8](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.7...@ttoss/postgresdb@0.2.8) (2024-12-03)
 
 ### Bug Fixes
