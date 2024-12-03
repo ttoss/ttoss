@@ -3,7 +3,7 @@ import {
   type ModelCtor,
   Sequelize,
   type SequelizeOptions,
-} from './sequelize-typescript';
+} from 'sequelize-typescript';
 
 let sequelize: Sequelize;
 
