@@ -18,6 +18,8 @@ export type CreateServerInput = {
   cors?: cors.Options;
 } & BuildSchemaInput;
 
+export type ServerContext = App.Context;
+
 export const createServer = ({
   authenticationType,
   userPoolConfig,
