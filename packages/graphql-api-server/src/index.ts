@@ -89,7 +89,14 @@ export const createServer = ({
       }
     }
 
-    const response = await yoga.handleNodeRequest(ctx.req, ctx);
+    /**
+     * https://the-guild.dev/graphql/yoga-server/docs/integrations/integration-with-koa
+     */
+    const response = await yoga.handleNodeRequestAndResponse(
+      ctx.req,
+      ctx.res,
+      ctx
+    );
 
     /**
      * Set status code
@@ -99,11 +106,9 @@ export const createServer = ({
     /**
      * Set headers
      */
-    for (const [key, value] of response.headers.entries()) {
-      if (ctx.status != 401) {
-        ctx.append(key, value);
-      }
-    }
+    response.headers.forEach((value, key) => {
+      ctx.append(key, value);
+    });
 
     ctx.body = response.body;
   });

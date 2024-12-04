@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql';
 import {
   ResolverResolveParams,
   composeWithConnection,
@@ -169,6 +170,14 @@ UserTC.addResolver({
   },
 });
 
+UserTC.addResolver({
+  name: 'findByIdWithError',
+  type: UserTC,
+  resolve: async () => {
+    throw new GraphQLError('findByIdWithError error');
+  },
+});
+
 schemaComposer.Query.addFields({
   author: AuthorTC.getResolver('connection'),
 });
@@ -179,6 +188,7 @@ schemaComposer.Mutation.addFields({
 
 schemaComposer.Query.addFields({
   getUser: UserTC.getResolver('findById'),
+  getUserWithError: UserTC.getResolver('findByIdWithError'),
 });
 
 export { schemaComposer };

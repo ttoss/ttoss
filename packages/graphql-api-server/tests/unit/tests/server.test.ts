@@ -269,3 +269,21 @@ test("should handle '/test' route", async () => {
   expect(response.status).toBe(200);
   expect(response.text).toBe('Test route response');
 });
+
+test('should handle resolvers errors', async () => {
+  const query = /* GraphQL */ `
+    query {
+      getUserWithError {
+        sub
+      }
+    }
+  `;
+
+  const response = await request(app.callback())
+    .post('/graphql')
+    .send({ query });
+
+  expect(response.status).toBe(200);
+  expect(response.body.errors).toBeDefined();
+  expect(response.body.errors[0].message).toBe('findByIdWithError error');
+});
