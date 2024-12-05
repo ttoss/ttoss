@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-cli",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A library for building GraphQL APIs types and schema.",
   "license": "MIT",
   "author": "ttoss",
@@ -23,7 +23,6 @@
     "build-config": "tsup-node"
   },
   "sideEffects": false,
-  "dependencies": {},
   "peerDependencies": {
     "graphql": "^16.6.0"
   },
