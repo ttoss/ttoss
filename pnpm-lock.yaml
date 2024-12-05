@@ -67,7 +67,7 @@ importers:
         version: 3.658.1(@aws-sdk/client-dynamodb@3.658.1)
       '@ttoss/graphql-api':
         specifier: workspace:^
-        version: link:../../../packages/graphql-api
+        version: link:../../../packages/graphql-api-cli
       '@ttoss/graphql-api-server':
         specifier: workspace:^
         version: link:../../../packages/graphql-api-server
@@ -351,7 +351,7 @@ importers:
         version: link:../config
       '@ttoss/graphql-api':
         specifier: workspace:^
-        version: link:../graphql-api
+        version: link:../graphql-api-cli
       '@ttoss/ids':
         specifier: workspace:^
         version: link:../ids
@@ -977,14 +977,57 @@ importers:
         specifier: ^8.3.5
         version: 8.3.5(jiti@1.21.6)(postcss@8.4.49)(tsx@4.19.1)(typescript@5.7.2)(yaml@2.5.1)
 
+  packages/graphql-api-cli:
+    dependencies:
+      '@graphql-codegen/core':
+        specifier: ^4.0.2
+        version: 4.0.2(graphql@16.9.0)
+      '@graphql-codegen/typescript':
+        specifier: ^4.1.2
+        version: 4.1.2(encoding@0.1.13)(graphql@16.9.0)
+      '@ttoss/ids':
+        specifier: workspace:^
+        version: link:../ids
+      esbuild:
+        specifier: ^0.24.0
+        version: 0.24.0
+      graphql-compose:
+        specifier: ^9.0.11
+        version: 9.0.11(graphql@16.9.0)
+      graphql-compose-connection:
+        specifier: ^8.2.1
+        version: 8.2.1(graphql-compose@9.0.11(graphql@16.9.0))
+      graphql-middleware:
+        specifier: ^6.1.35
+        version: 6.1.35(graphql@16.9.0)
+      graphql-shield:
+        specifier: ^7.6.5
+        version: 7.6.5(graphql-middleware@6.1.35(graphql@16.9.0))(graphql@16.9.0)
+      npmlog:
+        specifier: ^7.0.1
+        version: 7.0.1
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
+      graphql:
+        specifier: ^16.9.0
+        version: 16.9.0
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.7.3)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.7.3)(typescript@5.7.2))
+      tsup:
+        specifier: ^8.3.5
+        version: 8.3.5(jiti@1.21.6)(postcss@8.4.49)(tsx@4.19.1)(typescript@5.7.2)(yaml@2.5.1)
+
   packages/graphql-api-server:
     dependencies:
       '@ttoss/auth-core':
         specifier: workspace:^
         version: link:../auth-core
-      '@ttoss/graphql-api':
-        specifier: workspace:^
-        version: link:../graphql-api
       '@ttoss/http-server':
         specifier: workspace:^
         version: link:../http-server
@@ -995,6 +1038,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/graphql-api':
+        specifier: workspace:^
+        version: link:../graphql-api-cli
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.2
@@ -1670,7 +1716,7 @@ importers:
         version: link:../../packages/appsync-api
       '@ttoss/graphql-api':
         specifier: workspace:^
-        version: link:../../packages/graphql-api
+        version: link:../../packages/graphql-api-cli
       graphql:
         specifier: ^16.9.0
         version: 16.9.0
