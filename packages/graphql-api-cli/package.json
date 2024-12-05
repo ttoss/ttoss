@@ -23,17 +23,19 @@
     "build-config": "tsup-node"
   },
   "sideEffects": false,
+  "dependencies": {
+    "@graphql-codegen/core": "^4.0.2",
+    "@graphql-codegen/typescript": "^4.1.2",
+    "commander": "^12.1.0",
+    "esbuild": "^0.24.0",
+    "graphql": "^16.9.0",
+    "npmlog": "^7.0.1"
+  },
   "peerDependencies": {
     "graphql": "^16.6.0"
   },
   "devDependencies": {
-    "@graphql-codegen/core": "^4.0.2",
-    "@graphql-codegen/typescript": "^4.1.2",
     "@ttoss/config": "workspace:^",
-    "commander": "^12.1.0",
-    "esbuild": "^0.24.0",
-    "graphql": "^16.9.0",
-    "npmlog": "^7.0.1",
     "tsup": "^8.3.5"
   },
   "keywords": [

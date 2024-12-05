@@ -966,16 +966,13 @@ importers:
         version: 8.3.5(jiti@1.21.6)(postcss@8.4.49)(tsx@4.19.1)(typescript@5.7.2)(yaml@2.5.1)
 
   packages/graphql-api-cli:
-    devDependencies:
+    dependencies:
       '@graphql-codegen/core':
         specifier: ^4.0.2
         version: 4.0.2(graphql@16.9.0)
       '@graphql-codegen/typescript':
         specifier: ^4.1.2
         version: 4.1.2(encoding@0.1.13)(graphql@16.9.0)
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -988,6 +985,10 @@ importers:
       npmlog:
         specifier: ^7.0.1
         version: 7.0.1
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(jiti@1.21.6)(postcss@8.4.49)(tsx@4.19.1)(typescript@5.7.2)(yaml@2.5.1)
