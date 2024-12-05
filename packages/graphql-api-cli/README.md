@@ -14,10 +14,10 @@ pnpm add -D @ttoss/graphql-api-cli
 
 ## Usage
 
-As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
+As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphql-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
 
 ```bash
-ttoss-graphl-api build-schema
+ttoss-graphql-api build-schema
 ```
 
 You can add the `build-schema` script to your `package.json`:
@@ -25,7 +25,7 @@ You can add the `build-schema` script to your `package.json`:
 ```json
 {
   "scripts": {
-    "build-schema": "ttoss-graphl-api build-schema"
+    "build-schema": "ttoss-graphql-api build-schema"
   }
 }
 ```
@@ -34,10 +34,10 @@ You can add the `build-schema` script to your `package.json`:
 
 ### `--directory`/`-d`
 
-If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
+If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphql-api build-schema` command:
 
 ```bash
-ttoss-graphl-api build-schema -d tests
+ttoss-graphql-api build-schema -d tests
 ```
 
 ### `--external`
@@ -45,5 +45,5 @@ ttoss-graphl-api build-schema -d tests
 External dependencies to ignore during build. If you don't set this option, the `build-schema` command will use the `dependencies` from your `package.json` file.
 
 ```bash
-ttoss-graphl-api build-schema --external graphql-compose,graphql
+ttoss-graphql-api build-schema --external graphql-compose,graphql
 ```
