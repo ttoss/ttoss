@@ -18,6 +18,7 @@
     "@ttoss/aws-appsync-nodejs": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
+    "@ttoss/graphql-api-cli": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",
     "tsx": "^4.6.2"
   }

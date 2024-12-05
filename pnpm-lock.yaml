@@ -1699,6 +1699,9 @@ importers:
       '@ttoss/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
+      '@ttoss/graphql-api-cli':
+        specifier: workspace:^
+        version: link:../../packages/graphql-api-cli
       '@ttoss/graphql-api-server':
         specifier: workspace:^
         version: link:../../packages/graphql-api-server
