@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.54.0 (2024-12-05)
+
+### Bug Fixes
+
+- docs add new package ([f996740](https://github.com/ttoss/ttoss/commit/f9967409b10d47d56c442ab949adeaaee48698ec))
+
+### Features
+
+- add type module to auth-core ([209427d](https://github.com/ttoss/ttoss/commit/209427dae2448ff568ccce688a9141f5c8791e96))
+
 ## [1.53.15](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.14...@docs/website@1.53.15) (2024-12-02)
 
 **Note:** Version bump only for package @docs/website
