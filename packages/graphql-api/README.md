@@ -9,25 +9,13 @@ This package offers an opinionated approach to building a GraphQL API using the 
    As **Relay** is the primary GraphQL client in the ttoss ecosystem, this package implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/) for seamless client-server interaction.
 
 1. **Schema Building**:  
-   Generate the GraphQL schema required for Relay's introspection queries by running:
-
-   ```bash
-   ttoss-graphql-api build-schema
-   ```
+   Generate the GraphQL schema required for Relay's introspection queries with [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/).
 
 1. **TypeScript Types Generation**:
-   Automatically generate TypeScript types for your GraphQL schema with the same command:
-
-   ```bash
-   ttoss-graphql-api build-schema
-   ```
+   Automatically generate TypeScript types for your GraphQL schema with [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/).
 
 1. **AWS AppSync Support**:
    Create GraphQL APIs compatible with AWS AppSync. Additionally, this package includes support for running a local GraphQL API server for development and testing purposes.
-
-## ESM Only
-
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
 
 ## Installation
 
@@ -450,39 +438,7 @@ import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 
 ## Building Schema and Types
 
-As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
-
-```bash
-ttoss-graphl-api build-schema
-```
-
-You can add the `build-schema` script to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "build-schema": "ttoss-graphl-api build-schema"
-  }
-}
-```
-
-### Options
-
-#### `--directory`/`-d`
-
-If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
-
-```bash
-ttoss-graphl-api build-schema -d tests
-```
-
-#### `--external`
-
-External dependencies to ignore during build. If you don't set this option, the `build-schema` command will use the `dependencies` and `devDependencies` from your `package.json` file.
-
-```bash
-ttoss-graphl-api build-schema --external graphql-compose,graphql
-```
+Check [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/) for more information about how to build the schema and types.
 
 ## How to Create Tests
 
