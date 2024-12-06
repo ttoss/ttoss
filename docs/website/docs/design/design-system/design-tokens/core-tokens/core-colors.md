@@ -7,11 +7,11 @@ slug: /design/core-tokens/colors
 The core color tokens are divided into 2 hierarchical levels, first the color [Name](#color-name) is defined and second the [Variation](#color-variation) if any.  
 This standard intend to be exhaustive in the needs of using colors in the core layer. You can create as many colors as necessary at [Name](#color-name) set, where the only requirement is just keep them at a low level of abstraction. Then apply variations if needed, making it possible to extend the [Name](#color-name) palette by varying the color parameters (e.g. lightness, saturation or transparency).
 
-Name Pattern: `core.colors.{colorName}.{variationValue}`
+> Name Pattern: `core.colors.{colorName}.{variationValue}`
 
 ```mermaid
 graph TD;
-    core--> colors;
+    core-->colors;
     colors-->brandColor;
     colors-->hue;
     brandColor-->variationValue;
