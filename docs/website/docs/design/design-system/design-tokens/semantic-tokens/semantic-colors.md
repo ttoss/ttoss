@@ -12,13 +12,13 @@ Our token structure is organized into three main categories: Context, Nature, an
 
 ### UX Tokens
 
-| UX token     | Description                                                                                      | Elements examples                                                                                                                                             |
-| :----------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `navigation` | Elements that allow users to explore and find content within the interface.                      | - Navigation Menus: Main menus, secondary menus, and hamburger menus.<br>- Breadcrumbs: Navigation paths.<br>- Footer Links: Additional navigation.           |
-| `input`      | Elements that allow user data entry or selection.                                                | - Forms: Text fields, checkboxes, radio buttons.<br>- File Upload: Tools for uploading files.<br>- Date/Time Picker: Calendars and clocks.                    |
-| `action`     | Elements that trigger user-driven actions or changes.                                            | - Buttons: Click to execute actions.<br>- Switches and Toggles: Activate/deactivate options.<br>- Dropdowns: Select options.                                  |
-| `feedback`   | Elements that communicate the status, results of actions, outcomes, or instructions to the user. | - Error/Success Messages: Validation and confirmation of actions.<br>- Notifications: Alerts and important information.<br>- Tooltips: Tips and instructions. |
-| `display`    | Elements that present content or information to the user.                                        | - Texts: Articles, descriptions.<br>- Images and Videos: Multimedia content.<br>- Charts and Tables: Data presentation.                                       |
+| UX token     | Description                                                                                      | Elements examples                                                                                                                                                 |
+| :----------- | :----------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `navigation` | Elements that allow users to explore and find content within the interface.                      | - Navigation Menus: Main menus, secondary menus, and hamburger menus.<br />- Breadcrumbs: Navigation paths.<br />- Footer Links: Additional navigation.           |
+| `input`      | Elements that allow user data entry or selection.                                                | - Forms: Text fields, checkboxes, radio buttons.<br />- File Upload: Tools for uploading files.<br />- Date/Time Picker: Calendars and clocks.                    |
+| `action`     | Elements that trigger user-driven actions or changes.                                            | - Buttons: Click to execute actions.<br />- Switches and Toggles: Activate/deactivate options.<br />- Dropdowns: Select options.                                  |
+| `feedback`   | Elements that communicate the status, results of actions, outcomes, or instructions to the user. | - Error/Success Messages: Validation and confirmation of actions.<br />- Notifications: Alerts and important information.<br />- Tooltips: Tips and instructions. |
+| `display`    | Elements that present content or information to the user.                                        | - Texts: Articles, descriptions.<br />- Images and Videos: Multimedia content.<br />- Charts and Tables: Data presentation.                                       |
 
 ### Context
 

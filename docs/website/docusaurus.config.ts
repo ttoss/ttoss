@@ -59,6 +59,7 @@ const config: Config = {
           'forms',
           'google-maps',
           'graphql-api',
+          'graphql-api-cli',
           'graphql-api-server',
           'http-server',
           'i18n-cli',
@@ -275,6 +276,12 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  markdown: {
+    mermaid: true,
+  },
+
+  themes: ['@docusaurus/theme-mermaid'],
 };
 
 // eslint-disable-next-line import/no-default-export
