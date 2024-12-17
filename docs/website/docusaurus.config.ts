@@ -64,6 +64,7 @@ const config: Config = {
           'http-server',
           'i18n-cli',
           'ids',
+          'lambda-postgres-query',
           'layouts',
           'logger',
           'monorepo',
