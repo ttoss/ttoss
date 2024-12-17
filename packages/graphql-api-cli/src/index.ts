@@ -10,6 +10,8 @@ import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';
 
+const isMonorepo = process.env.TTOSS_MONOREPO === 'true';
+
 const importSchemaComposer = async ({
   external,
   schemaComposerPath,
@@ -35,7 +37,7 @@ const importSchemaComposer = async ({
        * ones, causing the following error:
        * Unknown file extension ".ts" for /ttoss/packages/graphql-api/src/index.ts
        */
-      if (dependency.startsWith('@ttoss/')) {
+      if (isMonorepo && dependency.startsWith('@ttoss/')) {
         return false;
       }
 

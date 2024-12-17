@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
+  "globalEnv": ["AWS_*", "CARLIN_*", "ENVIRONMENT", "TTOSS_MONOREPO"],
   "tasks": {
     "//#build:config": {
       "dependsOn": [],
