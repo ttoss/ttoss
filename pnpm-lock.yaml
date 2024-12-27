@@ -225,20 +225,17 @@ importers:
         specifier: ^7.26.0
         version: 7.26.0
       '@storybook/addon-actions':
-        specifier: ^8.4.5
-        version: 8.4.7(storybook@8.4.7(prettier@3.4.1))
-      '@storybook/addon-essentials':
-        specifier: ^8.4.5
-        version: 8.4.7(@types/react@18.3.12)(storybook@8.4.7(prettier@3.4.1))(webpack-sources@3.2.3)
-      '@storybook/addon-interactions':
-        specifier: ^8.4.5
-        version: 8.4.7(storybook@8.4.7(prettier@3.4.1))
-      '@storybook/addon-links':
-        specifier: ^8.4.5
-        version: 8.4.7(react@18.3.1)(storybook@8.4.7(prettier@3.4.1))
-      '@storybook/addon-themes':
         specifier: ^8.4.7
         version: 8.4.7(storybook@8.4.7(prettier@3.4.1))
+      '@storybook/addon-essentials':
+        specifier: ^8.4.7
+        version: 8.4.7(@types/react@18.3.12)(storybook@8.4.7(prettier@3.4.1))(webpack-sources@3.2.3)
+      '@storybook/addon-interactions':
+        specifier: ^8.4.7
+        version: 8.4.7(storybook@8.4.7(prettier@3.4.1))
+      '@storybook/addon-links':
+        specifier: ^8.4.7
+        version: 8.4.7(react@18.3.1)(storybook@8.4.7(prettier@3.4.1))
       '@storybook/addon-webpack5-compiler-babel':
         specifier: ^3.0.3
         version: 3.0.3(webpack@5.95.0(esbuild@0.24.0))
@@ -5808,11 +5805,6 @@ packages:
 
   '@storybook/addon-outline@8.4.7':
     resolution: {integrity: sha512-6LYRqUZxSodmAIl8icr585Oi8pmzbZ90aloZJIpve+dBAzo7ydYrSQxxoQEVltXbKf3VeVcrs64ouAYqjisMYA==}
-    peerDependencies:
-      storybook: ^8.4.7
-
-  '@storybook/addon-themes@8.4.7':
-    resolution: {integrity: sha512-MZa3eWTz0b3BQvF71WqLqvEYzDtbMhQx1IIluWBMMGzJ4sWBzLX85LoNMUlHsNd4EhEmAZ1xQQFIJpDWTBx0nQ==}
     peerDependencies:
       storybook: ^8.4.7
 
@@ -21123,11 +21115,6 @@ snapshots:
   '@storybook/addon-outline@8.4.7(storybook@8.4.7(prettier@3.4.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 8.4.7(prettier@3.4.1)
-      ts-dedent: 2.2.0
-
-  '@storybook/addon-themes@8.4.7(storybook@8.4.7(prettier@3.4.1))':
-    dependencies:
       storybook: 8.4.7(prettier@3.4.1)
       ts-dedent: 2.2.0
 
