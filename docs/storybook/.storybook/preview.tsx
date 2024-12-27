@@ -3,6 +3,7 @@ import { Decorator } from '@storybook/react';
 import { themes } from '../themes';
 import { BruttalFonts } from '@ttoss/theme/Bruttal';
 import { I18nProvider } from '@ttoss/react-i18n';
+import { withThemeByClassName } from '@storybook/addon-themes';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -36,7 +37,18 @@ export const globalTypes = {
   },
 };
 
-export const decorators: Decorator[] = [
+
+export const decorators = [
+  withThemeByClassName({
+    themes: {
+      Siflor: 'Siflor', 
+      Triangulos: 'Triangulos', 
+      Brutal: 'Bruttal',
+      Dynamic: 'Dynamic',
+      OneClickAds: 'OneClickAds',
+    },
+    defaultTheme: 'Brutal',
+  }),
   (Story, context) => {
     const theme = {
       ...themes[context.globals.theme],
@@ -56,4 +68,4 @@ export const decorators: Decorator[] = [
       </I18nProvider>
     );
   },
-];
+] as Decorator[];

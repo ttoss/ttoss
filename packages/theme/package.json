@@ -15,7 +15,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
+    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
+    "./OneClickAds": "./src/themes/OneClickAds/OneClickAds.ts"
   },
   "files": [
     "dist"

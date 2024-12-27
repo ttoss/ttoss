@@ -1,3 +1,4 @@
+import { OneClickAdsTheme } from '@ttoss/theme/OneClickAds';
 import { theme as Siflor } from './siflor';
 import { THEME_GLOBAL_KEY } from './../constants/theme-global';
 import { theme as Triangulos } from './triangulos';
@@ -30,4 +31,5 @@ export const themes: { [key: string]: Theme } = {
   Triangulos,
   Bruttal: BruttalTheme,
   Dynamic: getDynamicTheme(),
+  OneClickAds: OneClickAdsTheme,
 };
