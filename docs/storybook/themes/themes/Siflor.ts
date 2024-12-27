@@ -1,6 +1,8 @@
+import { BrutalIcons, BruttalFonts } from '@ttoss/theme/Bruttal';
 import { createTheme } from '@ttoss/theme';
+import type { ThemeObject } from '../themesObject';
 
-export const theme = createTheme({
+const theme = createTheme({
   breakpoints: ['42em', '60em'],
   fonts: {
     body: 'Overlock',
@@ -53,3 +55,10 @@ export const theme = createTheme({
     },
   },
 });
+
+export const Siflor: ThemeObject = {
+  name: 'Siflor',
+  fonts: BruttalFonts,
+  icons: BrutalIcons,
+  theme,
+};

@@ -1,59 +1,39 @@
-import { ThemeProvider } from '@ttoss/ui';
-import { Decorator } from '@storybook/react';
-import { themes } from '../themes';
-import { BruttalFonts } from '@ttoss/theme/Bruttal';
+import { Preview } from '@storybook/react';
+import { themesObjects, defaultThemeObject } from '../themes/themesObject';
 import { I18nProvider } from '@ttoss/react-i18n';
+import { ThemesProvider } from '../themes/ThemesProvider';
 
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+const themesNames = themesObjects.map((themeObject) => themeObject.name).sort();
+
+/**
+ * https://storybook.js.org/docs/essentials/toolbars-and-globals
+ */
+const preview: Preview = {
+  globalTypes: {
+    theme: {
+      description: 'Global theme for components',
+      toolbar: {
+        title: 'Theme',
+        icon: 'circlehollow',
+        items: themesNames,
+        dynamicTitle: true,
+      },
     },
   },
-  options: {
-    storySort: {
-      method: 'alphabetical',
-      order: ['@Docs', 'Design System', 'Theme'],
-      locales: 'en-US',
-    },
+  initialGlobals: {
+    theme: defaultThemeObject.name,
   },
-  defaultLocale: 'en',
-  locales: ['en'],
+  decorators: [
+    (Story, context) => {
+      return (
+        <I18nProvider>
+          <ThemesProvider themeName={context.globals.theme}>
+            <Story />
+          </ThemesProvider>
+        </I18nProvider>
+      );
+    },
+  ],
 };
 
-export const globalTypes = {
-  theme: {
-    name: 'Theme',
-    description: 'Global theme for components',
-    defaultValue: 'Bruttal',
-    toolbar: {
-      icon: 'circlehollow',
-      items: Object.keys(themes),
-      showName: true,
-    },
-  },
-};
-
-export const decorators: Decorator[] = [
-  (Story, context) => {
-    const theme = {
-      ...themes[context.globals.theme],
-    };
-
-    return (
-      <I18nProvider>
-        <ThemeProvider
-          theme={theme}
-          fonts={[
-            'https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Overlock:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap',
-            ...BruttalFonts,
-          ]}
-        >
-          <Story />
-        </ThemeProvider>
-      </I18nProvider>
-    );
-  },
-];
+export default preview;
