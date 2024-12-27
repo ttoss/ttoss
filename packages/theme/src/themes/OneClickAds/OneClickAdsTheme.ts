@@ -43,19 +43,23 @@ export const OneClickAdsTheme: Theme = {
       },
       background: {
         primary: { default: '#FFFFFF' },
+        accent: { default: '#03FF7A' },
         muted: { default: '#F3F4F6' },
+        negative: { default: 'red' },
       },
       text: {
+        accent: { default: '#03FF7A' },
         secondary: { default: '#465A69' },
         muted: { default: '#6B7280' },
+        negative: { default: 'red' },
       },
     },
     action: {
       background: {
-        primary: { default: '#465A69' },
+        primary: { default: '#111827' },
         secondary: { default: '#465A69' },
         accent: { default: '#03FF7A' },
-        muted: { default: '#9CA3AF' },
+        muted: { default: '#F3F4F6' },
         negative: { default: 'red' },
       },
       text: {
@@ -63,7 +67,7 @@ export const OneClickAdsTheme: Theme = {
         accent: { default: '#000000' },
         secondary: { default: '#465A69' },
         muted: { default: '#6B7280' },
-        negative: { default: 'black' },
+        negative: { default: 'red' },
       },
     },
     display: {
@@ -76,10 +80,11 @@ export const OneClickAdsTheme: Theme = {
         secondary: { default: '#465A69' },
         accent: { default: '#03FF7A' },
         muted: { default: '#6B7280' },
-        negative: { default: 'black' },
+        negative: { default: 'red' },
       },
       border: {
-        primary: { default: '#E5E7EB' },
+        primary: { default: '#111827' },
+        secondary: { default: '#465A69' },
         muted: { default: '#E5E7EB' },
         negative: { default: 'red' },
         accent: { default: '#03FF7A' },
@@ -122,21 +127,56 @@ export const OneClickAdsTheme: Theme = {
         borderCollapse: 'collapse',
       },
       th: {
-        paddingX: '2',
-        paddingY: '2',
+        paddingX: '4',
+        paddingY: '4',
       },
       tr: {
-        borderBottom: 'default',
+        borderWidth: 'navigation.background.muted.default',
+        borderBottomWidth: 'thin',
       },
       td: {
-        paddingX: '4',
-        paddingY: '2',
+        paddingX: '6',
+        paddingY: '4',
+      },
+    },
+    a: {
+      color: 'navigation.text.primary.default',
+      fontFamily: 'body',
+      textDecorationLine: 'underline',
+      lineHeight: 'normal',
+      '&.quiet:not(:hover)': {
+        textDecorationLine: 'none',
+      },
+      ':visited': {
+        color: 'navigation.text.accent.default',
       },
     },
   },
   /**
    * Components
    */
+  badges: {
+    positive: {
+      color: 'action.text.accent.default',
+      bg: 'action.background.accent.default',
+    },
+    negative: {
+      color: 'action.text.primary.default',
+      bg: 'action.background.negative.default',
+    },
+    neutral: {
+      color: 'action.text.primary.default',
+      bg: 'action.background.secondary.default',
+    },
+    // informative: {
+    //   color: 'onNotice',
+    //   bg: 'notice',
+    // },
+    muted: {
+      color: 'action.text.secondary.default',
+      bg: 'action.background.muted.default',
+    },
+  },
   buttons: {
     accent: {
       backgroundColor: 'action.background.accent.default',
@@ -159,14 +199,13 @@ export const OneClickAdsTheme: Theme = {
         filter: 'brightness(90%)',
       },
       ':active': {
-        backgroundColor: 'action.background.primary.default',
         color: 'action.text.primary.default',
         borderColor: 'outline',
       },
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'action.background.muted.default',
-        color: 'action.text.muted.default',
+        color: 'action.text.secondary.default',
       },
     },
     secondary: {
@@ -179,45 +218,39 @@ export const OneClickAdsTheme: Theme = {
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'action.background.muted.default',
-        color: 'action.text.muted.default',
+        color: 'action.text.secondary.default',
       },
     },
     destructive: {
-      color: 'action.text.negative.default',
+      color: 'action.text.primary.default',
       backgroundColor: 'action.background.negative.default',
+      borderRadius: 'lg',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
         backgroundColor: 'action.background.muted.default',
-        color: 'action.text.muted.default',
+        color: 'action.text.secondary.default',
       },
     },
     closeButton: {
-      backgroundColor: 'background',
-      color: 'primary',
-      border: 'default',
-      borderColor: 'primary',
-      borderRadius: 'action',
+      backgroundColor: 'action.background.primary.default',
+      color: 'action.text.primary.default',
+      borderRadius: 'lg',
       ':disabled': {
-        border: 'muted',
-        borderColor: 'onMuted',
-        backgroundColor: 'muted',
-        color: 'onMuted',
+        backgroundColor: 'action.background.muted.default',
+        color: 'action.text.secondary.default',
         cursor: 'not-allowed',
       },
       ':is(:focus-within, :hover):not(:disabled)': {
-        color: 'onHighlight',
-        backgroundColor: 'highlight',
-        borderColor: 'highlight',
+        backgroundColor: 'action.background.secondary.default',
       },
     },
     actionButton: {
       default: {
-        fontFamily: 'body',
-        backgroundColor: 'action.background.secoundary.default',
-        color: 'action.text.secondary.default',
+        backgroundColor: 'action.background.secondary.default',
+        color: 'action.text.primary.default',
         transition: 'all 0.2s',
         ':is(:focus-within, :hover)': {
           backgroundColor: 'action.background.primary.default',
@@ -225,8 +258,12 @@ export const OneClickAdsTheme: Theme = {
         },
       },
       accent: {
-        fontFamily: 'body',
         backgroundColor: 'action.background.accent.default',
+        color: 'action.text.accent.default',
+        border: 'none',
+      },
+      quiet: {
+        backgroundColor: 'action.background.muted.default',
         color: 'action.text.accent.default',
         border: 'none',
       },
@@ -237,7 +274,7 @@ export const OneClickAdsTheme: Theme = {
       backgroundColor: 'display.background.secondary.default',
       borderWidth: 'thin',
       borderColor: 'display.border.muted.default',
-      padding: [4, 5],
+      padding: ['4', '5'],
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -246,29 +283,72 @@ export const OneClickAdsTheme: Theme = {
   },
   forms: {
     label: {
+      fontFamily: 'body',
       color: 'display.text.secondary.default',
       '&:is([aria-disabled="true"])': {
-        color: 'display.text.muted.default',
+        color: 'input.text.muted.default',
       },
       '& > span[aria-label="tooltip"]': {
         fontSize: 'lg',
-        marginLeft: '2',
+        marginLeft: '3',
       },
       '&:has(input[type="checkbox"])': {
-        fontSize: 'md',
+        fontSize: 'lg',
         gap: '4',
       },
       '& > div:has(input[type="checkbox"]) > svg': {
         marginRight: 0,
       },
       '&:has(input[type="checkbox"]:disabled)': {
-        color: 'display.text.muted.default',
+        color: 'input.text.muted.default',
       },
       '&:has(div > input[type="radio"])': {
         alignItems: 'center',
       },
       '&:has(div > input[type="radio"]:disabled)': {
-        color: 'display.text.muted.default',
+        color: 'input.text.muted.default',
+      },
+    },
+    radio: {
+      color: 'input.text.secondary.default',
+      fontFamily: 'body',
+      fontSize: 'lg',
+      'input:disabled ~ &': {
+        color: 'input.text.secondary.default',
+      },
+      'input[aria-invalid="true"] ~ &': {
+        color: 'input.text.negative.default',
+      },
+      'input:focus ~ &': {
+        bg: 'input.background.muted.default',
+      },
+      '&:is(svg, svg + svg)': {
+        width: fontSizes.lg,
+        height: fontSizes.lg,
+      },
+    },
+    checkbox: {
+      'input:focus ~ &': {
+        bg: 'transparent',
+      },
+      'input:not(:checked) ~ &': {
+        color: 'input.text.secondary.default',
+      },
+      'input:checked ~ &': {
+        color: 'input.text.accent.default',
+      },
+      'input:disabled ~ &': {
+        color: 'input.text.muted.default',
+      },
+      'input:disabled ~ & path': {
+        backgroundColor: 'input.text.muted.default',
+      },
+      'input[aria-invalid="true"] ~ &': {
+        color: 'input.text.negative.default',
+      },
+      '&:is(svg, svg + svg)': {
+        width: fontSizes.lg,
+        height: fontSizes.lg,
       },
     },
     input: {
@@ -277,7 +357,7 @@ export const OneClickAdsTheme: Theme = {
       borderColor: 'display.border.muted.default',
       borderRadius: 'lg',
       backgroundColor: 'display.background.primary.default',
-      fontSize: 'lg',
+      fontSize: 'md',
       lineHeight: 'normal',
       '::placeholder': {
         color: 'display.text.muted.default',
@@ -311,10 +391,10 @@ export const OneClickAdsTheme: Theme = {
         cursor: 'default',
       },
       ':focus-within': {
-        outlineColor: 'display.border.primary.default',
+        outlineColor: 'display.border.muted.default',
       },
       ':not(:disabled, [aria-invalid="true"]):hover': {
-        borderColor: 'display.border.accent.default',
+        borderColor: 'display.border.muted.default',
       },
       ':not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover': {
         color: 'display.text.accent.default',
@@ -332,7 +412,7 @@ export const OneClickAdsTheme: Theme = {
       },
     },
     select: {
-      color: 'display.text.primary.default',
+      color: 'display.text.secondary.default',
       backgroundColor: 'display.background.primary.default',
       borderWidth: 'thin',
       borderColor: 'display.border.muted.default',
@@ -352,6 +432,7 @@ export const OneClickAdsTheme: Theme = {
       },
       '&[aria-invalid="true"] ~ * > span.error-icon': {
         color: 'display.text.negative.default',
+        fontSize: 'lg',
       },
     },
     textarea: {
@@ -393,7 +474,7 @@ export const OneClickAdsTheme: Theme = {
       lineSpace: 'wide',
     },
     help: {
-      color: 'display.text.secondary.default',
+      color: 'display.text.muted.default',
       '&[aria-disabled="true"]': {
         color: 'display.text.muted.default',
       },

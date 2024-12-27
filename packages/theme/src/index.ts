@@ -1,1 +1,1 @@
-export { createTheme } from './createTheme';
+export { createTheme, type Theme } from './createTheme';
