@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.26.6 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [0.26.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.4...@ttoss/forms@0.26.5) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/forms

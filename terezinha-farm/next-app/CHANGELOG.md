@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.57 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [0.1.56](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.55...@terezinha-farm/next-app@0.1.56) (2024-12-02)
 
 **Note:** Version bump only for package @terezinha-farm/next-app
