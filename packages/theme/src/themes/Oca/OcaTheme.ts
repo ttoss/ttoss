@@ -122,7 +122,7 @@ export const OcaTheme: Theme = {
         paddingY: '4',
       },
       tr: {
-        borderWidth: 'navigation.background.muted.default',
+        borderColor: 'navigation.background.muted.default',
         borderBottomWidth: 'thin',
       },
       td: {
