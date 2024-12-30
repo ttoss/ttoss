@@ -1,25 +1,17 @@
 import { Theme } from 'theme-ui';
-import {
-  fontSizes,
-  fontWeights,
-  letterSpacings,
-  lineHeights,
-  radii,
-  spacing,
-  zIndices,
-} from './tokens';
+import { defaultTheme } from '../default/defaultTheme';
 
-export const OneClickAdsTheme: Theme = {
+export const OcaTheme: Theme = {
   /**
    * Tokens
    */
-  fontSizes,
-  fontWeights,
-  letterSpacings,
-  space: spacing,
-  lineHeights,
-  zIndices,
-  radii,
+  fontSizes: defaultTheme.fontSizes,
+  fontWeights: defaultTheme.fontWeights,
+  letterSpacings: defaultTheme.letterSpacings,
+  space: defaultTheme.space,
+  lineHeights: defaultTheme.lineHeights,
+  zIndices: defaultTheme.zIndices,
+  radii: defaultTheme.radii,
   colors: {
     navigation: {
       background: {
@@ -102,13 +94,11 @@ export const OneClickAdsTheme: Theme = {
     body: '"Source Sans Pro", sans-serif',
     monospace: '"Inconsolata", sans-serif',
   },
-
   borderWidths: {
     thin: '1px',
     thick: '2px',
     medium: '1.5px',
   },
-
   /**
    * Global styles
    */
@@ -327,8 +317,8 @@ export const OneClickAdsTheme: Theme = {
         bg: 'input.background.muted.default',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.lg,
-        height: fontSizes.lg,
+        width: 'lg',
+        height: 'lg',
       },
     },
     checkbox: {
@@ -352,8 +342,8 @@ export const OneClickAdsTheme: Theme = {
         color: 'input.text.negative.default',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.lg,
-        height: fontSizes.lg,
+        width: 'lg',
+        height: 'lg',
       },
     },
     input: {

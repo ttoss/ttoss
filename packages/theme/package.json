@@ -16,7 +16,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
-    "./OneClickAds": "./src/themes/OneClickAds/OneClickAds.ts"
+    "./Oca": "./src/themes/Oca/Oca.ts"
   },
   "files": [
     "dist"
