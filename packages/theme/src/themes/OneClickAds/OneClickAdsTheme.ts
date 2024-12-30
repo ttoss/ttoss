@@ -43,6 +43,7 @@ export const OneClickAdsTheme: Theme = {
       },
       background: {
         primary: { default: '#FFFFFF' },
+        secondary: { default: '#465A69' },
         accent: { default: '#03FF7A' },
         muted: { default: '#F3F4F6' },
         negative: { default: 'red' },
@@ -316,6 +317,9 @@ export const OneClickAdsTheme: Theme = {
       'input:disabled ~ &': {
         color: 'input.text.secondary.default',
       },
+      'input:checked ~ &': {
+        color: 'input.text.accent.default',
+      },
       'input[aria-invalid="true"] ~ &': {
         color: 'input.text.negative.default',
       },
@@ -336,6 +340,7 @@ export const OneClickAdsTheme: Theme = {
       },
       'input:checked ~ &': {
         color: 'input.text.accent.default',
+        backgroundColor: 'input.background.secondary.default',
       },
       'input:disabled ~ &': {
         color: 'input.text.muted.default',
