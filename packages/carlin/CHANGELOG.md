@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.36.21 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [1.36.20](https://github.com/ttoss/ttoss/compare/carlin@1.36.19...carlin@1.36.20) (2024-12-02)
 
 **Note:** Version bump only for package carlin
