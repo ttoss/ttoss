@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.6...@terezinha-farm/api@0.19.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
 ## [0.18.6](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.5...@terezinha-farm/api@0.18.6) (2024-12-31)
 
 **Note:** Version bump only for package @terezinha-farm/api

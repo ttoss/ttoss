@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.19...@ttoss/lambda-postgres-query@0.3.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
 ## [0.2.19](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.18...@ttoss/lambda-postgres-query@0.2.19) (2024-12-31)
 
 ### Bug Fixes

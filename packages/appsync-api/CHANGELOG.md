@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.19.2...@ttoss/appsync-api@0.20.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
 ## [0.19.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.19.1...@ttoss/appsync-api@0.19.2) (2024-12-31)
 
 **Note:** Version bump only for package @ttoss/appsync-api
