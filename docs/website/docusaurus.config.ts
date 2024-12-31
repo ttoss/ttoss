@@ -1,9 +1,11 @@
 import { themes as prismThemes } from 'prism-react-renderer';
+import fs from 'node:fs';
+import path from 'node:path';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import tailwindPlugin from './plugins/tailwind-config.cjs';
 import type * as Preset from '@docusaurus/preset-classic';
-import type { Config } from '@docusaurus/types'; // add this
+import type { Config } from '@docusaurus/types';
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const environment = process.env.NODE_ENV;
@@ -81,6 +83,30 @@ const config: Config = {
           'theme',
           'ui',
         ].map((pkg) => {
+          const entryPoints = (() => {
+            const packageJsonObj = JSON.parse(
+              fs.readFileSync(`../../packages/${pkg}/package.json`, 'utf-8')
+            );
+
+            if (!packageJsonObj.exports) {
+              return [`../../packages/${pkg}/src/index.ts`];
+            }
+
+            const entryPoints = Object.values(packageJsonObj.exports)
+              .filter((filepath: string) => {
+                return filepath.endsWith('.ts');
+              })
+              .map((filepath: string) => {
+                return path.join(`../../packages/${pkg}`, filepath);
+              });
+
+            if (entryPoints.length === 0) {
+              return [`../../packages/${pkg}/src/index.ts`];
+            }
+
+            return entryPoints;
+          })();
+
           /**
            * https://typedoc-plugin-markdown.org/plugins/docusaurus/quick-start#add-the-plugin-to-docusaurusconfigjs
            */
@@ -88,7 +114,7 @@ const config: Config = {
             'docusaurus-plugin-typedoc',
             {
               id: pkg,
-              entryPoints: [`../../packages/${pkg}/src/index.ts`],
+              entryPoints,
               tsconfig: `../../packages/${pkg}/tsconfig.json`,
               out: `./docs/modules/packages/${pkg}`,
               sidebar: {
