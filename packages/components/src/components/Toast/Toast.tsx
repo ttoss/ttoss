@@ -1,21 +1,15 @@
-import * as React from 'react';
 import { Box } from '@ttoss/ui';
 import {
   ToastContainer as ReactToastifyToastContainer,
   type ToastContainerProps,
   toast,
 } from 'react-toastify';
-import { injectStyle } from 'react-toastify/dist/inject-style';
 
 export { toast };
 
 export { type ToastContainerProps };
 
 export const ToastContainer = (props: ToastContainerProps) => {
-  React.useEffect(() => {
-    injectStyle();
-  }, []);
-
   return (
     <Box
       sx={({ colors, fonts }) => {
