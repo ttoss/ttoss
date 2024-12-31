@@ -38,8 +38,8 @@ test('Should not call the onSubmit function if click on the Signup button withou
   expect(onSignUp).toHaveBeenCalledTimes(0);
 });
 
-test('Should call the onSubmit function if click on the Signup button with filling in the fields', async () => {
-  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+test('Should call the onSubmit function if click on the Signup button with the fields filled', async () => {
+  const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
 
   render(<AuthSignUp {...{ onSignUp, onReturnToSignIn }} />);
 
@@ -51,6 +51,7 @@ test('Should call the onSubmit function if click on the Signup button with filli
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);
   await user.type(confirmPassword, userForm.password);
+
   await user.click(buttonSubmit);
 
   expect(onSignUp).toHaveBeenCalledWith(userForm);
