@@ -1,6 +1,6 @@
 import { Button } from '@ttoss/ui';
 import { Form, FormFieldTextarea, useForm, yup, yupResolver } from 'src/index';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 
 const onSubmit = jest.fn();
 
@@ -40,5 +40,7 @@ test('should display error message', async () => {
 
   await user.click(screen.getByText('Submit'));
 
-  expect(screen.getByText('First name is required')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('First name is required')).toBeInTheDocument();
+  });
 });

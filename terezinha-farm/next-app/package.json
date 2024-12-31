@@ -15,18 +15,18 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "aws-amplify": "^6.0.28",
+    "aws-amplify": "^6.11.0",
     "next": "14.0.4",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/node": "^20.17.8",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.2.25",
+    "@types/node": "^20.17.10",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "typescript": "~5.7.2"
   }
 }

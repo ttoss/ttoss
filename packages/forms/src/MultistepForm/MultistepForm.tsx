@@ -33,6 +33,7 @@ export const MultistepForm = ({
   ...props
 }: MultistepFormProps) => {
   const amountOfSteps = props.steps.length;
+
   const [currentStep, setCurrentStep] = React.useState(1);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,7 +84,6 @@ export const MultistepForm = ({
               // isCurrentStep={isCurrentStep}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onSubmit={(data: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const newValue = { ...form, ...data };
 
                 setForm(newValue);

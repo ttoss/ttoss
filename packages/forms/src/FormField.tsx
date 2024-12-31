@@ -55,6 +55,13 @@ export const FormField = <
 
   const memoizedRender = React.useMemo(() => {
     return React.Children.map(render(controllerReturn), (child) => {
+      if (!React.isValidElement(child)) {
+        return null;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const childProps = child.props as any;
+
       return (
         <>
           {label && (
@@ -67,8 +74,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-
-          {React.createElement(child.type, { id, ...child.props })}
+          {React.createElement(child.type, { id, ...childProps })}
         </>
       );
     });

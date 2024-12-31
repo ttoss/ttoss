@@ -190,11 +190,11 @@ describe('test i18n messages', () => {
     });
 
     renderForm(true, CustomI18nProvider);
+
     await click();
 
-    [mixed_requiredMessage, string_minMessage].forEach(async (message) => {
-      expect(await screen.findByText(message)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(mixed_requiredMessage)).toBeInTheDocument();
+    expect(await screen.findByText(string_minMessage)).toBeInTheDocument();
   });
 
   test('should render a custom message provided in schema definition', async () => {

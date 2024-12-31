@@ -15,6 +15,8 @@ tags:
 
 Velocity is not just about moving fast—it's about achieving momentum that drives learning and adaptability. In product development, a team's ability to operate quickly can be a game-changer, allowing them to experiment, learn, and adjust before competitors even begin to react. By prioritizing velocity, we unlock two significant advantages: faster learning cycles and the ability to pivot with precision.
 
+<!-- truncate -->
+
 ### Magnitude of Velocity: Learning Faster
 
 Fast feedback enables teams to compress the time between action and learning (see [FF8: The Fast-Learning Principle: Use fast feedback to make learning faster and more efficient](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)). This applies both to understanding customer needs, mastering technical challenges, improving workflows and processes, and more. The benefits of faster learning include, in more detail:

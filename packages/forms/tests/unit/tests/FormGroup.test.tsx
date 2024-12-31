@@ -7,8 +7,8 @@ import {
   useFormGroup,
   yup,
   yupResolver,
-} from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+} from 'src/index';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 
 const RenderForm = () => {
   const formMethods = useForm();
@@ -260,5 +260,7 @@ test('should render group error message', async () => {
 
   await user.click(screen.getByText('Submit'));
 
-  expect(screen.getByText(groupErrorMessage)).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText(groupErrorMessage)).toBeInTheDocument();
+  });
 });
