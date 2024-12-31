@@ -12,7 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/lambda-postgres-query"
   },
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./cloudformation": "./src/cloudformation.ts"
