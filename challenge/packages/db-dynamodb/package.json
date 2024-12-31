@@ -12,6 +12,6 @@
     "@ttoss-challenge/seed": "workspace:^",
     "@ttoss/config": "workspace:^",
     "dotenv": "^16.4.5",
-    "tsx": "^4.6.2"
+    "tsx": "^4.19.2"
   }
 }
