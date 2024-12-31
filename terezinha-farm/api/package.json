@@ -4,7 +4,7 @@
   "version": "0.18.6",
   "type": "module",
   "scripts": {
-    "build-schema": "ttoss-graphql-api build-schema",
+    "build-schema": "cross-env TTOSS_MONOREPO=true ttoss-graphql-api build-schema",
     "deploy": "carlin deploy",
     "dev": "tsx watch ./server/server.ts"
   },
@@ -20,6 +20,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/graphql-api-cli": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",
+    "cross-env": "^7.0.3",
     "tsx": "^4.19.2"
   }
 }

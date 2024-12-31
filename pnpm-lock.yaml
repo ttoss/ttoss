@@ -366,7 +366,7 @@ importers:
         version: 7.6.5(graphql-middleware@6.1.35(graphql@16.10.0))(graphql@16.10.0)
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@20.17.10)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.17.10)(typescript@5.7.2))
+        version: 29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
@@ -658,7 +658,7 @@ importers:
         version: 8.20.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@theme-ui/css':
         specifier: ^0.17.1
-        version: 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+        version: 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1706,6 +1706,9 @@ importers:
       '@ttoss/graphql-api-server':
         specifier: workspace:^
         version: link:../../packages/graphql-api-server
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
       tsx:
         specifier: ^4.19.2
         version: 4.19.2
@@ -7425,6 +7428,11 @@ packages:
 
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
+  cross-env@7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
 
   cross-fetch@3.2.0:
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
@@ -20378,7 +20386,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       deepmerge: 4.3.1
       react: 19.0.0
 
@@ -20389,7 +20397,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@types/styled-system': 5.1.23
       react: 19.0.0
@@ -20397,11 +20405,11 @@ snapshots:
   '@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       deepmerge: 4.3.1
       react: 19.0.0
 
-  '@theme-ui/css@0.17.1(@emotion/react@11.14.0(react@19.0.0))':
+  '@theme-ui/css@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       csstype: 3.1.3
@@ -20410,13 +20418,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@theme-ui/match-media@0.17.1(@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(@theme-ui/css@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0)))(react@19.0.0)':
     dependencies:
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
@@ -20424,7 +20432,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@tootallnate/once@2.0.0': {}
@@ -22783,6 +22791,10 @@ snapshots:
       - ts-node
 
   create-require@1.1.1: {}
+
+  cross-env@7.0.3:
+    dependencies:
+      cross-spawn: 7.0.6
 
   cross-fetch@3.2.0(encoding@0.1.13):
     dependencies:
@@ -30271,7 +30283,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/components': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@theme-ui/global': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       react: 19.0.0
