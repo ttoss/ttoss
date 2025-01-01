@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.38.0](https://github.com/ttoss/ttoss/compare/carlin@1.37.1...carlin@1.38.0) (2025-01-01)
+
+### Features
+
+- update eslint ([#635](https://github.com/ttoss/ttoss/issues/635)) ([8036c30](https://github.com/ttoss/ttoss/commit/8036c30f419f1c0bb30d3e483b5fe71057985cad))
+
 ## [1.37.1](https://github.com/ttoss/ttoss/compare/carlin@1.37.0...carlin@1.37.1) (2024-12-31)
 
 **Note:** Version bump only for package carlin
