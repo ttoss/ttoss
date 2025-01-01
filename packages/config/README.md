@@ -29,12 +29,12 @@ const { prettierConfig } = require('@ttoss/config');
 module.exports = prettierConfig();
 ```
 
-Create the `.eslintrc.js` file and add the following configuration:
+Create the `eslint.config.mjs` file and add the following configuration:
 
-```js title=".eslintrc.js"
-module.exports = {
-  extends: '@ttoss/eslint-config',
-};
+```js title="eslint.config.mjs"
+import ttossEslintConfig from '@ttoss/eslint-config';
+
+export default [...ttossEslintConfig];
 ```
 
 ### Husky, commitlint, and lint-staged
@@ -76,23 +76,7 @@ pnpm husky add .husky/pre-commit "pnpm lint-staged"
 
 You can use configs below to your packages folders.
 
-### Babel
-
-Add the `babel.config.js` file on the package folder:
-
-```js title="babel.config.js"
-const { babelConfig } = require('@ttoss/config');
-
-module.exports = babelConfig();
-```
-
 ### Jest
-
-Install [Jest](https://jestjs.io/) and its types on your package:
-
-```shell
-pnpm add -D jest @types/jest ts-node
-```
 
 Follow our [tests guidelines](https://ttoss.dev/docs/engineering/guidelines/tests) to configure and run your tests.
 

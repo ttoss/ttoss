@@ -1,8 +1,16 @@
-require('@rushstack/eslint-patch/modern-module-resolution');
+/**
+ * https://nextjs.org/docs/app/api-reference/config/eslint#with-typescript
+ */
+import defaultConfig, { compat } from './config';
 
-module.exports = {
-  extends: ['./config.js', 'next/core-web-vitals'],
-  rules: {
-    'import/no-default-export': 'off',
+export default [
+  ...defaultConfig,
+  ...compat.config({
+    extends: ['next/core-web-vitals', 'next/typescript'],
+  }),
+  {
+    rules: {
+      'import/no-default-export': 'off',
+    },
   },
-};
+];
