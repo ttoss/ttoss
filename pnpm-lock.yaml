@@ -844,9 +844,9 @@ importers:
       eslint-plugin-relay:
         specifier: ^1.8.3
         version: 1.8.3
-      eslint-plugin-sort-imports-es6-autofix:
-        specifier: ^0.6.0
-        version: 0.6.0(eslint@9.17.0(jiti@2.4.2))
+      eslint-plugin-simple-import-sort:
+        specifier: ^12.1.1
+        version: 12.1.1(eslint@9.17.0(jiti@2.4.2))
       globals:
         specifier: ^15.14.0
         version: 15.14.0
@@ -8520,10 +8520,10 @@ packages:
   eslint-plugin-relay@1.8.3:
     resolution: {integrity: sha512-awyrwntUTZ7Z+lJUnniTCnJdZYr1dY2djQDARMx1P1y2BFMsBjtTljBK0lBEM7yiTHPBwVnE2OSnXxcD4yMb0A==}
 
-  eslint-plugin-sort-imports-es6-autofix@0.6.0:
-    resolution: {integrity: sha512-2NVaBGF9NN+727Fyq+jJYihdIeegjXeUUrZED9Q8FVB8MsV3YQEyXG96GVnXqWt0pmn7xfCZOZf3uKnIhBrfeQ==}
+  eslint-plugin-simple-import-sort@12.1.1:
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
     peerDependencies:
-      eslint: '>=7.7.0'
+      eslint: '>=5.0.0'
 
   eslint-plugin-turbo@2.3.3:
     resolution: {integrity: sha512-j8UEA0Z+NNCsjZep9G5u5soDQHcXq/x4amrwulk6eHF1U91H2qAjp5I4jQcvJewmccCJbVp734PkHHTRnosjpg==}
@@ -23935,7 +23935,7 @@ snapshots:
     dependencies:
       graphql: 15.9.0
 
-  eslint-plugin-sort-imports-es6-autofix@0.6.0(eslint@9.17.0(jiti@2.4.2)):
+  eslint-plugin-simple-import-sort@12.1.1(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       eslint: 9.17.0(jiti@2.4.2)
 
