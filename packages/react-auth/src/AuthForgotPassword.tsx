@@ -1,8 +1,9 @@
-import { AuthCard } from './AuthCard';
-import { Button, Link, Text } from '@ttoss/ui';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
-import { NotificationsBox } from '@ttoss/react-notifications';
 import { useI18n } from '@ttoss/react-i18n';
+import { NotificationsBox } from '@ttoss/react-notifications';
+import { Button, Link, Text } from '@ttoss/ui';
+
+import { AuthCard } from './AuthCard';
 import type { OnForgotPassword } from './types';
 
 export type AuthForgotPasswordProps = {
