@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.3.6...@ttoss/react-auth@2.4.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
 ## [2.3.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.3.5...@ttoss/react-auth@2.3.6) (2025-01-02)
 
 **Note:** Version bump only for package @ttoss/react-auth
