@@ -320,7 +320,7 @@ export const BruttalTheme: Theme = {
       },
       '&:has(input[type="checkbox"])': {
         fontSize: 'md',
-        gap: 'md',
+        gap: '2',
       },
       '& > div:has(input[type="checkbox"]) > svg': {
         marginRight: 0,
