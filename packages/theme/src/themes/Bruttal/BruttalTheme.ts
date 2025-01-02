@@ -1,10 +1,6 @@
 import { Theme } from 'theme-ui';
-import { fontSizes } from './tokens/fontSizes';
-import { fontWeights } from './tokens/fontWeights';
-import { letterSpacings } from './tokens/letterSpacings';
-import { lineHeights } from './tokens/lineHeights';
-import { space } from './tokens/space';
-import { zIndices } from './tokens/zIndices';
+
+import { defaultTheme } from '../default/defaultTheme';
 
 const coreFonts = {
   main: '"Atkinson Hyperlegible", sans-serif',
@@ -67,12 +63,12 @@ export const BruttalTheme: Theme = {
   /**
    * Tokens
    */
-  fontSizes,
-  fontWeights,
-  letterSpacings,
-  space,
-  lineHeights,
-  zIndices,
+  fontSizes: defaultTheme.fontSizes,
+  fontWeights: defaultTheme.fontWeights,
+  letterSpacings: defaultTheme.letterSpacings,
+  space: defaultTheme.space,
+  lineHeights: defaultTheme.lineHeights,
+  zIndices: defaultTheme.zIndices,
   colors: {
     background: coreColors.complimentary,
     text: coreColors.black,
@@ -128,7 +124,7 @@ export const BruttalTheme: Theme = {
     root: {
       fontFamily: 'body',
       fontWeight: 'normal',
-      fontSize: 'base',
+      fontSize: 'md',
       zIndex: 'base',
       margin: 0,
       padding: 0,
@@ -140,22 +136,22 @@ export const BruttalTheme: Theme = {
         borderCollapse: 'collapse',
       },
       th: {
-        paddingX: 'md',
-        paddingY: 'md',
+        paddingX: '4',
+        paddingY: '4',
       },
       tr: {
         borderBottom: 'default',
       },
       td: {
-        paddingX: 'xl',
-        paddingY: 'md',
+        paddingX: '6',
+        paddingY: '4',
       },
     },
     a: {
       color: 'text',
       fontFamily: 'body',
       textDecorationLine: 'underline',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       '&.quiet:not(:hover)': {
         textDecorationLine: 'none',
       },
@@ -320,10 +316,10 @@ export const BruttalTheme: Theme = {
       },
       '& > span[aria-label="tooltip"]': {
         fontSize: 'sm',
-        marginLeft: '2xs',
+        marginLeft: '2',
       },
       '&:has(input[type="checkbox"])': {
-        fontSize: 'base',
+        fontSize: 'md',
         gap: 'md',
       },
       '& > div:has(input[type="checkbox"]) > svg': {
@@ -353,8 +349,8 @@ export const BruttalTheme: Theme = {
         bg: 'transparent',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.base,
-        height: fontSizes.base,
+        width: 'min',
+        height: 'min',
       },
     },
     checkbox: {
@@ -374,8 +370,8 @@ export const BruttalTheme: Theme = {
         color: 'danger',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.base,
-        height: fontSizes.base,
+        width: 'min',
+        height: 'min',
       },
     },
     input: {
@@ -384,8 +380,8 @@ export const BruttalTheme: Theme = {
       borderColor: 'onMuted',
       borderRadius: 'action',
       backgroundColor: 'surface',
-      fontSize: 'base',
-      lineHeight: 'base',
+      fontSize: 'md',
+      lineHeight: 'normal',
       '::placeholder': {
         color: 'onMuted',
       },
@@ -429,7 +425,7 @@ export const BruttalTheme: Theme = {
         color: 'highlight',
       },
       '& ~ span:has(iconify-icon)': {
-        fontSize: 'base',
+        fontSize: 'md',
       },
       '&[aria-invalid="true"]': {
         border: 'danger',
@@ -489,7 +485,7 @@ export const BruttalTheme: Theme = {
       },
       '&[aria-invalid="true"]+span>iconify-icon': {
         color: 'danger',
-        fontSize: 'base',
+        fontSize: 'md',
       },
     },
   },
@@ -500,7 +496,7 @@ export const BruttalTheme: Theme = {
     },
     title: {
       fontFamily: 'heading',
-      fontSize: 4,
+      fontSize: '5xl',
       lineSpace: '3.5',
     },
     help: {
@@ -518,51 +514,51 @@ export const BruttalTheme: Theme = {
     headline: {
       fontFamily: 'contrast',
       fontWeight: 'bold',
-      lineHeight: 'flat',
+      lineHeight: 'moderate',
       fontSize: '5xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     subheadline: {
       fontFamily: 'main',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h1: {
       fontFamily: 'contrast',
       fontWeight: 'extrabold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: '3xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h2: {
       fontFamily: 'contrast',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: '2xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h3: {
       fontFamily: 'contrast',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h4: {
       fontFamily: 'contrast',
       fontWeight: 'semibold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'lg',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h5: {
       fontFamily: 'contrast',
       fontWeight: 'semibold',
-      lineHeight: 'base',
-      fontSize: 'base',
-      letterSpacing: 'regular',
+      lineHeight: 'normal',
+      fontSize: 'md',
+      letterSpacing: 'wide',
     },
   },
 };

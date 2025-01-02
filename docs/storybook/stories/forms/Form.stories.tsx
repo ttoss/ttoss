@@ -65,7 +65,7 @@ const Template: StoryFn = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         <FormFieldInput
           name="firstName"
           label="First Name"
@@ -92,7 +92,7 @@ const Template: StoryFn = () => {
         <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
         <FormFieldInput name="version" label="Version (disabled)" disabled />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
@@ -122,7 +122,7 @@ const Template2: StoryFn = () => {
       <Box
         sx={{
           backgroundColor: 'white',
-          padding: 'lg',
+          padding: '4',
           border: 'default',
           borderColor: 'muted',
         }}
@@ -205,7 +205,7 @@ const TemplateWithInternationalization: StoryFn = () => {
   return (
     <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
       <Form {...formMethods} onSubmit={action('onSubmit')}>
-        <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+        <Flex sx={{ flexDirection: 'column', gap: '4' }}>
           <FormFieldInput
             name="firstName"
             label="First Name"
@@ -232,7 +232,7 @@ const TemplateWithInternationalization: StoryFn = () => {
           <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
           <FormFieldInput name="version" label="Version (disabled)" disabled />
         </Flex>
-        <Button sx={{ marginTop: 'lg' }} type="submit">
+        <Button sx={{ marginTop: '4' }} type="submit">
           Submit
         </Button>
       </Form>
