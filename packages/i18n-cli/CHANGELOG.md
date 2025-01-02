@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.26](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.25...@ttoss/i18n-cli@0.7.26) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/i18n-cli
+
+## 0.7.25 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.7.24](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.23...@ttoss/i18n-cli@0.7.24) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

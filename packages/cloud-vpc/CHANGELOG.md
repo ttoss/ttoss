@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.13](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.12...@ttoss/cloud-vpc@0.1.13) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## 0.1.12 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.1.11](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.10...@ttoss/cloud-vpc@0.1.11) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/cloud-vpc

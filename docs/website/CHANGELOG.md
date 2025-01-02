@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.55.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.1...@docs/website@1.55.2) (2025-01-01)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.0...@docs/website@1.55.1) (2024-12-31)
+
+**Note:** Version bump only for package @docs/website
+
+# [1.55.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.2...@docs/website@1.55.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
+## [1.54.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.1...@docs/website@1.54.2) (2024-12-31)
+
+**Note:** Version bump only for package @docs/website
+
 ## [1.54.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.0...@docs/website@1.54.1) (2024-12-17)
 
 **Note:** Version bump only for package @docs/website

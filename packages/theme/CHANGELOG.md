@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.5](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.4...@ttoss/theme@1.8.5) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.3...@ttoss/theme@1.8.4) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## 1.8.3 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+- storybook themes ([#629](https://github.com/ttoss/ttoss/issues/629)) ([d5d993a](https://github.com/ttoss/ttoss/commit/d5d993a943bed7a148efa4095f3f240d63965e82))
+
 ## [1.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.1...@ttoss/theme@1.8.2) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/theme

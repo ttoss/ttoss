@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-notifications",
-  "version": "1.24.61",
+  "version": "1.24.64",
   "description": "ttoss notifications module for React apps.",
   "license": "MIT",
   "author": "ttoss",
@@ -36,9 +36,9 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^18.3.12",
+    "@types/react": "^19.0.2",
     "jest": "^29.7.0",
-    "react": "^18.3.1",
+    "react": "^19.0.0",
     "tsup": "^8.3.5"
   },
   "keywords": [

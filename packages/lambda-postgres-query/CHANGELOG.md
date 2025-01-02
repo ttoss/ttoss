@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.3.0...@ttoss/lambda-postgres-query@0.3.1) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.19...@ttoss/lambda-postgres-query@0.3.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
+## [0.2.19](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.18...@ttoss/lambda-postgres-query@0.2.19) (2024-12-31)
+
+### Bug Fixes
+
+- lambda query type ([#634](https://github.com/ttoss/ttoss/issues/634)) ([98b3d04](https://github.com/ttoss/ttoss/commit/98b3d04834a15b988ab6b75aa30fbbb92084081e))
+
+## 0.2.18 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.2.17](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.2.16...@ttoss/lambda-postgres-query@0.2.17) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/lambda-postgres-query

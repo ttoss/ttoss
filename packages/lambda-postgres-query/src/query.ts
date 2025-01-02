@@ -70,7 +70,7 @@ export const query = async <Rows extends QueryResultRow = any>(
     };
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error invoking Lambda: ', error);
+    console.error('Error invoking lambda-postgres-query: ', error);
     throw error;
   }
 };

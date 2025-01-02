@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.16](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.15...@ttoss/components@2.0.16) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.0.15](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.14...@ttoss/components@2.0.15) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/components
+
+## 2.0.14 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [2.0.13](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.12...@ttoss/components@2.0.13) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/components

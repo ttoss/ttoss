@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.64](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.63...@ttoss/react-notifications@1.24.64) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [1.24.63](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.62...@ttoss/react-notifications@1.24.63) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 1.24.62 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [1.24.61](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@1.24.60...@ttoss/react-notifications@1.24.61) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/react-notifications

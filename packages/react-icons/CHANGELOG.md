@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.4.7...@ttoss/react-icons@0.4.8) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## 0.4.7 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.4.5...@ttoss/react-icons@0.4.6) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/react-icons

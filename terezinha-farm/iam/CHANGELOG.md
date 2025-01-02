@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.44](https://github.com/ttoss/ttoss/compare/@terezinha-farm/iam@0.3.43...@terezinha-farm/iam@0.3.44) (2024-12-31)
+
+**Note:** Version bump only for package @terezinha-farm/iam
+
+## 0.3.43 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.3.42](https://github.com/ttoss/ttoss/compare/@terezinha-farm/iam@0.3.41...@terezinha-farm/iam@0.3.42) (2024-12-02)
 
 **Note:** Version bump only for package @terezinha-farm/iam

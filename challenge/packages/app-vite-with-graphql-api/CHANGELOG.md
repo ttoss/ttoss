@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.32](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.31...@ttoss-challenge/app-vite-with-graphql-api@0.0.32) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.0.31](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.30...@ttoss-challenge/app-vite-with-graphql-api@0.0.31) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## 0.0.30 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [0.0.29](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.28...@ttoss-challenge/app-vite-with-graphql-api@0.0.29) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api

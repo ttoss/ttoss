@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "2.1.19",
+  "version": "2.1.21",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "license": "MIT",
   "author": "ttoss",
@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@emotion/jest": "^11.13.0",
-    "@faker-js/faker": "^9.2.0",
+    "@faker-js/faker": "^9.3.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.0.1",
+    "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/relay-test-utils": "^18.0.0",
     "jest-environment-jsdom": "^29.7.0",
@@ -44,11 +44,11 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.17.8",
-    "@types/react": "^18.3.12",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
     "jest": "^29.7.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5"
   },

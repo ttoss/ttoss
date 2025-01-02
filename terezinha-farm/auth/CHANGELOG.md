@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.47](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.46...@terezinha-farm/auth@0.3.47) (2024-12-31)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.3.46 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.3.45](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.3.44...@terezinha-farm/auth@0.3.45) (2024-12-02)
 
 **Note:** Version bump only for package @terezinha-farm/auth
