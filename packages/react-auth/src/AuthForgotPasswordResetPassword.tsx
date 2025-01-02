@@ -1,6 +1,4 @@
-import * as React from 'react';
-import { AuthCard } from './AuthCard';
-import { Button } from '@ttoss/ui';
+import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import {
   Form,
   FormFieldInput,
@@ -9,9 +7,12 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { NotificationsBox } from '@ttoss/react-notifications';
-import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
+import { NotificationsBox } from '@ttoss/react-notifications';
+import { Button } from '@ttoss/ui';
+import * as React from 'react';
+
+import { AuthCard } from './AuthCard';
 import type { OnForgotPasswordResetPassword } from './types';
 
 export type AuthForgotPasswordResetPasswordProps = {

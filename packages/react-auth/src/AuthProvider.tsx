@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Hub } from 'aws-amplify/utils';
 import {
-  signOut as awsSignOut,
   fetchAuthSession,
   fetchUserAttributes,
   getCurrentUser,
+  signOut as awsSignOut,
 } from 'aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
+import * as React from 'react';
 
 type User = {
   id: string;

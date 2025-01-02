@@ -1,6 +1,4 @@
-import * as React from 'react';
-import { AuthCard } from './AuthCard';
-import { Button, Flex, Link, Text } from '@ttoss/ui';
+import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import {
   Form,
   FormFieldInput,
@@ -9,9 +7,12 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
-import { PASSWORD_MINIMUM_LENGTH } from '@ttoss/cloud-auth';
 import { useI18n } from '@ttoss/react-i18n';
+import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
+import { Button, Flex, Link, Text } from '@ttoss/ui';
+import * as React from 'react';
+
+import { AuthCard } from './AuthCard';
 import type { OnSignIn, OnSignInInput } from './types';
 
 export type AuthSignInProps = {

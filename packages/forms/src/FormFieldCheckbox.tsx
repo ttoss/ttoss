@@ -1,6 +1,7 @@
-import * as React from 'react';
 import { Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
+import * as React from 'react';
 import { FieldPath, FieldValues, useController } from 'react-hook-form';
+
 import { FormErrorMessage } from './FormErrorMessage';
 
 export const FormFieldCheckbox = <
@@ -11,7 +12,7 @@ export const FormFieldCheckbox = <
   sx,
   ...checkboxProps
 }: {
-  label?: string;
+  label?: React.ReactNode;
   name: FieldPath<TFieldValues>;
 } & CheckboxProps) => {
   const {
