@@ -474,6 +474,10 @@ exports[`Bruttal theme snapshot 1`] = `
       "textDecorationLine": "underline",
     },
     "root": {
+      ".react-select__control": {
+        "border": "interaction",
+        "borderRadius": "active",
+      },
       "backgroundColor": "background",
       "fontFamily": "body",
       "fontSize": "md",
