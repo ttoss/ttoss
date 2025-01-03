@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCurrencyInput,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldCurrencyInput',
@@ -21,7 +21,7 @@ const schema = yup.object({
   euro: yup.string().required('Value is required'),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -92,4 +92,39 @@ const Template: Story = () => {
   );
 };
 
+const WithWarning1: StoryFn = () => {
+  const schema = yup.object({
+    real: yup.string().required('Value is required'),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCurrencyInput
+          name="real"
+          label="Real"
+          prefix="R$ "
+          decimalSeparator=","
+          thousandSeparator="."
+          fixedDecimalScale
+          decimalScale={2}
+          allowNegative={false}
+          warning={true}
+          warningMessage="Value entered low. The campaign may not have results. Find out more."
+        />
+      </Flex>
+
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
 export const Example = Template.bind({});
+export const WithWarning = WithWarning1.bind({});
