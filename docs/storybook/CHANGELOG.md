@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.5.0...@docs/storybook@2.5.1) (2025-01-03)
+
+### Bug Fixes
+
+- termsAndConditions props ([#638](https://github.com/ttoss/ttoss/issues/638)) ([7e63806](https://github.com/ttoss/ttoss/commit/7e638063b1a4df06015df85dff8f5f34d6f79cc3))
+
 # [2.5.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.4.6...@docs/storybook@2.5.0) (2025-01-02)
 
 ### Features
