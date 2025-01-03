@@ -68,7 +68,7 @@ describe('sign up terms', () => {
             onReturnToSignIn,
             signUpTerms: {
               isRequired,
-              termsAndConditions: [
+              terms: [
                 {
                   label: 'Terms and Conditions',
                   url: 'https://example.com/terms',
@@ -83,13 +83,10 @@ describe('sign up terms', () => {
         />
       );
 
-      const termsAndConditions = screen.getByText('Terms and Conditions');
+      const terms = screen.getByText('Terms and Conditions');
 
-      expect(termsAndConditions).toBeInTheDocument();
-      expect(termsAndConditions).toHaveAttribute(
-        'href',
-        'https://example.com/terms'
-      );
+      expect(terms).toBeInTheDocument();
+      expect(terms).toHaveAttribute('href', 'https://example.com/terms');
 
       const privacyPolicy = screen.getByText('Privacy Policy');
 
@@ -111,7 +108,7 @@ describe('sign up terms', () => {
           onReturnToSignIn,
           signUpTerms: {
             isRequired: true,
-            termsAndConditions: [
+            terms: [
               {
                 label: 'Terms and Conditions',
                 url: 'https://example.com/terms',
@@ -146,7 +143,7 @@ describe('sign up terms', () => {
           onReturnToSignIn,
           signUpTerms: {
             isRequired: true,
-            termsAndConditions: [
+            terms: [
               {
                 label: 'Terms and Conditions',
                 url: 'https://example.com/terms',
@@ -183,7 +180,7 @@ describe('sign up terms', () => {
           onReturnToSignIn,
           signUpTerms: {
             isRequired: false,
-            termsAndConditions: [
+            terms: [
               {
                 label: 'Terms and Conditions',
                 url: 'https://example.com/terms',
