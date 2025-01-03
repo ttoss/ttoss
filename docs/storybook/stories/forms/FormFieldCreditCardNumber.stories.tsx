@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import {
   Form,
   FormFieldCreditCardNumber,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldCreditCardNumber',
@@ -32,7 +32,7 @@ const Template: Story = () => {
   }, []);
 
   return (
-    <Form {...formMethods} onSubmit={action('onSubmit')}>
+    <Form {...formMethods} onSubmit={action('onSubmit')} sx={{ gap: 'md' }}>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
         <FormFieldCreditCardNumber name="cartao1" label="cartao 1" />
       </Flex>
@@ -46,6 +46,14 @@ const Template: Story = () => {
           name="cartao3"
           label="cartao desativado"
           disabled
+        />
+      </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCreditCardNumber
+          name="cartao3"
+          label="cartao warning"
+          warning={true}
+          warningMessage="WARNING"
         />
       </Flex>
 

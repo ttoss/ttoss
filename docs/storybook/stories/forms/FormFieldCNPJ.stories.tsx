@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCNPJ } from '@ttoss/forms/brazil';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldCNPJ',
@@ -31,6 +31,14 @@ const Template: StoryFn = () => {
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
         <FormFieldCNPJ name="cnpjDisabled" label="CNPJ:" disabled />
+      </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCNPJ
+          name="cnpjWarning"
+          label="CNPJ:"
+          warning={true}
+          warningMessage="WARNING"
+        />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit

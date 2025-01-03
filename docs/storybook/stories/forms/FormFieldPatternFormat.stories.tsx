@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import {
   Form,
   FormFieldPatternFormat,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldPatterFormat',
@@ -69,6 +69,17 @@ const Template: Story = () => {
           format="##.###.###/####-##"
           placeholder="12.345.678/0000-00"
           disabled
+        />
+      </Flex>
+
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldPatternFormat
+          name="cnpj"
+          label="CNPJ:"
+          format="##.###.###/####-##"
+          placeholder="12.345.678/0000-00"
+          warning={true}
+          warningMessage="WARNING"
         />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">

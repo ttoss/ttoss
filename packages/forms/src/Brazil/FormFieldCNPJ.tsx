@@ -1,10 +1,13 @@
-import { FormField } from '..';
 import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
+
+import { FormField } from '..';
 
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
+  warning?: boolean;
+  warningMessage?: string;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +75,8 @@ export const FormFieldCNPJ = ({
     <FormField
       name={name}
       label={label}
+      warning={patternFormatProps.warning}
+      warningMessage={patternFormatProps.warningMessage}
       render={({ field }) => {
         return (
           <PatternFormat

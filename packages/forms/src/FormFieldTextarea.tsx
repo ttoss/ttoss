@@ -1,18 +1,23 @@
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { FormField } from './FormField';
 import { Textarea, type TextareaProps } from '@ttoss/ui';
+import { FieldPath, FieldValues } from 'react-hook-form';
+
+import { FormField } from './FormField';
 
 export const FormFieldTextarea = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   name,
+  warning,
+  warningMessage,
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
+  warning?: boolean;
+  warningMessage?: string;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -22,6 +27,8 @@ export const FormFieldTextarea = <
       name={name}
       id={id}
       sx={sx}
+      warning={warning}
+      warningMessage={warningMessage}
       render={({ field, fieldState }) => {
         return (
           <Textarea

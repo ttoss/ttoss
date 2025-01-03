@@ -1,7 +1,7 @@
-import { Button } from '@ttoss/ui';
-import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
+import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Button } from '@ttoss/ui';
 
 export default {
   title: 'Forms/FormFieldSelect',
@@ -29,6 +29,19 @@ const Template: StoryFn = () => {
           { value: 'Mercedes', label: 'Mercedes' },
           { value: 'BMW', label: 'BMW' },
         ]}
+      />
+
+      <FormFieldSelect
+        name="car warning"
+        defaultValue="Mercedes"
+        label="What car do you prefer?"
+        options={[
+          { value: 'Ferrari', label: 'Ferrari' },
+          { value: 'Mercedes', label: 'Mercedes' },
+          { value: 'BMW', label: 'BMW' },
+        ]}
+        warning={true}
+        warningMessage="WARNING"
       />
 
       <Button sx={{ marginTop: 'lg' }} type="submit">
