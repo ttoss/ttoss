@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Badge, BadgeProps, Flex } from '@ttoss/ui';
 import { ComponentMeta, Story } from '@storybook/react';
+import { Badge, BadgeProps, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'UI/Badge',

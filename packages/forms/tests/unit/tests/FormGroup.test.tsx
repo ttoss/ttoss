@@ -1,3 +1,4 @@
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 import { Button, Text } from '@ttoss/ui';
 import {
   Form,
@@ -8,7 +9,6 @@ import {
   yup,
   yupResolver,
 } from 'src/index';
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 
 const RenderForm = () => {
   const formMethods = useForm();

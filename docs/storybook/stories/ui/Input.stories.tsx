@@ -1,6 +1,6 @@
-import { Flex, Input, InputProps } from '@ttoss/ui';
-import { Meta, StoryFn } from '@storybook/react';
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
+import { Meta, StoryFn } from '@storybook/react';
+import { Flex, Input, InputProps } from '@ttoss/ui';
 
 export default {
   title: 'UI/Input',

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Flex, Text } from '@ttoss/ui';
+import * as React from 'react';
 
 type MultistepQuestionProps = {
   question: string;

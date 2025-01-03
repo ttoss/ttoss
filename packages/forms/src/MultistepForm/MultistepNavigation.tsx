@@ -1,5 +1,5 @@
-import { Flex, Text } from '@ttoss/ui';
 import { Icon } from '@ttoss/react-icons';
+import { Flex, Text } from '@ttoss/ui';
 
 export type MultistepNavigationProps = {
   amountOfSteps: number;

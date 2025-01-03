@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
+import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldInput',

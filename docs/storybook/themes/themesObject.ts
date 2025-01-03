@@ -1,7 +1,8 @@
+import type { Theme } from '@ttoss/theme';
+
 import { Bruttal } from './themes/Bruttal';
 import { Oca } from './themes/Oca';
 import { Siflor } from './themes/Siflor';
-import type { Theme } from '@ttoss/theme';
 
 export type ThemeObject = {
   name: string;

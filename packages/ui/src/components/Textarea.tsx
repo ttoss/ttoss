@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { Flex, Text } from '..';
 import { Icon, type IconType } from '@ttoss/react-icons';
+import * as React from 'react';
 import {
-  type TextareaProps as TextareaPropsUI,
   Textarea as TextareaUI,
+  type TextareaProps as TextareaPropsUI,
 } from 'theme-ui';
+
+import { Flex, Text } from '..';
 
 export interface TextareaProps extends TextareaPropsUI {
   trailingIcon?: IconType;

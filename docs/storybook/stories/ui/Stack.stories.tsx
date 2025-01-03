@@ -1,5 +1,5 @@
-import { Box, Stack } from '@ttoss/ui';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Box, Stack } from '@ttoss/ui';
 
 const meta: Meta<typeof Stack> = {
   /* 👇 The title prop is optional.

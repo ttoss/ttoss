@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Icon, IconifyIcon } from '@ttoss/react-icons';
 import {
   Box,
   BoxProps,
@@ -7,8 +7,9 @@ import {
   Text,
   useResponsiveValue,
 } from '@ttoss/ui';
+import * as React from 'react';
+
 import { Drawer } from '../Drawer';
-import { Icon, IconifyIcon } from '@ttoss/react-icons';
 
 export type MenuProps = {
   onClose: () => void;

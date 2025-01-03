@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { Flex, Text } from '..';
 import { Icon, type IconType } from '@ttoss/react-icons';
-import { InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
+import * as React from 'react';
+import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
+
+import { Flex, Text } from '..';
 
 export interface InputProps extends InputPropsUI {
   leadingIcon?: IconType;

@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Box, Flex, Heading } from '@ttoss/ui';
 import { Label, Select, useTheme } from '@ttoss/ui';
-import { Meta, StoryFn } from '@storybook/react';
+import * as React from 'react';
 
 export default {
   title: 'UI/Heading',

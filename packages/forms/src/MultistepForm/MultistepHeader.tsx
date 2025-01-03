@@ -1,5 +1,5 @@
-import { CloseButton, Flex, Image, Text } from '@ttoss/ui';
 import { Icon, type IconType } from '@ttoss/react-icons';
+import { CloseButton, Flex, Image, Text } from '@ttoss/ui';
 
 type MultistepHeaderTitledProps = {
   variant: 'titled';

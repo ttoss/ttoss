@@ -1,5 +1,5 @@
-import { Button, ButtonProps, Flex } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
+import { Button, ButtonProps, Flex } from '@ttoss/ui';
 
 export default {
   title: 'UI/Button',

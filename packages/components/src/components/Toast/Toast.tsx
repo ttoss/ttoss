@@ -1,8 +1,8 @@
 import { Box } from '@ttoss/ui';
 import {
+  toast,
   ToastContainer as ReactToastifyToastContainer,
   type ToastContainerProps,
-  toast,
 } from 'react-toastify';
 
 export { toast };

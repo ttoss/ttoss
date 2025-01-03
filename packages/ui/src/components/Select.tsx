@@ -3,11 +3,10 @@
  * More info about React Select: https://react-select.com/home
  * ttoss Figma: https://www.figma.com/file/VrB76VkH4hKCDUe9iYhpYu/_Component-%2F-Forms-%2F-Select?type=design&mode=design&t=ZBIeOpqcvQn3yq2t-0
  */
-import * as React from 'react';
-import { Box, Flex, Text } from '..';
 import { Icon, IconType } from '@ttoss/react-icons';
-import { type SxProp } from 'theme-ui';
+import * as React from 'react';
 import ReactSelect, {
+  components,
   type ContainerProps,
   type ControlProps,
   type DropdownIndicatorProps,
@@ -15,8 +14,10 @@ import ReactSelect, {
   type PlaceholderProps,
   type Props as ReactSelectProps,
   type ValueContainerProps,
-  components,
 } from 'react-select';
+import { type SxProp } from 'theme-ui';
+
+import { Box, Flex, Text } from '..';
 
 type SelectOptionValue = string | number | boolean;
 

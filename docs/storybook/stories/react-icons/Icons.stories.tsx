@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
-import { Icon, type IconType, addIcon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
+import { addIcon, Icon, type IconType } from '@ttoss/react-icons';
+import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'react-icons/Icon',

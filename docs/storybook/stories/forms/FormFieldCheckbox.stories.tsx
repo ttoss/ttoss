@@ -1,4 +1,5 @@
-import { Button, Stack } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCheckbox,
@@ -7,8 +8,7 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Stack } from '@ttoss/ui';
 
 export default {
   title: 'Forms/FormFieldCheckbox',

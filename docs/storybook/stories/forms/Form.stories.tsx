@@ -1,4 +1,6 @@
-import { Box, Button, Flex } from '@ttoss/ui';
+import alertIcon from '@iconify-icons/mdi-light/alert';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCheckbox,
@@ -12,9 +14,7 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import alertIcon from '@iconify-icons/mdi-light/alert';
+import { Box, Button, Flex } from '@ttoss/ui';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {

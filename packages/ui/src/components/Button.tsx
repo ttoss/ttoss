@@ -1,9 +1,9 @@
+import { Icon, IconType } from '@ttoss/react-icons';
 import * as React from 'react';
 import {
-  type ButtonProps as ButtonPropsUi,
   Button as ButtonUi,
+  type ButtonProps as ButtonPropsUi,
 } from 'theme-ui';
-import { Icon, IconType } from '@ttoss/react-icons';
 
 export type ButtonProps = ButtonPropsUi & {
   leftIcon?: IconType;

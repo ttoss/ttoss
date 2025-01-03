@@ -1,6 +1,7 @@
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { FormField } from './FormField';
 import { Textarea, type TextareaProps } from '@ttoss/ui';
+import { FieldPath, FieldValues } from 'react-hook-form';
+
+import { FormField } from './FormField';
 
 export const FormFieldTextarea = <
   TFieldValues extends FieldValues = FieldValues,

@@ -1,4 +1,4 @@
-import { IconifyIcon, addIcon } from '@ttoss/react-icons';
+import { addIcon, IconifyIcon } from '@ttoss/react-icons';
 
 const pressureHigh: IconifyIcon = {
   body: `

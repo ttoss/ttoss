@@ -1,5 +1,6 @@
-import * as React from 'react';
 import { Button } from '@ttoss/ui';
+import * as React from 'react';
+
 import { Form, useForm, yup, yupResolver } from '../';
 import {
   MultistepFlowMessage,

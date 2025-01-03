@@ -1,6 +1,7 @@
-import { BruttalTheme } from '../Bruttal/Bruttal';
 import { Theme } from 'theme-ui';
+
 import { createTheme } from '../../createTheme';
+import { BruttalTheme } from '../Bruttal/Bruttal';
 import { defaultTheme } from '../default/defaultTheme';
 
 export const OcaTheme: Theme = createTheme(

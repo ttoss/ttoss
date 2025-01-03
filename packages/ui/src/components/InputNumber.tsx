@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { Flex, Text } from '..';
 import { Icon } from '@ttoss/react-icons';
+import * as React from 'react';
 import { Input, type InputProps as InputPropsUI } from 'theme-ui';
+
+import { Flex, Text } from '..';
 
 export type InputNumberProps = Omit<
   InputPropsUI,

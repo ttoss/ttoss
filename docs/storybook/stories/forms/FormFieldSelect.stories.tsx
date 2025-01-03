@@ -1,7 +1,7 @@
-import { Button } from '@ttoss/ui';
-import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
+import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Button } from '@ttoss/ui';
 
 export default {
   title: 'Forms/FormFieldSelect',
