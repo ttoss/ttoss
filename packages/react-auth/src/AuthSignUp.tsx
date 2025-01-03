@@ -21,7 +21,7 @@ export type AuthSignUpProps = {
   onReturnToSignIn: () => void;
   signUpTerms?: {
     isRequired: boolean;
-    termsAndConditions: {
+    terms: {
       label: string;
       url: string;
     }[];
@@ -105,21 +105,18 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
         'By signing up, you agree to the following Terms and Conditions.',
     });
 
-    const termsLinks = props.signUpTerms.termsAndConditions.map(
-      (term, index, termsAndConditions) => {
-        const finalPunctuation =
-          index === termsAndConditions.length - 1 ? '.' : ', ';
+    const termsLinks = props.signUpTerms.terms.map((term, index, terms) => {
+      const finalPunctuation = index === terms.length - 1 ? '.' : ', ';
 
-        return (
-          <React.Fragment key={index}>
-            <Link key={index} href={term.url} target="_blank" rel="noreferrer">
-              {term.label}
-            </Link>
-            {finalPunctuation}
-          </React.Fragment>
-        );
-      }
-    );
+      return (
+        <React.Fragment key={index}>
+          <Link key={index} href={term.url} target="_blank" rel="noreferrer">
+            {term.label}
+          </Link>
+          {finalPunctuation}
+        </React.Fragment>
+      );
+    });
 
     const label = (
       <Text>

@@ -20,7 +20,7 @@ export const WithRequiredTerms = Template.bind({});
 WithRequiredTerms.args = {
   signUpTerms: {
     isRequired: true,
-    termsAndConditions: [
+    terms: [
       {
         label: 'Terms and Conditions',
         url: 'https://example.com/terms',
@@ -37,7 +37,7 @@ export const WithOptionalTerms = Template.bind({});
 WithOptionalTerms.args = {
   signUpTerms: {
     isRequired: false,
-    termsAndConditions: [
+    terms: [
       {
         label: 'Terms and Conditions',
         url: 'https://example.com/terms',
