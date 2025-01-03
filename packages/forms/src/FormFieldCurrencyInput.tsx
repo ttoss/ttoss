@@ -7,8 +7,6 @@ export type FormFieldCurrencyInputProps = {
   label?: string;
   name: string;
   prefix: string;
-  decimalSeparator: string;
-  thousandSeparator: string;
 } & FormFieldNumericFormatProps;
 
 export const FormFieldCurrencyInput = ({
@@ -23,6 +21,8 @@ export const FormFieldCurrencyInput = ({
     <FormFieldNumericFormat
       name={name}
       label={label}
+      warning={formFieldNumericFormatProps.warning}
+      warningMessage={formFieldNumericFormatProps.warningMessage}
       fixedDecimalScale
       decimalScale={2}
       prefix={prefix}

@@ -1,6 +1,7 @@
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { FormField, FormFieldProps } from './FormField';
 import { Select, type SelectProps } from '@ttoss/ui';
+import { FieldPath, FieldValues } from 'react-hook-form';
+
+import { FormField, FormFieldProps } from './FormField';
 
 type FormFieldSelectProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -30,6 +31,8 @@ export const FormFieldSelect = <
       disabled={disabled}
       tooltip={tooltip}
       onTooltipClick={onTooltipClick}
+      warning={selectProps.warning}
+      warningMessage={selectProps.warningMessage}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

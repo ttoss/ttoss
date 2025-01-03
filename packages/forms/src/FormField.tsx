@@ -1,12 +1,13 @@
+import { Flex, Label, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
   FieldPath,
   FieldPathValue,
   FieldValues,
-  UseControllerReturn,
   useController,
+  UseControllerReturn,
 } from 'react-hook-form';
-import { Flex, Label, type SxProp } from '@ttoss/ui';
+
 import { FormErrorMessage } from './FormErrorMessage';
 
 export type FormFieldProps<
@@ -20,6 +21,8 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: boolean;
   onTooltipClick?: () => void;
+  warning?: boolean;
+  warningMessage?: string;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -45,6 +48,8 @@ export const FormField = <
   sx,
   css,
   render,
+  warning = false,
+  warningMessage,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -87,6 +92,11 @@ export const FormField = <
     >
       {memoizedRender}
       <FormErrorMessage name={name} />
+      {warning && (
+        <div style={{ color: 'orange', marginTop: '8px', fontSize: '12px' }}>
+          {warningMessage}
+        </div>
+      )}
     </Flex>
   );
 };
