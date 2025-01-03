@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Box, Button, Flex, Heading } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
+import { Box, Button, Flex, Heading } from '@ttoss/ui';
+import * as React from 'react';
 
 export type LogoContextProps = {
   logo?: React.ReactNode;

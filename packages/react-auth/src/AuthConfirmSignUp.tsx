@@ -1,6 +1,7 @@
-import { AuthCard } from './AuthCard';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
+
+import { AuthCard } from './AuthCard';
 import type { OnConfirmSignUp } from './types';
 
 export type AuthConfirmSignUpProps = {

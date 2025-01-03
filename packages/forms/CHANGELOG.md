@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.9...@ttoss/forms@0.27.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
+## [0.26.9](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.8...@ttoss/forms@0.26.9) (2025-01-02)
+
+### Bug Fixes
+
+- eslint import rule ([#636](https://github.com/ttoss/ttoss/issues/636)) ([acb178f](https://github.com/ttoss/ttoss/commit/acb178f0a92b236b86af044b305ddea02bf0a714))
+
 ## [0.26.8](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.7...@ttoss/forms@0.26.8) (2024-12-31)
 
 **Note:** Version bump only for package @ttoss/forms

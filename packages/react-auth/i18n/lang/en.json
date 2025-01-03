@@ -35,6 +35,9 @@
     "defaultMessage": "Forgot password?",
     "description": "Forgot password?"
   },
+  "Co3exe": {
+    "defaultMessage": "By signing up, you agree to the following Terms and Conditions."
+  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
     "description": "Sign up"

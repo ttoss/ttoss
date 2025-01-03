@@ -1,14 +1,16 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
-import _import from 'eslint-plugin-import';
+import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import formatjs from 'eslint-plugin-formatjs';
-import globals from 'globals';
+import _import from 'eslint-plugin-import';
 import jest from 'eslint-plugin-jest';
 import jestDom from 'eslint-plugin-jest-dom';
 import jsxA11Y from 'eslint-plugin-jsx-a11y';
-import path from 'node:path';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import prettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
@@ -16,10 +18,9 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import relay from 'eslint-plugin-relay';
-import sortImportsEs6Autofix from 'eslint-plugin-sort-imports-es6-autofix';
-import tsParser from '@typescript-eslint/parser';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,13 +55,13 @@ export default tseslint.config([
       'react-hooks': fixupPluginRules(reactHooks),
       relay: fixupPluginRules(relay),
       'jsx-a11y': fixupPluginRules(jsxA11Y),
-      'sort-imports-es6-autofix': sortImportsEs6Autofix,
       'prefer-arrow-functions': preferArrowFunctions,
       prettier: fixupPluginRules(prettier),
       'jest-dom': fixupPluginRules(jestDom),
       import: fixupPluginRules(_import),
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
+      'simple-import-sort': simpleImportSort,
     },
 
     languageOptions: {
@@ -125,14 +126,8 @@ export default tseslint.config([
 
       'relay/generated-flow-types': 'off',
 
-      'sort-imports-es6-autofix/sort-imports-es6': [
-        2,
-        {
-          ignoreCase: false,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ['all', 'multiple', 'single', 'none'],
-        },
-      ],
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
     },
   },
   {

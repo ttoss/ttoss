@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.1](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.25.0...@ttoss/eslint-config@1.25.1) (2025-01-02)
+
+### Bug Fixes
+
+- eslint import rule ([#636](https://github.com/ttoss/ttoss/issues/636)) ([acb178f](https://github.com/ttoss/ttoss/commit/acb178f0a92b236b86af044b305ddea02bf0a714))
+
 # 1.25.0 (2025-01-01)
 
 ### Features
