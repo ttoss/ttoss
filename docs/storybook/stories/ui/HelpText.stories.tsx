@@ -10,7 +10,7 @@ const Template: Story<HelpTextProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'md',
+        gap: '2',
         flexDirection: 'column',
       }}
     >

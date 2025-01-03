@@ -1,5 +1,6 @@
-import { type BadgeProps as BadgePropsUi, Badge as BadgeUi } from 'theme-ui';
 import { Icon, IconType } from '@ttoss/react-icons';
+import { Badge as BadgeUi, type BadgeProps as BadgePropsUi } from 'theme-ui';
+
 import { Text } from '../components/Text';
 
 export type BadgeProps = BadgePropsUi & {
@@ -25,10 +26,10 @@ export const Badge = ({
         fontWeight: 'normal',
         lineHeight: 'base',
         fontSize: 'sm',
-        paddingX: 'xs',
+        paddingX: '2',
         borderRadius: 'informative',
-        paddingY: '2xs',
-        gap: 'xs',
+        paddingY: '1',
+        gap: '2',
         ...sx,
       }}
       {...props}

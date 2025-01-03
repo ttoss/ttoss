@@ -1,6 +1,8 @@
-import { Bruttal } from './themes/Bruttal';
-import { Siflor } from './themes/Siflor';
 import type { Theme } from '@ttoss/theme';
+
+import { Bruttal } from './themes/Bruttal';
+import { Oca } from './themes/Oca';
+import { Siflor } from './themes/Siflor';
 
 export type ThemeObject = {
   name: string;
@@ -12,4 +14,4 @@ export type ThemeObject = {
 
 export const defaultThemeObject: ThemeObject = Bruttal;
 
-export const themesObjects: ThemeObject[] = [defaultThemeObject, Siflor];
+export const themesObjects: ThemeObject[] = [defaultThemeObject, Siflor, Oca];

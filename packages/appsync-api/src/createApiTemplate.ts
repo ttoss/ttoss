@@ -1,4 +1,4 @@
-import { type SchemaComposer, graphql } from '@ttoss/graphql-api';
+import { graphql, type SchemaComposer } from '@ttoss/graphql-api';
 
 /**
  * Absolute path to avoid:

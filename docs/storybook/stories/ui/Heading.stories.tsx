@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Box, Flex, Heading } from '@ttoss/ui';
 import { Label, Select, useTheme } from '@ttoss/ui';
-import { Meta, StoryFn } from '@storybook/react';
+import * as React from 'react';
 
 export default {
   title: 'UI/Heading',
@@ -40,7 +40,7 @@ const TemplateLineHeights: StoryFn = (args) => {
     React.useState<string>('base');
 
   return (
-    <Flex sx={{ flexDirection: 'column', gap: '2xl' }}>
+    <Flex sx={{ flexDirection: 'column', gap: '6' }}>
       <Box>
         <Label>Line Height</Label>
 
@@ -59,7 +59,7 @@ const TemplateLineHeights: StoryFn = (args) => {
           })}
         </Select>
       </Box>
-      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         {as.map((tag) => {
           return (
             <Heading

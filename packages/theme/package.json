@@ -15,7 +15,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
+    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
+    "./Oca": "./src/themes/Oca/Oca.ts"
   },
   "files": [
     "dist"

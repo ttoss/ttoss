@@ -1,6 +1,6 @@
-import { AuthSignIn } from 'src/AuthSignIn';
 import { jest } from '@jest/globals';
 import { render, screen, userEvent } from '@ttoss/test-utils';
+import { AuthSignIn } from 'src/AuthSignIn';
 
 const onSignIn = jest.fn();
 

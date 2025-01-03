@@ -1,5 +1,5 @@
-import { Flex, Text } from '@ttoss/ui';
 import { Icon } from '@ttoss/react-icons';
+import { Flex, Text } from '@ttoss/ui';
 
 export type MultistepNavigationProps = {
   amountOfSteps: number;
@@ -18,7 +18,7 @@ export const MultistepNavigation = ({
     <Flex
       sx={{
         justifyContent: 'space-between',
-        marginX: '2xl',
+        marginX: '5',
       }}
     >
       <Flex onClick={onBack} sx={{ alignItems: 'center', cursor: 'pointer' }}>

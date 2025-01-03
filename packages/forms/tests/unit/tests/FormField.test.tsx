@@ -1,6 +1,6 @@
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 import { Button, Input } from '@ttoss/ui';
 import { Form, FormField, useForm, yup, yupResolver } from 'src/index';
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 
 const onSubmit = jest.fn();
 

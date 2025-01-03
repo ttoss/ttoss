@@ -1,5 +1,6 @@
-import * as React from 'react';
 import { Flex, Image, Text } from '@ttoss/ui';
+import * as React from 'react';
+
 import { MultistepFlowMessageBase } from './types';
 
 export type MultistepFlowMessageImageTextProps = MultistepFlowMessageBase & {
@@ -16,9 +17,9 @@ export const MultistepFlowMessageImageText = ({
     <Flex
       sx={{
         flexDirection: 'column',
-        paddingY: 'xl',
-        paddingX: '2xl',
-        gap: 'xl',
+        paddingY: '5',
+        paddingX: '6',
+        gap: '5',
       }}
     >
       <Image

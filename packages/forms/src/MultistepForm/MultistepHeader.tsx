@@ -1,5 +1,5 @@
-import { CloseButton, Flex, Image, Text } from '@ttoss/ui';
 import { Icon, type IconType } from '@ttoss/react-icons';
+import { CloseButton, Flex, Image, Text } from '@ttoss/ui';
 
 type MultistepHeaderTitledProps = {
   variant: 'titled';
@@ -22,8 +22,8 @@ const MultistepHeaderTitled = ({
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
-        paddingX: 'xl',
-        paddingY: 'lg',
+        paddingX: '5',
+        paddingY: '4',
         alignItems: 'center',
       }}
     >
@@ -46,8 +46,8 @@ const MultistepHeaderLogo = ({ onClose, src }: MultistepHeaderLogoProps) => {
       sx={{
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingX: 'xl',
-        paddingY: 'lg',
+        paddingX: '5',
+        paddingY: '4',
       }}
     >
       <Image

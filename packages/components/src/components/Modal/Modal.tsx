@@ -15,7 +15,7 @@ export const Modal = (props: ModalProps) => {
   const space = theme.space as Record<string, string>;
 
   const padding =
-    useResponsiveValue([space?.['lg'], space?.['xl'], space?.['xl']]) || 0;
+    useResponsiveValue([space?.['4'], space?.['5'], space?.['5']]) || 0;
 
   const style: ReactModal.Styles = {
     overlay: transformStyleObject({

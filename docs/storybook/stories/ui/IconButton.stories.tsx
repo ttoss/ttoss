@@ -1,6 +1,6 @@
-import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
-import { Icon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
+import { Icon } from '@ttoss/react-icons';
+import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
 
 export default {
   title: 'UI/IconButton',
@@ -11,7 +11,7 @@ const Template: Story<IconButtonProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flexDirection: 'row',
         alignItems: 'start',
       }}

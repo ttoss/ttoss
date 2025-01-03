@@ -1,11 +1,13 @@
-import { themes as prismThemes } from 'prism-react-renderer';
 import fs from 'node:fs';
 import path from 'node:path';
-import rehypeKatex from 'rehype-katex';
-import remarkMath from 'remark-math';
-import tailwindPlugin from './plugins/tailwind-config.cjs';
+
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config } from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+
+import tailwindPlugin from './plugins/tailwind-config.cjs';
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const environment = process.env.NODE_ENV;

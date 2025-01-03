@@ -1,9 +1,14 @@
 import { Preview } from '@storybook/react';
-import { themesObjects, defaultThemeObject } from '../themes/themesObject';
 import { I18nProvider } from '@ttoss/react-i18n';
+
+import { defaultThemeObject, themesObjects } from '../themes/themesObject';
 import { ThemesProvider } from '../themes/ThemesProvider';
 
-const themesNames = themesObjects.map((themeObject) => themeObject.name).sort();
+const themesNames = themesObjects
+  .map((themeObject) => {
+    return themeObject.name;
+  })
+  .sort();
 
 /**
  * https://storybook.js.org/docs/essentials/toolbars-and-globals

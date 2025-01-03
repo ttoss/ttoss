@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Badge, BadgeProps, Flex } from '@ttoss/ui';
 import { ComponentMeta, Story } from '@storybook/react';
+import { Badge, BadgeProps, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'UI/Badge',
@@ -26,7 +26,7 @@ const Template: Story<BadgeProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'md',
+        gap: '2',
         flexDirection: 'column',
         alignItems: 'start',
       }}

@@ -1,5 +1,6 @@
-import { BrutalIcons, BruttalFonts } from '@ttoss/theme/Bruttal';
 import { createTheme } from '@ttoss/theme';
+import { BrutalIcons, BruttalFonts } from '@ttoss/theme/Bruttal';
+
 import type { ThemeObject } from '../themesObject';
 
 const theme = createTheme({

@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCEP } from '@ttoss/forms/brazil';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldCEP',
@@ -26,13 +26,13 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCEP name="cep" label="CEP:" />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCEP name="cepDisabled" label="CEP:" disabled />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
