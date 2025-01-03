@@ -21,7 +21,7 @@
   },
   "5oOshZ": {
     "defaultMessage": "Enter your email address",
-    "description": "Required fieldd.",
+    "description": "Required field.",
     "module": "@ttoss/react-auth"
   },
   "6PdOcy": {
