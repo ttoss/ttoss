@@ -21,7 +21,7 @@ export const HelpText = ({
       sx={{
         fontSize: 'sm',
         fontFamily: 'caption',
-        lineHeight: 'base',
+        lineHeight: 'normal',
         ...sx,
       }}
       aria-disabled={disabled ? 'true' : undefined}

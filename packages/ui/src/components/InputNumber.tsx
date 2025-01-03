@@ -28,8 +28,8 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
               margin: 0,
             },
           ...sx,
-          paddingLeft: '3xl',
-          paddingRight: '2xl',
+          paddingLeft: '6',
+          paddingRight: '5',
           margin: 0,
         };
       }
@@ -43,11 +43,11 @@ export const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
             margin: 0,
           },
         fontFamily: 'body',
-        paddingY: 'lg',
-        paddingX: 'xl',
+        paddingY: '2',
+        paddingX: '4',
         ...sx,
-        paddingLeft: '2xl',
-        paddingRight: '2xl',
+        paddingLeft: '5',
+        paddingRight: '5',
         margin: 0,
       };
     }, [inputProps, value, sx]);

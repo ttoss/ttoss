@@ -22,12 +22,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         sx={{
           cursor: 'pointer',
-          paddingX: 'xl',
-          paddingY: 'lg',
+          paddingX: '6',
+          paddingY: '4',
           fontFamily: 'body',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 'lg',
+          gap: '4',
           ...restProps.sx,
         }}
       >

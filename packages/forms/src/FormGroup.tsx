@@ -85,7 +85,7 @@ const FormGroupWrapper = ({
 
   const childrenContainerSx: FlexProps['sx'] = {
     flexDirection: direction || 'column',
-    gap: 'md',
+    gap: '1',
     width: '100%',
   };
 
@@ -94,13 +94,13 @@ const FormGroupWrapper = ({
       aria-level={level}
       {...boxProps}
       sx={{
-        marginTop: level === 0 ? 'none' : 'lg',
-        marginBottom: 'lg',
+        marginTop: level === 0 ? 'none' : '4',
+        marginBottom: '4',
         ...boxProps.sx,
       }}
     >
       {title && (
-        <Box sx={{ marginBottom: 'md' }}>
+        <Box sx={{ marginBottom: '2' }}>
           <Text
             sx={{
               fontSize: '2xl',

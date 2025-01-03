@@ -4,7 +4,7 @@ import { Textarea, type TextareaProps } from '@ttoss/ui';
 
 export const FormFieldTextarea = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   name,

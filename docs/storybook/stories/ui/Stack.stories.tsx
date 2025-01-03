@@ -37,7 +37,7 @@ export const Example: Story = {
     return (
       <Stack
         sx={{
-          gap: 'md',
+          gap: '2',
         }}
       >
         <Boxes />

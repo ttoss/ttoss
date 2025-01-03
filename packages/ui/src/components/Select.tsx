@@ -58,7 +58,7 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
       return 'danger';
     }
 
-    return 'interaction';
+    return '';
   })();
 
   const backgroundColor = (() => {
@@ -75,9 +75,8 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
         '.react-select__control': {
           border,
           backgroundColor,
-          paddingX: 'xl',
-          paddingY: 'lg',
-          borderRadius: 'action',
+          paddingX: '4',
+          paddingY: '2',
         },
       }}
     >
@@ -103,7 +102,7 @@ const DropdownIndicator = (
   return (
     <Text
       sx={{
-        fontSize: 'base',
+        fontSize: 'md',
         color,
         alignSelf: 'center',
         display: 'flex',
@@ -121,7 +120,7 @@ const IndicatorsContainer = ({
   return (
     <Box
       sx={{
-        marginLeft: 'lg',
+        marginLeft: '4',
         border: 'none',
       }}
     >
@@ -188,7 +187,7 @@ const ValueContainer = ({
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flex: 1,
       }}
     >
@@ -198,7 +197,7 @@ const ValueContainer = ({
             alignSelf: 'center',
             pointerEvents: 'none',
             lineHeight: 0,
-            fontSize: 'base',
+            fontSize: 'md',
           }}
         >
           <Icon icon={finalLeadingIcon} />
@@ -219,7 +218,7 @@ const ValueContainer = ({
             alignSelf: 'center',
             pointerEvents: 'none',
             lineHeight: 0,
-            fontSize: 'base',
+            fontSize: 'md',
             color: trailingIconColor,
           }}
         >

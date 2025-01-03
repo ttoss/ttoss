@@ -14,15 +14,15 @@ export const MultistepQuestion = ({
     <Flex
       sx={{
         flexDirection: 'column',
-        paddingTop: 'xl',
-        paddingX: '2xl',
+        paddingTop: '5',
+        paddingX: '6',
       }}
     >
-      <Text sx={{ textAlign: 'center', fontSize: 'lg', marginBottom: 'xl' }}>
+      <Text sx={{ textAlign: 'center', fontSize: 'lg', marginBottom: '5' }}>
         {question}
       </Text>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'xl' }}>{fields}</Flex>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>{fields}</Flex>
     </Flex>
   );
 };

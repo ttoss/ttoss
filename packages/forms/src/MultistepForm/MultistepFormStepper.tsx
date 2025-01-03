@@ -55,9 +55,9 @@ export const MultistepFormStepper = ({
       <Button
         sx={{
           justifyContent: 'center',
-          marginTop: '2xl',
-          marginBottom: 'xl',
-          marginX: '2xl',
+          marginTop: '6',
+          marginBottom: '4',
+          marginX: '6',
         }}
         rightIcon={isLastStep ? undefined : 'nav-right'}
         aria-label={`btn-step-${stepNumber}`}

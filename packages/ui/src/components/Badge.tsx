@@ -25,10 +25,10 @@ export const Badge = ({
         fontWeight: 'normal',
         lineHeight: 'base',
         fontSize: 'sm',
-        paddingX: 'xs',
+        paddingX: '2',
         borderRadius: 'informative',
-        paddingY: '2xs',
-        gap: 'xs',
+        paddingY: '1',
+        gap: '2',
         ...sx,
       }}
       {...props}

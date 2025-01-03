@@ -34,7 +34,7 @@ const OptimizationCard = () => {
     <Form {...formMethods} onSubmit={onSubmit}>
       <FormFieldInput name="name" label="Name" />
       <FormFieldCheckbox name="isActivated" label="Is activated?" />
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

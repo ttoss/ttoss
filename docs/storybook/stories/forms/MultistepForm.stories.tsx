@@ -71,8 +71,8 @@ const MultistepFormFieldRadioImage = ({
           <Grid
             sx={{
               gridTemplateColumns: '1fr 1fr 1fr',
-              columnGap: 'xs',
-              rowGap: 'lg',
+              columnGap: '1',
+              rowGap: '4',
             }}
           >
             {options.map((option) => {
@@ -89,8 +89,8 @@ const MultistepFormFieldRadioImage = ({
                     borderColor: 'accent',
                     borderRadius: '9px',
                     overflow: 'hidden',
-                    padding: 'sm',
-                    gap: 'md',
+                    padding: '1',
+                    gap: '2',
                     boxShadow: checked
                       ? '1px 1px 2px 0px rgba(4, 105, 227, 0.24), -1px -1px 2px 0px rgba(4, 105, 227, 0.24)'
                       : '',
@@ -288,7 +288,7 @@ const steps: MultistepFormProps['steps'] = [
         .required('O campo email é obrigatório'),
     }),
     fields: (
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldInput name="name" label="Nome" />
         <FormFieldInput name="email" label="Email" />
       </Flex>

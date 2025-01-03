@@ -16,9 +16,9 @@ export const MultistepFlowMessageImageText = ({
     <Flex
       sx={{
         flexDirection: 'column',
-        paddingY: 'xl',
-        paddingX: '2xl',
-        gap: 'xl',
+        paddingY: '5',
+        paddingX: '6',
+        gap: '5',
       }}
     >
       <Image

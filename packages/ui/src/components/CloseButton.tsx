@@ -27,12 +27,12 @@ export const CloseButton = React.forwardRef<
         alignItems: 'center',
         cursor: 'pointer',
         lineHeight: 'normal',
-        gap: 'sm',
-        padding: 'sm',
+        gap: '2',
+        padding: '2',
         width: 'fit-content',
         transition: 'all 0.2s',
         '& > iconify-icon': {
-          fontSize: 'base',
+          fontSize: 'md',
         },
         ...sx,
       }}

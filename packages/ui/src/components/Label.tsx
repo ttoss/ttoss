@@ -19,10 +19,9 @@ export const Label = ({
   return (
     <LabelUi
       sx={{
-        fontFamily: 'caption',
         alignItems: 'center',
         fontSize: 'sm',
-        lineHeight: 'base',
+        lineHeight: 'normal',
         ...sx,
       }}
       {...props}

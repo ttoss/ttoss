@@ -22,8 +22,8 @@ const MultistepHeaderTitled = ({
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
-        paddingX: 'xl',
-        paddingY: 'lg',
+        paddingX: '5',
+        paddingY: '4',
         alignItems: 'center',
       }}
     >
@@ -46,8 +46,8 @@ const MultistepHeaderLogo = ({ onClose, src }: MultistepHeaderLogoProps) => {
       sx={{
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingX: 'xl',
-        paddingY: 'lg',
+        paddingX: '5',
+        paddingY: '4',
       }}
     >
       <Image

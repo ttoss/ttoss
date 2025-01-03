@@ -13,7 +13,7 @@ const Template: Story<ButtonProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flexDirection: 'column',
         alignItems: 'start',
       }}

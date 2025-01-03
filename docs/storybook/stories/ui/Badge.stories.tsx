@@ -26,7 +26,7 @@ const Template: Story<BadgeProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'md',
+        gap: '2',
         flexDirection: 'column',
         alignItems: 'start',
       }}

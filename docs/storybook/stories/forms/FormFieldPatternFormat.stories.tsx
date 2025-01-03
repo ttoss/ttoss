@@ -35,7 +35,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="CreditcardNumber"
           label="Numero do cartão:"
@@ -44,7 +44,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="document"
           label="CPF:"
@@ -53,7 +53,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="cnpj"
           label="CNPJ:"
@@ -62,7 +62,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="cnpj"
           label="CNPJ:"
@@ -71,7 +71,7 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

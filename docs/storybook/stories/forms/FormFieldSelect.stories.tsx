@@ -31,7 +31,7 @@ const Template: StoryFn = () => {
         ]}
       />
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
@@ -59,7 +59,7 @@ const Template2: StoryFn = () => {
         placeholder="Please select a car"
       />
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

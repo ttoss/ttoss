@@ -53,7 +53,7 @@ export const WithSxProps: Story = {
     ...Default.args,
     sx: {
       width: '300px',
-      margin: 'xl',
+      margin: '5',
     },
   },
 };

@@ -64,7 +64,7 @@ export const InsideFlex = () => {
         height: '100px',
         width: '100%',
         border: 'default',
-        padding: 'lg',
+        padding: '4',
       }}
     >
       <Input
@@ -75,9 +75,9 @@ export const InsideFlex = () => {
         sx={{
           height: '100%',
           flex: 2,
-          margin: '3xl',
+          margin: '7',
           border: 'default',
-          padding: 'lg',
+          padding: '4',
         }}
         trailingIcon="radio-not-selected"
         placeholder="Input with padding and margin inside container with padding"

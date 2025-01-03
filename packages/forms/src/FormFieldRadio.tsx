@@ -28,7 +28,7 @@ export const FormFieldRadio = <TFieldValues extends FieldValues = FieldValues>({
 
   return (
     <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
-      {label && <Label sx={{ marginBottom: 'md' }}>{label}</Label>}
+      {label && <Label sx={{ marginBottom: '1' }}>{label}</Label>}
       <Box>
         {options.map((option: FormRadioOption) => {
           const id = `form-field-radio-${name}-${option.value}`;

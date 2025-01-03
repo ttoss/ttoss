@@ -11,7 +11,7 @@ const Template: Story<IconButtonProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flexDirection: 'row',
         alignItems: 'start',
       }}

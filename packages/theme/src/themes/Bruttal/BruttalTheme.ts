@@ -129,6 +129,10 @@ export const BruttalTheme: Theme = {
       margin: 0,
       padding: 0,
       backgroundColor: 'background',
+      '.react-select__control': {
+        border: 'interaction',
+        borderRadius: 'active',
+      },
       /**
        * HTML elements
        */

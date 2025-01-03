@@ -50,11 +50,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           sx={{
             fontFamily: 'body',
-            paddingY: 'lg',
-            paddingX: 'xl',
+            paddingY: '3',
+            paddingX: '4',
             ...sx,
-            paddingLeft: leadingIcon ? '3xl' : undefined,
-            paddingRight: trailingIcon ? '3xl' : undefined,
+            paddingLeft: leadingIcon ? '10' : undefined,
+            paddingRight: trailingIcon ? '10' : undefined,
             margin: 0,
           }}
           className={className}

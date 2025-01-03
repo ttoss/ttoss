@@ -19,8 +19,8 @@ export const ActionButton = ({
       variant={`buttons.actionButton.${variant}`}
       leftIcon={icon}
       sx={{
-        padding: 'sm',
-        gap: 'xs',
+        padding: '2',
+        gap: '4',
         fontFamily: 'caption',
         borderRadius: 'action',
         outlineColor: 'transparent',

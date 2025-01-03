@@ -18,7 +18,7 @@ export const MultistepNavigation = ({
     <Flex
       sx={{
         justifyContent: 'space-between',
-        marginX: '2xl',
+        marginX: '5',
       }}
     >
       <Flex onClick={onBack} sx={{ alignItems: 'center', cursor: 'pointer' }}>

@@ -82,6 +82,9 @@ export const OcaTheme: Theme = createTheme(
         text: {
           secondary: { default: '#465A69' },
         },
+        border: {
+          primary: { default: '#111827' },
+        },
       },
     },
     fonts: {
@@ -107,6 +110,22 @@ export const OcaTheme: Theme = createTheme(
         padding: 0,
         backgroundColor: 'navigation.background.primary.default',
         /**
+         * select out of forms
+         */
+        '.react-select__control': {
+          color: 'display.text.secondary.default',
+          backgroundColor: 'display.background.primary.default',
+          borderWidth: 'thin',
+          borderColor: 'display.border.muted.default',
+          borderRadius: 'lg',
+          '&.react-select__control--is-disabled': {
+            borderWidth: 'thin',
+            backgroundColor: 'input.background.muted.default',
+            borderColor: 'display.border.muted.default',
+          },
+        },
+
+        /**
          * HTML elements
          */
         table: {
@@ -117,7 +136,7 @@ export const OcaTheme: Theme = createTheme(
           paddingY: '4',
         },
         tr: {
-          borderColor: 'navigation.background.muted.default',
+          borderColor: 'feedback.border.primary.default',
           borderBottomWidth: 'thin',
         },
         td: {
@@ -270,7 +289,6 @@ export const OcaTheme: Theme = createTheme(
     },
     forms: {
       label: {
-        fontFamily: 'body',
         color: 'display.text.secondary.default',
         '&:is([aria-disabled="true"])': {
           color: 'input.text.muted.default',
@@ -313,8 +331,8 @@ export const OcaTheme: Theme = createTheme(
           bg: 'input.background.muted.default',
         },
         '&:is(svg, svg + svg)': {
-          width: 'lg',
-          height: 'lg',
+          width: 'min',
+          height: 'min',
         },
       },
       checkbox: {
@@ -407,7 +425,7 @@ export const OcaTheme: Theme = createTheme(
         backgroundColor: 'display.background.primary.default',
         borderWidth: 'thin',
         borderColor: 'display.border.muted.default',
-        borderRadius: 'full',
+        borderRadius: 'lg',
         ':disabled': {
           borderColor: 'display.border.muted.default',
           backgroundColor: 'display.background.muted.default',
@@ -436,13 +454,13 @@ export const OcaTheme: Theme = createTheme(
           outlineColor: 'display.border.primary.default',
         },
         ':disabled::placeholder': {
-          color: 'display.text.muted.default',
+          color: 'input.text.muted.default',
         },
         ':disabled': {
           borderWidth: 'thin',
-          backgroundColor: 'display.background.muted.default',
-          border: 'display.border.muted.default',
-          color: 'display.text.muted.default',
+          backgroundColor: 'input.background.muted.default',
+          borderColor: 'input.border.muted.default',
+          color: 'input.text.muted.default',
         },
         '&[aria-invalid="true"]': {
           borderColor: 'display.border.negative.default',

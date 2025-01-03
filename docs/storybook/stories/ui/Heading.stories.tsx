@@ -40,7 +40,7 @@ const TemplateLineHeights: StoryFn = (args) => {
     React.useState<string>('base');
 
   return (
-    <Flex sx={{ flexDirection: 'column', gap: '2xl' }}>
+    <Flex sx={{ flexDirection: 'column', gap: '6' }}>
       <Box>
         <Label>Line Height</Label>
 
@@ -59,7 +59,7 @@ const TemplateLineHeights: StoryFn = (args) => {
           })}
         </Select>
       </Box>
-      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         {as.map((tag) => {
           return (
             <Heading
