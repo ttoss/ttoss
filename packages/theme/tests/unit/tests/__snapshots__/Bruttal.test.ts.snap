@@ -4,26 +4,26 @@ exports[`Bruttal theme snapshot 1`] = `
 {
   "badges": {
     "informative": {
-      "bg": "notice",
-      "color": "onNotice",
+      "bg": "action.background.caution.default",
+      "color": "action.text.caution.default",
     },
     "muted": {
-      "bg": "muted",
-      "color": "onMuted",
+      "bg": "action.background.muted.default",
+      "color": "action.text.muted.default",
     },
     "negative": {
-      "bg": "danger",
-      "color": "onDanger",
+      "bg": "action.background.negative.default",
+      "color": "action.text.negative.default",
     },
     "neutral": {
-      "bg": "secondary",
+      "bg": "action.background.secondary.default",
       "border": "muted",
-      "borderColor": "onMuted",
-      "color": "onSecondary",
+      "borderColor": "action.border.muted.default",
+      "color": "action.text.secondary.default",
     },
     "positive": {
-      "bg": "positive",
-      "color": "onPositive",
+      "bg": "action.background.accent.active",
+      "color": "action.text.accent.default",
     },
   },
   "borders": {
@@ -37,117 +37,117 @@ exports[`Bruttal theme snapshot 1`] = `
   "buttons": {
     "accent": {
       ":disabled": {
-        "backgroundColor": "muted",
-        "borderColor": "muted",
-        "color": "onMuted",
+        "backgroundColor": "action.background.muted.default",
+        "borderColor": "action.border.muted.default",
+        "color": "action.text.muted.default",
         "cursor": "default",
       },
       ":hover:not(:active,[disabled])": {
         "filter": "brightness(90%)",
       },
-      "backgroundColor": "accent",
-      "borderColor": "accent",
+      "backgroundColor": "action.background.accent.default",
+      "borderColor": "action.border.accent.default",
       "borderRadius": "action",
-      "color": "onAccent",
+      "color": "action.text.primary.default",
     },
     "actionButton": {
       "accent": {
-        "backgroundColor": "accent",
+        "backgroundColor": "action.background.accent.default",
         "border": "none",
-        "color": "onAccent",
+        "color": "action.text.accent.default",
       },
       "default": {
         ":is(:focus-within, :hover)": {
-          "backgroundColor": "highlight",
-          "borderColor": "highlight",
-          "color": "onHighlight",
+          "backgroundColor": "action.background.secondary.active",
+          "borderColor": "action.border.secondary.active",
+          "color": "action.text.secondary.active",
         },
-        "backgroundColor": "secondary",
+        "backgroundColor": "action.background.secondary.default",
         "border": "default",
-        "borderColor": "onSecondary",
-        "color": "onSecondary",
+        "borderColor": "action.background.primary.default",
+        "color": "action.text.secondary.default",
         "transition": "all 0.2s",
       },
       "quiet": {
         "backgroundColor": "transparent",
         "border": "none",
         "borderColor": "transparent",
-        "color": "text",
+        "color": "action.text.secondary.default",
       },
     },
     "closeButton": {
       ":disabled": {
-        "backgroundColor": "muted",
+        "backgroundColor": "action.background.muted.default",
         "border": "muted",
-        "borderColor": "onMuted",
-        "color": "onMuted",
+        "borderColor": "action.border.muted.default",
+        "color": "action.text.muted.default",
         "cursor": "not-allowed",
       },
       ":is(:focus-within, :hover):not(:disabled)": {
-        "backgroundColor": "highlight",
-        "borderColor": "highlight",
-        "color": "onHighlight",
+        "backgroundColor": "action.background.secondary.active",
+        "borderColor": "action.border.secondary.active",
+        "color": "action.text.secondary.active",
       },
-      "backgroundColor": "background",
+      "backgroundColor": "action.background.primary.active",
       "border": "default",
-      "borderColor": "primary",
+      "borderColor": "action.border.primary.default",
       "borderRadius": "action",
-      "color": "primary",
+      "color": "action.text.secondary.default",
     },
     "destructive": {
       ":disabled": {
-        "backgroundColor": "muted",
-        "borderColor": "muted",
-        "color": "onMuted",
+        "backgroundColor": "action.background.muted.default",
+        "borderColor": "action.border.muted.default",
+        "color": "action.text.muted.default",
         "cursor": "default",
       },
       ":hover:not(:active,[disabled])": {
         "filter": "brightness(90%)",
       },
-      "backgroundColor": "danger",
-      "color": "onDanger",
+      "backgroundColor": "action.background.negative.default",
+      "color": "action.text.negative.default",
     },
     "primary": {
       ":active": {
-        "backgroundColor": "primary",
-        "borderColor": "outline",
-        "color": "onPrimary",
+        "backgroundColor": "action.background.primary.default",
+        "borderColor": "action.border.secondary.default",
+        "color": "action.text.primary.default",
       },
       ":disabled": {
-        "backgroundColor": "muted",
-        "borderColor": "muted",
-        "color": "onMuted",
+        "backgroundColor": "action.background.muted.default",
+        "borderColor": "action.border.muted.default",
+        "color": "action.text.muted.default",
         "cursor": "default",
       },
       ":hover:not(:active,[disabled])": {
         "filter": "brightness(90%)",
       },
-      "backgroundColor": "primary",
-      "borderColor": "primary",
+      "backgroundColor": "action.background.primary.default",
+      "borderColor": "action.border.primary.default",
       "borderRadius": "action",
-      "color": "onPrimary",
+      "color": "action.text.primary.default",
     },
     "secondary": {
       ":disabled": {
-        "backgroundColor": "muted",
-        "borderColor": "muted",
-        "color": "onMuted",
+        "backgroundColor": "action.background.muted.default",
+        "borderColor": "action.border.muted.default",
+        "color": "action.text.muted.default",
         "cursor": "default",
       },
       ":hover:not(:active,[disabled])": {
         "filter": "brightness(90%)",
       },
-      "backgroundColor": "secondary",
+      "backgroundColor": "action.background.secondary.default",
       "border": "secondary",
-      "borderColor": "onSecondary",
+      "borderColor": "action.border.primary.default",
       "borderRadius": "action",
-      "color": "onSecondary",
+      "color": "action.text.secondary.default",
     },
   },
   "cards": {
     "primary": {
       "alignItems": "center",
-      "backgroundColor": "primary",
+      "backgroundColor": "display.background.primary.default",
       "border": "1px solid black",
       "display": "flex",
       "flexDirection": "column",
@@ -159,32 +159,197 @@ exports[`Bruttal theme snapshot 1`] = `
     },
   },
   "colors": {
-    "accent": "#0469E3",
-    "background": "#f4f3f3",
-    "contentHeader": "#dedede",
-    "danger": "#c62121",
-    "highlight": "#325C82",
-    "muted": "#dedede",
-    "mutedOutline": "#c4c4c4",
-    "neutral": "#325C82",
-    "notice": "#d97706",
-    "onAccent": "#ffffff",
-    "onContentHeader": "#000000",
-    "onDanger": "#ffffff",
-    "onHighlight": "#f4f3f3",
-    "onMuted": "#7a7a7a",
-    "onNeutral": "#F8F8F8",
-    "onNotice": "#ffffff",
-    "onPositive": "#ffffff",
-    "onPrimary": "#ffffff",
-    "onSecondary": "#000000",
-    "outline": "#929292",
-    "positive": "#0d9488",
-    "primary": "#292C2a",
-    "secondary": "#f9f9f9",
-    "surface": "#ffffff",
-    "text": "#000000",
-    "underemphasize": "#c4c4c4",
+    "action": {
+      "background": {
+        "accent": {
+          "active": "#0d9488",
+          "default": "#0469E3",
+        },
+        "caution": {
+          "default": "#d97706",
+        },
+        "muted": {
+          "default": "#dedede",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "active": "#f4f3f3",
+          "default": "#292C2a",
+        },
+        "secondary": {
+          "active": "#325C82",
+          "default": "#f9f9f9",
+        },
+      },
+      "border": {
+        "accent": {
+          "default": "#0469E3",
+        },
+        "muted": {
+          "default": "#7a7a7a",
+        },
+        "primary": {
+          "default": "#000000",
+        },
+        "secondary": {
+          "active": "#325C82",
+          "default": "#929292",
+        },
+      },
+      "text": {
+        "caution": {
+          "default": "#ffffff",
+        },
+        "muted": {
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#ffffff",
+        },
+        "primary": {
+          "default": "#ffffff",
+        },
+        "secondary": {
+          "active": "#f4f3f3",
+          "default": "#000000",
+        },
+      },
+    },
+    "display": {
+      "background": {
+        "muted": {
+          "default": "#dedede",
+        },
+        "primary": {
+          "default": "#292C2a",
+        },
+        "secondary": {
+          "default": "#ffffff",
+        },
+      },
+      "border": {
+        "accent": {
+          "default": "#0469E3",
+        },
+        "muted": {
+          "active": "#325C82",
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "default": "#292C2a",
+        },
+        "secondary": {
+          "default": "#000000",
+        },
+      },
+      "text": {
+        "muted": {
+          "active": "#dedede",
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "default": "#000000",
+        },
+        "secondary": {
+          "default": "#325C82",
+        },
+      },
+    },
+    "input": {
+      "background": {
+        "accent": {
+          "default": "#0469E3",
+        },
+        "muted": {
+          "active": "#dedede",
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "active": "#f4f3f3",
+          "default": "#292C2a",
+        },
+        "secondary": {
+          "active": "#ffffff",
+          "default": "#f9f9f9",
+        },
+      },
+      "border": {
+        "accent": {
+          "default": "#0469E3",
+        },
+        "caution": {
+          "default": "#929292",
+        },
+        "muted": {
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "default": "#292C2a",
+        },
+        "secondary": {
+          "active": "#325C82",
+          "default": "#000000",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#ffffff",
+        },
+        "muted": {
+          "active": "#7a7a7a",
+          "default": "#dedede",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "default": "#ffffff",
+        },
+        "secondary": {
+          "default": "#000000",
+        },
+      },
+    },
+    "navigation": {
+      "backgound": {
+        "primary": {
+          "default": "#f4f3f3",
+        },
+      },
+      "border": {
+        "primary": {
+          "default": "2px solid",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#325C82",
+        },
+        "muted": {
+          "default": "#7a7a7a",
+        },
+        "negative": {
+          "default": "#c62121",
+        },
+        "primary": {
+          "default": "#000000",
+        },
+      },
+    },
   },
   "fontSizes": {
     "2xl": "1.5rem",
@@ -228,46 +393,49 @@ exports[`Bruttal theme snapshot 1`] = `
         "height": "min",
         "width": "min",
       },
+      "input:checked ~ &": {
+        "color": "input.text.secondary.default",
+      },
       "input:disabled ~ &": {
-        "color": "muted",
+        "color": "input.text.muted.default",
       },
       "input:disabled ~ & path": {
-        "backgroundColor": "onMuted",
+        "backgroundColor": "input.background.muted.default",
       },
       "input:focus ~ &": {
         "bg": "transparent",
       },
       "input:not(:checked) ~ &": {
-        "color": "primary",
+        "color": "input.text.secondary.default",
       },
       "input[aria-invalid="true"] ~ &": {
-        "color": "danger",
+        "color": "display.text.negative.default",
       },
     },
     "input": {
       "&[aria-invalid="true"]": {
-        "borderColor": "danger",
+        "borderColor": "display.border.negative.default",
       },
       "&[aria-invalid="true"] ~ span:has(iconify-icon)": {
-        "color": "danger",
+        "color": "display.text.negative.default",
       },
       "::placeholder": {
-        "color": "onMuted",
+        "color": "display.text.muted.default",
       },
       ":disabled": {
-        "backgroundColor": "muted",
+        "backgroundColor": "display.background.muted.default",
         "border": "muted",
-        "borderColor": "onMuted",
-        "color": "onMuted",
+        "borderColor": "display.border.muted.default",
+        "color": "display.text.muted.default",
       },
       ":focus-within": {
-        "outlineColor": "neutral",
+        "outlineColor": "display.border.muted.active",
       },
-      "backgroundColor": "surface",
+      "backgroundColor": "display.background.secondary.default",
       "border": "interaction",
-      "borderColor": "onMuted",
+      "borderColor": "display.border.muted.default",
       "borderRadius": "action",
-      "color": "text",
+      "color": "display.text.primary.default",
       "fontSize": "md",
       "lineHeight": "normal",
     },
@@ -277,35 +445,35 @@ exports[`Bruttal theme snapshot 1`] = `
       },
       "&[aria-invalid="true"]": {
         "border": "danger",
-        "borderColor": "danger",
-        "color": "danger",
-        "outlineColor": "danger",
+        "borderColor": "display.border.negative.default",
+        "color": "display.text.negative.default",
+        "outlineColor": "display.border.negative.default",
       },
       "&[aria-invalid="true"] ~ span>iconify-icon": {
-        "color": "danger",
+        "color": "display.text.negative.default",
       },
       ":disabled": {
         "border": "muted",
-        "borderColor": "onMuted",
-        "color": "muted",
+        "borderColor": "display.border.muted.default",
+        "color": "display.text.muted.active",
       },
       ":disabled ~ span > iconify-icon": {
-        "color": "muted",
+        "color": "display.text.muted.active",
         "cursor": "default",
       },
       ":focus-within": {
-        "outlineColor": "highlight",
+        "outlineColor": "display.border.muted.active",
       },
       ":not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover": {
-        "color": "highlight",
+        "color": "display.text.secondary.default",
       },
       ":not(:disabled, [aria-invalid="true"]):hover": {
-        "borderColor": "highlight",
+        "borderColor": "display.border.muted.active",
       },
       "border": "interaction",
-      "borderColor": "onMuted",
+      "borderColor": "display.border.muted.default",
       "borderRadius": "action",
-      "color": "text",
+      "color": "display.text.primary.default",
     },
     "label": {
       "& > div:has(input[type="checkbox"]) > svg": {
@@ -319,88 +487,88 @@ exports[`Bruttal theme snapshot 1`] = `
         "alignItems": "center",
       },
       "&:has(div > input[type="radio"]:disabled)": {
-        "color": "muted",
+        "color": "display.text.muted.active",
       },
       "&:has(input[type="checkbox"])": {
         "fontSize": "md",
         "gap": "2",
       },
       "&:has(input[type="checkbox"]:disabled)": {
-        "color": "onMuted",
+        "color": "display.text.muted.default",
       },
       "&:is([aria-disabled="true"])": {
-        "color": "onMuted",
+        "color": "display.text.muted.default",
       },
-      "color": "text",
+      "color": "display.text.primary.default",
     },
     "radio": {
       "&:is(svg, svg + svg)": {
         "height": "min",
         "width": "min",
       },
-      "color": "text",
+      "color": "input.text.secondary.default",
       "fontFamily": "body",
       "fontSize": "lg",
       "input:disabled ~ &": {
-        "color": "muted",
+        "color": "input.text.muted.default",
       },
       "input:focus ~ &": {
         "bg": "transparent",
       },
       "input[aria-invalid="true"] ~ &": {
-        "color": "danger",
+        "color": "input.text.negative.default",
       },
     },
     "select": {
       "&[aria-invalid="true"]": {
         "border": "danger",
-        "borderColor": "danger",
-        "outlineColor": "danger",
+        "borderColor": "display.border.negative.default",
+        "outlineColor": "display.border.negative.default",
       },
       "&[aria-invalid="true"] ~ * > span.error-icon": {
-        "color": "danger",
+        "color": "display.text.negative.default",
       },
       ":disabled": {
-        "backgroundColor": "muted",
+        "backgroundColor": "display.background.muted.default",
         "border": "muted",
-        "borderColor": "onMuted",
-        "color": "onMuted",
+        "borderColor": "display.border.muted.default",
+        "color": "display.text.muted.default",
       },
       ":disabled ~ * > span:has(iconify-icon)": {
-        "color": "onMuted",
+        "color": "display.text.muted.default",
       },
-      "backgroundColor": "surface",
+      "backgroundColor": "display.background.secondary.default",
       "border": "interaction",
-      "borderColor": "onMuted",
+      "borderColor": "display.border.muted.default",
       "borderRadius": "action",
-      "color": "text",
+      "color": "display.text.primary.default",
     },
     "textarea": {
       "&[aria-invalid="true"]": {
-        "borderColor": "danger",
-        "outlineColor": "danger",
+        "borderColor": "input.border.negative.default",
+        "outlineColor": "input.border.negative.default",
       },
       "&[aria-invalid="true"]+span>iconify-icon": {
-        "color": "danger",
+        "color": "input.text.negative.default",
         "fontSize": "md",
       },
       ":disabled": {
-        "backgroundColor": "muted",
+        "backgroundColor": "input.background.muted.active",
         "border": "muted",
-        "borderColor": "onMuted",
-        "color": "onMuted",
+        "borderColor": "input.border.muted.default",
+        "color": "input.text.muted.active",
       },
       ":disabled::placeholder": {
-        "color": "onMuted",
+        "color": "input.text.muted.active",
       },
       ":focus-within": {
-        "outlineColor": "primary",
+        "outlineColor": "input.border.primary.default",
       },
-      "backgroundColor": "surface",
+      "backgroundColor": "input.background.secondary.default",
       "border": "interaction",
-      "borderColor": "onMuted",
+      "borderColor": "input.border.muted.default",
       "borderRadius": "action",
-      "color": "text",
+      "color": "navigation.text.primary.default",
     },
   },
   "letterSpacings": {
@@ -466,9 +634,9 @@ exports[`Bruttal theme snapshot 1`] = `
         "textDecorationLine": "none",
       },
       ":visited": {
-        "color": "highlight",
+        "color": "navigation.text.accent.default",
       },
-      "color": "text",
+      "color": "navigation.text.primary.default",
       "fontFamily": "body",
       "lineHeight": "normal",
       "textDecorationLine": "underline",
@@ -478,7 +646,7 @@ exports[`Bruttal theme snapshot 1`] = `
         "border": "interaction",
         "borderRadius": "active",
       },
-      "backgroundColor": "background",
+      "backgroundColor": "navigation.background.primary.default",
       "fontFamily": "body",
       "fontSize": "md",
       "fontWeight": "normal",
@@ -503,7 +671,7 @@ exports[`Bruttal theme snapshot 1`] = `
   },
   "text": {
     "default": {
-      "color": "text",
+      "color": "navigation.text.primary.default",
       "fontFamily": "body",
     },
     "h1": {
@@ -550,14 +718,14 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "help": {
       "&[aria-disabled="true"]": {
-        "color": "onMuted",
+        "color": "navigation.text.muted.default",
       },
-      "color": "text",
+      "color": "navigation.text.primary.default",
       "negative": {
         "&[aria-disabled="true"]": {
-          "color": "onMuted",
+          "color": "navigation.text.muted.default",
         },
-        "color": "danger",
+        "color": "navigation.text.negative.default",
       },
     },
     "subheadline": {
