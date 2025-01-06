@@ -29,7 +29,6 @@ export const FormFieldPassword = <
       tooltip={tooltip}
       onTooltipClick={onTooltipClick}
       warning={inputProps.warning}
-      warningMessage={inputProps.warningMessage}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       render={({ field, fieldState }) => {

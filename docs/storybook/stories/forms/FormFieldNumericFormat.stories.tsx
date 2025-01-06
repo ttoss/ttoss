@@ -84,8 +84,7 @@ const Template: Story = () => {
           prefix="$ "
           placeholder="$ 00,00"
           allowNegative={false}
-          warning={true}
-          warningMessage="WARNING"
+          warning="WARNING"
         />
       </Flex>
 

@@ -21,8 +21,7 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: boolean;
   onTooltipClick?: () => void;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -48,8 +47,7 @@ export const FormField = <
   sx,
   css,
   render,
-  warning = false,
-  warningMessage,
+  warning,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -93,9 +91,7 @@ export const FormField = <
       {memoizedRender}
       <FormErrorMessage name={name} />
       {warning && (
-        <div style={{ color: 'orange', marginTop: '8px', fontSize: '12px' }}>
-          {warningMessage}
-        </div>
+        <Flex sx={{ color: 'orange', fontSize: 'sm' }}>{warning}</Flex>
       )}
     </Flex>
   );

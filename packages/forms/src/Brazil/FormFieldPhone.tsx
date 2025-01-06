@@ -6,8 +6,7 @@ import { FormField } from '../FormField';
 export type FormFieldPhoneProps = {
   label: string;
   name: string;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
@@ -20,7 +19,6 @@ export const FormFieldPhone = ({
       name={name}
       label={label}
       warning={patternFormatProps.warning}
-      warningMessage={patternFormatProps.warningMessage}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

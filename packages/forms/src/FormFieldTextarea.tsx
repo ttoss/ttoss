@@ -10,14 +10,13 @@ export const FormFieldTextarea = <
   label,
   name,
   warning,
-  warningMessage,
+
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -28,7 +27,6 @@ export const FormFieldTextarea = <
       id={id}
       sx={sx}
       warning={warning}
-      warningMessage={warningMessage}
       render={({ field, fieldState }) => {
         return (
           <Textarea

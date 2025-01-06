@@ -40,8 +40,7 @@ const Template: StoryFn = () => {
           { value: 'Mercedes', label: 'Mercedes' },
           { value: 'BMW', label: 'BMW' },
         ]}
-        warning={true}
-        warningMessage="WARNING"
+        warning="WARNING"
       />
 
       <Button sx={{ marginTop: 'lg' }} type="submit">

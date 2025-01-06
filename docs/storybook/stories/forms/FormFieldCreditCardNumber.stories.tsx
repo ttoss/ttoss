@@ -52,8 +52,7 @@ const Template: Story = () => {
         <FormFieldCreditCardNumber
           name="cartao3"
           label="cartao warning"
-          warning={true}
-          warningMessage="WARNING"
+          warning="WARNING"
         />
       </Flex>
 

@@ -6,15 +6,13 @@ import { FormField } from './FormField';
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & NumericFormatProps;
 
 export const FormFieldNumericFormat = ({
   label,
   name,
   warning,
-  warningMessage,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
   return (
@@ -22,7 +20,6 @@ export const FormFieldNumericFormat = ({
       label={label}
       name={name}
       warning={warning}
-      warningMessage={warningMessage}
       render={({ field }) => {
         return (
           <NumericFormat

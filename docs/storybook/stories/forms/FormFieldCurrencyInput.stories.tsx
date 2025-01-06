@@ -114,8 +114,7 @@ const WithWarning1: StoryFn = () => {
           fixedDecimalScale
           decimalScale={2}
           allowNegative={false}
-          warning={true}
-          warningMessage="Value entered low. The campaign may not have results. Find out more."
+          warning="Value entered low. The campaign may not have results. Find out more."
         />
       </Flex>
 

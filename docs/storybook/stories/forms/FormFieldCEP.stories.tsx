@@ -33,12 +33,7 @@ const Template: Story = () => {
         <FormFieldCEP name="cepDisabled" label="CEP:" disabled />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
-        <FormFieldCEP
-          name="cepWarning"
-          label="CEP:"
-          warning={true}
-          warningMessage="WARNING"
-        />
+        <FormFieldCEP name="cepWarning" label="CEP:" warning="WARNING" />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit

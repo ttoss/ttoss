@@ -6,8 +6,7 @@ import { FormField } from '..';
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +75,6 @@ export const FormFieldCNPJ = ({
       name={name}
       label={label}
       warning={patternFormatProps.warning}
-      warningMessage={patternFormatProps.warningMessage}
       render={({ field }) => {
         return (
           <PatternFormat

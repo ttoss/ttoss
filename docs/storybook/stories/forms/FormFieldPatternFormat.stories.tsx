@@ -78,8 +78,7 @@ const Template: Story = () => {
           label="CNPJ:"
           format="##.###.###/####-##"
           placeholder="12.345.678/0000-00"
-          warning={true}
-          warningMessage="WARNING"
+          warning="WARNING"
         />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">

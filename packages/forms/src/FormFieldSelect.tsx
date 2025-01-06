@@ -32,7 +32,6 @@ export const FormFieldSelect = <
       tooltip={tooltip}
       onTooltipClick={onTooltipClick}
       warning={selectProps.warning}
-      warningMessage={selectProps.warningMessage}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

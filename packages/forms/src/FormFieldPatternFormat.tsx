@@ -6,15 +6,13 @@ import { FormField } from './FormField';
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
-  warning?: boolean;
-  warningMessage?: string;
+  warning?: string;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
   label,
   name,
   warning,
-  warningMessage,
   ...patternFormatProps
 }: FormFieldPatternFormatProps) => {
   return (
@@ -22,7 +20,6 @@ export const FormFieldPatternFormat = ({
       name={name}
       label={label}
       warning={warning}
-      warningMessage={warningMessage}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat
