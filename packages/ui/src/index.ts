@@ -40,6 +40,7 @@ export {
 export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { Stack, type StackProps } from './components/Stack';
+export { Switch, type SwitchProps } from './components/Switch';
 export { Text, type TextProps } from './components/Text';
 export { Textarea, type TextareaProps } from './components/Textarea';
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';

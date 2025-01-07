@@ -1,6 +1,6 @@
+import { render, screen, userEvent } from '@ttoss/test-utils';
 import { Button } from '@ttoss/ui';
 import { Form, FormFieldCheckbox, useForm, yupResolver } from 'src/index';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 import { yup } from 'src/yup/yup';
 
 test('call onSubmit with correct data', async () => {

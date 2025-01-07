@@ -1,12 +1,13 @@
+import { Flex, Label, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
   FieldPath,
   FieldPathValue,
   FieldValues,
-  UseControllerReturn,
   useController,
+  UseControllerReturn,
 } from 'react-hook-form';
-import { Flex, Label, type SxProp } from '@ttoss/ui';
+
 import { FormErrorMessage } from './FormErrorMessage';
 
 export type FormFieldProps<
@@ -51,7 +52,9 @@ export const FormField = <
     defaultValue,
   });
 
-  const id = idProp || `form-field-${name}`;
+  const uniqueId = React.useId();
+
+  const id = idProp || `form-field-${name}-${uniqueId}`;
 
   const memoizedRender = React.useMemo(() => {
     return React.Children.map(render(controllerReturn), (child) => {
