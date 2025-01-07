@@ -1,5 +1,7 @@
 import { Switch as SwitchUi, type SwitchProps } from 'theme-ui';
 
+export type { SwitchProps };
+
 export const Switch = (props: SwitchProps) => {
   return (
     <SwitchUi
