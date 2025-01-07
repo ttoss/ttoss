@@ -86,12 +86,13 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
             defaultMessage: 'Passwords are not the same',
           })
         ),
-      signUpTerms: yup
-        .boolean()
-        .oneOf(
-          [props.signUpTerms?.isRequired],
-          'Você deve aceitar os Termos e Condições.'
-        ),
+      signUpTerms: props.signUpTerms?.isRequired
+        ? yup.boolean().required(
+            intl.formatMessage({
+              defaultMessage: 'You must accept the terms and conditions',
+            })
+          )
+        : yup.boolean(),
     });
   }, [intl, props.signUpTerms?.isRequired]);
 
