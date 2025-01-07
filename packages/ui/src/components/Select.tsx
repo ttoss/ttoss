@@ -50,13 +50,13 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
 
   const hasError = props.selectProps['aria-invalid'] === 'true';
 
-  const border = (() => {
+  const borderColor = (() => {
     if (isDisabled) {
-      return 'muted';
+      return 'display.border.muted.default';
     }
 
     if (hasError) {
-      return 'danger';
+      return 'display.border.negative.default';
     }
 
     return '';
@@ -64,17 +64,17 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
 
   const backgroundColor = (() => {
     if (isDisabled) {
-      return 'muted';
+      return 'display.background.muted.default';
     }
 
-    return 'surface';
+    return 'display.background.secondary.default';
   })();
 
   return (
     <Box
       sx={{
         '.react-select__control': {
-          border,
+          borderColor,
           backgroundColor,
           paddingX: '4',
           paddingY: '2',
@@ -94,7 +94,7 @@ const DropdownIndicator = (
 
   const color = (() => {
     if (isDisabled) {
-      return 'onMuted';
+      return 'display.text.muted.default';
     }
 
     return 'text';

@@ -17,9 +17,9 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "neutral": {
       "bg": "action.background.secondary.default",
-      "border": "muted",
+      "border": "sm",
       "borderColor": "action.border.muted.default",
-      "color": "action.text.secondary.default",
+      "color": "action.text.primary.default",
     },
     "positive": {
       "bg": "action.background.accent.active",
@@ -27,12 +27,12 @@ exports[`Bruttal theme snapshot 1`] = `
     },
   },
   "borders": {
-    "danger": "2px solid",
-    "default": "1px solid",
-    "highlight": "2px solid",
-    "interaction": "2px solid",
-    "muted": "1px solid",
-    "secondary": "2px solid",
+    "lg": "4px solid",
+    "md": "2px solid",
+    "none": "0px solid",
+    "sm": "1px solid",
+    "xl": "8px solid",
+    "xs": "0.5px solid",
   },
   "buttons": {
     "accent": {
@@ -46,9 +46,8 @@ exports[`Bruttal theme snapshot 1`] = `
         "filter": "brightness(90%)",
       },
       "backgroundColor": "action.background.accent.default",
-      "borderColor": "action.border.accent.default",
-      "borderRadius": "action",
-      "color": "action.text.primary.default",
+      "borderRadius": "sm",
+      "color": "action.text.accent.default",
     },
     "actionButton": {
       "accent": {
@@ -63,22 +62,22 @@ exports[`Bruttal theme snapshot 1`] = `
           "color": "action.text.secondary.active",
         },
         "backgroundColor": "action.background.secondary.default",
-        "border": "default",
+        "border": "sm",
         "borderColor": "action.background.primary.default",
-        "color": "action.text.secondary.default",
+        "color": "action.text.primary.default",
         "transition": "all 0.2s",
       },
       "quiet": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "action.background.muted.default",
         "border": "none",
         "borderColor": "transparent",
-        "color": "action.text.secondary.default",
+        "color": "action.text.accent.default",
       },
     },
     "closeButton": {
       ":disabled": {
         "backgroundColor": "action.background.muted.default",
-        "border": "muted",
+        "border": "sm",
         "borderColor": "action.border.muted.default",
         "color": "action.text.muted.default",
         "cursor": "not-allowed",
@@ -89,10 +88,10 @@ exports[`Bruttal theme snapshot 1`] = `
         "color": "action.text.secondary.active",
       },
       "backgroundColor": "action.background.primary.active",
-      "border": "default",
+      "border": "sm",
       "borderColor": "action.border.primary.default",
-      "borderRadius": "action",
-      "color": "action.text.secondary.default",
+      "borderRadius": "sm",
+      "color": "action.text.primary.default",
     },
     "destructive": {
       ":disabled": {
@@ -110,8 +109,7 @@ exports[`Bruttal theme snapshot 1`] = `
     "primary": {
       ":active": {
         "backgroundColor": "action.background.primary.default",
-        "borderColor": "action.border.secondary.default",
-        "color": "action.text.primary.default",
+        "color": "action.text.secondary.default",
       },
       ":disabled": {
         "backgroundColor": "action.background.muted.default",
@@ -123,9 +121,8 @@ exports[`Bruttal theme snapshot 1`] = `
         "filter": "brightness(90%)",
       },
       "backgroundColor": "action.background.primary.default",
-      "borderColor": "action.border.primary.default",
-      "borderRadius": "action",
-      "color": "action.text.primary.default",
+      "borderRadius": "sm",
+      "color": "action.text.secondary.default",
     },
     "secondary": {
       ":disabled": {
@@ -138,17 +135,17 @@ exports[`Bruttal theme snapshot 1`] = `
         "filter": "brightness(90%)",
       },
       "backgroundColor": "action.background.secondary.default",
-      "border": "secondary",
+      "border": "md",
       "borderColor": "action.border.primary.default",
-      "borderRadius": "action",
-      "color": "action.text.secondary.default",
+      "borderRadius": "sm",
+      "color": "action.text.primary.default",
     },
   },
   "cards": {
     "primary": {
       "alignItems": "center",
-      "backgroundColor": "display.background.primary.default",
-      "border": "1px solid black",
+      "backgroundColor": "display.background.secondary.default",
+      "border": "sm",
       "display": "flex",
       "flexDirection": "column",
       "padding": [
@@ -199,6 +196,9 @@ exports[`Bruttal theme snapshot 1`] = `
         },
       },
       "text": {
+        "accent": {
+          "default": "#ffffff",
+        },
         "caution": {
           "default": "#ffffff",
         },
@@ -209,11 +209,11 @@ exports[`Bruttal theme snapshot 1`] = `
           "default": "#ffffff",
         },
         "primary": {
-          "default": "#ffffff",
+          "default": "#000000",
         },
         "secondary": {
           "active": "#f4f3f3",
-          "default": "#000000",
+          "default": "#ffffff",
         },
       },
     },
@@ -248,6 +248,7 @@ exports[`Bruttal theme snapshot 1`] = `
         },
       },
       "text": {
+        "accent": "#0469E3",
         "muted": {
           "active": "#dedede",
           "default": "#7a7a7a",
@@ -307,7 +308,7 @@ exports[`Bruttal theme snapshot 1`] = `
       },
       "text": {
         "accent": {
-          "default": "#ffffff",
+          "default": "#0469E3",
         },
         "muted": {
           "active": "#7a7a7a",
@@ -328,11 +329,6 @@ exports[`Bruttal theme snapshot 1`] = `
       "backgound": {
         "primary": {
           "default": "#f4f3f3",
-        },
-      },
-      "border": {
-        "primary": {
-          "default": "2px solid",
         },
       },
       "text": {
@@ -394,7 +390,7 @@ exports[`Bruttal theme snapshot 1`] = `
         "width": "min",
       },
       "input:checked ~ &": {
-        "color": "input.text.secondary.default",
+        "color": "input.text.accent.default",
       },
       "input:disabled ~ &": {
         "color": "input.text.muted.default",
@@ -424,7 +420,7 @@ exports[`Bruttal theme snapshot 1`] = `
       },
       ":disabled": {
         "backgroundColor": "display.background.muted.default",
-        "border": "muted",
+        "border": "sm",
         "borderColor": "display.border.muted.default",
         "color": "display.text.muted.default",
       },
@@ -432,9 +428,9 @@ exports[`Bruttal theme snapshot 1`] = `
         "outlineColor": "display.border.muted.active",
       },
       "backgroundColor": "display.background.secondary.default",
-      "border": "interaction",
+      "border": "md",
       "borderColor": "display.border.muted.default",
-      "borderRadius": "action",
+      "borderRadius": "sm",
       "color": "display.text.primary.default",
       "fontSize": "md",
       "lineHeight": "normal",
@@ -444,7 +440,7 @@ exports[`Bruttal theme snapshot 1`] = `
         "fontSize": "md",
       },
       "&[aria-invalid="true"]": {
-        "border": "danger",
+        "border": "md",
         "borderColor": "display.border.negative.default",
         "color": "display.text.negative.default",
         "outlineColor": "display.border.negative.default",
@@ -453,7 +449,7 @@ exports[`Bruttal theme snapshot 1`] = `
         "color": "display.text.negative.default",
       },
       ":disabled": {
-        "border": "muted",
+        "border": "sm",
         "borderColor": "display.border.muted.default",
         "color": "display.text.muted.active",
       },
@@ -465,14 +461,14 @@ exports[`Bruttal theme snapshot 1`] = `
         "outlineColor": "display.border.muted.active",
       },
       ":not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover": {
-        "color": "display.text.secondary.default",
+        "color": "display.text.accent.default",
       },
       ":not(:disabled, [aria-invalid="true"]):hover": {
         "borderColor": "display.border.muted.active",
       },
-      "border": "interaction",
+      "border": "md",
       "borderColor": "display.border.muted.default",
-      "borderRadius": "action",
+      "borderRadius": "sm",
       "color": "display.text.primary.default",
     },
     "label": {
@@ -509,6 +505,9 @@ exports[`Bruttal theme snapshot 1`] = `
       "color": "input.text.secondary.default",
       "fontFamily": "body",
       "fontSize": "lg",
+      "input:checked ~ &": {
+        "color": "input.text.accent.default",
+      },
       "input:disabled ~ &": {
         "color": "input.text.muted.default",
       },
@@ -521,7 +520,7 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "select": {
       "&[aria-invalid="true"]": {
-        "border": "danger",
+        "border": "md",
         "borderColor": "display.border.negative.default",
         "outlineColor": "display.border.negative.default",
       },
@@ -530,7 +529,7 @@ exports[`Bruttal theme snapshot 1`] = `
       },
       ":disabled": {
         "backgroundColor": "display.background.muted.default",
-        "border": "muted",
+        "border": "sm",
         "borderColor": "display.border.muted.default",
         "color": "display.text.muted.default",
       },
@@ -538,9 +537,9 @@ exports[`Bruttal theme snapshot 1`] = `
         "color": "display.text.muted.default",
       },
       "backgroundColor": "display.background.secondary.default",
-      "border": "interaction",
+      "border": "md",
       "borderColor": "display.border.muted.default",
-      "borderRadius": "action",
+      "borderRadius": "sm",
       "color": "display.text.primary.default",
     },
     "textarea": {
@@ -550,11 +549,11 @@ exports[`Bruttal theme snapshot 1`] = `
       },
       "&[aria-invalid="true"]+span>iconify-icon": {
         "color": "input.text.negative.default",
-        "fontSize": "md",
+        "fontSize": "lg",
       },
       ":disabled": {
         "backgroundColor": "input.background.muted.active",
-        "border": "muted",
+        "border": "sm",
         "borderColor": "input.border.muted.default",
         "color": "input.text.muted.active",
       },
@@ -564,11 +563,11 @@ exports[`Bruttal theme snapshot 1`] = `
       ":focus-within": {
         "outlineColor": "input.border.primary.default",
       },
-      "backgroundColor": "input.background.secondary.default",
-      "border": "interaction",
+      "backgroundColor": "display.background.secondary.default",
+      "border": "md",
       "borderColor": "input.border.muted.default",
-      "borderRadius": "action",
-      "color": "navigation.text.primary.default",
+      "borderRadius": "sm",
+      "color": "display.text.primary.default",
     },
   },
   "letterSpacings": {
@@ -589,9 +588,17 @@ exports[`Bruttal theme snapshot 1`] = `
     "taller": "2",
   },
   "radii": {
-    "action": "4px",
-    "default": "4px",
-    "informative": "2px",
+    "2xl": "1rem",
+    "2xs": "0.0625rem",
+    "3xl": "1.5rem",
+    "4xl": "2rem",
+    "full": "9999px",
+    "lg": "0.5rem",
+    "md": "0.375rem",
+    "none": "0",
+    "sm": "0.25rem",
+    "xl": "0.75rem",
+    "xs": "0.125rem",
   },
   "space": {
     "0.5": "0.125rem",
@@ -643,8 +650,8 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "root": {
       ".react-select__control": {
-        "border": "interaction",
-        "borderRadius": "active",
+        "border": "md",
+        "borderRadius": "sm",
       },
       "backgroundColor": "navigation.background.primary.default",
       "fontFamily": "body",

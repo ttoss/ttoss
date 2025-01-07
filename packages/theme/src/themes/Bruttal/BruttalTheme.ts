@@ -40,29 +40,11 @@ const coreColors = {
   teal600: '#0d9488',
 };
 
-const coreBorders = {
-  none: '0px solid',
-  thin: '1px solid',
-  medium: '2px solid',
-  thick: '4px solid',
-};
-
-const coreRadii = {
-  sharp: '0px',
-  xs: '2px',
-  sm: '4px',
-  md: '6px',
-  lg: '8px',
-  xl: '12px',
-  '2xl': '16px',
-  '3xl': '24px',
-  circle: '9999px',
-};
-
 export const BruttalTheme: Theme = {
   /**
    * Tokens
    */
+  borders: defaultTheme.borders,
   fontSizes: defaultTheme.fontSizes,
   fontWeights: defaultTheme.fontWeights,
   letterSpacings: defaultTheme.letterSpacings,
@@ -78,17 +60,15 @@ export const BruttalTheme: Theme = {
         muted: { default: coreColors.gray600 },
         negative: { default: coreColors.red700 },
       },
-      border: {
-        primary: { default: coreBorders.medium },
-      },
     },
     action: {
       text: {
-        primary: { default: coreColors.white },
+        primary: { default: coreColors.black },
         secondary: {
-          default: coreColors.black,
+          default: coreColors.white,
           active: coreColors.complimentary,
         },
+        accent: { default: coreColors.white },
         negative: { default: coreColors.white },
         caution: { default: coreColors.white },
         muted: { default: coreColors.gray600 },
@@ -128,7 +108,7 @@ export const BruttalTheme: Theme = {
           default: coreColors.gray200,
           active: coreColors.gray600,
         },
-        accent: { default: coreColors.white },
+        accent: { default: coreColors.accent },
         negative: { default: coreColors.red700 },
       },
       background: {
@@ -172,6 +152,7 @@ export const BruttalTheme: Theme = {
           default: coreColors.gray600,
           active: coreColors.gray200,
         },
+        accent: coreColors.accent,
         negative: { default: coreColors.red700 },
       },
       border: {
@@ -185,35 +166,6 @@ export const BruttalTheme: Theme = {
         negative: { default: coreColors.red700 },
       },
     },
-    /**
-     * old color tokens
-     */
-    // background: coreColors.complimentary,
-    // text: coreColors.black,
-    // muted: coreColors.gray200,
-    // onMuted: coreColors.gray600,
-    // mutedOutline: coreColors.gray300,
-    // danger: coreColors.red700,
-    // onDanger: coreColors.white,
-    // notice: coreColors.amber600,
-    // onNotice: coreColors.white,
-    // positive: coreColors.teal600,
-    // onPositive: coreColors.white,
-    // surface: coreColors.white,
-    // contentHeader: coreColors.gray200,
-    // onContentHeader: coreColors.black,
-    // outline: coreColors.gray500,
-    // primary: coreColors.main,
-    // onPrimary: coreColors.white,
-    // secondary: coreColors.gray100,
-    // onSecondary: coreColors.black,
-    // highlight: coreColors.darkNeutral,
-    // onHighlight: coreColors.complimentary,
-    // accent: coreColors.accent,
-    // onAccent: coreColors.white,
-    // neutral: coreColors.darkNeutral,
-    // onNeutral: coreColors.lightNeutral,
-    // underemphasize: coreColors.gray300,
   },
   fonts: {
     main: coreColors.main,
@@ -222,19 +174,7 @@ export const BruttalTheme: Theme = {
     highlight: coreFonts.main,
     caption: coreFonts.main,
   },
-  borders: {
-    default: coreBorders.thin,
-    secondary: coreBorders.medium,
-    muted: coreBorders.thin,
-    interaction: coreBorders.medium,
-    danger: coreBorders.medium,
-    highlight: coreBorders.medium,
-  },
-  radii: {
-    informative: coreRadii.xs,
-    default: coreRadii.sm,
-    action: coreRadii.sm,
-  },
+  radii: defaultTheme.radii,
   /**
    * Global styles
    */
@@ -248,8 +188,8 @@ export const BruttalTheme: Theme = {
       padding: 0,
       backgroundColor: 'navigation.background.primary.default',
       '.react-select__control': {
-        border: 'interaction',
-        borderRadius: 'active',
+        border: 'md',
+        borderRadius: 'sm',
       },
       /**
        * HTML elements
@@ -295,9 +235,9 @@ export const BruttalTheme: Theme = {
       bg: 'action.background.negative.default',
     },
     neutral: {
-      color: 'action.text.secondary.default',
+      color: 'action.text.primary.default',
       bg: 'action.background.secondary.default',
-      border: 'muted',
+      border: 'sm',
       borderColor: 'action.border.muted.default',
     },
     informative: {
@@ -312,9 +252,8 @@ export const BruttalTheme: Theme = {
   buttons: {
     accent: {
       backgroundColor: 'action.background.accent.default',
-      color: 'action.text.primary.default',
-      borderRadius: 'action',
-      borderColor: 'action.border.accent.default',
+      color: 'action.text.accent.default',
+      borderRadius: 'sm',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
@@ -327,16 +266,14 @@ export const BruttalTheme: Theme = {
     },
     primary: {
       backgroundColor: 'action.background.primary.default',
-      color: 'action.text.primary.default',
-      borderRadius: 'action',
-      borderColor: 'action.border.primary.default',
+      color: 'action.text.secondary.default',
+      borderRadius: 'sm',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':active': {
         backgroundColor: 'action.background.primary.default',
-        color: 'action.text.primary.default',
-        borderColor: 'action.border.secondary.default',
+        color: 'action.text.secondary.default',
       },
       ':disabled': {
         cursor: 'default',
@@ -347,9 +284,9 @@ export const BruttalTheme: Theme = {
     },
     secondary: {
       backgroundColor: 'action.background.secondary.default',
-      color: 'action.text.secondary.default',
-      borderRadius: 'action',
-      border: 'secondary',
+      color: 'action.text.primary.default',
+      borderRadius: 'sm',
+      border: 'md',
       borderColor: 'action.border.primary.default',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
@@ -376,12 +313,12 @@ export const BruttalTheme: Theme = {
     },
     closeButton: {
       backgroundColor: 'action.background.primary.active',
-      color: 'action.text.secondary.default',
-      border: 'default',
+      color: 'action.text.primary.default',
+      border: 'sm',
       borderColor: 'action.border.primary.default',
-      borderRadius: 'action',
+      borderRadius: 'sm',
       ':disabled': {
-        border: 'muted',
+        border: 'sm',
         backgroundColor: 'action.background.muted.default',
         borderColor: 'action.border.muted.default',
         color: 'action.text.muted.default',
@@ -396,8 +333,8 @@ export const BruttalTheme: Theme = {
     actionButton: {
       default: {
         backgroundColor: 'action.background.secondary.default',
-        color: 'action.text.secondary.default',
-        border: 'default',
+        color: 'action.text.primary.default',
+        border: 'sm',
         borderColor: 'action.background.primary.default',
         transition: 'all 0.2s',
         ':is(:focus-within, :hover)': {
@@ -412,8 +349,8 @@ export const BruttalTheme: Theme = {
         border: 'none',
       },
       quiet: {
-        backgroundColor: 'transparent',
-        color: 'action.text.secondary.default',
+        backgroundColor: 'action.background.muted.default',
+        color: 'action.text.accent.default',
         border: 'none',
         borderColor: 'transparent',
       },
@@ -421,8 +358,8 @@ export const BruttalTheme: Theme = {
   },
   cards: {
     primary: {
-      backgroundColor: 'display.background.primary.default',
-      border: '1px solid black',
+      backgroundColor: 'display.background.secondary.default',
+      border: 'sm',
       padding: [4, 5],
       display: 'flex',
       flexDirection: 'column',
@@ -464,6 +401,9 @@ export const BruttalTheme: Theme = {
       'input:disabled ~ &': {
         color: 'input.text.muted.default',
       },
+      'input:checked ~ &': {
+        color: 'input.text.accent.default',
+      },
       'input[aria-invalid="true"] ~ &': {
         color: 'input.text.negative.default',
       },
@@ -483,7 +423,7 @@ export const BruttalTheme: Theme = {
         color: 'input.text.secondary.default',
       },
       'input:checked ~ &': {
-        color: 'input.text.secondary.default',
+        color: 'input.text.accent.default',
       },
       'input:disabled ~ &': {
         color: 'input.text.muted.default',
@@ -501,9 +441,9 @@ export const BruttalTheme: Theme = {
     },
     input: {
       color: 'display.text.primary.default',
-      border: 'interaction',
+      border: 'md',
       borderColor: 'display.border.muted.default',
-      borderRadius: 'action',
+      borderRadius: 'sm',
       backgroundColor: 'display.background.secondary.default',
       fontSize: 'md',
       lineHeight: 'normal',
@@ -516,7 +456,7 @@ export const BruttalTheme: Theme = {
       ':disabled': {
         backgroundColor: 'display.background.muted.default',
         color: 'display.text.muted.default',
-        border: 'muted',
+        border: 'sm',
         borderColor: 'display.border.muted.default',
       },
       '&[aria-invalid="true"]': {
@@ -528,11 +468,11 @@ export const BruttalTheme: Theme = {
     },
     inputNumber: {
       color: 'display.text.primary.default',
-      border: 'interaction',
+      border: 'md',
       borderColor: 'display.border.muted.default',
-      borderRadius: 'action',
+      borderRadius: 'sm',
       ':disabled': {
-        border: 'muted',
+        border: 'sm',
         borderColor: 'display.border.muted.default',
         color: 'display.text.muted.active',
       },
@@ -547,13 +487,13 @@ export const BruttalTheme: Theme = {
         borderColor: 'display.border.muted.active',
       },
       ':not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover': {
-        color: 'display.text.secondary.default',
+        color: 'display.text.accent.default',
       },
       '& ~ span:has(iconify-icon)': {
         fontSize: 'md',
       },
       '&[aria-invalid="true"]': {
-        border: 'danger',
+        border: 'md',
         borderColor: 'display.border.negative.default',
         color: 'display.text.negative.default',
         outlineColor: 'display.border.negative.default',
@@ -565,11 +505,11 @@ export const BruttalTheme: Theme = {
     select: {
       color: 'display.text.primary.default',
       backgroundColor: 'display.background.secondary.default',
-      border: 'interaction',
+      border: 'md',
       borderColor: 'display.border.muted.default',
-      borderRadius: 'action',
+      borderRadius: 'sm',
       ':disabled': {
-        border: 'muted',
+        border: 'sm',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'display.background.muted.default',
         color: 'display.text.muted.default',
@@ -578,7 +518,7 @@ export const BruttalTheme: Theme = {
         color: 'display.text.muted.default',
       },
       '&[aria-invalid="true"]': {
-        border: 'danger',
+        border: 'md',
         borderColor: 'display.border.negative.default',
         outlineColor: 'display.border.negative.default',
       },
@@ -587,11 +527,11 @@ export const BruttalTheme: Theme = {
       },
     },
     textarea: {
-      color: 'navigation.text.primary.default',
-      border: 'interaction',
+      color: 'display.text.primary.default',
+      border: 'md',
       borderColor: 'input.border.muted.default',
-      backgroundColor: 'input.background.secondary.default',
-      borderRadius: 'action',
+      backgroundColor: 'display.background.secondary.default',
+      borderRadius: 'sm',
       ':focus-within': {
         outlineColor: 'input.border.primary.default',
       },
@@ -601,7 +541,7 @@ export const BruttalTheme: Theme = {
       ':disabled': {
         borderColor: 'input.border.muted.default',
         backgroundColor: 'input.background.muted.active',
-        border: 'muted',
+        border: 'sm',
         color: 'input.text.muted.active',
       },
       '&[aria-invalid="true"]': {
@@ -610,7 +550,7 @@ export const BruttalTheme: Theme = {
       },
       '&[aria-invalid="true"]+span>iconify-icon': {
         color: 'input.text.negative.default',
-        fontSize: 'md',
+        fontSize: 'lg',
       },
     },
   },

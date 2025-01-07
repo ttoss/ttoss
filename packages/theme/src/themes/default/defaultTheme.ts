@@ -1,4 +1,7 @@
+import type { Theme } from 'theme-ui';
+
 import {
+  borders,
   breakpoints,
   fontSizes,
   fontWeights,
@@ -9,7 +12,6 @@ import {
   spacing,
   zIndices,
 } from '../../defaultTokens/index';
-import type { Theme } from 'theme-ui';
 
 export const defaultTheme: Theme = {
   breakpoints: Object.values(breakpoints),
@@ -21,4 +23,5 @@ export const defaultTheme: Theme = {
   sizes,
   space: spacing,
   zIndices,
+  borders,
 };
