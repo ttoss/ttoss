@@ -7,6 +7,7 @@ import {
   FormFieldInput,
   FormFieldPassword,
   FormFieldSelect,
+  FormFieldSwitch,
   FormFieldTextarea,
   FormGroup,
   useForm,
@@ -89,7 +90,14 @@ const Template: StoryFn = () => {
           placeholder="Password"
           showPasswordByDefault
         />
-        <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
+        <FormFieldCheckbox
+          name="receiveAlertEmails"
+          label="Receive Alert Emails"
+        />
+        <FormFieldSwitch
+          name="receiveMarketingEmails"
+          label="Receive Marketing Emails"
+        />
         <FormFieldInput name="version" label="Version (disabled)" disabled />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">

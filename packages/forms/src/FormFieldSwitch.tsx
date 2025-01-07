@@ -1,20 +1,21 @@
-import { Checkbox, type CheckboxProps } from '@ttoss/ui';
+import { Switch, type SwitchProps } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField } from './FormField';
 
-export const FormFieldCheckbox = <
+export const FormFieldSwitch = <
   TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   name,
   sx,
-  ...checkboxProps
+  ...switchProps
 }: {
   label?: React.ReactNode;
-  name: FieldPath<TFieldValues>;
-} & CheckboxProps) => {
+  name: TName;
+} & SwitchProps) => {
   return (
     <FormField
       label={label}
@@ -22,9 +23,9 @@ export const FormFieldCheckbox = <
       name={name}
       render={({ field, fieldState }) => {
         return (
-          <Checkbox
+          <Switch
             {...field}
-            {...checkboxProps}
+            {...switchProps}
             aria-invalid={!!fieldState.error}
             sx={sx}
           />
