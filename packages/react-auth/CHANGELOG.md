@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.1...@ttoss/react-auth@2.4.2) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+- react-auth tests ([709af7f](https://github.com/ttoss/ttoss/commit/709af7f944bd3ace1f04f33a1733ea9ab3a72c7a))
+
 ## [2.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.0...@ttoss/react-auth@2.4.1) (2025-01-03)
 
 ### Bug Fixes

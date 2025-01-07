@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.1...@terezinha-farm/next-app@0.2.2) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([d512d81](https://github.com/ttoss/ttoss/commit/d512d8101647c4a2d180a6654f18ba7df7e4fb41))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.0...@terezinha-farm/next-app@0.2.1) (2025-01-03)
 
 **Note:** Version bump only for package @terezinha-farm/next-app
