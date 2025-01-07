@@ -21,7 +21,7 @@ export const ActionButton = ({
       sx={{
         padding: '2',
         gap: '4',
-        fontFamily: 'caption',
+        fontFamily: 'body',
         borderRadius: 'action',
         outlineColor: 'transparent',
         ':disabled': props.disabled

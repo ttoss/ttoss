@@ -22,7 +22,7 @@ export const Badge = ({
       sx={{
         display: 'flex',
         alignItems: 'center',
-        fontFamily: 'caption',
+        fontFamily: 'body',
         fontWeight: 'normal',
         lineHeight: 'base',
         fontSize: 'sm',

@@ -17,7 +17,6 @@ const defaultBorders = defaultTheme.borders as DefaultBorders;
 
 export const OcaTheme: Theme = createTheme(
   {
-    radii: defaultTheme.radii,
     colors: {
       navigation: {
         background: {
@@ -46,6 +45,7 @@ export const OcaTheme: Theme = createTheme(
           muted: {
             default: '#F3F4F6',
             active: '#F3F4F6',
+            disabled: '#9CA3AF',
           },
           negative: { default: 'red' },
         },
@@ -125,7 +125,7 @@ export const OcaTheme: Theme = createTheme(
     fonts: {
       heading: '"Outfit", sans-serif',
       body: '"Source Sans Pro", sans-serif',
-      monospace: '"Inconsolata", sans-serif',
+      mono: '"Inconsolata", sans-serif',
     },
     borders: {
       none: defaultBorders.none,
@@ -198,48 +198,6 @@ export const OcaTheme: Theme = createTheme(
       },
       textarea: {
         borderRadius: 'lg',
-      },
-    },
-    text: {
-      title: {
-        fontFamily: 'heading',
-        fontSize: 4,
-        lineSpace: 'wide',
-      },
-      headline: {
-        fontFamily: 'heading',
-        lineHeight: 'short',
-        letterSpacing: 'normal',
-      },
-      subheadline: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'normal',
-      },
-      h1: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'normal',
-      },
-      h2: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'normal',
-      },
-      h3: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'wide',
-      },
-      h4: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'wide',
-      },
-      h5: {
-        fontFamily: 'body',
-        lineHeight: 'normal',
-        letterSpacing: 'wide',
       },
     },
   },

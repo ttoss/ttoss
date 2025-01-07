@@ -3,9 +3,9 @@ import { Theme } from 'theme-ui';
 import { defaultTheme } from '../default/defaultTheme';
 
 const coreFonts = {
-  main: '"Atkinson Hyperlegible", sans-serif',
-  contrast: '"Work Sans", sans-serif',
-  monospace: '"Inconsolata", sans-serif',
+  body: '"Atkinson Hyperlegible", sans-serif',
+  heading: '"Work Sans", sans-serif',
+  mono: '"Inconsolata", sans-serif',
 };
 
 const brandColors = {
@@ -117,12 +117,13 @@ export const BruttalTheme: Theme = {
           active: coreColors.complimentary,
         },
         secondary: {
-          default: coreColors.gray100,
+          default: coreColors.gray200,
           active: coreColors.white,
         },
         muted: {
           default: coreColors.gray600,
           active: coreColors.gray200,
+          disabled: coreColors.gray200,
         },
         accent: { default: coreColors.accent },
         negative: { default: coreColors.red700 },
@@ -167,13 +168,7 @@ export const BruttalTheme: Theme = {
       },
     },
   },
-  fonts: {
-    main: coreColors.main,
-    contrast: coreFonts.contrast,
-    body: coreFonts.main,
-    highlight: coreFonts.main,
-    caption: coreFonts.main,
-  },
+  fonts: coreFonts,
   radii: defaultTheme.radii,
   /**
    * Global styles
@@ -577,49 +572,49 @@ export const BruttalTheme: Theme = {
       },
     },
     headline: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
       lineHeight: 'moderate',
       fontSize: '5xl',
       letterSpacing: 'wide',
     },
     subheadline: {
-      fontFamily: 'main',
+      fontFamily: 'body',
       fontWeight: 'bold',
       lineHeight: 'normal',
       fontSize: 'xl',
       letterSpacing: 'wide',
     },
     h1: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'extrabold',
       lineHeight: 'normal',
       fontSize: '3xl',
       letterSpacing: 'wide',
     },
     h2: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
       lineHeight: 'normal',
       fontSize: '2xl',
       letterSpacing: 'wide',
     },
     h3: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
       lineHeight: 'normal',
       fontSize: 'xl',
       letterSpacing: 'wide',
     },
     h4: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'semibold',
       lineHeight: 'normal',
       fontSize: 'lg',
       letterSpacing: 'wide',
     },
     h5: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'semibold',
       lineHeight: 'normal',
       fontSize: 'md',

@@ -20,7 +20,7 @@ export const HelpText = ({
       variant={variant}
       sx={{
         fontSize: 'sm',
-        fontFamily: 'caption',
+        fontFamily: 'body',
         lineHeight: 'normal',
         ...sx,
       }}

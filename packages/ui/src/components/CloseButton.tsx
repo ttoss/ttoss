@@ -22,7 +22,7 @@ export const CloseButton = React.forwardRef<
       type="button"
       aria-label={label}
       sx={{
-        fontFamily: 'caption',
+        fontFamily: 'body',
         fontSize: 'xs',
         display: 'inline-flex',
         alignItems: 'center',
