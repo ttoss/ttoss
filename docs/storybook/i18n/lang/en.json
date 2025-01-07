@@ -167,5 +167,9 @@
     "defaultMessage": "Sign up",
     "description": "Title on sign up.",
     "module": "@ttoss/react-auth"
+  },
+  "qnQYqN": {
+    "defaultMessage": "You must accept the terms and conditions",
+    "module": "@ttoss/react-auth"
   }
 }
