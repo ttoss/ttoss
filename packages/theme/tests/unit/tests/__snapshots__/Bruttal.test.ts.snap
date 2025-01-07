@@ -272,6 +272,7 @@ exports[`Bruttal theme snapshot 1`] = `
         "muted": {
           "active": "#dedede",
           "default": "#7a7a7a",
+          "disabled": "#dedede",
         },
         "negative": {
           "default": "#c62121",
@@ -282,7 +283,7 @@ exports[`Bruttal theme snapshot 1`] = `
         },
         "secondary": {
           "active": "#ffffff",
-          "default": "#f9f9f9",
+          "default": "#dedede",
         },
       },
       "border": {
