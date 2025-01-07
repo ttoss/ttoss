@@ -1,7 +1,7 @@
-import { Button } from '@ttoss/ui';
-import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
+import { Form, FormFieldSelect, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Button } from '@ttoss/ui';
 
 export default {
   title: 'Forms/FormFieldSelect',
@@ -31,7 +31,7 @@ const Template: StoryFn = () => {
         ]}
       />
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
@@ -59,7 +59,7 @@ const Template2: StoryFn = () => {
         placeholder="Please select a car"
       />
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

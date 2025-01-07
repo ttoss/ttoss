@@ -6,9 +6,9 @@ export const MultistepFooter = ({ footer }: { footer: string }) => {
       <Text
         sx={{
           textAlign: 'center',
-          marginTop: '4xl',
-          marginBottom: 'lg',
-          marginX: '2xl',
+          marginTop: '8',
+          marginBottom: '4',
+          marginX: '6',
         }}
       >
         {footer}

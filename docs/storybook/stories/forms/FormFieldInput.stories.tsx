@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
+import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldInput',
@@ -27,7 +27,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldInput
           name="firstName"
           label="First Name"
@@ -38,7 +38,7 @@ const Template: Story = () => {
 
         <FormFieldInput disabled name="age" label="Age" defaultValue={22} />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

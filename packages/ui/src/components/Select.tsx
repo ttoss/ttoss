@@ -3,11 +3,10 @@
  * More info about React Select: https://react-select.com/home
  * ttoss Figma: https://www.figma.com/file/VrB76VkH4hKCDUe9iYhpYu/_Component-%2F-Forms-%2F-Select?type=design&mode=design&t=ZBIeOpqcvQn3yq2t-0
  */
-import * as React from 'react';
-import { Box, Flex, Text } from '..';
 import { Icon, IconType } from '@ttoss/react-icons';
-import { type SxProp } from 'theme-ui';
+import * as React from 'react';
 import ReactSelect, {
+  components,
   type ContainerProps,
   type ControlProps,
   type DropdownIndicatorProps,
@@ -15,8 +14,10 @@ import ReactSelect, {
   type PlaceholderProps,
   type Props as ReactSelectProps,
   type ValueContainerProps,
-  components,
 } from 'react-select';
+import { type SxProp } from 'theme-ui';
+
+import { Box, Flex, Text } from '..';
 
 type SelectOptionValue = string | number | boolean;
 
@@ -49,35 +50,34 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
 
   const hasError = props.selectProps['aria-invalid'] === 'true';
 
-  const border = (() => {
+  const borderColor = (() => {
     if (isDisabled) {
-      return 'muted';
+      return 'display.border.muted.default';
     }
 
     if (hasError) {
-      return 'danger';
+      return 'display.border.negative.default';
     }
 
-    return 'interaction';
+    return '';
   })();
 
   const backgroundColor = (() => {
     if (isDisabled) {
-      return 'muted';
+      return 'display.background.muted.default';
     }
 
-    return 'surface';
+    return 'display.background.secondary.default';
   })();
 
   return (
     <Box
       sx={{
         '.react-select__control': {
-          border,
+          borderColor,
           backgroundColor,
-          paddingX: 'xl',
-          paddingY: 'lg',
-          borderRadius: 'action',
+          paddingX: '4',
+          paddingY: '2',
         },
       }}
     >
@@ -94,7 +94,7 @@ const DropdownIndicator = (
 
   const color = (() => {
     if (isDisabled) {
-      return 'onMuted';
+      return 'display.text.muted.default';
     }
 
     return 'text';
@@ -103,7 +103,7 @@ const DropdownIndicator = (
   return (
     <Text
       sx={{
-        fontSize: 'base',
+        fontSize: 'md',
         color,
         alignSelf: 'center',
         display: 'flex',
@@ -121,7 +121,7 @@ const IndicatorsContainer = ({
   return (
     <Box
       sx={{
-        marginLeft: 'lg',
+        marginLeft: '4',
         border: 'none',
       }}
     >
@@ -188,7 +188,7 @@ const ValueContainer = ({
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flex: 1,
       }}
     >
@@ -198,7 +198,7 @@ const ValueContainer = ({
             alignSelf: 'center',
             pointerEvents: 'none',
             lineHeight: 0,
-            fontSize: 'base',
+            fontSize: 'md',
           }}
         >
           <Icon icon={finalLeadingIcon} />
@@ -219,7 +219,7 @@ const ValueContainer = ({
             alignSelf: 'center',
             pointerEvents: 'none',
             lineHeight: 0,
-            fontSize: 'base',
+            fontSize: 'md',
             color: trailingIconColor,
           }}
         >

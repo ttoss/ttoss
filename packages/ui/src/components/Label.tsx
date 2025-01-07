@@ -1,5 +1,6 @@
 import { Icon } from '@ttoss/react-icons';
-import { type LabelProps as LabelPropsUi, Label as LabelUi } from 'theme-ui';
+import { Label as LabelUi, type LabelProps as LabelPropsUi } from 'theme-ui';
+
 import { Text } from '..';
 
 const TOOLTIP_LABEL = 'tooltip';
@@ -19,10 +20,9 @@ export const Label = ({
   return (
     <LabelUi
       sx={{
-        fontFamily: 'caption',
         alignItems: 'center',
         fontSize: 'sm',
-        lineHeight: 'base',
+        lineHeight: 'normal',
         ...sx,
       }}
       {...props}
