@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.5.1...@docs/storybook@2.6.0) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+
+### Features
+
+- add switch component ([#640](https://github.com/ttoss/ttoss/issues/640)) ([d03aaaf](https://github.com/ttoss/ttoss/commit/d03aaaf204110925d07db8ce8921f8b45547e91b))
+
 ## [2.5.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.5.0...@docs/storybook@2.5.1) (2025-01-03)
 
 ### Bug Fixes

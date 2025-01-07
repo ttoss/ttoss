@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.0.15...@ttoss/ui@5.1.0) (2025-01-07)
+
+### Features
+
+- add switch component ([#640](https://github.com/ttoss/ttoss/issues/640)) ([d03aaaf](https://github.com/ttoss/ttoss/commit/d03aaaf204110925d07db8ce8921f8b45547e91b))
+
 ## [5.0.15](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.0.14...@ttoss/ui@5.0.15) (2025-01-02)
 
 ### Bug Fixes

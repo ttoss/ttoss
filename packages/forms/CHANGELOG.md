@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.28.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.27.0...@ttoss/forms@0.28.0) (2025-01-07)
+
+### Features
+
+- add switch component ([#640](https://github.com/ttoss/ttoss/issues/640)) ([d03aaaf](https://github.com/ttoss/ttoss/commit/d03aaaf204110925d07db8ce8921f8b45547e91b))
+
 # [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.26.9...@ttoss/forms@0.27.0) (2025-01-02)
 
 ### Features
