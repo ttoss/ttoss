@@ -122,6 +122,9 @@
     "defaultMessage": "Sign up",
     "description": "Title on sign up."
   },
+  "qnQYqN": {
+    "defaultMessage": "You must accept the terms and conditions"
+  },
   "D1C6fR": {
     "defaultMessage": "Field must be at least {min} characters",
     "description": "Min length field",
