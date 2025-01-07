@@ -204,4 +204,41 @@ describe('sign up terms', () => {
 
     expect(onSignUp).toHaveBeenCalledTimes(1);
   });
+
+  test('Should call the onSubmit function if click on the Signup button with the fields filled', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+
+    render(
+      <AuthSignUp
+        {...{
+          onSignUp,
+          onReturnToSignIn,
+          signUpTerms: {
+            isRequired: true,
+            terms: [
+              {
+                label: 'Terms and Conditions',
+                url: 'https://example.com/terms',
+              },
+            ],
+          },
+        }}
+      />
+    );
+
+    const emailInput = screen.getByLabelText('Email');
+    const password = screen.getByLabelText('Password');
+    const confirmPassword = screen.getByLabelText('Confirm password');
+    const checkbox = screen.getByRole('checkbox');
+    const buttonSubmit = screen.getByLabelText('submit-button');
+
+    await user.type(emailInput, userForm.email);
+    await user.type(password, userForm.password);
+    await user.type(confirmPassword, userForm.password);
+    await user.click(checkbox);
+
+    await user.click(buttonSubmit);
+
+    expect(onSignUp).toHaveBeenCalledWith({ ...userForm, signUpTerms: true });
+  });
 });
