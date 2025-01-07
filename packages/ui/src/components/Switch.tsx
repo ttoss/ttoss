@@ -6,6 +6,8 @@ export const Switch = (props: SwitchProps) => {
   return (
     <SwitchUi
       {...props}
+      role="switch"
+      aria-checked={props.checked || false}
       sx={{
         backgroundColor: 'input.background.muted.default',
         'input:checked ~ &': {
@@ -16,6 +18,11 @@ export const Switch = (props: SwitchProps) => {
         },
         'input:checked ~ & > div': {
           backgroundColor: 'input.background.accent.default',
+        },
+        'input:focus ~ &': {
+          outline: 'md',
+          outlineColor: 'input.border.accent.default',
+          outlineOffset: '0px',
         },
       }}
     />

@@ -1,8 +1,8 @@
-import { Checkbox, type CheckboxProps, Flex, Label } from '@ttoss/ui';
+import { Checkbox, type CheckboxProps } from '@ttoss/ui';
 import * as React from 'react';
-import { FieldPath, FieldValues, useController } from 'react-hook-form';
+import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormErrorMessage } from './FormErrorMessage';
+import { FormField } from './FormField';
 
 export const FormFieldCheckbox = <
   TFieldValues extends FieldValues = FieldValues,
@@ -15,39 +15,21 @@ export const FormFieldCheckbox = <
   label?: React.ReactNode;
   name: FieldPath<TFieldValues>;
 } & CheckboxProps) => {
-  const {
-    field: { onChange, onBlur, value, ref },
-    formState: { errors },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } = useController<any>({
-    name,
-    defaultValue: false,
-  });
-
-  const uniqueId = React.useId();
-
-  const id = checkboxProps.id || `form-field-checkbox-${name}-${uniqueId}`;
-
-  const error = !!errors[name]?.message;
-
   return (
-    <Flex sx={{ flexDirection: 'column', width: '100%', ...sx }}>
-      <Flex sx={{ alignItems: 'center' }}>
-        <Label aria-disabled={checkboxProps.disabled} htmlFor={id}>
+    <FormField
+      label={label}
+      labelPosition="right"
+      name={name}
+      render={({ field, fieldState }) => {
+        return (
           <Checkbox
-            id={id}
-            ref={ref}
-            checked={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            name={name}
-            aria-invalid={error ? 'true' : 'false'}
+            {...field}
             {...checkboxProps}
+            aria-invalid={!!fieldState.error}
+            sx={sx}
           />
-          {label}
-        </Label>
-      </Flex>
-      <FormErrorMessage name={name} />
-    </Flex>
+        );
+      }}
+    />
   );
 };

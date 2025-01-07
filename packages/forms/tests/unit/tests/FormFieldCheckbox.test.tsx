@@ -9,7 +9,12 @@ test('call onSubmit with correct data', async () => {
   const onSubmit = jest.fn();
 
   const RenderForm = () => {
-    const formMethods = useForm();
+    const formMethods = useForm({
+      defaultValues: {
+        checkbox1: false,
+        checkbox2: false,
+      },
+    });
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>

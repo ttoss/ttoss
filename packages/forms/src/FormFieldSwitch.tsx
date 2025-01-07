@@ -19,9 +19,17 @@ export const FormFieldSwitch = <
   return (
     <FormField
       label={label}
+      labelPosition="right"
       name={name}
       render={({ field, fieldState }) => {
-        return <Switch {...field} {...fieldState} {...switchProps} sx={sx} />;
+        return (
+          <Switch
+            {...field}
+            {...switchProps}
+            aria-invalid={!!fieldState.error}
+            sx={sx}
+          />
+        );
       }}
     />
   );
