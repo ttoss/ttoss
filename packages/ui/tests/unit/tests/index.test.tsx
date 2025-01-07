@@ -31,4 +31,6 @@ test('should export methods', () => {
   expect(uiModule.Textarea).toBeDefined();
   expect(uiModule.Container).toBeDefined();
   expect(uiModule.Paragraph).toBeDefined();
+  expect(uiModule.Switch).toBeDefined();
+  expect(uiModule.Stack).toBeDefined();
 });

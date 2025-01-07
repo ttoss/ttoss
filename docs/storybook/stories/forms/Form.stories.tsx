@@ -1,10 +1,13 @@
-import { Box, Button, Flex } from '@ttoss/ui';
+import alertIcon from '@iconify-icons/mdi-light/alert';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
   FormFieldPassword,
   FormFieldSelect,
+  FormFieldSwitch,
   FormFieldTextarea,
   FormGroup,
   useForm,
@@ -12,9 +15,7 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import alertIcon from '@iconify-icons/mdi-light/alert';
+import { Box, Button, Flex } from '@ttoss/ui';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
@@ -89,7 +90,14 @@ const Template: StoryFn = () => {
           placeholder="Password"
           showPasswordByDefault
         />
-        <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
+        <FormFieldCheckbox
+          name="receiveAlertEmails"
+          label="Receive Alert Emails"
+        />
+        <FormFieldSwitch
+          name="receiveMarketingEmails"
+          label="Receive Marketing Emails"
+        />
         <FormFieldInput name="version" label="Version (disabled)" disabled />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">

@@ -1,19 +1,21 @@
+import { Box, Flex, Label, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
   FieldPath,
   FieldPathValue,
   FieldValues,
-  UseControllerReturn,
   useController,
+  UseControllerReturn,
 } from 'react-hook-form';
-import { Flex, Label, type SxProp } from '@ttoss/ui';
+
 import { FormErrorMessage } from './FormErrorMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  label?: string;
+  label?: React.ReactNode;
+  labelPosition?: 'top' | 'bottom' | 'left' | 'right';
   id?: string;
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
@@ -36,6 +38,7 @@ export const FormField = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
+  labelPosition = 'top',
   id: idProp,
   name,
   defaultValue,
@@ -51,7 +54,9 @@ export const FormField = <
     defaultValue,
   });
 
-  const id = idProp || `form-field-${name}`;
+  const uniqueId = React.useId();
+
+  const id = idProp || `form-field-${name}-${uniqueId}`;
 
   const memoizedRender = React.useMemo(() => {
     return React.Children.map(render(controllerReturn), (child) => {
@@ -62,23 +67,56 @@ export const FormField = <
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const childProps = child.props as any;
 
+      const isLabelHorizontal = ['left', 'right'].includes(labelPosition);
+
+      const labelFontSize = isLabelHorizontal ? 'md' : 'sm';
+
+      const flexDirectionMap = {
+        top: 'column',
+        bottom: 'column-reverse',
+        left: 'row',
+        right: 'row-reverse',
+      };
+
       return (
-        <>
+        <Flex
+          sx={{
+            width: '100%',
+            flexDirection: flexDirectionMap[labelPosition] as
+              | 'row'
+              | 'column'
+              | 'row-reverse'
+              | 'column-reverse',
+            gap: 'sm',
+          }}
+        >
           {label && (
             <Label
               aria-disabled={disabled}
               htmlFor={id}
               tooltip={tooltip}
               onTooltipClick={onTooltipClick}
+              sx={{
+                fontSize: labelFontSize,
+              }}
             >
               {label}
             </Label>
           )}
-          {React.createElement(child.type, { id, ...childProps })}
-        </>
+          <Box>{React.createElement(child.type, { id, ...childProps })}</Box>
+        </Flex>
       );
     });
-  }, [controllerReturn, disabled, onTooltipClick, tooltip, id, label, render]);
+  }, [
+    render,
+    controllerReturn,
+    labelPosition,
+    label,
+    disabled,
+    id,
+    tooltip,
+    onTooltipClick,
+  ]);
 
   return (
     <Flex

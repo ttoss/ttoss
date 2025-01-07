@@ -10,6 +10,7 @@ export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldPatternFormat } from './FormFieldPatternFormat';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldSelect } from './FormFieldSelect';
+export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
 export { yup } from './yup/yup';
