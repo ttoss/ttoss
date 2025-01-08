@@ -1,6 +1,7 @@
-import * as React from 'react';
-import { Button, type ButtonProps } from './Button';
 import { Icon } from '@ttoss/react-icons';
+import * as React from 'react';
+
+import { Button, type ButtonProps } from './Button';
 
 export type CloseButtonProps = ButtonProps & {
   label?: string;
@@ -21,18 +22,18 @@ export const CloseButton = React.forwardRef<
       type="button"
       aria-label={label}
       sx={{
-        fontFamily: 'caption',
+        fontFamily: 'body',
         fontSize: 'xs',
         display: 'inline-flex',
         alignItems: 'center',
         cursor: 'pointer',
         lineHeight: 'normal',
-        gap: 'sm',
-        padding: 'sm',
+        gap: '2',
+        padding: '2',
         width: 'fit-content',
         transition: 'all 0.2s',
         '& > iconify-icon': {
-          fontSize: 'base',
+          fontSize: 'md',
         },
         ...sx,
       }}

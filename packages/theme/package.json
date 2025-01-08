@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.8.6",
+  "version": "2.0.2",
   "description": "Theme for packages.",
   "license": "MIT",
   "author": "ttoss",
@@ -15,7 +15,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
+    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
+    "./Oca": "./src/themes/Oca/Oca.ts"
   },
   "files": [
     "dist"
@@ -53,6 +54,10 @@
       "./Bruttal": {
         "import": "./dist/esm/themes/Bruttal/Bruttal.js",
         "types": "./dist/themes/Bruttal/Bruttal.d.ts"
+      },
+      "./Oca": {
+        "import": "./dist/esm/themes/Oca/Oca.js",
+        "types": "./dist/themes/Oca/Oca.d.ts"
       }
     },
     "provenance": true

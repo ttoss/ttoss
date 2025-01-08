@@ -1,10 +1,14 @@
-import { Box, Button, Flex } from '@ttoss/ui';
+import alertIcon from '@iconify-icons/mdi-light/alert';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
   FormFieldPassword,
+  FormFieldRadio,
   FormFieldSelect,
+  FormFieldSwitch,
   FormFieldTextarea,
   FormGroup,
   useForm,
@@ -12,9 +16,7 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import alertIcon from '@iconify-icons/mdi-light/alert';
+import { Box, Button, Flex } from '@ttoss/ui';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
@@ -47,10 +49,15 @@ const Template: StoryFn = () => {
       .string()
       .min(6, 'Min of 6 caracteres')
       .required('Password is a required field'),
-    receiveEmails: yup
+    receiveAlertEmails: yup
       .boolean()
       .oneOf([true], 'It needs to be checked')
       .required(),
+    receiveMarketingEmails: yup
+      .boolean()
+      .oneOf([true], 'It needs to be checked')
+      .required(),
+    emailFrequency: yup.string().required('Email Frequency is required'),
     version: yup.string().required('Version is required'),
   });
 
@@ -59,13 +66,14 @@ const Template: StoryFn = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       version: 'v15',
-      receiveEmails: false,
+      receiveAlertEmails: false,
+      receiveMarketingEmails: false,
     },
   });
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         <FormFieldInput
           name="firstName"
           label="First Name"
@@ -89,10 +97,35 @@ const Template: StoryFn = () => {
           placeholder="Password"
           showPasswordByDefault
         />
-        <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
+        <FormFieldCheckbox
+          name="receiveAlertEmails"
+          label="Receive Alert Emails"
+        />
+        <FormFieldSwitch
+          name="receiveMarketingEmails"
+          label="Receive Marketing Emails"
+        />
+        <FormFieldRadio
+          name="emailFrequency"
+          label="Email Frequency"
+          options={[
+            {
+              label: 'Daily',
+              value: 'daily',
+            },
+            {
+              label: 'Weekly',
+              value: 'weekly',
+            },
+            {
+              label: 'Monthly',
+              value: 'monthly',
+            },
+          ]}
+        />
         <FormFieldInput name="version" label="Version (disabled)" disabled />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
@@ -122,7 +155,7 @@ const Template2: StoryFn = () => {
       <Box
         sx={{
           backgroundColor: 'white',
-          padding: 'lg',
+          padding: '4',
           border: 'default',
           borderColor: 'muted',
         }}
@@ -205,7 +238,7 @@ const TemplateWithInternationalization: StoryFn = () => {
   return (
     <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
       <Form {...formMethods} onSubmit={action('onSubmit')}>
-        <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+        <Flex sx={{ flexDirection: 'column', gap: '4' }}>
           <FormFieldInput
             name="firstName"
             label="First Name"
@@ -232,7 +265,7 @@ const TemplateWithInternationalization: StoryFn = () => {
           <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
           <FormFieldInput name="version" label="Version (disabled)" disabled />
         </Flex>
-        <Button sx={{ marginTop: 'lg' }} type="submit">
+        <Button sx={{ marginTop: '4' }} type="submit">
           Submit
         </Button>
       </Form>

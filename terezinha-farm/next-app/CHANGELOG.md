@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.4...@terezinha-farm/next-app@0.2.5) (2025-01-08)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.3...@terezinha-farm/next-app@0.2.4) (2025-01-08)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.2...@terezinha-farm/next-app@0.2.3) (2025-01-07)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.1...@terezinha-farm/next-app@0.2.2) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([d512d81](https://github.com/ttoss/ttoss/commit/d512d8101647c4a2d180a6654f18ba7df7e4fb41))
+
+## [0.2.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.0...@terezinha-farm/next-app@0.2.1) (2025-01-03)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+# [0.2.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.61...@terezinha-farm/next-app@0.2.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
 ## [0.1.61](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.1.60...@terezinha-farm/next-app@0.1.61) (2025-01-02)
 
 **Note:** Version bump only for package @terezinha-farm/next-app

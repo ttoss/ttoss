@@ -1,9 +1,10 @@
+import { render, screen, userEvent } from '@ttoss/test-utils';
+
 import { FormFieldInput, yup } from '../../../src';
 import {
   MultistepForm,
   type MultistepFormProps,
 } from '../../../src/MultistepForm';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const HEADERS = {
   titled: {

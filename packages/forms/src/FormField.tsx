@@ -1,5 +1,5 @@
 import { Icon } from '@ttoss/react-icons';
-import { Flex, Label, type SxProp } from '@ttoss/ui';
+import { Checkbox, Flex, Label, Switch, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
   FieldPath,
@@ -15,7 +15,7 @@ export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  label?: string;
+  label?: React.ReactNode;
   id?: string;
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
@@ -55,7 +55,9 @@ export const FormField = <
     defaultValue,
   });
 
-  const id = idProp || `form-field-${name}`;
+  const uniqueId = React.useId();
+
+  const id = idProp || `form-field-${name}-${uniqueId}`;
 
   const memoizedRender = React.useMemo(() => {
     return React.Children.map(render(controllerReturn), (child) => {
@@ -66,8 +68,34 @@ export const FormField = <
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const childProps = child.props as any;
 
+      if (
+        label &&
+        [Checkbox, Switch].some((component) => {
+          return child.type === component;
+        })
+      ) {
+        return (
+          <Label
+            aria-disabled={disabled}
+            tooltip={tooltip}
+            onTooltipClick={onTooltipClick}
+          >
+            <Flex>
+              {React.createElement(child.type, { id, ...childProps })}
+            </Flex>
+            {label}
+          </Label>
+        );
+      }
+
       return (
-        <>
+        <Flex
+          sx={{
+            width: '100%',
+            flexDirection: 'column',
+            gap: '1',
+          }}
+        >
           {label && (
             <Label
               aria-disabled={disabled}
@@ -79,14 +107,14 @@ export const FormField = <
             </Label>
           )}
           {React.createElement(child.type, { id, ...childProps })}
-        </>
+        </Flex>
       );
     });
-  }, [controllerReturn, disabled, onTooltipClick, tooltip, id, label, render]);
+  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
 
   return (
     <Flex
-      sx={{ flexDirection: 'column', width: '100%', gap: 'md', ...sx }}
+      sx={{ flexDirection: 'column', width: '100%', gap: '1', ...sx }}
       css={css}
     >
       {memoizedRender}

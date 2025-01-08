@@ -33,7 +33,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="real"
           label="Real"
@@ -46,7 +46,7 @@ const Template: Story = () => {
           allowNegative={false}
         />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
           label="Dolar"
@@ -59,7 +59,7 @@ const Template: Story = () => {
           allowNegative={false}
         />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
           label="Dolar"
@@ -73,7 +73,7 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
           label="Dolar"
@@ -88,7 +88,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

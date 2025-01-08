@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.4...@terezinha-farm/vite-app@0.10.5) (2025-01-08)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.10.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.3...@terezinha-farm/vite-app@0.10.4) (2025-01-08)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.10.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.2...@terezinha-farm/vite-app@0.10.3) (2025-01-07)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.10.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.1...@terezinha-farm/vite-app@0.10.2) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([d512d81](https://github.com/ttoss/ttoss/commit/d512d8101647c4a2d180a6654f18ba7df7e4fb41))
+
+## [0.10.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.0...@terezinha-farm/vite-app@0.10.1) (2025-01-03)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.89...@terezinha-farm/vite-app@0.10.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
 ## [0.9.89](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.9.88...@terezinha-farm/vite-app@0.9.89) (2025-01-02)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

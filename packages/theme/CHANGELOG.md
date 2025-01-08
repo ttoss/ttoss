@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.0.1...@ttoss/theme@2.0.2) (2025-01-08)
+
+### Bug Fixes
+
+- export oca theme ([fdbef75](https://github.com/ttoss/ttoss/commit/fdbef752521920e20775d51f3b638c1a56edb369))
+
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.6...@ttoss/theme@2.0.1) (2025-01-07)
+
+**Note:** Version bump only for package @ttoss/theme
+
 ## [1.8.6](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.5...@ttoss/theme@1.8.6) (2025-01-02)
 
 ### Bug Fixes

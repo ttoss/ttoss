@@ -44,6 +44,10 @@
     "description": "Forgot password?",
     "module": "@ttoss/react-auth"
   },
+  "Co3exe": {
+    "defaultMessage": "By signing up, you agree to the following Terms and Conditions.",
+    "module": "@ttoss/react-auth"
+  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
     "description": "Sign up",
@@ -147,6 +151,10 @@
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up.",
+    "module": "@ttoss/react-auth"
+  },
+  "qnQYqN": {
+    "defaultMessage": "You must accept the terms and conditions",
     "module": "@ttoss/react-auth"
   },
   "D1C6fR": {

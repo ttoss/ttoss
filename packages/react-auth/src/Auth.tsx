@@ -1,13 +1,6 @@
-import * as React from 'react';
-import { AuthConfirmSignUp } from './AuthConfirmSignUp';
-import { AuthForgotPassword } from './AuthForgotPassword';
-import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPassword';
-import { AuthFullScreen } from './AuthFullScreen';
-import { AuthSignIn } from './AuthSignIn';
-import { AuthSignUp } from './AuthSignUp';
+import { useNotifications } from '@ttoss/react-notifications';
 import { Flex } from '@ttoss/ui';
-import { LogoContextProps, LogoProvider } from './AuthCard';
-import { assign, createMachine } from 'xstate';
+import { useMachine } from '@xstate/react';
 import {
   confirmResetPassword,
   confirmSignUp,
@@ -16,9 +9,17 @@ import {
   signIn,
   signUp,
 } from 'aws-amplify/auth';
+import * as React from 'react';
+import { assign, createMachine } from 'xstate';
+
+import { LogoContextProps, LogoProvider } from './AuthCard';
+import { AuthConfirmSignUp } from './AuthConfirmSignUp';
+import { AuthForgotPassword } from './AuthForgotPassword';
+import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPassword';
+import { AuthFullScreen } from './AuthFullScreen';
 import { useAuth } from './AuthProvider';
-import { useMachine } from '@xstate/react';
-import { useNotifications } from '@ttoss/react-notifications';
+import { AuthSignIn } from './AuthSignIn';
+import { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
 import type {
   OnConfirmSignUp,
   OnForgotPassword,
@@ -133,7 +134,11 @@ const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
   }
 );
 
-const AuthLogic = () => {
+type AuthLogicProps = {
+  signUpTerms?: AuthSignUpProps['signUpTerms'];
+};
+
+const AuthLogic = (props: AuthLogicProps) => {
   const { isAuthenticated } = useAuth();
 
   const [state, send] = useMachine(authMachine);
@@ -265,7 +270,11 @@ const AuthLogic = () => {
 
   if (state.matches('signUp')) {
     return (
-      <AuthSignUp onSignUp={onSignUp} onReturnToSignIn={onReturnToSignIn} />
+      <AuthSignUp
+        onSignUp={onSignUp}
+        onReturnToSignIn={onReturnToSignIn}
+        signUpTerms={props.signUpTerms}
+      />
     );
   }
 
@@ -316,25 +325,28 @@ const AuthLogic = () => {
 
 type AuthLayout = {
   fullScreen?: boolean;
-  sideImage?: React.ReactNode;
-  sideImagePosition?: 'left' | 'right';
+  sideContent?: React.ReactNode;
+  sideContentPosition?: 'left' | 'right';
 };
 
-export type AuthProps = LogoContextProps & {
-  layout?: AuthLayout;
-};
+export type AuthProps = LogoContextProps &
+  AuthLogicProps & {
+    layout?: AuthLayout;
+  };
 
-export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
+export const Auth = (props: AuthProps) => {
+  const { layout = { fullScreen: true } } = props;
+
   const withLogoNode = React.useMemo(() => {
     return (
-      <LogoProvider logo={logo}>
-        <AuthLogic />
+      <LogoProvider logo={props.logo}>
+        <AuthLogic signUpTerms={props.signUpTerms} />
       </LogoProvider>
     );
-  }, [logo]);
+  }, [props.logo, props.signUpTerms]);
 
   if (layout.fullScreen) {
-    if (layout.sideImage) {
+    if (layout.sideContentPosition) {
       return (
         <AuthFullScreen>
           <Flex
@@ -342,7 +354,7 @@ export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
               width: '100%',
               height: '100%',
               flexDirection:
-                layout.sideImagePosition === 'left' ? 'row' : 'row-reverse',
+                layout.sideContentPosition === 'left' ? 'row' : 'row-reverse',
             }}
           >
             <Flex
@@ -354,7 +366,7 @@ export const Auth = ({ logo, layout = { fullScreen: true } }: AuthProps) => {
                 alignItems: 'center',
               }}
             >
-              {layout.sideImage}
+              {layout.sideContent}
             </Flex>
             <Flex
               sx={{

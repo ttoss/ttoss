@@ -32,16 +32,16 @@ const Template: Story = () => {
   }, []);
 
   return (
-    <Form {...formMethods} onSubmit={action('onSubmit')} sx={{ gap: 'md' }}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber name="cartao1" label="cartao 1" />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber name="cartao2" label="cartao 2" />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber
           name="cartao3"
           label="cartao desativado"
@@ -56,7 +56,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

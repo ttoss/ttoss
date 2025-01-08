@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
-import { Icon, type IconType, addIcon } from '@ttoss/react-icons';
 import { Meta, Story } from '@storybook/react';
+import { addIcon, Icon, type IconType } from '@ttoss/react-icons';
+import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'react-icons/Icon',
@@ -152,7 +152,7 @@ const CORE_ICONS = [
 
 export const CoreIcons = () => {
   return (
-    <Flex sx={{ gap: 'lg', flexWrap: 'wrap' }}>
+    <Flex sx={{ gap: '4', flexWrap: 'wrap' }}>
       {CORE_ICONS.map((icon) => {
         return (
           <Flex
@@ -160,7 +160,7 @@ export const CoreIcons = () => {
               flexDirection: 'column',
               alignItems: 'center',
               width: '120px',
-              gap: 'md',
+              gap: '2',
             }}
             key={icon}
           >
@@ -188,16 +188,16 @@ addIcon('custom-search', customSearchIcon);
 
 export const CustomIcon = () => {
   return (
-    <Flex sx={{ gap: 'lg', flexWrap: 'wrap' }}>
+    <Flex sx={{ gap: '4', flexWrap: 'wrap' }}>
       <Flex
         sx={{
           flexDirection: 'column',
           alignItems: 'center',
           width: '120px',
-          gap: 'md',
+          gap: '2',
         }}
       >
-        <Text sx={{ fontSize: '3xl', color: 'primary' }}>
+        <Text sx={{ fontSize: '7', color: 'primary' }}>
           <Icon icon="custom-search" />
         </Text>
 

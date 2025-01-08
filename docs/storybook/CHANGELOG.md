@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.2...@docs/storybook@2.6.3) (2025-01-08)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.6.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.1...@docs/storybook@2.6.2) (2025-01-08)
+
+### Bug Fixes
+
+- checkbox click ([#641](https://github.com/ttoss/ttoss/issues/641)) ([4b424a9](https://github.com/ttoss/ttoss/commit/4b424a99aa6a414f52d7c01afca3ecec475339fb))
+
+## [2.6.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.0...@docs/storybook@2.6.1) (2025-01-07)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.5.1...@docs/storybook@2.6.0) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+
+### Features
+
+- add switch component ([#640](https://github.com/ttoss/ttoss/issues/640)) ([d03aaaf](https://github.com/ttoss/ttoss/commit/d03aaaf204110925d07db8ce8921f8b45547e91b))
+
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.5.0...@docs/storybook@2.5.1) (2025-01-03)
+
+### Bug Fixes
+
+- termsAndConditions props ([#638](https://github.com/ttoss/ttoss/issues/638)) ([7e63806](https://github.com/ttoss/ttoss/commit/7e638063b1a4df06015df85dff8f5f34d6f79cc3))
+
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.4.6...@docs/storybook@2.5.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
 ## [2.4.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.4.5...@docs/storybook@2.4.6) (2025-01-02)
 
 **Note:** Version bump only for package @docs/storybook

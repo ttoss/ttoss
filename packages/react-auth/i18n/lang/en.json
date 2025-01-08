@@ -35,6 +35,9 @@
     "defaultMessage": "Forgot password?",
     "description": "Forgot password?"
   },
+  "Co3exe": {
+    "defaultMessage": "By signing up, you agree to the following Terms and Conditions."
+  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
     "description": "Sign up"
@@ -118,6 +121,9 @@
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up."
+  },
+  "qnQYqN": {
+    "defaultMessage": "You must accept the terms and conditions"
   },
   "D1C6fR": {
     "defaultMessage": "Field must be at least {min} characters",

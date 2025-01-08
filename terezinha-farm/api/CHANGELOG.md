@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.3...@terezinha-farm/api@0.19.4) (2025-01-07)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## [0.19.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.2...@terezinha-farm/api@0.19.3) (2025-01-02)
 
 **Note:** Version bump only for package @terezinha-farm/api

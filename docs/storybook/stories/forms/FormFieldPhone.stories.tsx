@@ -26,13 +26,13 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPhone name="phone" label="Telefone:" />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPhone name="phoneDisabled" label="Telefone:" disabled />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPhone
           name="phoneWarning"
           label="Telefone:"
@@ -40,7 +40,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

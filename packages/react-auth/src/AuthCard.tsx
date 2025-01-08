@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Box, Button, Flex, Heading } from '@ttoss/ui';
 import { useNotifications } from '@ttoss/react-notifications';
+import { Box, Button, Flex, Heading } from '@ttoss/ui';
+import * as React from 'react';
 
 export type LogoContextProps = {
   logo?: React.ReactNode;
@@ -35,21 +35,21 @@ export const AuthCard = ({
   return (
     <Box
       sx={{
-        width: '100%',
+        width: 'full',
         border: 'default',
         borderColor: 'primary',
-        paddingX: '2xl',
-        paddingY: '3xl',
+        paddingX: '6',
+        paddingY: '7',
         backgroundColor: 'surface',
       }}
     >
       {logo && (
         <Flex
           sx={{
-            width: '100%',
+            width: 'full',
             maxHeight: '90px',
             justifyContent: 'center',
-            marginBottom: '2xl',
+            marginBottom: '6',
           }}
         >
           {logo}
@@ -60,7 +60,7 @@ export const AuthCard = ({
           as="h2"
           variant="h2"
           sx={{
-            marginBottom: '2xl',
+            marginBottom: '6',
           }}
         >
           {title}
@@ -72,8 +72,8 @@ export const AuthCard = ({
           sx={{
             flexDirection: 'column',
             width: '100%',
-            gap: 'xl',
-            marginTop: '2xl',
+            gap: '5',
+            marginTop: '6',
           }}
         >
           <Button

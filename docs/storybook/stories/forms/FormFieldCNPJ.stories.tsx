@@ -26,10 +26,10 @@ const Template: StoryFn = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCNPJ name="cnpj" label="CNPJ:" />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCNPJ name="cnpjDisabled" label="CNPJ:" disabled />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>

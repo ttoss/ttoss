@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.4...@ttoss/react-auth@2.4.5) (2025-01-08)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.3...@ttoss/react-auth@2.4.4) (2025-01-08)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.2...@ttoss/react-auth@2.4.3) (2025-01-07)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.1...@ttoss/react-auth@2.4.2) (2025-01-07)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+- react-auth tests ([709af7f](https://github.com/ttoss/ttoss/commit/709af7f944bd3ace1f04f33a1733ea9ab3a72c7a))
+
+## [2.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.0...@ttoss/react-auth@2.4.1) (2025-01-03)
+
+### Bug Fixes
+
+- termsAndConditions props ([#638](https://github.com/ttoss/ttoss/issues/638)) ([7e63806](https://github.com/ttoss/ttoss/commit/7e638063b1a4df06015df85dff8f5f34d6f79cc3))
+
+# [2.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.3.6...@ttoss/react-auth@2.4.0) (2025-01-02)
+
+### Features
+
+- add signup terms ([#637](https://github.com/ttoss/ttoss/issues/637)) ([3cd8905](https://github.com/ttoss/ttoss/commit/3cd8905eb7b5181208087a980a38877f675b722c))
+
 ## [2.3.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.3.5...@ttoss/react-auth@2.3.6) (2025-01-02)
 
 **Note:** Version bump only for package @ttoss/react-auth

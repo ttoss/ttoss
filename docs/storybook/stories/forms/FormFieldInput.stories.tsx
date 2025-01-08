@@ -27,7 +27,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldInput
           name="firstName"
           label="First Name"
@@ -45,7 +45,7 @@ const Template: Story = () => {
           warning="WARNING"
         />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

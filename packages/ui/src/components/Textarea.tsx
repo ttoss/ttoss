@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { Flex, Text } from '..';
 import { Icon, type IconType } from '@ttoss/react-icons';
+import * as React from 'react';
 import {
-  type TextareaProps as TextareaPropsUI,
   Textarea as TextareaUI,
+  type TextareaProps as TextareaPropsUI,
 } from 'theme-ui';
+
+import { Flex, Text } from '..';
 
 export interface TextareaProps extends TextareaPropsUI {
   trailingIcon?: IconType;
@@ -26,10 +27,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           sx={{
             fontFamily: 'body',
-            paddingY: 'lg',
-            paddingX: 'xl',
+            paddingY: '4',
+            paddingX: '5',
             ...sx,
-            paddingRight: trailingIcon ? '3xl' : undefined,
+            paddingRight: trailingIcon ? '7' : undefined,
             margin: 0,
           }}
           className={className}

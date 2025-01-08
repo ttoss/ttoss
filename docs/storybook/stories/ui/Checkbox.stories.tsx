@@ -1,6 +1,6 @@
 /* eslint-disable formatjs/no-literal-string-in-jsx */
-import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
+import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
 
 const Template: Story<CheckboxProps> = (args) => {
   return (

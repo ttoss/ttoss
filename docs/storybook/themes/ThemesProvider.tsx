@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as React from 'react';
+import type { Theme } from '@ttoss/theme';
 import { ThemeProvider } from '@ttoss/ui';
+import * as React from 'react';
+
 import {
   defaultThemeObject,
   themesObjects as defaultThemesObject,
 } from './themesObject';
-import type { Theme } from '@ttoss/theme';
 
 export const ThemesContext = React.createContext({
   updateCurrentTheme: (theme: Theme) => {},
