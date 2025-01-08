@@ -1,5 +1,5 @@
-import { Footer, Header, Main, StackedLayout } from 'src/index';
 import { render, screen } from '@ttoss/test-utils';
+import { Footer, Header, Main, StackedLayout } from 'src/index';
 
 test('should render stacked layout from StackedLayout components', () => {
   render(

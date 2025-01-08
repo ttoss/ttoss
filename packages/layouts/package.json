@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.14",

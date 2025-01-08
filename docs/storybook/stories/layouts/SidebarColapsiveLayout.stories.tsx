@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { Layout, StackedLayout } from '@ttoss/layouts';
+import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 
 type Story = StoryObj<typeof Layout>;
 
@@ -15,6 +15,7 @@ const Header = () => {
         backgroundColor: 'red',
         height: '100px',
       }}
+      sidebarButton={true}
     >
       Header
     </Layout.Header>
@@ -23,12 +24,28 @@ const Header = () => {
 
 Header.displayName = Layout.Header.displayName;
 
+const Sidebar = () => {
+  return (
+    <Layout.Sidebar
+      sx={{
+        backgroundColor: 'orange',
+        height: '500px',
+      }}
+    >
+      Sidebar
+    </Layout.Sidebar>
+  );
+};
+
+Sidebar.displayName = Layout.Sidebar.displayName;
+
 const Main = () => {
   return (
     <Layout.Main
       sx={{
         backgroundColor: 'blue',
         height: '500px',
+        width: 'full',
       }}
     >
       Main
@@ -53,15 +70,16 @@ const Footer = () => {
 
 Footer.displayName = Layout.Footer.displayName;
 
-export const StackedLayoutStory: Story = {
-  name: 'StackedLayout',
+export const SidebarCollapseLayoutStory: Story = {
+  name: 'SidebarCollapseLayout',
   render: () => {
     return (
-      <StackedLayout>
+      <SidebarCollapseLayout>
         <Header />
+        <Sidebar />
         <Main />
         <Footer />
-      </StackedLayout>
+      </SidebarCollapseLayout>
     );
   },
 };

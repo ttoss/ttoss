@@ -45,6 +45,7 @@ export const BruttalTheme: Theme = {
    * Tokens
    */
   borders: defaultTheme.borders,
+  sizes: defaultTheme.sizes,
   fontSizes: defaultTheme.fontSizes,
   fontWeights: defaultTheme.fontWeights,
   letterSpacings: defaultTheme.letterSpacings,
