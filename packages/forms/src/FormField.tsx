@@ -1,4 +1,4 @@
-import { Box, Flex, Label, type SxProp } from '@ttoss/ui';
+import { Checkbox, Flex, Label, Switch, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
   FieldPath,
@@ -15,7 +15,6 @@ export type FormFieldProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   label?: React.ReactNode;
-  labelPosition?: 'top' | 'bottom' | 'left' | 'right';
   id?: string;
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
@@ -38,7 +37,6 @@ export const FormField = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
-  labelPosition = 'top',
   id: idProp,
   name,
   defaultValue,
@@ -67,27 +65,32 @@ export const FormField = <
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const childProps = child.props as any;
 
-      const isLabelHorizontal = ['left', 'right'].includes(labelPosition);
-
-      const labelFontSize = isLabelHorizontal ? 'md' : 'sm';
-
-      const flexDirectionMap = {
-        top: 'column',
-        bottom: 'column-reverse',
-        left: 'row',
-        right: 'row-reverse',
-      };
+      if (
+        label &&
+        [Checkbox, Switch].some((component) => {
+          return child.type === component;
+        })
+      ) {
+        return (
+          <Label
+            aria-disabled={disabled}
+            tooltip={tooltip}
+            onTooltipClick={onTooltipClick}
+          >
+            <Flex>
+              {React.createElement(child.type, { id, ...childProps })}
+            </Flex>
+            {label}
+          </Label>
+        );
+      }
 
       return (
         <Flex
           sx={{
             width: '100%',
-            flexDirection: flexDirectionMap[labelPosition] as
-              | 'row'
-              | 'column'
-              | 'row-reverse'
-              | 'column-reverse',
-            gap: 'sm',
+            flexDirection: 'column',
+            gap: '1',
           }}
         >
           {label && (
@@ -96,27 +99,15 @@ export const FormField = <
               htmlFor={id}
               tooltip={tooltip}
               onTooltipClick={onTooltipClick}
-              sx={{
-                fontSize: labelFontSize,
-              }}
             >
               {label}
             </Label>
           )}
-          <Box>{React.createElement(child.type, { id, ...childProps })}</Box>
+          {React.createElement(child.type, { id, ...childProps })}
         </Flex>
       );
     });
-  }, [
-    render,
-    controllerReturn,
-    labelPosition,
-    label,
-    disabled,
-    id,
-    tooltip,
-    onTooltipClick,
-  ]);
+  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
 
   return (
     <Flex
