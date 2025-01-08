@@ -28,7 +28,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
 export const useGlobal = () => {
   const context = React.useContext(GlobalContext);
   if (!context) {
-    throw new Error('useSidebar must be used within a SidebarProvider');
+    throw new Error('useGlobal must be used within a GlobalProvider');
   }
   return context;
 };

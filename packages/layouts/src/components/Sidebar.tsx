@@ -10,18 +10,16 @@ const fadeIn = keyframes({
 export const Sidebar = (props: BoxProps) => {
   const { isSidebarOpen } = useGlobal();
   return (
-    <>
-      <Box
-        sx={{
-          width: isSidebarOpen ? '2xs' : 0,
-          animation: isSidebarOpen && `${fadeIn} 0.5s ease`,
+    <Box
+      sx={{
+        width: isSidebarOpen ? '2xs' : 0,
+        animation: isSidebarOpen && `${fadeIn} 0.5s ease`,
 
-          ...props.sx,
-        }}
-      >
-        Sidebar
-      </Box>
-    </>
+        ...props.sx,
+      }}
+    >
+      {props.children}
+    </Box>
   );
 };
 
