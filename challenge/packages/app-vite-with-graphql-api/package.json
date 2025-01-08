@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss-challenge/app-vite-with-graphql-api",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "type": "module",
   "scripts": {
     "prebuild": "pnpm relay",

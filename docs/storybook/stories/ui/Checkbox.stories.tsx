@@ -1,7 +1,8 @@
-import { Meta, StoryFn } from '@storybook/react';
+/* eslint-disable formatjs/no-literal-string-in-jsx */
+import { Meta, Story } from '@storybook/react';
 import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
 
-const Template: StoryFn<CheckboxProps> = (args) => {
+const Template: Story<CheckboxProps> = (args) => {
   return (
     <Label>
       <Checkbox {...args} />

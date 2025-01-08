@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.28.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.2...@ttoss/forms@0.28.3) (2025-01-08)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.1...@ttoss/forms@0.28.2) (2025-01-08)
+
+### Bug Fixes
+
+- checkbox click ([#641](https://github.com/ttoss/ttoss/issues/641)) ([4b424a9](https://github.com/ttoss/ttoss/commit/4b424a99aa6a414f52d7c01afca3ecec475339fb))
+
 ## [0.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.0...@ttoss/forms@0.28.1) (2025-01-07)
 
 **Note:** Version bump only for package @ttoss/forms
