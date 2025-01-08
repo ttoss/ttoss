@@ -19,7 +19,6 @@ export const FormFieldSwitch = <
   return (
     <FormField
       label={label}
-      labelPosition="right"
       name={name}
       render={({ field, fieldState }) => {
         return (

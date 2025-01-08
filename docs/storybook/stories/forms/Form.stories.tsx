@@ -6,6 +6,7 @@ import {
   FormFieldCheckbox,
   FormFieldInput,
   FormFieldPassword,
+  FormFieldRadio,
   FormFieldSelect,
   FormFieldSwitch,
   FormFieldTextarea,
@@ -48,10 +49,15 @@ const Template: StoryFn = () => {
       .string()
       .min(6, 'Min of 6 caracteres')
       .required('Password is a required field'),
-    receiveEmails: yup
+    receiveAlertEmails: yup
       .boolean()
       .oneOf([true], 'It needs to be checked')
       .required(),
+    receiveMarketingEmails: yup
+      .boolean()
+      .oneOf([true], 'It needs to be checked')
+      .required(),
+    emailFrequency: yup.string().required('Email Frequency is required'),
     version: yup.string().required('Version is required'),
   });
 
@@ -60,7 +66,8 @@ const Template: StoryFn = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       version: 'v15',
-      receiveEmails: false,
+      receiveAlertEmails: false,
+      receiveMarketingEmails: false,
     },
   });
 
@@ -97,6 +104,24 @@ const Template: StoryFn = () => {
         <FormFieldSwitch
           name="receiveMarketingEmails"
           label="Receive Marketing Emails"
+        />
+        <FormFieldRadio
+          name="emailFrequency"
+          label="Email Frequency"
+          options={[
+            {
+              label: 'Daily',
+              value: 'daily',
+            },
+            {
+              label: 'Weekly',
+              value: 'weekly',
+            },
+            {
+              label: 'Monthly',
+              value: 'monthly',
+            },
+          ]}
         />
         <FormFieldInput name="version" label="Version (disabled)" disabled />
       </Flex>

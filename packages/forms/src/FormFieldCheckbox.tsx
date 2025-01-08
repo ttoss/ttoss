@@ -18,7 +18,6 @@ export const FormFieldCheckbox = <
   return (
     <FormField
       label={label}
-      labelPosition="right"
       name={name}
       render={({ field, fieldState }) => {
         return (
