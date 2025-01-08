@@ -108,6 +108,8 @@ export const BrutalIcons: Record<
   language: languageIcon,
   loading: loadingIcon,
   'menu-open': menuIcon,
+  'menu-left-arrow': ouiMenuLeft,
+  'menu-right-arrow': ouiMenuRight,
   'open-link': arrowUpRightIcon,
   paste: pasteIcon,
   'picker-down': chevronDownIcon,
@@ -130,8 +132,6 @@ export const BrutalIcons: Record<
   'view-on': viewFilledIcon,
   warning: warningFilledIcon,
   'warning-alt': warningAltIcon,
-  'sidebar-closed': ouiMenuLeft,
-  'sidebar-opened': ouiMenuRight,
 };
 
 Object.entries(BrutalIcons).forEach(([key, icon]) => {

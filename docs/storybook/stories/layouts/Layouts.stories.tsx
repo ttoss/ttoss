@@ -9,46 +9,19 @@ export default {
 } as Meta<typeof Layout>;
 
 const Header = () => {
-  return (
-    <Layout.Header
-      sx={{
-        backgroundColor: 'red',
-        height: '100px',
-      }}
-    >
-      Header
-    </Layout.Header>
-  );
+  return <Layout.Header sx={{}}>Header</Layout.Header>;
 };
 
 Header.displayName = Layout.Header.displayName;
 
 const Main = () => {
-  return (
-    <Layout.Main
-      sx={{
-        backgroundColor: 'blue',
-        height: '500px',
-      }}
-    >
-      Main
-    </Layout.Main>
-  );
+  return <Layout.Main sx={{}}>Main</Layout.Main>;
 };
 
 Main.displayName = Layout.Main.displayName;
 
 const Footer = () => {
-  return (
-    <Layout.Footer
-      sx={{
-        backgroundColor: 'green',
-        height: '50px',
-      }}
-    >
-      Footer
-    </Layout.Footer>
-  );
+  return <Layout.Footer sx={{}}>Footer</Layout.Footer>;
 };
 
 Footer.displayName = Layout.Footer.displayName;

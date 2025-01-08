@@ -1,20 +1,23 @@
-import { Box, BoxProps, keyframes } from '@ttoss/ui';
+import { Box, BoxProps } from '@ttoss/ui';
 
-import { useGlobal } from './GlobalProvider';
+import { useLayout } from './LayoutProvider';
 
-const fadeIn = keyframes({
-  from: { width: 0 },
-  to: { width: '2xs' },
-});
+export const SIDEBAR_WIDTH = '2xs';
 
 export const Sidebar = (props: BoxProps) => {
-  const { isSidebarOpen } = useGlobal();
+  const { isSidebarOpen } = useLayout();
   return (
     <Box
       sx={{
-        width: isSidebarOpen ? '2xs' : 0,
-        animation: isSidebarOpen && `${fadeIn} 0.5s ease`,
-
+        height: 'full',
+        width: isSidebarOpen ? SIDEBAR_WIDTH : '0',
+        opacity: isSidebarOpen ? 1 : 0,
+        transition: 'width 0.5s ease, opacity 0.5s ease',
+        borderRight: 'sm',
+        borderColor: 'display.border.muted.default',
+        backgroundColor: 'navigation.background.muted.default',
+        paddingX: '2',
+        paddingY: '9',
         ...props.sx,
       }}
     >

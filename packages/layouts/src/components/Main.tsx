@@ -7,6 +7,8 @@ export const Main = (props: BoxProps) => {
       {...props}
       as="main"
       sx={{
+        paddingX: '8',
+        paddingY: '4',
         ...props.sx,
       }}
     >

@@ -1,7 +1,7 @@
 import { Flex, Stack, type StackProps } from '@ttoss/ui';
 
 import { getSematicElements } from '../getSemanticElements';
-import { GlobalProvider } from './GlobalProvider';
+import { LayoutProvider } from './LayoutProvider';
 
 export const SidebarCollapseLayout = ({
   children,
@@ -10,22 +10,27 @@ export const SidebarCollapseLayout = ({
   const { header, main, sidebar } = getSematicElements({ children });
 
   return (
-    <GlobalProvider>
+    <LayoutProvider>
       <Stack
         {...props}
         sx={{
+          height: '100vh',
           width: 'full',
           display: 'flex',
-          flexDirection: 'column',
           ...props.sx,
         }}
       >
         {header}
-        <Flex>
+        <Flex
+          sx={{
+            width: 'full',
+            height: 'full',
+          }}
+        >
           {sidebar}
           {main}
         </Flex>
       </Stack>
-    </GlobalProvider>
+    </LayoutProvider>
   );
 };

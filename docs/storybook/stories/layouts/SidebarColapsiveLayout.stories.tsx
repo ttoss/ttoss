@@ -1,85 +1,73 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
-
-type Story = StoryObj<typeof Layout>;
+import { Image } from '@ttoss/ui';
 
 export default {
-  title: 'Layouts/Layout',
-  component: Layout,
-} as Meta<typeof Layout>;
+  title: 'Layouts/SidebarCollapseLayout',
+  parameters: {
+    layout: 'fullscreen',
+  },
+} as Meta;
 
-const Header = () => {
+const SidebarCollapseLayoutTemplate = ({
+  showSidebarButton,
+  sidebarSlot,
+}: {
+  showSidebarButton?: boolean;
+  sidebarSlot?: React.ReactNode;
+}) => {
   return (
-    <Layout.Header
-      sx={{
-        backgroundColor: 'red',
-        height: '100px',
-      }}
-      sidebarButton={true}
-    >
-      Header
-    </Layout.Header>
+    <SidebarCollapseLayout>
+      <Layout.Header
+        showSidebarButton={showSidebarButton}
+        sidebarSlot={sidebarSlot}
+      >
+        Header starts here
+      </Layout.Header>
+      <Layout.Sidebar>Sidebar starts here</Layout.Sidebar>
+      <Layout.Main>Main starts here</Layout.Main>
+    </SidebarCollapseLayout>
   );
 };
 
-Header.displayName = Layout.Header.displayName;
+const SIDE_IMAGE_URL =
+  'https://cdn.triangulos.tech/assets/terezinha_500x500_da67d70b65.webp';
 
-const Sidebar = () => {
-  return (
-    <Layout.Sidebar
-      sx={{
-        backgroundColor: 'orange',
-        height: '500px',
-      }}
-    >
-      Sidebar
-    </Layout.Sidebar>
-  );
+const terezinhaLogo = (
+  <Image
+    src={SIDE_IMAGE_URL}
+    alt="Terezinha"
+    sx={{
+      height: '100%',
+    }}
+    onError={(e) => {
+      e.currentTarget.style.display = 'none';
+    }}
+  />
+);
+
+type Story = StoryObj<typeof SidebarCollapseLayoutTemplate>;
+
+export const WithoutSidebarButton: Story = {
+  name: 'Without Sidebar Button',
+  render: SidebarCollapseLayoutTemplate,
+  args: {
+    showSidebarButton: false,
+  },
 };
 
-Sidebar.displayName = Layout.Sidebar.displayName;
-
-const Main = () => {
-  return (
-    <Layout.Main
-      sx={{
-        backgroundColor: 'blue',
-        height: '500px',
-        width: 'full',
-      }}
-    >
-      Main
-    </Layout.Main>
-  );
+export const WithSidebarButton: Story = {
+  name: 'With Sidebar Button',
+  render: SidebarCollapseLayoutTemplate,
+  args: {
+    showSidebarButton: true,
+  },
 };
 
-Main.displayName = Layout.Main.displayName;
-
-const Footer = () => {
-  return (
-    <Layout.Footer
-      sx={{
-        backgroundColor: 'green',
-        height: '50px',
-      }}
-    >
-      Footer
-    </Layout.Footer>
-  );
-};
-
-Footer.displayName = Layout.Footer.displayName;
-
-export const SidebarCollapseLayoutStory: Story = {
-  name: 'SidebarCollapseLayout',
-  render: () => {
-    return (
-      <SidebarCollapseLayout>
-        <Header />
-        <Sidebar />
-        <Main />
-        <Footer />
-      </SidebarCollapseLayout>
-    );
+export const WithSidebarSlot: Story = {
+  name: 'With Sidebar Slot',
+  render: SidebarCollapseLayoutTemplate,
+  args: {
+    sidebarSlot: terezinhaLogo,
   },
 };

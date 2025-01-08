@@ -1,6 +1,6 @@
+import { Meta, StoryFn } from '@storybook/react';
 import { Auth, type AuthProps } from '@ttoss/react-auth';
 import { Image } from '@ttoss/ui';
-import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'React Auth/Auth',

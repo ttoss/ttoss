@@ -2,7 +2,7 @@ import { Stack, type StackProps } from '@ttoss/ui';
 import * as React from 'react';
 
 import { getSematicElements } from '../getSemanticElements';
-import { GlobalProvider } from './GlobalProvider';
+import { LayoutProvider } from './LayoutProvider';
 
 export const StackedLayout = ({
   children,
@@ -11,12 +11,12 @@ export const StackedLayout = ({
   const { header, main, footer } = getSematicElements({ children });
 
   return (
-    <GlobalProvider>
+    <LayoutProvider>
       <Stack {...props}>
         {header}
         {main}
         {footer}
       </Stack>
-    </GlobalProvider>
+    </LayoutProvider>
   );
 };
