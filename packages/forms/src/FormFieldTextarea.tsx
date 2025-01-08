@@ -16,7 +16,7 @@ export const FormFieldTextarea = <
 }: {
   label?: string;
   name: TName;
-  warning?: string;
+  warning?: boolean | string;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 

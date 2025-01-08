@@ -6,7 +6,7 @@ import { FormField } from '../FormField';
 export type FormFieldPhoneProps = {
   label: string;
   name: string;
-  warning?: string;
+  warning?: boolean | string;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({

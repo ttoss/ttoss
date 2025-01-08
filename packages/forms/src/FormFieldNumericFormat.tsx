@@ -6,7 +6,7 @@ import { FormField } from './FormField';
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
-  warning?: string;
+  warning?: boolean | string;
 } & NumericFormatProps;
 
 export const FormFieldNumericFormat = ({

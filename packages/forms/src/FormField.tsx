@@ -1,3 +1,4 @@
+import { Icon } from '@ttoss/react-icons';
 import { Flex, Label, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
@@ -21,7 +22,7 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: boolean;
   onTooltipClick?: () => void;
-  warning?: string;
+  warning?: boolean | string;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -90,8 +91,14 @@ export const FormField = <
     >
       {memoizedRender}
       <FormErrorMessage name={name} />
-      {warning && (
+
+      {typeof warning === 'string' && (
         <Flex sx={{ color: 'orange', fontSize: 'sm' }}>{warning}</Flex>
+      )}
+      {typeof warning === 'boolean' && warning === true && (
+        <Flex sx={{ color: 'orange', fontSize: 'lg' }}>
+          <Icon icon={'line-md:alert'} />
+        </Flex>
       )}
     </Flex>
   );

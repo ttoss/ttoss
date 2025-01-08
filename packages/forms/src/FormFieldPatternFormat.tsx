@@ -6,7 +6,7 @@ import { FormField } from './FormField';
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
-  warning?: string;
+  warning?: boolean | string;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
