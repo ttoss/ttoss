@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCurrencyInput,
