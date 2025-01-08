@@ -20,7 +20,7 @@ export const Header = ({
         ...props.sx,
       }}
     >
-      {(sidebarButton as boolean) === true && (
+      {sidebarButton && (
         <Flex
           sx={{
             cursor: 'pointer',
@@ -37,7 +37,13 @@ export const Header = ({
           }}
           onClick={toggleSidebar}
         >
-          <Icon icon={isSidebarOpen ? 'sidebar-opened' : 'sidebar-closed'} />
+          {typeof sidebarButton === 'boolean' && sidebarButton === true && (
+            <Icon icon={isSidebarOpen ? 'sidebar-opened' : 'sidebar-closed'} />
+          )}
+          {typeof sidebarButton === 'string' && <Icon icon={sidebarButton} />}
+          {typeof sidebarButton === 'function' && (
+            <Icon icon={sidebarButton as IconType} />
+          )}
         </Flex>
       )}
 
