@@ -17,8 +17,8 @@ test('should render layout from SidebarCollapseLayout component', () => {
   expect(screen.queryByText('Extra')).not.toBeInTheDocument();
 });
 
-test('should hide sidebar when user clicks on the sidebar button', async () => {
-  const user = userEvent.setup({ delay: null });
+test('should toggle sidebar visibility with proper accessibility', async () => {
+  const user = userEvent.setup();
 
   render(
     <SidebarCollapseLayout>
@@ -28,11 +28,19 @@ test('should hide sidebar when user clicks on the sidebar button', async () => {
     </SidebarCollapseLayout>
   );
 
-  expect(screen.getByText('Header')).toBeInTheDocument();
-  expect(screen.getByText('Main')).toBeInTheDocument();
-  expect(screen.getByText('Sidebar')).toBeInTheDocument();
+  const button = screen.getByTestId('sidebar-button');
 
-  await user.click(screen.getByTestId('sidebar-button'));
+  // Test button accessibility
+  expect(button).toHaveAttribute('aria-label');
+  expect(button).toHaveAttribute('aria-expanded', 'true');
 
+  // Test hiding
+  await user.click(button);
   expect(screen.queryByText('Sidebar')).not.toBeInTheDocument();
+  expect(button).toHaveAttribute('aria-expanded', 'false');
+
+  // Test showing
+  await user.click(button);
+  expect(screen.getByText('Sidebar')).toBeInTheDocument();
+  expect(button).toHaveAttribute('aria-expanded', 'true');
 });
