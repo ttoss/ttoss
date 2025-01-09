@@ -327,7 +327,7 @@ exports[`Bruttal theme snapshot 1`] = `
       },
     },
     "navigation": {
-      "backgound": {
+      "background": {
         "primary": {
           "default": "#f4f3f3",
         },
@@ -598,6 +598,31 @@ exports[`Bruttal theme snapshot 1`] = `
     "sm": "0.25rem",
     "xl": "0.75rem",
     "xs": "0.125rem",
+  },
+  "sizes": {
+    "2xl": "42rem",
+    "2xs": "16rem",
+    "3xl": "48rem",
+    "3xs": "14rem",
+    "4xl": "56rem",
+    "5xl": "64rem",
+    "6xl": "72rem",
+    "7xl": "80rem",
+    "8xl": "90rem",
+    "container": {
+      "lg": "1024px",
+      "md": "768px",
+      "sm": "640px",
+      "xl": "1280px",
+    },
+    "full": "100%",
+    "lg": "32rem",
+    "max": "max-content",
+    "md": "28rem",
+    "min": "min-content",
+    "sm": "24rem",
+    "xl": "36rem",
+    "xs": "20rem",
   },
   "space": {
     "0.5": "0.125rem",

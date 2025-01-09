@@ -1,21 +1,22 @@
-import { BaseLayout, type BaseLayoutProps } from './BaseLayout';
-import { getSematicElements } from '../getSemanticElements';
+import { Stack, type StackProps } from '@ttoss/ui';
+import * as React from 'react';
 
-export const StackedLayout = ({ children, ...props }: BaseLayoutProps) => {
+import { getSematicElements } from '../getSemanticElements';
+import { LayoutProvider } from './LayoutProvider';
+
+export const StackedLayout = ({
+  children,
+  ...props
+}: React.PropsWithChildren<StackProps>) => {
   const { header, main, footer } = getSematicElements({ children });
 
   return (
-    <BaseLayout
-      {...props}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        ...props.sx,
-      }}
-    >
-      {header}
-      {main}
-      {footer}
-    </BaseLayout>
+    <LayoutProvider>
+      <Stack {...props}>
+        {header}
+        {main}
+        {footer}
+      </Stack>
+    </LayoutProvider>
   );
 };

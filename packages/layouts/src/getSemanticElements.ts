@@ -2,6 +2,7 @@ import * as React from 'react';
 
 const semanticComponents = {
   Header: 'header',
+  Sidebar: 'sidebar',
   Footer: 'footer',
   Main: 'main',
 } as const;

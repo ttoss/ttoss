@@ -45,6 +45,7 @@ export const BruttalTheme: Theme = {
    * Tokens
    */
   borders: defaultTheme.borders,
+  sizes: defaultTheme.sizes,
   fontSizes: defaultTheme.fontSizes,
   fontWeights: defaultTheme.fontWeights,
   letterSpacings: defaultTheme.letterSpacings,
@@ -53,7 +54,7 @@ export const BruttalTheme: Theme = {
   zIndices: defaultTheme.zIndices,
   colors: {
     navigation: {
-      backgound: { primary: { default: coreColors.complimentary } },
+      background: { primary: { default: coreColors.complimentary } },
       text: {
         primary: { default: coreColors.black },
         accent: { default: coreColors.darkNeutral },
