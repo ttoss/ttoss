@@ -9,6 +9,9 @@ export const Sidebar = (props: BoxProps) => {
 
   return (
     <Box
+      role="complementary"
+      aria-label="Sidebar"
+      aria-hidden={!isSidebarOpen}
       sx={{
         height: 'full',
         minWidth: isSidebarOpen ? SIDEBAR_WIDTH : '0',

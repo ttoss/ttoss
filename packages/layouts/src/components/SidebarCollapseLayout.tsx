@@ -14,7 +14,7 @@ export const SidebarCollapseLayout = ({
       <Stack
         {...props}
         sx={{
-          height: '100vh',
+          height: ['auto', '100vh'],
           width: 'full',
           overflow: 'hidden',
           ...props.sx,

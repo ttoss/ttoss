@@ -28,6 +28,9 @@ export const Header = ({
 
     return (
       <IconButton
+        aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-expanded={isSidebarOpen}
+        aria-controls="sidebar"
         sx={{
           cursor: 'pointer',
           fontSize: ['xl', '2xl'],
