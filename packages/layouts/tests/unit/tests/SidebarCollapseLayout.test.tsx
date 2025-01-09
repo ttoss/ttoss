@@ -44,3 +44,27 @@ test('should toggle sidebar visibility with proper accessibility', async () => {
   expect(screen.getByText('Sidebar')).toBeInTheDocument();
   expect(button).toHaveAttribute('aria-expanded', 'true');
 });
+
+test('should support keyboard navigation', async () => {
+  const user = userEvent.setup();
+  render(
+    <SidebarCollapseLayout>
+      <Layout.Header showSidebarButton>Header</Layout.Header>
+      <Layout.Main>Main</Layout.Main>
+      <Layout.Sidebar>Sidebar</Layout.Sidebar>
+    </SidebarCollapseLayout>
+  );
+
+  const button = screen.getByTestId('sidebar-button');
+
+  // Focus the button
+  await user.tab();
+  expect(button).toHaveFocus();
+
+  // Toggle with keyboard
+  await user.keyboard('{Enter}');
+  expect(screen.queryByText('Sidebar')).not.toBeInTheDocument();
+
+  await user.keyboard('{Enter}');
+  expect(screen.getByText('Sidebar')).toBeInTheDocument();
+});
