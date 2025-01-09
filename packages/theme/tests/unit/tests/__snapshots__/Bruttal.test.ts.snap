@@ -327,7 +327,7 @@ exports[`Bruttal theme snapshot 1`] = `
       },
     },
     "navigation": {
-      "backgound": {
+      "background": {
         "primary": {
           "default": "#f4f3f3",
         },
