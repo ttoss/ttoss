@@ -10,13 +10,14 @@ export const Sidebar = (props: BoxProps) => {
     <Box
       sx={{
         height: 'full',
+        minWidth: isSidebarOpen ? SIDEBAR_WIDTH : '0',
         width: isSidebarOpen ? SIDEBAR_WIDTH : '0',
         opacity: isSidebarOpen ? 1 : 0,
-        transition: 'width 0.5s ease, opacity 0.5s ease',
-        borderRight: 'sm',
+        transition: 'min-width 0.5s ease, width 0.5s ease, opacity 0.5s ease',
+        borderRight: isSidebarOpen ? 'sm' : 'none',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.muted.default',
-        paddingX: '2',
+        paddingX: isSidebarOpen ? '2' : '0',
         paddingY: '9',
         ...props.sx,
       }}

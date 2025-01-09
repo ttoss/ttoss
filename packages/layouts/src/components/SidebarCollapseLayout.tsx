@@ -16,7 +16,7 @@ export const SidebarCollapseLayout = ({
         sx={{
           height: '100vh',
           width: 'full',
-          display: 'flex',
+          overflow: 'hidden',
           ...props.sx,
         }}
       >
@@ -24,7 +24,8 @@ export const SidebarCollapseLayout = ({
         <Flex
           sx={{
             width: 'full',
-            height: 'full',
+            flex: 1,
+            overflow: 'hidden',
           }}
         >
           {sidebar}

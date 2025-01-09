@@ -9,6 +9,9 @@ export const Main = (props: BoxProps) => {
       sx={{
         paddingX: '8',
         paddingY: '4',
+        overflowY: 'auto',
+        width: 'full',
+        height: 'full',
         ...props.sx,
       }}
     >

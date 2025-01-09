@@ -1,9 +1,14 @@
 import { Icon } from '@ttoss/react-icons';
-import { BoxProps, Flex } from '@ttoss/ui';
+import { Box, BoxProps, Flex, IconButton } from '@ttoss/ui';
 import * as React from 'react';
 
 import { useLayout } from './LayoutProvider';
 import { SIDEBAR_WIDTH } from './Sidebar';
+
+const paddingSx = {
+  paddingX: '4',
+  paddingY: '3',
+};
 
 export const Header = ({
   showSidebarButton,
@@ -22,24 +27,15 @@ export const Header = ({
     }
 
     return (
-      <Flex
+      <IconButton
         sx={{
           cursor: 'pointer',
-          backgroundColor: 'navigation.background.muted.default',
-          color: isSidebarOpen
-            ? 'navigation.text.primary.default'
-            : 'navigation.text.muted.default',
-          width: 'min',
-          borderRadius: 'full',
-          paddingX: '1',
-          paddingY: '1',
-          marginRight: '5',
           fontSize: ['xl', '2xl'],
         }}
         onClick={toggleSidebar}
       >
-        <Icon icon={isSidebarOpen ? 'menu-left-arrow' : 'menu-right-arrow'} />
-      </Flex>
+        <Icon icon={isSidebarOpen ? 'sidebar-close' : 'sidebar-open'} />
+      </IconButton>
     );
   }, [isSidebarOpen, showSidebarButton, toggleSidebar]);
 
@@ -51,7 +47,13 @@ export const Header = ({
     return (
       <Flex
         sx={{
+          minWidth: SIDEBAR_WIDTH,
           width: SIDEBAR_WIDTH,
+          borderRight: 'sm',
+          borderColor: 'display.border.muted.default',
+          alignItems: 'center',
+          gap: '2',
+          ...paddingSx,
         }}
       >
         {sidebarButton}
@@ -70,13 +72,19 @@ export const Header = ({
         alignItems: 'center',
         borderBottom: 'sm',
         borderColor: 'display.border.muted.default',
-        paddingX: '5',
-        paddingY: '3',
+        ...(sidebarSlot ? {} : paddingSx),
         ...boxProps.sx,
       }}
     >
       {memoizedSidebarSlot}
-      {children}
+      <Box
+        sx={{
+          width: '100%',
+          ...(sidebarSlot ? paddingSx : {}),
+        }}
+      >
+        {children}
+      </Box>
     </Flex>
   );
 };

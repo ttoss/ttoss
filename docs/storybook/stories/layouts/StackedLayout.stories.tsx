@@ -4,8 +4,8 @@ import { Layout, StackedLayout } from '@ttoss/layouts';
 type Story = StoryObj<typeof Layout>;
 
 export default {
-  title: 'Layouts/Layout',
-  component: Layout,
+  title: 'Layouts/StackedLayout',
+  component: StackedLayout,
 } as Meta<typeof Layout>;
 
 const Header = () => {
