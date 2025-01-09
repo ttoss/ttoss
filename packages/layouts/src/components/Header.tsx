@@ -32,6 +32,7 @@ export const Header = ({
           cursor: 'pointer',
           fontSize: ['xl', '2xl'],
         }}
+        data-testid="sidebar-button"
         onClick={toggleSidebar}
       >
         <Icon icon={isSidebarOpen ? 'sidebar-close' : 'sidebar-open'} />

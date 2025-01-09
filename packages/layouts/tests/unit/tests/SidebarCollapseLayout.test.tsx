@@ -1,0 +1,38 @@
+import { render, screen, userEvent } from '@ttoss/test-utils';
+import { Layout, SidebarCollapseLayout } from 'src/index';
+
+test('should render layout from SidebarCollapseLayout component', () => {
+  render(
+    <SidebarCollapseLayout>
+      <Layout.Header>Header</Layout.Header>
+      <Layout.Main>Main</Layout.Main>
+      <Layout.Sidebar>Sidebar</Layout.Sidebar>
+      <div>Extra</div>
+    </SidebarCollapseLayout>
+  );
+
+  expect(screen.getByText('Header')).toBeInTheDocument();
+  expect(screen.getByText('Main')).toBeInTheDocument();
+  expect(screen.getByText('Sidebar')).toBeInTheDocument();
+  expect(screen.queryByText('Extra')).not.toBeInTheDocument();
+});
+
+test('should hide sidebar when user clicks on the sidebar button', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  render(
+    <SidebarCollapseLayout>
+      <Layout.Header showSidebarButton>Header</Layout.Header>
+      <Layout.Main>Main</Layout.Main>
+      <Layout.Sidebar>Sidebar</Layout.Sidebar>
+    </SidebarCollapseLayout>
+  );
+
+  expect(screen.getByText('Header')).toBeInTheDocument();
+  expect(screen.getByText('Main')).toBeInTheDocument();
+  expect(screen.getByText('Sidebar')).toBeInTheDocument();
+
+  await user.click(screen.getByTestId('sidebar-button'));
+
+  expect(screen.queryByText('Sidebar')).not.toBeInTheDocument();
+});

@@ -6,6 +6,7 @@ export const SIDEBAR_WIDTH = '2xs';
 
 export const Sidebar = (props: BoxProps) => {
   const { isSidebarOpen } = useLayout();
+
   return (
     <Box
       sx={{
@@ -22,7 +23,7 @@ export const Sidebar = (props: BoxProps) => {
         ...props.sx,
       }}
     >
-      {props.children}
+      {isSidebarOpen ? props.children : null}
     </Box>
   );
 };
