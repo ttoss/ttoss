@@ -36,8 +36,8 @@ export const AuthCard = ({
     <Box
       sx={{
         width: 'full',
-        border: 'default',
-        borderColor: 'primary',
+        border: 'md',
+        borderColor: 'display.border.muted.default',
         paddingX: '6',
         paddingY: '7',
         backgroundColor: 'surface',
