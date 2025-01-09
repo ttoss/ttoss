@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "description": "ttoss authentication module for React apps.",
   "license": "MIT",
   "author": "ttoss",

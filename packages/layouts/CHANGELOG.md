@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.3.18...@ttoss/layouts@0.4.0) (2025-01-09)
+
+### Features
+
+- add collapse sidebar layout ([#642](https://github.com/ttoss/ttoss/issues/642)) ([8f5fd3e](https://github.com/ttoss/ttoss/commit/8f5fd3ec3def570b56f3c1b2b491ad229ba7649a))
+
 ## [0.3.18](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.3.17...@ttoss/layouts@0.3.18) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/layouts
