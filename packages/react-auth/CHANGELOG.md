@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.5...@ttoss/react-auth@2.4.6) (2025-01-09)
+
+### Bug Fixes
+
+- authcard color and border tokens and storybook ([#643](https://github.com/ttoss/ttoss/issues/643)) ([a0992f0](https://github.com/ttoss/ttoss/commit/a0992f03e7b1707b93f01d91a239c4f8da6baf23))
+
 ## [2.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.4...@ttoss/react-auth@2.4.5) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/react-auth

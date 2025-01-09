@@ -21,7 +21,7 @@ const SIDE_IMAGE_URL =
 SideImageRight.args = {
   layout: {
     fullScreen: true,
-    sideImage: (
+    sideContent: (
       <Image
         src={SIDE_IMAGE_URL}
         alt="Terezinha"
@@ -30,6 +30,7 @@ SideImageRight.args = {
         }}
       />
     ),
+    sideContentPosition: 'right',
   },
 };
 
@@ -38,7 +39,7 @@ export const SideImageLeft = Template.bind({});
 SideImageLeft.args = {
   layout: {
     fullScreen: true,
-    sideImage: (
+    sideContent: (
       <Image
         src={SIDE_IMAGE_URL}
         alt="Terezinha"
@@ -47,6 +48,6 @@ SideImageLeft.args = {
         }}
       />
     ),
-    sideImagePosition: 'left',
+    sideContentPosition: 'left',
   },
 };
