@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.1...@ttoss/layouts@0.4.2) (2025-01-10)
+
+### Bug Fixes
+
+- header width from sidebar collapse layout ([#645](https://github.com/ttoss/ttoss/issues/645)) ([da917de](https://github.com/ttoss/ttoss/commit/da917debfb9f7b512298bccac4cee17d0c07fd7b))
+
 ## [0.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.0...@ttoss/layouts@0.4.1) (2025-01-09)
 
 **Note:** Version bump only for package @ttoss/layouts
