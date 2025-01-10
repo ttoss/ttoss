@@ -135,6 +135,7 @@ export const OcaTheme: Theme = createTheme(
       lg: defaultBorders.lg,
       xl: defaultBorders.xl,
     },
+    radii: defaultTheme.radii,
     /**
      * Global styles
      */
@@ -186,6 +187,7 @@ export const OcaTheme: Theme = createTheme(
         },
       },
     },
+
     forms: {
       input: {
         borderRadius: 'lg',

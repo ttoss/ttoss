@@ -170,7 +170,11 @@ export const BruttalTheme: Theme = {
     },
   },
   fonts: coreFonts,
-  radii: defaultTheme.radii,
+
+  radii: {
+    ...defaultTheme.radii,
+    lg: '0.25rem',
+  },
   /**
    * Global styles
    */
@@ -352,17 +356,7 @@ export const BruttalTheme: Theme = {
       },
     },
   },
-  cards: {
-    primary: {
-      backgroundColor: 'display.background.secondary.default',
-      border: 'sm',
-      padding: [4, 5],
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      width: 'fit-content',
-    },
-  },
+
   forms: {
     label: {
       color: 'display.text.primary.default',
