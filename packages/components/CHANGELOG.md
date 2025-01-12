@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.23](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.22...@ttoss/components@2.0.23) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
 ## [2.0.22](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.21...@ttoss/components@2.0.22) (2025-01-09)
 
 **Note:** Version bump only for package @ttoss/components

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.4...@ttoss/ui@5.1.5) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
 ## [5.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.3...@ttoss/ui@5.1.4) (2025-01-09)
 
 ### Bug Fixes
