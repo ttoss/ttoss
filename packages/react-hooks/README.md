@@ -59,6 +59,14 @@ export const LocalStorageComponent = () => {
 };
 ```
 
+It uses the `localStorage` storage by default, but you can also use the `sessionStorage` storage by passing the `Storage` option.
+
+```tsx
+const [value, setValue] = useLocalStorage('key', 'default value', {
+  storage: window.sessionStorage,
+});
+```
+
 ### useScript
 
 The `useScript` hook is used to load external scripts into your React component.
