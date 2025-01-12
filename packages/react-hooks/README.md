@@ -2,35 +2,15 @@
 
 ## 📚 About
 
-**@ttoss/react-hooks** is an easy way to use Utility Hooks in your React application.
+**@ttoss/react-hooks** is a collection of custom React hooks that can be used to simplify the development of React applications.
 
-## 🚀 Getting Started
+## Installation
 
-### Installing @ttoss/react-hooks
-
-```shell
-$ yarn add @ttoss/react-hooks
-# or
-$ npm install @ttoss/react-hooks
+```bash
+pnpm add @ttoss/react-hooks
 ```
 
-## 📄 Usage Examples
-
-### useScript
-
-The `useScript` hook is used to load external scripts into your React component.
-
-```tsx
-import React from 'react';
-import { useScript } from '@ttoss/react-hooks';
-
-export const ComponentWithScript = () => {
-  const url = 'https://your-domain.com/bundle-api.js';
-  const { status } = useScript(url);
-
-  return <div>{status === 'ready' ? 'Script loaded' : 'Loading'}</div>;
-};
-```
+## API
 
 ### useDebounce
 
@@ -55,20 +35,42 @@ export const DebouncedInputComponent = () => {
 };
 ```
 
-## 📘 Types
+### useLocalStorage
 
-### useScript
+The `useLocalStorage` hook is used to store and retrieve values from the local storage.
 
-```ts
-type ScriptStatus = 'idle' | 'loading' | 'ready' | 'error';
+```tsx
+import * as React from 'react';
+import { useLocalStorage } from '@ttoss/react-hooks';
 
-const useScript: (src: string) => {
-  status: ScriptStatus;
+export const LocalStorageComponent = () => {
+  const [value, setValue] = useLocalStorage('key', 'default value');
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to save..."
+      />
+    </div>
+  );
 };
 ```
 
-### useDebounce
+### useScript
 
-```ts
-const useDebounce: <T>(value: T, delay?: number) => T;
+The `useScript` hook is used to load external scripts into your React component.
+
+```tsx
+import React from 'react';
+import { useScript } from '@ttoss/react-hooks';
+
+export const ComponentWithScript = () => {
+  const url = 'https://your-domain.com/bundle-api.js';
+  const { status } = useScript(url);
+
+  return <div>{status === 'ready' ? 'Script loaded' : 'Loading'}</div>;
+};
 ```

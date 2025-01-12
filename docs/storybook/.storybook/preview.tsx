@@ -24,9 +24,13 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    themesObjects: {
+      description: 'Themes objects',
+    },
   },
   initialGlobals: {
     theme: defaultThemeObject.name,
+    themesObjects,
   },
   decorators: [
     (Story, context) => {
@@ -39,6 +43,7 @@ const preview: Preview = {
       );
     },
   ],
+  tags: ['autodocs'],
 };
 
 export default preview;
