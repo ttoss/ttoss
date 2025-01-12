@@ -40,6 +40,20 @@ const coreColors = {
   teal600: '#0d9488',
 };
 
+const radii = {
+  none: '0',
+  '2xs': '0.0625rem',
+  xs: '0.125rem',
+  sm: '0.25rem',
+  md: '0.375rem',
+  lg: '0.25rem',
+  xl: '0.25rem',
+  '2xl': '0.25rem',
+  '3xl': '0.25rem',
+  '4xl': '0.25rem',
+  full: '9999px',
+};
+
 export const BruttalTheme: Theme = {
   /**
    * Tokens
@@ -170,7 +184,7 @@ export const BruttalTheme: Theme = {
     },
   },
   fonts: coreFonts,
-  radii: defaultTheme.radii,
+  radii,
   /**
    * Global styles
    */
@@ -352,17 +366,7 @@ export const BruttalTheme: Theme = {
       },
     },
   },
-  cards: {
-    primary: {
-      backgroundColor: 'display.background.secondary.default',
-      border: 'sm',
-      padding: [4, 5],
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      width: 'fit-content',
-    },
-  },
+
   forms: {
     label: {
       color: 'display.text.primary.default',

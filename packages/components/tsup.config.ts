@@ -4,6 +4,8 @@ export const components = [
   'Accordion',
   'Drawer',
   'InstallPwa',
+  'JsonEditor',
+  'JsonView',
   'List',
   'Markdown',
   'Menu',
@@ -18,7 +20,7 @@ export const components = [
  * If this happens, tsup won't create a folder for the component and
  * the exports of the component will be in the root of the dist folder.
  */
-const GROUP_SIZE = 5;
+const GROUP_SIZE = 6;
 
 /**
  * To avoid tsup build failing with ERR_WORKER_OUT_OF_MEMORY

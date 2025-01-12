@@ -1,5 +1,5 @@
-import { Box, Flex, Grid, Text, useTheme } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
+import { Box, Flex, Grid, Text, useTheme } from '@ttoss/ui';
 
 type ColorProps = {
   name: string;

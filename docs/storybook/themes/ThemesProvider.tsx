@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { useStorage } from '@ttoss/react-hooks';
 import type { Theme } from '@ttoss/theme';
 import { ThemeProvider } from '@ttoss/ui';
 import * as React from 'react';
 
 import {
   defaultThemeObject,
-  themesObjects as defaultThemesObject,
+  type ThemeObject,
+  themesObjects as defaultThemesObjects,
 } from './themesObject';
 
 export const ThemesContext = React.createContext({
   updateCurrentTheme: (theme: Theme) => {},
 });
+
+const themesObjectsKey = 'themesObjects';
 
 export const ThemesProvider = ({
   children,
@@ -19,9 +23,19 @@ export const ThemesProvider = ({
   children: React.ReactNode;
   themeName?: string;
 }) => {
-  const [themesObjects, setThemesObjects] = React.useState(defaultThemesObject);
+  const [themesObjects, setThemesObjects] = useStorage<ThemeObject[]>(
+    themesObjectsKey,
+    defaultThemesObjects,
+    {
+      storage: window.sessionStorage,
+    }
+  );
 
   const updateCurrentTheme = (theme: Theme) => {
+    if (!themesObjects) {
+      return;
+    }
+
     const currentThemeIndex = themesObjects.findIndex((themeObject) => {
       return themeObject.name === themeName;
     });
@@ -47,7 +61,7 @@ export const ThemesProvider = ({
   });
 
   if (!themeObject) {
-    throw new Error(`Theme ${themeName} not found`);
+    return null;
   }
 
   return (
@@ -61,4 +75,8 @@ export const ThemesProvider = ({
       </ThemeProvider>
     </ThemesContext.Provider>
   );
+};
+
+export const useThemes = () => {
+  return React.useContext(ThemesContext);
 };

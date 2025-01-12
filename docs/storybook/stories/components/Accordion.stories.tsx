@@ -1,3 +1,4 @@
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Accordion,
   AccordionItem,
@@ -5,7 +6,6 @@ import {
   AccordionItemHeading,
   AccordionItemPanel,
 } from '@ttoss/components/Accordion';
-import { Meta, StoryFn } from '@storybook/react';
 import { Text } from '@ttoss/ui';
 
 export default {
