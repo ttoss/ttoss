@@ -41,23 +41,21 @@ export function useStorage<T>(
     };
   }, [options]);
 
-  const {
-    serializer,
-    parser,
-    logger,
-    syncData,
-    storage = window.localStorage,
-  } = opts;
+  const { serializer, parser, logger, syncData, storage } = opts;
+
+  const effectiveStorage =
+    storage ??
+    (typeof window !== 'undefined' ? window.localStorage : undefined);
 
   const rawValueRef = React.useRef<string | null>(null);
 
   const [value, setValue] = React.useState(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !effectiveStorage) {
       return defaultValue;
     }
 
     try {
-      rawValueRef.current = storage.getItem(key);
+      rawValueRef.current = effectiveStorage.getItem(key);
       const res: T = rawValueRef.current
         ? parser(rawValueRef.current)
         : defaultValue;
@@ -69,7 +67,7 @@ export function useStorage<T>(
   });
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !effectiveStorage) {
       return;
     }
 
@@ -80,10 +78,10 @@ export function useStorage<T>(
         const newValue = serializer(value);
         const oldValue = rawValueRef.current;
         rawValueRef.current = newValue;
-        storage.setItem(key, newValue);
+        effectiveStorage.setItem(key, newValue);
         window.dispatchEvent(
           new StorageEvent('storage', {
-            storageArea: storage,
+            storageArea: effectiveStorage,
             url: window.location.href,
             key,
             newValue,
@@ -91,10 +89,10 @@ export function useStorage<T>(
           })
         );
       } else {
-        storage.removeItem(key);
+        effectiveStorage.removeItem(key);
         window.dispatchEvent(
           new StorageEvent('storage', {
-            storageArea: storage,
+            storageArea: effectiveStorage,
             url: window.location.href,
             key,
           })
@@ -107,7 +105,7 @@ export function useStorage<T>(
     } catch (e) {
       logger(e);
     }
-  }, [key, logger, serializer, storage, value]);
+  }, [key, logger, serializer, effectiveStorage, value]);
 
   React.useEffect(() => {
     if (!syncData) {
@@ -115,7 +113,7 @@ export function useStorage<T>(
     }
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key !== key || e.storageArea !== storage) {
+      if (e.key !== key || e.storageArea !== effectiveStorage) {
         return;
       }
 
@@ -137,7 +135,7 @@ export function useStorage<T>(
     return () => {
       return window.removeEventListener('storage', handleStorageChange);
     };
-  }, [key, logger, parser, storage, syncData]);
+  }, [key, logger, parser, effectiveStorage, syncData]);
 
   return [value, setValue];
 }
