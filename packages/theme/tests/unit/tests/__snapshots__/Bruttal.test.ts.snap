@@ -141,20 +141,6 @@ exports[`Bruttal theme snapshot 1`] = `
       "color": "action.text.primary.default",
     },
   },
-  "cards": {
-    "primary": {
-      "alignItems": "center",
-      "backgroundColor": "display.background.secondary.default",
-      "border": "sm",
-      "display": "flex",
-      "flexDirection": "column",
-      "padding": [
-        4,
-        5,
-      ],
-      "width": "fit-content",
-    },
-  },
   "colors": {
     "action": {
       "background": {
@@ -587,16 +573,16 @@ exports[`Bruttal theme snapshot 1`] = `
     "taller": "2",
   },
   "radii": {
-    "2xl": "1rem",
+    "2xl": "0.25rem",
     "2xs": "0.0625rem",
-    "3xl": "1.5rem",
-    "4xl": "2rem",
+    "3xl": "0.25rem",
+    "4xl": "0.25rem",
     "full": "9999px",
-    "lg": "0.5rem",
+    "lg": "0.25rem",
     "md": "0.375rem",
     "none": "0",
     "sm": "0.25rem",
-    "xl": "0.75rem",
+    "xl": "0.25rem",
     "xs": "0.125rem",
   },
   "sizes": {
