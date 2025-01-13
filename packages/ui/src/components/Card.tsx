@@ -1,15 +1,14 @@
 import { Card as CardUi, type CardProps } from 'theme-ui';
 
-export type { CardProps };
-
 export const Card = (props: CardProps) => {
   return (
     <CardUi
       {...props}
       sx={{
         backgroundColor: 'display.background.secondary.default',
-        borderRadius: 'lg',
         border: 'md',
+        borderColor: 'display.border.muted.default',
+        borderRadius: 'lg',
         padding: [4, 5],
         display: 'flex',
         flexDirection: 'column',
