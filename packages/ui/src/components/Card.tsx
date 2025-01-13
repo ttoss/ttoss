@@ -8,13 +8,14 @@ export const Card = (props: CardProps) => {
       {...props}
       sx={{
         backgroundColor: 'display.background.secondary.default',
-        borderRadius: 'lg',
         border: 'md',
-        padding: [4, 5],
+        borderColor: 'display.border.muted.default',
+        borderRadius: 'lg',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         width: 'fit-content',
+        boxShadow: '2px 4px 8px #E5E7EB',
         ...props.sx,
       }}
     />
