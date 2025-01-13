@@ -17,7 +17,6 @@ const defaultBorders = defaultTheme.borders as DefaultBorders;
 
 export const OcaTheme: Theme = createTheme(
   {
-    space: { cardpadding1: 0, cardpadding2: 0, ...defaultTheme.space },
     colors: {
       navigation: {
         background: {

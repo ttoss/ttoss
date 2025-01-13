@@ -63,11 +63,7 @@ export const BruttalTheme: Theme = {
   fontSizes: defaultTheme.fontSizes,
   fontWeights: defaultTheme.fontWeights,
   letterSpacings: defaultTheme.letterSpacings,
-  space: {
-    cardpadding1: '1rem',
-    cardpadding2: '1.25rem',
-    ...defaultTheme.space,
-  },
+  space: defaultTheme.space,
   lineHeights: defaultTheme.lineHeights,
   zIndices: defaultTheme.zIndices,
   colors: {

@@ -9,11 +9,11 @@ export const Card = (props: CardProps) => {
         border: 'md',
         borderColor: 'display.border.muted.default',
         borderRadius: 'lg',
-        padding: ['cardpadding1', 'cardpadding2'],
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         width: 'fit-content',
+        boxShadow: '2px 4px 8px #E5E7EB',
         ...props.sx,
       }}
     />
