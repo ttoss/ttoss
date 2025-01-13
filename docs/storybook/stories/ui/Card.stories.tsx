@@ -67,7 +67,7 @@ const CampaignInfoData = () => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Template: StoryFn<CardProps> = (args: any) => {
   return (
-    <Card {...args} sx={{ padding: '0' }}>
+    <Card {...args}>
       <Flex
         sx={{
           paddingY: '4',

@@ -9,7 +9,7 @@ export const Card = (props: CardProps) => {
         border: 'md',
         borderColor: 'display.border.muted.default',
         borderRadius: 'lg',
-        padding: [4, 5],
+        padding: ['cardpadding1', 'cardpadding2'],
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
