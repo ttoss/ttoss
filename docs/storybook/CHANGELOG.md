@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.3...@docs/storybook@2.7.4) (2025-01-13)
+
+### Bug Fixes
+
+- parse campaign card to Card storybook ([#647](https://github.com/ttoss/ttoss/issues/647)) ([eaf1b2b](https://github.com/ttoss/ttoss/commit/eaf1b2be5d1a2c3ad54e4ce08a0d44d58413ae88))
+
 ## [2.7.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.2...@docs/storybook@2.7.3) (2025-01-12)
 
 ### Bug Fixes
