@@ -1,5 +1,7 @@
 import { Card as CardUi, type CardProps } from 'theme-ui';
 
+export type { CardProps };
+
 export const Card = (props: CardProps) => {
   return (
     <CardUi
