@@ -151,7 +151,7 @@ const AuthLogic = (props: AuthLogicProps) => {
    */
   React.useEffect(() => {
     clearNotifications();
-  }, [state, clearNotifications]);
+  }, [state.value, clearNotifications]);
 
   /**
    * Clear notifications when the component unmounts
