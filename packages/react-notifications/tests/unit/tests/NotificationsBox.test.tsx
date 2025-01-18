@@ -1,6 +1,6 @@
-import { NotificationsBox, useNotifications } from 'src/index';
-import { NotificationsProvider, type NotifyParams } from 'src/Provider';
 import { render, screen, userEvent } from '@ttoss/test-utils';
+import { NotificationsBox, useNotifications } from 'src/index';
+import { type Notification, NotificationsProvider } from 'src/Provider';
 
 const NOTIFICATION_MESSAGE = 'notification message test';
 
@@ -10,16 +10,16 @@ describe('Notifications Box Test', () => {
   const Component = ({
     notifications,
   }: {
-    notifications: NotifyParams | NotifyParams[];
+    notifications: Notification | Notification[];
   }) => {
-    const { setNotifications } = useNotifications();
+    const { addNotification } = useNotifications();
 
     return (
       <div>
         <NotificationsBox />
         <button
           onClick={() => {
-            setNotifications(notifications);
+            addNotification(notifications);
           }}
           type="button"
         >
@@ -32,7 +32,10 @@ describe('Notifications Box Test', () => {
   test('should render single notification message', async () => {
     render(
       <Component
-        notifications={{ message: NOTIFICATION_MESSAGE, type: 'error' }}
+        notifications={{
+          message: NOTIFICATION_MESSAGE,
+          type: 'error',
+        }}
       />,
       { wrapper: NotificationsProvider }
     );
@@ -51,7 +54,7 @@ describe('Notifications Box Test', () => {
       <Component
         notifications={Array.from({
           length: numberOfMessages,
-        }).map<NotifyParams>((_, idx) => {
+        }).map<Notification>((_, idx) => {
           return {
             message: `${NOTIFICATION_MESSAGE}-${idx + 1}`,
             type: 'error',
@@ -76,33 +79,10 @@ describe('Notifications Box Test', () => {
     });
   });
 
-  test('Should resolve repeated notifications correctly', async () => {
-    const repeatedNotifications: Array<NotifyParams> = [
-      { message: 'single message', type: 'error' },
-      { message: 'single message', type: 'error' },
-    ];
-
-    render(<Component notifications={repeatedNotifications} />, {
-      wrapper: NotificationsProvider,
-    });
-
-    expect(screen.getByRole('button')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button'));
-
-    const elements = screen.getAllByText('single message');
-
-    expect(elements.length).toBe(2);
-
-    await user.click(elements[0]);
-
-    expect(screen.getByText('single message')).toBeInTheDocument();
-  });
-
   test('Should resolve notifications with the same key', async () => {
-    const keyedNotifications: Array<NotifyParams> = [
-      { message: 'single message', type: 'error', key: 'message' },
-      { message: 'single message', type: 'error', key: 'message' },
+    const keyedNotifications: Array<Notification> = [
+      { message: 'single message', type: 'error', id: 'message' },
+      { message: 'single message', type: 'error', id: 'message' },
     ];
 
     render(<Component notifications={keyedNotifications} />, {

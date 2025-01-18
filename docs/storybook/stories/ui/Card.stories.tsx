@@ -68,25 +68,10 @@ const CampaignInfoData = () => {
 const Template: StoryFn<CardProps> = (args: any) => {
   return (
     <Card {...args}>
-      <Flex
-        sx={{
-          paddingY: '4',
-          paddingX: '8',
-          width: 'full',
-          borderBottom: 'md',
-          borderBottomColor: 'display.border.muted.default',
-        }}
-      >
+      <Card.Title>
         <CampaignInfoData />
-      </Flex>
-      <Flex
-        sx={{
-          paddingY: '4',
-          paddingX: '8',
-          width: 'full',
-          backgroundColor: 'display.background.muted.default',
-        }}
-      >
+      </Card.Title>
+      <Card.Body>
         <Text
           sx={{
             fontSize: 'xl',
@@ -95,7 +80,17 @@ const Template: StoryFn<CardProps> = (args: any) => {
         >
           {'Input Content'}
         </Text>
-      </Flex>
+      </Card.Body>
+      <Card.Footer>
+        <Text
+          sx={{
+            fontSize: 'xl',
+            color: 'display.text.primary.default',
+          }}
+        >
+          {'Footer Content'}
+        </Text>
+      </Card.Footer>
     </Card>
   );
 };

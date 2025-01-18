@@ -1,6 +1,6 @@
-import { Button } from '@ttoss/ui';
 import { Meta, StoryFn } from '@storybook/react';
-import { ToastContainer, toast } from '@ttoss/components/Toast';
+import { toast, ToastContainer } from '@ttoss/components/Toast';
+import { Button } from '@ttoss/ui';
 
 export default {
   title: 'Components/Toast',

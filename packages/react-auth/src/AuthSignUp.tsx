@@ -9,7 +9,7 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
-import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
+import { NotificationsBox } from '@ttoss/react-notifications';
 import { Flex, Link, Text } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -30,11 +30,6 @@ export type AuthSignUpProps = {
 
 export const AuthSignUp = (props: AuthSignUpProps) => {
   const { intl } = useI18n();
-  const { setNotifications } = useNotifications();
-
-  React.useEffect(() => {
-    setNotifications(undefined);
-  }, [setNotifications]);
 
   const schema = React.useMemo(() => {
     return yup.object().shape({
