@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.4...@docs/storybook@2.8.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
 ## [2.7.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.3...@docs/storybook@2.7.4) (2025-01-13)
 
 ### Bug Fixes
