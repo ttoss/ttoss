@@ -2,9 +2,9 @@ import { Icon } from '@ttoss/react-icons';
 
 import { Button, type ButtonProps } from './Button';
 
-export type CloseButtonProps = ButtonProps;
+export type CloseButtonProps = ButtonProps & { label?: string };
 
-export const CloseButton = ({ sx, ...props }: CloseButtonProps) => {
+export const CloseButton = (props: CloseButtonProps) => {
   return (
     <Button
       type="button"
@@ -20,6 +20,7 @@ export const CloseButton = ({ sx, ...props }: CloseButtonProps) => {
         border: 'sm',
         borderColor: 'action.border.primary.default',
         borderRadius: 'sm',
+        gap: 2,
         ':disabled': {
           border: 'sm',
           backgroundColor: 'action.background.muted.default',
@@ -32,10 +33,11 @@ export const CloseButton = ({ sx, ...props }: CloseButtonProps) => {
           backgroundColor: 'action.background.secondary.active',
           borderColor: 'action.border.secondary.active',
         },
-        ...sx,
+        ...props.sx,
       }}
       {...props}
     >
+      {props.label && <span>{props.label}</span>}
       <Icon icon="close" />
     </Button>
   );
