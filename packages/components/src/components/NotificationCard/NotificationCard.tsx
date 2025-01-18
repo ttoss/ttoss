@@ -51,11 +51,13 @@ export const NotificationCard = (props: {
         sx={{
           display: 'flex',
           gap: '4',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         {props.message}
         {!props.title && props.onClose && (
-          <Box>
+          <Box sx={{ alignSelf: 'flex-start' }}>
             <CloseButton onClick={props.onClose} />
           </Box>
         )}
