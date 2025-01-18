@@ -119,6 +119,11 @@ export const OcaTheme: Theme = createTheme(
         },
         border: {
           primary: { default: '#111827' },
+          secondary: { default: '#465A69' },
+          muted: { default: '#E5E7EB' },
+          negative: { default: 'red' },
+          caution: { default: 'orange' },
+          positive: { default: 'green' },
         },
       },
     },

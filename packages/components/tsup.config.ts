@@ -1,3 +1,7 @@
+/**
+ * To avoid tsup build failing with ERR_WORKER_OUT_OF_MEMORY
+ * https://github.com/egoist/tsup/issues/920#issuecomment-1862456590
+ */
 import { tsupConfig } from '@ttoss/config';
 
 export const components = [
@@ -10,6 +14,7 @@ export const components = [
   'Markdown',
   'Menu',
   'Modal',
+  'NotificationCard',
   'Search',
   'Table',
   'Toast',
@@ -20,15 +25,11 @@ export const components = [
  * If this happens, tsup won't create a folder for the component and
  * the exports of the component will be in the root of the dist folder.
  */
-const GROUP_SIZE = 6;
+const groupSize = components.length % 2 === 0 ? 5 : 6;
 
-/**
- * To avoid tsup build failing with ERR_WORKER_OUT_OF_MEMORY
- * https://github.com/egoist/tsup/issues/920#issuecomment-1862456590
- */
 const getConfigByGroup = (group: number) => {
-  const start = group * GROUP_SIZE;
-  const end = start + GROUP_SIZE;
+  const start = group * groupSize;
+  const end = start + groupSize;
   const groupComponents = components.slice(start, end);
   return tsupConfig(
     {
@@ -43,7 +44,10 @@ const getConfigByGroup = (group: number) => {
   );
 };
 
-export const tsup0 = getConfigByGroup(0);
-export const tsup1 = getConfigByGroup(1);
+const numberOfGroups = Math.ceil(components.length / groupSize);
 
-export default [tsup0, tsup1];
+const tsupConfigs = Array.from({ length: numberOfGroups }, (_, i) => {
+  return i;
+}).map(getConfigByGroup);
+
+export default tsupConfigs;

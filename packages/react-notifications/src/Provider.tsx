@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
+import * as React from 'react';
 
 export type NotifyParams = {
   key?: string;

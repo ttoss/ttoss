@@ -1,5 +1,6 @@
-import * as React from 'react';
 import { Button, Flex, Stack } from '@ttoss/ui';
+import * as React from 'react';
+
 import { type NotifyParams, useNotifications } from './Provider';
 
 const NotificationBoxWrapper = ({
@@ -28,7 +29,9 @@ const NotificationBoxWrapper = ({
 };
 
 const resolveNotifications = (notifications: NotifyParams | NotifyParams[]) => {
-  if (!Array.isArray(notifications)) return notifications;
+  if (!Array.isArray(notifications)) {
+    return notifications;
+  }
 
   // keyed notifications should be unique
   const keyedNotifications = new Map<string | undefined, NotifyParams>(

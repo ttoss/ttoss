@@ -1,31 +1,48 @@
-import { Box } from '@ttoss/ui';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { css as createClassName } from '@emotion/css';
+import { css as transformStyleObject } from '@theme-ui/css';
+import { Box, useTheme } from '@ttoss/ui';
+import * as React from 'react';
 import {
-  toast,
+  toast as toastReactToastify,
   ToastContainer as ReactToastifyToastContainer,
   type ToastContainerProps,
 } from 'react-toastify';
-
-export { toast };
-
 export { type ToastContainerProps };
 
 export const ToastContainer = (props: ToastContainerProps) => {
+  const { theme } = useTheme();
+
+  const className = React.useMemo(() => {
+    /**
+     * https://fkhadra.github.io/react-toastify/how-to-style#override-existing-css-classes
+     */
+    const styles = transformStyleObject({
+      '.Toastify__toast-container': {},
+    })(theme);
+
+    return createClassName(styles);
+  }, [theme]);
+
   return (
     <Box
+      className={className}
       sx={({ colors, fonts }) => {
+        const themeColors = colors as Record<string, any>;
+
+        /**
+         * https://fkhadra.github.io/react-toastify/how-to-style#override-css-variables
+         */
         return {
-          '--toastify-color-light': '#fff',
-          '--toastify-color-dark': '#121212',
-          '--toastify-color-info': colors?.info || '#3498db',
-          '--toastify-color-success': colors?.success || '#07bc0c',
-          '--toastify-color-warning': '#f1c40f',
-          '--toastify-color-error': '#e74c3c',
-          '--toastify-color-progress-light': `linear-gradient(to right, ${colors?.primary}, ${colors?.secondary})`,
-          '--toastify-font-family': (fonts as { body: string }).body,
+          '--toastify-font-family': (fonts as any)?.body,
+          '--toastify-color-light':
+            themeColors.feedback?.background?.primary?.default,
         };
       }}
     >
-      <ReactToastifyToastContainer {...props} />
+      <ReactToastifyToastContainer className={className} {...props} />
     </Box>
   );
 };
+
+export const toast = toastReactToastify;
