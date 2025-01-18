@@ -1,8 +1,8 @@
-import * as React from 'react';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
-import { ThemeProvider } from '@ttoss/ui';
 import { setOptions } from '@ttoss/test-utils';
+import { ThemeProvider } from '@ttoss/ui';
+import * as React from 'react';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (

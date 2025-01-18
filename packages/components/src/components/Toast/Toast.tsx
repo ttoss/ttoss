@@ -7,8 +7,10 @@ import {
   toast as toastReactToastify,
   ToastContainer as ReactToastifyToastContainer,
   type ToastContainerProps,
+  type ToastOptions,
 } from 'react-toastify';
-export { type ToastContainerProps };
+
+export type { ToastContainerProps, ToastOptions };
 
 export const ToastContainer = (props: ToastContainerProps) => {
   const { theme } = useTheme();
@@ -36,7 +38,7 @@ export const ToastContainer = (props: ToastContainerProps) => {
         return {
           '--toastify-font-family': (fonts as any)?.body,
           '--toastify-color-light':
-            themeColors.feedback?.background?.primary?.default,
+            themeColors?.feedback?.background?.primary?.default,
         };
       }}
     >

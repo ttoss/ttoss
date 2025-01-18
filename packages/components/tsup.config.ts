@@ -25,7 +25,11 @@ export const components = [
  * If this happens, tsup won't create a folder for the component and
  * the exports of the component will be in the root of the dist folder.
  */
-const groupSize = components.length % 2 === 0 ? 5 : 6;
+let groupSize = 4;
+
+while (components.length % groupSize === 1) {
+  groupSize++;
+}
 
 const getConfigByGroup = (group: number) => {
   const start = group * groupSize;

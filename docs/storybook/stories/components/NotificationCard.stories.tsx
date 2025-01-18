@@ -44,3 +44,21 @@ export const NoTitle: StoryObj = {
     message: 'This is an info message without a title',
   },
 };
+
+export const CloseButtonOnTitle: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Info',
+    message: 'This is an info message with a close button on the title',
+    onClose: () => {},
+  },
+};
+
+export const CloseButtonOnBody: StoryObj = {
+  args: {
+    type: 'info',
+    message:
+      'This is an info message with a close button on the body. This is an info message with a close button on the body. This is an info message with a close button on the body. This is an info message with a close button on the body',
+    onClose: () => {},
+  },
+};

@@ -1,9 +1,9 @@
-import { Button } from '@ttoss/ui';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   NotificationsProvider,
   useNotifications,
-} from '../../../../packages/react-notifications/src';
+} from '@ttoss/react-notifications';
+import { Button } from '@ttoss/ui';
 
 export default {
   title: 'React Notifications/Loading',
@@ -18,7 +18,7 @@ export default {
   ],
 } as Meta;
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const { isLoading, setLoading } = useNotifications();
 
   return (

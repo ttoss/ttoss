@@ -1,50 +1,42 @@
 import { Icon } from '@ttoss/react-icons';
-import * as React from 'react';
 
 import { Button, type ButtonProps } from './Button';
 
-export type CloseButtonProps = ButtonProps & {
-  label?: string;
-  onlyText?: boolean;
-};
+export type CloseButtonProps = ButtonProps;
 
-export const CloseButton = React.forwardRef<
-  HTMLButtonElement,
-  CloseButtonProps
->(({ label, sx, onlyText, ...props }, ref) => {
-  if (onlyText && !label) {
-    return null;
-  }
-
+export const CloseButton = ({ sx, ...props }: CloseButtonProps) => {
   return (
     <Button
-      variant="buttons.closeButton"
       type="button"
-      aria-label={label}
       sx={{
         fontFamily: 'body',
-        fontSize: 'xs',
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
         cursor: 'pointer',
         lineHeight: 'normal',
-        gap: '2',
         padding: '2',
-        width: 'fit-content',
-        transition: 'all 0.2s',
-        '& > iconify-icon': {
-          fontSize: 'md',
+        backgroundColor: 'action.background.primary.active',
+        color: 'action.text.primary.default',
+        border: 'sm',
+        borderColor: 'action.border.primary.default',
+        borderRadius: 'sm',
+        ':disabled': {
+          border: 'sm',
+          backgroundColor: 'action.background.muted.default',
+          borderColor: 'action.border.muted.default',
+          color: 'action.text.muted.default',
+          cursor: 'not-allowed',
+        },
+        ':is(:focus-within, :hover):not(:disabled)': {
+          color: 'action.text.secondary.active',
+          backgroundColor: 'action.background.secondary.active',
+          borderColor: 'action.border.secondary.active',
         },
         ...sx,
       }}
       {...props}
-      ref={ref}
     >
-      {label}
-
-      {!onlyText && <Icon icon="close" />}
+      <Icon icon="close" />
     </Button>
   );
-});
-
-CloseButton.displayName = 'CloseButton';
+};
