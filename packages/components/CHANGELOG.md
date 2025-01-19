@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.1...@ttoss/components@2.1.2) (2025-01-19)
+
+### Bug Fixes
+
+- notifications card theme ([#651](https://github.com/ttoss/ttoss/issues/651)) ([a93cf22](https://github.com/ttoss/ttoss/commit/a93cf22fb50f5da9248ffaef94589ead346d4cb5))
+
 ## [2.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.0...@ttoss/components@2.1.1) (2025-01-18)
 
 ### Bug Fixes
