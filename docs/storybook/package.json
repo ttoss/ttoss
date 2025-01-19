@@ -29,21 +29,21 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@storybook/addon-a11y": "^8.4.7",
-    "@storybook/addon-actions": "^8.4.7",
-    "@storybook/addon-essentials": "^8.4.7",
-    "@storybook/addon-interactions": "^8.4.7",
-    "@storybook/addon-links": "^8.4.7",
-    "@storybook/addon-webpack5-compiler-babel": "^3.0.3",
-    "@storybook/manager-api": "^8.4.7",
-    "@storybook/react": "^8.4.7",
-    "@storybook/react-webpack5": "^8.4.7",
-    "@storybook/test": "^8.4.7",
+    "@storybook/addon-a11y": "^8.5.0",
+    "@storybook/addon-actions": "^8.5.0",
+    "@storybook/addon-essentials": "^8.5.0",
+    "@storybook/addon-interactions": "^8.5.0",
+    "@storybook/addon-links": "^8.5.0",
+    "@storybook/addon-webpack5-compiler-babel": "^3.0.5",
+    "@storybook/manager-api": "^8.5.0",
+    "@storybook/react": "^8.5.0",
+    "@storybook/react-webpack5": "^8.5.0",
+    "@storybook/test": "^8.5.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "storybook": "^8.4.7"
+    "storybook": "^8.5.0"
   }
 }
