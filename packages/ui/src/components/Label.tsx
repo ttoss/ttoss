@@ -46,10 +46,7 @@ export const Label = ({
             clickable={tooltipClickable ? true : false}
             place="right"
           >
-            {typeof tooltip === 'string' && (
-              <Text sx={{ color: 'white' }}>{tooltip}</Text>
-            )}
-            {React.isValidElement(tooltip) && tooltip}
+            {tooltip}
           </Tooltip>
         </Text>
       )}
