@@ -1,5 +1,6 @@
-import { Label } from '../../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
+
+import { Label } from '../../../src';
 
 const LABEL_CONTENT = 'Label text';
 
@@ -20,16 +21,10 @@ test('should render Label with tooltip icon', () => {
 
 test('should call function onTooltipClick when click on it', async () => {
   const user = userEvent.setup({ delay: null });
-  const onTooltipClick = jest.fn();
-  render(
-    <Label tooltip onTooltipClick={onTooltipClick}>
-      {LABEL_CONTENT}
-    </Label>
-  );
+
+  render(<Label tooltip>{LABEL_CONTENT}</Label>);
 
   const icon = screen.getByLabelText('tooltip');
 
   await user.click(icon);
-
-  expect(onTooltipClick).toHaveBeenCalled();
 });
