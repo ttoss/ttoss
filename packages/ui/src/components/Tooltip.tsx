@@ -19,7 +19,12 @@ export const Tooltip = (props: ITooltip) => {
           '.tooltip-component': {
             fontFamily: (fonts as any)?.body,
             backgroundColor: themeColors?.feedback?.background?.muted?.default,
+            paddingY: '2',
+            paddingX: '3',
             color: themeColors?.feedback?.text?.secondary?.default,
+            border: 'sm',
+            borderRadius: 'xl',
+            borderColor: themeColors?.feedback?.border?.muted?.default,
           },
         };
       }}
