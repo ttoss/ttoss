@@ -45,7 +45,6 @@ export const Label = ({
             anchorSelect={'.anchor-element'}
             clickable={tooltipClickable ? true : false}
             place="right"
-            className="tooltip-component"
           >
             {typeof tooltip === 'string' && (
               <Text sx={{ color: 'white' }}>{tooltip}</Text>

@@ -115,6 +115,7 @@ export const OcaTheme: Theme = createTheme(
       },
       feedback: {
         text: {
+          primary: { default: '#FFFFFF' },
           secondary: { default: '#465A69' },
         },
         border: {
@@ -128,7 +129,7 @@ export const OcaTheme: Theme = createTheme(
         background: {
           primary: { default: '#eef9fd' },
           secondary: { default: '#FFFFFF' },
-          muted: { default: '#F3F4F6' },
+          muted: { default: '#E5E7EB' },
           negative: { default: '#ffebec' },
           caution: { default: '#fff8e6' },
           positive: { default: '#e6f6e6' },

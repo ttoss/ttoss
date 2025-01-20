@@ -182,6 +182,14 @@ export const BruttalTheme: Theme = {
         negative: { default: coreColors.red700 },
       },
     },
+    feedback: {
+      background: {
+        primary: { default: coreColors.main },
+      },
+      text: {
+        primary: { default: coreColors.white },
+      },
+    },
   },
   fonts: coreFonts,
   radii,
@@ -357,10 +365,6 @@ export const BruttalTheme: Theme = {
       '& > span[aria-label="tooltip"]': {
         fontSize: 'sm',
         marginLeft: '2',
-        '.tooltip-component': {
-          backgroundColor: 'action.background.primary.default',
-          color: 'action.text.secondary.default',
-        },
       },
       '&:has(input[type="checkbox"])': {
         fontSize: 'md',
