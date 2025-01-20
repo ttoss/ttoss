@@ -82,6 +82,7 @@ const Template: StoryFn = () => {
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
           tooltip={'tooltip message'}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldInput
           name="age"

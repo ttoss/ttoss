@@ -10,11 +10,13 @@ const TOOLTIP_LABEL = 'tooltip';
 export type LabelProps = LabelPropsUi & {
   tooltip?: string | React.ReactNode;
   tooltipClickable?: boolean;
+  onTooltipClick?: () => void;
 };
 
 export const Label = ({
   children,
   tooltip,
+  onTooltipClick,
   tooltipClickable,
   sx,
   ...props
@@ -39,6 +41,7 @@ export const Label = ({
           }}
           className={'anchor-element'}
           aria-label={TOOLTIP_LABEL}
+          onClick={onTooltipClick}
         >
           <Icon inline icon="info" />
           <Tooltip

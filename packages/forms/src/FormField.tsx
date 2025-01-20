@@ -21,6 +21,7 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: string | React.ReactNode;
   tooltipClickable?: boolean;
+  onTooltipClick?: () => void;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -43,6 +44,7 @@ export const FormField = <
   disabled,
   tooltip,
   tooltipClickable,
+  onTooltipClick,
   sx,
   css,
   render,
@@ -95,6 +97,7 @@ export const FormField = <
               htmlFor={id}
               tooltip={tooltip}
               tooltipClickable={tooltipClickable}
+              onTooltipClick={onTooltipClick}
             >
               {label}
             </Label>
@@ -111,6 +114,7 @@ export const FormField = <
     id,
     tooltip,
     tooltipClickable,
+    onTooltipClick,
   ]);
 
   return (

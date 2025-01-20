@@ -21,10 +21,16 @@ test('should render Label with tooltip icon', () => {
 
 test('should call function onTooltipClick when click on it', async () => {
   const user = userEvent.setup({ delay: null });
-
-  render(<Label tooltip>{LABEL_CONTENT}</Label>);
+  const onTooltipClick = jest.fn();
+  render(
+    <Label tooltip onTooltipClick={onTooltipClick}>
+      {LABEL_CONTENT}
+    </Label>
+  );
 
   const icon = screen.getByLabelText('tooltip');
 
   await user.click(icon);
+
+  expect(onTooltipClick).toHaveBeenCalled();
 });
