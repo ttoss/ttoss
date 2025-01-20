@@ -16,6 +16,8 @@ export const ThemesContext = React.createContext({
 
 const themesObjectsKey = 'themesObjects';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export const ThemesProvider = ({
   children,
   themeName = defaultThemeObject.name,
@@ -31,34 +33,47 @@ export const ThemesProvider = ({
     }
   );
 
-  const updateCurrentTheme = (theme: Theme) => {
-    if (!themesObjects) {
-      return;
-    }
+  const updateCurrentTheme = React.useCallback(
+    (theme: Theme) => {
+      if (!themesObjects) {
+        return;
+      }
 
-    const currentThemeIndex = themesObjects.findIndex((themeObject) => {
+      const currentThemeIndex = themesObjects.findIndex((themeObject) => {
+        return themeObject.name === themeName;
+      });
+
+      if (currentThemeIndex === -1) {
+        return;
+      }
+
+      const currentTheme = themesObjects[currentThemeIndex];
+
+      const newThemesObject = [...themesObjects];
+
+      newThemesObject[currentThemeIndex] = {
+        ...currentTheme,
+        theme,
+      };
+
+      setThemesObjects(newThemesObject);
+    },
+    [themesObjects, setThemesObjects, themeName]
+  );
+
+  /**
+   * Do not use the themesObjects from the storage in development mode, because
+   * the themesObjects from the storage are not updated when the themes a
+   */
+  const themesObjectsConsideringDevelopment = isDevelopment
+    ? defaultThemesObjects
+    : themesObjects;
+
+  const themeObject = themesObjectsConsideringDevelopment.find(
+    (themeObject) => {
       return themeObject.name === themeName;
-    });
-
-    if (currentThemeIndex === -1) {
-      return;
     }
-
-    const currentTheme = themesObjects[currentThemeIndex];
-
-    const newThemesObject = [...themesObjects];
-
-    newThemesObject[currentThemeIndex] = {
-      ...currentTheme,
-      theme,
-    };
-
-    setThemesObjects(newThemesObject);
-  };
-
-  const themeObject = themesObjects.find((themeObject) => {
-    return themeObject.name === themeName;
-  });
+  );
 
   if (!themeObject) {
     return null;

@@ -17,6 +17,7 @@ import {
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { Box, Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
@@ -278,3 +279,69 @@ export const Example2 = Template2.bind({});
 export const WithInternationalization = TemplateWithInternationalization.bind(
   {}
 );
+
+/**
+ * This story shows how fields are aligned vertically when label has different
+ * sizes and an error message is displayed.
+ */
+export const VerticalAlignment: StoryFn = () => {
+  const schema = yup.object({
+    firstName: yup.string(),
+    middleName: yup.string(),
+    lastName: yup.string().required('Last Name is required'),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+  });
+
+  const { setError } = formMethods;
+
+  React.useEffect(() => {
+    setError('lastName', {
+      message: 'Some message to break alignment',
+    });
+  }, [setError]);
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex
+        sx={{
+          gap: 4,
+          display: 'grid',
+          gridTemplateRows: '[label] auto [input] auto [error] auto', // Nomeando as linhas
+          gridAutoFlow: 'column',
+        }}
+      >
+        <FormFieldInput
+          name="firstName"
+          label="First Name with big label"
+          placeholder="First Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="middleName"
+          label="Middle Name"
+          placeholder="Middle Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="lastName"
+          label="Last Name"
+          placeholder="Last Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <Button sx={{ marginTop: '4' }} type="submit">
+          Submit
+        </Button>
+      </Flex>
+    </Form>
+  );
+};

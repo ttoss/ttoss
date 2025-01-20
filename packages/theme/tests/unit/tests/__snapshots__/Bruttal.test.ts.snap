@@ -74,25 +74,6 @@ exports[`Bruttal theme snapshot 1`] = `
         "color": "action.text.accent.default",
       },
     },
-    "closeButton": {
-      ":disabled": {
-        "backgroundColor": "action.background.muted.default",
-        "border": "sm",
-        "borderColor": "action.border.muted.default",
-        "color": "action.text.muted.default",
-        "cursor": "not-allowed",
-      },
-      ":is(:focus-within, :hover):not(:disabled)": {
-        "backgroundColor": "action.background.secondary.active",
-        "borderColor": "action.border.secondary.active",
-        "color": "action.text.secondary.active",
-      },
-      "backgroundColor": "action.background.primary.active",
-      "border": "sm",
-      "borderColor": "action.border.primary.default",
-      "borderRadius": "sm",
-      "color": "action.text.primary.default",
-    },
     "destructive": {
       ":disabled": {
         "backgroundColor": "action.background.muted.default",

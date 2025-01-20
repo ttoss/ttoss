@@ -8,9 +8,8 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
-import { NotificationsBox, useNotifications } from '@ttoss/react-notifications';
+import { NotificationsBox } from '@ttoss/react-notifications';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
-import * as React from 'react';
 
 import { AuthCard } from './AuthCard';
 import type { OnSignIn, OnSignInInput } from './types';
@@ -30,11 +29,6 @@ export const AuthSignIn = ({
   onForgotPassword,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
-  const { setNotifications } = useNotifications();
-
-  React.useEffect(() => {
-    setNotifications(undefined);
-  }, [setNotifications]);
 
   const schema = yup.object().shape({
     email: yup

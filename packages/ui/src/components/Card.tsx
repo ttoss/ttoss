@@ -1,4 +1,5 @@
-import { Card as CardUi, type CardProps } from 'theme-ui';
+import * as React from 'react';
+import { Box, BoxProps, Card as CardUi, type CardProps } from 'theme-ui';
 
 export type { CardProps };
 
@@ -21,3 +22,62 @@ export const Card = (props: CardProps) => {
     />
   );
 };
+
+const CardTitle = ({
+  children,
+  ...props
+}: React.PropsWithChildren<BoxProps>) => {
+  return (
+    <Box
+      {...props}
+      sx={{
+        paddingY: '4',
+        paddingX: '8',
+        width: 'full',
+        borderBottom: 'md',
+        borderBottomColor: 'display.border.muted.default',
+        ...props.sx,
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+const CardBody = ({
+  children,
+  ...props
+}: React.PropsWithChildren<BoxProps>) => {
+  return (
+    <Box
+      {...props}
+      sx={{
+        paddingY: '4',
+        paddingX: '8',
+        width: 'full',
+        backgroundColor: 'display.background.muted.default',
+        ...props.sx,
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+const CardFooter = ({
+  children,
+  ...props
+}: React.PropsWithChildren<BoxProps>) => {
+  return (
+    <Box
+      {...props}
+      sx={{ paddingY: '2', paddingX: '8', width: 'full', ...props.sx }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+Card.Title = CardTitle;
+Card.Body = CardBody;
+Card.Footer = CardFooter;
