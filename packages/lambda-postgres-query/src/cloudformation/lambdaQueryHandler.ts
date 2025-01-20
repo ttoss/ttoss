@@ -1,6 +1,7 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
-import { Client } from 'pg';
 import type { Handler } from 'aws-lambda';
+import { Client } from 'pg';
+
 import type { QueryParams } from '../query';
 
 const database = process.env.DATABASE_NAME;
