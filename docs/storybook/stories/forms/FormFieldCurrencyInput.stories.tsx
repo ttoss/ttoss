@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCurrencyInput,
@@ -21,7 +21,7 @@ const schema = yup.object({
   euro: yup.string().required('Value is required'),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
