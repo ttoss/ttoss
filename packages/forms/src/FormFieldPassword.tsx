@@ -1,6 +1,7 @@
-import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
-import { FormField, type FormFieldProps } from './FormField';
 import { InputPassword, type InputPasswordProps } from '@ttoss/ui';
+import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
+
+import { FormField, type FormFieldProps } from './FormField';
 
 export type FormFieldPasswordProps<TName> = {
   label?: string;
@@ -15,7 +16,8 @@ export const FormFieldPassword = <
   label,
   name,
   tooltip,
-  onTooltipClick,
+  tooltipClickable,
+  tooltipStyle,
   sx,
   defaultValue = '',
   ...inputProps
@@ -26,7 +28,8 @@ export const FormFieldPassword = <
       label={label}
       disabled={inputProps.disabled}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
+      tooltipClickable={tooltipClickable}
+      tooltipStyle={tooltipStyle}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       render={({ field, fieldState }) => {

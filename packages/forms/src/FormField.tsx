@@ -19,8 +19,9 @@ export type FormFieldProps<
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
-  tooltip?: boolean;
-  onTooltipClick?: () => void;
+  tooltip?: boolean | string | React.ReactNode;
+  tooltipClickable?: boolean;
+  tooltipStyle?: React.CSSProperties;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -42,7 +43,8 @@ export const FormField = <
   defaultValue,
   disabled,
   tooltip,
-  onTooltipClick,
+  tooltipClickable,
+  tooltipStyle,
   sx,
   css,
   render,
@@ -72,11 +74,7 @@ export const FormField = <
         })
       ) {
         return (
-          <Label
-            aria-disabled={disabled}
-            tooltip={tooltip}
-            onTooltipClick={onTooltipClick}
-          >
+          <Label aria-disabled={disabled} tooltip={tooltip}>
             <Flex>
               {React.createElement(child.type, { id, ...childProps })}
             </Flex>
@@ -98,7 +96,8 @@ export const FormField = <
               aria-disabled={disabled}
               htmlFor={id}
               tooltip={tooltip}
-              onTooltipClick={onTooltipClick}
+              tooltipClickable={tooltipClickable}
+              tooltipStyle={tooltipStyle}
             >
               {label}
             </Label>
@@ -107,7 +106,16 @@ export const FormField = <
         </Flex>
       );
     });
-  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
+  }, [
+    render,
+    controllerReturn,
+    label,
+    disabled,
+    id,
+    tooltip,
+    tooltipClickable,
+    tooltipStyle,
+  ]);
 
   return (
     <Flex

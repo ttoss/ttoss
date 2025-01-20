@@ -1,6 +1,7 @@
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { FormField, FormFieldProps } from './FormField';
 import { Select, type SelectProps } from '@ttoss/ui';
+import { FieldPath, FieldValues } from 'react-hook-form';
+
+import { FormField, FormFieldProps } from './FormField';
 
 type FormFieldSelectProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -18,7 +19,8 @@ export const FormFieldSelect = <
   css,
   disabled,
   tooltip,
-  onTooltipClick,
+  tooltipClickable,
+  tooltipStyle,
   ...selectProps
 }: FormFieldSelectProps<TFieldValues>) => {
   return (
@@ -29,7 +31,8 @@ export const FormFieldSelect = <
       defaultValue={defaultValue}
       disabled={disabled}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
+      tooltipClickable={tooltipClickable}
+      tooltipStyle={tooltipStyle}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

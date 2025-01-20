@@ -37,6 +37,7 @@ const Template: Story = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCurrencyInput
+          tooltip={'Currency input '}
           name="real"
           label="Real"
           prefix="R$ "
