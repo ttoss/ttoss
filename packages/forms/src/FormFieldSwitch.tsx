@@ -15,7 +15,7 @@ export const FormFieldSwitch = <
 }: {
   label?: React.ReactNode;
   name: TName;
-  tooltip?: boolean | string | React.ReactNode;
+  tooltip?: string | React.ReactNode;
 } & SwitchProps) => {
   return (
     <FormField

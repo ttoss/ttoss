@@ -19,9 +19,8 @@ export type FormFieldProps<
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
-  tooltip?: boolean | string | React.ReactNode;
+  tooltip?: string | React.ReactNode;
   tooltipClickable?: boolean;
-  tooltipStyle?: React.CSSProperties;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -44,7 +43,6 @@ export const FormField = <
   disabled,
   tooltip,
   tooltipClickable,
-  tooltipStyle,
   sx,
   css,
   render,
@@ -97,7 +95,6 @@ export const FormField = <
               htmlFor={id}
               tooltip={tooltip}
               tooltipClickable={tooltipClickable}
-              tooltipStyle={tooltipStyle}
             >
               {label}
             </Label>
@@ -114,7 +111,6 @@ export const FormField = <
     id,
     tooltip,
     tooltipClickable,
-    tooltipStyle,
   ]);
 
   return (

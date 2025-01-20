@@ -7,9 +7,8 @@ import { FormField } from './FormField';
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
-  tooltip?: boolean | string | React.ReactNode;
+  tooltip?: string | React.ReactNode;
   tooltipClickable?: boolean;
-  tooltipStyle?: React.CSSProperties;
 } & NumericFormatProps;
 
 export const FormFieldNumericFormat = ({
@@ -17,7 +16,6 @@ export const FormFieldNumericFormat = ({
   name,
   tooltip,
   tooltipClickable,
-  tooltipStyle,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
   return (
@@ -26,7 +24,6 @@ export const FormFieldNumericFormat = ({
       name={name}
       tooltip={tooltip}
       tooltipClickable={tooltipClickable}
-      tooltipStyle={tooltipStyle}
       render={({ field }) => {
         return (
           <NumericFormat

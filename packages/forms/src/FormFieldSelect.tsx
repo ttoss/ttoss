@@ -20,7 +20,6 @@ export const FormFieldSelect = <
   disabled,
   tooltip,
   tooltipClickable,
-  tooltipStyle,
   ...selectProps
 }: FormFieldSelectProps<TFieldValues>) => {
   return (
@@ -32,7 +31,6 @@ export const FormFieldSelect = <
       disabled={disabled}
       tooltip={tooltip}
       tooltipClickable={tooltipClickable}
-      tooltipStyle={tooltipStyle}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

@@ -81,15 +81,14 @@ const Template: StoryFn = () => {
           placeholder="First Name"
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
-          onTooltipClick={action('onTooltipClick')}
-          tooltip
+          tooltip={'tooltip message'}
         />
         <FormFieldInput
           name="age"
           label="Age"
           placeholder="Age"
           type="number"
-          tooltip
+          tooltip={'tooltip message'}
         />
 
         <FormFieldPassword
@@ -246,15 +245,14 @@ const TemplateWithInternationalization: StoryFn = () => {
             placeholder="First Name"
             trailingIcon={alertIcon}
             leadingIcon="ic:baseline-supervised-user-circle"
-            onTooltipClick={action('onTooltipClick')}
-            tooltip
+            tooltip={'tooltip message'}
           />
           <FormFieldInput
             name="age"
             label="Age"
             placeholder="Age"
             type="number"
-            tooltip
+            tooltip={'tooltip message'}
           />
 
           <FormFieldPassword

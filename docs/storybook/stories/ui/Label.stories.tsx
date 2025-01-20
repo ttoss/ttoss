@@ -28,7 +28,6 @@ export const Default: Story = {
   args: {
     onChange: action('onChange'),
     children: 'Label (optional)',
-    tooltip: 'tooltip',
   },
 };
 
@@ -39,10 +38,10 @@ export const Disabled: Story = {
   },
 };
 
-export const WithoutTooltip: Story = {
+export const WithTooltip: Story = {
   args: {
     ...Default.args,
-    tooltip: false,
+    tooltip: 'tooltip message',
   },
 };
 
@@ -59,13 +58,5 @@ export const WithTooltipChildrenAndNotClickable: Story = {
     ...Default.args,
     tooltip: <Component />,
     tooltipClickable: false,
-  },
-};
-export const WithTooltipCSS: Story = {
-  args: {
-    ...Default.args,
-    tooltip: 'tooltip with css',
-    tooltipClickable: false,
-    tooltipStyle: { backgroundColor: 'green' },
   },
 };

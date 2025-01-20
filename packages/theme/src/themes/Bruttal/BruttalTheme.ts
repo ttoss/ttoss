@@ -357,6 +357,10 @@ export const BruttalTheme: Theme = {
       '& > span[aria-label="tooltip"]': {
         fontSize: 'sm',
         marginLeft: '2',
+        '.tooltip-component': {
+          backgroundColor: 'action.background.primary.default',
+          color: 'action.text.secondary.default',
+        },
       },
       '&:has(input[type="checkbox"])': {
         fontSize: 'md',

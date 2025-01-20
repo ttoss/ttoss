@@ -1,23 +1,21 @@
 import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
-import { Tooltip } from 'react-tooltip';
 import { Label as LabelUi, type LabelProps as LabelPropsUi } from 'theme-ui';
 
 import { Text } from '..';
+import { Tooltip } from '..';
 
 const TOOLTIP_LABEL = 'tooltip';
 
 export type LabelProps = LabelPropsUi & {
-  tooltip?: string | boolean | React.ReactNode;
+  tooltip?: string | React.ReactNode;
   tooltipClickable?: boolean;
-  tooltipStyle?: React.CSSProperties;
 };
 
 export const Label = ({
   children,
   tooltip,
   tooltipClickable,
-  tooltipStyle,
   sx,
   ...props
 }: LabelProps) => {
@@ -47,17 +45,10 @@ export const Label = ({
             anchorSelect={'.anchor-element'}
             clickable={tooltipClickable ? true : false}
             place="right"
-            style={{
-              ...(tooltipStyle as React.CSSProperties),
-            }}
+            className="tooltip-component"
           >
             {typeof tooltip === 'string' && (
               <Text sx={{ color: 'white' }}>{tooltip}</Text>
-            )}
-            {typeof tooltip === 'boolean' && (
-              <Text sx={{ color: 'white' }}>
-                Por favor, preste atenção aos detalhes nesta seção
-              </Text>
             )}
             {React.isValidElement(tooltip) && tooltip}
           </Tooltip>
