@@ -118,6 +118,16 @@ export const createLambdaPostgresQueryTemplate = ({
           },
         },
       },
+      LambdaQueryFunctionLogs: {
+        Type: 'AWS::Logs::LogGroup',
+        DependsOn: 'LambdaQueryFunction',
+        Properties: {
+          LogGroupName: {
+            'Fn::Join': ['', ['/aws/lambda/', { Ref: 'LambdaQueryFunction' }]],
+          },
+          RetentionInDays: 7,
+        },
+      },
     },
     Outputs: {
       LambdaPostgresQueryFunction: {

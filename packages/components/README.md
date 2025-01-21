@@ -189,12 +189,6 @@ The `Table` component is a flexible and customizable table that supports sorting
 import * as React from 'react';
 import {
   Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -311,61 +305,61 @@ const RenderTable = () => {
 
   return (
     <Table>
-      <TableHead>
+      <Table.Head>
         {table.getHeaderGroups().map((headerGroup) => {
           return (
-            <TableRow key={headerGroup.id}>
+            <Table.Row key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHeader key={header.id}>
+                  <Table.Header key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TableHeader>
+                  </Table.Header>
                 );
               })}
-            </TableRow>
+            </Table.Row>
           );
         })}
-      </TableHead>
-      <TableBody>
+      </Table.Head>
+      <Table.Body>
         {table.getRowModel().rows.map((row) => {
           return (
-            <TableRow key={row.id}>
+            <Table.Row key={row.id}>
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <TableCell key={cell.id}>
+                  <Table.Cell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  </Table.Cell>
                 );
               })}
-            </TableRow>
+            </Table.Row>
           );
         })}
-      </TableBody>
-      <TableFooter>
+      </Table.Body>
+      <Table.Footer>
         {table.getFooterGroups().map((footerGroup) => {
           return (
-            <TableRow key={footerGroup.id}>
+            <Table.Row key={footerGroup.id}>
               {footerGroup.headers.map((header) => {
                 return (
-                  <TableHeader key={header.id}>
+                  <Table.Header key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.footer,
                           header.getContext()
                         )}
-                  </TableHeader>
+                  </Table.Header>
                 );
               })}
-            </TableRow>
+            </Table.Row>
           );
         })}
-      </TableFooter>
+      </Table.Footer>
     </Table>
   );
 };

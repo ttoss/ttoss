@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.3 (2025-01-20)
+
+### Bug Fixes
+
+- lambda query text decoder and error message ([#653](https://github.com/ttoss/ttoss/issues/653)) ([63c00fc](https://github.com/ttoss/ttoss/commit/63c00fcea10a61bc581ccddaebdddc7b47cfccfc))
+
 ## [0.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.3.1...@ttoss/lambda-postgres-query@0.3.2) (2025-01-02)
 
 **Note:** Version bump only for package @ttoss/lambda-postgres-query
