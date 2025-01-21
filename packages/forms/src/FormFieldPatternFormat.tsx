@@ -1,6 +1,7 @@
-import { FormField } from './FormField';
 import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
+
+import { FormField } from './FormField';
 
 export type FormFieldPatternFormatProps = {
   label?: string;
