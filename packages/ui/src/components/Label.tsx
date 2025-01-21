@@ -9,7 +9,6 @@ const TOOLTIP_LABEL = 'tooltip';
 
 export type LabelProps = LabelPropsUi & {
   tooltip?: string | React.ReactNode;
-  tooltipClickable?: boolean;
   onTooltipClick?: () => void;
 };
 
@@ -17,7 +16,7 @@ export const Label = ({
   children,
   tooltip,
   onTooltipClick,
-  tooltipClickable,
+
   sx,
   ...props
 }: LabelProps) => {
@@ -46,7 +45,7 @@ export const Label = ({
           <Icon inline icon="info" />
           <Tooltip
             anchorSelect={'.anchor-element'}
-            clickable={tooltipClickable ? true : false}
+            clickable={onTooltipClick ? true : false}
             place="right"
           >
             {tooltip}

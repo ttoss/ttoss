@@ -20,7 +20,6 @@ export type FormFieldProps<
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
   tooltip?: string | React.ReactNode;
-  tooltipClickable?: boolean;
   onTooltipClick?: () => void;
 } & SxProp;
 
@@ -43,7 +42,6 @@ export const FormField = <
   defaultValue,
   disabled,
   tooltip,
-  tooltipClickable,
   onTooltipClick,
   sx,
   css,
@@ -96,7 +94,6 @@ export const FormField = <
               aria-disabled={disabled}
               htmlFor={id}
               tooltip={tooltip}
-              tooltipClickable={tooltipClickable}
               onTooltipClick={onTooltipClick}
             >
               {label}
@@ -106,16 +103,7 @@ export const FormField = <
         </Flex>
       );
     });
-  }, [
-    render,
-    controllerReturn,
-    label,
-    disabled,
-    id,
-    tooltip,
-    tooltipClickable,
-    onTooltipClick,
-  ]);
+  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
 
   return (
     <Flex

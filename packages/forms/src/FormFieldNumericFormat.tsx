@@ -8,7 +8,6 @@ export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
   tooltip?: string | React.ReactNode;
-  tooltipClickable?: boolean;
   onTooltipClick?: () => void;
 } & NumericFormatProps;
 
@@ -16,7 +15,6 @@ export const FormFieldNumericFormat = ({
   label,
   name,
   tooltip,
-  tooltipClickable,
   onTooltipClick,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
@@ -25,7 +23,6 @@ export const FormFieldNumericFormat = ({
       label={label}
       name={name}
       tooltip={tooltip}
-      tooltipClickable={tooltipClickable}
       onTooltipClick={onTooltipClick}
       render={({ field }) => {
         return (

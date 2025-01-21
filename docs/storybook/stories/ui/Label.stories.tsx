@@ -49,7 +49,9 @@ export const WithTooltipChildrenAndClickable: Story = {
   args: {
     ...Default.args,
     tooltip: <Component />,
-    tooltipClickable: true,
+    onTooltipClick: () => {
+      action('onTooltipClick');
+    },
   },
 };
 
@@ -57,6 +59,5 @@ export const WithTooltipChildrenAndNotClickable: Story = {
   args: {
     ...Default.args,
     tooltip: <Component />,
-    tooltipClickable: false,
   },
 };
