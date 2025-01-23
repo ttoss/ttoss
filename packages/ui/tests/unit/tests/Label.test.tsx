@@ -18,7 +18,7 @@ test('should render Label with tooltip icon', () => {
   const icon = screen.getByTestId('iconify-icon');
 
   expect(icon).toBeInTheDocument();
-  expect(icon).toHaveAttribute('icon', 'info');
+  expect(icon).toHaveAttribute('icon', 'fluent:info-24-regular');
 });
 
 test('should call function onTooltipClick when click on it', async () => {
