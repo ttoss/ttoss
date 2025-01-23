@@ -182,6 +182,14 @@ export const BruttalTheme: Theme = {
         negative: { default: coreColors.red700 },
       },
     },
+    feedback: {
+      background: {
+        primary: { default: coreColors.main },
+      },
+      text: {
+        primary: { default: coreColors.white },
+      },
+    },
   },
   fonts: coreFonts,
   radii,

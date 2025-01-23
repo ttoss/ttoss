@@ -43,6 +43,7 @@ export { Stack, type StackProps } from './components/Stack';
 export { Switch, type SwitchProps } from './components/Switch';
 export { Text, type TextProps } from './components/Text';
 export { Textarea, type TextareaProps } from './components/Textarea';
+export { Tooltip } from './components/Tooltip';
 export { ThemeProvider, type ThemeProviderProps } from './theme/ThemeProvider';
 export { useTheme } from './theme/useTheme';
 export { type Keyframes, keyframes } from '@emotion/react';

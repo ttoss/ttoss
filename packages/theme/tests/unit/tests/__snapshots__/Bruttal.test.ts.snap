@@ -231,6 +231,18 @@ exports[`Bruttal theme snapshot 1`] = `
         },
       },
     },
+    "feedback": {
+      "background": {
+        "primary": {
+          "default": "#292C2a",
+        },
+      },
+      "text": {
+        "primary": {
+          "default": "#ffffff",
+        },
+      },
+    },
     "input": {
       "background": {
         "accent": {

@@ -31,6 +31,12 @@ const loadLocaleData = async (locale: string) => {
 export default {
   title: 'Forms/Form',
   component: Form,
+  argTypes: {
+    showTooltip: { control: 'boolean' },
+  },
+  args: {
+    showTooltip: true,
+  },
   decorators: [
     (Story) => {
       return (
@@ -42,7 +48,11 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn = () => {
+type StoryArgs = {
+  showTooltip: boolean;
+};
+
+const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
   const schema = yup.object({
     firstName: yup.string().required('First Name is required'),
     age: yup.number().required('Age is required'),
@@ -72,6 +82,8 @@ const Template: StoryFn = () => {
     },
   });
 
+  const tooltip = props.showTooltip ? 'tooltip message' : undefined;
+
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '4' }}>
@@ -81,15 +93,15 @@ const Template: StoryFn = () => {
           placeholder="First Name"
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
+          tooltip={tooltip}
           onTooltipClick={action('onTooltipClick')}
-          tooltip
         />
         <FormFieldInput
           name="age"
           label="Age"
           placeholder="Age"
-          type="number"
-          tooltip
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
 
         <FormFieldPassword
@@ -97,18 +109,26 @@ const Template: StoryFn = () => {
           label="Password"
           placeholder="Password"
           showPasswordByDefault
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldCheckbox
           name="receiveAlertEmails"
           label="Receive Alert Emails"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldSwitch
           name="receiveMarketingEmails"
           label="Receive Marketing Emails"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldRadio
           name="emailFrequency"
           label="Email Frequency"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
           options={[
             {
               label: 'Daily',
@@ -124,7 +144,13 @@ const Template: StoryFn = () => {
             },
           ]}
         />
-        <FormFieldInput name="version" label="Version (disabled)" disabled />
+        <FormFieldInput
+          name="version"
+          label="Version (disabled)"
+          disabled
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
+        />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
@@ -246,15 +272,14 @@ const TemplateWithInternationalization: StoryFn = () => {
             placeholder="First Name"
             trailingIcon={alertIcon}
             leadingIcon="ic:baseline-supervised-user-circle"
-            onTooltipClick={action('onTooltipClick')}
-            tooltip
+            tooltip={'tooltip message'}
           />
           <FormFieldInput
             name="age"
             label="Age"
             placeholder="Age"
             type="number"
-            tooltip
+            tooltip={'tooltip message'}
           />
 
           <FormFieldPassword

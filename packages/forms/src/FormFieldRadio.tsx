@@ -1,7 +1,7 @@
 import { Flex, Label, Radio, type RadioProps } from '@ttoss/ui';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 
 type FormRadioOption = {
   value: string | number;
@@ -16,17 +16,20 @@ export const FormFieldRadio = <
   name,
   sx,
   options,
+  tooltip,
+  onTooltipClick,
   ...radioProps
 }: {
-  label?: React.ReactNode;
-  name: TName;
   options: FormRadioOption[];
-} & RadioProps) => {
+} & FormFieldProps<TFieldValues, TName> &
+  RadioProps) => {
   return (
     <FormField
       label={label}
       name={name}
       sx={sx}
+      tooltip={tooltip}
+      onTooltipClick={onTooltipClick}
       render={({ field }) => {
         return (
           <Flex
@@ -36,11 +39,11 @@ export const FormFieldRadio = <
             }}
           >
             {options.map((option: FormRadioOption) => {
-              const id = `form-field-radio-${name}-${option.value}`;
+              const key = `form-field-radio-${name}-${option.value}`;
 
               return (
                 <Label
-                  key={id}
+                  key={key}
                   sx={{
                     fontSize: 'md',
                   }}
