@@ -1,6 +1,7 @@
-import * as React from 'react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { css, Global } from '@emotion/react';
 import { BruttalFonts, BruttalTheme } from '@ttoss/theme/Bruttal';
-import { Global, css } from '@emotion/react';
+import * as React from 'react';
 import { Theme, ThemeUIProvider } from 'theme-ui';
 
 export type ThemeProviderProps = {
@@ -17,19 +18,47 @@ export const ThemeProvider = ({
   theme = BruttalTheme,
   fonts = BruttalFonts,
 }: ThemeProviderProps) => {
+  // const config = defineConfig({
+  //   preflight: true,
+  //   cssVarsPrefix: 'chakra',
+  //   cssVarsRoot: ':where(html, .chakra-theme)',
+  //   theme: {
+  //     breakpoints,
+  //     tokens: {
+  //       borders: theme.borders as any,
+  //       fonts: theme.fonts as any,
+  //       fontSizes: theme.fontSizes as any,
+  //       fontWeights: theme.fontWeights as any,
+  //       letterSpacings: theme.letterSpacings as any,
+  //       lineHeights: theme.lineHeights as any,
+  //       radii: theme.radii as any,
+  //       spacing: theme.space as any,
+  //       sizes: theme.sizes as any,
+  //       zIndex: theme.zIndices as any,
+  //     },
+  //     semanticTokens: {
+  //       colors: theme.colors as any,
+  //     },
+  //   },
+  // });
+
+  // const system = createSystem(config);
+
   return (
     <>
       <ThemeUIProvider theme={theme}>
-        <Global
-          styles={css`
-            ${fonts
-              .map((url) => {
-                return `@import url('${url}');`;
-              })
-              .join('\n')}
-          `}
-        />
-        {children}
+        <ChakraProvider value={defaultSystem}>
+          <Global
+            styles={css`
+              ${fonts
+                .map((url) => {
+                  return `@import url('${url}');`;
+                })
+                .join('\n')}
+            `}
+          />
+          {children}
+        </ChakraProvider>
       </ThemeUIProvider>
     </>
   );
