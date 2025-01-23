@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.3...@docs/storybook@2.9.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
 ## [2.8.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.2...@docs/storybook@2.8.3) (2025-01-20)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.5 (2025-01-23)
+
+### Bug Fixes
+
+- stack component ([1c647e3](https://github.com/ttoss/ttoss/commit/1c647e34e520850f19817e366bdeb91fc9411d88))
+
 ## [0.19.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.3...@terezinha-farm/api@0.19.4) (2025-01-07)
 
 **Note:** Version bump only for package @terezinha-farm/api
