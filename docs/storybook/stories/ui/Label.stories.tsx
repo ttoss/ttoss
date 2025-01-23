@@ -4,7 +4,7 @@ import { Label } from '@ttoss/ui';
 
 type Story = StoryObj<typeof Label>;
 
-const Component = () => {
+const TooltipComponent = () => {
   return (
     <div>
       <h3>This is a very interesting header</h3>
@@ -48,16 +48,14 @@ export const WithTooltip: Story = {
 export const WithTooltipChildrenAndClickable: Story = {
   args: {
     ...Default.args,
-    tooltip: <Component />,
-    onTooltipClick: () => {
-      action('onTooltipClick');
-    },
+    tooltip: <TooltipComponent />,
+    onTooltipClick: action('onTooltipClick'),
   },
 };
 
 export const WithTooltipChildrenAndNotClickable: Story = {
   args: {
     ...Default.args,
-    tooltip: <Component />,
+    tooltip: <TooltipComponent />,
   },
 };

@@ -16,35 +16,38 @@ export const Label = ({
   children,
   tooltip,
   onTooltipClick,
-
   sx,
   ...props
 }: LabelProps) => {
+  const id = React.useId();
+
+  const tooltipId = `${id}-tooltip`;
+
   return (
     <LabelUi
+      data-tooltip-id={tooltipId}
       sx={{
         alignItems: 'center',
         fontSize: 'sm',
         lineHeight: 'normal',
+        width: 'fit-content',
         ...sx,
       }}
       {...props}
     >
       {children}
-
       {tooltip && (
         <Text
           sx={{
             color: 'currentcolor',
             cursor: 'pointer',
           }}
-          className={'anchor-element'}
           aria-label={TOOLTIP_LABEL}
           onClick={onTooltipClick}
         >
           <Icon inline icon="info" />
           <Tooltip
-            anchorSelect={'.anchor-element'}
+            id={tooltipId}
             clickable={onTooltipClick ? true : false}
             place="right"
           >

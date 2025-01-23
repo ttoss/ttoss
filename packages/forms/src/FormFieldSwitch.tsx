@@ -1,8 +1,7 @@
 import { Switch, type SwitchProps } from '@ttoss/ui';
-import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 
 export const FormFieldSwitch = <
   TFieldValues extends FieldValues = FieldValues,
@@ -11,16 +10,16 @@ export const FormFieldSwitch = <
   label,
   name,
   sx,
+  tooltip,
+  onTooltipClick,
   ...switchProps
-}: {
-  label?: React.ReactNode;
-  name: TName;
-  tooltip?: string | React.ReactNode;
-} & SwitchProps) => {
+}: FormFieldProps<TFieldValues, TName> & SwitchProps) => {
   return (
     <FormField
       label={label}
       name={name}
+      tooltip={tooltip}
+      onTooltipClick={onTooltipClick}
       render={({ field, fieldState }) => {
         return (
           <Switch

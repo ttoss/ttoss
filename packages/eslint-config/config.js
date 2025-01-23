@@ -139,13 +139,6 @@ export default tseslint.config([
       '@typescript-eslint/camelcase': 'off',
     },
   },
-  {
-    files: ['**/*.stories.tsx', '**/*.stories.jsx'],
-
-    rules: {
-      'import/no-default-export': 'off',
-    },
-  },
   ...compat.extends('plugin:jest/recommended').map((config) => {
     return {
       ...config,

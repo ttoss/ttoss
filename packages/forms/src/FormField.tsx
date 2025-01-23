@@ -72,7 +72,11 @@ export const FormField = <
         })
       ) {
         return (
-          <Label aria-disabled={disabled} tooltip={tooltip}>
+          <Label
+            aria-disabled={disabled}
+            tooltip={tooltip}
+            onTooltipClick={onTooltipClick}
+          >
             <Flex>
               {React.createElement(child.type, { id, ...childProps })}
             </Flex>
