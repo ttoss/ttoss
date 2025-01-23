@@ -45,11 +45,11 @@ export const Label = ({
           aria-label={TOOLTIP_LABEL}
           onClick={onTooltipClick}
         >
-          <Icon inline icon="info" />
+          <Icon inline icon="fluent:info-24-regular" />
           <Tooltip
             id={tooltipId}
             clickable={onTooltipClick ? true : false}
-            place="right"
+            place="top"
           >
             {tooltip}
           </Tooltip>
