@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.3.0...@ttoss/ui@5.3.1) (2025-01-24)
+
+### Bug Fixes
+
+- change tooltip position and color tokens ([#657](https://github.com/ttoss/ttoss/issues/657)) ([6a1460b](https://github.com/ttoss/ttoss/commit/6a1460b6f2a51a5fe087c4b3cc33a184bcc64c8e))
+
 # [5.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.2.1...@ttoss/ui@5.3.0) (2025-01-23)
 
 ### Features
