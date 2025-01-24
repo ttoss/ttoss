@@ -19,7 +19,7 @@ export type FormFieldProps<
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
-  tooltip?: boolean;
+  tooltip?: string | React.ReactNode;
   onTooltipClick?: () => void;
 } & SxProp;
 

@@ -1,24 +1,25 @@
 import { Checkbox, type CheckboxProps } from '@ttoss/ui';
-import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 
 export const FormFieldCheckbox = <
   TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   label,
   name,
   sx,
+  tooltip,
+  onTooltipClick,
   ...checkboxProps
-}: {
-  label?: React.ReactNode;
-  name: FieldPath<TFieldValues>;
-} & CheckboxProps) => {
+}: FormFieldProps<TFieldValues, TName> & CheckboxProps) => {
   return (
     <FormField
       label={label}
       name={name}
+      tooltip={tooltip}
+      onTooltipClick={onTooltipClick}
       render={({ field, fieldState }) => {
         return (
           <Checkbox

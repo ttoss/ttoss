@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.2.1...@ttoss/theme@2.3.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
 ## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.2.0...@ttoss/theme@2.2.1) (2025-01-19)
 
 ### Bug Fixes

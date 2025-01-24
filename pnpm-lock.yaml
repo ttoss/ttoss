@@ -1652,7 +1652,7 @@ importers:
         version: 29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))
       theme-ui:
         specifier: ^0.17.1
-        version: 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+        version: 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
@@ -1671,9 +1671,12 @@ importers:
       react-tabs:
         specifier: ^6.1.0
         version: 6.1.0(react@19.0.0)
+      react-tooltip:
+        specifier: ^5.28.0
+        version: 5.28.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       theme-ui:
         specifier: ^0.17.1
-        version: 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+        version: 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
     devDependencies:
       '@emotion/react':
         specifier: ^11.14.0
@@ -7377,6 +7380,9 @@ packages:
   cjs-module-lexer@1.4.1:
     resolution: {integrity: sha512-cuSVIHi9/9E/+821Qjdvngor+xpnlwnuwIyZOaLmHBVdXL+gP+I6QQB9VkO7RI77YIcTV+S1W9AreJ5eN63JBA==}
 
+  classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
+
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
@@ -12767,6 +12773,12 @@ packages:
     peerDependencies:
       react: ^18 || ^19
       react-dom: ^18 || ^19
+
+  react-tooltip@5.28.0:
+    resolution: {integrity: sha512-R5cO3JPPXk6FRbBHMO0rI9nkUG/JKfalBSQfZedZYzmqaZQgq7GLzF8vcCWx6IhUCKg0yPqJhXIzmIO5ff15xg==}
+    peerDependencies:
+      react: '>=16.14.0'
+      react-dom: '>=16.14.0'
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
@@ -21237,27 +21249,27 @@ snapshots:
     dependencies:
       '@testing-library/dom': 10.4.0
 
-  '@theme-ui/color-modes@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)':
+  '@theme-ui/color-modes@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
       deepmerge: 4.3.1
       react: 19.0.0
 
-  '@theme-ui/components@0.17.1(@emotion/react@11.14.0(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
+  '@theme-ui/components@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@styled-system/color': 5.1.2
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
-      '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@types/styled-system': 5.1.23
       react: 19.0.0
 
-  '@theme-ui/core@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)':
+  '@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
@@ -21269,24 +21281,24 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       csstype: 3.1.3
 
-  '@theme-ui/global@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)':
+  '@theme-ui/global@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
       react: 19.0.0
 
   '@theme-ui/match-media@0.17.1(@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(@theme-ui/css@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0)))(react@19.0.0)':
     dependencies:
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
       react: 19.0.0
 
-  '@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)':
+  '@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
       react: 19.0.0
 
@@ -23256,6 +23268,8 @@ snapshots:
   cjs-module-lexer@1.2.3: {}
 
   cjs-module-lexer@1.4.1: {}
+
+  classnames@2.5.1: {}
 
   clean-css@5.3.3:
     dependencies:
@@ -29683,6 +29697,13 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
+  react-tooltip@5.28.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      '@floating-ui/dom': 1.6.12
+      classnames: 2.5.1
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   react-transition-group@4.4.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@babel/runtime': 7.26.0
@@ -30993,15 +31014,15 @@ snapshots:
 
   text-table@0.2.0: {}
 
-  theme-ui@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0):
+  theme-ui@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0):
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
-      '@theme-ui/components': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
-      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
+      '@theme-ui/components': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
-      '@theme-ui/global': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
-      '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(react@19.0.0))(react@19.0.0)
+      '@theme-ui/global': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
+      '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       react: 19.0.0
 
   thenify-all@1.6.0:

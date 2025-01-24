@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "5.2.1",
+  "version": "5.3.0",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "MIT",
   "author": "ttoss",
@@ -30,6 +30,7 @@
     "@ttoss/theme": "workspace:^",
     "react-select": "^5.9.0",
     "react-tabs": "^6.1.0",
+    "react-tooltip": "^5.28.0",
     "theme-ui": "^0.17.1"
   },
   "peerDependencies": {

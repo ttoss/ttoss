@@ -11,13 +11,13 @@ export const Switch = (props: SwitchProps) => {
       sx={{
         backgroundColor: 'input.background.muted.disabled',
         'input:checked ~ &': {
-          backgroundColor: 'input.background.secondary.default',
+          backgroundColor: 'input.background.accent.default',
         },
         'input ~ & > div': {
           backgroundColor: 'input.background.primary.default',
         },
         'input:checked ~ & > div': {
-          backgroundColor: 'input.background.accent.default',
+          backgroundColor: 'input.text.primary.default',
         },
         'input:focus ~ &': {
           outline: 'md',
