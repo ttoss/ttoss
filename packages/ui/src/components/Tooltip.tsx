@@ -18,13 +18,16 @@ export const Tooltip = (props: ITooltip) => {
         return {
           '.tooltip-component': {
             fontFamily: (fonts as any)?.body,
-            backgroundColor: themeColors?.feedback?.background?.muted?.default,
+            backgroundColor:
+              themeColors?.feedback?.background?.primary?.default,
             paddingY: '2',
             paddingX: '3',
             color: themeColors?.feedback?.text?.secondary?.default,
             border: 'sm',
             borderRadius: 'xl',
-            borderColor: themeColors?.feedback?.border?.muted?.default,
+            borderColor: themeColors?.feedback?.border?.primary?.default,
+            zIndex: 'tooltip',
+            opacity: '1',
           },
         };
       }}
