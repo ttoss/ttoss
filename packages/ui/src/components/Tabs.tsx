@@ -1,14 +1,12 @@
-import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { Icon, IconType } from '@ttoss/react-icons';
 import * as React from 'react';
+import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
+import { Flex } from 'theme-ui';
 
 export const Tabs = ({
-  rootValue,
-  variant,
   triggerList,
   triggerContentList,
 }: {
-  rootValue: string;
   variant: 'outline' | 'line' | 'subtle' | 'enclosed' | 'plain' | undefined;
   triggerList: {
     value: string;
@@ -19,28 +17,22 @@ export const Tabs = ({
   triggerContentList: { value: string; content: React.ReactNode }[];
 }) => {
   return (
-    <ChakraTabs.Root defaultValue={rootValue} variant={variant}>
-      <ChakraTabs.List>
+    <ReactTabs>
+      <TabList>
         {triggerList.map((trigger) => {
           return (
-            <ChakraTabs.Trigger
-              value={trigger.value}
-              key={trigger.value}
-              disabled={trigger.disabled}
-            >
-              {trigger.leftIcon && <Icon icon={trigger.leftIcon} />}
-              {trigger.name}
-            </ChakraTabs.Trigger>
+            <Tab key={trigger.value} disabled={trigger.disabled}>
+              <Flex sx={{ gap: '2' }}>
+                {trigger.leftIcon && <Icon icon={trigger.leftIcon} />}
+                {trigger.name}
+              </Flex>
+            </Tab>
           );
         })}
-      </ChakraTabs.List>
+      </TabList>
       {triggerContentList.map((content) => {
-        return (
-          <ChakraTabs.Content value={content.value} key={content.value}>
-            {content.content}
-          </ChakraTabs.Content>
-        );
+        return <TabPanel key={content.value}>{content.content}</TabPanel>;
       })}
-    </ChakraTabs.Root>
+    </ReactTabs>
   );
 };

@@ -26,10 +26,10 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@chakra-ui/react": "^3.4.0",
     "@theme-ui/match-media": "^0.17.1",
     "@ttoss/theme": "workspace:^",
     "react-select": "^5.9.0",
+    "react-tabs": "^6.1.0",
     "theme-ui": "^0.17.1"
   },
   "peerDependencies": {

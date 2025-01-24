@@ -10,8 +10,6 @@ export default {
 
 export const Default: Story = {
   args: {
-    rootValue: 'members',
-    variant: 'line',
     triggerList: [
       {
         value: 'members',
@@ -23,10 +21,17 @@ export const Default: Story = {
         name: 'Campaigns',
         leftIcon: 'fluent:arrow-trending-lines-20-filled',
       },
+      {
+        value: 'dataloggers',
+        name: 'Dataloggers',
+        leftIcon: 'fluent:arrow-trending-lines-20-filled',
+        disabled: true,
+      },
     ],
     triggerContentList: [
       { value: 'members', content: <Flex>Members content</Flex> },
       { value: 'campaigns', content: <Flex>Campaigns content</Flex> },
+      { value: 'dataloggers', content: <Flex>Dataloggers content</Flex> },
     ],
   },
 };

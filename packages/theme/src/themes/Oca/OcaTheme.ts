@@ -37,6 +37,7 @@ export const OcaTheme: Theme = createTheme(
       input: {
         border: {
           muted: { default: '#E5E7EB' },
+          accent: { default: '#03FF7A' },
         },
         background: {
           primary: { default: '#FFFFFF' },

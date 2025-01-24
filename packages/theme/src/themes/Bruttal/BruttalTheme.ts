@@ -218,6 +218,50 @@ export const BruttalTheme: Theme = {
         paddingX: '6',
         paddingY: '4',
       },
+      /**
+       * Tabs
+       */
+      '.react-tabs': {
+        WebkitTapHighlightColor: 'transparent',
+      },
+      '.react-tabs__tab-list': {
+        borderBottom: 'md',
+        borderColor: 'input.border.muted.default',
+      },
+      '.react-tabs__tab--selected': {
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderBottom: 'lg',
+        borderColor: 'input.border.accent.default',
+      },
+      '.react-tabs__tab': {
+        color: 'input.text.secondary.default',
+        display: 'inline-block',
+        padding: '3',
+        cursor: 'pointer',
+        position: 'relative',
+        listStyle: 'none',
+      },
+      '.react-tabs__tab--disabled': {
+        cursor: 'not-allowed',
+        color: 'input.text.muted.default',
+      },
+      '.react-tabs__tab:focus': {
+        outline: 'none',
+      },
+      '.react-tabs__tab:focus:after': {
+        position: 'absolute',
+        height: 'min',
+        left: '-2',
+        right: '-2',
+        bottom: '-3',
+      },
+      '.react-tabs__tab-panel': {
+        display: 'none',
+      },
+      '.react-tabs__tab-panel--selected': {
+        display: 'block',
+      },
     },
     a: {
       color: 'navigation.text.primary.default',
