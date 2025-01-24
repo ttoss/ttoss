@@ -7,7 +7,6 @@ export const Tabs = ({
   triggerList,
   triggerContentList,
 }: {
-  variant: 'outline' | 'line' | 'subtle' | 'enclosed' | 'plain' | undefined;
   triggerList: {
     value: string;
     leftIcon?: IconType;
