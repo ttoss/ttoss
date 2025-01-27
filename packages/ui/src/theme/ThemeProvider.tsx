@@ -1,6 +1,6 @@
-import * as React from 'react';
+import { css, Global } from '@emotion/react';
 import { BruttalFonts, BruttalTheme } from '@ttoss/theme/Bruttal';
-import { Global, css } from '@emotion/react';
+import * as React from 'react';
 import { Theme, ThemeUIProvider } from 'theme-ui';
 
 export type ThemeProviderProps = {

@@ -37,6 +37,7 @@ export const OcaTheme: Theme = createTheme(
       input: {
         border: {
           muted: { default: '#E5E7EB' },
+          accent: { default: '#03FF7A' },
         },
         background: {
           primary: { default: '#FFFFFF' },
@@ -144,10 +145,10 @@ export const OcaTheme: Theme = createTheme(
     borders: {
       none: defaultBorders.none,
       xs: defaultBorders.xs,
-      sm: defaultBorders.sm,
-      md: '1px solid',
-      lg: defaultBorders.lg,
-      xl: defaultBorders.xl,
+      sm: defaultBorders.xs,
+      md: defaultBorders.sm,
+      lg: defaultBorders.md,
+      xl: defaultBorders.lg,
     },
     radii: defaultTheme.radii,
     /**

@@ -26,6 +26,7 @@
     "./NotificationCard": "./src/components/NotificationCard/index.ts",
     "./Search": "./src/components/Search/index.ts",
     "./Table": "./src/components/Table/index.ts",
+    "./Tabs": "./src/components/Tabs/index.ts",
     "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
@@ -50,6 +51,7 @@
     "react-markdown": "^9.0.3",
     "react-modal": "^3.16.3",
     "react-modern-drawer": "^1.4.0",
+    "react-tabs": "^6.1.0",
     "react-toastify": "^11.0.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0"
@@ -126,6 +128,10 @@
       "./Table": {
         "types": "./dist/Table/index.d.ts",
         "import": "./dist/esm/Table/index.js"
+      },
+      "./Tabs": {
+        "types": "./dist/Tabs/index.d.ts",
+        "import": "./dist/esm/Tabs/index.js"
       },
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",
