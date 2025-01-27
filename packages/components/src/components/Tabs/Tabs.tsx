@@ -14,6 +14,8 @@ import {
 export type { TabListProps, TabPanelProps, TabProps, TabsProps };
 
 export const Tabs = (props: BoxProps & TabsProps) => {
+  const { sx: customSx, ...restProps } = props;
+
   return (
     <Box
       sx={({ colors }) => {
@@ -67,9 +69,10 @@ export const Tabs = (props: BoxProps & TabsProps) => {
           '.react-tabs__tab-panel--selected': {
             display: 'block',
           },
+          ...customSx,
         };
       }}
-      {...props}
+      {...restProps}
     >
       <ReactTabs {...props}>{props.children}</ReactTabs>
     </Box>
