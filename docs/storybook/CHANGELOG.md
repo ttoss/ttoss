@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.9.1...@docs/storybook@2.10.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
 ## [2.9.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.9.0...@docs/storybook@2.9.1) (2025-01-24)
 
 **Note:** Version bump only for package @docs/storybook

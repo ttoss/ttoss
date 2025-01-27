@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.5...@ttoss/components@2.2.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
 ## [2.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.4...@ttoss/components@2.1.5) (2025-01-24)
 
 **Note:** Version bump only for package @ttoss/components
