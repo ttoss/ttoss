@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, BoxProps } from '@ttoss/ui';
-import { SxProp } from '@ttoss/ui';
 import {
   Tab,
   TabList,
@@ -14,7 +13,9 @@ import {
 
 export type { TabListProps, TabPanelProps, TabProps, TabsProps };
 
-export const Tabs = (props: BoxProps & TabsProps & SxProp) => {
+export const Tabs = (props: BoxProps & TabsProps) => {
+  const { sx: customSx, ...restProps } = props;
+
   return (
     <Box
       sx={({ colors }) => {
@@ -68,10 +69,10 @@ export const Tabs = (props: BoxProps & TabsProps & SxProp) => {
           '.react-tabs__tab-panel--selected': {
             display: 'block',
           },
-          ...props.sx,
+          ...customSx,
         };
       }}
-      {...props}
+      {...restProps}
     >
       <ReactTabs {...props}>{props.children}</ReactTabs>
     </Box>
