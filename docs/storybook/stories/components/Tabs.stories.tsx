@@ -11,30 +11,28 @@ export default {
 
 export const Default: Story = {
   args: {
-    props: {
-      triggerList: [
-        {
-          value: 'members',
-          name: 'Members',
-          leftIcon: 'fluent:person-24-regular',
-        },
-        {
-          value: 'campaigns',
-          name: 'Campaigns',
-          leftIcon: 'fluent:arrow-trending-lines-20-filled',
-        },
-        {
-          value: 'dataloggers',
-          name: 'Dataloggers',
-          leftIcon: 'fluent:arrow-trending-lines-20-filled',
-          disabled: true,
-        },
-      ],
-      triggerContentList: [
-        { value: 'members', content: <Flex>Members content</Flex> },
-        { value: 'campaigns', content: <Flex>Campaigns content</Flex> },
-        { value: 'dataloggers', content: <Flex>Dataloggers content</Flex> },
-      ],
-    },
+    triggerList: [
+      {
+        value: 'members',
+        name: 'Members',
+        leftIcon: 'fluent:person-24-regular',
+      },
+      {
+        value: 'campaigns',
+        name: 'Campaigns',
+        leftIcon: 'fluent:arrow-trending-lines-20-filled',
+      },
+      {
+        value: 'dataloggers',
+        name: 'Dataloggers',
+        leftIcon: 'fluent:arrow-trending-lines-20-filled',
+        disabled: true,
+      },
+    ],
+    triggerContentList: [
+      { value: 'members', content: <Flex>Members content</Flex> },
+      { value: 'campaigns', content: <Flex>Campaigns content</Flex> },
+      { value: 'dataloggers', content: <Flex>Dataloggers content</Flex> },
+    ],
   },
 };

@@ -14,11 +14,7 @@ export type TabsProps = {
   triggerContentList: { value: string; content: React.ReactNode }[];
 };
 
-export const Tabs = ({
-  props: { triggerList, triggerContentList },
-}: {
-  props: TabsProps;
-}) => {
+export const Tabs = ({ triggerList, triggerContentList }: TabsProps) => {
   return (
     <Box
       sx={({ colors }) => {
@@ -79,7 +75,13 @@ export const Tabs = ({
         <TabList>
           {triggerList.map((trigger) => {
             return (
-              <Tab key={trigger.value} disabled={trigger.disabled}>
+              <Tab
+                key={trigger.value}
+                disabled={trigger.disabled}
+                role="tab"
+                aria-selected={false}
+                aria-controls={`panel-${trigger.value}`}
+              >
                 <Flex sx={{ gap: '2' }}>
                   {trigger.leftIcon && <Icon icon={trigger.leftIcon} />}
                   {trigger.name}
