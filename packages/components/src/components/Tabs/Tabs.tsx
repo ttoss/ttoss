@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Icon, IconType } from '@ttoss/react-icons';
+import { Box, Flex } from '@ttoss/ui';
 import * as React from 'react';
 import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
-import { Box, Flex } from 'theme-ui';
 
-export const Tabs = ({
-  triggerList,
-  triggerContentList,
-}: {
+export type TabsProps = {
   triggerList: {
     value: string;
     leftIcon?: IconType;
@@ -15,6 +12,12 @@ export const Tabs = ({
     disabled?: boolean;
   }[];
   triggerContentList: { value: string; content: React.ReactNode }[];
+};
+
+export const Tabs = ({
+  props: { triggerList, triggerContentList },
+}: {
+  props: TabsProps;
 }) => {
   return (
     <Box

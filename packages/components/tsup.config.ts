@@ -17,6 +17,7 @@ export const components = [
   'NotificationCard',
   'Search',
   'Table',
+  'Tabs',
   'Toast',
 ];
 
