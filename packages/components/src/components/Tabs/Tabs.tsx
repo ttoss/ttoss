@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Icon, IconType } from '@ttoss/react-icons';
-import { Box, Flex } from '@ttoss/ui';
-import * as React from 'react';
+import { IconType } from '@ttoss/react-icons';
+import { Box, BoxProps } from '@ttoss/ui';
 import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
 
 export type TabsProps = {
@@ -14,7 +13,7 @@ export type TabsProps = {
   triggerContentList: { value: string; content: React.ReactNode }[];
 };
 
-export const Tabs = ({ triggerList, triggerContentList }: TabsProps) => {
+export const Tabs = (props: BoxProps & { children: React.ReactNode }) => {
   return (
     <Box
       sx={({ colors }) => {
@@ -70,30 +69,18 @@ export const Tabs = ({ triggerList, triggerContentList }: TabsProps) => {
           },
         };
       }}
+      {...props}
     >
-      <ReactTabs>
-        <TabList>
-          {triggerList.map((trigger) => {
-            return (
-              <Tab
-                key={trigger.value}
-                disabled={trigger.disabled}
-                role="tab"
-                aria-selected={false}
-                aria-controls={`panel-${trigger.value}`}
-              >
-                <Flex sx={{ gap: '2' }}>
-                  {trigger.leftIcon && <Icon icon={trigger.leftIcon} />}
-                  {trigger.name}
-                </Flex>
-              </Tab>
-            );
-          })}
-        </TabList>
-        {triggerContentList.map((content) => {
-          return <TabPanel key={content.value}>{content.content}</TabPanel>;
-        })}
-      </ReactTabs>
+      <ReactTabs>{props.children}</ReactTabs>
     </Box>
   );
 };
+
+Tabs.TabList = TabList;
+
+/**
+ * Tab default props
+ * https://github.com/reactjs/react-tabs/blob/main/src/components/Tab.js
+ */
+Tabs.Tab = Tab;
+Tabs.TabPanel = TabPanel;
