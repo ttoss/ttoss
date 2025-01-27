@@ -3,10 +3,15 @@ import { Box, BoxProps } from '@ttoss/ui';
 import {
   Tab,
   TabList,
+  TabListProps,
   TabPanel,
+  TabPanelProps,
+  TabProps,
   Tabs as ReactTabs,
   TabsProps,
 } from 'react-tabs';
+
+export type { TabListProps, TabPanelProps, TabProps, TabsProps };
 
 export const Tabs = (props: BoxProps & TabsProps) => {
   return (
@@ -66,7 +71,7 @@ export const Tabs = (props: BoxProps & TabsProps) => {
       }}
       {...props}
     >
-      <ReactTabs>{props.children}</ReactTabs>
+      <ReactTabs {...props}>{props.children}</ReactTabs>
     </Box>
   );
 };
