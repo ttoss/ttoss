@@ -1,12 +1,12 @@
 import { Icon } from '@ttoss/react-icons';
-import { fireEvent, render } from '@ttoss/test-utils';
+import { render, userEvent } from '@ttoss/test-utils';
 import { Flex } from '@ttoss/ui';
 
-import { Tabs, TabsProps } from '../../../src/components/Tabs';
+import { Tabs } from '../../../src/components/Tabs';
 
 describe('Tabs Component', () => {
-  test('renders a list with items', () => {
-    const args: TabsProps = {
+  test('renders Tabs with items', async () => {
+    const args = {
       triggerList: [
         {
           value: 'members',
@@ -64,7 +64,7 @@ describe('Tabs Component', () => {
     /**
      * Click on the "Campaigns" tab
      */
-    fireEvent.click(getByText('Campaigns'));
+    await userEvent.click(getByText('Campaigns'));
     expect(getByText('Campaigns content')).toBeInTheDocument();
     expect(queryByText('Members content')).not.toBeInTheDocument();
     expect(queryByText('Dataloggers content')).not.toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('Tabs Component', () => {
     /**
      * Click on the "Dataloggers" tab disabled
      */
-    fireEvent.click(getByText('Dataloggers'));
+    await userEvent.click(getByText('Dataloggers'));
     expect(getByText('Campaigns content')).toBeInTheDocument();
     expect(queryByText('Members content')).not.toBeInTheDocument();
     expect(queryByText('Dataloggers content')).not.toBeInTheDocument();
@@ -80,7 +80,7 @@ describe('Tabs Component', () => {
     /**
      * Click back on the "Members" tab
      */
-    fireEvent.click(getByText('Members'));
+    await userEvent.click(getByText('Members'));
     expect(getByText('Members content')).toBeInTheDocument();
     expect(queryByText('Campaigns content')).not.toBeInTheDocument();
     expect(queryByText('Dataloggers content')).not.toBeInTheDocument();

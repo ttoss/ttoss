@@ -1,19 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IconType } from '@ttoss/react-icons';
 import { Box, BoxProps } from '@ttoss/ui';
-import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs as ReactTabs,
+  TabsProps,
+} from 'react-tabs';
 
-export type TabsProps = {
-  triggerList: {
-    value: string;
-    leftIcon?: IconType;
-    name: string;
-    disabled?: boolean;
-  }[];
-  triggerContentList: { value: string; content: React.ReactNode }[];
-};
-
-export const Tabs = (props: BoxProps & { children: React.ReactNode }) => {
+export const Tabs = (props: BoxProps & TabsProps) => {
   return (
     <Box
       sx={({ colors }) => {
