@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.0...@ttoss/components@2.2.1) (2025-01-27)
+
+### Bug Fixes
+
+- add sx props to tabs component ([#658](https://github.com/ttoss/ttoss/issues/658)) ([33ca84c](https://github.com/ttoss/ttoss/commit/33ca84c42031c890e60e41ef2608f6bfbaf22f14))
+
 # [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.5...@ttoss/components@2.2.0) (2025-01-27)
 
 ### Features
