@@ -59,7 +59,7 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
       return 'display.border.negative.default';
     }
 
-    return '';
+    return 'display.border.muted.default';
   })();
 
   const backgroundColor = (() => {
@@ -77,7 +77,7 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
           borderColor,
           backgroundColor,
           paddingX: '4',
-          paddingY: '2',
+          paddingY: '3',
         },
       }}
     >

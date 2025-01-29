@@ -38,7 +38,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             sx={{
               position: 'absolute',
               alignSelf: 'center',
-              left: '1rem',
+              left: '4',
               cursor: onLeadingIconClick ? 'pointer' : 'default',
             }}
             onClick={onLeadingIconClick}
