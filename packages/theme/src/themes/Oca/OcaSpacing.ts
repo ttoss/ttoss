@@ -1,6 +1,6 @@
 import { defaultTheme } from '../default/defaultTheme';
 
-type DefaultSpacing = {
+type Spacing = {
   px: string; // 1px
   0.5: string; // 2px
   1: string; // 4px
@@ -36,7 +36,7 @@ type DefaultSpacing = {
   96: string;
 };
 
-const defaultSpacing = defaultTheme.space as DefaultSpacing;
+const defaultSpacing = defaultTheme.space as Spacing;
 
 export const ocaSpace = Object.freeze({
   ...defaultSpacing,
