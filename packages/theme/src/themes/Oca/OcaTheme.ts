@@ -152,8 +152,8 @@ export const OcaTheme: Theme = createTheme(
       xl: defaultBorders.lg,
     },
     space: {
-      ...ocaSpace,
       ...defaultTheme.space,
+      ...ocaSpace,
     },
     radii: defaultTheme.radii,
     /**
