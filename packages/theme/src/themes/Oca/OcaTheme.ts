@@ -151,7 +151,10 @@ export const OcaTheme: Theme = createTheme(
       lg: defaultBorders.md,
       xl: defaultBorders.lg,
     },
-    space: ocaSpace,
+    space: {
+      ...ocaSpace,
+      ...defaultTheme.space,
+    },
     radii: defaultTheme.radii,
     /**
      * Global styles
