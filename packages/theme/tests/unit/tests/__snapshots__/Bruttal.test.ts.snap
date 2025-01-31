@@ -388,10 +388,20 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "input": {
       "&[aria-invalid="true"]": {
+        ":focus-within": {
+          "outlineColor": "display.border.negative.default",
+        },
         "borderColor": "display.border.negative.default",
       },
       "&[aria-invalid="true"] ~ span:has(iconify-icon)": {
         "color": "display.text.negative.default",
+      },
+      ".is-warning &": {
+        ":focus-within": {
+          "outlineColor": "feedback.border.caution.active",
+        },
+        "border": "md",
+        "borderColor": "feedback.border.caution.active",
       },
       "::placeholder": {
         "color": "display.text.muted.default",
