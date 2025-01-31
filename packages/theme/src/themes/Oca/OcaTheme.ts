@@ -125,7 +125,7 @@ export const OcaTheme: Theme = createTheme(
           secondary: { default: '#465A69' },
           muted: { default: '#E5E7EB' },
           negative: { default: '#ffebec' },
-          caution: { default: '#eead2d' },
+          caution: { default: '#fff8e6', active: '#eead2d' },
           positive: { default: '#e6f6e6' },
         },
         background: {

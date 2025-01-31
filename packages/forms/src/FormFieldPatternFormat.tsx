@@ -1,5 +1,4 @@
 import { Input } from '@ttoss/ui';
-import * as React from 'react';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from './FormField';

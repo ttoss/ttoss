@@ -459,9 +459,9 @@ export const BruttalTheme: Theme = {
       },
       '.is-warning &': {
         border: 'md',
-        borderColor: 'feedback.border.caution.default',
+        borderColor: 'feedback.border.caution.active',
         ':focus-within': {
-          outlineColor: 'feedback.border.caution.default',
+          outlineColor: 'feedback.border.caution.active',
         },
       },
     },
