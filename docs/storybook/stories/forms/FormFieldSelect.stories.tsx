@@ -31,6 +31,18 @@ const Template: StoryFn = () => {
         ]}
       />
 
+      <FormFieldSelect
+        name="car warning"
+        defaultValue="Mercedes"
+        label="What car do you prefer?"
+        options={[
+          { value: 'Ferrari', label: 'Ferrari' },
+          { value: 'Mercedes', label: 'Mercedes' },
+          { value: 'BMW', label: 'BMW' },
+        ]}
+        warning="WARNING"
+      />
+
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>

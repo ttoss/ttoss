@@ -93,4 +93,38 @@ const Template: StoryFn = () => {
   );
 };
 
+const WithWarning1: StoryFn = () => {
+  const schema = yup.object({
+    real: yup.string().required('Value is required'),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCurrencyInput
+          name="real"
+          label="Real"
+          prefix="R$ "
+          decimalSeparator=","
+          thousandSeparator="."
+          fixedDecimalScale
+          decimalScale={2}
+          allowNegative={false}
+          warning="Value entered low. The campaign may not have results. Find out more."
+        />
+      </Flex>
+
+      <Button sx={{ marginTop: 'lg' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
 export const Example = Template.bind({});
+export const WithWarning = WithWarning1.bind({});

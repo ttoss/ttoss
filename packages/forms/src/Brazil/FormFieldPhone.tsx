@@ -1,11 +1,12 @@
-import { FormField } from '../FormField';
 import { Input } from '@ttoss/ui';
-
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
+
+import { FormField } from '../FormField';
 
 export type FormFieldPhoneProps = {
   label: string;
   name: string;
+  warning?: string | React.ReactNode;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
@@ -17,6 +18,7 @@ export const FormFieldPhone = ({
     <FormField
       name={name}
       label={label}
+      warning={patternFormatProps.warning}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

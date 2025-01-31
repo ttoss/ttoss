@@ -119,13 +119,14 @@ export const OcaTheme: Theme = createTheme(
         text: {
           primary: { default: '#FFFFFF' },
           secondary: { default: '#465A69' },
+          caution: { default: '#eead2d' },
         },
         border: {
           primary: { default: '#eef9fd' },
           secondary: { default: '#465A69' },
           muted: { default: '#E5E7EB' },
           negative: { default: '#ffebec' },
-          caution: { default: '#fff8e6' },
+          caution: { default: '#fff8e6', active: '#eead2d' },
           positive: { default: '#e6f6e6' },
         },
         background: {

@@ -9,11 +9,14 @@ export const FormFieldTextarea = <
 >({
   label,
   name,
+  warning,
+
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
+  warning?: string | React.ReactNode;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -23,6 +26,7 @@ export const FormFieldTextarea = <
       name={name}
       id={id}
       sx={sx}
+      warning={warning}
       render={({ field, fieldState }) => {
         return (
           <Textarea

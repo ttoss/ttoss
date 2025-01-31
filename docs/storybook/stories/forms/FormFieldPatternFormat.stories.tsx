@@ -71,6 +71,16 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
+
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldPatternFormat
+          name="cnpj"
+          label="CNPJ:"
+          format="##.###.###/####-##"
+          placeholder="12.345.678/0000-00"
+          warning="WARNING"
+        />
+      </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>

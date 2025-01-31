@@ -6,6 +6,7 @@ import {
   FieldValues,
   useController,
   UseControllerReturn,
+  useFormContext,
 } from 'react-hook-form';
 
 import { FormErrorMessage } from './FormErrorMessage';
@@ -21,6 +22,7 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: string | React.ReactNode;
   onTooltipClick?: () => void;
+  warning?: string | React.ReactNode;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -46,11 +48,18 @@ export const FormField = <
   sx,
   css,
   render,
+  warning,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
     defaultValue,
   });
+
+  const {
+    formState: { errors },
+  } = useFormContext();
+
+  const hasError = !!errors[name];
 
   const uniqueId = React.useId();
 
@@ -78,7 +87,16 @@ export const FormField = <
             onTooltipClick={onTooltipClick}
           >
             <Flex>
-              {React.createElement(child.type, { id, ...childProps })}
+              {warning
+                ? React.createElement(child.type, {
+                    id,
+                    ...childProps,
+                    ...(warning ? { trailingIcon: 'warning-alt' } : {}),
+                  })
+                : React.createElement(child.type, {
+                    id,
+                    ...childProps,
+                  })}
             </Flex>
             {label}
           </Label>
@@ -103,11 +121,29 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, { id, ...childProps })}
+          {warning
+            ? React.createElement(child.type, {
+                id,
+                ...childProps,
+                ...(warning ? { trailingIcon: 'warning-alt' } : {}),
+              })
+            : React.createElement(child.type, {
+                id,
+                ...childProps,
+              })}
         </Flex>
       );
     });
-  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
+  }, [
+    render,
+    controllerReturn,
+    label,
+    disabled,
+    id,
+    tooltip,
+    onTooltipClick,
+    warning,
+  ]);
 
   return (
     <Flex
@@ -116,6 +152,20 @@ export const FormField = <
     >
       {memoizedRender}
       <FormErrorMessage name={name} />
+
+      {warning && !hasError && (
+        <Flex
+          sx={{
+            color: 'feedback.text.caution.default',
+            fontSize: 'sm',
+            gap: '2',
+            paddingBottom: '1',
+            alignItems: 'center',
+          }}
+        >
+          {warning}
+        </Flex>
+      )}
     </Flex>
   );
 };

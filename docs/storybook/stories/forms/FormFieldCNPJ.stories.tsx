@@ -32,7 +32,10 @@ const Template: StoryFn = () => {
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCNPJ name="cnpjDisabled" label="CNPJ:" disabled />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCNPJ name="cnpjWarning" label="CNPJ:" warning={true} />
+      </Flex>
+      <Button sx={{ marginTop: 'lg' }} type="submit">
         Submit
       </Button>
     </Form>

@@ -6,17 +6,20 @@ import { FormField } from './FormField';
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
+  warning?: string | React.ReactNode;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
   label,
   name,
+  warning,
   ...patternFormatProps
 }: FormFieldPatternFormatProps) => {
   return (
     <FormField
       name={name}
       label={label}
+      warning={warning}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat

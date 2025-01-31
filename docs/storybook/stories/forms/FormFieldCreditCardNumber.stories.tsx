@@ -48,6 +48,13 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCreditCardNumber
+          name="cartao3"
+          label="cartao warning"
+          warning="WARNING"
+        />
+      </Flex>
 
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit

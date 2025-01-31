@@ -32,6 +32,14 @@ const Template: Story = () => {
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPhone name="phoneDisabled" label="Telefone:" disabled />
       </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldPhone
+          name="phoneWarning"
+          label="Telefone:"
+          warning="WARNING"
+        />
+      </Flex>
+
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>

@@ -144,11 +144,6 @@
     "description": "Title on sign up.",
     "module": "@ttoss/react-auth"
   },
-  "rx8HF/": {
-    "defaultMessage": "Já estou cadastrado",
-    "description": "Link to sign in on sign up.",
-    "module": "@ttoss/react-auth"
-  },
   "D1C6fR": {
     "defaultMessage": "O campo deve ter pelo menos {min} caracteres",
     "description": "Min length field",

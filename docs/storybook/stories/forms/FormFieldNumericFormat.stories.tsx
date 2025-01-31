@@ -46,7 +46,6 @@ const Template: Story = () => {
           allowNegative={false}
         />
       </Flex>
-
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
@@ -74,6 +73,21 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldNumericFormat
+          name="dolar"
+          label="Dolar"
+          thousandSeparator=","
+          decimalSeparator="."
+          fixedDecimalScale
+          decimalScale={2}
+          prefix="$ "
+          placeholder="$ 00,00"
+          allowNegative={false}
+          warning="WARNING"
+        />
+      </Flex>
+
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
