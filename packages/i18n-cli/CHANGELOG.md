@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.27 (2025-01-31)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+- remove unused translations from lang folder ([#659](https://github.com/ttoss/ttoss/issues/659)) ([d214436](https://github.com/ttoss/ttoss/commit/d2144367aefe3cffd66c939cb69994cceb523efa))
+
 ## [0.7.26](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.25...@ttoss/i18n-cli@0.7.26) (2024-12-31)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

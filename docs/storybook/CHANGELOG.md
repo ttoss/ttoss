@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.10.1...@docs/storybook@2.11.0) (2025-01-31)
+
+### Features
+
+- new spacing to oca theme ([#660](https://github.com/ttoss/ttoss/issues/660)) ([2d43c1e](https://github.com/ttoss/ttoss/commit/2d43c1e750d3bd51870be54b357d1b1c9fb06868))
+
 ## [2.10.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.10.0...@docs/storybook@2.10.1) (2025-01-27)
 
 **Note:** Version bump only for package @docs/storybook
