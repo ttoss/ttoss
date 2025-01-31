@@ -216,7 +216,6 @@ const Template2: StoryFn = () => {
             label="First Name"
             placeholder="First Name"
             options={options}
-            sx={{ flex: 1 }}
           />
 
           <FormFieldSelect
@@ -224,7 +223,6 @@ const Template2: StoryFn = () => {
             label="Last Name"
             placeholder="Last Name"
             options={options}
-            sx={{ flex: 1 }}
           />
         </FormGroup>
         <FormGroup

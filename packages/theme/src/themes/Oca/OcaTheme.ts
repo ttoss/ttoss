@@ -3,6 +3,7 @@ import { Theme } from 'theme-ui';
 import { createTheme } from '../../createTheme';
 import { BruttalTheme } from '../Bruttal/Bruttal';
 import { defaultTheme } from '../default/defaultTheme';
+import { ocaSpace } from './OcaSpacing';
 
 type DefaultBorders = {
   none: string;
@@ -150,6 +151,10 @@ export const OcaTheme: Theme = createTheme(
       md: defaultBorders.sm,
       lg: defaultBorders.md,
       xl: defaultBorders.lg,
+    },
+    space: {
+      ...defaultTheme.space,
+      ...ocaSpace,
     },
     radii: defaultTheme.radii,
     /**
