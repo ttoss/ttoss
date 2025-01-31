@@ -143,7 +143,22 @@ const AuthLogic = (props: AuthLogicProps) => {
 
   const [state, send] = useMachine(authMachine);
 
-  const { setLoading, setNotifications } = useNotifications();
+  const { setLoading, addNotification, clearNotifications } =
+    useNotifications();
+
+  /**
+   * Clear notifications when the state changes
+   */
+  React.useEffect(() => {
+    clearNotifications();
+  }, [state.value, clearNotifications]);
+
+  /**
+   * Clear notifications when the component unmounts
+   */
+  React.useEffect(() => {
+    return clearNotifications;
+  }, [clearNotifications]);
 
   const onSignIn = React.useCallback<OnSignIn>(
     async ({ email, password }) => {
@@ -151,7 +166,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(true);
         const result = await signIn({ username: email, password });
         if (result.nextStep.signInStep === 'RESET_PASSWORD') {
-          setNotifications({
+          addNotification({
             type: 'error',
             message: `For your security, we have updated our system and you need to reset your password in 'forgot your password?' to proceed`,
           });
@@ -167,12 +182,12 @@ const AuthLogic = (props: AuthLogicProps) => {
           default:
           // toast(JSON.stringify(error, null, 2));
         }
-        setNotifications({ type: 'error', message: error.message });
+        addNotification({ type: 'error', message: error.message });
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, addNotification]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -192,13 +207,13 @@ const AuthLogic = (props: AuthLogicProps) => {
         send({ type: 'SIGN_UP_CONFIRM', email });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        setNotifications({ type: 'error', message: error.message });
+        addNotification({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, addNotification]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -210,13 +225,13 @@ const AuthLogic = (props: AuthLogicProps) => {
         send({ type: 'SIGN_UP_CONFIRMED', email });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        setNotifications({ type: 'error', message: error.message });
+        addNotification({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, addNotification]
   );
 
   const onReturnToSignIn = React.useCallback(() => {
@@ -232,13 +247,13 @@ const AuthLogic = (props: AuthLogicProps) => {
         send({ type: 'FORGOT_PASSWORD_RESET_PASSWORD', email });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        setNotifications({ type: 'error', message: error.message });
+        addNotification({ type: 'error', message: error.message });
         // toast(JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, setNotifications]
+    [send, setLoading, addNotification]
   );
 
   const onForgotPasswordResetPassword =
@@ -255,13 +270,13 @@ const AuthLogic = (props: AuthLogicProps) => {
           send({ type: 'FORGOT_PASSWORD_CONFIRMED', email });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-          setNotifications({ type: 'error', message: error.message });
+          addNotification({ type: 'error', message: error.message });
           // toast(JSON.stringify(error, null, 2));
         } finally {
           setLoading(false);
         }
       },
-      [send, setLoading, setNotifications]
+      [send, setLoading, addNotification]
     );
 
   if (isAuthenticated) {

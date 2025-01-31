@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.27](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.26...@ttoss/landing-pages@0.12.27) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.26](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.25...@ttoss/landing-pages@0.12.26) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.25](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.24...@ttoss/landing-pages@0.12.25) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.24](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.23...@ttoss/landing-pages@0.12.24) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.23](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.22...@ttoss/landing-pages@0.12.23) (2025-01-18)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.22](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.21...@ttoss/landing-pages@0.12.22) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.21](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.20...@ttoss/landing-pages@0.12.21) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.20](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.19...@ttoss/landing-pages@0.12.20) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.19](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.18...@ttoss/landing-pages@0.12.19) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 ## [0.12.18](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.17...@ttoss/landing-pages@0.12.18) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/landing-pages

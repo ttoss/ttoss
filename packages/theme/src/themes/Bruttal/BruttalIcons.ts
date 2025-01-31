@@ -61,6 +61,22 @@ const subtractIcon: IconifyIcon = {
   height: 48,
 };
 
+const ouiMenuLeft: IconifyIcon = {
+  body: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+	<path fill="#465A69" d="M1.014 7.382a.5.5 0 0 0-.013.152c-.014.4.133.806.439 1.112l2.12 2.122a.5.5 0 1 0 .708-.708L2.208 8H14.5a.5.5 0 0 0 0-1H2.379l1.889-1.89a.5.5 0 0 0-.707-.706L1.44 6.524a1.5 1.5 0 0 0-.426.858M14.5 3h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1m0 8h-7a.5.5 0 1 0 0 1h7a.5.5 0 1 0 0-1" />
+  </svg>`,
+  width: 16,
+  height: 16,
+};
+
+const ouiMenuRight: IconifyIcon = {
+  body: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+	<path fill="#465A69" d="M14.986 7.382a.5.5 0 0 1 .013.152c.014.4-.133.806-.439 1.112l-2.12 2.122a.5.5 0 1 1-.708-.708L13.792 8H1.5a.5.5 0 0 1 0-1h12.121l-1.889-1.89a.5.5 0 0 1 .707-.706l2.121 2.12a1.5 1.5 0 0 1 .426.858M1.5 3h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1m0 8h7a.5.5 0 1 1 0 1h-7a.5.5 0 1 1 0-1" />
+  </svg>`,
+  width: 16,
+  height: 16,
+};
+
 export const BrutalIcons: Record<
   string,
   | IconifyIcon
@@ -104,6 +120,8 @@ export const BrutalIcons: Record<
   replicate: replicateIcon,
   search: searchIcon,
   share: shareIcon,
+  'sidebar-close': ouiMenuRight,
+  'sidebar-open': ouiMenuLeft,
   subtract: subtractIcon,
   'success-circle': successCircleIcon,
   'small-close': closeFilledIcon,

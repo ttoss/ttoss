@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.6...@ttoss/react-auth@2.5.7) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.5...@ttoss/react-auth@2.5.6) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.4...@ttoss/react-auth@2.5.5) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.3...@ttoss/react-auth@2.5.4) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.2...@ttoss/react-auth@2.5.3) (2025-01-20)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.1...@ttoss/react-auth@2.5.2) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.0...@ttoss/react-auth@2.5.1) (2025-01-18)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.10...@ttoss/react-auth@2.5.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
+## [2.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.9...@ttoss/react-auth@2.4.10) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.8...@ttoss/react-auth@2.4.9) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.7...@ttoss/react-auth@2.4.8) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.6...@ttoss/react-auth@2.4.7) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.5...@ttoss/react-auth@2.4.6) (2025-01-09)
+
+### Bug Fixes
+
+- authcard color and border tokens and storybook ([#643](https://github.com/ttoss/ttoss/issues/643)) ([a0992f0](https://github.com/ttoss/ttoss/commit/a0992f03e7b1707b93f01d91a239c4f8da6baf23))
+
 ## [2.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.4.4...@ttoss/react-auth@2.4.5) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/react-auth

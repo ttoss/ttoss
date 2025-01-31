@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.18](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.17...@terezinha-farm/next-app@0.2.18) (2025-01-27)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.17](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.16...@terezinha-farm/next-app@0.2.17) (2025-01-27)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.16](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.15...@terezinha-farm/next-app@0.2.16) (2025-01-24)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.15](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.14...@terezinha-farm/next-app@0.2.15) (2025-01-23)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.14](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.13...@terezinha-farm/next-app@0.2.14) (2025-01-20)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.13](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.12...@terezinha-farm/next-app@0.2.13) (2025-01-19)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.12](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.11...@terezinha-farm/next-app@0.2.12) (2025-01-18)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.11](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.10...@terezinha-farm/next-app@0.2.11) (2025-01-18)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.10](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.9...@terezinha-farm/next-app@0.2.10) (2025-01-13)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.9](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.8...@terezinha-farm/next-app@0.2.9) (2025-01-12)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.7...@terezinha-farm/next-app@0.2.8) (2025-01-09)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.7](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.6...@terezinha-farm/next-app@0.2.7) (2025-01-09)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
+## [0.2.6](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.5...@terezinha-farm/next-app@0.2.6) (2025-01-09)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
 ## [0.2.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.4...@terezinha-farm/next-app@0.2.5) (2025-01-08)
 
 **Note:** Version bump only for package @terezinha-farm/next-app

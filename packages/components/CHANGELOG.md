@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.0...@ttoss/components@2.2.1) (2025-01-27)
+
+### Bug Fixes
+
+- add sx props to tabs component ([#658](https://github.com/ttoss/ttoss/issues/658)) ([33ca84c](https://github.com/ttoss/ttoss/commit/33ca84c42031c890e60e41ef2608f6bfbaf22f14))
+
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.5...@ttoss/components@2.2.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
+## [2.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.4...@ttoss/components@2.1.5) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.3...@ttoss/components@2.1.4) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.1.3](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.2...@ttoss/components@2.1.3) (2025-01-20)
+
+### Bug Fixes
+
+- change components ([#654](https://github.com/ttoss/ttoss/issues/654)) ([d232bcc](https://github.com/ttoss/ttoss/commit/d232bcc16cad164f02014add557d32771b8e184d))
+
+## [2.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.1...@ttoss/components@2.1.2) (2025-01-19)
+
+### Bug Fixes
+
+- notifications card theme ([#651](https://github.com/ttoss/ttoss/issues/651)) ([a93cf22](https://github.com/ttoss/ttoss/commit/a93cf22fb50f5da9248ffaef94589ead346d4cb5))
+
+## [2.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.1.0...@ttoss/components@2.1.1) (2025-01-18)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.24...@ttoss/components@2.1.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
+## [2.0.24](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.23...@ttoss/components@2.0.24) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.0.23](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.22...@ttoss/components@2.0.23) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
+## [2.0.22](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.21...@ttoss/components@2.0.22) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.0.21](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.20...@ttoss/components@2.0.21) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [2.0.20](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.0.19...@ttoss/components@2.0.20) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/components

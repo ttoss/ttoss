@@ -1,50 +1,44 @@
 import { Icon } from '@ttoss/react-icons';
-import * as React from 'react';
 
 import { Button, type ButtonProps } from './Button';
 
-export type CloseButtonProps = ButtonProps & {
-  label?: string;
-  onlyText?: boolean;
-};
+export type CloseButtonProps = ButtonProps & { label?: string };
 
-export const CloseButton = React.forwardRef<
-  HTMLButtonElement,
-  CloseButtonProps
->(({ label, sx, onlyText, ...props }, ref) => {
-  if (onlyText && !label) {
-    return null;
-  }
-
+export const CloseButton = (props: CloseButtonProps) => {
   return (
     <Button
-      variant="buttons.closeButton"
       type="button"
-      aria-label={label}
       sx={{
         fontFamily: 'body',
-        fontSize: 'xs',
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
         cursor: 'pointer',
         lineHeight: 'normal',
-        gap: '2',
         padding: '2',
-        width: 'fit-content',
-        transition: 'all 0.2s',
-        '& > iconify-icon': {
-          fontSize: 'md',
+        backgroundColor: 'action.background.primary.active',
+        color: 'action.text.primary.default',
+        border: 'sm',
+        borderColor: 'action.border.primary.default',
+        borderRadius: 'sm',
+        gap: 2,
+        ':disabled': {
+          border: 'sm',
+          backgroundColor: 'action.background.muted.default',
+          borderColor: 'action.border.muted.default',
+          color: 'action.text.muted.default',
+          cursor: 'not-allowed',
         },
-        ...sx,
+        ':is(:focus-within, :hover):not(:disabled)': {
+          color: 'action.text.secondary.active',
+          backgroundColor: 'action.background.secondary.active',
+          borderColor: 'action.border.secondary.active',
+        },
+        ...props.sx,
       }}
       {...props}
-      ref={ref}
     >
-      {label}
-
-      {!onlyText && <Icon icon="close" />}
+      {props.label && <span>{props.label}</span>}
+      <Icon icon="close" />
     </Button>
   );
-});
-
-CloseButton.displayName = 'CloseButton';
+};

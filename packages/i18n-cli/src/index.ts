@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import fg from 'fast-glob';
-import * as path from 'path';
 import { compile, extract } from '@formatjs/cli-lib';
+import fg from 'fast-glob';
+import * as fs from 'fs';
 import minimist from 'minimist';
+import * as path from 'path';
 
 const DEFAULT_DIR = 'i18n';
 
@@ -13,6 +13,8 @@ const EXTRACT_FILE = path.join(EXTRACT_DIR, 'en.json');
 const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled');
 
 const MISSING_DIR = path.join(DEFAULT_DIR, 'missing');
+
+const UNUSED_DIR = path.join(DEFAULT_DIR, 'unused');
 
 const argv = minimist(process.argv.slice(2));
 
@@ -28,12 +30,10 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Get all dependencies and devDependencies that start with "@ttoss"
    */
-  const ttossDependencies = Object.keys(
-    {
-      ...packageJson.dependencies,
-      ...packageJson.peerDependencies,
-    } || {}
-  )
+  const ttossDependencies = Object.keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies,
+  })
     .filter((dependency) => {
       return dependency.startsWith('@ttoss');
     })
@@ -63,7 +63,8 @@ const getTtossExtractedTranslations = async () => {
         dependency
       );
       const requirePath = path.join(dependencyPathFromCwd, EXTRACT_FILE);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const extractedTranslations = require(requirePath);
       /**
        * Add "module: dependency" to the extracted translations
@@ -84,7 +85,7 @@ const getTtossExtractedTranslations = async () => {
         ttossExtractedTranslations,
         extractedTranslationsWithModule
       );
-    } catch (error: unknown) {
+    } catch {
       continue;
     }
   }
@@ -135,7 +136,10 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Compile
    */
-  const translations = fg.sync('**/*.json', { cwd: EXTRACT_DIR, absolute: true });
+  const translations = fg.sync('**/*.json', {
+    cwd: EXTRACT_DIR,
+    absolute: true,
+  });
 
   await fs.promises.mkdir(COMPILE_DIR, {
     recursive: true,
@@ -159,6 +163,13 @@ const getTtossExtractedTranslations = async () => {
    * Missing
    */
   await fs.promises.mkdir(MISSING_DIR, {
+    recursive: true,
+  });
+
+  /**
+   * Unused
+   */
+  await fs.promises.mkdir(UNUSED_DIR, {
     recursive: true,
   });
 
@@ -191,10 +202,87 @@ const getTtossExtractedTranslations = async () => {
       {} as Record<string, any>
     );
 
+    /**
+     * generate file with translations that doesnt exist in lang/en.json
+     */
+    const unusedTranslations = Object.keys(obj).reduce(
+      (acc, key) => {
+        if (!extractedTranslations[key]) {
+          acc[key] = obj[key];
+        }
+
+        return acc;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as Record<string, any>
+    );
+
+    /**
+     * generate list without unecessary translations
+     */
+    const withoutUnecessaryTranslations = Object.keys(obj).reduce(
+      (acc, key) => {
+        if (obj[key] !== unusedTranslations[key]) {
+          acc[key] = obj[key];
+        }
+
+        return acc;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as Record<string, any>
+    );
+
     if (filename) {
       await fs.promises.writeFile(
         path.join(MISSING_DIR, filename),
         JSON.stringify(missingTranslations, null, 2)
+      );
+
+      /**
+       * Read unused file to get all old unused translation
+       */
+      try {
+        const existentUnusedJsonAsString = await fs.promises.readFile(
+          path.join(UNUSED_DIR, filename)
+        );
+
+        if (existentUnusedJsonAsString) {
+          const existentUnusedJson = JSON.parse(
+            existentUnusedJsonAsString.toString()
+          );
+
+          /**
+           * append existent unused translations and news unused translations
+           */
+          const updatedUnusedTranslations = {
+            ...existentUnusedJson,
+            ...unusedTranslations,
+          };
+
+          /**
+           * add Unused translations
+           */
+          await fs.promises.writeFile(
+            path.join(UNUSED_DIR, filename),
+            JSON.stringify(updatedUnusedTranslations, null, 2)
+          );
+        }
+      } catch {
+        /**
+         * add Unused translations
+         */
+        await fs.promises.writeFile(
+          path.join(UNUSED_DIR, filename),
+          JSON.stringify(unusedTranslations, null, 2)
+        );
+      }
+
+      /**
+       * remove unecessary translations from lang/filename
+       */
+      await fs.promises.writeFile(
+        path.join(EXTRACT_DIR, filename),
+        JSON.stringify(withoutUnecessaryTranslations, null, 2)
       );
     }
   }

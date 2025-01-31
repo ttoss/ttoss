@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.0.10 (2025-01-12)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
 ## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.0.8...@ttoss/react-hooks@2.0.9) (2025-01-02)
 
 **Note:** Version bump only for package @ttoss/react-hooks

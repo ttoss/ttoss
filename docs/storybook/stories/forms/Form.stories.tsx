@@ -17,6 +17,7 @@ import {
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { Box, Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
@@ -30,6 +31,12 @@ const loadLocaleData = async (locale: string) => {
 export default {
   title: 'Forms/Form',
   component: Form,
+  argTypes: {
+    showTooltip: { control: 'boolean' },
+  },
+  args: {
+    showTooltip: true,
+  },
   decorators: [
     (Story) => {
       return (
@@ -41,7 +48,11 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn = () => {
+type StoryArgs = {
+  showTooltip: boolean;
+};
+
+const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
   const schema = yup.object({
     firstName: yup.string().required('First Name is required'),
     age: yup.number().required('Age is required'),
@@ -71,6 +82,8 @@ const Template: StoryFn = () => {
     },
   });
 
+  const tooltip = props.showTooltip ? 'tooltip message' : undefined;
+
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '4' }}>
@@ -80,15 +93,15 @@ const Template: StoryFn = () => {
           placeholder="First Name"
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
+          tooltip={tooltip}
           onTooltipClick={action('onTooltipClick')}
-          tooltip
         />
         <FormFieldInput
           name="age"
           label="Age"
           placeholder="Age"
-          type="number"
-          tooltip
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
 
         <FormFieldPassword
@@ -96,18 +109,26 @@ const Template: StoryFn = () => {
           label="Password"
           placeholder="Password"
           showPasswordByDefault
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldCheckbox
           name="receiveAlertEmails"
           label="Receive Alert Emails"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldSwitch
           name="receiveMarketingEmails"
           label="Receive Marketing Emails"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
         />
         <FormFieldRadio
           name="emailFrequency"
           label="Email Frequency"
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
           options={[
             {
               label: 'Daily',
@@ -123,7 +144,13 @@ const Template: StoryFn = () => {
             },
           ]}
         />
-        <FormFieldInput name="version" label="Version (disabled)" disabled />
+        <FormFieldInput
+          name="version"
+          label="Version (disabled)"
+          disabled
+          tooltip={tooltip}
+          onTooltipClick={action('onTooltipClick')}
+        />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
@@ -245,15 +272,14 @@ const TemplateWithInternationalization: StoryFn = () => {
             placeholder="First Name"
             trailingIcon={alertIcon}
             leadingIcon="ic:baseline-supervised-user-circle"
-            onTooltipClick={action('onTooltipClick')}
-            tooltip
+            tooltip={'tooltip message'}
           />
           <FormFieldInput
             name="age"
             label="Age"
             placeholder="Age"
             type="number"
-            tooltip
+            tooltip={'tooltip message'}
           />
 
           <FormFieldPassword
@@ -278,3 +304,69 @@ export const Example2 = Template2.bind({});
 export const WithInternationalization = TemplateWithInternationalization.bind(
   {}
 );
+
+/**
+ * This story shows how fields are aligned vertically when label has different
+ * sizes and an error message is displayed.
+ */
+export const VerticalAlignment: StoryFn = () => {
+  const schema = yup.object({
+    firstName: yup.string(),
+    middleName: yup.string(),
+    lastName: yup.string().required('Last Name is required'),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+  });
+
+  const { setError } = formMethods;
+
+  React.useEffect(() => {
+    setError('lastName', {
+      message: 'Some message to break alignment',
+    });
+  }, [setError]);
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex
+        sx={{
+          gap: 4,
+          display: 'grid',
+          gridTemplateRows: '[label] auto [input] auto [error] auto', // Nomeando as linhas
+          gridAutoFlow: 'column',
+        }}
+      >
+        <FormFieldInput
+          name="firstName"
+          label="First Name with big label"
+          placeholder="First Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="middleName"
+          label="Middle Name"
+          placeholder="Middle Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="lastName"
+          label="Last Name"
+          placeholder="Last Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <Button sx={{ marginTop: '4' }} type="submit">
+          Submit
+        </Button>
+      </Flex>
+    </Form>
+  );
+};

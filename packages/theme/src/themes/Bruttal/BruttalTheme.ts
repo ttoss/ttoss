@@ -40,11 +40,26 @@ const coreColors = {
   teal600: '#0d9488',
 };
 
+const radii = {
+  none: '0',
+  '2xs': '0.0625rem',
+  xs: '0.125rem',
+  sm: '0.25rem',
+  md: '0.375rem',
+  lg: '0.25rem',
+  xl: '0.25rem',
+  '2xl': '0.25rem',
+  '3xl': '0.25rem',
+  '4xl': '0.25rem',
+  full: '9999px',
+};
+
 export const BruttalTheme: Theme = {
   /**
    * Tokens
    */
   borders: defaultTheme.borders,
+  sizes: defaultTheme.sizes,
   fontSizes: defaultTheme.fontSizes,
   fontWeights: defaultTheme.fontWeights,
   letterSpacings: defaultTheme.letterSpacings,
@@ -53,7 +68,7 @@ export const BruttalTheme: Theme = {
   zIndices: defaultTheme.zIndices,
   colors: {
     navigation: {
-      backgound: { primary: { default: coreColors.complimentary } },
+      background: { primary: { default: coreColors.complimentary } },
       text: {
         primary: { default: coreColors.black },
         accent: { default: coreColors.darkNeutral },
@@ -167,9 +182,17 @@ export const BruttalTheme: Theme = {
         negative: { default: coreColors.red700 },
       },
     },
+    feedback: {
+      background: {
+        primary: { default: coreColors.main },
+      },
+      text: {
+        primary: { default: coreColors.white },
+      },
+    },
   },
   fonts: coreFonts,
-  radii: defaultTheme.radii,
+  radii,
   /**
    * Global styles
    */
@@ -306,25 +329,6 @@ export const BruttalTheme: Theme = {
         color: 'action.text.muted.default',
       },
     },
-    closeButton: {
-      backgroundColor: 'action.background.primary.active',
-      color: 'action.text.primary.default',
-      border: 'sm',
-      borderColor: 'action.border.primary.default',
-      borderRadius: 'sm',
-      ':disabled': {
-        border: 'sm',
-        backgroundColor: 'action.background.muted.default',
-        borderColor: 'action.border.muted.default',
-        color: 'action.text.muted.default',
-        cursor: 'not-allowed',
-      },
-      ':is(:focus-within, :hover):not(:disabled)': {
-        color: 'action.text.secondary.active',
-        backgroundColor: 'action.background.secondary.active',
-        borderColor: 'action.border.secondary.active',
-      },
-    },
     actionButton: {
       default: {
         backgroundColor: 'action.background.secondary.default',
@@ -351,17 +355,7 @@ export const BruttalTheme: Theme = {
       },
     },
   },
-  cards: {
-    primary: {
-      backgroundColor: 'display.background.secondary.default',
-      border: 'sm',
-      padding: [4, 5],
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      width: 'fit-content',
-    },
-  },
+
   forms: {
     label: {
       color: 'display.text.primary.default',

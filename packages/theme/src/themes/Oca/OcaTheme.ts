@@ -37,6 +37,7 @@ export const OcaTheme: Theme = createTheme(
       input: {
         border: {
           muted: { default: '#E5E7EB' },
+          accent: { default: '#03FF7A' },
         },
         background: {
           primary: { default: '#FFFFFF' },
@@ -115,10 +116,24 @@ export const OcaTheme: Theme = createTheme(
       },
       feedback: {
         text: {
+          primary: { default: '#FFFFFF' },
           secondary: { default: '#465A69' },
         },
         border: {
-          primary: { default: '#111827' },
+          primary: { default: '#eef9fd' },
+          secondary: { default: '#465A69' },
+          muted: { default: '#E5E7EB' },
+          negative: { default: '#ffebec' },
+          caution: { default: '#fff8e6' },
+          positive: { default: '#e6f6e6' },
+        },
+        background: {
+          primary: { default: '#eef9fd' },
+          secondary: { default: '#FFFFFF' },
+          muted: { default: '#F3F4F6' },
+          negative: { default: '#ffebec' },
+          caution: { default: '#fff8e6' },
+          positive: { default: '#e6f6e6' },
         },
       },
     },
@@ -130,11 +145,12 @@ export const OcaTheme: Theme = createTheme(
     borders: {
       none: defaultBorders.none,
       xs: defaultBorders.xs,
-      sm: defaultBorders.sm,
-      md: '1px solid',
-      lg: defaultBorders.lg,
-      xl: defaultBorders.xl,
+      sm: defaultBorders.xs,
+      md: defaultBorders.sm,
+      lg: defaultBorders.md,
+      xl: defaultBorders.lg,
     },
+    radii: defaultTheme.radii,
     /**
      * Global styles
      */
@@ -186,6 +202,7 @@ export const OcaTheme: Theme = createTheme(
         },
       },
     },
+
     forms: {
       input: {
         borderRadius: 'lg',

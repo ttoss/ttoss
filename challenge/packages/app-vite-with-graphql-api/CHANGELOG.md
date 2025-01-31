@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.8...@ttoss-challenge/app-vite-with-graphql-api@0.1.9) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.8](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.7...@ttoss-challenge/app-vite-with-graphql-api@0.1.8) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.7](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.6...@ttoss-challenge/app-vite-with-graphql-api@0.1.7) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.6](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.5...@ttoss-challenge/app-vite-with-graphql-api@0.1.6) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.5](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.4...@ttoss-challenge/app-vite-with-graphql-api@0.1.5) (2025-01-18)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.4](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.3...@ttoss-challenge/app-vite-with-graphql-api@0.1.4) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.3](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.2...@ttoss-challenge/app-vite-with-graphql-api@0.1.3) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.2](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.1...@ttoss-challenge/app-vite-with-graphql-api@0.1.2) (2025-01-10)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+## [0.1.1](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.0...@ttoss-challenge/app-vite-with-graphql-api@0.1.1) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
+# [0.1.0](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.36...@ttoss-challenge/app-vite-with-graphql-api@0.1.0) (2025-01-09)
+
+### Features
+
+- add collapse sidebar layout ([#642](https://github.com/ttoss/ttoss/issues/642)) ([8f5fd3e](https://github.com/ttoss/ttoss/commit/8f5fd3ec3def570b56f3c1b2b491ad229ba7649a))
+
 ## [0.0.36](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.0.35...@ttoss-challenge/app-vite-with-graphql-api@0.0.36) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api

@@ -3,6 +3,80 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.10.0...@docs/storybook@2.10.1) (2025-01-27)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.10.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.9.1...@docs/storybook@2.10.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
+## [2.9.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.9.0...@docs/storybook@2.9.1) (2025-01-24)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.9.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.3...@docs/storybook@2.9.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
+## [2.8.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.2...@docs/storybook@2.8.3) (2025-01-20)
+
+### Bug Fixes
+
+- change components ([#654](https://github.com/ttoss/ttoss/issues/654)) ([d232bcc](https://github.com/ttoss/ttoss/commit/d232bcc16cad164f02014add557d32771b8e184d))
+
+## [2.8.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.1...@docs/storybook@2.8.2) (2025-01-19)
+
+### Bug Fixes
+
+- notifications card theme ([#651](https://github.com/ttoss/ttoss/issues/651)) ([a93cf22](https://github.com/ttoss/ttoss/commit/a93cf22fb50f5da9248ffaef94589ead346d4cb5))
+
+## [2.8.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.8.0...@docs/storybook@2.8.1) (2025-01-18)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.4...@docs/storybook@2.8.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
+## [2.7.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.3...@docs/storybook@2.7.4) (2025-01-13)
+
+### Bug Fixes
+
+- parse campaign card to Card storybook ([#647](https://github.com/ttoss/ttoss/issues/647)) ([eaf1b2b](https://github.com/ttoss/ttoss/commit/eaf1b2be5d1a2c3ad54e4ce08a0d44d58413ae88))
+
+## [2.7.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.2...@docs/storybook@2.7.3) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
+## [2.7.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.1...@docs/storybook@2.7.2) (2025-01-10)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.7.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.7.0...@docs/storybook@2.7.1) (2025-01-09)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [2.7.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.4...@docs/storybook@2.7.0) (2025-01-09)
+
+### Features
+
+- add collapse sidebar layout ([#642](https://github.com/ttoss/ttoss/issues/642)) ([8f5fd3e](https://github.com/ttoss/ttoss/commit/8f5fd3ec3def570b56f3c1b2b491ad229ba7649a))
+
+## [2.6.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.3...@docs/storybook@2.6.4) (2025-01-09)
+
+### Bug Fixes
+
+- authcard color and border tokens and storybook ([#643](https://github.com/ttoss/ttoss/issues/643)) ([a0992f0](https://github.com/ttoss/ttoss/commit/a0992f03e7b1707b93f01d91a239c4f8da6baf23))
+
 ## [2.6.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.6.2...@docs/storybook@2.6.3) (2025-01-08)
 
 **Note:** Version bump only for package @docs/storybook

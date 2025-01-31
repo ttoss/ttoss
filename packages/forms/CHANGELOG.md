@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.29.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.29.1...@ttoss/forms@0.29.2) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.29.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.29.0...@ttoss/forms@0.29.1) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/forms
+
+# [0.29.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.9...@ttoss/forms@0.29.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
+## [0.28.9](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.8...@ttoss/forms@0.28.9) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.8](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.7...@ttoss/forms@0.28.8) (2025-01-18)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.7](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.6...@ttoss/forms@0.28.7) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.5...@ttoss/forms@0.28.6) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.4...@ttoss/forms@0.28.5) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.28.4](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.3...@ttoss/forms@0.28.4) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/forms
+
 ## [0.28.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.28.2...@ttoss/forms@0.28.3) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/forms

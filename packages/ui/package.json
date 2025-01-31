@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "5.1.2",
+  "version": "5.4.0",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "MIT",
   "author": "ttoss",
@@ -29,6 +29,7 @@
     "@theme-ui/match-media": "^0.17.1",
     "@ttoss/theme": "workspace:^",
     "react-select": "^5.9.0",
+    "react-tooltip": "^5.28.0",
     "theme-ui": "^0.17.1"
   },
   "peerDependencies": {

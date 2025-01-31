@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.9](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.8...@ttoss/layouts@0.4.9) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.7...@ttoss/layouts@0.4.8) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.6...@ttoss/layouts@0.4.7) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.5...@ttoss/layouts@0.4.6) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.4...@ttoss/layouts@0.4.5) (2025-01-18)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.4](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.3...@ttoss/layouts@0.4.4) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.2...@ttoss/layouts@0.4.3) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.1...@ttoss/layouts@0.4.2) (2025-01-10)
+
+### Bug Fixes
+
+- header width from sidebar collapse layout ([#645](https://github.com/ttoss/ttoss/issues/645)) ([da917de](https://github.com/ttoss/ttoss/commit/da917debfb9f7b512298bccac4cee17d0c07fd7b))
+
+## [0.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.0...@ttoss/layouts@0.4.1) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.3.18...@ttoss/layouts@0.4.0) (2025-01-09)
+
+### Features
+
+- add collapse sidebar layout ([#642](https://github.com/ttoss/ttoss/issues/642)) ([8f5fd3e](https://github.com/ttoss/ttoss/commit/8f5fd3ec3def570b56f3c1b2b491ad229ba7649a))
+
 ## [0.3.18](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.3.17...@ttoss/layouts@0.3.18) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/layouts

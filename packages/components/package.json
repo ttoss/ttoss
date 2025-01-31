@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "2.0.20",
+  "version": "2.2.1",
   "description": "React components for ttoss ecosystem.",
   "license": "MIT",
   "author": "ttoss",
@@ -17,12 +17,16 @@
     "./Accordion": "./src/components/Accordion/index.ts",
     "./Drawer": "./src/components/Drawer/index.ts",
     "./InstallPwa": "./src/components/InstallPwa/index.ts",
+    "./JsonEditor": "./src/components/JsonEditor/index.ts",
+    "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
     "./Markdown": "./src/components/Markdown/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
+    "./NotificationCard": "./src/components/NotificationCard/index.ts",
     "./Search": "./src/components/Search/index.ts",
     "./Table": "./src/components/Table/index.ts",
+    "./Tabs": "./src/components/Tabs/index.ts",
     "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
@@ -41,10 +45,13 @@
     "@tanstack/react-table": "^8.20.6",
     "@theme-ui/css": "^0.17.1",
     "@types/react-modal": "^3.16.3",
+    "json-edit-react": "^1.19.2",
     "react-accessible-accordion": "^5.0.0",
-    "react-markdown": "^9.0.1",
+    "react-json-view-lite": "^2.3.0",
+    "react-markdown": "^9.0.3",
     "react-modal": "^3.16.3",
     "react-modern-drawer": "^1.4.0",
+    "react-tabs": "^6.1.0",
     "react-toastify": "^11.0.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0"
@@ -86,6 +93,14 @@
         "types": "./dist/InstallPwa/index.d.ts",
         "import": "./dist/esm/InstallPwa/index.js"
       },
+      "./JsonEditor": {
+        "types": "./dist/JsonEditor/index.d.ts",
+        "import": "./dist/esm/JsonEditor/index.js"
+      },
+      "./JsonView": {
+        "types": "./dist/JsonView/index.d.ts",
+        "import": "./dist/esm/JsonView/index.js"
+      },
       "./List": {
         "types": "./dist/List/index.d.ts",
         "import": "./dist/esm/List/index.js"
@@ -102,6 +117,10 @@
         "types": "./dist/Modal/index.d.ts",
         "import": "./dist/esm/Modal/index.js"
       },
+      "./NotificationCard": {
+        "types": "./dist/NotificationCard/index.d.ts",
+        "import": "./dist/esm/NotificationCard/index.js"
+      },
       "./Search": {
         "types": "./dist/Search/index.d.ts",
         "import": "./dist/esm/Search/index.js"
@@ -109,6 +128,10 @@
       "./Table": {
         "types": "./dist/Table/index.d.ts",
         "import": "./dist/esm/Table/index.js"
+      },
+      "./Tabs": {
+        "types": "./dist/Tabs/index.d.ts",
+        "import": "./dist/esm/Tabs/index.js"
       },
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",

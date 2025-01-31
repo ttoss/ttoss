@@ -8,11 +8,12 @@ import type { QueryConfig, QueryResult, QueryResultRow } from 'pg';
 
 const lambdaClient = new LambdaClient();
 
-const asciiDecoder = new TextDecoder('ascii');
+const textDecoder = new TextDecoder('utf-8');
 
 export type QueryParams = {
   readOnly?: boolean;
   lambdaPostgresQueryFunction?: string;
+  camelCaseKeys?: boolean;
 } & QueryConfig;
 
 export type LambdaError = {
@@ -30,6 +31,7 @@ export const query = async <Rows extends QueryResultRow = any>(
       readOnly = true,
       // eslint-disable-next-line turbo/no-undeclared-env-vars
       lambdaPostgresQueryFunction = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
+      camelCaseKeys = true,
       ...pgParams
     } = typeof params === 'string'
       ? {
@@ -50,17 +52,21 @@ export const query = async <Rows extends QueryResultRow = any>(
       throw new Error('No payload returned from lambda query');
     }
 
-    const data = asciiDecoder.decode(Payload);
+    const data = textDecoder.decode(Payload);
 
     const result = JSON.parse(data) as QueryResult<Rows> | LambdaError;
 
     if ('errorType' in result) {
-      throw result;
+      throw new Error(result.errorMessage);
     }
 
     return {
       ...result,
       rows: result.rows.map((row) => {
+        if (!camelCaseKeys) {
+          return row;
+        }
+
         return {
           ...row,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

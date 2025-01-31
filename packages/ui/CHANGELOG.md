@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.3.1...@ttoss/ui@5.4.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
+## [5.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.3.0...@ttoss/ui@5.3.1) (2025-01-24)
+
+### Bug Fixes
+
+- change tooltip position and color tokens ([#657](https://github.com/ttoss/ttoss/issues/657)) ([6a1460b](https://github.com/ttoss/ttoss/commit/6a1460b6f2a51a5fe087c4b3cc33a184bcc64c8e))
+
+# [5.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.2.1...@ttoss/ui@5.3.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
+## [5.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.2.0...@ttoss/ui@5.2.1) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# [5.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.6...@ttoss/ui@5.2.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
+## [5.1.6](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.5...@ttoss/ui@5.1.6) (2025-01-13)
+
+### Bug Fixes
+
+- parse campaign card to Card storybook ([#647](https://github.com/ttoss/ttoss/issues/647)) ([eaf1b2b](https://github.com/ttoss/ttoss/commit/eaf1b2be5d1a2c3ad54e4ce08a0d44d58413ae88))
+
+## [5.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.4...@ttoss/ui@5.1.5) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
+## [5.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.3...@ttoss/ui@5.1.4) (2025-01-09)
+
+### Bug Fixes
+
+- stack component ([1c647e3](https://github.com/ttoss/ttoss/commit/1c647e34e520850f19817e366bdeb91fc9411d88))
+
+## [5.1.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.2...@ttoss/ui@5.1.3) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## [5.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.1.1...@ttoss/ui@5.1.2) (2025-01-08)
 
 **Note:** Version bump only for package @ttoss/ui

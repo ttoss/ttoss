@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/layouts",
-  "version": "0.3.18",
+  "version": "0.4.9",
   "description": "Layout components for React",
   "license": "MIT",
   "author": "ttoss",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^29.5.14",
