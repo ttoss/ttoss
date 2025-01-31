@@ -25,7 +25,7 @@ pnpm add @ttoss/graphql-api graphql
 
 ## Usage
 
-This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-export all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
+This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-exports all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
 
 ### Type Creation
 
@@ -43,7 +43,7 @@ const UserTC = schemaComposer.createObjectTC({
 });
 ```
 
-This library uses the `tsconfig.json` file from the target package it is being applied on. If you are using relative imports in your package you can skip this section, but, if you use path aliases in your typescript code by leveraging the [`paths`](https://www.typescriptlang.org/tsconfig#paths) property, the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) must be filled accordingly.This is needed because in order to interpret the path aliases, `ts-node` uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that uses this config, and `tsconfig-paths` needs both `baseUrl` and `paths` values to be non-null. A `tsconfig.json` example that follows such recommendations is given below:
+This library uses the `tsconfig.json` file from the target package it is being applied on. If you are using relative imports in your package you can skip this section, but, if you use path aliases in your typescript code by leveraging the [`paths`](https://www.typescriptlang.org/tsconfig#paths) property, the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) must be filled accordingly. This is needed because in order to interpret the path aliases, `ts-node` uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that use this config, and `tsconfig-paths` needs both `baseUrl` and `paths` values to be non-null. A `tsconfig.json` example that follows such recommendations is given below:
 
 ```json
 {
@@ -58,7 +58,7 @@ This library uses the `tsconfig.json` file from the target package it is being a
 
 ### Resolvers
 
-TODO
+This section is currently under construction. Please refer to the official documentation for more details on creating resolvers.
 
 ### Integrate All Modules
 
@@ -171,7 +171,7 @@ _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github
 
 ### Connections
 
-This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
+This package provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
 
 ```typescript
 import { composeWithConnection } from '@ttoss/graphql-api';
@@ -324,13 +324,13 @@ The resolver that will be used to count the nodes.
 
 It's an object that defines the sort options. Each key is the sort name and the value is an object with the following properties:
 
-- `value`: and object that the `args` resolver will receive as the `sort` argument. It'll also be the values of the sort enum composer created (check the implementation details [here](https://github.com/graphql-compose/graphql-compose-connection/blob/master/src/types/sortInputType.ts).)
+- `value`: an object that the `args` resolver will receive as the `sort` argument. It'll also be the values of the sort enum composer created (check the implementation details [here](https://github.com/graphql-compose/graphql-compose-connection/blob/master/src/types/sortInputType.ts).)
 - `cursorFields`: an array of fields that will be used to create the cursor.
 - `beforeCursorQuery` and `afterCursorQuery`: methods that will be used to create the `rawQuery` object for the `findManyResolver`. They receive the following arguments:
 
   - `rawQuery`: the `rawQuery` object that will be used to find the nodes.
-  - `cursorData`: the data from the cursor define on `cursorFields`. For example, if you define `cursorFields` as `['id', 'name']`, the `cursorData` will an object with the `id` and `name` properties.
-  - `resolveParams`: the `resolveParams` object from the resolver. You can access `args`, `context` and `info` and other GraphQL properties from this object.
+  - `cursorData`: the data from the cursor defined on `cursorFields`. For example, if you define `cursorFields` as `['id', 'name']`, the `cursorData` will be an object with the `id` and `name` properties.
+  - `resolveParams`: the `resolveParams` object from the resolver. You can access `args`, `context`, and `info` and other GraphQL properties from this object.
 
   Example:
 
@@ -430,7 +430,7 @@ const schema = buildSchema({
 
 #### Shield
 
-This package re-exports the all methods from [GraphQL Shield](https://the-guild.dev/graphql/shield).
+This package re-exports all methods from [GraphQL Shield](https://the-guild.dev/graphql/shield).
 
 ```typescript
 import { allow, deny, shield } from '@ttoss/graphql-api/shield';
@@ -481,3 +481,19 @@ test('testing my query', () => {
   });
 });
 ```
+
+## Best Practices
+
+- **Modular Design**: Keep your GraphQL schema modular by organizing types and resolvers into separate files.
+- **Error Handling**: Implement error handling in your resolvers to provide meaningful error messages to clients.
+- **Testing**: Regularly test your GraphQL API to ensure it behaves as expected.
+
+## Common Errors and Troubleshooting
+
+- **Error: Type not found**: Ensure that the type is correctly defined and imported.
+- **Error: Resolver not found**: Check that the resolver is properly registered with the type.
+
+## Additional Resources
+
+- [GraphQL Documentation](https://graphql.org/learn/)
+- [ttoss Ecosystem Documentation](https://ttoss.dev/docs/)
