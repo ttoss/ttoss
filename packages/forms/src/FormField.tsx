@@ -1,4 +1,3 @@
-import { Icon } from '@ttoss/react-icons';
 import { Checkbox, Flex, Label, Switch, type SxProp } from '@ttoss/ui';
 import * as React from 'react';
 import {
@@ -7,6 +6,7 @@ import {
   FieldValues,
   useController,
   UseControllerReturn,
+  useFormContext,
 } from 'react-hook-form';
 
 import { FormErrorMessage } from './FormErrorMessage';
@@ -55,6 +55,12 @@ export const FormField = <
     defaultValue,
   });
 
+  const {
+    formState: { errors },
+  } = useFormContext();
+
+  const hasError = !!errors[name];
+
   const uniqueId = React.useId();
 
   const id = idProp || `form-field-${name}-${uniqueId}`;
@@ -81,7 +87,11 @@ export const FormField = <
             onTooltipClick={onTooltipClick}
           >
             <Flex>
-              {React.createElement(child.type, { id, ...childProps })}
+              {React.createElement(child.type, {
+                id,
+                ...childProps,
+                trailingIcon: warning ? 'warning-alt' : undefined,
+              })}
             </Flex>
             {label}
           </Label>
@@ -106,11 +116,24 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, { id, ...childProps })}
+          {React.createElement(child.type, {
+            id,
+            ...childProps,
+            trailingIcon: warning ? 'warning-alt' : undefined,
+          })}
         </Flex>
       );
     });
-  }, [render, controllerReturn, label, disabled, id, tooltip, onTooltipClick]);
+  }, [
+    render,
+    controllerReturn,
+    label,
+    disabled,
+    id,
+    tooltip,
+    onTooltipClick,
+    warning,
+  ]);
 
   return (
     <Flex
@@ -120,7 +143,7 @@ export const FormField = <
       {memoizedRender}
       <FormErrorMessage name={name} />
 
-      {warning && (
+      {warning && !hasError && (
         <Flex
           sx={{
             color: 'feedback.text.caution.default',
@@ -131,9 +154,6 @@ export const FormField = <
           }}
         >
           {warning}
-          <Flex sx={{ color: 'feedback.text.caution.default', fontSize: 'lg' }}>
-            <Icon icon={'line-md:alert'} />
-          </Flex>
         </Flex>
       )}
     </Flex>

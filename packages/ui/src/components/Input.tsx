@@ -28,9 +28,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ? 'warning-alt'
       : trailingIconProp;
 
+    const isWarning =
+      !inputProps['aria-invalid'] && trailingIcon === 'warning-alt';
+
     return (
       <Flex
-        className={className}
+        className={`${className} ${isWarning ? 'is-warning' : ''}`}
         sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
       >
         {leadingIcon && (
@@ -68,7 +71,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
+              color: isWarning ? 'feedback.text.caution.default' : undefined,
               cursor: onTrailingIconClick ? 'pointer' : 'default',
+              fontSize: 'xl',
             }}
             variant="trailing-icon"
             onClick={onTrailingIconClick}

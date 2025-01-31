@@ -450,9 +450,19 @@ export const BruttalTheme: Theme = {
       },
       '&[aria-invalid="true"]': {
         borderColor: 'display.border.negative.default',
+        ':focus-within': {
+          outlineColor: 'display.border.negative.default',
+        },
       },
       '&[aria-invalid="true"] ~ span:has(iconify-icon)': {
         color: 'display.text.negative.default',
+      },
+      '.is-warning &': {
+        border: 'md',
+        borderColor: 'feedback.border.caution.default',
+        ':focus-within': {
+          outlineColor: 'feedback.border.caution.default',
+        },
       },
     },
     inputNumber: {

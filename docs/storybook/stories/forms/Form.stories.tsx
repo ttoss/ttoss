@@ -88,6 +88,7 @@ const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         <FormFieldInput
+          warning={'Warning message'}
           name="firstName"
           label="First Name"
           placeholder="First Name"
@@ -103,7 +104,6 @@ const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
           tooltip={tooltip}
           onTooltipClick={action('onTooltipClick')}
         />
-
         <FormFieldPassword
           name="password"
           label="Password"
