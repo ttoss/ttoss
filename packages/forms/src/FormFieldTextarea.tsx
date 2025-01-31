@@ -16,7 +16,7 @@ export const FormFieldTextarea = <
 }: {
   label?: string;
   name: TName;
-  warning?: boolean | string;
+  warning?: string | React.ReactNode;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 

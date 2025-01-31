@@ -1,4 +1,5 @@
 import { Input } from '@ttoss/ui';
+import * as React from 'react';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from './FormField';
@@ -6,7 +7,7 @@ import { FormField } from './FormField';
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
-  warning?: boolean | string;
+  warning?: string | React.ReactNode;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({

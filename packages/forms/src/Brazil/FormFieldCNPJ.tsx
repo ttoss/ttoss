@@ -6,7 +6,7 @@ import { FormField } from '..';
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
-  warning?: boolean | string;
+  warning?: string | React.ReactNode;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

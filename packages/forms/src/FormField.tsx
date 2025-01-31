@@ -22,7 +22,7 @@ export type FormFieldProps<
   disabled?: boolean;
   tooltip?: string | React.ReactNode;
   onTooltipClick?: () => void;
-  warning?: boolean | string;
+  warning?: string | React.ReactNode;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -120,12 +120,20 @@ export const FormField = <
       {memoizedRender}
       <FormErrorMessage name={name} />
 
-      {typeof warning === 'string' && (
-        <Flex sx={{ color: 'orange', fontSize: 'sm' }}>{warning}</Flex>
-      )}
-      {typeof warning === 'boolean' && warning === true && (
-        <Flex sx={{ color: 'orange', fontSize: 'lg' }}>
-          <Icon icon={'line-md:alert'} />
+      {warning && (
+        <Flex
+          sx={{
+            color: 'feedback.text.caution.default',
+            fontSize: 'sm',
+            gap: '2',
+            paddingBottom: '1',
+            alignItems: 'center',
+          }}
+        >
+          {warning}
+          <Flex sx={{ color: 'feedback.text.caution.default', fontSize: 'lg' }}>
+            <Icon icon={'line-md:alert'} />
+          </Flex>
         </Flex>
       )}
     </Flex>
