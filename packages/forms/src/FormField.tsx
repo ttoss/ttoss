@@ -87,11 +87,16 @@ export const FormField = <
             onTooltipClick={onTooltipClick}
           >
             <Flex>
-              {React.createElement(child.type, {
-                id,
-                ...childProps,
-                trailingIcon: warning ? 'warning-alt' : undefined,
-              })}
+              {warning
+                ? React.createElement(child.type, {
+                    id,
+                    ...childProps,
+                    ...(warning ? { trailingIcon: 'warning-alt' } : {}),
+                  })
+                : React.createElement(child.type, {
+                    id,
+                    ...childProps,
+                  })}
             </Flex>
             {label}
           </Label>
@@ -116,11 +121,16 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, {
-            id,
-            ...childProps,
-            trailingIcon: warning ? 'warning-alt' : undefined,
-          })}
+          {warning
+            ? React.createElement(child.type, {
+                id,
+                ...childProps,
+                ...(warning ? { trailingIcon: 'warning-alt' } : {}),
+              })
+            : React.createElement(child.type, {
+                id,
+                ...childProps,
+              })}
         </Flex>
       );
     });
