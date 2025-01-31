@@ -31,6 +31,7 @@ export const Label = ({
         fontSize: 'sm',
         lineHeight: 'normal',
         width: 'fit-content',
+        color: 'input.text.secondary.default',
         ...sx,
       }}
       {...props}
