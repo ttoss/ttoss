@@ -38,8 +38,8 @@ export const AuthCard = ({
         width: 'full',
         border: 'md',
         borderColor: 'display.border.muted.default',
-        paddingX: '6',
-        paddingY: '7',
+        paddingX: '8',
+        paddingY: '9',
         backgroundColor: 'surface',
       }}
     >
@@ -49,7 +49,7 @@ export const AuthCard = ({
             width: 'full',
             maxHeight: '90px',
             justifyContent: 'center',
-            marginBottom: '6',
+            marginBottom: '8',
           }}
         >
           {logo}
@@ -60,7 +60,7 @@ export const AuthCard = ({
           as="h2"
           variant="h2"
           sx={{
-            marginBottom: '6',
+            marginBottom: '8',
           }}
         >
           {title}
@@ -72,8 +72,8 @@ export const AuthCard = ({
           sx={{
             flexDirection: 'column',
             width: '100%',
-            gap: '5',
-            marginTop: '6',
+            gap: '7',
+            marginTop: '8',
           }}
         >
           <Button
