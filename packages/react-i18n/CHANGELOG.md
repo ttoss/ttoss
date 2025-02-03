@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.0.10 (2025-01-31)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+
 ## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.8...@ttoss/react-i18n@2.0.9) (2025-01-02)
 
 **Note:** Version bump only for package @ttoss/react-i18n

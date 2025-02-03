@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.4.0...@ttoss/theme@2.5.0) (2025-01-31)
+
+### Features
+
+- new spacing to oca theme ([#660](https://github.com/ttoss/ttoss/issues/660)) ([2d43c1e](https://github.com/ttoss/ttoss/commit/2d43c1e750d3bd51870be54b357d1b1c9fb06868))
+
 # [2.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.3.0...@ttoss/theme@2.4.0) (2025-01-27)
 
 ### Features
