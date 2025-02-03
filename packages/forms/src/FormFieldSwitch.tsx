@@ -11,7 +11,6 @@ export const FormFieldSwitch = <
   name,
   sx,
   tooltip,
-  onTooltipClick,
   ...switchProps
 }: FormFieldProps<TFieldValues, TName> & SwitchProps) => {
   return (
@@ -19,7 +18,6 @@ export const FormFieldSwitch = <
       label={label}
       name={name}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
       render={({ field, fieldState }) => {
         return (
           <Switch

@@ -16,7 +16,6 @@ export const FormFieldInput = <
   label,
   name,
   tooltip,
-  onTooltipClick,
   sx,
   defaultValue = '',
   ...inputProps
@@ -27,7 +26,6 @@ export const FormFieldInput = <
       label={label}
       disabled={inputProps.disabled}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
       warning={inputProps.warning}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}

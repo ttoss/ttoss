@@ -17,7 +17,6 @@ export const FormFieldRadio = <
   sx,
   options,
   tooltip,
-  onTooltipClick,
   ...radioProps
 }: {
   options: FormRadioOption[];
@@ -29,7 +28,6 @@ export const FormFieldRadio = <
       name={name}
       sx={sx}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
       render={({ field }) => {
         return (
           <Flex

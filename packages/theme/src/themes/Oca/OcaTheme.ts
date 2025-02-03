@@ -119,7 +119,7 @@ export const OcaTheme: Theme = createTheme(
         text: {
           primary: { default: '#FFFFFF' },
           secondary: { default: '#465A69' },
-          caution: { default: '#eead2d' },
+          caution: { default: '#906900' },
         },
         border: {
           primary: { default: '#eef9fd' },

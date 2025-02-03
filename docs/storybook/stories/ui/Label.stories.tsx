@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions';
 import { Meta, StoryObj } from '@storybook/react';
-import { Label } from '@ttoss/ui';
+import { Label, LabelProps } from '@ttoss/ui';
 
 type Story = StoryObj<typeof Label>;
 
@@ -17,6 +17,33 @@ const TooltipComponent = () => {
       <a href="https://www.google.com.br/"> Go to google</a>
     </div>
   );
+};
+
+const tooltipClickable: LabelProps = {
+  tooltip: {
+    render: <TooltipComponent />,
+    place: 'top',
+    openOnClick: false,
+    clickable: true,
+  },
+};
+
+const tooltipNotClickable: LabelProps = {
+  tooltip: {
+    render: <TooltipComponent />,
+    place: 'top',
+    openOnClick: false,
+    clickable: false,
+  },
+};
+
+const tooltipOpenOnClick: LabelProps = {
+  tooltip: {
+    render: <TooltipComponent />,
+    place: 'top',
+    openOnClick: true,
+    clickable: false,
+  },
 };
 
 export default {
@@ -41,21 +68,27 @@ export const Disabled: Story = {
 export const WithTooltip: Story = {
   args: {
     ...Default.args,
-    tooltip: 'tooltip message',
+    tooltip: { render: 'tooltip message', place: 'top' },
   },
 };
 
 export const WithTooltipChildrenAndClickable: Story = {
   args: {
     ...Default.args,
-    tooltip: <TooltipComponent />,
-    onTooltipClick: action('onTooltipClick'),
+    tooltip: tooltipClickable.tooltip,
   },
 };
 
 export const WithTooltipChildrenAndNotClickable: Story = {
   args: {
     ...Default.args,
-    tooltip: <TooltipComponent />,
+    tooltip: tooltipNotClickable.tooltip,
+  },
+};
+
+export const WithTooltipChildrenOpenOnClick: Story = {
+  args: {
+    ...Default.args,
+    tooltip: tooltipOpenOnClick.tooltip,
   },
 };

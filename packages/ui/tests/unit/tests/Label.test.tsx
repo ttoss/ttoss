@@ -1,10 +1,19 @@
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
-import { Label } from '../../../src';
+import { Label, LabelProps } from '../../../src';
 
 const LABEL_CONTENT = 'Label text';
 
-const tooltip = 'Tooltip text';
+const tooltip = 'Tooltip content';
+
+const labelProps: LabelProps = {
+  tooltip: {
+    render: tooltip,
+    place: 'top',
+    openOnClick: false,
+    clickable: true,
+  },
+};
 
 test('should render Label', () => {
   render(<Label>{LABEL_CONTENT}</Label>);
@@ -13,7 +22,7 @@ test('should render Label', () => {
 });
 
 test('should render Label with tooltip icon', () => {
-  render(<Label tooltip>{LABEL_CONTENT}</Label>);
+  render(<Label tooltip={labelProps.tooltip}>{LABEL_CONTENT}</Label>);
 
   const icon = screen.getByTestId('iconify-icon');
 
@@ -21,29 +30,13 @@ test('should render Label with tooltip icon', () => {
   expect(icon).toHaveAttribute('icon', 'fluent:info-24-regular');
 });
 
-test('should call function onTooltipClick when click on it', async () => {
-  const user = userEvent.setup({ delay: null });
-  const onTooltipClick = jest.fn();
-  render(
-    <Label tooltip onTooltipClick={onTooltipClick}>
-      {LABEL_CONTENT}
-    </Label>
-  );
-
-  const icon = screen.getByLabelText('tooltip');
-
-  await user.click(icon);
-
-  expect(onTooltipClick).toHaveBeenCalled();
-});
-
 test('should render tooltip when hover on it', async () => {
   const user = userEvent.setup({ delay: null });
-  render(<Label tooltip={tooltip}>{LABEL_CONTENT}</Label>);
+  render(<Label tooltip={labelProps.tooltip}>{LABEL_CONTENT}</Label>);
 
-  const label = screen.getByText(LABEL_CONTENT);
+  const icon = screen.getByTestId('iconify-icon');
 
-  await user.hover(label);
+  await user.hover(icon);
 
   expect(screen.getByText(tooltip)).toBeInTheDocument();
 });
