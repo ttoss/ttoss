@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.8...@ttoss/react-auth@2.5.9) (2025-02-03)
+
+### Bug Fixes
+
+- spacing tokens from auth card, collapse layout and tooltip message ([#661](https://github.com/ttoss/ttoss/issues/661)) ([2e9d57a](https://github.com/ttoss/ttoss/commit/2e9d57a418d58daec4601a0c9e584e114bcbca04))
+
 ## [2.5.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.7...@ttoss/react-auth@2.5.8) (2025-01-31)
 
 **Note:** Version bump only for package @ttoss/react-auth

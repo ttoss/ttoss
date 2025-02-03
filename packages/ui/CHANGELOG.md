@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.0...@ttoss/ui@5.5.1) (2025-02-03)
+
+### Bug Fixes
+
+- spacing tokens from auth card, collapse layout and tooltip message ([#661](https://github.com/ttoss/ttoss/issues/661)) ([2e9d57a](https://github.com/ttoss/ttoss/commit/2e9d57a418d58daec4601a0c9e584e114bcbca04))
+
 # [5.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.4.0...@ttoss/ui@5.5.0) (2025-01-31)
 
 ### Features

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.11](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.10...@ttoss/layouts@0.4.11) (2025-02-03)
+
+### Bug Fixes
+
+- spacing tokens from auth card, collapse layout and tooltip message ([#661](https://github.com/ttoss/ttoss/issues/661)) ([2e9d57a](https://github.com/ttoss/ttoss/commit/2e9d57a418d58daec4601a0c9e584e114bcbca04))
+
 ## [0.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.9...@ttoss/layouts@0.4.10) (2025-01-31)
 
 **Note:** Version bump only for package @ttoss/layouts
