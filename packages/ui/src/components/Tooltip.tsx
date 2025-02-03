@@ -28,6 +28,14 @@ export const Tooltip = (props: ITooltip) => {
             borderColor: themeColors?.feedback?.border?.primary?.default,
             zIndex: 'tooltip',
             opacity: '1',
+            lineHeight: 'shorter',
+            letterSpacing: 'wide',
+            a: {
+              color: 'input.text.primary.default',
+              fontFamily: 'body',
+              textDecorationLine: 'underline',
+              lineHeight: 'normal',
+            },
           },
         };
       }}

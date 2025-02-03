@@ -21,8 +21,8 @@ export const Sidebar = (props: BoxProps) => {
         borderRight: isSidebarOpen ? 'sm' : 'none',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.muted.default',
-        paddingX: isSidebarOpen ? '2' : '0',
-        paddingY: '9',
+        paddingX: isSidebarOpen ? '3' : '0',
+        paddingY: '10',
         ...props.sx,
       }}
     >
