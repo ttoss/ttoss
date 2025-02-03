@@ -11,7 +11,6 @@ export const FormFieldCheckbox = <
   name,
   sx,
   tooltip,
-  onTooltipClick,
   ...checkboxProps
 }: FormFieldProps<TFieldValues, TName> & CheckboxProps) => {
   return (
@@ -19,7 +18,6 @@ export const FormFieldCheckbox = <
       label={label}
       name={name}
       tooltip={tooltip}
-      onTooltipClick={onTooltipClick}
       render={({ field, fieldState }) => {
         return (
           <Checkbox

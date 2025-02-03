@@ -8,17 +8,15 @@ import { Tooltip } from '..';
 const TOOLTIP_LABEL = 'tooltip';
 
 export type LabelProps = LabelPropsUi & {
-  tooltip?: string | React.ReactNode;
-  onTooltipClick?: () => void;
+  tooltip?: {
+    render: string | React.ReactNode;
+    place: 'top' | 'right' | 'bottom' | 'left';
+    openOnClick?: boolean;
+    clickable?: boolean;
+  };
 };
 
-export const Label = ({
-  children,
-  tooltip,
-  onTooltipClick,
-  sx,
-  ...props
-}: LabelProps) => {
+export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
   const id = React.useId();
 
   const tooltipId = `${id}-tooltip`;
@@ -44,15 +42,15 @@ export const Label = ({
             cursor: 'pointer',
           }}
           aria-label={TOOLTIP_LABEL}
-          onClick={onTooltipClick}
         >
           <Icon inline icon="fluent:info-24-regular" />
           <Tooltip
             id={tooltipId}
-            clickable={onTooltipClick ? true : false}
-            place="top"
+            openOnClick={tooltip.openOnClick}
+            clickable={tooltip.clickable}
+            place={tooltip.place}
           >
-            {tooltip}
+            {tooltip.render}
           </Tooltip>
         </Text>
       )}
