@@ -227,17 +227,23 @@ export const BruttalTheme: Theme = {
         paddingX: '6',
         paddingY: '4',
       },
-    },
-    a: {
-      color: 'navigation.text.primary.default',
-      fontFamily: 'body',
-      textDecorationLine: 'underline',
-      lineHeight: 'normal',
-      '&.quiet:not(:hover)': {
-        textDecorationLine: 'none',
-      },
-      ':visited': {
-        color: 'navigation.text.accent.default',
+      a: {
+        fontFamily: 'body',
+        textDecorationLine: 'underline',
+        lineHeight: 'normal',
+        color: 'navigation.text.primary.default',
+        '&[aria-invalid="true"]': {
+          color: 'feedback.text.negative.default',
+        },
+        '&.quiet:not(:hover)': {
+          textDecorationLine: 'none',
+        },
+        ':visited': {
+          color: 'navigation.text.accent.default',
+        },
+        '&.warning': {
+          color: 'feedback.text.caution.default',
+        },
       },
     },
   },

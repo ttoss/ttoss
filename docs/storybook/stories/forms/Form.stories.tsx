@@ -98,7 +98,9 @@ const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
           warning={
             <>
               {'Warning message'}
-              <a href="https://example.com">{'Saiba mais'}</a>
+              <a className="warning" href="https://example.com">
+                {'Saiba mais'}
+              </a>
             </>
           }
           name="firstName"

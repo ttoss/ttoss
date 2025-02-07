@@ -140,16 +140,13 @@ export const FormField = <
 
       {warning && !hasError && (
         <Flex
+          className="warning"
           sx={{
             color: 'feedback.text.caution.default',
             fontSize: 'sm',
             gap: '2',
             paddingBottom: '1',
             alignItems: 'center',
-            a: {
-              color: 'feedback.text.caution.default',
-              fontSize: 'sm',
-            },
           }}
         >
           {warning}
