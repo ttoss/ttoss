@@ -241,6 +241,9 @@ exports[`Bruttal theme snapshot 1`] = `
         "primary": {
           "default": "#ffffff",
         },
+        "secondary": {
+          "default": "#000000",
+        },
       },
     },
     "input": {
@@ -649,22 +652,28 @@ exports[`Bruttal theme snapshot 1`] = `
     "px": "1px",
   },
   "styles": {
-    "a": {
-      "&.quiet:not(:hover)": {
-        "textDecorationLine": "none",
-      },
-      ":visited": {
-        "color": "navigation.text.accent.default",
-      },
-      "color": "navigation.text.primary.default",
-      "fontFamily": "body",
-      "lineHeight": "normal",
-      "textDecorationLine": "underline",
-    },
     "root": {
       ".react-select__control": {
         "border": "md",
         "borderRadius": "sm",
+      },
+      "a": {
+        "&.quiet:not(:hover)": {
+          "textDecorationLine": "none",
+        },
+        "&.warning": {
+          "color": "feedback.text.caution.default",
+        },
+        "&[aria-invalid="true"]": {
+          "color": "feedback.text.negative.default",
+        },
+        ":visited": {
+          "color": "navigation.text.accent.default",
+        },
+        "color": "navigation.text.primary.default",
+        "fontFamily": "body",
+        "lineHeight": "normal",
+        "textDecorationLine": "underline",
       },
       "backgroundColor": "navigation.background.primary.default",
       "fontFamily": "body",

@@ -140,6 +140,7 @@ export const FormField = <
 
       {warning && !hasError && (
         <Flex
+          className="warning"
           sx={{
             color: 'feedback.text.caution.default',
             fontSize: 'sm',

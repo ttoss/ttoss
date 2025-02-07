@@ -9,29 +9,26 @@ export const Tooltip = (props: ITooltip) => {
 
   return (
     <Box
-      sx={({ colors, fonts }) => {
-        const themeColors = colors as Record<string, any>;
-
+      sx={({ fonts }) => {
         /**
          * https://react-tooltip.com/docs/examples/styling#classes
          */
         return {
           '.tooltip-component': {
             fontFamily: (fonts as any)?.body,
-            backgroundColor:
-              themeColors?.feedback?.background?.primary?.default,
+            backgroundColor: 'input.background.secondary.default',
             paddingY: '2',
             paddingX: '3',
-            color: themeColors?.feedback?.text?.secondary?.default,
+            color: 'feedback.text.secondary.default',
             border: 'sm',
             borderRadius: 'xl',
-            borderColor: themeColors?.feedback?.border?.primary?.default,
+            borderColor: 'feedback.border.secondary.default',
             zIndex: 'tooltip',
             opacity: '1',
             lineHeight: 'shorter',
             letterSpacing: 'wide',
             a: {
-              color: 'input.text.primary.default',
+              color: 'feedback.text.secondary.default',
               fontFamily: 'body',
               textDecorationLine: 'underline',
               lineHeight: 'normal',

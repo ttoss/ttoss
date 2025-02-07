@@ -95,7 +95,14 @@ const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         <FormFieldInput
-          warning={'Warning message'}
+          warning={
+            <>
+              {'Warning message'}
+              <a className="warning" href="https://example.com">
+                {'Saiba mais'}
+              </a>
+            </>
+          }
           name="firstName"
           label="First Name"
           placeholder="First Name"
