@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.2...@ttoss/ui@5.5.3) (2025-02-07)
+
+### Bug Fixes
+
+- parse pnpm to 10v, change tooltip style and add style to 'a' com… ([#663](https://github.com/ttoss/ttoss/issues/663)) ([43216bc](https://github.com/ttoss/ttoss/commit/43216bc45ec3a693981155bb930362e8f961bc96))
+
 ## [5.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.1...@ttoss/ui@5.5.2) (2025-02-03)
 
 **Note:** Version bump only for package @ttoss/ui
