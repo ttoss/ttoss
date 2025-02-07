@@ -188,6 +188,7 @@ export const BruttalTheme: Theme = {
       },
       text: {
         primary: { default: coreColors.white },
+        secondary: { default: coreColors.black },
       },
     },
   },

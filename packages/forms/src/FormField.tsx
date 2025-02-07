@@ -146,6 +146,10 @@ export const FormField = <
             gap: '2',
             paddingBottom: '1',
             alignItems: 'center',
+            a: {
+              color: 'feedback.text.caution.default',
+              fontSize: 'sm',
+            },
           }}
         >
           {warning}
