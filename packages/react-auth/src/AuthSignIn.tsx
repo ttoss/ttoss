@@ -85,12 +85,10 @@ export const AuthSignIn = ({
     >
       <AuthCard
         title={intl.formatMessage({
-          description: 'Sign in title.',
-          defaultMessage: 'Log in',
+          defaultMessage: 'Sign in',
         })}
         buttonLabel={intl.formatMessage({
-          description: 'Button label.',
-          defaultMessage: 'Log in',
+          defaultMessage: 'Sign in',
         })}
         isValidForm={formMethods.formState.isValid}
         extraButton={

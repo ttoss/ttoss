@@ -1,8 +1,4 @@
 {
-  "/J+02x": {
-    "defaultMessage": "Log in",
-    "description": "Button label."
-  },
   "0XOzcH": {
     "defaultMessage": "Required field",
     "description": "Required field."
@@ -42,10 +38,6 @@
     "defaultMessage": "Sign up",
     "description": "Sign up"
   },
-  "F2iS37": {
-    "defaultMessage": "Log in",
-    "description": "Sign in title."
-  },
   "KY2T6J": {
     "defaultMessage": "Code",
     "description": "Sign up confirmation code"
@@ -69,6 +61,9 @@
   "S4bbEj": {
     "defaultMessage": "Recovering Password",
     "description": "Recovering Password"
+  },
+  "SQJto2": {
+    "defaultMessage": "Sign in"
   },
   "SnONhb": {
     "defaultMessage": "Please, insert a valid e-mail",
@@ -121,6 +116,9 @@
   "oayEC3": {
     "defaultMessage": "Sign up",
     "description": "Title on sign up."
+  },
+  "pwv2cR": {
+    "defaultMessage": "We have sent a confirmation code to your email address. Please enter the code below."
   },
   "qnQYqN": {
     "defaultMessage": "You must accept the terms and conditions"

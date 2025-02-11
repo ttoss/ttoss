@@ -1,9 +1,4 @@
 {
-  "/J+02x": {
-    "defaultMessage": "Log in",
-    "description": "Button label.",
-    "module": "@ttoss/react-auth"
-  },
   "0XOzcH": {
     "defaultMessage": "Campo obrigatório",
     "description": "Required field.",
@@ -42,11 +37,6 @@
   "EZ3YF2": {
     "defaultMessage": "Cadastre-se",
     "description": "Sign up",
-    "module": "@ttoss/react-auth"
-  },
-  "F2iS37": {
-    "defaultMessage": "Log in",
-    "description": "Sign in title.",
     "module": "@ttoss/react-auth"
   },
   "KY2T6J": {
