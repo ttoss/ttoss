@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "2.5.11",
+  "version": "2.5.12",
   "description": "ttoss authentication module for React apps.",
   "license": "MIT",
   "author": "ttoss",
@@ -26,7 +26,6 @@
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
-  "dependencies": {},
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",

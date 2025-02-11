@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.2...@ttoss/theme@2.5.3) (2025-02-11)
+
+### Bug Fixes
+
+- confirmation code auth ([#664](https://github.com/ttoss/ttoss/issues/664)) ([defcc8a](https://github.com/ttoss/ttoss/commit/defcc8a1c0e493e6c1583a8055b463ed85b6b773))
+
 ## [2.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.1...@ttoss/theme@2.5.2) (2025-02-07)
 
 ### Bug Fixes
