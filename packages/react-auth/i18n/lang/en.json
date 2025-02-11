@@ -62,9 +62,8 @@
     "defaultMessage": "Recovering Password",
     "description": "Recovering Password"
   },
-  "Sep5lA": {
-    "defaultMessage": "Sign in",
-    "description": "Sign in title."
+  "SQJto2": {
+    "defaultMessage": "Sign in"
   },
   "SnONhb": {
     "defaultMessage": "Please, insert a valid e-mail",
@@ -123,10 +122,6 @@
   },
   "qnQYqN": {
     "defaultMessage": "You must accept the terms and conditions"
-  },
-  "regsdJ": {
-    "defaultMessage": "Sign in",
-    "description": "Button label."
   },
   "D1C6fR": {
     "defaultMessage": "Field must be at least {min} characters",
