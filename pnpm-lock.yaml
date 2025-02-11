@@ -1326,13 +1326,6 @@ importers:
         version: 8.3.5(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
 
   packages/react-auth:
-    dependencies:
-      '@xstate/react':
-        specifier: ^3.2.2
-        version: 3.2.2(@types/react@19.0.2)(react@19.0.0)(xstate@4.38.3)
-      xstate:
-        specifier: ^4.38.3
-        version: 4.38.3
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -6632,18 +6625,6 @@ packages:
   '@whatwg-node/server@0.9.65':
     resolution: {integrity: sha512-CnYTFEUJkbbAcuBXnXirVIgKBfs2YA6sSGjxeq07AUiyXuoQ0fbvTIQoteMglmn09QeGzcH/l0B7nIml83xvVw==}
     engines: {node: '>=18.0.0'}
-
-  '@xstate/react@3.2.2':
-    resolution: {integrity: sha512-feghXWLedyq8JeL13yda3XnHPZKwYDN5HPBLykpLeuNpr9178tQd2/3d0NrH6gSd0sG5mLuLeuD+ck830fgzLQ==}
-    peerDependencies:
-      '@xstate/fsm': ^2.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      xstate: ^4.37.2
-    peerDependenciesMeta:
-      '@xstate/fsm':
-        optional: true
-      xstate:
-        optional: true
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -14330,11 +14311,6 @@ packages:
       '@types/react':
         optional: true
 
-  use-sync-external-store@1.4.0:
-    resolution: {integrity: sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -14815,9 +14791,6 @@ packages:
 
   xmlcreate@2.0.4:
     resolution: {integrity: sha512-nquOebG4sngPmGPICTS5EnxqhKbCmz5Ox5hsszI2T6U5qdrJizBc+0ilYSEjTSzU0yZcmvppztXe/5Al5fUwdg==}
-
-  xstate@4.38.3:
-    resolution: {integrity: sha512-SH7nAaaPQx57dx6qvfcIgqKRXIh4L0A1iYEqim4s1u7c9VoCgzZc+63FY90AKU4ZzOC2cfJzTnpO4zK7fCUzzw==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -22333,16 +22306,6 @@ snapshots:
       '@whatwg-node/disposablestack': 0.0.5
       '@whatwg-node/fetch': 0.10.1
       tslib: 2.8.1
-
-  '@xstate/react@3.2.2(@types/react@19.0.2)(react@19.0.0)(xstate@4.38.3)':
-    dependencies:
-      react: 19.0.0
-      use-isomorphic-layout-effect: 1.2.0(@types/react@19.0.2)(react@19.0.0)
-      use-sync-external-store: 1.4.0(react@19.0.0)
-    optionalDependencies:
-      xstate: 4.38.3
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -31537,10 +31500,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.0.2
 
-  use-sync-external-store@1.4.0(react@19.0.0):
-    dependencies:
-      react: 19.0.0
-
   util-deprecate@1.0.2: {}
 
   util@0.12.5:
@@ -32146,8 +32105,6 @@ snapshots:
   xmlchars@2.2.0: {}
 
   xmlcreate@2.0.4: {}
-
-  xstate@4.38.3: {}
 
   xtend@4.0.2: {}
 

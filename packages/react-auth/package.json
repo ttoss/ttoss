@@ -26,10 +26,7 @@
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
-  "dependencies": {
-    "@xstate/react": "^3.2.2",
-    "xstate": "^4.38.3"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
