@@ -13,10 +13,10 @@ importers:
         version: 19.6.1(@types/node@22.10.2)(typescript@5.7.2)
       '@lerna-lite/changed':
         specifier: ^3.10.1
-        version: 3.10.1(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
+        version: 3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/cli':
         specifier: ^3.10.1
-        version: 3.10.1(@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
+        version: 3.10.1(@lerna-lite/list@3.10.1)(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/list':
         specifier: ^3.10.1
         version: 3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
@@ -831,7 +831,7 @@ importers:
         version: 2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-typescript@3.7.0)(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-jest:
         specifier: ^28.10.0
-        version: 28.10.0(@typescript-eslint/eslint-plugin@8.19.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(jest@29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0))(typescript@5.7.2)
+        version: 28.10.0(@typescript-eslint/eslint-plugin@8.19.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(jest@29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2)))(typescript@5.7.2)
       eslint-plugin-jest-dom:
         specifier: ^5.5.0
         version: 5.5.0(@testing-library/dom@10.4.0)(eslint@9.17.0(jiti@2.4.2))
@@ -999,7 +999,7 @@ importers:
         version: 4.0.2(graphql@16.10.0)
       '@graphql-codegen/typescript':
         specifier: ^4.1.2
-        version: 4.1.2(graphql@16.10.0)
+        version: 4.1.2(encoding@0.1.13)(graphql@16.10.0)
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -1327,9 +1327,6 @@ importers:
 
   packages/react-auth:
     dependencies:
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../forms
       '@xstate/react':
         specifier: ^3.2.2
         version: 3.2.2(@types/react@19.0.2)(react@19.0.0)(xstate@4.38.3)
@@ -1343,9 +1340,15 @@ importers:
       '@ttoss/cloud-auth':
         specifier: workspace:^
         version: link:../cloud-auth
+      '@ttoss/components':
+        specifier: workspace:^
+        version: link:../components
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/forms':
+        specifier: workspace:^
+        version: link:../forms
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../i18n-cli
@@ -15105,7 +15108,7 @@ snapshots:
 
   '@antfu/utils@0.7.10': {}
 
-  '@ardatan/relay-compiler@12.0.0(graphql@16.10.0)':
+  '@ardatan/relay-compiler@12.0.0(encoding@0.1.13)(graphql@16.10.0)':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/generator': 7.26.3
@@ -15122,7 +15125,7 @@ snapshots:
       immutable: 3.7.6
       invariant: 2.2.4
       nullthrows: 1.1.1
-      relay-runtime: 12.0.0
+      relay-runtime: 12.0.0(encoding@0.1.13)
       signedsource: 1.0.0
       yargs: 15.4.1
     transitivePeerDependencies:
@@ -18987,11 +18990,11 @@ snapshots:
       graphql: 16.10.0
       tslib: 2.6.3
 
-  '@graphql-codegen/typescript@4.1.2(graphql@16.10.0)':
+  '@graphql-codegen/typescript@4.1.2(encoding@0.1.13)(graphql@16.10.0)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.1.0(graphql@16.10.0)
       '@graphql-codegen/schema-ast': 4.1.0(graphql@16.10.0)
-      '@graphql-codegen/visitor-plugin-common': 5.6.0(graphql@16.10.0)
+      '@graphql-codegen/visitor-plugin-common': 5.6.0(encoding@0.1.13)(graphql@16.10.0)
       auto-bind: 4.0.0
       graphql: 16.10.0
       tslib: 2.6.3
@@ -18999,11 +19002,11 @@ snapshots:
       - encoding
       - supports-color
 
-  '@graphql-codegen/visitor-plugin-common@5.6.0(graphql@16.10.0)':
+  '@graphql-codegen/visitor-plugin-common@5.6.0(encoding@0.1.13)(graphql@16.10.0)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.1.0(graphql@16.10.0)
       '@graphql-tools/optimize': 2.0.0(graphql@16.10.0)
-      '@graphql-tools/relay-operation-optimizer': 7.0.9(graphql@16.10.0)
+      '@graphql-tools/relay-operation-optimizer': 7.0.9(encoding@0.1.13)(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.0(graphql@16.10.0)
       auto-bind: 4.0.0
       change-case-all: 1.0.15
@@ -19061,9 +19064,9 @@ snapshots:
       graphql: 16.10.0
       tslib: 2.8.1
 
-  '@graphql-tools/relay-operation-optimizer@7.0.9(graphql@16.10.0)':
+  '@graphql-tools/relay-operation-optimizer@7.0.9(encoding@0.1.13)(graphql@16.10.0)':
     dependencies:
-      '@ardatan/relay-compiler': 12.0.0(graphql@16.10.0)
+      '@ardatan/relay-compiler': 12.0.0(encoding@0.1.13)(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.0(graphql@16.10.0)
       graphql: 16.10.0
       tslib: 2.8.1
@@ -19486,9 +19489,9 @@ snapshots:
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
-  '@lerna-lite/changed@3.10.1(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
+  '@lerna-lite/changed@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
     dependencies:
-      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
+      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1)(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/core': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/list': 3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/listable': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
@@ -19504,7 +19507,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@lerna-lite/cli@3.10.1(@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
+  '@lerna-lite/cli@3.10.1(@lerna-lite/list@3.10.1)(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
     dependencies:
       '@lerna-lite/core': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/init': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
@@ -19577,7 +19580,7 @@ snapshots:
 
   '@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
     dependencies:
-      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
+      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1)(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/core': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/listable': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
     transitivePeerDependencies:
@@ -19617,7 +19620,7 @@ snapshots:
 
   '@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)':
     dependencies:
-      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@lerna-lite/version@3.10.1(@lerna-lite/list@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2))(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
+      '@lerna-lite/cli': 3.10.1(@lerna-lite/list@3.10.1)(@lerna-lite/version@3.10.1)(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/core': 3.10.1(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(typescript@5.7.2)
       '@lerna-lite/npmlog': 3.10.1
       '@octokit/plugin-enterprise-rest': 6.0.1
@@ -24748,7 +24751,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -24788,7 +24791,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@9.17.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -24814,7 +24817,7 @@ snapshots:
     optionalDependencies:
       '@testing-library/dom': 10.4.0
 
-  eslint-plugin-jest@28.10.0(@typescript-eslint/eslint-plugin@8.19.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(jest@29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0))(typescript@5.7.2):
+  eslint-plugin-jest@28.10.0(@typescript-eslint/eslint-plugin@8.19.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(jest@29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2)))(typescript@5.7.2):
     dependencies:
       '@typescript-eslint/utils': 8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       eslint: 9.17.0(jiti@2.4.2)
@@ -29916,7 +29919,7 @@ snapshots:
 
   relay-compiler@18.2.0: {}
 
-  relay-runtime@12.0.0:
+  relay-runtime@12.0.0(encoding@0.1.13):
     dependencies:
       '@babel/runtime': 7.26.0
       fbjs: 3.0.5(encoding@0.1.13)

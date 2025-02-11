@@ -164,24 +164,23 @@ const AuthLogic = (props: AuthLogicProps) => {
     async ({ email, password }) => {
       try {
         setLoading(true);
+
         const result = await signIn({ username: email, password });
+
         if (result.nextStep.signInStep === 'RESET_PASSWORD') {
           addNotification({
             type: 'error',
             message: `For your security, we have updated our system and you need to reset your password in 'forgot your password?' to proceed`,
           });
+        } else if (result.nextStep.signInStep === 'CONFIRM_SIGN_UP') {
+          await resendSignUpCode({ username: email });
+          send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email });
+        } else {
+          addNotification({ type: 'error', message: 'Unknown error' });
         }
-        // toast('Signed In');
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        switch (error.code) {
-          case 'UserNotConfirmedException':
-            await resendSignUpCode({ username: email });
-            send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email });
-            break;
-          default:
-          // toast(JSON.stringify(error, null, 2));
-        }
         addNotification({ type: 'error', message: error.message });
       } finally {
         setLoading(false);

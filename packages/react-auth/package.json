@@ -27,11 +27,12 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@ttoss/forms": "workspace:^",
     "@xstate/react": "^3.2.2",
     "xstate": "^4.38.3"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -41,7 +42,9 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@ttoss/cloud-auth": "workspace:^",
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
