@@ -58,6 +58,10 @@
     "defaultMessage": "By signing up, you agree to the following Terms and Conditions.",
     "module": "@ttoss/react-auth"
   },
+  "EO/33N": {
+    "defaultMessage": "Signed in successfully",
+    "module": "@ttoss/react-auth"
+  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
     "description": "Sign up",
