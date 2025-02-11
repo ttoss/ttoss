@@ -1,3 +1,4 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { useNotifications } from '@ttoss/react-notifications';
 import { Flex } from '@ttoss/ui';
 import {
@@ -57,6 +58,8 @@ type AuthLogicProps = {
 };
 
 const AuthLogic = (props: AuthLogicProps) => {
+  const { intl } = useI18n();
+
   const { isAuthenticated } = useAuth();
 
   const [screen, setScreen] = React.useState<AuthScreen>({
@@ -96,8 +99,14 @@ const AuthLogic = (props: AuthLogicProps) => {
         } else if (result.nextStep.signInStep === 'CONFIRM_SIGN_UP') {
           await resendSignUpCode({ username: email });
           setScreen({ value: 'signUpResendConfirmation', context: { email } });
-        } else {
-          addNotification({ type: 'error', message: 'Unknown error' });
+        } else if (result.nextStep.signInStep === 'DONE') {
+          addNotification({
+            viewType: 'toast',
+            type: 'success',
+            message: intl.formatMessage({
+              defaultMessage: 'Signed in successfully',
+            }),
+          });
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,7 +116,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [addNotification, setLoading]
+    [addNotification, intl, setLoading]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
