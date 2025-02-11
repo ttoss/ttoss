@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.4...@docs/storybook@2.11.5) (2025-02-11)
+
+### Bug Fixes
+
+- react auth error ([#666](https://github.com/ttoss/ttoss/issues/666)) ([0c17ff8](https://github.com/ttoss/ttoss/commit/0c17ff86db39fdcc8229c09b35635e49546d274b))
+
 ## [2.11.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.3...@docs/storybook@2.11.4) (2025-02-11)
 
 ### Bug Fixes

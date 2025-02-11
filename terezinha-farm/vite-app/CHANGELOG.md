@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.23...@terezinha-farm/vite-app@0.10.24) (2025-02-11)
+
+### Bug Fixes
+
+- react auth error ([#666](https://github.com/ttoss/ttoss/issues/666)) ([0c17ff8](https://github.com/ttoss/ttoss/commit/0c17ff86db39fdcc8229c09b35635e49546d274b))
+
 ## [0.10.23](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.22...@terezinha-farm/vite-app@0.10.23) (2025-02-11)
 
 ### Bug Fixes

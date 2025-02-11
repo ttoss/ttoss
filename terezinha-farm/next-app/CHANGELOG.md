@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.23...@terezinha-farm/next-app@0.2.24) (2025-02-11)
+
+### Bug Fixes
+
+- i18n ([81401d8](https://github.com/ttoss/ttoss/commit/81401d8a66b4fbe7c927304f8e6f6637e258387c))
+
 ## [0.2.23](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.22...@terezinha-farm/next-app@0.2.23) (2025-02-11)
 
 ### Bug Fixes
