@@ -3,5 +3,15 @@
     "defaultMessage": "Já estou cadastrado",
     "description": "Link to sign in on sign up.",
     "module": "@ttoss/react-auth"
+  },
+  "/J+02x": {
+    "defaultMessage": "Log in",
+    "description": "Button label.",
+    "module": "@ttoss/react-auth"
+  },
+  "F2iS37": {
+    "defaultMessage": "Log in",
+    "description": "Sign in title.",
+    "module": "@ttoss/react-auth"
   }
 }
