@@ -234,7 +234,7 @@ exports[`Bruttal theme snapshot 1`] = `
     "feedback": {
       "background": {
         "primary": {
-          "default": "#292C2a",
+          "default": "#ffffff",
         },
       },
       "text": {
