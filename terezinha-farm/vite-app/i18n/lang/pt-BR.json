@@ -1,4 +1,8 @@
 {
+  "EO/33N": {
+    "defaultMessage": "Logado com sucesso",
+    "module": "@ttoss/react-auth"
+  },
   "8GMUPk": {
     "defaultMessage": "Já sou cadastrado",
     "description": "Link to sign in on sign up.",

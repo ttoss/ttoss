@@ -1,26 +1,32 @@
-const { log, warn, error } = console;
+/* eslint-disable no-console */
+type Setup = {
+  discordWebhookUrl: string;
+};
 
-export const Logger = (isDev?: boolean) => {
-  const devEnv = isDev !== undefined ? isDev : true;
+let setup: Setup | null = null;
 
-  return (prefix: string) => {
-    return {
-      warn: (value: string) => {
-        if (devEnv) {
-          const now = new Date();
-          warn(`[${now}] - ${prefix} - ${value}`);
-        }
+export const setupLogger = (params: Setup) => {
+  setup = params;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const sendNotificationToDiscord = async (message: string) => {
+  if (setup?.discordWebhookUrl) {
+    await fetch(setup.discordWebhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      info: (value: string) => {
-        if (devEnv) {
-          const now = new Date();
-          log(`[${now}] - ${prefix} - ${value}`);
-        }
-      },
-      error: (value: string) => {
-        const now = new Date();
-        error(`[${now}] - ${prefix} - ${value}`);
-      },
-    };
-  };
+      body: JSON.stringify(message),
+    });
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const sendNotification = (message: string) => {};
+
+export const log = {
+  warn: console.warn,
+  error: console.error,
+  info: console.info,
 };
