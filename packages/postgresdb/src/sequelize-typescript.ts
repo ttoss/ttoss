@@ -1,6 +1,7 @@
 /**
  * Exports the necessary classes from the sequelize-typescript package.
  */
+export type { ModelCtor, SequelizeOptions } from 'sequelize-typescript';
 export {
   BelongsTo,
   BelongsToMany,
@@ -13,9 +14,9 @@ export {
   HasOne,
   Index,
   Model,
+  PrimaryKey,
   Sequelize,
   Table,
+  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
-
-export type { ModelCtor, SequelizeOptions } from 'sequelize-typescript';
