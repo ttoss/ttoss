@@ -13,6 +13,7 @@ export {
   HasOne,
   Index,
   Model,
+  PrimaryKey,
   Sequelize,
   Table,
   UpdatedAt,
