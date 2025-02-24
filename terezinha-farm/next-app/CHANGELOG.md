@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.24...@terezinha-farm/next-app@0.3.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
 ## [0.2.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.23...@terezinha-farm/next-app@0.2.24) (2025-02-11)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.11.0...@terezinha-farm/vite-app@0.12.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
 # [0.11.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.24...@terezinha-farm/vite-app@0.11.0) (2025-02-24)
 
 ### Features

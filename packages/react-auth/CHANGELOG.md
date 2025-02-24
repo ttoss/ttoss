@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.13...@ttoss/react-auth@2.6.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
 ## [2.5.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.5.12...@ttoss/react-auth@2.5.13) (2025-02-11)
 
 ### Bug Fixes
