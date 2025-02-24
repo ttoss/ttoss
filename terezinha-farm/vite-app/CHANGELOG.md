@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.24...@terezinha-farm/vite-app@0.11.0) (2025-02-24)
+
+### Features
+
+- logger ([#670](https://github.com/ttoss/ttoss/issues/670)) ([453ba8e](https://github.com/ttoss/ttoss/commit/453ba8eed092da40dde5c31cb04eca4ac1fe2f28))
+
 ## [0.10.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.23...@terezinha-farm/vite-app@0.10.24) (2025-02-11)
 
 ### Bug Fixes

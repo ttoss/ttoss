@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.4.0 (2025-02-24)
+
+### Features
+
+- logger ([#670](https://github.com/ttoss/ttoss/issues/670)) ([453ba8e](https://github.com/ttoss/ttoss/commit/453ba8eed092da40dde5c31cb04eca4ac1fe2f28))
+
 ## [0.3.17](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.16...@ttoss/logger@0.3.17) (2024-12-31)
 
 **Note:** Version bump only for package @ttoss/logger
