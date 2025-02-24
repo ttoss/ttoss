@@ -26,9 +26,13 @@
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
+  "dependencies": {
+    "react-error-boundary": "^5.0.0"
+  },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -42,6 +46,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/forms": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

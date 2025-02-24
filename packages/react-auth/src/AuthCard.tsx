@@ -2,6 +2,8 @@ import { useNotifications } from '@ttoss/react-notifications';
 import { Box, Button, Flex, Heading } from '@ttoss/ui';
 import * as React from 'react';
 
+import { ErrorBoundary } from './ErrorBoundary';
+
 export type LogoContextProps = {
   logo?: React.ReactNode;
   children?: React.ReactNode;
@@ -66,9 +68,7 @@ export const AuthCard = ({
         >
           {title}
         </Heading>
-
-        {children}
-
+        <ErrorBoundary>{children}</ErrorBoundary>
         <Flex
           sx={{
             flexDirection: 'column',
@@ -87,7 +87,6 @@ export const AuthCard = ({
           >
             {buttonLabel}
           </Button>
-
           {extraButton}
         </Flex>
       </Flex>

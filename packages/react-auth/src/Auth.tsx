@@ -19,6 +19,7 @@ import { AuthFullScreen } from './AuthFullScreen';
 import { useAuth } from './AuthProvider';
 import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
+import { ErrorBoundary } from './ErrorBoundary';
 import type {
   OnConfirmSignUp,
   OnForgotPassword,
@@ -287,7 +288,9 @@ export const Auth = (props: AuthProps) => {
   const withLogoNode = React.useMemo(() => {
     return (
       <LogoProvider logo={props.logo}>
-        <AuthLogic signUpTerms={props.signUpTerms} />
+        <ErrorBoundary>
+          <AuthLogic signUpTerms={props.signUpTerms} />
+        </ErrorBoundary>
       </LogoProvider>
     );
   }, [props.logo, props.signUpTerms]);

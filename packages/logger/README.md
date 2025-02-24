@@ -23,6 +23,7 @@ import { configureLogger } from '@ttoss/logger';
 
 configureLogger({
   discordWebhookUrl: 'https://discord.com/api/webhooks/your-webhook-here',
+  project: 'My project',
 });
 ```
 
@@ -33,7 +34,10 @@ Use the `notify` method to send messages to the configured services:
 ```ts
 import { notify } from '@ttoss/logger';
 
-await notify('Hello! This is a notification for Discord.');
+await notify({
+  type: 'error',
+  message: 'Hello! This is a notification for Discord.',
+});
 ```
 
 ### Local Logging
@@ -58,13 +62,17 @@ Configures the logger with notification sending options.
 
 - **Parameters**:
   - `params.discordWebhookUrl` (string): The Discord webhook URL.
+  - `params.project` (string): The project identifier to prefix notifications.
 
-### `notify(message)`
+### `notify(notification)`
 
 Sends a notification to the configured services.
 
 - **Parameters**:
-  - `message` (string): The message to send.
+  - `notification` (object): The notification to send, with the following properties:
+    - `type` ('info' | 'warn' | 'error'): The type of the notification.
+    - `title` (string, optional): The title of the notification.
+    - `message` (string): The main message content.
 - **Returns**: A Promise that resolves when the sending is complete.
 
 ### `log`
@@ -88,7 +96,10 @@ configureLogger({
 
 // Send a notification
 
-await notify('Application started successfully!');
+await notify({
+  type: 'info',
+  message: 'Application started successfully!',
+});
 
 // Local logs
 
