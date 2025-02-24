@@ -146,6 +146,10 @@
     "description": "Password is required.",
     "module": "@ttoss/react-auth"
   },
+  "khMx/2": {
+    "defaultMessage": "An error occurred with your authentication. Please try again.",
+    "module": "@ttoss/react-auth"
+  },
   "lY+cuM": {
     "defaultMessage": "Confirm password",
     "description": "Confirm Password label.",
