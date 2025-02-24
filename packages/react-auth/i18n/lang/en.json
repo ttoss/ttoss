@@ -104,6 +104,9 @@
     "defaultMessage": "Password field is required",
     "description": "Password is required."
   },
+  "khMx/2": {
+    "defaultMessage": "An error occurred with your authentication. Please try again."
+  },
   "lY+cuM": {
     "defaultMessage": "Confirm password",
     "description": "Confirm Password label."
