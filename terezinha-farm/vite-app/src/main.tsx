@@ -1,14 +1,17 @@
-import * as React from 'react';
-import { App } from './App.tsx';
+import './amplify.ts';
+
+import { configureLogger } from '@ttoss/logger';
 import { AuthProvider } from '@ttoss/react-auth';
 import { FeatureFlagsProvider } from '@ttoss/react-feature-flags';
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
-import { RelayEnvironmentProvider } from 'react-relay';
 import { ThemeProvider } from '@ttoss/ui';
-import { environment } from './RelayEnvironment.ts';
+import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import './amplify.ts';
+import { RelayEnvironmentProvider } from 'react-relay';
+
+import { App } from './App.tsx';
+import { environment } from './RelayEnvironment.ts';
 
 const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
@@ -19,6 +22,10 @@ const loadLocaleData: LoadLocaleData = async (locale) => {
       return (await import('../i18n/compiled/en.json')).default;
   }
 };
+
+configureLogger({
+  project: 'terezinha-farm',
+});
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

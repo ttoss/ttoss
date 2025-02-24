@@ -1,35 +1,71 @@
 /* eslint-disable no-console */
-type Setup = {
-  discordWebhookUrl?: string;
+type NotificationType = 'info' | 'warn' | 'error';
+
+type NotificationMessage = {
+  type: NotificationType;
+  title?: string;
+  message: string;
 };
 
-let setup: Setup | null = null;
+type Configuration = {
+  discordWebhookUrl?: string;
+  project?: string;
+};
 
-export const configureLogger = (params: Setup) => {
+let setup: Configuration | null = null;
+
+export const configureLogger = (params: Configuration) => {
   setup = params;
 };
 
 export const sendNotificationToDiscord = async ({
-  message,
+  notification,
   url,
+  project,
 }: {
-  message: string;
+  notification: NotificationMessage;
   url: string;
+  project: string;
 }) => {
+  const embedMessage = {
+    embeds: [
+      {
+        title:
+          notification.title ||
+          `${notification.type.toUpperCase()} from ${project}`,
+        description: notification.message,
+        color:
+          notification.type === 'error'
+            ? 0xff0000
+            : notification.type === 'warn'
+              ? 0xffff00
+              : 0x00ff00,
+        footer: { text: `Project: ${project}` },
+      },
+    ],
+  };
+
+  const body = JSON.stringify(embedMessage);
+
   await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(message),
+    body,
   });
 };
 
-export const notify = async (message: string) => {
+export const notify = async (notification: NotificationMessage) => {
+  if (!setup?.project) {
+    return;
+  }
+
   if (setup?.discordWebhookUrl) {
     await sendNotificationToDiscord({
-      message,
+      notification,
       url: setup.discordWebhookUrl,
+      project: setup.project,
     });
   }
 };
