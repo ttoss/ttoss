@@ -1,29 +1,38 @@
 /* eslint-disable no-console */
 type Setup = {
-  discordWebhookUrl: string;
+  discordWebhookUrl?: string;
 };
 
 let setup: Setup | null = null;
 
-export const setupLogger = (params: Setup) => {
+export const configureLogger = (params: Setup) => {
   setup = params;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const sendNotificationToDiscord = async (message: string) => {
+export const sendNotificationToDiscord = async ({
+  message,
+  url,
+}: {
+  message: string;
+  url: string;
+}) => {
+  await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+};
+
+export const notify = async (message: string) => {
   if (setup?.discordWebhookUrl) {
-    await fetch(setup.discordWebhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
+    await sendNotificationToDiscord({
+      message,
+      url: setup.discordWebhookUrl,
     });
   }
 };
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const sendNotification = (message: string) => {};
 
 export const log = {
   warn: console.warn,
