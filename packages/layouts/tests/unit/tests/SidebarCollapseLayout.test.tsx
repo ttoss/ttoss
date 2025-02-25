@@ -2,7 +2,7 @@ import { render, screen, userEvent } from '@ttoss/test-utils';
 import { Layout, SidebarCollapseLayout } from 'src/index';
 import { useIsDesktop } from 'src/useIsDesktop';
 
-jest.mock('src/components/useIsDesktop');
+jest.mock('src/useIsDesktop');
 
 test('should render layout from SidebarCollapseLayout component', () => {
   (useIsDesktop as jest.Mock).mockReturnValue({ isDesktop: true });
