@@ -7,7 +7,7 @@ import { useLayout } from './LayoutProvider';
 export const SIDEBAR_WIDTH = '2xs';
 
 export const Sidebar = (props: BoxProps) => {
-  const { isSidebarOpen } = useLayout();
+  const { isSidebarOpen, toggleSidebar } = useLayout();
   const { isDesktop } = useIsDesktop();
 
   return (
@@ -48,13 +48,13 @@ export const Sidebar = (props: BoxProps) => {
             width: 'full',
             ...props.sx,
           }}
+          onClick={() => {
+            if (isSidebarOpen) {
+              toggleSidebar();
+            }
+          }}
         >
-          <Drawer
-            open={isSidebarOpen}
-            direction={'left'}
-            enableOverlay={false}
-            size={'min'}
-          >
+          <Drawer open={isSidebarOpen} direction={'left'} size={'min'}>
             {isSidebarOpen ? props.children : null}
           </Drawer>
         </Box>

@@ -72,7 +72,6 @@ export const Header = ({
       {...boxProps}
       as="header"
       sx={{
-        zIndex: 'sticky',
         width: 'full',
         flexDirection: 'row',
         alignItems: 'center',

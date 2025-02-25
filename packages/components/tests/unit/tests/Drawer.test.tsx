@@ -14,7 +14,7 @@ describe('Drawer', () => {
     expect(screen.getByText(testMessage)).toBeInTheDocument();
   });
 
-  test('should applies custom styles from sx prop', () => {
+  test('should apply custom styles from sx prop', () => {
     const customStyle = { backgroundColor: 'red' };
     render(
       <Drawer open={true} direction="right" sx={customStyle}>
@@ -22,8 +22,8 @@ describe('Drawer', () => {
       </Drawer>
     );
 
-    const boxComponent = screen.getByText('Test content');
-    expect(boxComponent).toHaveStyle(customStyle);
+    const drawerComponent = screen.getByTestId('drawer-container');
+    expect(drawerComponent).toHaveStyle(customStyle);
   });
 
   test('should propagates props to DrawerUi component', () => {
