@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { useIsDesktop } from '../useIsDesktop';
+
 interface LayoutContextType {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
@@ -12,6 +14,14 @@ const LayoutContext = React.createContext<LayoutContextType>({
 
 export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+
+  const { isDesktop } = useIsDesktop();
+
+  React.useEffect(() => {
+    if (!isDesktop) {
+      setIsSidebarOpen(false);
+    }
+  }, [isDesktop]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => {

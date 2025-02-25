@@ -68,7 +68,10 @@ export const BruttalTheme: Theme = {
   zIndices: defaultTheme.zIndices,
   colors: {
     navigation: {
-      background: { primary: { default: coreColors.complimentary } },
+      background: {
+        primary: { default: coreColors.complimentary },
+        muted: { default: coreColors.complimentary },
+      },
       text: {
         primary: { default: coreColors.black },
         accent: { default: coreColors.darkNeutral },

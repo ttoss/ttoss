@@ -1,5 +1,6 @@
-import { Drawer } from '../../../src/components/Drawer';
 import { render, screen } from '@ttoss/test-utils';
+
+import { Drawer } from '../../../src/components/Drawer';
 
 describe('Drawer', () => {
   test('should renders children content', () => {
@@ -17,11 +18,11 @@ describe('Drawer', () => {
     const customStyle = { backgroundColor: 'red' };
     render(
       <Drawer open={true} direction="right" sx={customStyle}>
-        <div>Test content</div>
+        Test content
       </Drawer>
     );
 
-    const boxComponent = screen.getByRole('navigation').firstChild;
+    const boxComponent = screen.getByText('Test content');
     expect(boxComponent).toHaveStyle(customStyle);
   });
 
