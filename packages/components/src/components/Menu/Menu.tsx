@@ -80,9 +80,11 @@ export const Menu = ({
                 height: '44px',
                 objectFit: 'cover',
               }}
+              data-testid="img"
             />
 
             <Text
+              data-testid="button"
               sx={{
                 marginLeft: 'auto',
                 fontSize: '2xl',

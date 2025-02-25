@@ -11,51 +11,50 @@ export type DrawerProps = DrawerUiProps & {
 export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
   return (
     <Box
-      sx={() => {
+      data-testid="drawer-container"
+      sx={{
         /**
          * https://github.com/Farzin-Firoozi/react-modern-drawer/blob/master/src/styles.css
          */
-        return {
-          zIndex: 'dropdown',
+        zIndex: 'dropdown',
+        width: '100%',
+        height: '100%',
+        '.EZDrawer__checkbox': {
+          display: 'none',
+        },
+        '.EZDrawer__checkbox:checked ~ .EZDrawer__overlay': {
+          display: 'block',
+          opacity: 1,
+        },
+        '.EZDrawer__checkbox:checked ~ .EZDrawer__container': {
+          visibility: 'visible',
+          transform: 'translate3d(0, 0, 0) !important',
+        },
+        '.EZDrawer__overlay ': {
+          display: 'none',
+          height: '100vh',
+          left: '0',
+          position: 'absolute',
+          top: '0',
           width: '100%',
-          height: '100%',
-          '.EZDrawer__checkbox': {
-            display: 'none',
+        },
+        '.EZDrawer__container': {
+          position: 'absolute',
+          visibility: 'hidden',
+          backgroundColor: 'navigation.background.muted.default',
+          transition: 'all',
+          boxShadow: '0 0 10px 5px rgba(0, 0, 0, 0.1)',
+          paddingY: '6',
+          paddingX: '6',
+          overflowY: 'auto',
+          '@media (max-width: 768px)': {
+            position: 'sticky',
           },
-          '.EZDrawer__checkbox:checked ~ .EZDrawer__overlay': {
-            display: 'block',
-            opacity: 1,
-          },
-          '.EZDrawer__checkbox:checked ~ .EZDrawer__container': {
-            visibility: 'visible',
-            transform: 'translate3d(0, 0, 0) !important',
-          },
-          '.EZDrawer__overlay ': {
-            display: 'none',
-            height: '100vh',
-            left: '0',
-            position: 'absolute',
-            top: '0',
-            width: '100%',
-          },
-          '.EZDrawer__container': {
-            position: 'absolute',
-            visibility: 'hidden',
-            backgroundColor: 'navigation.background.muted.default',
-            transition: 'all',
-            boxShadow: '0 0 10px 5px rgba(0, 0, 0, 0.1)',
-            paddingY: '6',
-            paddingX: '6',
-            overflowY: 'auto',
-            '@media (max-width: 768px)': {
-              position: 'sticky',
-            },
-          },
-          ...sx,
-        };
+        },
+        ...sx,
       }}
     >
-      <DrawerUi {...props} enableOverlay={false}>
+      <DrawerUi {...props}>
         <Box
           sx={{
             width: '100%',

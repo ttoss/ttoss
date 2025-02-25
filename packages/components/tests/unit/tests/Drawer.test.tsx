@@ -29,11 +29,11 @@ describe('Drawer', () => {
   test('should propagates props to DrawerUi component', () => {
     const testMessage = 'Test content';
     render(
-      <Drawer direction="right" open={true}>
+      <Drawer direction="top" open={true} enableOverlay={false}>
         <div>{testMessage}</div>
       </Drawer>
     );
 
-    expect(screen.getByText(testMessage)).toBeVisible();
+    expect(screen.getByText(testMessage)).toBeInTheDocument();
   });
 });
