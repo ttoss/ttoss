@@ -65,6 +65,30 @@ When a queue builds up into a sustained high-load state, it won't easily or quic
 
 You need to intervene quickly and decisively in such situations. Set limits on maximum queue size, and act before the system hits those limits. The more closely you monitor queues and intervene early, the less they will cost you in the long run.
 
+## Exploiting Variability
+
+### V1: The Principle of Beneficial Variability: Variability can create economic value.
+
+Which choice is the best economic choice? Which option has the minimum uncertainty in its outcome?
+
+| Choice | Stakes   | Payoff    | Probability | EMV     |
+| ------ | -------- | --------- | ----------- | ------- |
+| A      | \$15,000 | \$100,000 | 50%         | $35,000 |
+| B      | \$15,000 | \$20,000  | 90%         | $3,000  |
+| C      | \$15,000 | \$16,000  | 100%        | $1,000  |
+
+_EMV = Expected Monetary Value_
+
+Choice A is the best economic choice and the most uncertain. Choice C has zero uncertainty, yet it isn't the best economic choice.
+
+The economics of each discrete choice depends on two factors: the probability and the payoff function. We can't make good economic choices if we only pay attention to probabilities. So you need to pay attention to both probability and payoff functions.
+
+### V7: The Principle of Small Experiments: Many small experiments produce less variation than one big one.
+
+This principle emphasizes that breaking a large risk into many smaller, independent risks reduces the overall variation in outcomes. This idea stems from statistics, where repeated small trials (a binomial distribution) result in a smaller coefficient of variation compared to a single large trial. This is because, as the number of trials increases, the mean grows faster than the standard deviation, lowering the overall risk of failure.
+
+For example, dividing a single high-risk bet (e.g., a 50% chance of losing $15,000) into multiple smaller bets significantly decreases the chance of total loss. Similarly, in product development, launching several smaller innovations rather than one blockbuster product reduces the risk of complete failure, offering more consistent and stable outcomes.
+
 ## Reducing Batch Size
 
 ### B17: The Proximity Principle: Proximity enables small batch sizes

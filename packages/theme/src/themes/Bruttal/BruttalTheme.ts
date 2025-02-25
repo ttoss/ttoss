@@ -187,7 +187,7 @@ export const BruttalTheme: Theme = {
     },
     feedback: {
       background: {
-        primary: { default: coreColors.main },
+        primary: { default: coreColors.white },
       },
       text: {
         primary: { default: coreColors.white },

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.5...@docs/storybook@2.12.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
+## [2.11.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.4...@docs/storybook@2.11.5) (2025-02-11)
+
+### Bug Fixes
+
+- react auth error ([#666](https://github.com/ttoss/ttoss/issues/666)) ([0c17ff8](https://github.com/ttoss/ttoss/commit/0c17ff86db39fdcc8229c09b35635e49546d274b))
+
+## [2.11.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.3...@docs/storybook@2.11.4) (2025-02-11)
+
+### Bug Fixes
+
+- confirmation code auth ([#664](https://github.com/ttoss/ttoss/issues/664)) ([defcc8a](https://github.com/ttoss/ttoss/commit/defcc8a1c0e493e6c1583a8055b463ed85b6b773))
+
+## [2.11.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.2...@docs/storybook@2.11.3) (2025-02-07)
+
+### Bug Fixes
+
+- parse pnpm to 10v, change tooltip style and add style to 'a' com… ([#663](https://github.com/ttoss/ttoss/issues/663)) ([43216bc](https://github.com/ttoss/ttoss/commit/43216bc45ec3a693981155bb930362e8f961bc96))
+
 ## [2.11.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.1...@docs/storybook@2.11.2) (2025-02-03)
 
 **Note:** Version bump only for package @docs/storybook

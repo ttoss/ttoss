@@ -1,6 +1,6 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { useNotifications } from '@ttoss/react-notifications';
 import { Flex } from '@ttoss/ui';
-import { useMachine } from '@xstate/react';
 import {
   confirmResetPassword,
   confirmSignUp,
@@ -10,7 +10,6 @@ import {
   signUp,
 } from 'aws-amplify/auth';
 import * as React from 'react';
-import { assign, createMachine } from 'xstate';
 
 import { LogoContextProps, LogoProvider } from './AuthCard';
 import { AuthConfirmSignUp } from './AuthConfirmSignUp';
@@ -20,6 +19,7 @@ import { AuthFullScreen } from './AuthFullScreen';
 import { useAuth } from './AuthProvider';
 import { AuthSignIn } from './AuthSignIn';
 import { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
+import { ErrorBoundary } from './ErrorBoundary';
 import type {
   OnConfirmSignUp,
   OnForgotPassword,
@@ -28,7 +28,7 @@ import type {
   OnSignUp,
 } from './types';
 
-type AuthState =
+type AuthScreen =
   | {
       value: 'signIn';
       context: { email?: string };
@@ -54,94 +54,19 @@ type AuthState =
       context: { email: string };
     };
 
-type AuthEvent =
-  | { type: 'SIGN_UP' }
-  | { type: 'SIGN_UP_CONFIRM'; email: string }
-  | { type: 'SIGN_UP_CONFIRMED'; email: string }
-  | { type: 'SIGN_UP_RESEND_CONFIRMATION'; email: string }
-  | { type: 'RETURN_TO_SIGN_IN' }
-  | { type: 'FORGOT_PASSWORD' }
-  | { type: 'FORGOT_PASSWORD_RESET_PASSWORD'; email: string }
-  | { type: 'FORGOT_PASSWORD_CONFIRMED'; email: string };
-
-type AuthContext = { email?: string };
-
-const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
-  {
-    predictableActionArguments: true,
-    initial: 'signIn',
-    states: {
-      signIn: {
-        on: {
-          SIGN_UP: { target: 'signUp' },
-          SIGN_UP_RESEND_CONFIRMATION: {
-            actions: ['assignEmail'],
-            target: 'signUpConfirm',
-          },
-          FORGOT_PASSWORD: { target: 'forgotPassword' },
-        },
-      },
-      signUp: {
-        on: {
-          SIGN_UP_CONFIRM: {
-            actions: ['assignEmail'],
-            target: 'signUpConfirm',
-          },
-          RETURN_TO_SIGN_IN: { target: 'signIn' },
-        },
-      },
-      signUpConfirm: {
-        on: {
-          SIGN_UP_CONFIRMED: {
-            actions: ['assignEmail'],
-            target: 'signIn',
-          },
-        },
-      },
-      forgotPassword: {
-        on: {
-          RETURN_TO_SIGN_IN: { target: 'signIn' },
-          SIGN_UP: { target: 'signUp' },
-          FORGOT_PASSWORD_RESET_PASSWORD: {
-            actions: ['assignEmail'],
-            target: 'forgotPasswordResetPassword',
-          },
-        },
-      },
-      forgotPasswordResetPassword: {
-        on: {
-          FORGOT_PASSWORD_CONFIRMED: {
-            actions: ['assignEmail'],
-            target: 'signIn',
-          },
-          RETURN_TO_SIGN_IN: { target: 'signIn' },
-        },
-      },
-    },
-  },
-  {
-    actions: {
-      assignEmail: assign({
-        email: (_, event) => {
-          if ('email' in event) {
-            return event.email;
-          }
-
-          return undefined;
-        },
-      }),
-    },
-  }
-);
-
 type AuthLogicProps = {
   signUpTerms?: AuthSignUpProps['signUpTerms'];
 };
 
 const AuthLogic = (props: AuthLogicProps) => {
+  const { intl } = useI18n();
+
   const { isAuthenticated } = useAuth();
 
-  const [state, send] = useMachine(authMachine);
+  const [screen, setScreen] = React.useState<AuthScreen>({
+    value: 'signIn',
+    context: {},
+  });
 
   const { setLoading, addNotification, clearNotifications } =
     useNotifications();
@@ -151,7 +76,7 @@ const AuthLogic = (props: AuthLogicProps) => {
    */
   React.useEffect(() => {
     clearNotifications();
-  }, [state.value, clearNotifications]);
+  }, [screen.value, clearNotifications]);
 
   /**
    * Clear notifications when the component unmounts
@@ -164,30 +89,35 @@ const AuthLogic = (props: AuthLogicProps) => {
     async ({ email, password }) => {
       try {
         setLoading(true);
+
         const result = await signIn({ username: email, password });
+
         if (result.nextStep.signInStep === 'RESET_PASSWORD') {
           addNotification({
             type: 'error',
             message: `For your security, we have updated our system and you need to reset your password in 'forgot your password?' to proceed`,
           });
+        } else if (result.nextStep.signInStep === 'CONFIRM_SIGN_UP') {
+          await resendSignUpCode({ username: email });
+          setScreen({ value: 'signUpResendConfirmation', context: { email } });
+        } else if (result.nextStep.signInStep === 'DONE') {
+          addNotification({
+            viewType: 'toast',
+            type: 'success',
+            message: intl.formatMessage({
+              defaultMessage: 'Signed in successfully',
+            }),
+          });
         }
-        // toast('Signed In');
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        switch (error.code) {
-          case 'UserNotConfirmedException':
-            await resendSignUpCode({ username: email });
-            send({ type: 'SIGN_UP_RESEND_CONFIRMATION', email });
-            break;
-          default:
-          // toast(JSON.stringify(error, null, 2));
-        }
         addNotification({ type: 'error', message: error.message });
       } finally {
         setLoading(false);
       }
     },
-    [send, setLoading, addNotification]
+    [addNotification, intl, setLoading]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -204,7 +134,7 @@ const AuthLogic = (props: AuthLogicProps) => {
           },
         });
         // toast('Signed Up');
-        send({ type: 'SIGN_UP_CONFIRM', email });
+        setScreen({ value: 'signUpConfirm', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         addNotification({ type: 'error', message: error.message });
@@ -213,7 +143,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [send, setLoading, addNotification]
+    [setLoading, addNotification]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -222,7 +152,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(true);
         await confirmSignUp({ confirmationCode: code, username: email });
         // toast('Confirmed Signed In');
-        send({ type: 'SIGN_UP_CONFIRMED', email });
+        setScreen({ value: 'signIn', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         addNotification({ type: 'error', message: error.message });
@@ -231,12 +161,12 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [send, setLoading, addNotification]
+    [setLoading, addNotification]
   );
 
   const onReturnToSignIn = React.useCallback(() => {
-    send({ type: 'RETURN_TO_SIGN_IN' });
-  }, [send]);
+    setScreen({ value: 'signIn', context: {} });
+  }, []);
 
   const onForgotPassword = React.useCallback<OnForgotPassword>(
     async ({ email }) => {
@@ -244,7 +174,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(true);
         await resetPassword({ username: email });
         // toast('Forgot Password');
-        send({ type: 'FORGOT_PASSWORD_RESET_PASSWORD', email });
+        setScreen({ value: 'forgotPasswordResetPassword', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         addNotification({ type: 'error', message: error.message });
@@ -253,7 +183,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [send, setLoading, addNotification]
+    [setLoading, addNotification]
   );
 
   const onForgotPasswordResetPassword =
@@ -267,7 +197,7 @@ const AuthLogic = (props: AuthLogicProps) => {
             newPassword,
           });
           // toast('Forgot Password Reset Password');
-          send({ type: 'FORGOT_PASSWORD_CONFIRMED', email });
+          setScreen({ value: 'signIn', context: { email } });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           addNotification({ type: 'error', message: error.message });
@@ -276,14 +206,14 @@ const AuthLogic = (props: AuthLogicProps) => {
           setLoading(false);
         }
       },
-      [send, setLoading, addNotification]
+      [setLoading, addNotification]
     );
 
   if (isAuthenticated) {
     return null;
   }
 
-  if (state.matches('signUp')) {
+  if (screen.value === 'signUp') {
     return (
       <AuthSignUp
         onSignUp={onSignUp}
@@ -293,31 +223,34 @@ const AuthLogic = (props: AuthLogicProps) => {
     );
   }
 
-  if (state.matches('signUpConfirm')) {
+  if (
+    screen.value === 'signUpConfirm' ||
+    screen.value === 'signUpResendConfirmation'
+  ) {
     return (
       <AuthConfirmSignUp
         onConfirmSignUp={onConfirmSignUp}
-        email={state.context.email}
+        email={screen.context.email}
       />
     );
   }
 
-  if (state.matches('forgotPassword')) {
+  if (screen.value === 'forgotPassword') {
     return (
       <AuthForgotPassword
         onForgotPassword={onForgotPassword}
         onCancel={onReturnToSignIn}
         onSignUp={() => {
-          return send('SIGN_UP');
+          setScreen({ value: 'signUp', context: {} });
         }}
       />
     );
   }
 
-  if (state.matches('forgotPasswordResetPassword')) {
+  if (screen.value === 'forgotPasswordResetPassword') {
     return (
       <AuthForgotPasswordResetPassword
-        email={state.context.email}
+        email={screen.context.email}
         onForgotPasswordResetPassword={onForgotPasswordResetPassword}
         onCancel={onReturnToSignIn}
       />
@@ -328,12 +261,12 @@ const AuthLogic = (props: AuthLogicProps) => {
     <AuthSignIn
       onSignIn={onSignIn}
       onSignUp={() => {
-        return send('SIGN_UP');
+        setScreen({ value: 'signUp', context: {} });
       }}
       onForgotPassword={() => {
-        return send('FORGOT_PASSWORD');
+        setScreen({ value: 'forgotPassword', context: {} });
       }}
-      defaultValues={{ email: state.context.email }}
+      defaultValues={{ email: screen.context.email }}
     />
   );
 };
@@ -355,7 +288,9 @@ export const Auth = (props: AuthProps) => {
   const withLogoNode = React.useMemo(() => {
     return (
       <LogoProvider logo={props.logo}>
-        <AuthLogic signUpTerms={props.signUpTerms} />
+        <ErrorBoundary>
+          <AuthLogic signUpTerms={props.signUpTerms} />
+        </ErrorBoundary>
       </LogoProvider>
     );
   }, [props.logo, props.signUpTerms]);

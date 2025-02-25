@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "2.5.10",
+  "version": "2.6.0",
   "description": "ttoss authentication module for React apps.",
   "license": "MIT",
   "author": "ttoss",
@@ -27,11 +27,12 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@ttoss/forms": "workspace:^",
-    "@xstate/react": "^3.2.2",
-    "xstate": "^4.38.3"
+    "react-error-boundary": "^5.0.0"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -41,8 +42,11 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@ttoss/cloud-auth": "workspace:^",
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

@@ -1,7 +1,27 @@
 {
-  "/J+02x": {
-    "defaultMessage": "Log in",
-    "description": "Button label.",
+  "EO/33N": {
+    "defaultMessage": "Logado com sucesso",
+    "module": "@ttoss/react-auth"
+  },
+  "8GMUPk": {
+    "defaultMessage": "Já sou cadastrado",
+    "description": "Link to sign in on sign up.",
+    "module": "@ttoss/react-auth"
+  },
+  "Co3exe": {
+    "defaultMessage": "Ao se cadastrar, você concorda com os seguintes Termos e Condições.",
+    "module": "@ttoss/react-auth"
+  },
+  "SQJto2": {
+    "defaultMessage": "Entrar",
+    "module": "@ttoss/react-auth"
+  },
+  "pwv2cR": {
+    "defaultMessage": "Enviamos um código de confirmação para o seu endereço de email. Por favor, insira o código abaixo.",
+    "module": "@ttoss/react-auth"
+  },
+  "qnQYqN": {
+    "defaultMessage": "Você deve aceitar os termos e condições",
     "module": "@ttoss/react-auth"
   },
   "0XOzcH": {
@@ -42,11 +62,6 @@
   "EZ3YF2": {
     "defaultMessage": "Cadastre-se",
     "description": "Sign up",
-    "module": "@ttoss/react-auth"
-  },
-  "F2iS37": {
-    "defaultMessage": "Log in",
-    "description": "Sign in title.",
     "module": "@ttoss/react-auth"
   },
   "KY2T6J": {

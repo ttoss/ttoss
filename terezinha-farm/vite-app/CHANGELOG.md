@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.11.0...@terezinha-farm/vite-app@0.12.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.24...@terezinha-farm/vite-app@0.11.0) (2025-02-24)
+
+### Features
+
+- logger ([#670](https://github.com/ttoss/ttoss/issues/670)) ([453ba8e](https://github.com/ttoss/ttoss/commit/453ba8eed092da40dde5c31cb04eca4ac1fe2f28))
+
+## [0.10.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.23...@terezinha-farm/vite-app@0.10.24) (2025-02-11)
+
+### Bug Fixes
+
+- react auth error ([#666](https://github.com/ttoss/ttoss/issues/666)) ([0c17ff8](https://github.com/ttoss/ttoss/commit/0c17ff86db39fdcc8229c09b35635e49546d274b))
+
+## [0.10.23](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.22...@terezinha-farm/vite-app@0.10.23) (2025-02-11)
+
+### Bug Fixes
+
+- confirmation code auth ([#664](https://github.com/ttoss/ttoss/issues/664)) ([defcc8a](https://github.com/ttoss/ttoss/commit/defcc8a1c0e493e6c1583a8055b463ed85b6b773))
+
+## [0.10.22](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.21...@terezinha-farm/vite-app@0.10.22) (2025-02-07)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.10.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.10.20...@terezinha-farm/vite-app@0.10.21) (2025-02-03)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

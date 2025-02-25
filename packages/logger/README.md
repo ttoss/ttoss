@@ -1,57 +1,120 @@
 # @ttoss/logger
 
-Simple environment agnostic logger.
+A simple module to configure and send notifications to services like Discord from your applications.
 
-## Motivation
+## Installation
 
-Often, for debugging some piece of code, developers use console.log for it. When the application goes for production, some of these logs still appears, most because they forget to clear these logs.
-These package solves this, providing some levels of log that are emitted based on the environment of the application.
+Install the package via pnpm:
 
-## Log Levels vs Environments
-
-<table>
-<thead>
-<tr><th>Log Level</th><th>Environment</th></tr>
-</thead>
-<tbody>
-<tr><td>Warn</td><td>Dev-only</td></tr>
-<tr><td>Error</td><td>All</td></tr>
-<tr><td>Info</td><td>Dev-only</td></tr>
-</tbody>
-</table>
-
-## How to use
-
-Just instantiate the logger, providing the `isDev` value configuration and start to use:
-
-```ts
-// createLogger.ts
-
-import { Logger } from '@ttoss/logger';
-import { config } from 'dotenv';
-
-config();
-
-export const createLogger = Logger(process.env.DEV === 'true');
-
-// randomFile.ts
-
-const logger = createLogger('randomFile');
-
-logger.warn('This will emit an warn on console');
-
-logger.error('This will emit a log of type error on console');
-
-loggger.info('This will emit a simple log on console');
+```bash
+pnpm add @ttoss/logger
 ```
 
-If you not pass any parameter to `Logger`, it gonna considers to be in dev environment:
+## Usage
+
+The `@ttoss/logger` module allows you to configure a logger and send notifications to external services, such as Discord, with ease. It also provides basic methods for local console logging.
+
+### Configuration
+
+First, configure the logger with the necessary parameters, such as a Discord webhook URL:
 
 ```ts
-// createLogger.ts
+import { configureLogger } from '@ttoss/logger';
 
-import { Logger } from '@ttoss/logger';
-
-// In dev environment, gonna log everything
-export const createLogger = Logger();
+configureLogger({
+  discordWebhookUrl: 'https://discord.com/api/webhooks/your-webhook-here',
+  project: 'My project',
+});
 ```
+
+### Sending Notifications
+
+Use the `notify` method to send messages to the configured services:
+
+```ts
+import { notify } from '@ttoss/logger';
+
+await notify({
+  type: 'error',
+  message: 'Hello! This is a notification for Discord.',
+});
+```
+
+### Local Logging
+
+For console logs, use the `log` object:
+
+```ts
+import { log } from '@ttoss/logger';
+
+log.info('Useful information');
+
+log.warn('Important warning');
+
+log.error('Critical error');
+```
+
+## API
+
+### `configureLogger(params)`
+
+Configures the logger with notification sending options.
+
+- **Parameters**:
+  - `params.discordWebhookUrl` (string): The Discord webhook URL.
+  - `params.project` (string): The project identifier to prefix notifications.
+
+### `notify(notification)`
+
+Sends a notification to the configured services.
+
+- **Parameters**:
+  - `notification` (object): The notification to send, with the following properties:
+    - `type` ('info' | 'warn' | 'error'): The type of the notification.
+    - `title` (string, optional): The title of the notification.
+    - `message` (string): The main message content.
+- **Returns**: A Promise that resolves when the sending is complete.
+
+### `log`
+
+Object with methods for local logging:
+
+- `log.warn(message)`: Displays a warning in the console.
+- `log.error(message)`: Displays an error in the console.
+- `log.info(message)`: Displays an info message in the console.
+
+## Complete Example
+
+```ts
+import { configureLogger, notify, log } from '@ttoss/logger';
+
+// Configure the logger
+
+configureLogger({
+  discordWebhookUrl: 'https://discord.com/api/webhooks/your-webhook-here',
+});
+
+// Send a notification
+
+await notify({
+  type: 'info',
+  message: 'Application started successfully!',
+});
+
+// Local logs
+
+log.info('Starting the server...');
+
+log.warn('Low memory.');
+
+log.error('Failed to connect to the database.');
+```
+
+## Notes
+
+- Currently, support is limited to Discord via webhooks, but more services will be added in the future.
+- Ensure the `discordWebhookUrl` is valid to avoid silent failures.
+
+## License
+
+[MIT](https://github.com/ttoss/ttoss/blob/main/LICENSE)

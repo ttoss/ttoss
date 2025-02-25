@@ -1,11 +1,9 @@
 {
   "name": "@ttoss/logger",
-  "version": "0.3.17",
-  "description": "Simple environment agnostic logger",
+  "version": "0.5.0",
+  "description": "A simple module to configure and send notifications to services like Discord from your applications.",
   "license": "MIT",
-  "contributors": [
-    "Eron Alves <eron.alves@rocketmail.com>"
-  ],
+  "contributors": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -14,16 +12,17 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "module": "dist/esm/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "jest": "^29.7.0",
     "tsup": "^8.3.5"
   },
   "keywords": [],

@@ -1,7 +1,0 @@
-{
-  "rx8HF/": {
-    "defaultMessage": "Já estou cadastrado",
-    "description": "Link to sign in on sign up.",
-    "module": "@ttoss/react-auth"
-  }
-}

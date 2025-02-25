@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.24...@terezinha-farm/next-app@0.3.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
+## [0.2.24](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.23...@terezinha-farm/next-app@0.2.24) (2025-02-11)
+
+### Bug Fixes
+
+- i18n ([81401d8](https://github.com/ttoss/ttoss/commit/81401d8a66b4fbe7c927304f8e6f6637e258387c))
+
+## [0.2.23](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.22...@terezinha-farm/next-app@0.2.23) (2025-02-11)
+
+### Bug Fixes
+
+- confirmation code auth ([#664](https://github.com/ttoss/ttoss/issues/664)) ([defcc8a](https://github.com/ttoss/ttoss/commit/defcc8a1c0e493e6c1583a8055b463ed85b6b773))
+
+## [0.2.22](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.21...@terezinha-farm/next-app@0.2.22) (2025-02-07)
+
+**Note:** Version bump only for package @terezinha-farm/next-app
+
 ## [0.2.21](https://github.com/ttoss/ttoss/compare/@terezinha-farm/next-app@0.2.20...@terezinha-farm/next-app@0.2.21) (2025-02-03)
 
 **Note:** Version bump only for package @terezinha-farm/next-app
