@@ -44,7 +44,6 @@ export const Sidebar = (props: BoxProps) => {
           aria-hidden={!isSidebarOpen}
           sx={{
             border: 'none',
-            position: 'fixed',
             width: 'full',
             ...props.sx,
           }}
