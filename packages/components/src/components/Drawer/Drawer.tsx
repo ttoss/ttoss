@@ -16,7 +16,7 @@ export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
         /**
          * https://github.com/Farzin-Firoozi/react-modern-drawer/blob/master/src/styles.css
          */
-        zIndex: 'dropdown',
+        zIndex: 'overlay',
         width: '100%',
         height: '100%',
         '.EZDrawer__checkbox': {
@@ -44,7 +44,7 @@ export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
           backgroundColor: 'navigation.background.muted.default',
           transition: 'all',
           boxShadow: '0 0 10px 5px rgba(0, 0, 0, 0.1)',
-          paddingY: '6',
+
           paddingX: '6',
           overflowY: 'auto',
         },

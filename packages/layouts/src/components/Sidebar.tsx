@@ -49,16 +49,18 @@ export const Sidebar = ({
     return (
       <Flex
         sx={{
-          minWidth: SIDEBAR_WIDTH,
-          width: SIDEBAR_WIDTH,
-          borderRight: 'sm',
+          width: 'full',
+          paddingY: '3',
+          borderBottom: 'sm',
           borderColor: 'display.border.muted.default',
           alignItems: 'center',
           gap: '2',
         }}
       >
         {sidebarButtonInDrawer}
-        {drawerSlot}
+        <Flex sx={{ minWidth: SIDEBAR_WIDTH, width: SIDEBAR_WIDTH }}>
+          {drawerSlot}
+        </Flex>
       </Flex>
     );
   }, [drawerSlot, sidebarButtonInDrawer]);
@@ -72,7 +74,7 @@ export const Sidebar = ({
           aria-hidden={!isSidebarOpen}
           sx={{
             position: 'relative',
-            zIndex: 'dropdown',
+            zIndex: 'overlay',
             height: 'full',
             minHeight: isSidebarOpen ? 'full' : '0',
             width: isSidebarOpen ? SIDEBAR_WIDTH : '0',
@@ -97,6 +99,7 @@ export const Sidebar = ({
           aria-hidden={!isSidebarOpen}
           sx={{
             position: 'fixed',
+            zIndex: 'overlay',
             border: 'none',
             width: isSidebarOpen ? 'full' : '0',
             height: isSidebarOpen ? 'full' : '0',
