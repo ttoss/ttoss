@@ -26,7 +26,7 @@ export const SidebarCollapseLayout = ({
             width: 'full',
             flex: 1,
             overflow: 'hidden',
-            flexDirection: ['column', 'row', 'row'],
+            flexDirection: ['row'],
           }}
         >
           {sidebar}

@@ -34,12 +34,12 @@ export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
           display: 'none',
           height: '100vh',
           left: '0',
-          position: 'absolute',
+          position: 'fixed',
           top: '0',
           width: '100%',
         },
         '.EZDrawer__container': {
-          position: 'absolute',
+          position: 'fixed',
           visibility: 'hidden',
           backgroundColor: 'navigation.background.muted.default',
           transition: 'all',
@@ -47,9 +47,6 @@ export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
           paddingY: '6',
           paddingX: '6',
           overflowY: 'auto',
-          '@media (max-width: 768px)': {
-            position: 'sticky',
-          },
         },
         ...sx,
       }}
