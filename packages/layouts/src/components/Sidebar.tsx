@@ -29,9 +29,8 @@ export const Sidebar = (props: BoxProps) => {
             borderRight: isSidebarOpen ? 'sm' : 'none',
             borderColor: 'display.border.muted.default',
             backgroundColor: 'navigation.background.muted.default',
-            paddingX: isSidebarOpen ? '3' : '0',
-            paddingY: isSidebarOpen ? '10' : '0',
-
+            paddingX: isSidebarOpen ? '6' : '0',
+            paddingY: isSidebarOpen ? '6' : '0',
             ...props.sx,
           }}
         >
@@ -43,8 +42,10 @@ export const Sidebar = (props: BoxProps) => {
           aria-label="Sidebar"
           aria-hidden={!isSidebarOpen}
           sx={{
+            position: 'fixed',
             border: 'none',
-            width: 'full',
+            width: isSidebarOpen ? 'full' : '0',
+            height: isSidebarOpen ? 'full' : '0',
             ...props.sx,
           }}
           onClick={() => {
@@ -53,7 +54,12 @@ export const Sidebar = (props: BoxProps) => {
             }
           }}
         >
-          <Drawer open={isSidebarOpen} direction={'left'} size={'min'}>
+          <Drawer
+            open={isSidebarOpen}
+            direction={'left'}
+            size={'min'}
+            enableOverlay={false}
+          >
             {isSidebarOpen ? props.children : null}
           </Drawer>
         </Box>

@@ -57,6 +57,7 @@
     "remark-gfm": "^4.0.0"
   },
   "peerDependencies": {
+    "@ttoss/layouts": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
