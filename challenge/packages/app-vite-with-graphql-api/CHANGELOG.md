@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.16](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.15...@ttoss-challenge/app-vite-with-graphql-api@0.1.16) (2025-02-26)
+
+**Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
+
 ## [0.1.15](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.1.14...@ttoss-challenge/app-vite-with-graphql-api@0.1.15) (2025-02-26)
 
 **Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api
