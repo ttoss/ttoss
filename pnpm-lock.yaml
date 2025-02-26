@@ -665,9 +665,6 @@ importers:
       '@theme-ui/css':
         specifier: ^0.17.1
         version: 0.17.1(@emotion/react@11.14.0(react@19.0.0))
-      '@ttoss/layouts':
-        specifier: workspace:^
-        version: link:../layouts
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3

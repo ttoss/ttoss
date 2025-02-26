@@ -28,7 +28,7 @@ const SidebarCollapseLayoutTemplate = ({
       >
         Header starts here
       </Layout.Header>
-      <Layout.Sidebar>
+      <Layout.Sidebar showSidebarButtonInDrawer={true} drawerSlot={sidebarSlot}>
         <Flex
           sx={{
             flexDirection: 'column',

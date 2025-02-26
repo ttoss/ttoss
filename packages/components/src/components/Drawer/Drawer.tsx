@@ -1,4 +1,3 @@
-import { useIsDesktop } from '@ttoss/layouts';
 import { Box, type BoxProps } from '@ttoss/ui';
 import * as React from 'react';
 import DrawerUi from 'react-modern-drawer';
@@ -10,8 +9,6 @@ export type DrawerProps = DrawerUiProps & {
 };
 
 export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
-  const { isDesktop } = useIsDesktop();
-
   return (
     <Box
       data-testid="drawer-container"
@@ -42,7 +39,7 @@ export const Drawer = ({ children, sx, ...props }: DrawerProps) => {
           width: '100%',
         },
         '.EZDrawer__container': {
-          position: isDesktop ? 'fixed' : 'sticky',
+          position: 'fixed',
           visibility: 'hidden',
           backgroundColor: 'navigation.background.muted.default',
           transition: 'all',
