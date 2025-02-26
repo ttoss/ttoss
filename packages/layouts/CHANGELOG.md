@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.14...@ttoss/layouts@0.4.15) (2025-02-26)
+
+### Bug Fixes
+
+- drawer and implement side bar in mobile mode ([#672](https://github.com/ttoss/ttoss/issues/672)) ([ebb963a](https://github.com/ttoss/ttoss/commit/ebb963a20b749743bdb06bf14586f1b016cd78a9))
+
 ## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.13...@ttoss/layouts@0.4.14) (2025-02-11)
 
 **Note:** Version bump only for package @ttoss/layouts
