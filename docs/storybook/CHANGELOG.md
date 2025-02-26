@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.0...@docs/storybook@2.12.1) (2025-02-26)
+
+### Bug Fixes
+
+- drawer and implement side bar in mobile mode ([#672](https://github.com/ttoss/ttoss/issues/672)) ([ebb963a](https://github.com/ttoss/ttoss/commit/ebb963a20b749743bdb06bf14586f1b016cd78a9))
+
 # [2.12.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.11.5...@docs/storybook@2.12.0) (2025-02-24)
 
 ### Features
