@@ -77,6 +77,7 @@ export const Header = ({
         alignItems: 'center',
         borderBottom: 'sm',
         borderColor: 'display.border.muted.default',
+        backgroundColor: 'navigation.background.primary.default',
         ...(sidebarSlot ? {} : paddingSx),
         ...boxProps.sx,
       }}

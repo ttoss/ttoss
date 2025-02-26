@@ -1,5 +1,6 @@
-import { Menu } from '../../../src/components/Menu';
 import { fireEvent, render, screen } from '@ttoss/test-utils';
+
+import { Menu } from '../../../src/components/Menu';
 
 describe('Menu', () => {
   const mockOnClose = jest.fn();
@@ -22,7 +23,7 @@ describe('Menu', () => {
       </Menu>
     );
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByTestId('button'));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
@@ -41,7 +42,7 @@ describe('Menu', () => {
       </Menu>
     );
 
-    expect(screen.getByRole('img')).toHaveAttribute('src', logoSrc);
+    expect(screen.getByTestId('img')).toHaveAttribute('src', logoSrc);
   });
 
   test('should render children correctly', () => {

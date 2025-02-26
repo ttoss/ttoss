@@ -28,7 +28,24 @@ const SidebarCollapseLayoutTemplate = ({
       >
         Header starts here
       </Layout.Header>
-      <Layout.Sidebar>Sidebar starts here</Layout.Sidebar>
+      <Layout.Sidebar>
+        <Flex
+          sx={{
+            flexDirection: 'column',
+            gap: '6',
+          }}
+        >
+          <Flex>Sidebar item 1 </Flex>
+          <Flex>Sidebar item 2 </Flex>
+          <Flex>Sidebar item 3 </Flex>
+          <Flex>Sidebar item 4 </Flex>
+          <Flex>Sidebar item 5 </Flex>
+          <Flex>Sidebar item 6 </Flex>
+          <Flex>Sidebar item 7 </Flex>
+          <Flex>Sidebar item 8 </Flex>
+          <Flex>Sidebar item 9 </Flex>
+        </Flex>
+      </Layout.Sidebar>
       <Layout.Main>{mainContent}</Layout.Main>
     </SidebarCollapseLayout>
   );

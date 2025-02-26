@@ -1,7 +1,12 @@
 import { render, screen, userEvent } from '@ttoss/test-utils';
 import { Layout, SidebarCollapseLayout } from 'src/index';
+import { useIsDesktop } from 'src/useIsDesktop';
+
+jest.mock('src/useIsDesktop');
 
 test('should render layout from SidebarCollapseLayout component', () => {
+  (useIsDesktop as jest.Mock).mockReturnValue({ isDesktop: true });
+
   render(
     <SidebarCollapseLayout>
       <Layout.Header>Header</Layout.Header>
@@ -19,6 +24,8 @@ test('should render layout from SidebarCollapseLayout component', () => {
 
 test('should toggle sidebar visibility with proper accessibility', async () => {
   const user = userEvent.setup();
+
+  (useIsDesktop as jest.Mock).mockReturnValue({ isDesktop: true });
 
   render(
     <SidebarCollapseLayout>
@@ -47,6 +54,9 @@ test('should toggle sidebar visibility with proper accessibility', async () => {
 
 test('should support keyboard navigation', async () => {
   const user = userEvent.setup();
+
+  (useIsDesktop as jest.Mock).mockReturnValue({ isDesktop: true });
+
   render(
     <SidebarCollapseLayout>
       <Layout.Header showSidebarButton>Header</Layout.Header>
