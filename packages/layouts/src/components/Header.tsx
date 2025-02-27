@@ -6,7 +6,7 @@ import { useLayout } from './LayoutProvider';
 import { SIDEBAR_WIDTH } from './Sidebar';
 
 const paddingSx = {
-  paddingX: '4',
+  paddingX: ['2', '4', '4'],
   paddingY: '3',
 };
 
@@ -51,9 +51,9 @@ export const Header = ({
     return (
       <Flex
         sx={{
-          minWidth: SIDEBAR_WIDTH,
-          width: SIDEBAR_WIDTH,
-          borderRight: 'sm',
+          minWidth: ['12rem', '3xs', SIDEBAR_WIDTH],
+          width: ['12rem', '3xs', SIDEBAR_WIDTH],
+          borderRight: ['none', 'sm', 'sm'],
           borderColor: 'display.border.muted.default',
           alignItems: 'center',
           gap: '2',
@@ -85,7 +85,9 @@ export const Header = ({
       {memoizedSidebarSlot}
       <Box
         sx={{
-          width: '100%',
+          width: 'full',
+          display: ['flex', 'unset', 'unset'],
+          justifyContent: ['center', 'unset', 'unset'],
           ...(sidebarSlot ? paddingSx : {}),
         }}
       >
