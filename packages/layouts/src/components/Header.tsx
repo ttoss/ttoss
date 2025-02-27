@@ -57,7 +57,6 @@ export const Header = ({
           width: ['12rem', '3xs', SIDEBAR_WIDTH],
           borderRight: isDesktop ? 'sm' : 'none',
           borderColor: 'display.border.muted.default',
-          backgroundColor: 'red',
           alignItems: 'center',
           gap: '2',
           ...paddingSx,
