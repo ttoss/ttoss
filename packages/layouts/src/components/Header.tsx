@@ -2,11 +2,12 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, BoxProps, Flex, IconButton } from '@ttoss/ui';
 import * as React from 'react';
 
+import { useIsDesktop } from '../useIsDesktop';
 import { useLayout } from './LayoutProvider';
 import { SIDEBAR_WIDTH } from './Sidebar';
 
 const paddingSx = {
-  paddingX: ['2', '4', '4'],
+  paddingX: '4',
   paddingY: '3',
 };
 
@@ -20,6 +21,7 @@ export const Header = ({
   sidebarSlot?: React.ReactNode;
 }) => {
   const { isSidebarOpen, toggleSidebar } = useLayout();
+  const { isDesktop } = useIsDesktop();
 
   const sidebarButton = React.useMemo(() => {
     if (!showSidebarButton) {
@@ -53,7 +55,7 @@ export const Header = ({
         sx={{
           minWidth: ['12rem', '3xs', SIDEBAR_WIDTH],
           width: ['12rem', '3xs', SIDEBAR_WIDTH],
-          borderRight: ['none', 'sm', 'sm'],
+          borderRight: isDesktop ? 'sm' : 'none',
           borderColor: 'display.border.muted.default',
           alignItems: 'center',
           gap: '2',
@@ -64,7 +66,7 @@ export const Header = ({
         {sidebarSlot}
       </Flex>
     );
-  }, [sidebarButton, sidebarSlot]);
+  }, [isDesktop, sidebarButton, sidebarSlot]);
 
   return (
     <Flex
