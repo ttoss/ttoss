@@ -85,7 +85,9 @@ export const Header = ({
       {memoizedSidebarSlot}
       <Box
         sx={{
-          width: '100%',
+          width: 'full',
+          display: ['flex', 'unset', 'unset'],
+          justifyContent: ['center', 'unset', 'unset'],
           ...(sidebarSlot ? paddingSx : {}),
         }}
       >
