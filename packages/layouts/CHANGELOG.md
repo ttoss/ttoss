@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.18](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.17...@ttoss/layouts@0.4.18) (2025-02-27)
+
+### Bug Fixes
+
+- responsive header ([#675](https://github.com/ttoss/ttoss/issues/675)) ([debb74e](https://github.com/ttoss/ttoss/commit/debb74ee3feb61c7e67d74320b98cc73e19e15df))
+
 ## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.16...@ttoss/layouts@0.4.17) (2025-02-26)
 
 ### Bug Fixes
