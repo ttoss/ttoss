@@ -1215,10 +1215,6 @@ importers:
         version: 8.3.5(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
 
   packages/layouts:
-    dependencies:
-      '@ttoss/components':
-        specifier: workspace:^
-        version: link:../components
     devDependencies:
       '@ttoss/components':
         specifier: workspace:^
@@ -1256,6 +1252,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.10.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))

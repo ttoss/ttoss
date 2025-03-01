@@ -1,8 +1,11 @@
+import { faker } from '@ttoss/test-utils/faker';
 import {
   configureLogger,
+  log,
   notify,
+  notifyError,
   sendNotificationToDiscord,
-} from '@ttoss/logger';
+} from 'src/index';
 
 global.fetch = jest.fn(() => {
   return Promise.resolve({
@@ -16,6 +19,10 @@ const project = 'project-name';
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 test('should configure logger and send notification to Discord', async () => {
@@ -96,6 +103,46 @@ test('should send a formatted notification with prefix', async () => {
     'https://discord.com/api/webhooks/test-webhook',
     expect.objectContaining({
       body: '{"embeds":[{"title":"Alert","description":"Test warning","color":16776960,"footer":{"text":"Project: TestApp"}}]}',
+    })
+  );
+});
+
+test.each<keyof typeof log>(['error', 'warn', 'info'])(
+  'should call log.%s and log when log is true',
+  async (type) => {
+    jest.spyOn(console, type).mockImplementation(() => {});
+
+    const logSpy = jest.spyOn(log, type);
+
+    const title = faker.word.words(2);
+
+    const message = faker.word.words(8);
+
+    await notify({
+      type,
+      title,
+      message,
+      log: true,
+    });
+
+    expect(logSpy).toHaveBeenCalledWith(`${title}: ${message}`);
+  }
+);
+
+test('sendNotificationToDiscord should send POST request correctly when using notifyError', async () => {
+  const discordWebhookUrl = 'https://discord.com/api/webhooks/test-webhook';
+  configureLogger({ discordWebhookUrl, project });
+
+  const error = new Error('This is an error');
+  await notifyError({ error });
+
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledWith(
+    discordWebhookUrl,
+    expect.objectContaining({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"embeds":[{"title":"ERROR from project-name","description":"This is an error","color":16711680,"footer":{"text":"Project: project-name"}}]}',
     })
   );
 });
