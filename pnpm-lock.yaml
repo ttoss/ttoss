@@ -664,7 +664,7 @@ importers:
         version: 8.20.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@theme-ui/css':
         specifier: ^0.17.1
-        version: 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+        version: 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -802,6 +802,9 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.21.0
+      '@typescript-eslint/parser':
+        specifier: ^8.25.0
+        version: 8.25.0(eslint@9.21.0(jiti@2.4.2))(typescript@5.7.2)
       eslint:
         specifier: '>=9.20.0'
         version: 9.21.0(jiti@2.4.2)
@@ -19823,7 +19826,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.6.3
+      semver: 7.7.1
       tar: 6.2.1
     transitivePeerDependencies:
       - encoding
@@ -19956,7 +19959,7 @@ snapshots:
       json-parse-even-better-errors: 3.0.2
       normalize-package-data: 6.0.2
       proc-log: 4.2.0
-      semver: 7.6.3
+      semver: 7.7.1
     transitivePeerDependencies:
       - bluebird
 
@@ -21399,7 +21402,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       deepmerge: 4.3.1
       react: 19.0.0
 
@@ -21410,7 +21413,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@types/styled-system': 5.1.23
       react: 19.0.0
@@ -21418,11 +21421,11 @@ snapshots:
   '@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       deepmerge: 4.3.1
       react: 19.0.0
 
-  '@theme-ui/css@0.17.1(@emotion/react@11.14.0(react@19.0.0))':
+  '@theme-ui/css@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       csstype: 3.1.3
@@ -21431,13 +21434,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@theme-ui/match-media@0.17.1(@theme-ui/core@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(@theme-ui/css@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0)))(react@19.0.0)':
     dependencies:
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)':
@@ -21445,7 +21448,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       react: 19.0.0
 
   '@tootallnate/once@2.0.0': {}
@@ -23909,7 +23912,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.4.49)
       postcss-modules-values: 4.0.0(postcss@8.4.49)
       postcss-value-parser: 4.2.0
-      semver: 7.6.3
+      semver: 7.7.1
     optionalDependencies:
       webpack: 5.97.1(esbuild@0.24.2)
 
@@ -23922,7 +23925,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.4.49)
       postcss-modules-values: 4.0.0(postcss@8.4.49)
       postcss-value-parser: 4.2.0
-      semver: 7.6.3
+      semver: 7.7.1
     optionalDependencies:
       webpack: 5.97.1
 
@@ -25590,7 +25593,7 @@ snapshots:
       memfs: 3.5.3
       minimatch: 3.1.2
       schema-utils: 2.7.0
-      semver: 7.6.3
+      semver: 7.7.1
       tapable: 1.1.3
       typescript: 5.7.2
       webpack: 5.97.1
@@ -25609,7 +25612,7 @@ snapshots:
       minimatch: 3.1.2
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
-      semver: 7.6.3
+      semver: 7.7.1
       tapable: 2.2.1
       typescript: 5.7.2
       webpack: 5.97.1(esbuild@0.24.2)
@@ -26780,7 +26783,7 @@ snapshots:
       '@babel/parser': 7.26.3
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.6.3
+      semver: 7.7.1
     transitivePeerDependencies:
       - supports-color
 
@@ -27094,7 +27097,7 @@ snapshots:
       jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.7.0
-      semver: 7.6.3
+      semver: 7.7.1
     transitivePeerDependencies:
       - supports-color
 
@@ -27575,7 +27578,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.6.3
+      semver: 7.7.1
 
   make-dir@5.0.0: {}
 
@@ -28473,7 +28476,7 @@ snapshots:
       make-fetch-happen: 13.0.1
       nopt: 7.2.1
       proc-log: 4.2.0
-      semver: 7.6.3
+      semver: 7.7.1
       tar: 6.2.1
       which: 4.0.0
     transitivePeerDependencies:
@@ -28753,7 +28756,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.0.3
       registry-url: 6.0.1
-      semver: 7.6.3
+      semver: 7.7.1
 
   package-manager-detector@0.2.8: {}
 
@@ -29189,7 +29192,7 @@ snapshots:
       cosmiconfig: 8.3.6(typescript@5.7.2)
       jiti: 1.21.7
       postcss: 8.4.49
-      semver: 7.6.3
+      semver: 7.7.1
       webpack: 5.97.1
     transitivePeerDependencies:
       - typescript
@@ -30489,7 +30492,7 @@ snapshots:
 
   semver-diff@4.0.0:
     dependencies:
-      semver: 7.6.3
+      semver: 7.7.1
 
   semver@6.3.1: {}
 
@@ -31267,7 +31270,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/components': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@theme-ui/theme-provider@0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@theme-ui/core': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
-      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(react@19.0.0))
+      '@theme-ui/css': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))
       '@theme-ui/global': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       '@theme-ui/theme-provider': 0.17.1(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(react@19.0.0)
       react: 19.0.0
