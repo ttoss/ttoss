@@ -76,8 +76,8 @@ const getTtossExtractedTranslations = async () => {
         return {
           ...accumulator,
           [key]: {
-            ...extractedTranslations[key],
             module: dependency,
+            ...extractedTranslations[key],
           },
         };
       }, {});
