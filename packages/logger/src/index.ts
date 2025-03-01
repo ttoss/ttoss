@@ -1,10 +1,17 @@
 /* eslint-disable no-console */
 type NotificationType = 'info' | 'warn' | 'error';
 
+export const log = {
+  warn: console.warn,
+  error: console.error,
+  info: console.info,
+};
+
 type NotificationMessage = {
   type: NotificationType;
   title?: string;
   message: string;
+  log?: boolean;
 };
 
 type Configuration = {
@@ -57,6 +64,11 @@ export const sendNotificationToDiscord = async ({
 };
 
 export const notify = async (notification: NotificationMessage) => {
+  if (notification.log) {
+    const message = [notification.title, notification.message].join(': ');
+    log[notification.type](message);
+  }
+
   if (!setup?.project) {
     return;
   }
@@ -70,8 +82,25 @@ export const notify = async (notification: NotificationMessage) => {
   }
 };
 
-export const log = {
-  warn: console.warn,
-  error: console.error,
-  info: console.info,
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return 'Unknown error:' + JSON.stringify(error);
+};
+
+export const notifyError = async (notification: {
+  error: unknown;
+  title?: string;
+  log?: boolean;
+}) => {
+  return notify({
+    type: 'error',
+    message: getErrorMessage(notification.error),
+    title: notification.title,
+    log: notification.log,
+  });
 };
