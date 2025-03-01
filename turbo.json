@@ -13,6 +13,7 @@
       "outputs": ["packages/config/dist/**"]
     },
     "//#lint": {
+      "cache": false,
       "dependsOn": ["//#build:config"],
       "inputs": []
     },
