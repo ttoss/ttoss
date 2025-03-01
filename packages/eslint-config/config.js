@@ -4,21 +4,22 @@ import { fileURLToPath } from 'node:url';
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import turboConfig from 'eslint-config-turbo/flat';
 import formatjs from 'eslint-plugin-formatjs';
-import _import from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import';
 import jest from 'eslint-plugin-jest';
 import jestDom from 'eslint-plugin-jest-dom';
-import jsxA11Y from 'eslint-plugin-jsx-a11y';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import prettier from 'eslint-plugin-prettier';
-import react from 'eslint-plugin-react';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import relay from 'eslint-plugin-relay';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -32,33 +33,25 @@ export const compat = new FlatCompat({
 });
 
 export default tseslint.config([
+  ...turboConfig,
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  importPlugin.flatConfigs.recommended,
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat['jsx-runtime'],
+  jestDom.configs['flat/recommended'],
+  eslintPluginUnicorn.configs.recommended,
   ...fixupConfigRules(
-    compat.extends(
-      'eslint:recommended',
-      'turbo',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:react/recommended',
-      'plugin:react/jsx-runtime',
-      'plugin:react-hooks/recommended',
-      'plugin:jsx-a11y/recommended',
-      'plugin:relay/recommended',
-      'plugin:prettier/recommended',
-      'plugin:jest-dom/recommended',
-      'plugin:import/typescript'
-    )
+    compat.extends('plugin:react-hooks/recommended', 'plugin:relay/recommended')
   ),
   {
     plugins: {
-      '@typescript-eslint': fixupPluginRules(typescriptEslint),
       formatjs,
-      react: fixupPluginRules(react),
       'react-hooks': fixupPluginRules(reactHooks),
       relay: fixupPluginRules(relay),
-      'jsx-a11y': fixupPluginRules(jsxA11Y),
+      'jsx-a11y': jsxA11y,
       'prefer-arrow-functions': preferArrowFunctions,
-      prettier: fixupPluginRules(prettier),
-      'jest-dom': fixupPluginRules(jestDom),
-      import: fixupPluginRules(_import),
+      prettier,
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
@@ -101,7 +94,7 @@ export default tseslint.config([
       'formatjs/no-offset': 'error',
       'formatjs/no-id': 'error',
       'formatjs/no-complex-selectors': 'error',
-      'import/no-default-export': 'warn',
+      'import/no-default-export': 'off',
       'max-params': ['error', 3],
       'no-console': 'error',
       'no-use-before-define': ['error'],
