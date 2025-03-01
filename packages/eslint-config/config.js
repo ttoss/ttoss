@@ -121,6 +121,8 @@ export default tseslint.config([
 
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/no-null': 'off',
     },
   },
   {

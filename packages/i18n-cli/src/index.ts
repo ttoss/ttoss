@@ -1,8 +1,9 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { compile, extract } from '@formatjs/cli-lib';
 import fg from 'fast-glob';
-import * as fs from 'fs';
 import minimist from 'minimist';
-import * as path from 'path';
 
 const DEFAULT_DIR = 'i18n';
 
@@ -46,7 +47,7 @@ const getTtossExtractedTranslations = async () => {
     /**
      * Remove duplicates
      */
-    // eslint-disable-next-line max-params
+
     .filter((dependency, index, array) => {
       return array.indexOf(dependency) === index;
     });
@@ -64,16 +65,16 @@ const getTtossExtractedTranslations = async () => {
       );
       const requirePath = path.join(dependencyPathFromCwd, EXTRACT_FILE);
 
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line unicorn/prefer-module, @typescript-eslint/no-require-imports
       const extractedTranslations = require(requirePath);
       /**
        * Add "module: dependency" to the extracted translations
        */
       const extractedTranslationsWithModule = Object.keys(
         extractedTranslations
-      ).reduce((acc, key) => {
+      ).reduce((accumulator, key) => {
         return {
-          ...acc,
+          ...accumulator,
           [key]: {
             ...extractedTranslations[key],
             module: dependency,
@@ -93,7 +94,7 @@ const getTtossExtractedTranslations = async () => {
   return ttossExtractedTranslations;
 };
 
-(async () => {
+const executeI18nCli = async () => {
   /**
    * Extract
    */
@@ -122,7 +123,7 @@ const getTtossExtractedTranslations = async () => {
       ...ttossExtractedTranslations,
     };
 
-    return JSON.stringify(finalExtractedData, null, 2);
+    return JSON.stringify(finalExtractedData, undefined, 2);
   })();
 
   await fs.promises.mkdir(EXTRACT_DIR, { recursive: true });
@@ -185,18 +186,20 @@ const getTtossExtractedTranslations = async () => {
 
     const extractedTranslations = JSON.parse(finalExtractedData);
 
-    const obj = JSON.parse(fs.readFileSync(translation, { encoding: 'utf-8' }));
+    const object = JSON.parse(
+      fs.readFileSync(translation, { encoding: 'utf8' })
+    );
 
     /**
      * List all missing translations that exist in en.json but not in the current translation.
      */
     const missingTranslations = Object.keys(extractedTranslations).reduce(
-      (acc, key) => {
-        if (!obj[key]) {
-          acc[key] = extractedTranslations[key];
+      (accumulator, key) => {
+        if (!object[key]) {
+          accumulator[key] = extractedTranslations[key];
         }
 
-        return acc;
+        return accumulator;
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<string, any>
@@ -205,28 +208,28 @@ const getTtossExtractedTranslations = async () => {
     /**
      * generate file with translations that doesnt exist in lang/en.json
      */
-    const unusedTranslations = Object.keys(obj).reduce(
-      (acc, key) => {
+    const unusedTranslations = Object.keys(object).reduce(
+      (accumulator, key) => {
         if (!extractedTranslations[key]) {
-          acc[key] = obj[key];
+          accumulator[key] = object[key];
         }
 
-        return acc;
+        return accumulator;
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<string, any>
     );
 
     /**
-     * generate list without unecessary translations
+     * generate list without unnecessary translations
      */
-    const withoutUnecessaryTranslations = Object.keys(obj).reduce(
-      (acc, key) => {
-        if (obj[key] !== unusedTranslations[key]) {
-          acc[key] = obj[key];
+    const withoutUnnecessaryTranslations = Object.keys(object).reduce(
+      (accumulator, key) => {
+        if (object[key] !== unusedTranslations[key]) {
+          accumulator[key] = object[key];
         }
 
-        return acc;
+        return accumulator;
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<string, any>
@@ -235,7 +238,7 @@ const getTtossExtractedTranslations = async () => {
     if (filename) {
       await fs.promises.writeFile(
         path.join(MISSING_DIR, filename),
-        JSON.stringify(missingTranslations, null, 2)
+        JSON.stringify(missingTranslations, undefined, 2)
       );
 
       /**
@@ -264,7 +267,7 @@ const getTtossExtractedTranslations = async () => {
            */
           await fs.promises.writeFile(
             path.join(UNUSED_DIR, filename),
-            JSON.stringify(updatedUnusedTranslations, null, 2)
+            JSON.stringify(updatedUnusedTranslations, undefined, 2)
           );
         }
       } catch {
@@ -273,17 +276,19 @@ const getTtossExtractedTranslations = async () => {
          */
         await fs.promises.writeFile(
           path.join(UNUSED_DIR, filename),
-          JSON.stringify(unusedTranslations, null, 2)
+          JSON.stringify(unusedTranslations, undefined, 2)
         );
       }
 
       /**
-       * remove unecessary translations from lang/filename
+       * remove unnecessary translations from lang/filename
        */
       await fs.promises.writeFile(
         path.join(EXTRACT_DIR, filename),
-        JSON.stringify(withoutUnecessaryTranslations, null, 2)
+        JSON.stringify(withoutUnnecessaryTranslations, undefined, 2)
       );
     }
   }
-})();
+};
+
+executeI18nCli();
