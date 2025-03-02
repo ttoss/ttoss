@@ -35,6 +35,10 @@ If everything goes well, you should see the Storybook running in your browser.
 
 ## FAQ
 
+### What is `build-config` command?
+
+`build-config` is a command that builds some packages that are used in the configuration files of the other packages. For example, it builds [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) package because it must be built before running i18n commands in the other packages.
+
 ### Do I need to build packages before importing them?
 
 No. We use the [`exports` field](https://nodejs.org/api/packages.html#package-entry-points) to specify the package entry points of the packages and point them to the `src` folder. For example,

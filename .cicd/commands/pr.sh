@@ -4,7 +4,7 @@ export TTOSS_MONOREPO=true
 export LATEST_TAG=$(git describe --tags --abbrev=0)
 
 # Build configs to syncpack:list works properly.
-pnpm turbo run build --filter=@ttoss/config
+pnpm turbo run build-config
 
 # Check dependencies versions.
 pnpm run syncpack:list

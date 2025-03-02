@@ -28,7 +28,7 @@ echo NPM whoami: $(npm whoami)
 # when commiting changes. If we don't build this package, commit will fail
 # because pre-commit hook will run syncpack:list with default config, that
 # not works because of package version and "workspace:^" mismatch.
-pnpm turbo run build --filter=@ttoss/config
+pnpm turbo run build-config
 
 # Check dependencies versions.
 pnpm run syncpack:list
