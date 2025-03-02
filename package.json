@@ -16,7 +16,7 @@
     "url": "https://github.com/ttoss/ttoss/issues"
   },
   "scripts": {
-    "build:config": "pnpm --filter @ttoss/config run build:config",
+    "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet --no-stash --allow-empty",
     "monorepo:update": "ttoss-monorepo setup",
@@ -35,7 +35,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.17.0",
+    "eslint": "^9.20.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",
