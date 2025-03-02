@@ -8,20 +8,16 @@
     "TTOSS_MONOREPO"
   ],
   "tasks": {
-    "build:config": {
+    "build-config": {
       "dependsOn": [],
       "outputs": ["dist/**"]
     },
-    "build-config": {
-      "dependsOn": ["build:config"],
-      "outputs": ["dist/**"]
-    },
     "i18n": {
-      "dependsOn": ["^build-config", "^i18n"],
+      "dependsOn": ["^build-config"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["build-config", "i18n", "^build"],
+      "dependsOn": ["^build", "i18n"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {

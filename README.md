@@ -35,10 +35,6 @@ If everything goes well, you should see the Storybook running in your browser.
 
 ## FAQ
 
-### Why doesn't @ttoss/config (./packages/config) have a `build` script?
-
-It doesn't have a `build` script because its build cannot be done at the same time as the other packages. The other packages use [`@ttoss/config` package](https://ttoss.dev/docs/modules/packages/config/) on their configuration files. As the `build` command on [`turbo.json`](https://github.com/ttoss/ttoss/blob/main/turbo.json) is executed in parallel, it may happen that the other packages are built before `@ttoss/config` package, which would cause an error because they would try to use `@ttoss/config` package before it was built.
-
 ### What is `build-config` command?
 
 `build-config` is a command that builds some packages that are used in the configuration files of the other packages. For example, it builds [`@ttoss/i18n-cli`](https://ttoss.dev/docs/modules/packages/i18n-cli/) package because it must be built before running i18n commands in the other packages.
