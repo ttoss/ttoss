@@ -8,12 +8,8 @@
     "TTOSS_MONOREPO"
   ],
   "tasks": {
-    "build-config": {
-      "dependsOn": ["^build-config"],
-      "outputs": ["dist/**"]
-    },
     "i18n": {
-      "dependsOn": ["^@ttoss/i18n-cli#build-config"],
+      "dependsOn": ["@ttoss/i18n-cli#build"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {
