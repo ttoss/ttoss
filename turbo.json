@@ -8,23 +8,12 @@
     "TTOSS_MONOREPO"
   ],
   "tasks": {
-    "//#build:config": {
+    "build:config": {
       "dependsOn": [],
-      "outputs": ["packages/config/dist/**"]
-    },
-    "//#lint": {
-      "cache": false,
-      "dependsOn": ["//#build:config"],
-      "inputs": []
-    },
-    "//#syncpack:list": {
-      "dependsOn": []
-    },
-    "topo": {
-      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"]
+      "outputs": ["dist/**"]
     },
     "build-config": {
-      "dependsOn": ["//#build:config"],
+      "dependsOn": ["build:config"],
       "outputs": ["dist/**"]
     },
     "i18n": {
@@ -32,11 +21,11 @@
       "outputs": ["i18n/lang/**"]
     },
     "build": {
-      "dependsOn": ["topo", "build-config", "i18n", "^build"],
+      "dependsOn": ["build-config", "i18n", "^build"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["topo", "i18n"],
+      "dependsOn": ["i18n"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -46,7 +35,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["topo", "i18n", "build", "carlin#build", "^deploy"],
+      "dependsOn": ["i18n", "build", "carlin#build", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }

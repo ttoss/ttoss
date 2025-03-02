@@ -16,7 +16,7 @@
     "url": "https://github.com/ttoss/ttoss/issues"
   },
   "scripts": {
-    "build:config": "pnpm --filter @ttoss/config run build:config",
+    "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",
     "lint": "lint-staged --diff main --quiet --no-stash --allow-empty",
     "monorepo:update": "ttoss-monorepo setup",

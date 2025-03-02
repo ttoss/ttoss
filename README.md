@@ -19,16 +19,10 @@ The "hello world" of this repository is running [ttoss Storybook](https://storyb
    pnpm install
    ```
 
-1. Build [@ttoss/config](https://ttoss.dev/docs/modules/packages/config/) package:
-
-   ```sh
-   pnpm build:config
-   ```
-
 1. Build i18n languages (for more information, see [@ttoss/i18n-cli](https://ttoss.dev/docs/modules/packages/i18n-cli/)):
 
    ```sh
-   pnpm turbo run i18n
+   pnpm i18n
    ```
 
 1. Run the Storybook:
