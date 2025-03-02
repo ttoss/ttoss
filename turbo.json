@@ -9,7 +9,7 @@
   ],
   "tasks": {
     "build-config": {
-      "dependsOn": [],
+      "dependsOn": ["^build-config"],
       "outputs": ["dist/**"]
     },
     "i18n": {
