@@ -65,7 +65,7 @@ const getTtossExtractedTranslations = async () => {
       );
       const requirePath = path.join(dependencyPathFromCwd, EXTRACT_FILE);
 
-      // eslint-disable-next-line unicorn/prefer-module, @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const extractedTranslations = require(requirePath);
       /**
        * Add "module: dependency" to the extracted translations

@@ -28,7 +28,7 @@
       "outputs": ["dist/**"]
     },
     "i18n": {
-      "dependsOn": ["^build-config"],
+      "dependsOn": ["^build-config", "^i18n"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {

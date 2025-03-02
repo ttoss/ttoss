@@ -40,7 +40,6 @@ export default tseslint.config([
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   jestDom.configs['flat/recommended'],
-  eslintPluginUnicorn.configs.recommended,
   ...fixupConfigRules(
     compat.extends('plugin:react-hooks/recommended', 'plugin:relay/recommended')
   ),
@@ -55,32 +54,24 @@ export default tseslint.config([
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
+      unicorn: eslintPluginUnicorn,
     },
-
     languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-
+      globals: globals.builtin,
       parser: tsParser,
     },
-
     settings: {
       react: {
         version: 'detect',
       },
-
       import: {
         ignore: ['node_modules'],
       },
-
       'import/resolver': {
         typescript: true,
         node: true,
       },
     },
-
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'error',
       curly: 'error',
@@ -100,34 +91,29 @@ export default tseslint.config([
       'no-use-before-define': ['error'],
       'object-shorthand': ['error', 'always'],
       'prefer-arrow-callback': 'error',
-
       'prefer-arrow-functions/prefer-arrow-functions': [
         'error',
         {
           returnStyle: 'explicit',
         },
       ],
-
       'react-namespace-import/no-namespace-import': 'error',
-
       'react-refresh/only-export-components': [
         'warn',
         {
           allowConstantExport: true,
         },
       ],
-
       'relay/generated-flow-types': 'off',
-
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      'unicorn/no-array-reduce': 'off',
-      'unicorn/no-null': 'off',
+      'unicorn/no-array-for-each': 'error',
+      'unicorn/catch-error-name': 'error',
+      'unicorn/prefer-node-protocol': 'error',
     },
   },
   {
     files: ['**/*.js', '**/*.jsx', '**/*.cjs'],
-
     rules: {
       '@typescript-eslint': 'off',
       '@typescript-eslint/no-var-requires': 'off',
@@ -142,11 +128,9 @@ export default tseslint.config([
   }),
   {
     files: ['**/*.spec.ts', '**/*.test.ts', '**/*.spec.tsx', '**/*.test.tsx'],
-
     plugins: {
       jest,
     },
-
     languageOptions: {
       globals: {
         ...globals.node,
@@ -156,7 +140,6 @@ export default tseslint.config([
       ecmaVersion: 2019,
       sourceType: 'module',
     },
-
     rules: {
       'jest/consistent-test-it': [
         'error',

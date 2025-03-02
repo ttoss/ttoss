@@ -21,10 +21,12 @@ import * as React from 'react';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
-    case 'pt-BR':
+    case 'pt-BR': {
       return (await import('../../i18n/compiled/pt-BR.json')).default;
-    default:
+    }
+    default: {
       return (await import('../../i18n/compiled/en.json')).default;
+    }
   }
 };
 
@@ -48,11 +50,11 @@ export default {
   ],
 } as Meta;
 
-type StoryArgs = {
+type StoryArguments = {
   showTooltip: boolean;
 };
 
-const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
+const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
   const schema = yup.object({
     firstName: yup.string().required('First Name is required'),
     age: yup.number().required('Age is required'),
@@ -82,7 +84,7 @@ const Template: StoryFn<StoryArgs> = (props: StoryArgs) => {
     },
   });
 
-  const tooltip = props.showTooltip
+  const tooltip = properties.showTooltip
     ? {
         render: 'tooltip message',
         place: 'top' as const,
