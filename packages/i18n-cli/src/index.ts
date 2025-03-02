@@ -72,15 +72,16 @@ const getTtossExtractedTranslations = async () => {
        */
       const extractedTranslationsWithModule = Object.keys(
         extractedTranslations
-      ).reduce((accumulator, key) => {
-        return {
-          ...accumulator,
-          [key]: {
+      ).reduce(
+        (accumulator, key) => {
+          accumulator[key] = {
             module: dependency,
             ...extractedTranslations[key],
-          },
-        };
-      }, {});
+          };
+          return accumulator;
+        },
+        {} as Record<string, Record<string, string>>
+      );
 
       Object.assign(
         ttossExtractedTranslations,
