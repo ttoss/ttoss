@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.1.23 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/test-utils
+
 ## [2.1.22](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.21...@ttoss/test-utils@2.1.22) (2025-01-02)
 
 ### Bug Fixes
