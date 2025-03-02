@@ -22,6 +22,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": true,

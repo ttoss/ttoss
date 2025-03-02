@@ -13,7 +13,7 @@
       "outputs": ["dist/**"]
     },
     "i18n": {
-      "dependsOn": ["^build-config"],
+      "dependsOn": ["^@ttoss/i18n-cli#build-config"],
       "outputs": ["i18n/lang/**"]
     },
     "build": {

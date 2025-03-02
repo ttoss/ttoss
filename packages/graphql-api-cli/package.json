@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node"
+    "build": "tsup-node"
   },
   "sideEffects": false,
   "dependencies": {

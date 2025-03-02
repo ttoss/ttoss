@@ -20,7 +20,7 @@
     "tsconfig.test.json"
   ],
   "scripts": {
-    "build-config": "tsup-node",
+    "build": "tsup-node",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
