@@ -43,7 +43,19 @@ export const Sidebar = ({
 
   const memoizedDrawerSlot = React.useMemo(() => {
     if (!drawerSlot) {
-      return <>{sidebarButtonInDrawer}</>;
+      return (
+        <Flex
+          sx={{
+            width: 'full',
+            paddingY: '3',
+            borderBottom: 'sm',
+            borderColor: 'display.border.muted.default',
+            alignItems: 'center',
+          }}
+        >
+          {sidebarButtonInDrawer}
+        </Flex>
+      );
     }
 
     return (
