@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.21](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.20...@ttoss/layouts@0.4.21) (2025-03-05)
+
+### Bug Fixes
+
+- parse sidebar open when isDesktop is true ([#680](https://github.com/ttoss/ttoss/issues/680)) ([e85ca8d](https://github.com/ttoss/ttoss/commit/e85ca8de6db359aa2079e544dc2b0f3432f5113e))
+
 ## [0.4.20](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.19...@ttoss/layouts@0.4.20) (2025-03-02)
 
 **Note:** Version bump only for package @ttoss/layouts
