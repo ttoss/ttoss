@@ -100,12 +100,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const updateUserListener = Hub.listen('auth', updateUser);
+
+    /**
+     * Check manually the first time.
+     */
     updateUser();
 
     return () => {
       updateUserListener();
     };
   }, []);
+
+  if (authState.isAuthenticated === undefined) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider
