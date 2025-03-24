@@ -19,6 +19,14 @@ type Tokens = {
   refreshToken: string;
 } | null;
 
+type AuthScreen =
+  | { value: 'signIn'; context: { email?: string } }
+  | { value: 'signUp'; context: Record<string, never> }
+  | { value: 'signUpConfirm'; context: { email: string } }
+  | { value: 'signUpResendConfirmation'; context: { email: string } }
+  | { value: 'forgotPassword'; context: Record<string, never> }
+  | { value: 'forgotPasswordResetPassword'; context: { email: string } };
+
 const signOut = () => {
   return awsSignOut();
 };
@@ -29,15 +37,19 @@ const AuthContext = React.createContext<{
   isAuthenticated: boolean;
   user: User;
   tokens: Tokens;
+  screen: AuthScreen;
+  setScreen: React.Dispatch<React.SetStateAction<AuthScreen>>;
 }>({
   signOut,
   isAuthenticated: false,
   user: null,
   tokens: null,
+  screen: { value: 'signIn', context: {} },
+  setScreen: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [{ user, tokens, isAuthenticated }, setAuthState] = React.useState<{
+  const [authState, setAuthState] = React.useState<{
     user: User;
     tokens: Tokens;
     isAuthenticated: boolean | undefined;
@@ -45,6 +57,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user: null,
     tokens: null,
     isAuthenticated: undefined,
+  });
+
+  const [screen, setScreen] = React.useState<AuthScreen>({
+    value: 'signIn',
+    context: {},
   });
 
   React.useEffect(() => {
@@ -73,9 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isAuthenticated: true,
           });
         })
-        .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error(e);
+        .catch(() => {
           setAuthState({
             user: null,
             tokens: null,
@@ -96,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  if (isAuthenticated === undefined) {
+  if (authState.isAuthenticated === undefined) {
     return null;
   }
 
@@ -104,9 +119,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         signOut,
-        isAuthenticated,
-        user,
-        tokens,
+        isAuthenticated: authState.isAuthenticated ?? false,
+        user: authState.user,
+        tokens: authState.tokens,
+        screen,
+        setScreen,
       }}
     >
       {children}

@@ -1,28 +1,48 @@
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 import * as amplifyAuth from 'aws-amplify/auth';
-import { Auth } from 'src/index';
+import { Auth, AuthProvider } from 'src/index';
+
+const email = 'some@email.com';
+const password = 'somepassword';
 
 jest.mock('aws-amplify/auth', () => {
   return {
-    signIn: jest.fn().mockResolvedValue({}),
-    signUp: jest.fn().mockResolvedValue({}),
-    confirmSignUp: jest.fn().mockResolvedValue({}),
-    resendSignUpCode: jest.fn().mockResolvedValue({}),
+    signIn: jest.fn(),
+    signUp: jest.fn(),
+    confirmSignUp: jest.fn(),
+    resendSignUpCode: jest.fn(),
+    fetchAuthSession: jest
+      .fn()
+      .mockRejectedValue(new Error('Not authenticated')),
+    fetchUserAttributes: jest
+      .fn()
+      .mockRejectedValue(new Error('Not authenticated')),
+    getCurrentUser: jest.fn().mockRejectedValue(new Error('Not authenticated')),
+    signOut: jest.fn(),
+    confirmResetPassword: jest.fn(),
+    resetPassword: jest.fn(),
   };
 });
 
-const email = 'some@email.com';
-
-const password = 'somepassword';
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 test('should call Amplify Auth.signIn', async () => {
   const user = userEvent.setup();
 
-  render(<Auth />);
+  render(
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
 
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
-
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.signIn).toHaveBeenCalledWith({
@@ -34,23 +54,27 @@ test('should call Amplify Auth.signIn', async () => {
 test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   const user = userEvent.setup();
 
-  render(<Auth />);
+  render(
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
+  );
 
-  /**
-   * Sign In screen
-   */
+  await waitFor(() => {
+    expect(screen.getByText('Sign up')).toBeInTheDocument();
+  });
 
-  await user.click(screen.getByLabelText('sign-up'));
+  await user.click(screen.getByText('Sign up'));
+
+  await waitFor(() => {
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
 
   expect(amplifyAuth.signIn).not.toHaveBeenCalled();
 
-  /**
-   * Sign Up screen
-   */
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
   await user.type(screen.getByLabelText('Confirm password'), password);
-
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.signUp).toHaveBeenCalledWith({
@@ -59,13 +83,12 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
     options: { userAttributes: { email } },
   });
 
-  /**
-   * Confirm Sign Up screen
-   */
+  await waitFor(() => {
+    expect(screen.getByLabelText('Code')).toBeInTheDocument();
+  });
+
   const confirmationCode = '123456';
-
   await user.type(screen.getByLabelText('Code'), confirmationCode);
-
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.confirmSignUp).toHaveBeenCalledWith({
@@ -74,12 +97,18 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   });
 });
 
-test('should render logo', () => {
+test('should render logo', async () => {
   const logo = <p>logo</p>;
 
-  render(<Auth logo={logo} />);
+  render(
+    <AuthProvider>
+      <Auth logo={logo} />
+    </AuthProvider>
+  );
 
-  expect(screen.getByText('logo')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('logo')).toBeInTheDocument();
+  });
 });
 
 test('should render confirmation code if email not confirmed', async () => {
@@ -91,23 +120,29 @@ test('should render confirmation code if email not confirmed', async () => {
     },
   });
 
-  render(<Auth />);
+  render(
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
 
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
-
   await user.click(screen.getByLabelText('submit-button'));
 
-  expect(amplifyAuth.resendSignUpCode).toHaveBeenCalledWith({
-    username: email,
+  await waitFor(() => {
+    expect(amplifyAuth.resendSignUpCode).toHaveBeenCalledWith({
+      username: email,
+    });
+    expect(screen.getByLabelText('Code')).toBeInTheDocument();
   });
 
-  expect(screen.getByLabelText('Code')).toBeInTheDocument();
-
   const confirmationCode = '111114';
-
   await user.type(screen.getByLabelText('Code'), confirmationCode);
-
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.confirmSignUp).toHaveBeenCalledWith({
@@ -115,9 +150,9 @@ test('should render confirmation code if email not confirmed', async () => {
     username: email,
   });
 
-  expect(screen.queryByLabelText('Code')).not.toBeInTheDocument();
-
-  const signInElements = screen.getAllByText('Sign in');
-
-  expect(signInElements).toHaveLength(2);
+  await waitFor(() => {
+    expect(screen.queryByLabelText('Code')).not.toBeInTheDocument();
+    const signInElements = screen.getAllByText('Sign in');
+    expect(signInElements).toHaveLength(2);
+  });
 });

@@ -28,32 +28,6 @@ import type {
   OnSignUp,
 } from './types';
 
-type AuthScreen =
-  | {
-      value: 'signIn';
-      context: { email?: string };
-    }
-  | {
-      value: 'signUp';
-      context: Record<string, never>;
-    }
-  | {
-      value: 'signUpConfirm';
-      context: { email: string };
-    }
-  | {
-      value: 'signUpResendConfirmation';
-      context: { email: string };
-    }
-  | {
-      value: 'forgotPassword';
-      context: Record<string, never>;
-    }
-  | {
-      value: 'forgotPasswordResetPassword';
-      context: { email: string };
-    };
-
 type AuthLogicProps = {
   signUpTerms?: AuthSignUpProps['signUpTerms'];
 };
@@ -61,12 +35,7 @@ type AuthLogicProps = {
 const AuthLogic = (props: AuthLogicProps) => {
   const { intl } = useI18n();
 
-  const { isAuthenticated } = useAuth();
-
-  const [screen, setScreen] = React.useState<AuthScreen>({
-    value: 'signIn',
-    context: {},
-  });
+  const { isAuthenticated, screen, setScreen } = useAuth();
 
   const { setLoading, addNotification, clearNotifications } =
     useNotifications();
@@ -117,7 +86,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [addNotification, intl, setLoading]
+    [addNotification, intl, setLoading, setScreen]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -143,7 +112,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [setLoading, addNotification]
+    [setLoading, setScreen, addNotification]
   );
 
   const onConfirmSignUp = React.useCallback<OnConfirmSignUp>(
@@ -161,12 +130,12 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [setLoading, addNotification]
+    [setLoading, setScreen, addNotification]
   );
 
   const onReturnToSignIn = React.useCallback(() => {
     setScreen({ value: 'signIn', context: {} });
-  }, []);
+  }, [setScreen]);
 
   const onForgotPassword = React.useCallback<OnForgotPassword>(
     async ({ email }) => {
@@ -183,7 +152,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         setLoading(false);
       }
     },
-    [setLoading, addNotification]
+    [setLoading, setScreen, addNotification]
   );
 
   const onForgotPasswordResetPassword =
@@ -206,7 +175,7 @@ const AuthLogic = (props: AuthLogicProps) => {
           setLoading(false);
         }
       },
-      [setLoading, addNotification]
+      [setLoading, setScreen, addNotification]
     );
 
   if (isAuthenticated) {

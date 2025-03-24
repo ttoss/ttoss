@@ -14,7 +14,7 @@
     },
     "i18n": {
       "dependsOn": ["@ttoss/i18n-cli#build-config"],
-      "outputs": ["i18n/lang/**"]
+      "outputs": ["i18n/lang/**", "i18n/compiled/**"]
     },
     "build": {
       "dependsOn": ["^build", "i18n"],
