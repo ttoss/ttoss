@@ -27,7 +27,7 @@
   "5E12mO": {
     "module": "@ttoss/react-auth",
     "defaultMessage": "Email",
-    "description": "Email labell."
+    "description": "Email label."
   },
   "5oOshZ": {
     "module": "@ttoss/react-auth",
