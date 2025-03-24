@@ -20,30 +20,12 @@ type Tokens = {
 } | null;
 
 type AuthScreen =
-  | {
-      value: 'signIn';
-      context: { email?: string };
-    }
-  | {
-      value: 'signUp';
-      context: Record<string, never>;
-    }
-  | {
-      value: 'signUpConfirm';
-      context: { email: string };
-    }
-  | {
-      value: 'signUpResendConfirmation';
-      context: { email: string };
-    }
-  | {
-      value: 'forgotPassword';
-      context: Record<string, never>;
-    }
-  | {
-      value: 'forgotPasswordResetPassword';
-      context: { email: string };
-    };
+  | { value: 'signIn'; context: { email?: string } }
+  | { value: 'signUp'; context: Record<string, never> }
+  | { value: 'signUpConfirm'; context: { email: string } }
+  | { value: 'signUpResendConfirmation'; context: { email: string } }
+  | { value: 'forgotPassword'; context: Record<string, never> }
+  | { value: 'forgotPasswordResetPassword'; context: { email: string } };
 
 const signOut = () => {
   return awsSignOut();
@@ -108,9 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isAuthenticated: true,
           });
         })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error);
+        .catch(() => {
           setAuthState({
             user: null,
             tokens: null,
@@ -127,15 +107,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  if (authState.isAuthenticated === undefined) {
-    return null;
-  }
-
   return (
     <AuthContext.Provider
       value={{
         signOut,
-        isAuthenticated: authState.isAuthenticated,
+        isAuthenticated: authState.isAuthenticated ?? false,
         user: authState.user,
         tokens: authState.tokens,
         screen,
