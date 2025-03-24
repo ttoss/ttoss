@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.9](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.8...@docs/storybook@2.12.9) (2025-03-24)
+
+### Bug Fixes
+
+- add screen in auth provider to render with specific step ([#681](https://github.com/ttoss/ttoss/issues/681)) ([a492c79](https://github.com/ttoss/ttoss/commit/a492c79c96da1d3ddfc25897e54bbf884c0a2811))
+
 ## [2.12.8](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.7...@docs/storybook@2.12.8) (2025-03-05)
 
 **Note:** Version bump only for package @docs/storybook
