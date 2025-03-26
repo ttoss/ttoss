@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { Flex } from '@ttoss/ui';
 
 export default {
   title: 'Components/NotificationCard',
@@ -18,7 +19,19 @@ export const Error: StoryObj = {
   args: {
     type: 'error',
     title: 'Error',
-    message: 'This is an error message',
+    message: (
+      <Flex sx={{ gap: '4' }}>
+        This is an error message
+        <Flex
+          sx={{ color: 'blue', cursor: 'pointer' }}
+          onClick={() => {
+            window.open('http://www.google.com', '_blank');
+          }}
+        >
+          Clique aqui
+        </Flex>
+      </Flex>
+    ),
   },
 };
 
