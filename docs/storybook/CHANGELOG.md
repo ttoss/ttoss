@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.10](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.9...@docs/storybook@2.12.10) (2025-03-26)
+
+### Bug Fixes
+
+- add type react node to notificationCard ([#682](https://github.com/ttoss/ttoss/issues/682)) ([fdea6d6](https://github.com/ttoss/ttoss/commit/fdea6d6e99686b03a94bfc0f73ed4859e65a05ed))
+
 ## [2.12.9](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.8...@docs/storybook@2.12.9) (2025-03-24)
 
 ### Bug Fixes
