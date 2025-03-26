@@ -1,12 +1,13 @@
 import { Icon } from '@ttoss/react-icons';
 import { Box, Card, CloseButton, Text } from '@ttoss/ui';
+import * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
 export const NotificationCard = (props: {
   type: NotificationType;
-  title?: string;
-  message: string;
+  title?: string | React.ReactNode;
+  message: string | React.ReactNode;
   onClose?: () => void;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
