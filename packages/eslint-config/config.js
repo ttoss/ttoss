@@ -12,7 +12,7 @@ import jest from 'eslint-plugin-jest';
 import jestDom from 'eslint-plugin-jest-dom';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
-import prettier from 'eslint-plugin-prettier';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
@@ -50,7 +50,6 @@ export default tseslint.config([
       relay: fixupPluginRules(relay),
       'jsx-a11y': jsxA11y,
       'prefer-arrow-functions': preferArrowFunctions,
-      prettier,
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
@@ -150,4 +149,5 @@ export default tseslint.config([
       ],
     },
   },
+  eslintPluginPrettierRecommended,
 ]);
