@@ -12,7 +12,7 @@ import jest from 'eslint-plugin-jest';
 import jestDom from 'eslint-plugin-jest-dom';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
-//import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
@@ -26,7 +26,10 @@ import tseslint from 'typescript-eslint';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const compat = new FlatCompat({  baseDirectory: __dirname,  recommendedConfig: eslint.configs.recommended,  allConfig: eslint.configs.all,
+export const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: eslint.configs.recommended,
+  allConfig: eslint.configs.all,
 });
 
 export default tseslint.config([
@@ -146,5 +149,5 @@ export default tseslint.config([
       ],
     },
   },
-  // eslintPluginPrettierRecommended,
+  eslintPluginPrettierRecommended,
 ]);
