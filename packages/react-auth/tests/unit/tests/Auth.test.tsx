@@ -66,9 +66,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
 
   await user.click(screen.getByText('Sign up'));
 
-  await waitFor(() => {
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-  });
+  expect(screen.getByLabelText('Email')).toBeInTheDocument();
 
   expect(amplifyAuth.signIn).not.toHaveBeenCalled();
 
@@ -83,9 +81,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
     options: { userAttributes: { email } },
   });
 
-  await waitFor(() => {
-    expect(screen.getByLabelText('Code')).toBeInTheDocument();
-  });
+  expect(screen.getByLabelText('Code')).toBeInTheDocument();
 
   const confirmationCode = '123456';
   await user.type(screen.getByLabelText('Code'), confirmationCode);
