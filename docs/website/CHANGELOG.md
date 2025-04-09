@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.55.5 (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
 ## [1.55.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.3...@docs/website@1.55.4) (2025-01-07)
 
 **Note:** Version bump only for package @docs/website

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.6...@ttoss/react-auth@2.6.7) (2025-03-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.5...@ttoss/react-auth@2.6.6) (2025-03-24)
+
+### Bug Fixes
+
+- add screen in auth provider to render with specific step ([#681](https://github.com/ttoss/ttoss/issues/681)) ([a492c79](https://github.com/ttoss/ttoss/commit/a492c79c96da1d3ddfc25897e54bbf884c0a2811))
+
+## [2.6.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.4...@ttoss/react-auth@2.6.5) (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
 ## [2.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.3...@ttoss/react-auth@2.6.4) (2025-03-01)
 
 **Note:** Version bump only for package @ttoss/react-auth

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.15](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.14...@ttoss/postgresdb@0.2.15) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
 ## 0.2.14 (2025-02-23)
 
 **Note:** Version bump only for package @ttoss/postgresdb

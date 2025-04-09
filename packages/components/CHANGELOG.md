@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.11](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.10...@ttoss/components@2.2.11) (2025-03-26)
+
+### Bug Fixes
+
+- add type react node to notificationCard ([#682](https://github.com/ttoss/ttoss/issues/682)) ([fdea6d6](https://github.com/ttoss/ttoss/commit/fdea6d6e99686b03a94bfc0f73ed4859e65a05ed))
+
+## [2.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.9...@ttoss/components@2.2.10) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [2.2.9](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.8...@ttoss/components@2.2.9) (2025-02-26)
 
 ### Bug Fixes

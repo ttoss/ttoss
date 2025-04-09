@@ -21,6 +21,13 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
     if (!isDesktop) {
       setIsSidebarOpen(false);
     }
+    /**
+     * by default the isDesktop started as false ultil it recognizes the screen size
+     * so we need to set the sidebar open if the screen is desktop
+     */
+    if (isDesktop) {
+      setIsSidebarOpen(true);
+    }
   }, [isDesktop]);
 
   const toggleSidebar = () => {

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.10](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.9...@docs/storybook@2.12.10) (2025-03-26)
+
+### Bug Fixes
+
+- add type react node to notificationCard ([#682](https://github.com/ttoss/ttoss/issues/682)) ([fdea6d6](https://github.com/ttoss/ttoss/commit/fdea6d6e99686b03a94bfc0f73ed4859e65a05ed))
+
+## [2.12.9](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.8...@docs/storybook@2.12.9) (2025-03-24)
+
+### Bug Fixes
+
+- add screen in auth provider to render with specific step ([#681](https://github.com/ttoss/ttoss/issues/681)) ([a492c79](https://github.com/ttoss/ttoss/commit/a492c79c96da1d3ddfc25897e54bbf884c0a2811))
+
+## [2.12.8](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.7...@docs/storybook@2.12.8) (2025-03-05)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [2.12.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.6...@docs/storybook@2.12.7) (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
 ## [2.12.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.5...@docs/storybook@2.12.6) (2025-03-01)
 
 **Note:** Version bump only for package @docs/storybook
