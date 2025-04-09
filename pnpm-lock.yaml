@@ -484,8 +484,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
       prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
+        specifier: ^3.5.3
+        version: 3.5.3
       semver:
         specifier: ^7.6.3
         version: 7.6.3
@@ -12755,11 +12755,6 @@ packages:
 
   prettier-package-json@2.8.0:
     resolution: {integrity: sha512-WxtodH/wWavfw3MR7yK/GrS4pASEQ+iSTkdtSxPJWvqzG55ir5nvbLt9rw5AOiEcqqPCRM92WCtR1rk3TG3JSQ==}
-    hasBin: true
-
-  prettier@3.4.2:
-    resolution: {integrity: sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==}
-    engines: {node: '>=14'}
     hasBin: true
 
   prettier@3.5.3:
@@ -29971,8 +29966,6 @@ snapshots:
       parse-author: 2.0.0
       sort-object-keys: 1.1.3
       sort-order: 1.1.2
-
-  prettier@3.4.2: {}
 
   prettier@3.5.3: {}
 
