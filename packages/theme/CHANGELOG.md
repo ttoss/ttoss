@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.5...@ttoss/theme@2.5.6) (2025-04-29)
+
+### Bug Fixes
+
+- add settings icon ([#685](https://github.com/ttoss/ttoss/issues/685)) ([bb5d2aa](https://github.com/ttoss/ttoss/commit/bb5d2aa1f9e7a3e74d576bd6d9e3e7db1f06802a))
+
 ## [2.5.5](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.4...@ttoss/theme@2.5.5) (2025-03-02)
 
 **Note:** Version bump only for package @ttoss/theme
