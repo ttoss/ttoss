@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.9](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.8...@ttoss/ui@5.5.9) (2025-04-29)
+
+### Bug Fixes
+
+- icon button oca ([724e2bc](https://github.com/ttoss/ttoss/commit/724e2bca23a094b7e1d028a20efbae1036e73b58))
+
 ## [5.5.8](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.7...@ttoss/ui@5.5.8) (2025-04-29)
 
 ### Bug Fixes
