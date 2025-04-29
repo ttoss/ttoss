@@ -12,10 +12,15 @@ export const IconButton = (props: IconButtonProps) => {
   const { icon, children, ...restProps } = props;
 
   return (
-    <IconButtonUi type="button" {...restProps}>
+    <IconButtonUi
+      type="button"
+      {...restProps}
+      sx={{
+        borderRadius: 'sm',
+        ...restProps.sx,
+      }}
+    >
       {icon ? <Icon inline icon={icon} /> : children}
     </IconButtonUi>
   );
 };
-
-IconButton.displayName = 'IconButton';
