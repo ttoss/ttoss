@@ -339,31 +339,6 @@ export const BruttalTheme: Theme = {
         color: 'action.text.muted.default',
       },
     },
-    actionButton: {
-      default: {
-        backgroundColor: 'action.background.secondary.default',
-        color: 'action.text.primary.default',
-        border: 'sm',
-        borderColor: 'action.background.primary.default',
-        transition: 'all 0.2s',
-        ':is(:focus-within, :hover)': {
-          backgroundColor: 'action.background.secondary.active',
-          borderColor: 'action.border.secondary.active',
-          color: 'action.text.secondary.active',
-        },
-      },
-      accent: {
-        backgroundColor: 'action.background.accent.default',
-        color: 'action.text.accent.default',
-        border: 'none',
-      },
-      quiet: {
-        backgroundColor: 'action.background.muted.default',
-        color: 'action.text.accent.default',
-        border: 'none',
-        borderColor: 'transparent',
-      },
-    },
   },
 
   forms: {
