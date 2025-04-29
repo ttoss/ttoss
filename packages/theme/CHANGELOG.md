@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.6...@ttoss/theme@2.5.7) (2025-04-29)
+
+### Bug Fixes
+
+- action button status ([#686](https://github.com/ttoss/ttoss/issues/686)) ([d90af52](https://github.com/ttoss/ttoss/commit/d90af52c88f1224d354ef35880e104cef5f202c9))
+
 ## [2.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.5...@ttoss/theme@2.5.6) (2025-04-29)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.12](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.11...@docs/storybook@2.12.12) (2025-04-29)
+
+### Bug Fixes
+
+- action button status ([#686](https://github.com/ttoss/ttoss/issues/686)) ([d90af52](https://github.com/ttoss/ttoss/commit/d90af52c88f1224d354ef35880e104cef5f202c9))
+
 ## [2.12.11](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.10...@docs/storybook@2.12.11) (2025-04-29)
 
 **Note:** Version bump only for package @docs/storybook
