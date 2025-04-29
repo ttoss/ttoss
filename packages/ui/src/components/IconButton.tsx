@@ -1,12 +1,21 @@
-import * as React from 'react';
-import { type IconButtonProps, IconButton as IconButtonUi } from 'theme-ui';
+import { Icon } from '@ttoss/react-icons';
+import {
+  IconButton as IconButtonUi,
+  type IconButtonProps as ThemeUIIconButtonProps,
+} from 'theme-ui';
 
-export type { IconButtonProps };
+export type IconButtonProps = ThemeUIIconButtonProps & {
+  icon?: string;
+};
 
-export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  (props, ref) => {
-    return <IconButtonUi type="button" {...props} ref={ref} />;
-  }
-);
+export const IconButton = (props: IconButtonProps) => {
+  const { icon, children, ...restProps } = props;
+
+  return (
+    <IconButtonUi type="button" {...restProps}>
+      {icon ? <Icon inline icon={icon} /> : children}
+    </IconButtonUi>
+  );
+};
 
 IconButton.displayName = 'IconButton';
