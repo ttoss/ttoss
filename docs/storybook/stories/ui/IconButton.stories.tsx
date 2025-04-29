@@ -35,3 +35,9 @@ export const Accent = Template.bind({});
 Accent.args = {
   variant: 'accent',
 };
+
+export const Disabled = Template.bind({});
+Disabled.args = {
+  variant: 'primary',
+  disabled: true,
+};
