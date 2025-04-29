@@ -29,6 +29,7 @@ import radioButtonIcon from '@iconify/icons-carbon/radio-button';
 import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked';
 import renewIcon from '@iconify/icons-carbon/renew';
 import searchIcon from '@iconify/icons-carbon/search';
+import settingsIcon from '@iconify/icons-carbon/settings';
 import shareIcon from '@iconify/icons-carbon/share';
 import timeIcon from '@iconify/icons-carbon/time';
 import trashCanIcon from '@iconify/icons-carbon/trash-can';
@@ -119,6 +120,7 @@ export const BrutalIcons: Record<
   refresh: renewIcon,
   replicate: replicateIcon,
   search: searchIcon,
+  settings: settingsIcon,
   share: shareIcon,
   'sidebar-close': ouiMenuRight,
   'sidebar-open': ouiMenuLeft,
@@ -134,15 +136,15 @@ export const BrutalIcons: Record<
   'warning-alt': warningAltIcon,
 };
 
-Object.entries(BrutalIcons).forEach(([key, icon]) => {
+for (const [key, icon] of Object.entries(BrutalIcons)) {
   /**
    * "It happens when an ES module imports a CommonJS module with the default property present and the __esModule property set to true."
    * https://github.com/evanw/esbuild/issues/1719#issuecomment-953470495
    */
   if ('default' in icon) {
     addIcon(key, icon.default);
-    return;
+    continue;
   }
 
   addIcon(key, icon);
-});
+}

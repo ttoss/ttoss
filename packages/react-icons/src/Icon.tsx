@@ -1,10 +1,10 @@
-import * as React from 'react';
 import {
   Icon as IconComponent,
   IconifyIcon,
   IconifyIconHTMLElement,
   IconifyIconProps,
 } from '@iconify-icon/react';
+import * as React from 'react';
 
 export type IconType = string | IconifyIcon;
 
