@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.38](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.37...@ttoss/landing-pages@0.12.38) (2025-04-30)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 ## [0.12.37](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.36...@ttoss/landing-pages@0.12.37) (2025-04-29)
 
 **Note:** Version bump only for package @ttoss/landing-pages

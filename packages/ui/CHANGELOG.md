@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.10](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.9...@ttoss/ui@5.5.10) (2025-04-30)
+
+### Bug Fixes
+
+- button cursor ([#687](https://github.com/ttoss/ttoss/issues/687)) ([d5622a1](https://github.com/ttoss/ttoss/commit/d5622a13757d69615f56142cc81ccea99faf0b3c))
+
 ## [5.5.9](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.8...@ttoss/ui@5.5.9) (2025-04-29)
 
 ### Bug Fixes
