@@ -16,7 +16,11 @@ export const IconButton = (props: IconButtonProps) => {
       type="button"
       {...restProps}
       sx={{
+        cursor: 'pointer',
         borderRadius: 'sm',
+        '&:disabled': {
+          cursor: 'not-allowed',
+        },
         ...restProps.sx,
       }}
     >

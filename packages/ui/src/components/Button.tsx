@@ -28,6 +28,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           display: 'inline-flex',
           alignItems: 'center',
           gap: '4',
+          '&:disabled': {
+            cursor: 'not-allowed',
+          },
           ...restProps.sx,
         }}
       >
