@@ -12,7 +12,7 @@ export const getDbDynamically = async ({ dbPath }: { dbPath: string }) => {
   const result = esbuild.buildSync({
     bundle: true,
     entryPoints: [entryPoint],
-    external: ['@ttoss/postgresdb'],
+    external: ['@ttoss/postgresdb', 'fs', 'path', 'dotenv'],
     format: 'esm',
     outfile,
     platform: 'node',
