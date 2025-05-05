@@ -1,6 +1,8 @@
 import * as fs from 'node:fs';
-import { getDbDynamically } from './getDbDynamically';
+
 import sequelizeErd from 'sequelize-erd';
+
+import { getDbDynamically } from './getDbDynamically';
 
 export const erd = async ({ dbPath }: { dbPath: string }) => {
   // eslint-disable-next-line no-console
