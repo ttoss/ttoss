@@ -1,7 +1,8 @@
 import { Command } from 'commander';
+
+import pkg from '../package.json';
 import { erd } from './erd';
 import { sync } from './sync';
-import pkg from '../package.json';
 
 const program = new Command();
 

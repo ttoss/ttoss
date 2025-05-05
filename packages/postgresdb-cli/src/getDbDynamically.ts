@@ -1,7 +1,12 @@
 import 'dotenv/config';
 
-import * as esbuild from 'esbuild';
+import * as builtinModules from 'node:module';
 import path from 'node:path';
+
+import * as esbuild from 'esbuild';
+
+// Get all Node.js built-in modules - using the modern approach
+const nodeBuiltins = builtinModules.builtinModules;
 
 export const getDbDynamically = async ({ dbPath }: { dbPath: string }) => {
   const lastEntryPointName = dbPath.split('/').pop();
@@ -12,7 +17,7 @@ export const getDbDynamically = async ({ dbPath }: { dbPath: string }) => {
   const result = esbuild.buildSync({
     bundle: true,
     entryPoints: [entryPoint],
-    external: ['@ttoss/postgresdb', 'fs', 'path', 'dotenv'],
+    external: ['@ttoss/postgresdb', ...nodeBuiltins],
     format: 'esm',
     outfile,
     platform: 'node',
