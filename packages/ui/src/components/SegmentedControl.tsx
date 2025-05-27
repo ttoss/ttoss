@@ -18,6 +18,12 @@ export interface SegmentedControlProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+const sizes = {
+  sm: { padding: 1, fontSize: 12, height: '28px' },
+  md: { padding: 4, fontSize: 14, height: '36px' },
+  lg: { padding: 8, fontSize: 18, height: '44px' },
+};
+
 export const SegmentedControl = ({
   options,
   value,
@@ -28,42 +34,22 @@ export const SegmentedControl = ({
   size = 'md',
   ...rest
 }: SegmentedControlProps) => {
-  // Definir os tamanhos com base no parâmetro size
-  const sizes = {
-    sm: {
-      padding: 1,
-      fontSize: 12,
-      height: '28px',
-    },
-    md: {
-      padding: 4,
-      fontSize: 14,
-      height: '36px',
-    },
-    lg: {
-      padding: 8,
-      fontSize: 18,
-      height: '44px',
-    },
-  };
-
-  const currentSize = sizes[size];
+  const { padding, fontSize, height } = sizes[size];
 
   return (
     <Flex
+      className={className}
       sx={{
         width: '100%',
         borderRadius: 'full',
         border: '1px solid',
-        borderColor: 'display.border.muted.default',
+        borderColor: 'action.background.muted',
         overflow: 'hidden',
 
-        // Estilização do componente rc-segmented
         '.rc-segmented': {
           width: '100%',
-          borderRadius: 'full',
-          padding: '0',
-          backgroundColor: 'transparent',
+          padding: 0,
+          backgroundColor: 'action.background.muted',
         },
         '.rc-segmented-group': {
           borderRadius: 'full',
@@ -72,19 +58,21 @@ export const SegmentedControl = ({
         },
         '.rc-segmented-item': {
           borderRadius: 'full',
-          margin: '0',
-          transition: 'background-color 0.2s ease, color 0.2s ease', // Transição específica para cores
-          padding: `${currentSize.padding}px 16px`,
-          fontSize: currentSize.fontSize,
-          lineHeight: currentSize.height,
+          margin: 0,
+          transition: 'background-color 0.2s ease, color 0.2s ease',
+          padding: `${padding}px 16px`,
+          fontSize,
+          lineHeight: height,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'display.text.secondary.default',
+          color: 'action.text.muted',
           '&:focus': {
-            boxShadow: `none`,
             boxShadowColor: 'action.background.accent.default',
-            outlineColor: 'transparent',
+            outlineColor: 'action.background.muted.default',
+          },
+          '&:hover:not(.rc-segmented-item-selected)': {
+            backgroundColor: 'action.background.muted',
           },
         },
         '.rc-segmented-item-selected': {
@@ -92,27 +80,18 @@ export const SegmentedControl = ({
           color: 'action.text.accent.default',
           fontWeight: 'bold',
         },
-        '.rc-segmented-item:hover:not(.rc-segmented-item-selected)': {
-          backgroundColor: 'display.background.muted.default',
-        },
         '.rc-segmented-thumb': {
           backgroundColor: 'action.background.accent.default',
           borderRadius: 'full',
           zIndex: 1,
-          margin: '0', // Sem margem
-          boxSizing: 'border-box',
-          transition: 'transform 0.2s ease, width 0.2s ease', // Controla a animação do thumb
-          willChange: 'transform', // Otimiza a performance da animação
-          transform: 'translateZ(0)', // Força aceleração de hardware
+          margin: 0,
+          transition: 'transform 0.2s ease, width 0.2s ease',
         },
         '.rc-segmented-item-disabled': {
           opacity: 0.5,
           cursor: 'not-allowed',
-          color: 'input.text.muted.disabled',
-          backgroundColor: 'input.background.muted.disabled',
         },
       }}
-      className={className}
     >
       <Segmented
         options={options}
