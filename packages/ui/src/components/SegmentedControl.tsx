@@ -1,6 +1,6 @@
 import Segmented from 'rc-segmented';
 import * as React from 'react';
-import { Flex } from 'theme-ui';
+import { Flex, FlexProps } from 'theme-ui';
 
 export interface SegmentedControlProps {
   options: (
@@ -13,6 +13,7 @@ export interface SegmentedControlProps {
   onChange?: (value: string | number) => void;
   disabled?: boolean;
   className?: string;
+  sx?: FlexProps['sx'];
 }
 
 export const SegmentedControl = ({
@@ -22,11 +23,9 @@ export const SegmentedControl = ({
   onChange,
   disabled,
   className,
-  // size = 'md',
+  sx,
   ...rest
 }: SegmentedControlProps) => {
-  // const { padding, fontSize } = sizes[size];
-
   return (
     <Flex
       className={className}
@@ -56,9 +55,9 @@ export const SegmentedControl = ({
         '.rc-segmented-item': {
           borderRadius: '2xl',
           margin: 0,
-          paddingX: '4',
+          paddingX: '5',
           width: '100%',
-          paddingY: '2',
+          paddingY: '3',
           fontSize: 'lg',
           display: 'flex',
           alignItems: 'center',
@@ -104,6 +103,7 @@ export const SegmentedControl = ({
           cursor: 'not-allowed',
           backgroundColor: 'action.background.muted.disabled',
         },
+        ...sx,
       }}
     >
       <Segmented
