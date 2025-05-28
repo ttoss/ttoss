@@ -1,5 +1,3 @@
-import 'rc-segmented/assets/index.css';
-
 import Segmented from 'rc-segmented';
 import * as React from 'react';
 import { Flex } from 'theme-ui';
@@ -19,7 +17,7 @@ export interface SegmentedControlProps {
 }
 
 const sizes = {
-  sm: { padding: 1, fontSize: 12, height: '28px' },
+  sm: { padding: 2, fontSize: 12, height: '28px' },
   md: { padding: 4, fontSize: 14, height: '36px' },
   lg: { padding: 8, fontSize: 18, height: '44px' },
 };
@@ -34,39 +32,50 @@ export const SegmentedControl = ({
   size = 'md',
   ...rest
 }: SegmentedControlProps) => {
-  const { padding, fontSize, height } = sizes[size];
+  const { padding, fontSize } = sizes[size];
 
   return (
     <Flex
       className={className}
       sx={{
         width: '100%',
-        borderRadius: 'full',
+        borderRadius: 'xl',
         border: '1px solid',
         borderColor: 'action.background.muted',
         overflow: 'hidden',
+        position: 'relative',
 
         '.rc-segmented': {
           width: '100%',
           padding: 0,
           backgroundColor: 'action.background.muted',
+          position: 'relative',
+          display: 'flex',
+          flexGrow: 1,
         },
         '.rc-segmented-group': {
-          borderRadius: 'full',
+          borderRadius: 'xl',
           display: 'flex',
           width: '100%',
+          position: 'relative',
         },
         '.rc-segmented-item': {
-          borderRadius: 'full',
+          borderRadius: 'xl',
           margin: 0,
-          transition: 'background-color 0.2s ease, color 0.2s ease',
           padding: `${padding}px 16px`,
           fontSize,
-          lineHeight: height,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'action.text.muted',
+          flex: 1,
+          minWidth: 0,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          zIndex: 2,
+          transition: 'background-color 0.2s ease, color 0.2s ease',
+
           '&:focus': {
             boxShadowColor: 'action.background.accent.default',
             outlineColor: 'action.background.muted.default',
@@ -74,22 +83,30 @@ export const SegmentedControl = ({
           '&:hover:not(.rc-segmented-item-selected)': {
             backgroundColor: 'action.background.muted',
           },
+          'input[type="radio"]': {
+            display: 'none',
+          },
         },
         '.rc-segmented-item-selected': {
           backgroundColor: 'action.background.accent.default',
-          color: 'action.text.accent.default',
+          color: 'action.text.accent.active',
           fontWeight: 'bold',
         },
         '.rc-segmented-thumb': {
           backgroundColor: 'action.background.accent.default',
-          borderRadius: 'full',
-          zIndex: 1,
+          borderRadius: 'xl',
+          zIndex: -1,
           margin: 0,
-          transition: 'transform 0.2s ease, width 0.2s ease',
+          position: 'absolute',
+          height: '100%',
+          width: `calc(100% / ${options.length})`,
+          left: 0,
+          transition: 'transform 0.2s ease, left 0.2s ease',
         },
         '.rc-segmented-item-disabled': {
           opacity: 0.5,
           cursor: 'not-allowed',
+          backgroundColor: 'action.background.muted.disabled',
         },
       }}
     >
