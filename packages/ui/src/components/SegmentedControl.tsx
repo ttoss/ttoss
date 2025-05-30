@@ -70,7 +70,7 @@ export const SegmentedControl = ({
             normalizedOptions[index + 1].value !== currentValue;
 
           return (
-            <React.Fragment key={option.value}>
+            <React.Fragment key={`${index}-${option.value}`}>
               <Box
                 as="label"
                 className={`rc-segmented-item ${isSelected ? 'rc-segmented-item-selected' : ''} ${option.disabled ? 'rc-segmented-item-disabled' : ''}`}
@@ -85,7 +85,11 @@ export const SegmentedControl = ({
                   value={option.value}
                   checked={isSelected}
                   disabled={disabled || option.disabled}
-                  onChange={() => {}}
+                  onChange={(e) => {
+                    if (!disabled && !option.disabled && e.target.checked) {
+                      handleChange(option.value);
+                    }
+                  }}
                 />
                 <div className="rc-segmented-item-label">{option.label}</div>
               </Box>
@@ -144,7 +148,6 @@ export const SegmentedControl = ({
           borderRadius: '4xl',
           margin: 0,
           paddingX: '5',
-          // width: '100%',
           paddingY: '3',
           fontSize: 'lg',
           display: 'flex',
@@ -182,7 +185,7 @@ export const SegmentedControl = ({
           margin: 0,
           position: 'absolute',
           height: '100%',
-          width: `full`,
+          width: '100%',
           left: 0,
           transition: 'transform 0.2s ease, left 0.2s ease',
         },
@@ -203,6 +206,7 @@ export const SegmentedControl = ({
           defaultValue={defaultValue}
           onChange={onChange}
           disabled={disabled}
+          className="rc-segmented"
           {...rest}
         />
       )}
