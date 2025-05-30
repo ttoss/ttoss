@@ -28,7 +28,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    options: ['Option 1', 'Option 2', 'Option 3'],
+    options: [
+      { label: 'Option 1', value: 'option1' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'option1',
     onChange: (value) => {
       return value;
     },
@@ -37,14 +42,24 @@ export const Default: Story = {
 
 export const Disabled: Story = {
   args: {
-    options: ['Option 1', 'Option 2', 'Option 3'],
+    options: [
+      { label: 'Option 1', value: 'option1' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'option1',
     disabled: true,
   },
 };
 
 export const WithDividers: Story = {
   args: {
-    options: ['Opção 1', 'Opção 2', 'Opção 3'],
+    options: [
+      { label: 'Option 1', value: 'option1' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'option1',
     showDividers: true,
   },
 };
