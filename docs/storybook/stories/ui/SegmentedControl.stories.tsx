@@ -16,10 +16,6 @@ const meta = {
     options: {
       description: 'Lista de opções (strings, números ou objetos)',
     },
-    showDividers: {
-      control: 'boolean',
-      description: 'Mostra divisores verticais entre as opções',
-    },
   },
 } satisfies Meta<typeof SegmentedControl>;
 
@@ -47,19 +43,17 @@ export const Disabled: Story = {
       { label: 'Option 2', value: 'option2' },
       { label: 'Option 3', value: 'option3' },
     ],
-    defaultValue: 'option1',
     disabled: true,
   },
 };
 
-export const WithDividers: Story = {
+export const disabledOption: Story = {
   args: {
     options: [
       { label: 'Option 1', value: 'option1' },
       { label: 'Option 2', value: 'option2' },
-      { label: 'Option 3', value: 'option3' },
+      { label: 'Option 3', value: 'option3', disabled: true },
     ],
     defaultValue: 'option1',
-    showDividers: true,
   },
 };

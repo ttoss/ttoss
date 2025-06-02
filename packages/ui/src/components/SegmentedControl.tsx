@@ -1,4 +1,3 @@
-import Segmented from 'rc-segmented';
 import * as React from 'react';
 import { Box, Flex, FlexProps } from 'theme-ui';
 
@@ -14,7 +13,6 @@ export interface SegmentedControlProps {
   disabled?: boolean;
   className?: string;
   sx?: FlexProps['sx'];
-  showDividers?: boolean;
 }
 
 export const SegmentedControl = ({
@@ -25,7 +23,6 @@ export const SegmentedControl = ({
   disabled,
   className,
   sx,
-  showDividers = false,
   ...rest
 }: SegmentedControlProps) => {
   const [internalValue, setInternalValue] = React.useState<
@@ -54,70 +51,6 @@ export const SegmentedControl = ({
 
   const currentValue = propValue !== undefined ? propValue : internalValue;
 
-  // Custom rendering for options with dividers
-  const renderCustomContent = () => {
-    return (
-      <Flex className="rc-segmented-group custom-segmented-group">
-        {normalizedOptions.map((option, index) => {
-          const isSelected = option.value === currentValue;
-          const isLastItem = index === normalizedOptions.length - 1;
-
-          // Determine if we should show divider
-          const showDivider =
-            showDividers &&
-            !isLastItem &&
-            option.value !== currentValue &&
-            normalizedOptions[index + 1].value !== currentValue;
-
-          return (
-            <React.Fragment key={`${index}-${option.value}`}>
-              <Box
-                as="label"
-                className={`rc-segmented-item ${isSelected ? 'rc-segmented-item-selected' : ''} ${option.disabled ? 'rc-segmented-item-disabled' : ''}`}
-                onClick={() => {
-                  if (!disabled && !option.disabled) {
-                    handleChange(option.value);
-                  }
-                }}
-              >
-                <input
-                  type="radio"
-                  value={option.value}
-                  checked={isSelected}
-                  disabled={disabled || option.disabled}
-                  onChange={(e) => {
-                    if (!disabled && !option.disabled && e.target.checked) {
-                      handleChange(option.value);
-                    }
-                  }}
-                />
-                <div className="rc-segmented-item-label">{option.label}</div>
-              </Box>
-
-              {showDivider && (
-                <Box
-                  className="segmented-divider"
-                  sx={{
-                    height: '60%',
-                    width: '1px',
-                    backgroundColor: 'action.text.accent.default',
-                    opacity: 0.4,
-                    alignSelf: 'center',
-                    zIndex: 3,
-                  }}
-                />
-              )}
-            </React.Fragment>
-          );
-        })}
-
-        {currentValue !== undefined && (
-          <div className="rc-segmented-thumb"></div>
-        )}
-      </Flex>
-    );
-  };
-
   return (
     <Flex
       className={className}
@@ -139,7 +72,7 @@ export const SegmentedControl = ({
         },
         '.rc-segmented-group, .custom-segmented-group': {
           borderRadius: '4xl',
-          gap: showDividers ? '0' : '3',
+          gap: '0',
           display: 'flex',
           width: '100%',
           position: 'relative',
@@ -170,6 +103,7 @@ export const SegmentedControl = ({
           '&:hover:not(.rc-segmented-item-selected)': {
             backgroundColor: 'action.background.muted.default',
           },
+
           'input[type="radio"]': {
             display: 'none',
           },
@@ -196,20 +130,68 @@ export const SegmentedControl = ({
         },
         ...sx,
       }}
+      {...rest}
     >
-      {showDividers ? (
-        <div className="rc-segmented">{renderCustomContent()}</div>
-      ) : (
-        <Segmented
-          options={options}
-          value={propValue}
-          defaultValue={defaultValue}
-          onChange={onChange}
-          disabled={disabled}
-          className="rc-segmented"
-          {...rest}
-        />
-      )}
+      <div className="rc-segmented">
+        <Flex className="rc-segmented-group custom-segmented-group">
+          {normalizedOptions.map((option, index) => {
+            const isSelected = option.value === currentValue;
+            const isLastItem = index === normalizedOptions.length - 1;
+            const isItemDisabled = disabled || option.disabled;
+
+            // Determine if we should show divider
+            const showDivider =
+              !isLastItem &&
+              option.value !== currentValue &&
+              normalizedOptions[index + 1].value !== currentValue;
+
+            return (
+              <React.Fragment key={`${index}-${option.value}`}>
+                <Box
+                  as="label"
+                  className={`rc-segmented-item ${isSelected ? 'rc-segmented-item-selected' : ''} ${isItemDisabled ? 'rc-segmented-item-disabled' : ''}`}
+                  onClick={() => {
+                    if (!disabled && !option.disabled) {
+                      handleChange(option.value);
+                    }
+                  }}
+                >
+                  <input
+                    type="radio"
+                    value={option.value}
+                    checked={isSelected}
+                    disabled={isItemDisabled}
+                    onChange={(e) => {
+                      if (!disabled && !option.disabled && e.target.checked) {
+                        handleChange(option.value);
+                      }
+                    }}
+                  />
+                  <div className="rc-segmented-item-label">{option.label}</div>
+                </Box>
+
+                {showDivider && (
+                  <Box
+                    className="segmented-divider"
+                    sx={{
+                      height: '60%',
+                      width: '1px',
+                      backgroundColor: 'action.text.accent.default',
+                      opacity: 0.4,
+                      alignSelf: 'center',
+                      zIndex: 3,
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {currentValue !== undefined && (
+            <div className="rc-segmented-thumb"></div>
+          )}
+        </Flex>
+      </div>
     </Flex>
   );
 };
