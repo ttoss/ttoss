@@ -4,10 +4,26 @@ import * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
+const getTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 1) return 'agora mesmo';
+  if (minutes < 60) return `há ${minutes} min`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `há ${hours}h`;
+
+  const days = Math.floor(hours / 24);
+  return `há ${days}d`;
+};
+
 export const NotificationCard = (props: {
   type: NotificationType;
   title?: string | React.ReactNode;
   message: string | React.ReactNode;
+  createdAt?: Date;
   onClose?: () => void;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,14 +83,32 @@ export const NotificationCard = (props: {
         sx={{
           ...sxMap[props.type].card,
           display: 'flex',
-          gap: '4',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: 'column',
+          gap: '2',
         }}
       >
-        {props.message}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            width: '100%',
+            gap: '4',
+          }}
+        >
+          <Box sx={{ flex: 1 }}>{props.message}</Box>
+
+          <Box sx={{ whiteSpace: 'nowrap' }}>
+            {props.createdAt && (
+              <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
+                {getTimeAgo(props.createdAt)}
+              </Text>
+            )}
+          </Box>
+        </Box>
+
         {!props.title && props.onClose && (
-          <Box sx={{ alignSelf: 'flex-start' }}>
+          <Box sx={{ alignSelf: 'flex-end' }}>
             <CloseButton onClick={props.onClose} />
           </Box>
         )}

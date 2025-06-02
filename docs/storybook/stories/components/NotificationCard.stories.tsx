@@ -75,3 +75,12 @@ export const CloseButtonOnBody: StoryObj = {
     onClose: () => {},
   },
 };
+
+export const WithCreatedAt: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Nova notificação',
+    message: 'Você tem uma nova notificação pendente.',
+    createdAt: new Date(Date.now() - 5 * 60 * 1000),
+  },
+};
