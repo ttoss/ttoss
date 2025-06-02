@@ -97,8 +97,15 @@ export const SegmentedControl = ({
           cursor: 'pointer',
 
           '&:focus': {
-            boxShadowColor: 'action.background.accent.default',
-            outlineColor: 'action.background.muted.default',
+            outline: '2px solid',
+            outlineColor: 'action.background.accent.default',
+            outlineOffset: '2px',
+            boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
+          },
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: 'action.background.accent.default',
+            outlineOffset: '2px',
           },
           '&:hover:not(.rc-segmented-item-selected)': {
             backgroundColor: 'action.background.muted.default',
@@ -188,7 +195,17 @@ export const SegmentedControl = ({
           })}
 
           {currentValue !== undefined && (
-            <div className="rc-segmented-thumb"></div>
+            <div
+              className="rc-segmented-thumb"
+              style={{
+                width: `${100 / normalizedOptions.length}%`,
+                transform: `translateX(${
+                  normalizedOptions.findIndex((option) => {
+                    return option.value === currentValue;
+                  }) * 100
+                }%)`,
+              }}
+            ></div>
           )}
         </Flex>
       </div>
