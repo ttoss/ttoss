@@ -97,16 +97,14 @@ export const NotificationCard = (props: {
           }}
         >
           <Box sx={{ flex: 1 }}>{props.message}</Box>
-
-          <Box sx={{ whiteSpace: 'nowrap' }}>
-            {props.createdAt && (
-              <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
-                {getTimeAgo(props.createdAt)}
-              </Text>
-            )}
-          </Box>
         </Box>
-
+        <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
+          {props.createdAt && (
+            <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
+              {getTimeAgo(props.createdAt)}
+            </Text>
+          )}
+        </Box>
         {!props.title && props.onClose && (
           <Box sx={{ alignSelf: 'flex-end' }}>
             <CloseButton onClick={props.onClose} />

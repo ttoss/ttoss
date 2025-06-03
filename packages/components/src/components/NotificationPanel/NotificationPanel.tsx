@@ -32,14 +32,14 @@ const renderMessage = (message: string, actions?: Notification['actions']) => {
   if (!actions || actions.length === 0) return message;
 
   return (
-    <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+    <Flex sx={{ flexDirection: 'column', gap: 2 }}>
       <Text>{message}</Text>
       {actions.map((action, index) => {
         if (action.action === 'open_url') {
           return (
             <Text
               key={index}
-              sx={{ color: 'blue', cursor: 'pointer' }}
+              sx={{ color: 'action.text.accent.default', cursor: 'pointer' }}
               onClick={() => {
                 return window.open(action.url, '_blank');
               }}
@@ -121,11 +121,11 @@ export const NotificationPanel = ({
           variant="ghost"
           sx={{
             position: 'relative',
-            borderRadius: '50%',
-            padding: '10px',
+            borderRadius: 'full',
+            padding: 2,
             transition: 'background-color 0.3s ease',
             '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.03)',
+              backgroundColor: 'action.background.muted.default',
             },
           }}
           onClick={togglePanel}
@@ -139,11 +139,11 @@ export const NotificationPanel = ({
                 right: '-4px',
                 minWidth: '16px',
                 height: '16px',
-                paddingX: '4px',
-                borderRadius: '9999px',
-                backgroundColor: 'red',
-                color: 'white',
-                fontSize: '10px',
+                paddingX: 1,
+                borderRadius: 'full',
+                backgroundColor: 'action.background.negative.default',
+                color: 'feedback.text.primary.default',
+                fontSize: 'xs',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
@@ -170,7 +170,7 @@ export const NotificationPanel = ({
               padding: 0,
               boxShadow: 'xl',
               borderRadius: '2xl',
-              backgroundColor: 'background.surface',
+              backgroundColor: 'display.background.secondary.default',
             }}
           >
             <Box ref={containerRef}>
@@ -178,9 +178,9 @@ export const NotificationPanel = ({
                 {notifications.length === 0 && (
                   <Text
                     sx={{
-                      color: 'text.secondary',
+                      color: 'display.text.muted.default',
                       textAlign: 'center',
-                      p: '4',
+                      p: 4,
                     }}
                   >
                     Nenhuma notificação
