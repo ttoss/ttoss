@@ -8,8 +8,6 @@ const Component = (args: CloseButtonProps) => {
   return (
     <Flex sx={{ flexDirection: 'column', gap: '4' }}>
       <CloseButton {...args} />
-      <CloseButton {...args} onlyText />
-      <CloseButton {...args} label={undefined} />
     </Flex>
   );
 };
@@ -22,7 +20,6 @@ export default {
 export const Default: Story = {
   args: {
     onClick: action('onChange'),
-    label: 'Close',
   },
 };
 
