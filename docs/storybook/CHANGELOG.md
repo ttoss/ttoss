@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.14...@docs/storybook@2.13.0) (2025-06-02)
+
+### Features
+
+- created SegmentedControl ([#689](https://github.com/ttoss/ttoss/issues/689)) ([4c37608](https://github.com/ttoss/ttoss/commit/4c37608b6d83c1278353c5f2db464ee9a013472b))
+
 ## [2.12.14](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.12.13...@docs/storybook@2.12.14) (2025-04-30)
 
 **Note:** Version bump only for package @docs/storybook
