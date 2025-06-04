@@ -67,6 +67,7 @@ export const OcaTheme: Theme = createTheme(
           primary: {
             default: '#111827',
             active: '#111827',
+            disabled: '#F3F4F6',
           },
           secondary: {
             default: '#465A69',
