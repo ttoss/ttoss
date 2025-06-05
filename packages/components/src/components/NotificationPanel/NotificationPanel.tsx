@@ -25,6 +25,7 @@ type Props = {
   onLoadMore?: () => void;
   onOpenChange?: (isOpen: boolean) => void;
   unreadCount?: number;
+  onClose?: () => void;
 };
 
 const renderMessage = (message: string, actions?: Notification['actions']) => {
@@ -60,6 +61,7 @@ export const NotificationPanel = ({
   onLoadMore,
   onOpenChange,
   unreadCount,
+  onClose,
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [openToLeft, setOpenToLeft] = React.useState(false);
@@ -196,7 +198,7 @@ export const NotificationPanel = ({
                         notification.message,
                         notification.actions
                       )}
-                      onClose={() => {}}
+                      onClose={onClose}
                       metaInfo={notification.createdAt}
                     />
                   );

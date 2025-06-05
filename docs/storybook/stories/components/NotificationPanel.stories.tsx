@@ -76,6 +76,7 @@ export const Default: StoryObj = {
   args: {
     notifications: defaultNotifications,
     defaultOpen: true,
+    onClose: () => {},
   },
 };
 
@@ -132,6 +133,7 @@ export const WithInfiniteScroll: StoryObj = {
         defaultOpen={isOpen}
         onOpenChange={setIsOpen}
         unreadCount={scrollNotifications.length}
+        onClose={() => {}}
       />
     );
   },

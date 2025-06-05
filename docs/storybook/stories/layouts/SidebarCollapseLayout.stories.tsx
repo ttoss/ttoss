@@ -175,7 +175,10 @@ export const WithNotificationPanel: Story = {
           <Flex sx={{ alignItems: 'center', width: '100%' }}>
             Header starts here
             <Box sx={{ ml: 'auto' }}>
-              <NotificationPanel notifications={mockNotifications} />
+              <NotificationPanel
+                notifications={mockNotifications}
+                onClose={() => {}}
+              />
             </Box>
           </Flex>
         </Layout.Header>
