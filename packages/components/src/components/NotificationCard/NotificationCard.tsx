@@ -4,26 +4,11 @@ import * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
-const getTimeAgo = (date: Date): string => {
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 1) return 'agora mesmo';
-  if (minutes < 60) return `há ${minutes} min`;
-
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `há ${hours}h`;
-
-  const days = Math.floor(hours / 24);
-  return `há ${days}d`;
-};
-
 export const NotificationCard = (props: {
   type: NotificationType;
   title?: string | React.ReactNode;
   message: string | React.ReactNode;
-  createdAt?: Date;
+  metaInfo?: string;
   onClose?: () => void;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,9 +84,9 @@ export const NotificationCard = (props: {
           <Box sx={{ flex: 1 }}>{props.message}</Box>
         </Box>
         <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
-          {props.createdAt && (
+          {props.metaInfo && (
             <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
-              {getTimeAgo(props.createdAt)}
+              {props.metaInfo}
             </Text>
           )}
         </Box>

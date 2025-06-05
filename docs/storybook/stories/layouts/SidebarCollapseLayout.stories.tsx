@@ -151,8 +151,7 @@ const mockNotifications: Notification[] = [
         label: 'Ver campanha',
       },
     ],
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+    createdAt: 'há 3h',
   },
   {
     id: '2',
@@ -160,8 +159,7 @@ const mockNotifications: Notification[] = [
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
     presentation: 'LOCKED',
-    expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    createdAt: 'há 25 min',
   },
 ];
 

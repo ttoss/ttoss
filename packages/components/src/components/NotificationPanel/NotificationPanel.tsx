@@ -1,5 +1,5 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, Flex, IconButton, Text } from '@ttoss/ui';
+import { Box, Card, Flex, IconButton, Link, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import { NotificationCard } from '../NotificationCard/NotificationCard';
@@ -15,8 +15,7 @@ export type Notification = {
     url?: string;
     label?: string;
   }[];
-  expiresAt: Date;
-  createdAt: Date;
+  createdAt: string;
 };
 
 type Props = {
@@ -37,15 +36,15 @@ const renderMessage = (message: string, actions?: Notification['actions']) => {
       {actions.map((action, index) => {
         if (action.action === 'open_url') {
           return (
-            <Text
+            <Link
               key={index}
+              href={action.url}
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{ color: 'action.text.accent.default', cursor: 'pointer' }}
-              onClick={() => {
-                return window.open(action.url, '_blank');
-              }}
             >
               {action.label || 'Acessar'}
-            </Text>
+            </Link>
           );
         }
         return null;
@@ -198,7 +197,7 @@ export const NotificationPanel = ({
                         notification.actions
                       )}
                       onClose={() => {}}
-                      createdAt={notification.createdAt}
+                      metaInfo={notification.createdAt}
                     />
                   );
                 })}

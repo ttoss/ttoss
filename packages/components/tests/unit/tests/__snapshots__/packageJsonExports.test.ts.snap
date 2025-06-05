@@ -12,6 +12,7 @@ exports[`package.json exports should export all components 1`] = `
   "./Menu": "./src/components/Menu/index.ts",
   "./Modal": "./src/components/Modal/index.ts",
   "./NotificationCard": "./src/components/NotificationCard/index.ts",
+  "./NotificationPanel": "./src/components/NotificationPanel/index.ts",
   "./Search": "./src/components/Search/index.ts",
   "./Table": "./src/components/Table/index.ts",
   "./Tabs": "./src/components/Tabs/index.ts",

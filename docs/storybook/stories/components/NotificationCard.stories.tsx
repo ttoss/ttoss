@@ -76,11 +76,11 @@ export const CloseButtonOnBody: StoryObj = {
   },
 };
 
-export const WithCreatedAt: StoryObj = {
+export const WithMetaInfo: StoryObj = {
   args: {
     type: 'info',
     title: 'Nova notificação',
     message: 'Você tem uma nova notificação pendente.',
-    createdAt: new Date(Date.now() - 5 * 60 * 1000),
+    metaInfo: 'há 5 min',
   },
 };

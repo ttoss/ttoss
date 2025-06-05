@@ -25,8 +25,7 @@ const defaultNotifications: Notification[] = [
         label: 'Ver campanha',
       },
     ],
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 1 * 60 * 1000),
+    createdAt: 'há 1 min',
   },
   {
     id: '2',
@@ -34,8 +33,7 @@ const defaultNotifications: Notification[] = [
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
     presentation: 'LOCKED',
-    expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 25 * 60 * 1000),
+    createdAt: 'há 25 min',
   },
   {
     id: '3',
@@ -50,8 +48,7 @@ const defaultNotifications: Notification[] = [
         label: 'Tentar novamente',
       },
     ],
-    expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+    createdAt: 'há 3h',
   },
   {
     id: '4',
@@ -59,8 +56,7 @@ const defaultNotifications: Notification[] = [
     title: 'Nova funcionalidade disponível',
     message: 'Agora você pode monitorar seus gastos em tempo real.',
     presentation: 'SIMPLE',
-    expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    createdAt: 'há 2d',
   },
 ];
 
