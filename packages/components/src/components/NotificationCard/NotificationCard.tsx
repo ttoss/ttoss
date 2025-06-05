@@ -8,6 +8,7 @@ export const NotificationCard = (props: {
   type: NotificationType;
   title?: string | React.ReactNode;
   message: string | React.ReactNode;
+  metaInfo?: string;
   onClose?: () => void;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,14 +68,30 @@ export const NotificationCard = (props: {
         sx={{
           ...sxMap[props.type].card,
           display: 'flex',
-          gap: '4',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: 'column',
+          gap: '2',
         }}
       >
-        {props.message}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            width: '100%',
+            gap: '4',
+          }}
+        >
+          <Box sx={{ flex: 1 }}>{props.message}</Box>
+        </Box>
+        <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
+          {props.metaInfo && (
+            <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
+              {props.metaInfo}
+            </Text>
+          )}
+        </Box>
         {!props.title && props.onClose && (
-          <Box sx={{ alignSelf: 'flex-start' }}>
+          <Box sx={{ alignSelf: 'flex-end' }}>
             <CloseButton onClick={props.onClose} />
           </Box>
         )}
