@@ -56,9 +56,9 @@ describe('Modal Notifications Test', () => {
 
     expect(notification).toBeInTheDocument();
 
-    const closeButton = screen.getAllByLabelText('Close');
+    const closeButton = screen.getByLabelText('Close');
 
-    await user.click(closeButton[0]);
+    await user.click(closeButton);
 
     expectNotBeInDocument(notification);
   });
