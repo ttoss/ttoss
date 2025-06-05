@@ -15,7 +15,7 @@ export const components = [
   'Menu',
   'Modal',
   'NotificationCard',
-  'NotificationPanel',
+  'NotificationsMenu',
   'Search',
   'Table',
   'Tabs',

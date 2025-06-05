@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import {
   Notification,
-  NotificationPanel,
-} from '@ttoss/components/NotificationPanel';
+  NotificationsMenu,
+} from '@ttoss/components/NotificationsMenu';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import { Box, Flex, Image, Stack } from '@ttoss/ui';
 
@@ -163,8 +163,8 @@ const mockNotifications: Notification[] = [
   },
 ];
 
-export const WithNotificationPanel: Story = {
-  name: 'With Notification Panel',
+export const WithNotificationsMenu: Story = {
+  name: 'With Notifications Menu',
   render: (args) => {
     return (
       <SidebarCollapseLayout>
@@ -175,7 +175,7 @@ export const WithNotificationPanel: Story = {
           <Flex sx={{ alignItems: 'center', width: '100%' }}>
             Header starts here
             <Box sx={{ ml: 'auto' }}>
-              <NotificationPanel
+              <NotificationsMenu
                 notifications={mockNotifications}
                 onClose={() => {}}
               />
