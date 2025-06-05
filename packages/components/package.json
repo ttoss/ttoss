@@ -122,6 +122,10 @@
         "types": "./dist/NotificationCard/index.d.ts",
         "import": "./dist/esm/NotificationCard/index.js"
       },
+      "./NotificationPanel": {
+        "types": "./dist/NotificationPanel/index.d.ts",
+        "import": "./dist/esm/NotificationPanel/index.js"
+      },
       "./Search": {
         "types": "./dist/Search/index.d.ts",
         "import": "./dist/esm/Search/index.js"
