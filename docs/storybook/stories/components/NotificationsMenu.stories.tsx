@@ -31,7 +31,6 @@ const defaultNotifications: Notification[] = [
     type: 'warning',
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    presentation: 'LOCKED',
     createdAt: 'há 25 min',
   },
   {
@@ -39,7 +38,6 @@ const defaultNotifications: Notification[] = [
     type: 'error',
     title: 'Falha na integração',
     message: 'Não foi possível conectar com a API do Facebook.',
-    presentation: 'BLOCKED',
     actions: [
       {
         action: 'open_url',
@@ -54,7 +52,6 @@ const defaultNotifications: Notification[] = [
     type: 'info',
     title: 'Nova funcionalidade disponível',
     message: 'Agora você pode monitorar seus gastos em tempo real.',
-    presentation: 'SIMPLE',
     createdAt: 'há 2d',
   },
 ];

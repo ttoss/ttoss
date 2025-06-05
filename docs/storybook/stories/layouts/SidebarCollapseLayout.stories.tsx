@@ -143,7 +143,6 @@ const mockNotifications: Notification[] = [
     type: 'success',
     title: 'Campanha criada com sucesso',
     message: 'Sua campanha "Promoção de Verão" foi criada e está ativa.',
-    presentation: 'SIMPLE',
     actions: [
       {
         action: 'open_url',
@@ -158,7 +157,6 @@ const mockNotifications: Notification[] = [
     type: 'warning',
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    presentation: 'LOCKED',
     createdAt: 'há 25 min',
   },
 ];
