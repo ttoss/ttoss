@@ -62,6 +62,10 @@ exports[`package.json exports should export all components 2`] = `
     "import": "./dist/esm/NotificationCard/index.js",
     "types": "./dist/NotificationCard/index.d.ts",
   },
+  "./NotificationPanel": {
+    "import": "./dist/esm/NotificationPanel/index.js",
+    "types": "./dist/NotificationPanel/index.d.ts",
+  },
   "./Search": {
     "import": "./dist/esm/Search/index.js",
     "types": "./dist/Search/index.d.ts",
