@@ -13,6 +13,10 @@ export type LabelProps = LabelPropsUi & {
     place: 'top' | 'right' | 'bottom' | 'left';
     openOnClick?: boolean;
     clickable?: boolean;
+    variant?: 'dark' | 'light' | 'success' | 'warning' | 'error' | 'info';
+    hidden?: boolean;
+    setIsOpen?: (value: boolean) => void;
+    isOpen?: boolean;
   };
 };
 
@@ -49,6 +53,10 @@ export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
             openOnClick={tooltip.openOnClick}
             clickable={tooltip.clickable}
             place={tooltip.place}
+            hidden={tooltip.hidden}
+            variant={tooltip.variant}
+            setIsOpen={tooltip.setIsOpen}
+            isOpen={tooltip.isOpen}
           >
             {tooltip.render}
           </Tooltip>

@@ -72,6 +72,50 @@ export const WithTooltip: Story = {
   },
 };
 
+export const WithTooltipVariantLight: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Light tooltip message',
+      place: 'top',
+      variant: 'light',
+    },
+  },
+};
+
+export const WithTooltipVariantSuccess: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Success tooltip message',
+      place: 'top',
+      variant: 'success',
+    },
+  },
+};
+
+export const WithTooltipVariantWarning: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Warning tooltip message',
+      place: 'top',
+      variant: 'warning',
+    },
+  },
+};
+
+export const WithTooltipVariantError: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Error tooltip message',
+      place: 'top',
+      variant: 'error',
+    },
+  },
+};
+
 export const WithTooltipChildrenAndClickable: Story = {
   args: {
     ...Default.args,
