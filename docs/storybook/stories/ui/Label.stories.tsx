@@ -72,6 +72,61 @@ export const WithTooltip: Story = {
   },
 };
 
+export const WithTooltipDifferentIcon: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'info tooltip message',
+      place: 'right',
+      icon: 'fluent:ios-arrow-rtl-24-filled',
+    },
+  },
+};
+
+export const WithTooltipVariantInfo: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Info tooltip message',
+      place: 'bottom',
+      variant: 'info',
+    },
+  },
+};
+
+export const WithTooltipVariantSuccess: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Success tooltip message',
+      place: 'top',
+      variant: 'success',
+    },
+  },
+};
+
+export const WithTooltipVariantWarning: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Warning tooltip message',
+      place: 'top',
+      variant: 'warning',
+    },
+  },
+};
+
+export const WithTooltipVariantError: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Error tooltip message',
+      place: 'top',
+      variant: 'error',
+    },
+  },
+};
+
 export const WithTooltipChildrenAndClickable: Story = {
   args: {
     ...Default.args,

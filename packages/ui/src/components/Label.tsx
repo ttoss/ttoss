@@ -13,6 +13,11 @@ export type LabelProps = LabelPropsUi & {
     place: 'top' | 'right' | 'bottom' | 'left';
     openOnClick?: boolean;
     clickable?: boolean;
+    variant?: 'dark' | 'light' | 'success' | 'warning' | 'error' | 'info';
+    hidden?: boolean;
+    setIsOpen?: (value: boolean) => void;
+    isOpen?: boolean;
+    icon?: string;
   };
 };
 
@@ -43,12 +48,20 @@ export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
           }}
           aria-label={TOOLTIP_LABEL}
         >
-          <Icon inline icon="fluent:info-24-regular" />
+          {tooltip.icon ? (
+            <Icon inline icon={tooltip.icon} />
+          ) : (
+            <Icon inline icon="fluent:info-24-regular" />
+          )}
           <Tooltip
             id={tooltipId}
             openOnClick={tooltip.openOnClick}
             clickable={tooltip.clickable}
             place={tooltip.place}
+            hidden={tooltip.hidden}
+            variant={tooltip.variant}
+            setIsOpen={tooltip.setIsOpen}
+            isOpen={tooltip.isOpen}
           >
             {tooltip.render}
           </Tooltip>
