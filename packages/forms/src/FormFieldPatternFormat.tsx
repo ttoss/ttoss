@@ -2,11 +2,14 @@ import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from './FormField';
+import { WarningTooltipProps } from './FormWarningMessage';
 
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
+  warningTooltip?: WarningTooltipProps;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
@@ -20,6 +23,8 @@ export const FormFieldPatternFormat = ({
       name={name}
       label={label}
       warning={warning}
+      warningMaxLines={patternFormatProps.warningMaxLines}
+      warningTooltip={patternFormatProps.warningTooltip}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat

@@ -18,6 +18,8 @@ export const FormFieldCreditCardNumber = ({
       name={name}
       label={label}
       warning={formFieldPatternFormatProps.warning}
+      warningMaxLines={formFieldPatternFormatProps.warningMaxLines}
+      warningTooltip={formFieldPatternFormatProps.warningTooltip}
       format="#### #### #### ####"
       placeholder="1234 1234 1234 1234"
       {...formFieldPatternFormatProps}

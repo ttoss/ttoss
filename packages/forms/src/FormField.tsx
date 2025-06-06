@@ -6,10 +6,13 @@ import {
   FieldValues,
   useController,
   UseControllerReturn,
-  useFormContext,
 } from 'react-hook-form';
 
 import { FormErrorMessage } from './FormErrorMessage';
+import {
+  FormWarningMessage,
+  type WarningTooltipProps,
+} from './FormWarningMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -27,6 +30,8 @@ export type FormFieldProps<
     clickable?: boolean;
   };
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
+  warningTooltip?: WarningTooltipProps;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -52,17 +57,13 @@ export const FormField = <
   css,
   render,
   warning,
+  warningMaxLines,
+  warningTooltip,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
     defaultValue,
   });
-
-  const {
-    formState: { errors },
-  } = useFormContext();
-
-  const hasError = !!errors[name];
 
   const uniqueId = React.useId();
 
@@ -137,21 +138,12 @@ export const FormField = <
     >
       {memoizedRender}
       <FormErrorMessage name={name} />
-
-      {warning && !hasError && (
-        <Flex
-          className="warning"
-          sx={{
-            color: 'feedback.text.caution.default',
-            fontSize: 'sm',
-            gap: '2',
-            paddingBottom: '1',
-            alignItems: 'center',
-          }}
-        >
-          {warning}
-        </Flex>
-      )}
+      <FormWarningMessage
+        name={name}
+        warning={warning}
+        warningMaxLines={warningMaxLines}
+        warningTooltip={warningTooltip}
+      />
     </Flex>
   );
 };
