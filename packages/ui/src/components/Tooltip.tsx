@@ -4,20 +4,15 @@ import { Tooltip as TooltipReact } from 'react-tooltip';
 
 import { Box } from '..';
 
-export const Tooltip = ({ variant = 'dark', ...props }: ITooltip) => {
+export const Tooltip = ({ variant = 'info', ...props }: ITooltip) => {
   const className = `tooltip-component tooltip-${variant}`;
 
   const getVariantStyles = (variantType: string) => {
     const variants = {
-      dark: {
+      info: {
         backgroundColor: 'input.background.secondary.default',
         color: 'feedback.text.secondary.default',
         borderColor: 'feedback.border.secondary.default',
-      },
-      light: {
-        backgroundColor: 'display.background.primary.default',
-        color: 'display.text.primary.default',
-        borderColor: 'display.border.primary.default',
       },
       success: {
         backgroundColor: 'feedback.background.positive.default',
@@ -34,14 +29,9 @@ export const Tooltip = ({ variant = 'dark', ...props }: ITooltip) => {
         color: 'feedback.text.negative.default',
         borderColor: 'feedback.border.negative.default',
       },
-      info: {
-        backgroundColor: 'feedback.background.info.default',
-        color: 'feedback.text.info.default',
-        borderColor: 'feedback.border.info.default',
-      },
     };
 
-    return variants[variantType as keyof typeof variants] || variants.dark;
+    return variants[variantType as keyof typeof variants] || variants.info;
   };
 
   return (
