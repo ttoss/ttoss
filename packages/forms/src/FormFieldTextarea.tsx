@@ -10,13 +10,14 @@ export const FormFieldTextarea = <
   label,
   name,
   warning,
-
+  warningMaxLines,
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -27,6 +28,7 @@ export const FormFieldTextarea = <
       id={id}
       sx={sx}
       warning={warning}
+      warningMaxLines={warningMaxLines}
       render={({ field, fieldState }) => {
         return (
           <Textarea

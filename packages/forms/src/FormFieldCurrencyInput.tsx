@@ -22,6 +22,7 @@ export const FormFieldCurrencyInput = ({
       name={name}
       label={label}
       warning={formFieldNumericFormatProps.warning}
+      warningMaxLines={formFieldNumericFormatProps.warningMaxLines}
       fixedDecimalScale
       decimalScale={2}
       prefix={prefix}

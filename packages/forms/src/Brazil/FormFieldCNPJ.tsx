@@ -7,6 +7,7 @@ export type FormFieldCNPJProps = {
   label: string;
   name: string;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +76,7 @@ export const FormFieldCNPJ = ({
       name={name}
       label={label}
       warning={patternFormatProps.warning}
+      warningMaxLines={patternFormatProps.warningMaxLines}
       render={({ field }) => {
         return (
           <PatternFormat

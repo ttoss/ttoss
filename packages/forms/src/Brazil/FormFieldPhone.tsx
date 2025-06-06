@@ -7,6 +7,7 @@ export type FormFieldPhoneProps = {
   label: string;
   name: string;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
@@ -19,6 +20,7 @@ export const FormFieldPhone = ({
       name={name}
       label={label}
       warning={patternFormatProps.warning}
+      warningMaxLines={patternFormatProps.warningMaxLines}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

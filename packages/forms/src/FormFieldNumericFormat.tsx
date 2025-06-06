@@ -8,6 +8,7 @@ export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
   tooltip?: {
     render: string | React.ReactNode;
     place: 'top';
@@ -28,6 +29,7 @@ export const FormFieldNumericFormat = ({
       label={label}
       name={name}
       warning={warning}
+      warningMaxLines={numericFormatProps.warningMaxLines}
       tooltip={tooltip}
       render={({ field }) => {
         return (

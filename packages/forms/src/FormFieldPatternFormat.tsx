@@ -7,6 +7,7 @@ export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
   warning?: string | React.ReactNode;
+  warningMaxLines?: number;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
@@ -20,6 +21,7 @@ export const FormFieldPatternFormat = ({
       name={name}
       label={label}
       warning={warning}
+      warningMaxLines={patternFormatProps.warningMaxLines}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat
