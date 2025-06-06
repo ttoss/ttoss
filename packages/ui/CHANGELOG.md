@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.6.0...@ttoss/ui@5.6.1) (2025-06-06)
+
+### Bug Fixes
+
+- react notifications ([#694](https://github.com/ttoss/ttoss/issues/694)) ([009e00c](https://github.com/ttoss/ttoss/commit/009e00c1614576ddbb48fd8d5a0f080ed02b0a9e))
+
+# [5.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.10...@ttoss/ui@5.6.0) (2025-06-02)
+
+### Features
+
+- created SegmentedControl ([#689](https://github.com/ttoss/ttoss/issues/689)) ([4c37608](https://github.com/ttoss/ttoss/commit/4c37608b6d83c1278353c5f2db464ee9a013472b))
+
 ## [5.5.10](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.5.9...@ttoss/ui@5.5.10) (2025-04-30)
 
 ### Bug Fixes

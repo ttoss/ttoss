@@ -75,3 +75,12 @@ export const CloseButtonOnBody: StoryObj = {
     onClose: () => {},
   },
 };
+
+export const WithMetaInfo: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Nova notificação',
+    message: 'Você tem uma nova notificação pendente.',
+    metaInfo: 'há 5 min',
+  },
+};

@@ -12,6 +12,7 @@ exports[`package.json exports should export all components 1`] = `
   "./Menu": "./src/components/Menu/index.ts",
   "./Modal": "./src/components/Modal/index.ts",
   "./NotificationCard": "./src/components/NotificationCard/index.ts",
+  "./NotificationsMenu": "./src/components/NotificationsMenu/index.ts",
   "./Search": "./src/components/Search/index.ts",
   "./Table": "./src/components/Table/index.ts",
   "./Tabs": "./src/components/Tabs/index.ts",
@@ -60,6 +61,10 @@ exports[`package.json exports should export all components 2`] = `
   "./NotificationCard": {
     "import": "./dist/esm/NotificationCard/index.js",
     "types": "./dist/NotificationCard/index.d.ts",
+  },
+  "./NotificationsMenu": {
+    "import": "./dist/esm/NotificationsMenu/index.js",
+    "types": "./dist/NotificationsMenu/index.d.ts",
   },
   "./Search": {
     "import": "./dist/esm/Search/index.js",

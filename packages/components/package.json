@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "2.2.15",
+  "version": "2.2.17",
   "description": "React components for ttoss ecosystem.",
   "license": "MIT",
   "author": "ttoss",
@@ -24,6 +24,7 @@
     "./Menu": "./src/components/Menu/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
     "./NotificationCard": "./src/components/NotificationCard/index.ts",
+    "./NotificationsMenu": "./src/components/NotificationsMenu/index.ts",
     "./Search": "./src/components/Search/index.ts",
     "./Table": "./src/components/Table/index.ts",
     "./Tabs": "./src/components/Tabs/index.ts",
@@ -120,6 +121,10 @@
       "./NotificationCard": {
         "types": "./dist/NotificationCard/index.d.ts",
         "import": "./dist/esm/NotificationCard/index.js"
+      },
+      "./NotificationsMenu": {
+        "types": "./dist/NotificationsMenu/index.d.ts",
+        "import": "./dist/esm/NotificationsMenu/index.js"
       },
       "./Search": {
         "types": "./dist/Search/index.d.ts",

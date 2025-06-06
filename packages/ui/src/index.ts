@@ -32,6 +32,10 @@ export { Link, type LinkProps } from './components/Link';
 export { Paragraph, type ParagraphProps } from './components/Paragraph';
 export { Radio, type RadioProps } from './components/Radio';
 export {
+  SegmentedControl,
+  type SegmentedControlProps,
+} from './components/SegmentedControl';
+export {
   Select,
   type SelectOption,
   type SelectOptions,

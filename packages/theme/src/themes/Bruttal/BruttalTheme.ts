@@ -94,7 +94,8 @@ export const BruttalTheme: Theme = {
       background: {
         primary: {
           default: coreColors.main,
-          active: coreColors.complimentary,
+          active: coreColors.gray600,
+          disabled: coreColors.gray200,
         },
         secondary: {
           default: coreColors.gray100,
@@ -339,8 +340,21 @@ export const BruttalTheme: Theme = {
         color: 'action.text.muted.default',
       },
     },
+    close: {
+      color: 'action.background.primary.default',
+      ':hover:not(:active,[disabled])': {
+        filter: 'brightness(90%)',
+        cursor: 'pointer',
+      },
+      ':active': {
+        color: 'action.background.primary.active',
+      },
+      ':disabled': {
+        cursor: 'default',
+        color: 'action.background.primary.disabled',
+      },
+    },
   },
-
   forms: {
     label: {
       color: 'display.text.primary.default',
