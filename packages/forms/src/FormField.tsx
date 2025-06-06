@@ -9,7 +9,10 @@ import {
 } from 'react-hook-form';
 
 import { FormErrorMessage } from './FormErrorMessage';
-import { FormWarningMessage } from './FormWarningMessage';
+import {
+  FormWarningMessage,
+  type WarningTooltipProps,
+} from './FormWarningMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -28,6 +31,7 @@ export type FormFieldProps<
   };
   warning?: string | React.ReactNode;
   warningMaxLines?: number;
+  warningTooltip?: WarningTooltipProps;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -54,6 +58,7 @@ export const FormField = <
   render,
   warning,
   warningMaxLines,
+  warningTooltip,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -137,6 +142,7 @@ export const FormField = <
         name={name}
         warning={warning}
         warningMaxLines={warningMaxLines}
+        warningTooltip={warningTooltip}
       />
     </Flex>
   );

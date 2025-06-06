@@ -3,12 +3,14 @@ import * as React from 'react';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
 import { FormField } from './FormField';
+import { WarningTooltipProps } from './FormWarningMessage';
 
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
   warning?: string | React.ReactNode;
   warningMaxLines?: number;
+  warningTooltip?: WarningTooltipProps;
   tooltip?: {
     render: string | React.ReactNode;
     place: 'top';

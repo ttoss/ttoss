@@ -31,6 +31,7 @@ export const FormFieldSelect = <
       tooltip={tooltip}
       warning={selectProps.warning}
       warningMaxLines={selectProps.warningMaxLines}
+      warningTooltip={selectProps.warningTooltip}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

@@ -70,6 +70,10 @@ const Template: StoryFn = () => {
             </div>
           }
           warningMaxLines={1}
+          warningTooltip={{
+            place: 'right',
+            openOnClick: true,
+          }}
         />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">

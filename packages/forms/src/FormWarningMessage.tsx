@@ -2,6 +2,17 @@ import { Flex, Label } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues, useFormContext } from 'react-hook-form';
 
+export type WarningTooltipProps = {
+  place: 'top' | 'right' | 'bottom' | 'left';
+  openOnClick?: boolean;
+  clickable?: boolean;
+  variant?: 'success' | 'warning' | 'error' | 'info';
+  hidden?: boolean;
+  setIsOpen?: (value: boolean) => void;
+  isOpen?: boolean;
+  icon?: string;
+};
+
 export const FormWarningMessage = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -9,10 +20,12 @@ export const FormWarningMessage = <
   name,
   warning,
   warningMaxLines = 2,
+  warningTooltip,
 }: {
   name: TName;
   warning?: string | React.ReactNode;
   warningMaxLines?: number;
+  warningTooltip?: WarningTooltipProps;
 }) => {
   const {
     formState: { errors },
@@ -56,6 +69,8 @@ export const FormWarningMessage = <
                   ),
                   place: 'bottom',
                   clickable: true,
+                  variant: 'warning',
+                  ...warningTooltip,
                 }
               : undefined
           }
@@ -77,7 +92,7 @@ export const FormWarningMessage = <
       );
     }
     return null;
-  }, [isWarningTruncated, warning, warningMaxLines, hasError]);
+  }, [warning, hasError, isWarningTruncated, warningTooltip, warningMaxLines]);
 
   return warningLabel;
 };
