@@ -9,7 +9,6 @@ export type Notification = {
   type: 'info' | 'success' | 'warning' | 'error';
   title: string;
   message: string;
-  presentation: 'SIMPLE' | 'LOCKED' | 'BLOCKED';
   actions?: {
     action?: 'open_url';
     url?: string;
@@ -54,7 +53,7 @@ const renderMessage = (message: string, actions?: Notification['actions']) => {
   );
 };
 
-export const NotificationPanel = ({
+export const NotificationsMenu = ({
   notifications,
   defaultOpen = false,
   hasMore = false,

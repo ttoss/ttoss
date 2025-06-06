@@ -2,13 +2,13 @@
 import { Meta, StoryObj } from '@storybook/react';
 import {
   Notification,
-  NotificationPanel,
-} from '@ttoss/components/NotificationPanel';
+  NotificationsMenu,
+} from '@ttoss/components/NotificationsMenu';
 import * as React from 'react';
 
 export default {
-  title: 'Components/NotificationPanel',
-  component: NotificationPanel,
+  title: 'Components/NotificationsMenu',
+  component: NotificationsMenu,
 } as Meta;
 
 const defaultNotifications: Notification[] = [
@@ -17,7 +17,6 @@ const defaultNotifications: Notification[] = [
     type: 'success',
     title: 'Campanha criada com sucesso',
     message: 'Sua campanha "Promoção de Verão" foi criada e está ativa.',
-    presentation: 'SIMPLE',
     actions: [
       {
         action: 'open_url',
@@ -32,7 +31,6 @@ const defaultNotifications: Notification[] = [
     type: 'warning',
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    presentation: 'LOCKED',
     createdAt: 'há 25 min',
   },
   {
@@ -40,7 +38,6 @@ const defaultNotifications: Notification[] = [
     type: 'error',
     title: 'Falha na integração',
     message: 'Não foi possível conectar com a API do Facebook.',
-    presentation: 'BLOCKED',
     actions: [
       {
         action: 'open_url',
@@ -55,7 +52,6 @@ const defaultNotifications: Notification[] = [
     type: 'info',
     title: 'Nova funcionalidade disponível',
     message: 'Agora você pode monitorar seus gastos em tempo real.',
-    presentation: 'SIMPLE',
     createdAt: 'há 2d',
   },
 ];
@@ -126,7 +122,7 @@ export const WithInfiniteScroll: StoryObj = {
     }, [isOpen, hasInitialized]);
 
     return (
-      <NotificationPanel
+      <NotificationsMenu
         notifications={notifications}
         hasMore={notifications.length < scrollNotifications.length}
         onLoadMore={hasInitialized ? loadMore : undefined}
