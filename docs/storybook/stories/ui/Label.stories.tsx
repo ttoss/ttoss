@@ -72,6 +72,17 @@ export const WithTooltip: Story = {
   },
 };
 
+export const WithTooltipDifferentIcon: Story = {
+  args: {
+    ...Default.args,
+    tooltip: {
+      render: 'Light tooltip message',
+      place: 'right',
+      icon: 'fluent:ios-arrow-rtl-24-filled',
+    },
+  },
+};
+
 export const WithTooltipVariantLight: Story = {
   args: {
     ...Default.args,
