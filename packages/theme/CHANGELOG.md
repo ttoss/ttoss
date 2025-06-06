@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.8...@ttoss/theme@2.6.0) (2025-06-06)
+
+### Features
+
+- add variants to tooltip component and new props ([#696](https://github.com/ttoss/ttoss/issues/696)) ([db4e440](https://github.com/ttoss/ttoss/commit/db4e440afc14cb7d1444a78e574dee2133de1405))
+
 ## [2.5.8](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.7...@ttoss/theme@2.5.8) (2025-06-06)
 
 **Note:** Version bump only for package @ttoss/theme

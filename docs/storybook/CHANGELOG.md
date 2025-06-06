@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.14.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.13.1...@docs/storybook@2.14.0) (2025-06-06)
+
+### Features
+
+- add variants to tooltip component and new props ([#696](https://github.com/ttoss/ttoss/issues/696)) ([db4e440](https://github.com/ttoss/ttoss/commit/db4e440afc14cb7d1444a78e574dee2133de1405))
+
 ## [2.13.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.13.0...@docs/storybook@2.13.1) (2025-06-06)
 
 ### Bug Fixes
