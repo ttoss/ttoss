@@ -25,6 +25,7 @@ const defaultNotifications: Notification[] = [
       },
     ],
     createdAt: 'há 1 min',
+    readAt: null,
   },
   {
     id: '2',
@@ -32,9 +33,19 @@ const defaultNotifications: Notification[] = [
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
     createdAt: 'há 25 min',
+    readAt: null,
   },
   {
     id: '3',
+    type: 'warning',
+    title:
+      'Limite da conta está próximo e precisa ser ajustado para evitar interrupções',
+    message: 'Sua conta está utilizando 95% do orçamento mensal.',
+    createdAt: 'há 30 min',
+    readAt: null,
+  },
+  {
+    id: '4',
     type: 'error',
     title: 'Falha na integração',
     message: 'Não foi possível conectar com a API do Facebook.',
@@ -46,13 +57,24 @@ const defaultNotifications: Notification[] = [
       },
     ],
     createdAt: 'há 3h',
+    readAt: null,
   },
   {
-    id: '4',
+    id: '5',
     type: 'info',
     title: 'Nova funcionalidade disponível',
     message: 'Agora você pode monitorar seus gastos em tempo real.',
     createdAt: 'há 2d',
+    readAt: null,
+  },
+  {
+    id: '6',
+    type: 'info',
+    title: 'Nova funcionalidade disponível',
+    message:
+      'Integrado com o Google Analytics para relatórios mais detalhados, e pode ser acessado através do menu de relatórios.',
+    createdAt: 'há 20 min',
+    readAt: '2023-10-01T12:00:00Z',
   },
 ];
 
@@ -89,7 +111,7 @@ export const WithInfiniteScroll: StoryObj = {
       []
     );
     const [page, setPage] = React.useState(0);
-    const [isOpen, setIsOpen] = React.useState(true);
+    const [isOpen, setIsOpen] = React.useState(false);
     const [hasInitialized, setHasInitialized] = React.useState(false);
     const pageSize = 10;
 
@@ -128,8 +150,86 @@ export const WithInfiniteScroll: StoryObj = {
         onLoadMore={hasInitialized ? loadMore : undefined}
         defaultOpen={isOpen}
         onOpenChange={setIsOpen}
-        unreadCount={scrollNotifications.length}
+        unreadCount={
+          scrollNotifications.filter((n) => {
+            return n.readAt == null;
+          }).length
+        }
         onClose={() => {}}
+      />
+    );
+  },
+};
+
+export const WithCloseButton: StoryObj = {
+  render: () => {
+    const [notifications, setNotifications] =
+      React.useState<Notification[]>(defaultNotifications);
+    const [isOpen, setIsOpen] = React.useState(true);
+
+    const handleClose = (id: string) => {
+      setNotifications((prev) => {
+        return prev.filter((n) => {
+          return n.id !== id;
+        });
+      });
+    };
+
+    return (
+      <NotificationsMenu
+        notifications={notifications.map((n) => {
+          return {
+            ...n,
+            onClose: () => {
+              return handleClose(n.id);
+            },
+          };
+        })}
+        defaultOpen={isOpen}
+        onOpenChange={setIsOpen}
+        onClose={() => {
+          return setIsOpen(false);
+        }}
+      />
+    );
+  },
+};
+
+export const MarkAllAsReadOnOpen: StoryObj = {
+  render: () => {
+    const [notifications, setNotifications] = React.useState<
+      (Notification & { readAt: string | null })[]
+    >(
+      defaultNotifications.map((n) => {
+        return { ...n, readAt: n.readAt ?? null };
+      })
+    );
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    const unreadCount = notifications.filter((n) => {
+      return !n.readAt;
+    }).length;
+
+    const handleOpenChange = (open: boolean) => {
+      setIsOpen(open);
+      if (open) {
+        setNotifications((prev) => {
+          return prev.map((n) => {
+            return { ...n, readAt: new Date().toISOString() };
+          });
+        });
+      }
+    };
+
+    return (
+      <NotificationsMenu
+        notifications={notifications}
+        defaultOpen={isOpen}
+        onOpenChange={handleOpenChange}
+        unreadCount={unreadCount}
+        onClose={() => {
+          return setIsOpen(false);
+        }}
       />
     );
   },

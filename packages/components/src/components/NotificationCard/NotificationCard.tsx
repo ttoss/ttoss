@@ -61,7 +61,11 @@ export const NotificationCard = (props: {
             <Icon icon={icon[props.type]} />
             {props.title}
           </Text>
-          {props.onClose && <CloseButton onClick={props.onClose} />}
+          {props.onClose && (
+            <Box sx={{ marginLeft: 'auto' }}>
+              <CloseButton onClick={props.onClose} />
+            </Box>
+          )}
         </Card.Title>
       )}
       <Card.Body
