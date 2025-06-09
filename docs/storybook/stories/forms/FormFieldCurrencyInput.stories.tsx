@@ -37,7 +37,7 @@ const Template: StoryFn = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCurrencyInput
-          tooltip={'Currency input '}
+          tooltip={{ render: 'Currency input ', place: 'top' }}
           name="real"
           label="Real"
           prefix="R$ "
@@ -115,7 +115,7 @@ const WithWarning1: StoryFn = () => {
           fixedDecimalScale
           decimalScale={2}
           allowNegative={false}
-          warning="Value entered low. The campaign may not have results. Find out more."
+          feedbackMessage="Value entered low. The campaign may not have results. Find out more."
         />
       </Flex>
 

@@ -52,7 +52,7 @@ const Template: Story = () => {
         <FormFieldCreditCardNumber
           name="cartao3"
           label="cartao warning"
-          warning="WARNING"
+          feedbackMessage="WARNING"
         />
       </Flex>
 

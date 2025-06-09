@@ -2,12 +2,15 @@ import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from '..';
+import { FeedbackTooltipProps } from '../FormFeedbackMessage';
 
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
-  warning?: string | React.ReactNode;
-  warningMaxLines?: number;
+  feedbackMessage?: string | React.ReactNode;
+  feedbackMaxLines?: number;
+  feedbackTooltipProps?: FeedbackTooltipProps;
+  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,8 +78,10 @@ export const FormFieldCNPJ = ({
     <FormField
       name={name}
       label={label}
-      warning={patternFormatProps.warning}
-      warningMaxLines={patternFormatProps.warningMaxLines}
+      feedbackMessage={patternFormatProps.feedbackMessage}
+      feedbackMaxLines={patternFormatProps.feedbackMaxLines}
+      feedbackTooltipProps={patternFormatProps.feedbackTooltipProps}
+      feedbackVariant={patternFormatProps.feedbackVariant}
       render={({ field }) => {
         return (
           <PatternFormat

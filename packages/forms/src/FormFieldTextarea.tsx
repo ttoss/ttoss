@@ -1,8 +1,8 @@
 import { Textarea, type TextareaProps } from '@ttoss/ui';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
+import { FeedbackTooltipProps } from './FormFeedbackMessage';
 import { FormField } from './FormField';
-import { WarningTooltipProps } from './FormWarningMessage';
 
 export const FormFieldTextarea = <
   TFieldValues extends FieldValues = FieldValues,
@@ -10,16 +10,19 @@ export const FormFieldTextarea = <
 >({
   label,
   name,
-  warning,
-  warningMaxLines,
+  feedbackMessage,
+  feedbackMaxLines,
+  feedbackTooltipProps,
+  feedbackVariant,
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
-  warning?: string | React.ReactNode;
-  warningMaxLines?: number;
-  warningTooltip?: WarningTooltipProps;
+  feedbackMessage?: string | React.ReactNode;
+  feedbackMaxLines?: number;
+  feedbackTooltipProps?: FeedbackTooltipProps;
+  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -29,9 +32,10 @@ export const FormFieldTextarea = <
       name={name}
       id={id}
       sx={sx}
-      warning={warning}
-      warningMaxLines={warningMaxLines}
-      warningTooltip={textareaProps.warningTooltip}
+      feedbackMessage={feedbackMessage}
+      feedbackMaxLines={feedbackMaxLines}
+      feedbackTooltipProps={feedbackTooltipProps}
+      feedbackVariant={feedbackVariant}
       render={({ field, fieldState }) => {
         return (
           <Textarea

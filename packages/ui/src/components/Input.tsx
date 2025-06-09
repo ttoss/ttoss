@@ -28,12 +28,36 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ? 'warning-alt'
       : trailingIconProp;
 
-    const isWarning =
-      !inputProps['aria-invalid'] && trailingIcon === 'warning-alt';
+    const getIconColor = () => {
+      if (inputProps['aria-invalid']) {
+        return 'feedback.text.negative.default';
+      }
+      if (!trailingIcon) {
+        return undefined;
+      }
+      switch (trailingIcon) {
+        case 'fluent:checkmark-circle-16-regular':
+          return 'feedback.text.positive.default';
+        case 'warning-alt':
+          return 'feedback.text.caution.default';
+        case 'error':
+          return 'feedback.text.negative.default';
+        case 'fluent:info-20-regular':
+          return 'feedback.text.info.default';
+        default:
+          return undefined;
+      }
+    };
+
+    const iconColor = getIconColor();
 
     return (
       <Flex
-        className={`${className} ${isWarning ? 'is-warning' : ''}`}
+        className={`${className} ${
+          trailingIcon === 'warning-alt' && !inputProps['aria-invalid']
+            ? 'is-warning'
+            : ''
+        }`}
         sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
       >
         {leadingIcon && (
@@ -71,7 +95,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
-              color: isWarning ? 'feedback.text.caution.default' : undefined,
+              color: iconColor,
               cursor: onTrailingIconClick ? 'pointer' : 'default',
               fontSize: 'xl',
             }}

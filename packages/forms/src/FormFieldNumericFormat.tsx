@@ -2,15 +2,16 @@ import { Input } from '@ttoss/ui';
 import * as React from 'react';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
+import { FeedbackTooltipProps } from './FormFeedbackMessage';
 import { FormField } from './FormField';
-import { WarningTooltipProps } from './FormWarningMessage';
 
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
-  warning?: string | React.ReactNode;
-  warningMaxLines?: number;
-  warningTooltip?: WarningTooltipProps;
+  feedbackMessage?: string | React.ReactNode;
+  feedbackMaxLines?: number;
+  feedbackTooltipProps?: FeedbackTooltipProps;
+  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
   tooltip?: {
     render: string | React.ReactNode;
     place: 'top';
@@ -22,16 +23,19 @@ export type FormFieldNumericFormatProps = {
 export const FormFieldNumericFormat = ({
   label,
   name,
-  warning,
+  feedbackMessage,
   tooltip,
+  feedbackMaxLines,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
   return (
     <FormField
       label={label}
       name={name}
-      warning={warning}
-      warningMaxLines={numericFormatProps.warningMaxLines}
+      feedbackMessage={feedbackMessage}
+      feedbackMaxLines={feedbackMaxLines}
+      feedbackTooltipProps={numericFormatProps.feedbackTooltipProps}
+      feedbackVariant={numericFormatProps.feedbackVariant}
       tooltip={tooltip}
       render={({ field }) => {
         return (

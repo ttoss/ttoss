@@ -42,7 +42,7 @@ const Template: Story = () => {
           name="warning"
           label="Warning"
           defaultValue={22}
-          warning="WARNING"
+          feedbackMessage="WARNING"
         />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">

@@ -36,7 +36,7 @@ const Template: Story = () => {
         <FormFieldPhone
           name="phoneWarning"
           label="Telefone:"
-          warning="WARNING"
+          feedbackMessage="WARNING"
         />
       </Flex>
 

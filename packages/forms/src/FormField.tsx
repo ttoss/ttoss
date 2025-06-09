@@ -10,9 +10,9 @@ import {
 
 import { FormErrorMessage } from './FormErrorMessage';
 import {
-  FormWarningMessage,
-  type WarningTooltipProps,
-} from './FormWarningMessage';
+  type FeedbackTooltipProps,
+  FormFeedbackMessage,
+} from './FormFeedbackMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -29,9 +29,11 @@ export type FormFieldProps<
     openOnClick?: boolean;
     clickable?: boolean;
   };
-  warning?: string | React.ReactNode;
-  warningMaxLines?: number;
-  warningTooltip?: WarningTooltipProps;
+  feedbackMessage?: string | React.ReactNode;
+  feedbackMaxLines?: number;
+  feedbackTooltipProps?: FeedbackTooltipProps;
+  feedbackTooltipLabel?: string;
+  feedbackVariant?: 'success' | 'warning' | 'error' | 'info';
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -52,13 +54,15 @@ export const FormField = <
   name,
   defaultValue,
   disabled,
-  tooltip,
   sx,
   css,
   render,
-  warning,
-  warningMaxLines,
-  warningTooltip,
+  feedbackMessage,
+  feedbackMaxLines,
+  feedbackTooltipProps,
+  feedbackTooltipLabel,
+  feedbackVariant = 'warning',
+  tooltip,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -66,7 +70,6 @@ export const FormField = <
   });
 
   const uniqueId = React.useId();
-
   const id = idProp || `form-field-${name}-${uniqueId}`;
 
   const memoizedRender = React.useMemo(() => {
@@ -78,6 +81,22 @@ export const FormField = <
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const childProps = child.props as any;
 
+      const getTrailingIcon = () => {
+        if (!feedbackMessage) return undefined;
+        switch (feedbackVariant || 'warning') {
+          case 'success':
+            return 'fluent:checkmark-circle-16-regular';
+          case 'warning':
+            return 'warning-alt';
+          case 'error':
+            return 'warning-alt';
+          case 'info':
+            return 'fluent:info-20-regular';
+          default:
+            return 'warning-alt';
+        }
+      };
+
       if (
         label &&
         [Checkbox, Switch].some((component) => {
@@ -87,16 +106,11 @@ export const FormField = <
         return (
           <Label aria-disabled={disabled} tooltip={tooltip}>
             <Flex>
-              {warning
-                ? React.createElement(child.type, {
-                    id,
-                    ...childProps,
-                    ...(warning ? { trailingIcon: 'warning-alt' } : {}),
-                  })
-                : React.createElement(child.type, {
-                    id,
-                    ...childProps,
-                  })}
+              {React.createElement(child.type, {
+                id,
+                ...childProps,
+                ...(feedbackMessage ? { trailingIcon: getTrailingIcon() } : {}),
+              })}
             </Flex>
             {label}
           </Label>
@@ -116,20 +130,24 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {warning
-            ? React.createElement(child.type, {
-                id,
-                ...childProps,
-                ...(warning ? { trailingIcon: 'warning-alt' } : {}),
-              })
-            : React.createElement(child.type, {
-                id,
-                ...childProps,
-              })}
+          {React.createElement(child.type, {
+            id,
+            ...childProps,
+            ...(feedbackMessage ? { trailingIcon: getTrailingIcon() } : {}),
+          })}
         </Flex>
       );
     });
-  }, [render, controllerReturn, label, disabled, id, tooltip, warning]);
+  }, [
+    render,
+    controllerReturn,
+    label,
+    disabled,
+    id,
+    tooltip,
+    feedbackMessage,
+    feedbackVariant,
+  ]);
 
   return (
     <Flex
@@ -138,11 +156,13 @@ export const FormField = <
     >
       {memoizedRender}
       <FormErrorMessage name={name} />
-      <FormWarningMessage
+      <FormFeedbackMessage
         name={name}
-        warning={warning}
-        warningMaxLines={warningMaxLines}
-        warningTooltip={warningTooltip}
+        feedbackMessage={feedbackMessage}
+        feedbackMaxLines={feedbackMaxLines}
+        feedbackTooltipProps={feedbackTooltipProps}
+        feedbackTooltipLabel={feedbackTooltipLabel}
+        feedbackVariant={feedbackVariant}
       />
     </Flex>
   );

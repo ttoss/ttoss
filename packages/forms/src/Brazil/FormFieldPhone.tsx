@@ -1,26 +1,34 @@
 import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
+import { FeedbackTooltipProps } from '../FormFeedbackMessage';
 import { FormField } from '../FormField';
 
 export type FormFieldPhoneProps = {
   label: string;
   name: string;
-  warning?: string | React.ReactNode;
-  warningMaxLines?: number;
+  feedbackMessage?: string | React.ReactNode;
+  feedbackMaxLines?: number;
+  feedbackTooltipProps?: FeedbackTooltipProps;
+  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
   label,
   name,
+  feedbackMessage,
+  feedbackMaxLines,
+  feedbackTooltipProps,
   ...patternFormatProps
 }: FormFieldPhoneProps) => {
   return (
     <FormField
       name={name}
       label={label}
-      warning={patternFormatProps.warning}
-      warningMaxLines={patternFormatProps.warningMaxLines}
+      feedbackMessage={feedbackMessage}
+      feedbackMaxLines={feedbackMaxLines}
+      feedbackTooltipProps={feedbackTooltipProps}
+      feedbackVariant={patternFormatProps.feedbackVariant}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

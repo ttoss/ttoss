@@ -30,7 +30,7 @@ const Template: StoryFn = () => {
         <FormFieldCEP
           name="cep"
           label="CEP:"
-          warning={
+          feedbackMessage={
             <Link
               sx={{
                 color: 'feedback.text.caution.default',
@@ -54,7 +54,7 @@ const Template: StoryFn = () => {
         <FormFieldCEP
           name="cepWarning"
           label="CEP:"
-          warning={
+          feedbackMessage={
             <div>
               {` Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
@@ -69,11 +69,13 @@ const Template: StoryFn = () => {
               Aldus PageMaker including versions of Lorem Ipsum.`}
             </div>
           }
-          warningMaxLines={1}
-          warningTooltip={{
-            place: 'right',
+          feedbackMaxLines={2}
+          feedbackTooltipProps={{
+            place: 'bottom',
             openOnClick: true,
+            icon: 'fluent:arrow-right-16-regular',
           }}
+          feedbackVariant="warning"
         />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">
