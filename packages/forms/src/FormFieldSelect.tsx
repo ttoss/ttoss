@@ -32,6 +32,8 @@ export const FormFieldSelect = <
       feedbackMessage={selectProps.feedbackMessage}
       feedbackMaxLines={selectProps.feedbackMaxLines}
       feedbackTooltipProps={selectProps.feedbackTooltipProps}
+      feedbackVariant={selectProps.feedbackVariant}
+      feedbackTooltipLabel={selectProps.feedbackTooltipLabel}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

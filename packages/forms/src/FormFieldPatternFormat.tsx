@@ -11,6 +11,7 @@ export type FormFieldPatternFormatProps = {
   feedbackMaxLines?: number;
   feedbackTooltipProps?: FeedbackTooltipProps;
   feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
+  feedbackTooltipLabel?: string;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
@@ -20,6 +21,7 @@ export const FormFieldPatternFormat = ({
   feedbackMaxLines,
   feedbackTooltipProps,
   feedbackVariant,
+  feedbackTooltipLabel,
   ...patternFormatProps
 }: FormFieldPatternFormatProps) => {
   return (
@@ -30,6 +32,7 @@ export const FormFieldPatternFormat = ({
       feedbackMaxLines={feedbackMaxLines}
       feedbackTooltipProps={feedbackTooltipProps}
       feedbackVariant={feedbackVariant}
+      feedbackTooltipLabel={feedbackTooltipLabel}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat

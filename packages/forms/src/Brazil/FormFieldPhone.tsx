@@ -11,6 +11,7 @@ export type FormFieldPhoneProps = {
   feedbackMaxLines?: number;
   feedbackTooltipProps?: FeedbackTooltipProps;
   feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
+  feedbackTooltipLabel?: string;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
@@ -29,6 +30,7 @@ export const FormFieldPhone = ({
       feedbackMaxLines={feedbackMaxLines}
       feedbackTooltipProps={feedbackTooltipProps}
       feedbackVariant={patternFormatProps.feedbackVariant}
+      feedbackTooltipLabel={patternFormatProps.feedbackTooltipLabel}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

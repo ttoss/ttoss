@@ -11,6 +11,7 @@ export type FormFieldCNPJProps = {
   feedbackMaxLines?: number;
   feedbackTooltipProps?: FeedbackTooltipProps;
   feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
+  feedbackTooltipLabel?: string;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,6 +83,7 @@ export const FormFieldCNPJ = ({
       feedbackMaxLines={patternFormatProps.feedbackMaxLines}
       feedbackTooltipProps={patternFormatProps.feedbackTooltipProps}
       feedbackVariant={patternFormatProps.feedbackVariant}
+      feedbackTooltipLabel={patternFormatProps.feedbackTooltipLabel}
       render={({ field }) => {
         return (
           <PatternFormat

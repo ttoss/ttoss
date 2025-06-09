@@ -14,6 +14,7 @@ export const FormFieldTextarea = <
   feedbackMaxLines,
   feedbackTooltipProps,
   feedbackVariant,
+  feedbackTooltipLabel,
   sx,
   ...textareaProps
 }: {
@@ -23,6 +24,7 @@ export const FormFieldTextarea = <
   feedbackMaxLines?: number;
   feedbackTooltipProps?: FeedbackTooltipProps;
   feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
+  feedbackTooltipLabel?: string;
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -36,6 +38,7 @@ export const FormFieldTextarea = <
       feedbackMaxLines={feedbackMaxLines}
       feedbackTooltipProps={feedbackTooltipProps}
       feedbackVariant={feedbackVariant}
+      feedbackTooltipLabel={feedbackTooltipLabel}
       render={({ field, fieldState }) => {
         return (
           <Textarea
