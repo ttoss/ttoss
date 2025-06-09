@@ -42,8 +42,16 @@ export const FormFeedbackMessage = <
   // Check if message text is truncated based on max lines
   React.useEffect(() => {
     if (messageRef.current && feedbackMessage) {
-      const LINE_HEIGHT = 18; // Assuming line height of 18px
-      const MAX_HEIGHT = LINE_HEIGHT * feedbackMaxLines;
+      /**
+       * Calculate the line height based on the computed style of the message element.
+       * and limit the height to the maximum lines specified.
+       */
+      const computedStyle = window.getComputedStyle(messageRef.current);
+      const lineHeight =
+        parseFloat(computedStyle.lineHeight) ||
+        parseFloat(computedStyle.fontSize) * 1.2;
+
+      const MAX_HEIGHT = lineHeight * feedbackMaxLines;
       setIsMessageTruncated(messageRef.current.scrollHeight > MAX_HEIGHT);
     }
   }, [feedbackMessage, feedbackMaxLines]);
