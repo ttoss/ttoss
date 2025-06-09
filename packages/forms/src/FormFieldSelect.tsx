@@ -29,9 +29,9 @@ export const FormFieldSelect = <
       defaultValue={defaultValue}
       disabled={disabled}
       tooltip={tooltip}
-      warning={selectProps.warning}
-      warningMaxLines={selectProps.warningMaxLines}
-      warningTooltip={selectProps.warningTooltip}
+      feedbackMessage={selectProps.feedbackMessage}
+      feedbackMaxLines={selectProps.feedbackMaxLines}
+      feedbackTooltipProps={selectProps.feedbackTooltipProps}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {
