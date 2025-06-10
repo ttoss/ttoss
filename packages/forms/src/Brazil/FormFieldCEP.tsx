@@ -15,6 +15,7 @@ export const FormFieldCEP = ({
 }: FormFieldCEPProps) => {
   return (
     <FormFieldPatternFormat
+      feedback={formFieldPatternFormatProps.feedback}
       name={name}
       label={label}
       format="#####-###"

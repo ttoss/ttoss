@@ -2,7 +2,7 @@ import { Input } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from '..';
-import { FeedbackTooltipProps } from '../FormFeedbackMessage';
+import { TooltipProps } from '../FormFeedbackMessage';
 
 export type FormFieldCNPJProps = {
   label: string;
@@ -11,8 +11,7 @@ export type FormFieldCNPJProps = {
     | {
         message?: string | React.ReactNode;
         maxLines?: number;
-        tooltipProps?: FeedbackTooltipProps;
-        tooltipLabel?: string;
+        tooltipProps?: TooltipProps;
         variant?: 'success' | 'warning' | 'error' | 'info';
       }
     | string;

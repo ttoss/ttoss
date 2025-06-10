@@ -1,7 +1,7 @@
 import { Textarea, type TextareaProps } from '@ttoss/ui';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FeedbackTooltipProps } from './FormFeedbackMessage';
+import { TooltipProps } from './FormFeedbackMessage';
 import { FormField } from './FormField';
 
 export const FormFieldTextarea = <
@@ -20,8 +20,7 @@ export const FormFieldTextarea = <
     | {
         message?: string | React.ReactNode;
         maxLines?: number;
-        tooltipProps?: FeedbackTooltipProps;
-        tooltipLabel?: string;
+        tooltipProps?: TooltipProps;
         variant?: 'success' | 'warning' | 'error' | 'info';
       }
     | string;

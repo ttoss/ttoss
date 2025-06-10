@@ -2,7 +2,7 @@ import { Input } from '@ttoss/ui';
 import * as React from 'react';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
-import { FeedbackTooltipProps } from './FormFeedbackMessage';
+import { TooltipProps } from './FormFeedbackMessage';
 import { FormField } from './FormField';
 
 export type FormFieldNumericFormatProps = {
@@ -12,8 +12,7 @@ export type FormFieldNumericFormatProps = {
     | {
         message?: string | React.ReactNode;
         maxLines?: number;
-        tooltipProps?: FeedbackTooltipProps;
-        tooltipLabel?: string;
+        tooltipProps?: TooltipProps;
         variant?: 'success' | 'warning' | 'error' | 'info';
       }
     | string;

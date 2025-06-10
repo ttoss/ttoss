@@ -84,11 +84,11 @@ const Template: StoryFn = () => {
             ),
             maxLines: 2,
             tooltipProps: {
-              place: 'top',
+              place: 'bottom',
               openOnClick: true,
               icon: 'fluent:arrow-right-16-regular',
               isOpen,
-              setIsOpen: (value) => {
+              setIsOpen: (value: boolean) => {
                 setIsOpen(value);
               },
             },

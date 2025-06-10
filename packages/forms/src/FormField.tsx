@@ -9,10 +9,7 @@ import {
 } from 'react-hook-form';
 
 import { FormErrorMessage } from './FormErrorMessage';
-import {
-  type FeedbackTooltipProps,
-  FormFeedbackMessage,
-} from './FormFeedbackMessage';
+import { FormFeedbackMessage, type TooltipProps } from './FormFeedbackMessage';
 
 export type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -33,8 +30,7 @@ export type FormFieldProps<
     | {
         message?: string | React.ReactNode;
         maxLines?: number;
-        tooltipProps?: FeedbackTooltipProps;
-        tooltipLabel?: string;
+        tooltipProps?: TooltipProps;
         variant?: 'success' | 'warning' | 'error' | 'info';
       }
     | string;
@@ -153,19 +149,12 @@ export const FormField = <
       <FormErrorMessage name={name} />
       <FormFeedbackMessage
         name={name}
-        feedbackMessage={
-          typeof feedback === 'string' ? feedback : feedback?.message
-        }
-        feedbackMaxLines={
-          typeof feedback === 'string' ? undefined : feedback?.maxLines
-        }
-        feedbackTooltipProps={
+        message={typeof feedback === 'string' ? feedback : feedback?.message}
+        maxLines={typeof feedback === 'string' ? undefined : feedback?.maxLines}
+        tooltip={
           typeof feedback === 'string' ? undefined : feedback?.tooltipProps
         }
-        feedbackTooltipLabel={
-          typeof feedback === 'string' ? 'View more' : feedback?.tooltipLabel
-        }
-        feedbackVariant={
+        variant={
           typeof feedback === 'string'
             ? 'warning'
             : feedback?.variant || 'warning'

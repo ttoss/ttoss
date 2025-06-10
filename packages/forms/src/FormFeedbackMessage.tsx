@@ -2,7 +2,8 @@ import { Flex, Label, Text } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues, useFormContext } from 'react-hook-form';
 
-export type FeedbackTooltipProps = {
+export type TooltipProps = {
+  label?: string;
   place: 'top' | 'right' | 'bottom' | 'left';
   openOnClick?: boolean;
   clickable?: boolean;
@@ -18,18 +19,16 @@ export const FormFeedbackMessage = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
-  feedbackMessage,
-  feedbackMaxLines = 2,
-  feedbackTooltipProps,
-  feedbackTooltipLabel = 'View more',
-  feedbackVariant = 'warning',
+  message,
+  maxLines = 2,
+  tooltip,
+  variant = 'warning',
 }: {
   name: TName;
-  feedbackMessage?: string | React.ReactNode;
-  feedbackMaxLines?: number;
-  feedbackTooltipProps?: FeedbackTooltipProps;
-  feedbackTooltipLabel?: string;
-  feedbackVariant?: 'success' | 'warning' | 'error' | 'info';
+  message?: string | React.ReactNode;
+  maxLines?: number;
+  tooltip?: TooltipProps;
+  variant?: 'success' | 'warning' | 'error' | 'info';
 }) => {
   const {
     formState: { errors },
@@ -41,7 +40,7 @@ export const FormFeedbackMessage = <
 
   // Check if message text is truncated based on max lines
   React.useEffect(() => {
-    if (messageRef.current && feedbackMessage) {
+    if (messageRef.current && message) {
       /**
        * Calculate the line height based on the computed style of the message element.
        * and limit the height to the maximum lines specified.
@@ -51,14 +50,14 @@ export const FormFeedbackMessage = <
         parseFloat(computedStyle.lineHeight) ||
         parseFloat(computedStyle.fontSize) * 1.2;
 
-      const MAX_HEIGHT = lineHeight * feedbackMaxLines;
+      const MAX_HEIGHT = lineHeight * maxLines;
       setIsMessageTruncated(messageRef.current.scrollHeight > MAX_HEIGHT);
     }
-  }, [feedbackMessage, feedbackMaxLines]);
+  }, [message, maxLines]);
 
   const messageContent = React.useMemo(() => {
     const colorVariant = (() => {
-      switch (feedbackVariant) {
+      switch (variant) {
         case 'success':
           return 'feedback.text.positive.default';
         case 'warning':
@@ -72,7 +71,7 @@ export const FormFeedbackMessage = <
       }
     })();
 
-    if (feedbackMessage && !hasError) {
+    if (message && !hasError) {
       return (
         <Flex sx={{ flexDirection: 'column' }}>
           <Text
@@ -85,17 +84,17 @@ export const FormFeedbackMessage = <
               ref={messageRef}
               style={{
                 display: '-webkit-box',
-                WebkitLineClamp: feedbackMaxLines,
+                WebkitLineClamp: maxLines,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 width: 'full',
                 fontSize: 'sm',
               }}
             >
-              {feedbackMessage}
+              {message}
             </div>
           </Text>
-          {isMessageTruncated && feedbackTooltipLabel && (
+          {isMessageTruncated && (
             <Label
               sx={{
                 textDecoration: 'underline',
@@ -113,32 +112,24 @@ export const FormFeedbackMessage = <
                       color: colorVariant,
                     }}
                   >
-                    {feedbackMessage}
+                    {message}
                   </Flex>
                 ),
-                place: feedbackTooltipProps?.place || 'bottom',
-                clickable: true,
-                openOnClick: true,
-                variant: feedbackVariant || 'warning',
-                ...feedbackTooltipProps,
+                place: tooltip?.place || 'bottom',
+                clickable: tooltip?.clickable || true,
+                openOnClick: tooltip?.openOnClick || true,
+                variant: variant || 'warning',
+                ...tooltip,
               }}
             >
-              {feedbackTooltipLabel}
+              {tooltip?.label || 'View more'}
             </Label>
           )}
         </Flex>
       );
     }
     return null;
-  }, [
-    feedbackMessage,
-    hasError,
-    feedbackVariant,
-    feedbackMaxLines,
-    isMessageTruncated,
-    feedbackTooltipProps,
-    feedbackTooltipLabel,
-  ]);
+  }, [message, hasError, variant, maxLines, isMessageTruncated, tooltip]);
 
   return messageContent;
 };
