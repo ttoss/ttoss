@@ -29,11 +29,7 @@ export const FormFieldSelect = <
       defaultValue={defaultValue}
       disabled={disabled}
       tooltip={tooltip}
-      feedbackMessage={selectProps.feedbackMessage}
-      feedbackMaxLines={selectProps.feedbackMaxLines}
-      feedbackTooltipProps={selectProps.feedbackTooltipProps}
-      feedbackVariant={selectProps.feedbackVariant}
-      feedbackTooltipLabel={selectProps.feedbackTooltipLabel}
+      feedback={selectProps.feedback}
       sx={sx}
       css={css}
       render={({ field, fieldState }) => {

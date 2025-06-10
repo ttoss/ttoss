@@ -24,39 +24,52 @@ const Template: StoryFn = () => {
     formMethods.setError('cep', { message: 'Value is required' });
   }, []);
 
+  const [isOpen, setIsOpen] = React.useState(false);
+
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCEP
           name="cep"
           label="CEP:"
-          feedbackMessage={
-            <Link
-              sx={{
-                color: 'feedback.text.caution.default',
-                ':visited': {
+          feedback={{
+            message: (
+              <Link
+                sx={{
                   color: 'feedback.text.caution.default',
-                },
-              }}
-              href="https://www.google.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Saiba mais
-            </Link>
-          }
+                  ':visited': {
+                    color: 'feedback.text.caution.default',
+                  },
+                }}
+                href="https://www.google.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Saiba mais
+              </Link>
+            ),
+          }}
         />
       </Flex>
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCEP name="cepDisabled" label="CEP:" disabled />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex
+        sx={{
+          flexDirection: 'column',
+          gap: 'md',
+        }}
+      >
         <FormFieldCEP
           name="cepWarning"
           label="CEP:"
-          feedbackMessage={
-            <div>
-              {` Lorem Ipsum is simply dummy text of the printing and typesetting
+          onClick={() => {
+            setIsOpen(!isOpen);
+          }}
+          feedback={{
+            message: (
+              <div>
+                {` Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
               ever since the 1500s, when an unknown printer took a galley of
               type and scrambled it to make a type specimen book. It has
@@ -64,18 +77,23 @@ const Template: StoryFn = () => {
               electronic typesetting, remaining essentially unchanged. It was
               popularised in the 1960s with the release of Letraset sheets
               containing Lorem Ipsum passages,`}
-              <br />
-              {`and more recently with desktop publishing software like
+                <br />
+                {`and more recently with desktop publishing software like
               Aldus PageMaker including versions of Lorem Ipsum.`}
-            </div>
-          }
-          feedbackMaxLines={2}
-          feedbackTooltipProps={{
-            place: 'bottom',
-            openOnClick: true,
-            icon: 'fluent:arrow-right-16-regular',
+              </div>
+            ),
+            maxLines: 2,
+            tooltipProps: {
+              place: 'top',
+              openOnClick: true,
+              icon: 'fluent:arrow-right-16-regular',
+              isOpen,
+              setIsOpen: (value) => {
+                setIsOpen(value);
+              },
+            },
+            variant: 'success',
           }}
-          feedbackVariant="warning"
         />
       </Flex>
       <Button sx={{ marginTop: 'lg' }} type="submit">

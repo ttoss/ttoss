@@ -8,10 +8,15 @@ import { FormField } from './FormField';
 export type FormFieldNumericFormatProps = {
   label?: string;
   name: string;
-  feedbackMessage?: string | React.ReactNode;
-  feedbackMaxLines?: number;
-  feedbackTooltipProps?: FeedbackTooltipProps;
-  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
+  feedback?:
+    | {
+        message?: string | React.ReactNode;
+        maxLines?: number;
+        tooltipProps?: FeedbackTooltipProps;
+        tooltipLabel?: string;
+        variant?: 'success' | 'warning' | 'error' | 'info';
+      }
+    | string;
   tooltip?: {
     render: string | React.ReactNode;
     place: 'top';
@@ -23,19 +28,15 @@ export type FormFieldNumericFormatProps = {
 export const FormFieldNumericFormat = ({
   label,
   name,
-  feedbackMessage,
+  feedback,
   tooltip,
-  feedbackMaxLines,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
   return (
     <FormField
       label={label}
       name={name}
-      feedbackMessage={feedbackMessage}
-      feedbackMaxLines={feedbackMaxLines}
-      feedbackTooltipProps={numericFormatProps.feedbackTooltipProps}
-      feedbackVariant={numericFormatProps.feedbackVariant}
+      feedback={feedback}
       tooltip={tooltip}
       render={({ field }) => {
         return (

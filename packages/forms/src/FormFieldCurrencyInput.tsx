@@ -21,9 +21,7 @@ export const FormFieldCurrencyInput = ({
     <FormFieldNumericFormat
       name={name}
       label={label}
-      feedbackMessage={formFieldNumericFormatProps.feedbackMessage}
-      feedbackMaxLines={formFieldNumericFormatProps.feedbackMaxLines}
-      feedbackTooltipProps={formFieldNumericFormatProps.feedbackTooltipProps}
+      feedback={formFieldNumericFormatProps.feedback}
       fixedDecimalScale
       decimalScale={2}
       prefix={prefix}

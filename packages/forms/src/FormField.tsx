@@ -29,11 +29,15 @@ export type FormFieldProps<
     openOnClick?: boolean;
     clickable?: boolean;
   };
-  feedbackMessage?: string | React.ReactNode;
-  feedbackMaxLines?: number;
-  feedbackTooltipProps?: FeedbackTooltipProps;
-  feedbackTooltipLabel?: string;
-  feedbackVariant?: 'success' | 'warning' | 'error' | 'info';
+  feedback?:
+    | {
+        message?: string | React.ReactNode;
+        maxLines?: number;
+        tooltipProps?: FeedbackTooltipProps;
+        tooltipLabel?: string;
+        variant?: 'success' | 'warning' | 'error' | 'info';
+      }
+    | string;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -57,11 +61,7 @@ export const FormField = <
   sx,
   css,
   render,
-  feedbackMessage,
-  feedbackMaxLines,
-  feedbackTooltipProps,
-  feedbackTooltipLabel,
-  feedbackVariant = 'warning',
+  feedback,
   tooltip,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
@@ -82,14 +82,18 @@ export const FormField = <
       const childProps = child.props as any;
 
       const getTrailingIcon = () => {
-        if (!feedbackMessage) return undefined;
-        switch (feedbackVariant || 'warning') {
+        if (!feedback) return undefined;
+        const feedbackVariant =
+          typeof feedback === 'string'
+            ? 'warning'
+            : feedback.variant || 'warning';
+        switch (feedbackVariant) {
           case 'success':
             return 'fluent:checkmark-circle-16-regular';
           case 'warning':
             return 'warning-alt';
           case 'error':
-            return 'warning-alt';
+            return 'fluent-mdl2:warning';
           case 'info':
             return 'fluent:info-20-regular';
           default:
@@ -109,7 +113,7 @@ export const FormField = <
               {React.createElement(child.type, {
                 id,
                 ...childProps,
-                ...(feedbackMessage ? { trailingIcon: getTrailingIcon() } : {}),
+                ...(feedback ? { trailingIcon: getTrailingIcon() } : {}),
               })}
             </Flex>
             {label}
@@ -133,21 +137,12 @@ export const FormField = <
           {React.createElement(child.type, {
             id,
             ...childProps,
-            ...(feedbackMessage ? { trailingIcon: getTrailingIcon() } : {}),
+            ...(feedback ? { trailingIcon: getTrailingIcon() } : {}),
           })}
         </Flex>
       );
     });
-  }, [
-    render,
-    controllerReturn,
-    label,
-    disabled,
-    id,
-    tooltip,
-    feedbackMessage,
-    feedbackVariant,
-  ]);
+  }, [render, controllerReturn, label, disabled, id, tooltip, feedback]);
 
   return (
     <Flex
@@ -158,11 +153,23 @@ export const FormField = <
       <FormErrorMessage name={name} />
       <FormFeedbackMessage
         name={name}
-        feedbackMessage={feedbackMessage}
-        feedbackMaxLines={feedbackMaxLines}
-        feedbackTooltipProps={feedbackTooltipProps}
-        feedbackTooltipLabel={feedbackTooltipLabel}
-        feedbackVariant={feedbackVariant}
+        feedbackMessage={
+          typeof feedback === 'string' ? feedback : feedback?.message
+        }
+        feedbackMaxLines={
+          typeof feedback === 'string' ? undefined : feedback?.maxLines
+        }
+        feedbackTooltipProps={
+          typeof feedback === 'string' ? undefined : feedback?.tooltipProps
+        }
+        feedbackTooltipLabel={
+          typeof feedback === 'string' ? 'View more' : feedback?.tooltipLabel
+        }
+        feedbackVariant={
+          typeof feedback === 'string'
+            ? 'warning'
+            : feedback?.variant || 'warning'
+        }
       />
     </Flex>
   );

@@ -7,32 +7,28 @@ import { FormField } from './FormField';
 export type FormFieldPatternFormatProps = {
   label?: string;
   name: string;
-  feedbackMessage?: string | React.ReactNode;
-  feedbackMaxLines?: number;
-  feedbackTooltipProps?: FeedbackTooltipProps;
-  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
-  feedbackTooltipLabel?: string;
+  feedback?:
+    | {
+        message?: string | React.ReactNode;
+        maxLines?: number;
+        tooltipProps?: FeedbackTooltipProps;
+        tooltipLabel?: string;
+        variant?: 'success' | 'warning' | 'error' | 'info';
+      }
+    | string;
 } & PatternFormatProps;
 
 export const FormFieldPatternFormat = ({
   label,
   name,
-  feedbackMessage,
-  feedbackMaxLines,
-  feedbackTooltipProps,
-  feedbackVariant,
-  feedbackTooltipLabel,
+  feedback,
   ...patternFormatProps
 }: FormFieldPatternFormatProps) => {
   return (
     <FormField
       name={name}
       label={label}
-      feedbackMessage={feedbackMessage}
-      feedbackMaxLines={feedbackMaxLines}
-      feedbackTooltipProps={feedbackTooltipProps}
-      feedbackVariant={feedbackVariant}
-      feedbackTooltipLabel={feedbackTooltipLabel}
+      feedback={feedback}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat

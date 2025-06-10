@@ -7,11 +7,15 @@ import { FeedbackTooltipProps } from '../FormFeedbackMessage';
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
-  feedbackMessage?: string | React.ReactNode;
-  feedbackMaxLines?: number;
-  feedbackTooltipProps?: FeedbackTooltipProps;
-  feedbackVariant?: 'error' | 'warning' | 'info' | 'success';
-  feedbackTooltipLabel?: string;
+  feedback?:
+    | {
+        message?: string | React.ReactNode;
+        maxLines?: number;
+        tooltipProps?: FeedbackTooltipProps;
+        tooltipLabel?: string;
+        variant?: 'success' | 'warning' | 'error' | 'info';
+      }
+    | string;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,17 +77,14 @@ export const isCnpjValid = (cnpj: any) => {
 export const FormFieldCNPJ = ({
   label,
   name,
+  feedback,
   ...patternFormatProps
 }: FormFieldCNPJProps) => {
   return (
     <FormField
       name={name}
       label={label}
-      feedbackMessage={patternFormatProps.feedbackMessage}
-      feedbackMaxLines={patternFormatProps.feedbackMaxLines}
-      feedbackTooltipProps={patternFormatProps.feedbackTooltipProps}
-      feedbackVariant={patternFormatProps.feedbackVariant}
-      feedbackTooltipLabel={patternFormatProps.feedbackTooltipLabel}
+      feedback={feedback}
       render={({ field }) => {
         return (
           <PatternFormat

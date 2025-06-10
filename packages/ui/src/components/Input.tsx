@@ -40,7 +40,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           return 'feedback.text.positive.default';
         case 'warning-alt':
           return 'feedback.text.caution.default';
-        case 'error':
+        case 'fluent-mdl2:warning':
           return 'feedback.text.negative.default';
         case 'fluent:info-20-regular':
           return 'feedback.text.info.default';
@@ -57,7 +57,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           trailingIcon === 'warning-alt' && !inputProps['aria-invalid']
             ? 'is-warning'
             : ''
-        }`}
+        }
+        `}
         sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
       >
         {leadingIcon && (

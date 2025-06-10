@@ -38,7 +38,7 @@ const RenderFormWithWarning = () => {
       <FormField
         name="firstName"
         label="First Name"
-        feedbackMessage="Warning"
+        feedback="Warning"
         defaultValue={''}
         render={({ field }) => {
           return <Input {...field} />;

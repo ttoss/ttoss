@@ -26,11 +26,7 @@ export const FormFieldPassword = <
       label={label}
       disabled={inputProps.disabled}
       tooltip={tooltip}
-      feedbackMessage={inputProps.feedbackMessage}
-      feedbackMaxLines={inputProps.feedbackMaxLines}
-      feedbackTooltipProps={inputProps.feedbackTooltipProps}
-      feedbackVariant={inputProps.feedbackVariant}
-      feedbackTooltipLabel={inputProps.feedbackTooltipLabel}
+      feedback={inputProps.feedback}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       render={({ field, fieldState }) => {
