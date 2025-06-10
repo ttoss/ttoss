@@ -151,6 +151,7 @@ const mockNotifications: Notification[] = [
       },
     ],
     createdAt: 'há 3h',
+    readAt: null,
   },
   {
     id: '2',
@@ -158,6 +159,7 @@ const mockNotifications: Notification[] = [
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
     createdAt: 'há 25 min',
+    readAt: null,
   },
 ];
 
