@@ -15,6 +15,8 @@ export type Notification = {
     label?: string;
   }[];
   createdAt: string;
+  readAt?: string | null;
+  onClose?: () => void;
 };
 
 type Props = {
@@ -68,8 +70,6 @@ export const NotificationsMenu = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
 
-  const unread = unreadCount ?? notifications.length;
-
   const togglePanel = () => {
     setIsOpen((prev) => {
       const next = !prev;
@@ -77,6 +77,15 @@ export const NotificationsMenu = ({
       return next;
     });
   };
+
+  const unread =
+    unreadCount ??
+    notifications.filter((n) => {
+      if (defaultOpen) {
+        return 0;
+      }
+      return n.readAt === null;
+    }).length;
 
   React.useEffect(() => {
     if (!isOpen || !buttonRef.current) return;
@@ -113,6 +122,28 @@ export const NotificationsMenu = ({
     };
   }, [hasMore, onLoadMore, notifications.length]);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        onOpenChange?.(false);
+        onClose?.();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onOpenChange, onClose]);
+
   return (
     <Flex sx={{ position: 'relative', justifyContent: 'flex-start' }}>
       <Box sx={{ position: 'relative' }}>
@@ -122,7 +153,7 @@ export const NotificationsMenu = ({
           sx={{
             position: 'relative',
             borderRadius: 'full',
-            padding: 2,
+            padding: 1,
             transition: 'background-color 0.3s ease',
             '&:hover': {
               backgroundColor: 'action.background.muted.default',
@@ -130,20 +161,22 @@ export const NotificationsMenu = ({
           }}
           onClick={togglePanel}
         >
-          <Icon icon="mdi:bell-outline" width={25} height={25} />
+          <Box sx={{ color: 'display.text.muted.default' }}>
+            <Icon icon="mdi:bell-outline" width={22} height={22} />
+          </Box>
           {unread > 0 && (
             <Box
               sx={{
                 position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                minWidth: '16px',
-                height: '16px',
+                top: '-2px',
+                right: '-2px',
+                minWidth: '14px',
+                height: '14px',
                 paddingX: 1,
                 borderRadius: 'full',
                 backgroundColor: 'action.background.negative.default',
                 color: 'feedback.text.primary.default',
-                fontSize: 'xs',
+                fontSize: '10px',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
@@ -174,7 +207,7 @@ export const NotificationsMenu = ({
             }}
           >
             <Box ref={containerRef}>
-              <Flex sx={{ flexDirection: 'column' }}>
+              <Flex sx={{ flexDirection: 'column', gap: 2 }}>
                 {notifications.length === 0 && (
                   <Text
                     sx={{
@@ -197,7 +230,7 @@ export const NotificationsMenu = ({
                         notification.message,
                         notification.actions
                       )}
-                      onClose={onClose}
+                      onClose={notification.onClose || onClose}
                       metaInfo={notification.createdAt}
                     />
                   );
