@@ -1,58 +1,26 @@
+import { Tabs } from '@ttoss/components/Tabs';
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, Flex, IconButton, Link, Text } from '@ttoss/ui';
+import { Box, Card, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-import { NotificationCard } from '../NotificationCard/NotificationCard';
+import {
+  NotificationCard,
+  NotificationCardProps,
+} from '../NotificationCard/NotificationCard';
 
-export type Notification = {
+export type Notification = NotificationCardProps & {
   id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  actions?: {
-    action?: 'open_url';
-    url?: string;
-    label?: string;
-  }[];
-  createdAt: string;
-  readAt?: string | null;
-  onClose?: () => void;
+  group?: string;
 };
 
 type Props = {
   notifications: Notification[];
   defaultOpen?: boolean;
   hasMore?: boolean;
+  count: number;
   onLoadMore?: () => void;
   onOpenChange?: (isOpen: boolean) => void;
-  unreadCount?: number;
   onClose?: () => void;
-};
-
-const renderMessage = (message: string, actions?: Notification['actions']) => {
-  if (!actions || actions.length === 0) return message;
-
-  return (
-    <Flex sx={{ flexDirection: 'column', gap: 2 }}>
-      <Text>{message}</Text>
-      {actions.map((action, index) => {
-        if (action.action === 'open_url') {
-          return (
-            <Link
-              key={index}
-              href={action.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ color: 'action.text.accent.default', cursor: 'pointer' }}
-            >
-              {action.label || 'Acessar'}
-            </Link>
-          );
-        }
-        return null;
-      })}
-    </Flex>
-  );
 };
 
 export const NotificationsMenu = ({
@@ -61,7 +29,7 @@ export const NotificationsMenu = ({
   hasMore = false,
   onLoadMore,
   onOpenChange,
-  unreadCount,
+  count,
   onClose,
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
@@ -69,6 +37,19 @@ export const NotificationsMenu = ({
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
+
+  const [showCount, setshowCount] = React.useState(true);
+
+  const groupsList = React.useMemo(() => {
+    const uniqueGroups = Array.from(
+      new Set(
+        notifications.map((n) => {
+          return n.group;
+        })
+      )
+    );
+    return uniqueGroups;
+  }, [notifications]);
 
   const togglePanel = () => {
     setIsOpen((prev) => {
@@ -78,15 +59,6 @@ export const NotificationsMenu = ({
     });
   };
 
-  const unread =
-    unreadCount ??
-    notifications.filter((n) => {
-      if (defaultOpen) {
-        return 0;
-      }
-      return n.readAt === null;
-    }).length;
-
   React.useEffect(() => {
     if (!isOpen || !buttonRef.current) return;
 
@@ -94,6 +66,7 @@ export const NotificationsMenu = ({
     const spaceRight = window.innerWidth - rect.right;
     const spaceLeft = rect.left;
 
+    setshowCount(false);
     setOpenToLeft(spaceRight < 400 && spaceLeft > spaceRight);
   }, [isOpen]);
 
@@ -164,7 +137,7 @@ export const NotificationsMenu = ({
           <Box sx={{ color: 'display.text.muted.default' }}>
             <Icon icon="mdi:bell-outline" width={22} height={22} />
           </Box>
-          {unread > 0 && (
+          {count > 0 && showCount && (
             <Box
               sx={{
                 position: 'absolute',
@@ -184,7 +157,7 @@ export const NotificationsMenu = ({
                 lineHeight: 1,
               }}
             >
-              {unread > 99 ? '99+' : unread}
+              {count > 99 ? '99+' : count}
             </Box>
           )}
         </IconButton>
@@ -208,7 +181,7 @@ export const NotificationsMenu = ({
           >
             <Box ref={containerRef}>
               <Flex sx={{ flexDirection: 'column', gap: 2 }}>
-                {notifications.length === 0 && (
+                {notifications.length === 0 ? (
                   <Text
                     sx={{
                       color: 'display.text.muted.default',
@@ -218,24 +191,39 @@ export const NotificationsMenu = ({
                   >
                     Nenhuma notificação
                   </Text>
+                ) : (
+                  <Tabs sx={{ width: 'full' }}>
+                    <Tabs.TabList>
+                      {groupsList.map((group) => {
+                        return (
+                          <Tabs.Tab key={group}>
+                            <Flex>{group}</Flex>
+                          </Tabs.Tab>
+                        );
+                      })}
+                    </Tabs.TabList>
+                    {groupsList.map((group) => {
+                      const groupNotifications = notifications.filter((n) => {
+                        return n.group === group;
+                      });
+                      return (
+                        <Tabs.TabPanel key={group}>
+                          <Flex sx={{ flexDirection: 'column', gap: 6 }}>
+                            {groupNotifications.map((notification) => {
+                              return (
+                                <NotificationCard
+                                  key={notification.id}
+                                  {...notification}
+                                  onClose={() => {}}
+                                />
+                              );
+                            })}
+                          </Flex>
+                        </Tabs.TabPanel>
+                      );
+                    })}
+                  </Tabs>
                 )}
-
-                {notifications.map((notification) => {
-                  return (
-                    <NotificationCard
-                      key={notification.id}
-                      type={notification.type}
-                      title={notification.title}
-                      message={renderMessage(
-                        notification.message,
-                        notification.actions
-                      )}
-                      onClose={notification.onClose || onClose}
-                      metaInfo={notification.createdAt}
-                    />
-                  );
-                })}
-
                 {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
               </Flex>
             </Box>

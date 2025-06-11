@@ -4,7 +4,7 @@ import {
   Notification,
   NotificationsMenu,
 } from '@ttoss/components/NotificationsMenu';
-import * as React from 'react';
+// import * as React from 'react';
 
 export default {
   title: 'Components/NotificationsMenu',
@@ -24,16 +24,16 @@ const defaultNotifications: Notification[] = [
         label: 'Ver campanha',
       },
     ],
-    createdAt: 'há 1 min',
-    readAt: null,
+    caption: 'há 1 min',
+    group: 'Novas',
   },
   {
     id: '2',
     type: 'warning',
     title: 'Orçamento próximo do limite',
     message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    createdAt: 'há 25 min',
-    readAt: null,
+    caption: 'há 25 min',
+    group: 'Novas',
   },
   {
     id: '3',
@@ -41,8 +41,8 @@ const defaultNotifications: Notification[] = [
     title:
       'Limite da conta está próximo e precisa ser ajustado para evitar interrupções',
     message: 'Sua conta está utilizando 95% do orçamento mensal.',
-    createdAt: 'há 30 min',
-    readAt: null,
+    caption: 'há 30 min',
+    group: 'Novas',
   },
   {
     id: '4',
@@ -56,16 +56,16 @@ const defaultNotifications: Notification[] = [
         label: 'Tentar novamente',
       },
     ],
-    createdAt: 'há 3h',
-    readAt: null,
+    caption: 'há 3h',
+    group: 'Antigas',
   },
   {
     id: '5',
     type: 'info',
     title: 'Nova funcionalidade disponível',
     message: 'Agora você pode monitorar seus gastos em tempo real.',
-    createdAt: 'há 2d',
-    readAt: null,
+    caption: 'há 2d',
+    group: 'Antigas',
   },
   {
     id: '6',
@@ -73,27 +73,28 @@ const defaultNotifications: Notification[] = [
     title: 'Nova funcionalidade disponível',
     message:
       'Integrado com o Google Analytics para relatórios mais detalhados, e pode ser acessado através do menu de relatórios.',
-    createdAt: 'há 20 min',
-    readAt: '2023-10-01T12:00:00Z',
+    caption: 'há 20 min',
+    group: 'Antigas',
   },
 ];
 
-const scrollNotifications: Notification[] = Array(25)
-  .fill(null)
-  .map((_, i) => {
-    const base = defaultNotifications[i % defaultNotifications.length];
-    return {
-      ...base,
-      id: `${i + 100}`,
-      title: `${base.title}`,
-      message: `${base.message}`,
-    };
-  });
+// const scrollNotifications: Notification[] = Array(25)
+//   .fill(null)
+//   .map((_, i) => {
+//     const base = defaultNotifications[i % defaultNotifications.length];
+//     return {
+//       ...base,
+//       id: `${i + 100}`,
+//       title: `${base.title}`,
+//       message: `${base.message}`,
+//     };
+//   });
 
 export const Default: StoryObj = {
   args: {
     notifications: defaultNotifications,
-    defaultOpen: true,
+    defaultOpen: false,
+    count: defaultNotifications.length,
     onClose: () => {},
   },
 };
@@ -105,132 +106,132 @@ export const Empty: StoryObj = {
   },
 };
 
-export const WithInfiniteScroll: StoryObj = {
-  render: () => {
-    const [notifications, setNotifications] = React.useState<Notification[]>(
-      []
-    );
-    const [page, setPage] = React.useState(0);
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [hasInitialized, setHasInitialized] = React.useState(false);
-    const pageSize = 10;
+// export const WithInfiniteScroll: StoryObj = {
+//   render: () => {
+//     const [notifications, setNotifications] = React.useState<Notification[]>(
+//       []
+//     );
+//     const [page, setPage] = React.useState(0);
+//     const [isOpen, setIsOpen] = React.useState(false);
+//     const [hasInitialized, setHasInitialized] = React.useState(false);
+//     const pageSize = 10;
 
-    const loadMore = () => {
-      const start = (page + 1) * pageSize;
-      const end = start + pageSize;
-      const nextItems = scrollNotifications.slice(start, end);
+//     const loadMore = () => {
+//       const start = (page + 1) * pageSize;
+//       const end = start + pageSize;
+//       const nextItems = scrollNotifications.slice(start, end);
 
-      setNotifications((prev) => {
-        return [...prev, ...nextItems];
-      });
-      setPage((prev) => {
-        return prev + 1;
-      });
-    };
+//       setNotifications((prev) => {
+//         return [...prev, ...nextItems];
+//       });
+//       setPage((prev) => {
+//         return prev + 1;
+//       });
+//     };
 
-    React.useEffect(() => {
-      if (isOpen) {
-        if (!hasInitialized) {
-          const initial = scrollNotifications.slice(0, pageSize);
-          setNotifications(initial);
-          setPage(0);
-          setHasInitialized(true);
-        }
-      } else {
-        setNotifications([]);
-        setPage(0);
-        setHasInitialized(false);
-      }
-    }, [isOpen, hasInitialized]);
+//     React.useEffect(() => {
+//       if (isOpen) {
+//         if (!hasInitialized) {
+//           const initial = scrollNotifications.slice(0, pageSize);
+//           setNotifications(initial);
+//           setPage(0);
+//           setHasInitialized(true);
+//         }
+//       } else {
+//         setNotifications([]);
+//         setPage(0);
+//         setHasInitialized(false);
+//       }
+//     }, [isOpen, hasInitialized]);
 
-    return (
-      <NotificationsMenu
-        notifications={notifications}
-        hasMore={notifications.length < scrollNotifications.length}
-        onLoadMore={hasInitialized ? loadMore : undefined}
-        defaultOpen={isOpen}
-        onOpenChange={setIsOpen}
-        unreadCount={
-          scrollNotifications.filter((n) => {
-            return n.readAt == null;
-          }).length
-        }
-        onClose={() => {}}
-      />
-    );
-  },
-};
+//     return (
+//       <NotificationsMenu
+//         notifications={notifications}
+//         hasMore={notifications.length < scrollNotifications.length}
+//         onLoadMore={hasInitialized ? loadMore : undefined}
+//         defaultOpen={isOpen}
+//         onOpenChange={setIsOpen}
+//         unreadCount={
+//           scrollNotifications.filter((n) => {
+//             return n.readAt == null;
+//           }).length
+//         }
+//         onClose={() => {}}
+//       />
+//     );
+//   },
+// };
 
-export const WithCloseButton: StoryObj = {
-  render: () => {
-    const [notifications, setNotifications] =
-      React.useState<Notification[]>(defaultNotifications);
-    const [isOpen, setIsOpen] = React.useState(true);
+// export const WithCloseButton: StoryObj = {
+//   render: () => {
+//     const [notifications, setNotifications] =
+//       React.useState<Notification[]>(defaultNotifications);
+//     const [isOpen, setIsOpen] = React.useState(true);
 
-    const handleClose = (id: string) => {
-      setNotifications((prev) => {
-        return prev.filter((n) => {
-          return n.id !== id;
-        });
-      });
-    };
+//     const handleClose = (id: string) => {
+//       setNotifications((prev) => {
+//         return prev.filter((n) => {
+//           return n.id !== id;
+//         });
+//       });
+//     };
 
-    return (
-      <NotificationsMenu
-        notifications={notifications.map((n) => {
-          return {
-            ...n,
-            onClose: () => {
-              return handleClose(n.id);
-            },
-          };
-        })}
-        defaultOpen={isOpen}
-        onOpenChange={setIsOpen}
-        onClose={() => {
-          return setIsOpen(false);
-        }}
-      />
-    );
-  },
-};
+//     return (
+//       <NotificationsMenu
+//         notifications={notifications.map((n) => {
+//           return {
+//             ...n,
+//             onClose: () => {
+//               return handleClose(n.id);
+//             },
+//           };
+//         })}
+//         defaultOpen={isOpen}
+//         onOpenChange={setIsOpen}
+//         onClose={() => {
+//           return setIsOpen(false);
+//         }}
+//       />
+//     );
+//   },
+// };
 
-export const MarkAllAsReadOnOpen: StoryObj = {
-  render: () => {
-    const [notifications, setNotifications] = React.useState<
-      (Notification & { readAt: string | null })[]
-    >(
-      defaultNotifications.map((n) => {
-        return { ...n, readAt: n.readAt ?? null };
-      })
-    );
-    const [isOpen, setIsOpen] = React.useState(false);
+// export const MarkAllAsReadOnOpen: StoryObj = {
+//   render: () => {
+//     const [notifications, setNotifications] = React.useState<
+//       (Notification & { readAt: string | null })[]
+//     >(
+//       defaultNotifications.map((n) => {
+//         return { ...n, readAt: n.readAt ?? null };
+//       })
+//     );
+//     const [isOpen, setIsOpen] = React.useState(false);
 
-    const unreadCount = notifications.filter((n) => {
-      return !n.readAt;
-    }).length;
+//     const unreadCount = notifications.filter((n) => {
+//       return !n.readAt;
+//     }).length;
 
-    const handleOpenChange = (open: boolean) => {
-      setIsOpen(open);
-      if (open) {
-        setNotifications((prev) => {
-          return prev.map((n) => {
-            return { ...n, readAt: new Date().toISOString() };
-          });
-        });
-      }
-    };
+//     const handleOpenChange = (open: boolean) => {
+//       setIsOpen(open);
+//       if (open) {
+//         setNotifications((prev) => {
+//           return prev.map((n) => {
+//             return { ...n, readAt: new Date().toISOString() };
+//           });
+//         });
+//       }
+//     };
 
-    return (
-      <NotificationsMenu
-        notifications={notifications}
-        defaultOpen={isOpen}
-        onOpenChange={handleOpenChange}
-        unreadCount={unreadCount}
-        onClose={() => {
-          return setIsOpen(false);
-        }}
-      />
-    );
-  },
-};
+//     return (
+//       <NotificationsMenu
+//         notifications={notifications}
+//         defaultOpen={isOpen}
+//         onOpenChange={handleOpenChange}
+//         unreadCount={unreadCount}
+//         onClose={() => {
+//           return setIsOpen(false);
+//         }}
+//       />
+//     );
+//   },
+// };
