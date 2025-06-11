@@ -1,4 +1,4 @@
-import { Input } from '@ttoss/ui';
+import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
 import * as React from 'react';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
@@ -14,6 +14,14 @@ export type FormFieldNumericFormatProps = {
     openOnClick?: boolean;
     clickable?: boolean;
   };
+  inputTooltip?: {
+    render: string | React.ReactNode;
+    place: 'bottom' | 'top' | 'left' | 'right';
+    openOnClick?: boolean;
+    clickable?: boolean;
+    variant?: 'info' | 'warning' | 'success' | 'error';
+    sx?: ThemeUIStyleObject<Theme>;
+  } & SxProp;
 } & NumericFormatProps;
 
 export const FormFieldNumericFormat = ({
@@ -21,6 +29,7 @@ export const FormFieldNumericFormat = ({
   name,
   warning,
   tooltip,
+  inputTooltip,
   ...numericFormatProps
 }: FormFieldNumericFormatProps) => {
   return (
@@ -29,6 +38,7 @@ export const FormFieldNumericFormat = ({
       name={name}
       warning={warning}
       tooltip={tooltip}
+      inputTooltip={inputTooltip}
       render={({ field }) => {
         return (
           <NumericFormat
