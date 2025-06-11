@@ -1,6 +1,13 @@
-'use client';
-
-import { Checkbox, Flex, Label, Switch, type SxProp, Tooltip } from '@ttoss/ui';
+import {
+  Checkbox,
+  Flex,
+  Label,
+  Switch,
+  type SxProp,
+  Theme,
+  ThemeUIStyleObject,
+  Tooltip,
+} from '@ttoss/ui';
 import * as React from 'react';
 import {
   type FieldPath,
@@ -34,7 +41,8 @@ export type FormFieldProps<
     openOnClick?: boolean;
     clickable?: boolean;
     variant?: 'info' | 'warning' | 'success' | 'error';
-  };
+    sx?: ThemeUIStyleObject<Theme>;
+  } & SxProp;
   warning?: string | React.ReactNode;
 } & SxProp;
 
@@ -47,7 +55,6 @@ type FormFieldCompleteProps<
   ) => React.ReactElement;
 } & FormFieldProps<TFieldValues, TName>;
 
-// Solução 1: Usando estado local e event listeners
 export const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -191,7 +198,7 @@ export const FormField = <
       return (
         <Flex
           sx={{
-            width: '100%',
+            width: 'full',
             flexDirection: 'column',
           }}
         >
@@ -218,6 +225,7 @@ export const FormField = <
                 clickable={inputTooltip.clickable}
                 isOpen={showInputTooltip}
                 variant={inputTooltip.variant}
+                sx={inputTooltip.sx}
               >
                 {inputTooltip.render}
               </Tooltip>

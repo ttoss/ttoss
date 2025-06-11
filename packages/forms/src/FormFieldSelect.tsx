@@ -29,6 +29,7 @@ export const FormFieldSelect = <
       defaultValue={defaultValue}
       disabled={disabled}
       tooltip={tooltip}
+      inputTooltip={selectProps.inputTooltip}
       warning={selectProps.warning}
       sx={sx}
       css={css}

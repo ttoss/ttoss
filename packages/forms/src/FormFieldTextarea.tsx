@@ -1,4 +1,9 @@
-import { Textarea, type TextareaProps } from '@ttoss/ui';
+import {
+  Textarea,
+  type TextareaProps,
+  Theme,
+  ThemeUIStyleObject,
+} from '@ttoss/ui';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField } from './FormField';
@@ -10,13 +15,21 @@ export const FormFieldTextarea = <
   label,
   name,
   warning,
-
+  inputTooltip,
   sx,
   ...textareaProps
 }: {
   label?: string;
   name: TName;
   warning?: string | React.ReactNode;
+  inputTooltip?: {
+    render: string | React.ReactNode;
+    place: 'bottom' | 'top' | 'left' | 'right';
+    openOnClick?: boolean;
+    clickable?: boolean;
+    variant?: 'info' | 'warning' | 'success' | 'error';
+    sx?: ThemeUIStyleObject<Theme>;
+  };
 } & TextareaProps) => {
   const id = `form-field-textarea-${name}`;
 
@@ -27,6 +40,7 @@ export const FormFieldTextarea = <
       id={id}
       sx={sx}
       warning={warning}
+      inputTooltip={inputTooltip}
       render={({ field, fieldState }) => {
         return (
           <Textarea

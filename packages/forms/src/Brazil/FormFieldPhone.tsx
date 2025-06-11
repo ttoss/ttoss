@@ -1,4 +1,4 @@
-import { Input } from '@ttoss/ui';
+import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from '../FormField';
@@ -7,6 +7,14 @@ export type FormFieldPhoneProps = {
   label: string;
   name: string;
   warning?: string | React.ReactNode;
+  inputTooltip?: {
+    render: string | React.ReactNode;
+    place: 'bottom' | 'top' | 'left' | 'right';
+    openOnClick?: boolean;
+    clickable?: boolean;
+    variant?: 'info' | 'warning' | 'success' | 'error';
+    sx?: ThemeUIStyleObject<Theme>;
+  } & SxProp;
 } & Partial<PatternFormatProps>;
 
 export const FormFieldPhone = ({
@@ -19,6 +27,7 @@ export const FormFieldPhone = ({
       name={name}
       label={label}
       warning={patternFormatProps.warning}
+      inputTooltip={patternFormatProps.inputTooltip}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

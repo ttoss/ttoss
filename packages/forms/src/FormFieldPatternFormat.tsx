@@ -1,4 +1,4 @@
-import { Input } from '@ttoss/ui';
+import { Input, Theme, ThemeUIStyleObject } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
 import { FormField } from './FormField';
@@ -13,6 +13,7 @@ export type FormFieldPatternFormatProps = {
     openOnClick?: boolean;
     clickable?: boolean;
     variant?: 'info' | 'warning' | 'success' | 'error';
+    sx?: ThemeUIStyleObject<Theme>;
   };
 } & PatternFormatProps;
 

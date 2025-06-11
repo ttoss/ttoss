@@ -27,6 +27,7 @@ export const FormFieldInput = <
       disabled={inputProps.disabled}
       tooltip={tooltip}
       warning={inputProps.warning}
+      inputTooltip={inputProps.inputTooltip}
       sx={sx}
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       render={({ field, fieldState }) => {
