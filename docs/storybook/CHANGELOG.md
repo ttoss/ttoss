@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.15.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.14.1...@docs/storybook@2.15.0) (2025-06-11)
+
+### Features
+
+- add input tooltip in formfield component ([#699](https://github.com/ttoss/ttoss/issues/699)) ([59e8726](https://github.com/ttoss/ttoss/commit/59e872619e2aa7ad5f4ed2be3f14f337278017d1))
+
 ## [2.14.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.14.0...@docs/storybook@2.14.1) (2025-06-10)
 
 ### Bug Fixes
