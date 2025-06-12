@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.20](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.19...@ttoss/components@2.2.20) (2025-06-11)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.2.19](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.18...@ttoss/components@2.2.19) (2025-06-10)
+
+### Bug Fixes
+
+- cards from notifications ([#698](https://github.com/ttoss/ttoss/issues/698)) ([f091d1b](https://github.com/ttoss/ttoss/commit/f091d1b96534b9f17051fd6444cf17e41c96e989))
+
 ## [2.2.18](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.17...@ttoss/components@2.2.18) (2025-06-06)
 
 **Note:** Version bump only for package @ttoss/components

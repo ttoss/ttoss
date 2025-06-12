@@ -2,9 +2,13 @@
 import { type ITooltip } from 'react-tooltip';
 import { Tooltip as TooltipReact } from 'react-tooltip';
 
-import { Box } from '..';
+import { Box, SxProp } from '..';
 
-export const Tooltip = ({ variant = 'info', ...props }: ITooltip) => {
+export const Tooltip = ({
+  variant = 'info',
+  sx,
+  ...props
+}: ITooltip & SxProp) => {
   const className = `tooltip-component tooltip-${variant}`;
 
   const getVariantStyles = (variantType: string) => {
@@ -62,6 +66,7 @@ export const Tooltip = ({ variant = 'info', ...props }: ITooltip) => {
               lineHeight: 'normal',
             },
             ...variantStyles,
+            ...sx,
           },
           [`&.tooltip-${variant}`]: variantStyles,
         };

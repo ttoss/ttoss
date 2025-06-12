@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.30.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.29.16...@ttoss/forms@0.30.0) (2025-06-11)
+
+### Features
+
+- add input tooltip in formfield component ([#699](https://github.com/ttoss/ttoss/issues/699)) ([59e8726](https://github.com/ttoss/ttoss/commit/59e872619e2aa7ad5f4ed2be3f14f337278017d1))
+
 ## [0.29.16](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.29.15...@ttoss/forms@0.29.16) (2025-06-06)
 
 **Note:** Version bump only for package @ttoss/forms
