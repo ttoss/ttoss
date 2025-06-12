@@ -1,4 +1,3 @@
-import { Tabs } from '@ttoss/components/Tabs';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Card, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -39,17 +38,6 @@ export const NotificationsMenu = ({
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
 
   const [showCount, setshowCount] = React.useState(true);
-
-  const groupsList = React.useMemo(() => {
-    const uniqueGroups = Array.from(
-      new Set(
-        notifications.map((n) => {
-          return n.group;
-        })
-      )
-    );
-    return uniqueGroups;
-  }, [notifications]);
 
   const togglePanel = () => {
     setIsOpen((prev) => {
@@ -169,7 +157,7 @@ export const NotificationsMenu = ({
               top: 'calc(100% + 8px)',
               left: openToLeft ? 'auto' : 0,
               right: openToLeft ? 0 : 'auto',
-              width: ['90vw', '400px'],
+              width: ['90vw', '500px'],
               maxHeight: '400px',
               overflowY: 'auto',
               zIndex: 10,
@@ -179,7 +167,7 @@ export const NotificationsMenu = ({
               backgroundColor: 'display.background.secondary.default',
             }}
           >
-            <Box ref={containerRef}>
+            <Box ref={containerRef} sx={{ width: '100%' }}>
               <Flex sx={{ flexDirection: 'column', gap: 2 }}>
                 {notifications.length === 0 ? (
                   <Text
@@ -192,37 +180,18 @@ export const NotificationsMenu = ({
                     Nenhuma notificação
                   </Text>
                 ) : (
-                  <Tabs sx={{ width: 'full' }}>
-                    <Tabs.TabList>
-                      {groupsList.map((group) => {
-                        return (
-                          <Tabs.Tab key={group}>
-                            <Flex>{group}</Flex>
-                          </Tabs.Tab>
-                        );
-                      })}
-                    </Tabs.TabList>
-                    {groupsList.map((group) => {
-                      const groupNotifications = notifications.filter((n) => {
-                        return n.group === group;
-                      });
-                      return (
-                        <Tabs.TabPanel key={group}>
-                          <Flex sx={{ flexDirection: 'column', gap: 6 }}>
-                            {groupNotifications.map((notification) => {
-                              return (
-                                <NotificationCard
-                                  key={notification.id}
-                                  {...notification}
-                                  onClose={() => {}}
-                                />
-                              );
-                            })}
-                          </Flex>
-                        </Tabs.TabPanel>
-                      );
-                    })}
-                  </Tabs>
+                  notifications.map((notification) => {
+                    return (
+                      <NotificationCard
+                        key={notification.id}
+                        {...notification}
+                        onClose={() => {
+                          notification.onClose?.();
+                          onClose?.();
+                        }}
+                      />
+                    );
+                  })
                 )}
                 {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
               </Flex>
