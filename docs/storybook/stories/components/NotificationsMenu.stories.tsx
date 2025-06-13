@@ -83,7 +83,7 @@ const scrollNotifications: Notification[] = Array(25)
       id: `${i + 100}`,
       title: `${base.title}`,
       message: `${base.message}`,
-      tag: base.tag ?? (i % 2 === 0 ? 'New' : undefined),
+      tag: base.tag ?? (i % 2 === 0 ? ['New'] : undefined),
     };
   });
 
