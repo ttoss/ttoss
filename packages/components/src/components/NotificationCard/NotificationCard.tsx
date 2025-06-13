@@ -16,7 +16,7 @@ export type NotificationCardProps = {
   message: string | React.ReactNode;
   actions?: NotificationAction[];
   caption?: string | React.ReactNode;
-  tag?: string | React.ReactNode;
+  tag?: string[] | React.ReactNode;
   onClose?: () => void;
 };
 

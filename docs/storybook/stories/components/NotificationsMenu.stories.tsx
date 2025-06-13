@@ -25,7 +25,7 @@ const defaultNotifications: Notification[] = [
       },
     ],
     caption: '1 min ago',
-    tag: 'New',
+    tag: ['New'],
   },
   {
     id: '2',
@@ -33,7 +33,7 @@ const defaultNotifications: Notification[] = [
     title: 'Budget nearing the limit',
     message: 'Your account is using 85% of the monthly budget.',
     caption: '25 min ago',
-    tag: 'New',
+    tag: ['New'],
   },
   {
     id: '3',
@@ -41,7 +41,7 @@ const defaultNotifications: Notification[] = [
     title: 'Account limit is close',
     message: 'Your account is using 95% of the monthly budget.',
     caption: '30 min ago',
-    tag: 'New',
+    tag: ['New'],
   },
   {
     id: '4',
@@ -90,7 +90,6 @@ const scrollNotifications: Notification[] = Array(25)
 export const Default: StoryObj = {
   args: {
     notifications: defaultNotifications,
-    defaultOpen: false,
     count: defaultNotifications.filter((n) => {
       return n.tag;
     }).length,
@@ -101,7 +100,6 @@ export const Default: StoryObj = {
 export const Empty: StoryObj = {
   args: {
     notifications: [],
-    defaultOpen: false,
   },
 };
 
@@ -158,7 +156,6 @@ export const WithInfiniteScroll: StoryObj = {
         notifications={notifications}
         hasMore={notifications.length < orderedScrollNotifications.length}
         onLoadMore={hasInitialized ? loadMore : undefined}
-        defaultOpen={isOpen}
         onOpenChange={setIsOpen}
         count={count}
         onClose={() => {}}

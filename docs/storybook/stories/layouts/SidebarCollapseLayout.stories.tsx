@@ -151,7 +151,7 @@ const mockNotifications: Notification[] = [
       },
     ],
     caption: '1 min ago',
-    tag: 'New',
+    tag: ['New'],
   },
   {
     id: '2',

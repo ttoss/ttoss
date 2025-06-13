@@ -37,7 +37,7 @@ export const NotificationsMenu = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [showCount, setshowCount] = React.useState(true);
+  const [showCount, setShowCount] = React.useState(true);
 
   const togglePanel = () => {
     setIsOpen((prev) => {
@@ -54,8 +54,8 @@ export const NotificationsMenu = ({
     const spaceRight = window.innerWidth - rect.right;
     const spaceLeft = rect.left;
 
-    setshowCount(false);
-    setOpenToLeft(spaceRight < 400 && spaceLeft > spaceRight);
+    setShowCount(false);
+    setOpenToLeft(spaceRight < 500 && spaceLeft > spaceRight);
   }, [isOpen]);
 
   React.useEffect(() => {
