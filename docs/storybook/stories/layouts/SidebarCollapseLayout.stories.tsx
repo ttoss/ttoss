@@ -151,7 +151,7 @@ const mockNotifications: Notification[] = [
       },
     ],
     caption: '1 min ago',
-    tag: ['New'],
+    tags: ['New'],
   },
   {
     id: '2',
@@ -178,7 +178,7 @@ export const WithNotificationsMenu: Story = {
                 notifications={mockNotifications}
                 count={
                   mockNotifications.filter((n) => {
-                    return !n.tag;
+                    return !n.tags;
                   }).length
                 }
                 onClose={() => {}}

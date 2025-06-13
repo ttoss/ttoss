@@ -25,7 +25,7 @@ const defaultNotifications: Notification[] = [
       },
     ],
     caption: '1 min ago',
-    tag: ['New'],
+    tags: ['New'],
   },
   {
     id: '2',
@@ -33,7 +33,7 @@ const defaultNotifications: Notification[] = [
     title: 'Budget nearing the limit',
     message: 'Your account is using 85% of the monthly budget.',
     caption: '25 min ago',
-    tag: ['New'],
+    tags: ['New'],
   },
   {
     id: '3',
@@ -41,7 +41,7 @@ const defaultNotifications: Notification[] = [
     title: 'Account limit is close',
     message: 'Your account is using 95% of the monthly budget.',
     caption: '30 min ago',
-    tag: ['New'],
+    tags: ['New'],
   },
   {
     id: '4',
@@ -83,7 +83,7 @@ const scrollNotifications: Notification[] = Array(25)
       id: `${i + 100}`,
       title: `${base.title}`,
       message: `${base.message}`,
-      tag: base.tag ?? (i % 2 === 0 ? ['New'] : undefined),
+      tag: base.tags ?? (i % 2 === 0 ? ['New'] : undefined),
     };
   });
 
@@ -91,7 +91,7 @@ export const Default: StoryObj = {
   args: {
     notifications: defaultNotifications,
     count: defaultNotifications.filter((n) => {
-      return n.tag;
+      return n.tags;
     }).length,
     onClose: () => {},
   },
@@ -115,8 +115,8 @@ export const WithInfiniteScroll: StoryObj = {
 
     const orderedScrollNotifications = React.useMemo(() => {
       return [...scrollNotifications].sort((a, b) => {
-        if (a.tag && !b.tag) return -1;
-        if (!a.tag && b.tag) return 1;
+        if (a.tags && !b.tags) return -1;
+        if (!a.tags && b.tags) return 1;
         return 0;
       });
     }, []);
@@ -148,7 +148,7 @@ export const WithInfiniteScroll: StoryObj = {
     }, [isOpen, orderedScrollNotifications]);
 
     const count = orderedScrollNotifications.filter((n) => {
-      return n.tag;
+      return n.tags;
     }).length;
 
     return (
@@ -180,14 +180,14 @@ export const WithCloseButton: StoryObj = {
 
     const orderedNotifications = React.useMemo(() => {
       return [...notifications].sort((a, b) => {
-        if (a.tag && !b.tag) return -1;
-        if (!a.tag && b.tag) return 1;
+        if (a.tags && !b.tags) return -1;
+        if (!a.tags && b.tags) return 1;
         return 0;
       });
     }, [notifications]);
 
     const count = orderedNotifications.filter((n) => {
-      return n.tag;
+      return n.tags;
     }).length;
 
     return (

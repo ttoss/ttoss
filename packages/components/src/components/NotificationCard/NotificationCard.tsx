@@ -16,7 +16,7 @@ export type NotificationCardProps = {
   message: string | React.ReactNode;
   actions?: NotificationAction[];
   caption?: string | React.ReactNode;
-  tag?: string[] | React.ReactNode;
+  tags?: string[] | React.ReactNode;
   onClose?: () => void;
 };
 
@@ -77,7 +77,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
           <Text sx={{ display: 'inline-flex', alignItems: 'center', gap: '2' }}>
             <Icon icon={icon[props.type]} />
             {props.title}
-            {props.tag && <Tag>{props.tag}</Tag>}
+            {props.tags && <Tag>{props.tags}</Tag>}
           </Text>
           {props.onClose && (
             <Box sx={{ marginLeft: 'auto' }}>

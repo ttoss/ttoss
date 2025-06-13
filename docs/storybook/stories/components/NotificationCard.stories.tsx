@@ -91,6 +91,6 @@ export const WithTag: StoryObj = {
     title: 'Action completed',
     message: 'Your action has been completed and new features are now working.',
     caption: '2d ago',
-    tag: ['New', 'Feature', 'Available'],
+    tags: ['New', 'Feature', 'Available'],
   },
 };
