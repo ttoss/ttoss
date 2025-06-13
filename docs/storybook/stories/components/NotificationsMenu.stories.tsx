@@ -15,66 +15,62 @@ const defaultNotifications: Notification[] = [
   {
     id: '1',
     type: 'success',
-    title: 'Campanha criada com sucesso',
-    message: 'Sua campanha "Promoção de Verão" foi criada e está ativa.',
+    title: 'Campaign created successfully',
+    message: 'Your campaign "Summer Promotion" has been created and is active.',
     actions: [
       {
         action: 'open_url',
         url: 'https://example.com/campaign',
-        label: 'Ver campanha',
+        label: 'View campaign',
       },
     ],
-    createdAt: 'há 1 min',
-    readAt: null,
+    caption: '1 min ago',
+    tags: ['New'],
   },
   {
     id: '2',
     type: 'warning',
-    title: 'Orçamento próximo do limite',
-    message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    createdAt: 'há 25 min',
-    readAt: null,
+    title: 'Budget nearing the limit',
+    message: 'Your account is using 85% of the monthly budget.',
+    caption: '25 min ago',
+    tags: ['New'],
   },
   {
     id: '3',
     type: 'warning',
-    title:
-      'Limite da conta está próximo e precisa ser ajustado para evitar interrupções',
-    message: 'Sua conta está utilizando 95% do orçamento mensal.',
-    createdAt: 'há 30 min',
-    readAt: null,
+    title: 'Account limit is close',
+    message: 'Your account is using 95% of the monthly budget.',
+    caption: '30 min ago',
+    tags: ['New'],
   },
   {
     id: '4',
     type: 'error',
-    title: 'Falha na integração',
-    message: 'Não foi possível conectar com a API do Facebook.',
+    title: 'Integration failure',
+    message: 'Could not connect to the Facebook API.',
     actions: [
       {
         action: 'open_url',
         url: 'https://example.com/try-again',
-        label: 'Tentar novamente',
+        label: 'Try again',
       },
     ],
-    createdAt: 'há 3h',
-    readAt: null,
+    caption: '3h ago',
   },
   {
     id: '5',
     type: 'info',
-    title: 'Nova funcionalidade disponível',
-    message: 'Agora você pode monitorar seus gastos em tempo real.',
-    createdAt: 'há 2d',
-    readAt: null,
+    title: 'New feature available',
+    message: 'You can now monitor your spending in real time.',
+    caption: '2d ago',
   },
   {
     id: '6',
     type: 'info',
-    title: 'Nova funcionalidade disponível',
+    title: 'New feature available',
     message:
-      'Integrado com o Google Analytics para relatórios mais detalhados, e pode ser acessado através do menu de relatórios.',
-    createdAt: 'há 20 min',
-    readAt: '2023-10-01T12:00:00Z',
+      'Integrated with Google Analytics for more detailed reports, accessible through the reports menu.',
+    caption: '20 min ago',
   },
 ];
 
@@ -87,13 +83,16 @@ const scrollNotifications: Notification[] = Array(25)
       id: `${i + 100}`,
       title: `${base.title}`,
       message: `${base.message}`,
+      tag: base.tags ?? (i % 2 === 0 ? ['New'] : undefined),
     };
   });
 
 export const Default: StoryObj = {
   args: {
     notifications: defaultNotifications,
-    defaultOpen: true,
+    count: defaultNotifications.filter((n) => {
+      return n.tags;
+    }).length,
     onClose: () => {},
   },
 };
@@ -101,7 +100,6 @@ export const Default: StoryObj = {
 export const Empty: StoryObj = {
   args: {
     notifications: [],
-    defaultOpen: true,
   },
 };
 
@@ -115,10 +113,18 @@ export const WithInfiniteScroll: StoryObj = {
     const [hasInitialized, setHasInitialized] = React.useState(false);
     const pageSize = 10;
 
+    const orderedScrollNotifications = React.useMemo(() => {
+      return [...scrollNotifications].sort((a, b) => {
+        if (a.tags && !b.tags) return -1;
+        if (!a.tags && b.tags) return 1;
+        return 0;
+      });
+    }, []);
+
     const loadMore = () => {
       const start = (page + 1) * pageSize;
       const end = start + pageSize;
-      const nextItems = scrollNotifications.slice(start, end);
+      const nextItems = orderedScrollNotifications.slice(start, end);
 
       setNotifications((prev) => {
         return [...prev, ...nextItems];
@@ -130,31 +136,28 @@ export const WithInfiniteScroll: StoryObj = {
 
     React.useEffect(() => {
       if (isOpen) {
-        if (!hasInitialized) {
-          const initial = scrollNotifications.slice(0, pageSize);
-          setNotifications(initial);
-          setPage(0);
-          setHasInitialized(true);
-        }
+        const initial = orderedScrollNotifications.slice(0, pageSize);
+        setNotifications(initial);
+        setPage(0);
+        setHasInitialized(true);
       } else {
         setNotifications([]);
         setPage(0);
         setHasInitialized(false);
       }
-    }, [isOpen, hasInitialized]);
+    }, [isOpen, orderedScrollNotifications]);
+
+    const count = orderedScrollNotifications.filter((n) => {
+      return n.tags;
+    }).length;
 
     return (
       <NotificationsMenu
         notifications={notifications}
-        hasMore={notifications.length < scrollNotifications.length}
+        hasMore={notifications.length < orderedScrollNotifications.length}
         onLoadMore={hasInitialized ? loadMore : undefined}
-        defaultOpen={isOpen}
         onOpenChange={setIsOpen}
-        unreadCount={
-          scrollNotifications.filter((n) => {
-            return n.readAt == null;
-          }).length
-        }
+        count={count}
         onClose={() => {}}
       />
     );
@@ -165,7 +168,7 @@ export const WithCloseButton: StoryObj = {
   render: () => {
     const [notifications, setNotifications] =
       React.useState<Notification[]>(defaultNotifications);
-    const [isOpen, setIsOpen] = React.useState(true);
+    const [isOpen, setIsOpen] = React.useState(false);
 
     const handleClose = (id: string) => {
       setNotifications((prev) => {
@@ -175,9 +178,21 @@ export const WithCloseButton: StoryObj = {
       });
     };
 
+    const orderedNotifications = React.useMemo(() => {
+      return [...notifications].sort((a, b) => {
+        if (a.tags && !b.tags) return -1;
+        if (!a.tags && b.tags) return 1;
+        return 0;
+      });
+    }, [notifications]);
+
+    const count = orderedNotifications.filter((n) => {
+      return n.tags;
+    }).length;
+
     return (
       <NotificationsMenu
-        notifications={notifications.map((n) => {
+        notifications={orderedNotifications.map((n) => {
           return {
             ...n,
             onClose: () => {
@@ -190,46 +205,7 @@ export const WithCloseButton: StoryObj = {
         onClose={() => {
           return setIsOpen(false);
         }}
-      />
-    );
-  },
-};
-
-export const MarkAllAsReadOnOpen: StoryObj = {
-  render: () => {
-    const [notifications, setNotifications] = React.useState<
-      (Notification & { readAt: string | null })[]
-    >(
-      defaultNotifications.map((n) => {
-        return { ...n, readAt: n.readAt ?? null };
-      })
-    );
-    const [isOpen, setIsOpen] = React.useState(false);
-
-    const unreadCount = notifications.filter((n) => {
-      return !n.readAt;
-    }).length;
-
-    const handleOpenChange = (open: boolean) => {
-      setIsOpen(open);
-      if (open) {
-        setNotifications((prev) => {
-          return prev.map((n) => {
-            return { ...n, readAt: new Date().toISOString() };
-          });
-        });
-      }
-    };
-
-    return (
-      <NotificationsMenu
-        notifications={notifications}
-        defaultOpen={isOpen}
-        onOpenChange={handleOpenChange}
-        unreadCount={unreadCount}
-        onClose={() => {
-          return setIsOpen(false);
-        }}
+        count={count}
       />
     );
   },

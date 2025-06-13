@@ -79,8 +79,18 @@ export const CloseButtonOnBody: StoryObj = {
 export const WithMetaInfo: StoryObj = {
   args: {
     type: 'info',
-    title: 'Nova notificação',
-    message: 'Você tem uma nova notificação pendente.',
-    metaInfo: 'há 5 min',
+    title: 'New notification',
+    message: 'You have a new pending notification.',
+    caption: '5 min ago',
+  },
+};
+
+export const WithTag: StoryObj = {
+  args: {
+    type: 'success',
+    title: 'Action completed',
+    message: 'Your action has been completed and new features are now working.',
+    caption: '2d ago',
+    tags: ['New', 'Feature', 'Available'],
   },
 };

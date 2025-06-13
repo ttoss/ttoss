@@ -1,16 +1,26 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, CloseButton, Text } from '@ttoss/ui';
+import { Box, Card, CloseButton, Link, Tag, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-type NotificationType = 'success' | 'error' | 'warning' | 'info';
+type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
-export const NotificationCard = (props: {
+export type NotificationAction = {
+  action?: 'open_url';
+  url?: string;
+  label?: string;
+};
+
+export type NotificationCardProps = {
   type: NotificationType;
   title?: string | React.ReactNode;
   message: string | React.ReactNode;
-  metaInfo?: string;
+  actions?: NotificationAction[];
+  caption?: string | React.ReactNode;
+  tags?: string[] | React.ReactNode;
   onClose?: () => void;
-}) => {
+};
+
+export const NotificationCard = (props: NotificationCardProps) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sxMap: Record<NotificationType, Record<string, any>> = {
     success: {
@@ -37,6 +47,12 @@ export const NotificationCard = (props: {
         borderColor: 'feedback.border.primary.default',
       },
     },
+    neutral: {
+      card: {
+        backgroundColor: 'feedback.background.primary.default',
+        borderColor: 'feedback.border.primary.default',
+      },
+    },
   };
 
   const icon: Record<NotificationType, string> = {
@@ -44,6 +60,7 @@ export const NotificationCard = (props: {
     error: 'error',
     warning: 'warning-alt',
     info: 'info',
+    neutral: 'info',
   };
 
   return (
@@ -60,6 +77,7 @@ export const NotificationCard = (props: {
           <Text sx={{ display: 'inline-flex', alignItems: 'center', gap: '2' }}>
             <Icon icon={icon[props.type]} />
             {props.title}
+            {props.tags && <Tag>{props.tags}</Tag>}
           </Text>
           {props.onClose && (
             <Box sx={{ marginLeft: 'auto' }}>
@@ -87,10 +105,30 @@ export const NotificationCard = (props: {
         >
           <Box sx={{ flex: 1 }}>{props.message}</Box>
         </Box>
+        {props.actions && props.actions.length > 0 && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            {props.actions.map((action, index) => {
+              return action.action === 'open_url' ? (
+                <Link
+                  key={index}
+                  href={action.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    color: 'action.text.accent.default',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {action.label || 'Acessar'}
+                </Link>
+              ) : null;
+            })}
+          </Box>
+        )}
         <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
-          {props.metaInfo && (
+          {props.caption && (
             <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
-              {props.metaInfo}
+              {props.caption}
             </Text>
           )}
         </Box>

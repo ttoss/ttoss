@@ -141,25 +141,24 @@ const mockNotifications: Notification[] = [
   {
     id: '1',
     type: 'success',
-    title: 'Campanha criada com sucesso',
-    message: 'Sua campanha "Promoção de Verão" foi criada e está ativa.',
+    title: 'Campaign created successfully',
+    message: 'Your campaign "Summer Promotion" has been created and is active.',
     actions: [
       {
         action: 'open_url',
         url: 'https://example.com/campaign',
-        label: 'Ver campanha',
+        label: 'View campaign',
       },
     ],
-    createdAt: 'há 3h',
-    readAt: null,
+    caption: '1 min ago',
+    tags: ['New'],
   },
   {
     id: '2',
     type: 'warning',
-    title: 'Orçamento próximo do limite',
-    message: 'Sua conta está utilizando 85% do orçamento mensal.',
-    createdAt: 'há 25 min',
-    readAt: null,
+    title: 'Budget nearing the limit',
+    message: 'Your account is using 85% of the monthly budget.',
+    caption: '25 min ago',
   },
 ];
 
@@ -177,6 +176,11 @@ export const WithNotificationsMenu: Story = {
             <Box sx={{ ml: 'auto' }}>
               <NotificationsMenu
                 notifications={mockNotifications}
+                count={
+                  mockNotifications.filter((n) => {
+                    return !n.tags;
+                  }).length
+                }
                 onClose={() => {}}
               />
             </Box>
