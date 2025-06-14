@@ -41,16 +41,12 @@ The goal of the Design Tokens is to take the design concepts expressed in the La
 
 ### UI Components
 
-:::info
-
-In progress
-
-:::
+UI Components are the building blocks of the interface, such as buttons, forms
+or tooltips. Each component is built using semantic design tokens so that they
+can adapt to different themes without redefining their styles.
 
 ### UI Modules
 
-:::info
-
-In progress
-
-:::
+UI Modules combine multiple components to deliver higher level features.
+Examples include navigation bars, dashboards or data tables. Modules leverage
+the same components and tokens to ensure consistency across applications.
