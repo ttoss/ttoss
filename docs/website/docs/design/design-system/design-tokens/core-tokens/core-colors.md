@@ -63,8 +63,7 @@ The sets of values are divided into 3 groups: [Lightness](#lightness), [Saturati
 
 ### Transparency
 
-:::info
-
-In progress
-
-:::
+Transparency tokens control the alpha channel of a color. The variation value
+represents the opacity percentage. A token like `core.colors.main.a50` defines
+the brand `main` color at 50% opacity. Use transparency variations to create
+overlays or subtle backgrounds without changing the original hue.

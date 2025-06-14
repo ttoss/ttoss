@@ -17,3 +17,10 @@ They should provide a little abstraction so values can be adjusted. This means t
 
 The tokens at this tier have a high level of abstraction and define the specific cases in which it should be used, describing what the token is intended for (e.g. `color-background-surface`). It never has a raw value and always receives [`core tokens`](#first-tier-core-tokens).  
 The key difference between core and semantic design tokens is their level of abstraction and their intended use. Core design tokens are more abstract and are used to create the building blocks of the design system, while semantic design tokens are more concrete and are used to create specific design patterns or elements.
+
+### Applying tokens
+
+Components consume semantic tokens directly. We don't maintain a separate tier for component
+tokens. When a visual variant is required, a new theme can be created (for example
+`BruttalThemeDark` or `BruttalThemeLight`) that maps the same semantic tokens to different core
+values.
