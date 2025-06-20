@@ -12,9 +12,10 @@ describe('CloseButton', () => {
     render(
       <CloseButton data-testid="close-btn" sx={{ backgroundColor: 'red' }} />
     );
-    expect(screen.getByTestId('close-btn')).toHaveStyle({
-      backgroundColor: 'red',
-    });
+    expect(screen.getByTestId('close-btn')).toHaveStyleRule(
+      'background-color',
+      'red'
+    );
   });
 
   test('should call onClick function', async () => {
