@@ -23,8 +23,8 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^29.7.0",
-    "tsup": "^8.3.5"
+    "jest": "^30.0.2",
+    "tsup": "^8.5.0"
   },
   "keywords": [],
   "publishConfig": {

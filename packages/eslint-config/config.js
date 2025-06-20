@@ -1,8 +1,3 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
-import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import turboConfig from 'eslint-config-turbo/flat';
@@ -23,15 +18,6 @@ import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: eslint.configs.recommended,
-  allConfig: eslint.configs.all,
-});
-
 export default tseslint.config([
   ...turboConfig,
   eslint.configs.recommended,
@@ -39,15 +25,12 @@ export default tseslint.config([
   importPlugin.flatConfigs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
-  jestDom.configs['flat/recommended'],
-  ...fixupConfigRules(
-    compat.extends('plugin:react-hooks/recommended', 'plugin:relay/recommended')
-  ),
+  relay.configs.recommended,
+  reactHooks.configs['recommended-latest'],
   {
     plugins: {
+      relay,
       formatjs,
-      'react-hooks': fixupPluginRules(reactHooks),
-      relay: fixupPluginRules(relay),
       'jsx-a11y': jsxA11y,
       'prefer-arrow-functions': preferArrowFunctions,
       'react-namespace-import': reactNamespaceImport,
@@ -120,16 +103,12 @@ export default tseslint.config([
       '@typescript-eslint/camelcase': 'off',
     },
   },
-  ...compat.extends('plugin:jest/recommended').map((config) => {
-    return {
-      ...config,
-      files: ['**/*.spec.ts', '**/*.test.ts', '**/*.spec.tsx', '**/*.test.tsx'],
-    };
-  }),
   {
     files: ['**/*.spec.ts', '**/*.test.ts', '**/*.spec.tsx', '**/*.test.tsx'],
+    ...jestDom.configs['flat/recommended'],
     plugins: {
       jest,
+      ...jestDom.configs['flat/recommended'].plugins,
     },
     languageOptions: {
       globals: {
