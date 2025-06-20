@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.38.4 (2025-06-20)
+
+**Note:** Version bump only for package carlin
+
 ## [1.38.3](https://github.com/ttoss/ttoss/compare/carlin@1.38.2...carlin@1.38.3) (2025-04-09)
 
 **Note:** Version bump only for package carlin

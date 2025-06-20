@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.8 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/http-server
+
 ## 0.1.7 (2025-03-02)
 
 **Note:** Version bump only for package @ttoss/http-server
