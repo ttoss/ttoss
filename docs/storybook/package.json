@@ -28,7 +28,7 @@
     "@ttoss/ui": "workspace:^"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.27.4",
     "@storybook/addon-a11y": "^8.5.0",
     "@storybook/addon-actions": "^8.5.0",
     "@storybook/addon-essentials": "^8.5.0",
@@ -42,8 +42,8 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.2.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "storybook": "^8.5.0"
   }
 }

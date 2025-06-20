@@ -33,11 +33,11 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/jest": "^29.5.14",
-    "@types/react": "^19.0.2",
-    "jest": "^29.7.0",
-    "react": "^19.0.0",
-    "tsup": "^8.3.5"
+    "@types/jest": "^30.0.0",
+    "@types/react": "^19.1.8",
+    "jest": "^30.0.2",
+    "react": "^19.1.0",
+    "tsup": "^8.5.0"
   },
   "keywords": [
     "Icons",

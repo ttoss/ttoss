@@ -23,7 +23,7 @@ describe('Drawer', () => {
     );
 
     const drawerComponent = screen.getByTestId('drawer-container');
-    expect(drawerComponent).toHaveStyle(customStyle);
+    expect(drawerComponent).toHaveStyleRule('background-color', 'red');
   });
 
   test('should propagates props to DrawerUi component', () => {

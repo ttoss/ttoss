@@ -39,9 +39,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^29.7.0",
+    "jest": "^30.0.2",
     "theme-ui": "^0.17.1",
-    "tsup": "^8.3.5"
+    "tsup": "^8.5.0"
   },
   "keywords": [],
   "publishConfig": {

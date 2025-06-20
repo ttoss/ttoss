@@ -1,7 +1,8 @@
-import { Button } from '../../../src';
-import { render, screen } from '@ttoss/test-utils';
 import alertIcon from '@iconify-icons/mdi-light/alert';
 import arrowLeftIcon from '@iconify-icons/mdi-light/arrow-left';
+import { render, screen } from '@ttoss/test-utils';
+
+import { Button } from '../../../src';
 
 test('should render right icon', () => {
   render(<Button rightIcon={alertIcon}>Click me</Button>);
