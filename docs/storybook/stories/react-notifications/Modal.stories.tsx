@@ -89,6 +89,10 @@ export const Notifications: StoryFn = () => {
                 label: 'Toast',
                 value: 'toast',
               },
+              {
+                label: 'Header',
+                value: 'header',
+              },
             ]}
           />
           <FormFieldRadio
