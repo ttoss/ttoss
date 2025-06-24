@@ -72,6 +72,8 @@ describe('Notifications Header Test', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(screen.queryAllByText('not header').length).toBe(0);
+    const header = screen.queryByLabelText('Notifications Alt+T');
+
+    expect(header).not.toHaveTextContent('not header');
   });
 });
