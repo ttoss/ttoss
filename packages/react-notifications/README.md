@@ -18,8 +18,8 @@ Add a provider on top of your application and set [Modal app element](https://re
 
 ```tsx
 import { NotificationsProvider } from '@ttoss/react-notifications';
-import { ThemeProvider } from "@ttoss/ui";
-import { Modal } from "@ttoss/components";
+import { ThemeProvider } from '@ttoss/ui';
+import { Modal } from '@ttoss/components';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -30,6 +30,7 @@ ReactDOM.render(
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
+);
 
 Modal.setAppElement('#root');
 ```
@@ -43,7 +44,7 @@ import { useNotifications } from '@ttoss/react-notifications';
 import { Box, Button } from '@ttoss/ui';
 
 const Component = () => {
-  const { loading, setLoading } = useNotifications();
+  const { isLoading, setLoading } = useNotifications();
 
   return (
     <Box>
@@ -276,11 +277,8 @@ The `useNotifications` hook returns an object with the following properties:
 | `clearNotifications` | `() => void`                                             | Function to clear all non-persistent notifications |
 | `isLoading`          | `boolean`                                                | Current loading state                              |
 | `setLoading`         | `(loading: boolean) => void`                             | Function to set the loading state                  |
+| `defaultViewType`    | `'toast' \| 'modal' \| 'box' \| 'header'`                | The default view type for notifications            |
 
 ## License
 
 [MIT](https://github.com/ttoss/ttoss/blob/main/LICENSE)
-
-```
-
-```
