@@ -7,9 +7,10 @@ import {
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
 import * as React from 'react';
 
+import { NotificationsHeader } from './NotificationsHeader';
 import { NotificationsModal } from './NotificationsModal';
 
-type ViewType = 'toast' | 'modal' | 'box';
+type ViewType = 'toast' | 'modal' | 'box' | 'header';
 
 export type Notification = {
   id?: string | number;
@@ -104,6 +105,7 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
         return false;
       });
 
+      // eslint-disable-next-line unicorn/no-array-for-each
       toastNotifications.forEach((notification) => {
         toast(notification.message, {
           ...notification.toast,
@@ -171,6 +173,7 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
           <InfiniteLinearProgress />
         </Flex>
       )}
+      <NotificationsHeader />
       {props.children}
     </NotificationsContext.Provider>
   );

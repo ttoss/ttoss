@@ -169,6 +169,39 @@ const Component = () => {
 };
 ```
 
+### NotificationsHeader
+
+You can use `NotificationsHeader` to display notifications with `viewType: 'header'` in a specific place, such as your application's header. Only notifications with `viewType: 'header'` will be shown by this component.
+
+```tsx
+import {
+  NotificationsHeader,
+  useNotifications,
+} from '@ttoss/react-notifications';
+import { Box, Button } from '@ttoss/ui';
+
+const Header = () => {
+  const { addNotification } = useNotifications();
+
+  return (
+    <Box>
+      <NotificationsHeader />
+      <Button
+        onClick={() =>
+          addNotification({
+            message: "I'm a header notification",
+            type: 'info',
+            viewType: 'header',
+          })
+        }
+      >
+        Show Header Notification
+      </Button>
+    </Box>
+  );
+};
+```
+
 #### Recommendation
 
 "You can place the `NotificationsBox` component at the root of your application to handle notifications rendering automatically, eliminating the need to manage it manually elsewhere. If you need a specific `NotificationsBox`, simply render the `NotificationsBox` in the desired location and use the `boxId` property to differentiate it."
