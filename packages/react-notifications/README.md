@@ -202,10 +202,91 @@ const Header = () => {
 };
 ```
 
+### Persistent Notifications
+
+You can create persistent notifications that will not be removed when `clearNotifications()` is called by setting the `persist` property to `true`. This is useful for important notifications that should remain visible until manually dismissed.
+
+```tsx
+import { useNotifications } from '@ttoss/react-notifications';
+import { Box, Button } from '@ttoss/ui';
+
+const Component = () => {
+  const { addNotification, clearNotifications } = useNotifications();
+
+  return (
+    <Box>
+      <Button
+        onClick={() =>
+          addNotification({
+            message: "I'm a persistent notification",
+            type: 'warning',
+            persist: true, // This notification will not be cleared by clearNotifications()
+          })
+        }
+      >
+        Add Persistent Notification
+      </Button>
+      <Button
+        onClick={() =>
+          addNotification({
+            message: "I'm a regular notification",
+            type: 'info',
+            persist: false, // This notification will be cleared by clearNotifications()
+          })
+        }
+      >
+        Add Regular Notification
+      </Button>
+      <Button onClick={clearNotifications}>
+        Clear All Non-Persistent Notifications
+      </Button>
+    </Box>
+  );
+};
+```
+
+        Show Header Notification
+      </Button>
+    </Box>
+
+);
+};
+
+```
+
 #### Recommendation
 
 "You can place the `NotificationsBox` component at the root of your application to handle notifications rendering automatically, eliminating the need to manage it manually elsewhere. If you need a specific `NotificationsBox`, simply render the `NotificationsBox` in the desired location and use the `boxId` property to differentiate it."
 
+## API
+
+### Notification Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `id` | `string \| number` | Auto-generated | Unique identifier for the notification |
+| `title` | `string` | - | Optional title for the notification |
+| `message` | `string` | **Required** | The notification message content |
+| `type` | `'warning' \| 'error' \| 'info' \| 'success'` | **Required** | The type of notification |
+| `viewType` | `'toast' \| 'modal' \| 'box' \| 'header'` | `'box'` | Where the notification should be displayed |
+| `toast` | `ToastOptions` | - | Additional options for toast notifications |
+| `boxId` | `string \| number` | - | ID of the specific NotificationsBox to display the notification |
+| `persist` | `boolean` | `false` | Whether the notification should persist when `clearNotifications()` is called |
+
+### useNotifications Hook
+
+The `useNotifications` hook returns an object with the following properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `notifications` | `Notification[]` | Array of current notifications |
+| `addNotification` | `(notification: Notification \| Notification[]) => void` | Function to add one or more notifications |
+| `removeNotification` | `(id: string \| number) => void` | Function to remove a specific notification by ID |
+| `clearNotifications` | `() => void` | Function to clear all non-persistent notifications |
+| `isLoading` | `boolean` | Current loading state |
+| `setLoading` | `(loading: boolean) => void` | Function to set the loading state |
+
 ## License
 
 [MIT](https://github.com/ttoss/ttoss/blob/main/LICENSE)
+```

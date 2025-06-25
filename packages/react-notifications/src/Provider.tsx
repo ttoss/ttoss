@@ -20,6 +20,7 @@ export type Notification = {
   viewType?: ViewType;
   toast?: ToastOptions;
   boxId?: string | number;
+  persist?: boolean;
 };
 
 const NotificationsContext = React.createContext<{
@@ -151,7 +152,11 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
   );
 
   const clearNotifications = React.useCallback(() => {
-    setNotifications(undefined);
+    setNotifications((prevNotifications) => {
+      return prevNotifications?.filter((notification) => {
+        return notification.persist === true;
+      });
+    });
   }, []);
 
   return (
