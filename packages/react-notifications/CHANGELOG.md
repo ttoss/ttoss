@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.2.0...@ttoss/react-notifications@2.2.1) (2025-06-26)
+
+### Bug Fixes
+
+- notifications provider and add header story ([#707](https://github.com/ttoss/ttoss/issues/707)) ([9fd98cf](https://github.com/ttoss/ttoss/commit/9fd98cf1b6e92f00f80416a3a013bc38415aa017))
+
 # [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.1.28...@ttoss/react-notifications@2.2.0) (2025-06-25)
 
 ### Features
