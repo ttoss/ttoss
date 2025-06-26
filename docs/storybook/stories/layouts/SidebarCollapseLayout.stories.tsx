@@ -4,7 +4,12 @@ import {
   NotificationsMenu,
 } from '@ttoss/components/NotificationsMenu';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
+import {
+  NotificationsProvider,
+  useNotifications,
+} from '@ttoss/react-notifications';
 import { Box, Flex, Image, Stack } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Layouts/SidebarCollapseLayout',
@@ -52,6 +57,23 @@ const SidebarCollapseLayoutTemplate = ({
       </Layout.Sidebar>
       <Layout.Main>{mainContent}</Layout.Main>
     </SidebarCollapseLayout>
+  );
+};
+
+const HeaderWithNotifications = () => {
+  const { addNotification } = useNotifications();
+
+  React.useEffect(() => {
+    addNotification({
+      message: 'Esta notificação aparece automaticamente no header!',
+      type: 'info',
+      viewType: 'header',
+      title: 'Notificação Automática',
+    });
+  }, [addNotification]);
+
+  return (
+    <Flex sx={{ alignItems: 'center', width: '100%' }}>Header starts here</Flex>
   );
 };
 
@@ -201,6 +223,47 @@ export const WithNotificationsMenu: Story = {
         </Layout.Sidebar>
         <Layout.Main>{args.content || 'Main starts here'}</Layout.Main>
       </SidebarCollapseLayout>
+    );
+  },
+  args: {
+    showSidebarButton: true,
+    sidebarSlot: terezinhaLogo,
+  },
+};
+
+export const WithHeaderNotifications: Story = {
+  name: 'With Header Notifications',
+  render: (args) => {
+    return (
+      <NotificationsProvider>
+        <SidebarCollapseLayout>
+          <Layout.Header
+            showSidebarButton={args.showSidebarButton}
+            sidebarSlot={args.sidebarSlot}
+          >
+            <HeaderWithNotifications />
+          </Layout.Header>
+          <Layout.Sidebar
+            showSidebarButtonInDrawer={true}
+            drawerSlot={args.sidebarSlot}
+          >
+            <Flex sx={{ flexDirection: 'column', gap: '6' }}>
+              <Flex>Sidebar item 1 </Flex>
+              <Flex>Sidebar item 2 </Flex>
+              <Flex>Sidebar item 3 </Flex>
+              <Flex>Sidebar item 4 </Flex>
+              <Flex>Sidebar item 5 </Flex>
+              <Flex>Sidebar item 6 </Flex>
+            </Flex>
+          </Layout.Sidebar>
+          <Layout.Main>
+            <Box sx={{ p: '4' }}>
+              <p>Clique no botão do header para adicionar uma notificação!</p>
+              <p>A notificação aparecerá no topo da página.</p>
+            </Box>
+          </Layout.Main>
+        </SidebarCollapseLayout>
+      </NotificationsProvider>
     );
   },
   args: {
