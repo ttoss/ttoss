@@ -34,6 +34,7 @@ const schema = yup.object().shape({
   type: yup.string().required(),
   viewType: yup.string().required(),
   boxId: yup.string(),
+  persist: yup.string(),
 });
 
 export const Notifications: StoryFn = () => {
@@ -47,6 +48,7 @@ export const Notifications: StoryFn = () => {
       type: 'info',
       viewType: 'box',
       boxId: '',
+      persist: 'false',
     },
   });
 
@@ -58,6 +60,7 @@ export const Notifications: StoryFn = () => {
       type: values.type,
       viewType: values.viewType,
       boxId: values.boxId,
+      persist: values.persist === 'true',
     });
   };
 
@@ -128,6 +131,21 @@ export const Notifications: StoryFn = () => {
               {
                 label: 'Success',
                 value: 'success',
+              },
+            ]}
+          />
+
+          <FormFieldRadio
+            name="persist"
+            label="Persist"
+            options={[
+              {
+                label: 'No',
+                value: 'false',
+              },
+              {
+                label: 'Yes',
+                value: 'true',
               },
             ]}
           />
