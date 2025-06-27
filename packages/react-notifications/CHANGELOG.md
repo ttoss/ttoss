@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.2.1...@ttoss/react-notifications@2.3.0) (2025-06-27)
+
+### Features
+
+- add persist option to notifications ([#706](https://github.com/ttoss/ttoss/issues/706)) ([63c1b50](https://github.com/ttoss/ttoss/commit/63c1b50e872ad7911d2f403b5032abf10b8c6899))
+
 ## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.2.0...@ttoss/react-notifications@2.2.1) (2025-06-26)
 
 ### Bug Fixes
