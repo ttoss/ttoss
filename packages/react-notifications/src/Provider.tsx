@@ -119,33 +119,27 @@ export const NotificationsProvider = (props: NotificationsProviderProps) => {
       });
 
       setNotifications((prevNotifications = []) => {
-        /**
-         * Remove old notifications with same id and keep the new ones.
-         */
-        const oldNotifications = prevNotifications.filter(
-          (prevNotification) => {
-            const newNotification = newNotifications.find((newNotification) => {
-              return newNotification.id === prevNotification.id;
-            });
-
-            if (newNotification) {
-              if (newNotification.viewType === 'toast') {
-                return false;
-              }
-
-              if (
-                !newNotification.viewType &&
-                props.defaultViewType === 'toast'
-              ) {
-                return false;
-              }
+        const nonToastNewNotifications = newNotifications.filter(
+          (notification) => {
+            if (notification.viewType === 'toast') {
+              return false;
             }
-
+            if (!notification.viewType && props.defaultViewType === 'toast') {
+              return false;
+            }
             return true;
           }
         );
 
-        return [...oldNotifications, ...newNotifications];
+        const oldNotifications = prevNotifications.filter(
+          (prevNotification) => {
+            return !nonToastNewNotifications.some((newNotification) => {
+              return newNotification.id === prevNotification.id;
+            });
+          }
+        );
+
+        return [...oldNotifications, ...nonToastNewNotifications];
       });
     },
     [prefix, props.defaultViewType, removeNotification]
