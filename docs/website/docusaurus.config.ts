@@ -7,44 +7,34 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
-import tailwindPlugin from './plugins/tailwind-config.cjs';
-
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const environment = process.env.NODE_ENV;
-
-const isDevelopment = environment === 'development';
+// Environment configuration
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const config: Config = {
+  // Site metadata
   title: 'Terezinha Tech Operations (ttoss)',
   tagline:
     'Trust Terezinha to Simplify and Enhance Your Product Development Process',
   favicon: 'img/favicon.ico',
 
-  // Set the production url of your site here
+  // Deployment configuration
   url: 'https://ttoss.dev',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
+  organizationName: 'ttoss',
+  projectName: 'ttoss',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ttoss', // Usually your GitHub org/user name.
-  projectName: 'ttoss', // Usually your repo name.
-
+  // Quality assurance - fail fast on broken links
   onBrokenAnchors: 'throw',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  // Internationalization
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
 
   plugins: [
-    tailwindPlugin,
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
@@ -169,13 +159,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image:
-      'https://cdn.triangulos.tech/assets/terezinha_1200x1200_with_space_bg_white_e107229d26.png',
+    image: 'img/terezinha_1200x1200_with_space_bg_white.png',
     navbar: {
       title: 'ttoss',
       logo: {
         alt: 'Terezinha',
-        src: 'https://cdn.triangulos.tech/assets/terezinha_100x100_af9272c980.webp',
+        src: 'img/terezinha_100x100.webp',
       },
       items: [
         {
@@ -307,5 +296,4 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 };
 
-// eslint-disable-next-line import/no-default-export
 export default config;

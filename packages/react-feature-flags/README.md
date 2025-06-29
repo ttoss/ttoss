@@ -80,13 +80,13 @@ const MyComponent = () => {
 
 ### Update feature flags
 
-You can update feature flags by calling `updateFeatures` function that is returned from `useFeatureFlags` hook. This is useful when you want to update feature flags after providers are initialized.
+You can update feature flags by calling `updateFeatures` function that is returned from `useUpdateFeatures` hook. This is useful when you want to update feature flags after providers are initialized.
 
 ```tsx
-import { useFeatureFlags } from '@ttoss/react-feature-flags';
+import { useUpdateFeatures } from '@ttoss/react-feature-flags';
 
 const MyComponent = () => {
-  const { updateFeatures } = useFeatureFlags();
+  const { updateFeatures } = useUpdateFeatures();
   const handleClick = async () => {
     const response = await fetch('https://...');
     const { features } = await response.json();
@@ -116,5 +116,43 @@ import { useFeatureFlag } from '@ttoss/react-feature-flags';
 const MyComponent = () => {
   const isFeatureEnabled = useFeatureFlag('my-feature');
   return <div>{isFeatureEnabled ? 'Enabled' : 'Disabled'}</div>;
+};
+```
+
+## Examples
+
+### `loadFeatures` function needs a hook
+
+If `loadFeatures` function needs to use data from a hook, you can create a custom Provider that uses the hook, passes the data to `loadFeatures` function, and then wraps the `FeatureFlagsProvider`.
+
+For example, you need `userId` from a custom hook `useMe` to load features:
+
+```tsx
+import * as React from 'react';
+import { FeatureFlagsProvider as TtossFeatureFlagsProvider } from '@ttoss/react-feature-flags';
+
+const FeatureFlagsProvider = ({ children }: { children: React.ReactNode }) => {
+  const { me } = useMe();
+
+  const loadFeatures = React.useCallback(async () => {
+    if (!me?.email) {
+      return [];
+    }
+
+    /**
+     * Specify modules that some users have access to.
+     */
+    if (me.email === 'user@example.com') {
+      return ['module1', 'module2'];
+    }
+
+    return [];
+  }, [me?.email]);
+
+  return (
+    <TtossFeatureFlagsProvider loadFeatures={loadFeatures}>
+      {children}
+    </TtossFeatureFlagsProvider>
+  );
 };
 ```

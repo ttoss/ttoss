@@ -1,4 +1,5 @@
 label: Workflow
+position: 4
 link:
-  type: generated-index
-  slug: product/workflow
+  type: doc
+  id: product/workflow/index
