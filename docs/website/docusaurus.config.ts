@@ -7,8 +7,6 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
-import tailwindPlugin from './plugins/tailwind-config.cjs';
-
 // Environment configuration
 const isDevelopment = process.env.NODE_ENV === 'development' || true;
 
@@ -37,7 +35,6 @@ const config: Config = {
   },
 
   plugins: [
-    tailwindPlugin,
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
