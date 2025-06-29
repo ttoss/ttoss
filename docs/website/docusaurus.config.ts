@@ -8,7 +8,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
 // Environment configuration
-const isDevelopment = process.env.NODE_ENV === 'development' || true;
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const config: Config = {
   // Site metadata
