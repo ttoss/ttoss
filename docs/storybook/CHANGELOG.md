@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.17.0...@docs/storybook@2.18.0) (2025-06-30)
+
+### Features
+
+- docs color tokens ([#625](https://github.com/ttoss/ttoss/issues/625)) ([5826a91](https://github.com/ttoss/ttoss/commit/5826a91292852f69b87dfbce1391230a4f33e752))
+
 # [2.17.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.16.1...@docs/storybook@2.17.0) (2025-06-27)
 
 ### Features

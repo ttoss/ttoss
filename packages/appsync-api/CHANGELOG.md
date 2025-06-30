@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.20.5...@ttoss/appsync-api@0.21.0) (2025-06-30)
+
+### Features
+
+- docs color tokens ([#625](https://github.com/ttoss/ttoss/issues/625)) ([5826a91](https://github.com/ttoss/ttoss/commit/5826a91292852f69b87dfbce1391230a4f33e752))
+
 ## 0.20.5 (2025-06-20)
 
 **Note:** Version bump only for package @ttoss/appsync-api

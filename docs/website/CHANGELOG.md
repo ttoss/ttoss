@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.56.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.10...@docs/website@1.56.0) (2025-06-30)
+
+### Features
+
+- docs color tokens ([#625](https://github.com/ttoss/ttoss/issues/625)) ([5826a91](https://github.com/ttoss/ttoss/commit/5826a91292852f69b87dfbce1391230a4f33e752))
+
 ## [1.55.10](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.9...@docs/website@1.55.10) (2025-06-29)
 
 **Note:** Version bump only for package @docs/website
