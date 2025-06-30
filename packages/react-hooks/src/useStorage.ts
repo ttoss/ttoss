@@ -60,8 +60,8 @@ export function useStorage<T>(
         ? parser(rawValueRef.current)
         : defaultValue;
       return res;
-    } catch (e) {
-      logger(e);
+    } catch (error) {
+      logger(error);
       return defaultValue;
     }
   });
@@ -102,8 +102,8 @@ export function useStorage<T>(
 
     try {
       updateLocalStorage();
-    } catch (e) {
-      logger(e);
+    } catch (error) {
+      logger(error);
     }
   }, [key, logger, serializer, effectiveStorage, value]);
 
@@ -122,8 +122,8 @@ export function useStorage<T>(
           rawValueRef.current = e.newValue;
           setValue(e.newValue ? parser(e.newValue) : undefined);
         }
-      } catch (e) {
-        logger(e);
+      } catch (error) {
+        logger(error);
       }
     };
 

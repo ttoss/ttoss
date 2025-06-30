@@ -130,6 +130,50 @@ tags:
 - **Links**: Use descriptive link text, avoid "click here" or "read more"
 - **Images**: Include alt text for accessibility
 - **Tables**: Use markdown tables for structured data presentation
+- **Mermaid Diagrams**: Use Mermaid diagrams whenever possible to visualize processes, workflows, architectures, and relationships instead of static images or text descriptions
+
+### Visual Documentation with Mermaid
+
+**CRITICAL**: Use Mermaid diagrams to replace lengthy text explanations and make complex concepts immediately understandable.
+
+**When to Use Mermaid:**
+
+- **Process flows**: User journeys, development workflows, deployment processes
+- **System architecture**: Component relationships, data flow, service interactions
+- **Decision trees**: Conditional logic, approval processes, troubleshooting guides
+- **Timelines**: Project phases, feature releases, migration steps
+- **Relationships**: Entity relationships, class hierarchies, dependencies
+
+**Common Mermaid Diagram Types:**
+
+- `flowchart`: For processes, workflows, and decision paths
+- `sequenceDiagram`: For interactions between systems/users over time
+- `classDiagram`: For software architecture and entity relationships
+- `gitgraph`: For branching strategies and release workflows
+- `journey`: For user experience flows
+- `timeline`: For chronological processes or milestones
+
+**Best Practices:**
+
+- Keep diagrams focused on essential information only
+- Use clear, descriptive labels
+- Prefer multiple simple diagrams over one complex diagram
+- Always add a brief explanation after the diagram
+- Test diagrams render correctly in the documentation
+
+**Example:**
+
+```mermaid
+flowchart TD
+    A[Start] --> B{Is feature ready?}
+    B -->|Yes| C[Deploy to staging]
+    B -->|No| D[Continue development]
+    C --> E[Run tests]
+    E --> F{Tests pass?}
+    F -->|Yes| G[Deploy to production]
+    F -->|No| H[Fix issues]
+    H --> E
+```
 
 ### Content Organization
 
@@ -246,6 +290,12 @@ When you update `docs.instructions.md`, briefly note:
 This creates a living document that becomes more valuable with each documentation task, without becoming bloated or unwieldy.
 
 ### Recent Updates
+
+**June 30, 2025 - Added Mermaid Diagram Guidelines**:
+
+- **Pattern Identified**: Complex processes and architectures were being explained with lengthy text that was hard to scan and understand
+- **Solution**: Mandated use of Mermaid diagrams for visualizing processes, workflows, architectures, and relationships, with specific guidance on diagram types and best practices
+- **Impact**: Documentation will now be more visual and scannable, with complex concepts represented as clear diagrams instead of dense text explanations
 
 **June 27, 2025 - Added Core Documentation Philosophy**:
 

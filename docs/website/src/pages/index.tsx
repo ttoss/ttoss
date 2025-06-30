@@ -124,9 +124,9 @@ const Home = () => {
         <div className={styles.containerCustom}>
           <div className={`${styles.statsContainer}`}>
             <StatCard number="30+" label="Reusable Modules" />
-            <StatCard number="3" label="Core Pillars" />
+            <StatCard number="4" label="Core Pillars" />
+            <StatCard number="Design" label="System Ready" />
             <StatCard number="100%" label="TypeScript" />
-            <StatCard number="AWS" label="Cloud Ready" />
           </div>
         </div>
       </section>
@@ -141,21 +141,27 @@ const Home = () => {
         <div className={styles.containerCustom}>
           <div className={`${styles.textCenter} ${styles.mb8}`}>
             <Heading as="h2" className={styles.sectionTitle}>
-              Three Pillars of ttoss
+              Four Pillars of ttoss
             </Heading>
             <p className={styles.sectionDescription}>
               A complete ecosystem designed to accelerate product development
-              with modular solutions, structured processes, and powerful
-              automation tools.
+              with modular solutions, structured processes, design foundations,
+              and powerful automation tools.
             </p>
           </div>
 
-          <div className={styles.grid3}>
+          <div className={styles.grid4}>
             <FeatureCard
               icon="📚"
               title="Modular Library"
               description="30+ reusable NPM packages working in harmony. From GraphQL APIs to React components, authentication to internationalization - build faster with battle-tested modules."
               link="/docs/modules"
+            />
+            <FeatureCard
+              icon="🎨"
+              title="Design System"
+              description="Comprehensive design foundation with design tokens, themes, and reusable UI components. Create consistent, accessible interfaces with battle-tested design patterns."
+              link="/docs/design"
             />
             <FeatureCard
               icon="🏗️"
@@ -247,15 +253,20 @@ const Home = () => {
           </div>
 
           <div className={styles.techGrid}>
-            {['React', 'TypeScript', 'GraphQL', 'AWS', 'Node.js'].map(
-              (tech) => {
-                return (
-                  <div key={tech} className={styles.techCard}>
-                    {tech}
-                  </div>
-                );
-              }
-            )}
+            {[
+              'React',
+              'TypeScript',
+              'GraphQL',
+              'Theme UI',
+              'AWS',
+              'Node.js',
+            ].map((tech) => {
+              return (
+                <div key={tech} className={styles.techCard}>
+                  {tech}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -269,7 +280,8 @@ const Home = () => {
             </Heading>
             <p className={styles.ctaDescription}>
               Join teams already using ttoss to build better products faster.
-              Start with our modules or explore our comprehensive documentation.
+              Start with our modules, explore our design system, or dive into
+              our comprehensive documentation.
             </p>
             <div className={styles.ctaButtons}>
               <Link to="/docs/modules" className={styles.ctaButtonPrimary}>

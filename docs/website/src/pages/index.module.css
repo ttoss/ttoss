@@ -16,9 +16,16 @@
   gap: 2rem;
 }
 
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
 @media (max-width: 768px) {
   .grid2,
-  .grid3 {
+  .grid3,
+  .grid4 {
     grid-template-columns: 1fr;
   }
 }
@@ -136,6 +143,12 @@
   gap: 3rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .benefitsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .benefitSection h3 {

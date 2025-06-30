@@ -1,5 +1,6 @@
+import { dirname, join } from 'node:path';
+
 import type { StorybookConfig } from '@storybook/react-webpack5';
-import { dirname, join } from 'path';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAbsolutePath = (value: string): any => {

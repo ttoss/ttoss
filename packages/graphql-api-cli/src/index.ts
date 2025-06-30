@@ -1,11 +1,13 @@
-import * as esbuild from 'esbuild';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+
+import { codegen } from '@graphql-codegen/core';
 import * as typescriptPlugin from '@graphql-codegen/typescript';
 import { Command } from 'commander';
-import { codegen } from '@graphql-codegen/core';
+import * as esbuild from 'esbuild';
 import { parse } from 'graphql';
 import log from 'npmlog';
+
 import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';

@@ -208,7 +208,7 @@ export const createApiTemplate = ({
     },
   };
 
-  resolveMethodsEntries.forEach(({ fieldName, typeName }) => {
+  for (const { fieldName, typeName } of resolveMethodsEntries) {
     template.Resources[`${fieldName}${typeName}AppSyncResolver`] = {
       Type: 'AWS::AppSync::Resolver',
       DependsOn: AppSyncGraphQLSchemaLogicalId,
@@ -224,7 +224,7 @@ export const createApiTemplate = ({
         },
       },
     };
-  });
+  }
 
   const apiKey =
     additionalAuthenticationProviders?.includes('API_KEY') ||

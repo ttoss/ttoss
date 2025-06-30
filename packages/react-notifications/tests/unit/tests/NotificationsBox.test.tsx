@@ -70,13 +70,13 @@ describe('Notifications Box Test', () => {
 
     await user.click(screen.getByRole('button'));
 
-    Array.from({
+    for (const [idx] of Array.from({
       length: numberOfMessages,
-    }).forEach((_, idx) => {
+    }).entries()) {
       expect(
         screen.getByText(`${NOTIFICATION_MESSAGE}-${idx + 1}`)
       ).toBeInTheDocument();
-    });
+    }
   });
 
   test('Should resolve notifications with the same key', async () => {

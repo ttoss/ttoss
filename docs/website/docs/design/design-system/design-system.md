@@ -1,56 +1,85 @@
 ---
-id: designSystem
 title: Design System
-slug: /design/design-system
 ---
 
-The Design System is built around defined principles and purposes, which guide decisions on the constructed anatomy of assets, processes and documentation. In this documentation you will find the concepts and guidelines to understand and use it.
+# Design System
 
-## Principles
+The ttoss Design System provides a comprehensive foundation for building consistent, accessible, and scalable digital products.
 
-1. **Easy to use**  
-   Make it easy for newcomers to directly use our system to scale the projects. The usage extends to be easy to change and experiment with, allowing designers to identify needs to evolve the tools and be able to quickly make changes.
+## Core Principles
 
-2. **Keep it simple with low dependencies**  
-   Our system opens the door to a wide range of possibilities focusing on the small surface areas needed to cover the most common use cases. This small footprint helps keep it simple with low or zero dependencies.
+**1. Easy to use**  
+Make it simple for newcomers to adopt our system. Easy to use means easy to change and experiment with, enabling rapid iteration.
 
-3. **Flexibility, not rigidity**  
-   When building a multi-branding design system we have a trade-off of complexity and flexibility. At our decisions we take the vision of building a system that designers can build something more standard or to explore a new approach. By defaulting to simple while allowing for more complicated builds, the system optimizes for efficiency and ensures that designers don’t feel the need to leave the system for creativity productions.
+**2. Simple with minimal dependencies**  
+Focus on small, focused APIs that cover common use cases while keeping complexity low.
 
-## Purposes
+**3. Flexible, not rigid**  
+Balance standardization with creative freedom. Enable both efficient standard builds and innovative custom solutions.
 
-- Have a Single Source of Truth
-- Remove silos and empower teams to work together effectively
-- Allow to quickly test products
-- Improve consistency
-- Deal with several products and brands that have very different styles
+## System Architecture
 
-## Structure
+Our design system follows an **inside-out architecture** - each layer builds upon the previous one:
 
-To minimize complexity and allow flexibility of use, the Design System is broken into elements that have an inside-out flow organized into a hierarchy of layers and - each element builds on the next - making it very practical. Designers can work very fast, and less flexible, at outer layers, using ready-to-use interface components. On the other hand, at inner layers Designers can work with more flexibility by creating new branding elements, design tokens, components and interface funcionalities to meet specific demands.
+```mermaid
+graph TD
+    A[Digital Brand] --> B[Design Tokens]
+    B --> C[UI Components]
+    C --> D[UI Patterns]
+    D --> E[Complete Interfaces]
+```
 
-### Digital Brand
+### Layer 1: Digital Brand
 
-The goal of the Layer Digital Brand is to define a subset of the organization's brand to be used in the design and development of digital interfaces.  
-Clarify and focus brand guidelines in specific ways to digital interface work, its innermost core, captures those distinctions and the reasoning and principles behind the brand. This may include basics like logo, color, and photography styles, or even more details, like a point of view on animation.  
-For example, an organization might determine that only a subset of the colors permitted for the brand as a whole should be used in digital products. Or maybe there are special typefaces to be used in digital interface design.
+**Purpose**: Define brand guidelines for digital interfaces
 
-### Design Tokens
+- Logo usage and variations
+- Brand color palette
+- Typography hierarchy
+- Photography and imagery styles
+- Voice and tone guidelines
 
-The goal of the Design Tokens is to take the design concepts expressed in the Layer Digital Brand and codify them for use in constructing digital interfaces. Those design concepts are given a name and a value and sometimes other attributes such as a role or state. Once tokens have been defined, they can be translated into formats for use with multiple platforms. This is the power of tokens—you have one place to manage design decisions and the ability to use those defined values wherever people using the design system need them. Once a brand element has been tokenized, it’s much easier to perpetuate change throughout the system and resulting interfaces.
+### Layer 2: [Design Tokens](/docs/design/design-system/design-tokens)
 
-### UI Components
+**Purpose**: Codify brand concepts into reusable values
 
-:::info
+- **[Core Tokens](/docs/design/design-system/design-tokens/core-tokens)**: Raw brand values (colors, fonts, spacing)
+- **[Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)**: Context-specific applications (button colors, text hierarchy)
+- **[Theme Definition](/docs/design/design-system/theme)**: Complete implementations combining tokens and component styles
 
-In progress
+### Layer 3: [UI Components](/docs/design/design-system/components)
 
-:::
+**Purpose**: Provide building blocks for interfaces
 
-### UI Modules
+- **Foundations**: Basic elements (Button, Input, Text)
+- **Patterns**: Complex compositions (Forms, Navigation, Cards)
 
-:::info
+### Layer 4: UI Patterns
 
-In progress
+**Purpose**: Complete interface solutions
 
-:::
+- Page templates
+- Layout patterns
+- Interaction flows
+
+## Multi-Brand Support
+
+Our system excels at supporting multiple brands through:
+
+- **Theme Switching**: Different brands using the same component library
+- **Token Override**: Brand-specific values while maintaining structure
+- **Flexible Components**: Adaptable to various visual styles
+
+## Key Benefits
+
+- **Single Source of Truth**: Centralized design decisions
+- **Cross-Team Collaboration**: Shared vocabulary between design and engineering
+- **Rapid Prototyping**: Quick testing and iteration
+- **Visual Consistency**: Unified experience across products
+- **Scalability**: Support for multiple products and brands
+
+## Getting Started
+
+1. **[Install the packages](/docs/design/getting-started)** - Quick setup guide
+2. **[Explore tokens](/docs/design/design-system/design-tokens)** - Understand the foundation
+3. **[Browse components](https://storybook.ttoss.dev)** - See what's available
