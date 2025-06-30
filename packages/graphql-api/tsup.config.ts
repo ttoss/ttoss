@@ -2,7 +2,6 @@ import { tsupConfig } from '@ttoss/config';
 
 export const tsup = {
   ...tsupConfig({
-    entryPoints: ['src/index.ts', 'src/cli.ts', 'src/shield.ts'],
+    entryPoints: ['src/index.ts', 'src/shield.ts'],
   }),
-  format: ['esm'],
 };

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.13...@ttoss/postgresdb-cli@0.1.14) (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
+## [0.1.13](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.12...@ttoss/postgresdb-cli@0.1.13) (2025-05-05)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
+## 0.1.12 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
+## [0.1.11](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.10...@ttoss/postgresdb-cli@0.1.11) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
+## [0.1.10](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.9...@ttoss/postgresdb-cli@0.1.10) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
 ## [0.1.9](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.8...@ttoss/postgresdb-cli@0.1.9) (2024-12-03)
 
 ### Bug Fixes

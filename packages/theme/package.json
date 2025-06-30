@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "1.8.2",
+  "version": "2.6.1",
   "description": "Theme for packages.",
   "license": "MIT",
   "author": "ttoss",
@@ -15,7 +15,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts"
+    "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
+    "./Oca": "./src/themes/Oca/Oca.ts"
   },
   "files": [
     "dist"
@@ -38,9 +39,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^29.7.0",
-    "theme-ui": "^0.16.2",
-    "tsup": "^8.3.5"
+    "jest": "^30.0.2",
+    "theme-ui": "^0.17.1",
+    "tsup": "^8.5.0"
   },
   "keywords": [],
   "publishConfig": {
@@ -53,6 +54,10 @@
       "./Bruttal": {
         "import": "./dist/esm/themes/Bruttal/Bruttal.js",
         "types": "./dist/themes/Bruttal/Bruttal.d.ts"
+      },
+      "./Oca": {
+        "import": "./dist/esm/themes/Oca/Oca.js",
+        "types": "./dist/themes/Oca/Oca.d.ts"
       }
     },
     "provenance": true

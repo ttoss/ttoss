@@ -3,6 +3,131 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.6.0...@ttoss/theme@2.6.1) (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/theme
+
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.8...@ttoss/theme@2.6.0) (2025-06-06)
+
+### Features
+
+- add variants to tooltip component and new props ([#696](https://github.com/ttoss/ttoss/issues/696)) ([db4e440](https://github.com/ttoss/ttoss/commit/db4e440afc14cb7d1444a78e574dee2133de1405))
+
+## [2.5.8](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.7...@ttoss/theme@2.5.8) (2025-06-06)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [2.5.7](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.6...@ttoss/theme@2.5.7) (2025-04-29)
+
+### Bug Fixes
+
+- action button status ([#686](https://github.com/ttoss/ttoss/issues/686)) ([d90af52](https://github.com/ttoss/ttoss/commit/d90af52c88f1224d354ef35880e104cef5f202c9))
+
+## [2.5.6](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.5...@ttoss/theme@2.5.6) (2025-04-29)
+
+### Bug Fixes
+
+- add settings icon ([#685](https://github.com/ttoss/ttoss/issues/685)) ([bb5d2aa](https://github.com/ttoss/ttoss/commit/bb5d2aa1f9e7a3e74d576bd6d9e3e7db1f06802a))
+
+## [2.5.5](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.4...@ttoss/theme@2.5.5) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [2.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.3...@ttoss/theme@2.5.4) (2025-02-26)
+
+### Bug Fixes
+
+- drawer and implement side bar in mobile mode ([#672](https://github.com/ttoss/ttoss/issues/672)) ([ebb963a](https://github.com/ttoss/ttoss/commit/ebb963a20b749743bdb06bf14586f1b016cd78a9))
+
+## [2.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.2...@ttoss/theme@2.5.3) (2025-02-11)
+
+### Bug Fixes
+
+- confirmation code auth ([#664](https://github.com/ttoss/ttoss/issues/664)) ([defcc8a](https://github.com/ttoss/ttoss/commit/defcc8a1c0e493e6c1583a8055b463ed85b6b773))
+
+## [2.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.1...@ttoss/theme@2.5.2) (2025-02-07)
+
+### Bug Fixes
+
+- parse pnpm to 10v, change tooltip style and add style to 'a' com… ([#663](https://github.com/ttoss/ttoss/issues/663)) ([43216bc](https://github.com/ttoss/ttoss/commit/43216bc45ec3a693981155bb930362e8f961bc96))
+
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.5.0...@ttoss/theme@2.5.1) (2025-02-03)
+
+**Note:** Version bump only for package @ttoss/theme
+
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.4.0...@ttoss/theme@2.5.0) (2025-01-31)
+
+### Features
+
+- new spacing to oca theme ([#660](https://github.com/ttoss/ttoss/issues/660)) ([2d43c1e](https://github.com/ttoss/ttoss/commit/2d43c1e750d3bd51870be54b357d1b1c9fb06868))
+
+# [2.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.3.0...@ttoss/theme@2.4.0) (2025-01-27)
+
+### Features
+
+- add tab component unfinished yet integration with chakra ([#656](https://github.com/ttoss/ttoss/issues/656)) ([c9fe522](https://github.com/ttoss/ttoss/commit/c9fe522637d1ba271457ed20ffff2e84f3bebf45))
+
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.2.1...@ttoss/theme@2.3.0) (2025-01-23)
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
+## [2.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.2.0...@ttoss/theme@2.2.1) (2025-01-19)
+
+### Bug Fixes
+
+- notifications card theme ([#651](https://github.com/ttoss/ttoss/issues/651)) ([a93cf22](https://github.com/ttoss/ttoss/commit/a93cf22fb50f5da9248ffaef94589ead346d4cb5))
+
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.1.1...@ttoss/theme@2.2.0) (2025-01-18)
+
+### Features
+
+- react notifications v2 ([#649](https://github.com/ttoss/ttoss/issues/649)) ([5cc3237](https://github.com/ttoss/ttoss/commit/5cc3237ecdb48b03b46c1b0fe4bef43d2e3f5046))
+
+## [2.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.1.0...@ttoss/theme@2.1.1) (2025-01-12)
+
+### Bug Fixes
+
+- remove card from theme and style in component ([#646](https://github.com/ttoss/ttoss/issues/646)) ([964addc](https://github.com/ttoss/ttoss/commit/964addc34f04585712493f9953fb92305a21d88a))
+
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.0.2...@ttoss/theme@2.1.0) (2025-01-09)
+
+### Features
+
+- add collapse sidebar layout ([#642](https://github.com/ttoss/ttoss/issues/642)) ([8f5fd3e](https://github.com/ttoss/ttoss/commit/8f5fd3ec3def570b56f3c1b2b491ad229ba7649a))
+
+## [2.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.0.1...@ttoss/theme@2.0.2) (2025-01-08)
+
+### Bug Fixes
+
+- export oca theme ([fdbef75](https://github.com/ttoss/ttoss/commit/fdbef752521920e20775d51f3b638c1a56edb369))
+
+## [2.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.6...@ttoss/theme@2.0.1) (2025-01-07)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.8.6](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.5...@ttoss/theme@1.8.6) (2025-01-02)
+
+### Bug Fixes
+
+- eslint import rule ([#636](https://github.com/ttoss/ttoss/issues/636)) ([acb178f](https://github.com/ttoss/ttoss/commit/acb178f0a92b236b86af044b305ddea02bf0a714))
+
+## [1.8.5](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.4...@ttoss/theme@1.8.5) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [1.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.3...@ttoss/theme@1.8.4) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## 1.8.3 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+- storybook themes ([#629](https://github.com/ttoss/ttoss/issues/629)) ([d5d993a](https://github.com/ttoss/ttoss/commit/d5d993a943bed7a148efa4095f3f240d63965e82))
+
 ## [1.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@1.8.1...@ttoss/theme@1.8.2) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/theme

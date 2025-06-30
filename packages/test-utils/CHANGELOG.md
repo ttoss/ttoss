@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.1.24 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/test-utils
+
+## 2.1.23 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/test-utils
+
+## [2.1.22](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.21...@ttoss/test-utils@2.1.22) (2025-01-02)
+
+### Bug Fixes
+
+- eslint import rule ([#636](https://github.com/ttoss/ttoss/issues/636)) ([acb178f](https://github.com/ttoss/ttoss/commit/acb178f0a92b236b86af044b305ddea02bf0a714))
+
+## [2.1.21](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.20...@ttoss/test-utils@2.1.21) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/test-utils
+
+## 2.1.20 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [2.1.19](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@2.1.18...@ttoss/test-utils@2.1.19) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/test-utils

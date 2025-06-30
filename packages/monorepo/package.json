@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.27.15",
+  "version": "1.27.19",
   "description": "Monorepo setup for ttoss",
   "license": "MIT",
   "author": "ttoss",
@@ -32,7 +32,7 @@
     "@ttoss/config": "workspace:^",
     "@types/npmlog": "^7.0.0",
     "@types/yargs": "^17.0.33",
-    "tsup": "^8.3.5"
+    "tsup": "^8.5.0"
   },
   "publishConfig": {
     "access": "public",

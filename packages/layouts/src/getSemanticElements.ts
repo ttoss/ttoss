@@ -2,6 +2,7 @@ import * as React from 'react';
 
 const semanticComponents = {
   Header: 'header',
+  Sidebar: 'sidebar',
   Footer: 'footer',
   Main: 'main',
 } as const;
@@ -11,15 +12,7 @@ type SemanticComponents = keyof typeof semanticComponents;
 type SemanticTags = (typeof semanticComponents)[SemanticComponents];
 
 type SemanticElements = {
-  [key in SemanticTags]:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal
-    | null
-    | undefined;
+  [key in SemanticTags]: React.ReactNode;
 };
 
 /**
@@ -34,6 +27,7 @@ export const getSematicElements = ({
   const semanticElements = {} as SemanticElements;
 
   React.Children.forEach(children, (child) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const displayName = (child as any)?.type?.displayName as
       | SemanticComponents
       | undefined;

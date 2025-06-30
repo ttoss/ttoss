@@ -1,5 +1,6 @@
-import { configCreator } from './configCreator';
 import type { Config } from 'jest';
+
+import { configCreator } from './configCreator';
 
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:

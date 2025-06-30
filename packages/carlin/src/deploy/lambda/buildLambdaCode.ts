@@ -1,9 +1,10 @@
-import * as esbuild from 'esbuild';
-import { builtinModules } from 'node:module';
-import { typescriptConfig } from '@ttoss/config';
 import fs from 'node:fs';
-import log from 'npmlog';
+import { builtinModules } from 'node:module';
 import path from 'node:path';
+
+import { typescriptConfig } from '@ttoss/config';
+import * as esbuild from 'esbuild';
+import log from 'npmlog';
 
 const logPrefix = 'lambda';
 

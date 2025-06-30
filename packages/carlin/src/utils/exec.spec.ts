@@ -1,6 +1,7 @@
-/* eslint-disable jest/no-conditional-expect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import childProcess from 'node:child_process';
+
 import * as execModule from './exec';
-import childProcess from 'child_process';
 
 jest.mock('child_process');
 
@@ -18,8 +19,8 @@ describe('testing exec', () => {
 
     try {
       await execModule.exec('command');
-    } catch (err) {
-      expect(err).toEqual(error);
+    } catch (error_) {
+      expect(error_).toEqual(error);
       expect(childProcess.exec).toHaveBeenCalledWith(
         command,
         expect.any(Function)
@@ -38,7 +39,10 @@ describe('testing exec', () => {
 
     const out = await execModule.exec('command');
     expect(out).toEqual(stdout);
-    expect(childProcess.exec).toBeCalledWith(command, expect.any(Function));
+    expect(childProcess.exec).toHaveBeenCalledWith(
+      command,
+      expect.any(Function)
+    );
   });
 
   test('should return stderr', async () => {
@@ -52,8 +56,8 @@ describe('testing exec', () => {
 
     try {
       await execModule.exec('command');
-    } catch (err) {
-      expect(err).toEqual(stderr);
+    } catch (error) {
+      expect(error).toEqual(stderr);
       expect(childProcess.exec).toHaveBeenCalledWith(
         command,
         expect.any(Function)

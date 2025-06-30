@@ -1,10 +1,10 @@
 {
   "private": true,
   "name": "@terezinha-farm/api",
-  "version": "0.18.2",
+  "version": "0.19.9",
   "type": "module",
   "scripts": {
-    "build-schema": "ttoss-graphql-api build-schema",
+    "build-schema": "cross-env TTOSS_MONOREPO=true ttoss-graphql-api build-schema",
     "deploy": "carlin deploy",
     "dev": "tsx watch ./server/server.ts"
   },
@@ -18,7 +18,9 @@
     "@ttoss/aws-appsync-nodejs": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
+    "@ttoss/graphql-api-cli": "workspace:^",
     "@ttoss/graphql-api-server": "workspace:^",
-    "tsx": "^4.6.2"
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.2"
   }
 }

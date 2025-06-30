@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.8.23 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
+## 1.8.22 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
+## [1.8.21](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.20...@ttoss/aws-appsync-nodejs@1.8.21) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
+## 1.8.20 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [1.8.19](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.18...@ttoss/aws-appsync-nodejs@1.8.19) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/aws-appsync-nodejs

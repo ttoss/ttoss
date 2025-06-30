@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import {
   Form,
   FormFieldCreditCardNumber,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldCreditCardNumber',
@@ -33,23 +33,30 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber name="cartao1" label="cartao 1" />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber name="cartao2" label="cartao 2" />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldCreditCardNumber
           name="cartao3"
           label="cartao desativado"
           disabled
         />
       </Flex>
+      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+        <FormFieldCreditCardNumber
+          name="cartao3"
+          label="cartao warning"
+          warning="WARNING"
+        />
+      </Flex>
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

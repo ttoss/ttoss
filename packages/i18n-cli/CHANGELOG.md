@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.29 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/i18n-cli
+
+## 0.7.28 (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
+## 0.7.27 (2025-01-31)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+- remove unused translations from lang folder ([#659](https://github.com/ttoss/ttoss/issues/659)) ([d214436](https://github.com/ttoss/ttoss/commit/d2144367aefe3cffd66c939cb69994cceb523efa))
+
+## [0.7.26](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.25...@ttoss/i18n-cli@0.7.26) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/i18n-cli
+
+## 0.7.25 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.7.24](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.23...@ttoss/i18n-cli@0.7.24) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

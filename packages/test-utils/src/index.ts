@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
-import { type RenderOptions, render, renderHook } from '@testing-library/react';
-import { createSerializer, matchers } from '@emotion/jest';
-import ResizeObserver from 'resize-observer-polyfill';
 import './assignWindowProperties';
 import '@testing-library/jest-dom';
+
+import { createSerializer, matchers } from '@emotion/jest';
+import { render, renderHook, type RenderOptions } from '@testing-library/react';
+import * as React from 'react';
+import ResizeObserver from 'resize-observer-polyfill';
 
 /**
  * https://github.com/ZeeCoder/use-resize-observer/issues/40#issuecomment-991256805
@@ -16,7 +17,6 @@ global.ResizeObserver = ResizeObserver;
  * > Property 'toHaveStyleRule' does not exist on type 'JestMatchers<HTMLElement>'.
  */
 export * from '@emotion/jest';
-
 export { default as userEvent } from '@testing-library/user-event';
 
 /**

@@ -1,9 +1,9 @@
+import { Icon, IconType } from '@ttoss/react-icons';
 import * as React from 'react';
 import {
-  type ButtonProps as ButtonPropsUi,
   Button as ButtonUi,
+  type ButtonProps as ButtonPropsUi,
 } from 'theme-ui';
-import { Icon, IconType } from '@ttoss/react-icons';
 
 export type ButtonProps = ButtonPropsUi & {
   leftIcon?: IconType;
@@ -22,12 +22,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         sx={{
           cursor: 'pointer',
-          paddingX: 'xl',
-          paddingY: 'lg',
+          paddingX: '6',
+          paddingY: '4',
           fontFamily: 'body',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 'lg',
+          gap: '4',
+          '&:disabled': {
+            cursor: 'not-allowed',
+          },
           ...restProps.sx,
         }}
       >

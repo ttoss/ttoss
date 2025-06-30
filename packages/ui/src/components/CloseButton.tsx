@@ -1,49 +1,16 @@
-import * as React from 'react';
-import { Button, type ButtonProps } from './Button';
-import { Icon } from '@ttoss/react-icons';
+import { Close as CloseUI, type CloseProps as ClosePropsUI } from 'theme-ui';
 
-export type CloseButtonProps = ButtonProps & {
-  label?: string;
-  onlyText?: boolean;
-};
+export type CloseButtonProps = ClosePropsUI & { ariaLabel?: string };
 
-export const CloseButton = React.forwardRef<
-  HTMLButtonElement,
-  CloseButtonProps
->(({ label, sx, onlyText, ...props }, ref) => {
-  if (onlyText && !label) {
-    return null;
-  }
-
+export const CloseButton = (props: CloseButtonProps) => {
   return (
-    <Button
-      variant="buttons.closeButton"
+    <CloseUI
       type="button"
-      aria-label={label}
+      aria-label={props.ariaLabel}
       sx={{
-        fontFamily: 'caption',
-        fontSize: 'xs',
-        display: 'inline-flex',
-        alignItems: 'center',
-        cursor: 'pointer',
-        lineHeight: 'normal',
-        gap: 'sm',
-        padding: 'sm',
-        width: 'fit-content',
-        transition: 'all 0.2s',
-        '& > iconify-icon': {
-          fontSize: 'base',
-        },
-        ...sx,
+        ...props.sx,
       }}
       {...props}
-      ref={ref}
-    >
-      {label}
-
-      {!onlyText && <Icon icon="close" />}
-    </Button>
+    />
   );
-});
-
-CloseButton.displayName = 'CloseButton';
+};

@@ -1,4 +1,5 @@
 export ENVIRONMENT=Production
+export TTOSS_MONOREPO=true
 
 # Fetch tags.
 git fetch --tags --quiet
@@ -27,7 +28,10 @@ echo NPM whoami: $(npm whoami)
 # when commiting changes. If we don't build this package, commit will fail
 # because pre-commit hook will run syncpack:list with default config, that
 # not works because of package version and "workspace:^" mismatch.
-pnpm turbo run build:config
+pnpm turbo run build-config
+
+# Check dependencies versions.
+pnpm run syncpack:list
 
 # Publish packages only if `pnpm lerna changed` is success. This happens when
 # exists an update on root and no packages changes. This way, `version` won't

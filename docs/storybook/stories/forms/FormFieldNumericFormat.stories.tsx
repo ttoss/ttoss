@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import {
   Form,
   FormFieldNumericFormat,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldNumericFormat',
@@ -33,7 +33,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="real"
           label="Real"
@@ -46,8 +46,7 @@ const Template: Story = () => {
           allowNegative={false}
         />
       </Flex>
-
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
           label="Dolar"
@@ -60,7 +59,7 @@ const Template: Story = () => {
           allowNegative={false}
         />
       </Flex>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldNumericFormat
           name="dolar"
           label="Dolar"
@@ -74,7 +73,22 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldNumericFormat
+          name="dolar"
+          label="Dolar"
+          thousandSeparator=","
+          decimalSeparator="."
+          fixedDecimalScale
+          decimalScale={2}
+          prefix="$ "
+          placeholder="$ 00,00"
+          allowNegative={false}
+          warning="WARNING"
+        />
+      </Flex>
+
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

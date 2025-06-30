@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.44](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.43...@ttoss/landing-pages@0.12.44) (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.43](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.42...@ttoss/landing-pages@0.12.43) (2025-06-13)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.42](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.41...@ttoss/landing-pages@0.12.42) (2025-06-11)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.41](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.40...@ttoss/landing-pages@0.12.41) (2025-06-06)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.40](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.39...@ttoss/landing-pages@0.12.40) (2025-06-06)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.39](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.38...@ttoss/landing-pages@0.12.39) (2025-06-02)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.38](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.37...@ttoss/landing-pages@0.12.38) (2025-04-30)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.37](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.36...@ttoss/landing-pages@0.12.37) (2025-04-29)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.36](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.35...@ttoss/landing-pages@0.12.36) (2025-04-29)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.35](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.34...@ttoss/landing-pages@0.12.35) (2025-04-29)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.34](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.33...@ttoss/landing-pages@0.12.34) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.33](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.32...@ttoss/landing-pages@0.12.33) (2025-02-26)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.32](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.31...@ttoss/landing-pages@0.12.32) (2025-02-11)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.31](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.30...@ttoss/landing-pages@0.12.31) (2025-02-07)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.30](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.29...@ttoss/landing-pages@0.12.30) (2025-02-03)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.29](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.28...@ttoss/landing-pages@0.12.29) (2025-02-03)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.28](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.27...@ttoss/landing-pages@0.12.28) (2025-01-31)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.27](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.26...@ttoss/landing-pages@0.12.27) (2025-01-27)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.26](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.25...@ttoss/landing-pages@0.12.26) (2025-01-24)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.25](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.24...@ttoss/landing-pages@0.12.25) (2025-01-23)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.24](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.23...@ttoss/landing-pages@0.12.24) (2025-01-19)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.23](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.22...@ttoss/landing-pages@0.12.23) (2025-01-18)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.22](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.21...@ttoss/landing-pages@0.12.22) (2025-01-13)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.21](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.20...@ttoss/landing-pages@0.12.21) (2025-01-12)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.20](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.19...@ttoss/landing-pages@0.12.20) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.19](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.18...@ttoss/landing-pages@0.12.19) (2025-01-09)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.18](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.17...@ttoss/landing-pages@0.12.18) (2025-01-08)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.17](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.16...@ttoss/landing-pages@0.12.17) (2025-01-07)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.16](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.15...@ttoss/landing-pages@0.12.16) (2025-01-07)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.15](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.14...@ttoss/landing-pages@0.12.15) (2025-01-02)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.14](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.13...@ttoss/landing-pages@0.12.14) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.13](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.12...@ttoss/landing-pages@0.12.13) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## 0.12.12 (2024-12-27)
+
+### Bug Fixes
+
+- add postgresdb to postgresdb-cli dep ([eb574dc](https://github.com/ttoss/ttoss/commit/eb574dcb29fb37c71a9fa378da413f95c68b656a))
+
 ## [0.12.11](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.10...@ttoss/landing-pages@0.12.11) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/landing-pages

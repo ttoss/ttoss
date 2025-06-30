@@ -1,46 +1,40 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import type * as Preset from '@docusaurus/preset-classic';
+import type { Config } from '@docusaurus/types';
 import { themes as prismThemes } from 'prism-react-renderer';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
-import tailwindPlugin from './plugins/tailwind-config.cjs';
-import type * as Preset from '@docusaurus/preset-classic';
-import type { Config } from '@docusaurus/types'; // add this
 
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const environment = process.env.NODE_ENV;
-
-const isDevelopment = environment === 'development';
+// Environment configuration
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const config: Config = {
+  // Site metadata
   title: 'Terezinha Tech Operations (ttoss)',
   tagline:
     'Trust Terezinha to Simplify and Enhance Your Product Development Process',
   favicon: 'img/favicon.ico',
 
-  // Set the production url of your site here
+  // Deployment configuration
   url: 'https://ttoss.dev',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
+  organizationName: 'ttoss',
+  projectName: 'ttoss',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ttoss', // Usually your GitHub org/user name.
-  projectName: 'ttoss', // Usually your repo name.
-
+  // Quality assurance - fail fast on broken links
   onBrokenAnchors: 'throw',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  // Internationalization
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
 
   plugins: [
-    tailwindPlugin,
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
@@ -64,6 +58,7 @@ const config: Config = {
           'http-server',
           'i18n-cli',
           'ids',
+          'lambda-postgres-query',
           'layouts',
           'logger',
           'monorepo',
@@ -80,6 +75,30 @@ const config: Config = {
           'theme',
           'ui',
         ].map((pkg) => {
+          const entryPoints = (() => {
+            const packageJsonObj = JSON.parse(
+              fs.readFileSync(`../../packages/${pkg}/package.json`, 'utf-8')
+            );
+
+            if (!packageJsonObj.exports) {
+              return [`../../packages/${pkg}/src/index.ts`];
+            }
+
+            const entryPoints = Object.values(packageJsonObj.exports)
+              .filter((filepath: string) => {
+                return filepath.endsWith('.ts');
+              })
+              .map((filepath: string) => {
+                return path.join(`../../packages/${pkg}`, filepath);
+              });
+
+            if (entryPoints.length === 0) {
+              return [`../../packages/${pkg}/src/index.ts`];
+            }
+
+            return entryPoints;
+          })();
+
           /**
            * https://typedoc-plugin-markdown.org/plugins/docusaurus/quick-start#add-the-plugin-to-docusaurusconfigjs
            */
@@ -87,7 +106,7 @@ const config: Config = {
             'docusaurus-plugin-typedoc',
             {
               id: pkg,
-              entryPoints: [`../../packages/${pkg}/src/index.ts`],
+              entryPoints,
               tsconfig: `../../packages/${pkg}/tsconfig.json`,
               out: `./docs/modules/packages/${pkg}`,
               sidebar: {
@@ -140,13 +159,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image:
-      'https://cdn.triangulos.tech/assets/terezinha_1200x1200_with_space_bg_white_e107229d26.png',
+    image: 'img/terezinha_1200x1200_with_space_bg_white.png',
     navbar: {
       title: 'ttoss',
       logo: {
         alt: 'Terezinha',
-        src: 'https://cdn.triangulos.tech/assets/terezinha_100x100_af9272c980.webp',
+        src: 'img/terezinha_100x100.webp',
       },
       items: [
         {
@@ -284,5 +302,4 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 };
 
-// eslint-disable-next-line import/no-default-export
 export default config;

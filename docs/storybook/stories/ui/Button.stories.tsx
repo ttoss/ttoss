@@ -1,5 +1,5 @@
-import { Button, ButtonProps, Flex } from '@ttoss/ui';
 import { Meta, Story } from '@storybook/react';
+import { Button, ButtonProps, Flex } from '@ttoss/ui';
 
 export default {
   title: 'UI/Button',
@@ -13,7 +13,7 @@ const Template: Story<ButtonProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flexDirection: 'column',
         alignItems: 'start',
       }}

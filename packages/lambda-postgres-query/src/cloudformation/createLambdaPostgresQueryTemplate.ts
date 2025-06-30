@@ -101,7 +101,7 @@ export const createLambdaPostgresQueryTemplate = ({
           Timeout: timeout,
           Handler: handler,
           Role: { 'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'] },
-          Runtime: 'nodejs20.x',
+          Runtime: 'nodejs22.x',
           Environment: {
             Variables: {
               DATABASE_HOST: { Ref: 'DatabaseHost' },
@@ -116,6 +116,16 @@ export const createLambdaPostgresQueryTemplate = ({
             SecurityGroupIds: { Ref: 'SecurityGroupIds' },
             SubnetIds: { Ref: 'SubnetIds' },
           },
+        },
+      },
+      LambdaQueryFunctionLogs: {
+        Type: 'AWS::Logs::LogGroup',
+        DependsOn: 'LambdaQueryFunction',
+        Properties: {
+          LogGroupName: {
+            'Fn::Join': ['', ['/aws/lambda/', { Ref: 'LambdaQueryFunction' }]],
+          },
+          RetentionInDays: 7,
         },
       },
     },

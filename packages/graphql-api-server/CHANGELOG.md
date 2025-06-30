@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.7 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## 0.8.6 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.8.5](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.8.4...@ttoss/graphql-api-server@0.8.5) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.8.3...@ttoss/graphql-api-server@0.8.4) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.8.2...@ttoss/graphql-api-server@0.8.3) (2024-12-05)
+
+### Bug Fixes
+
+- graphql-api not adding cjs build ([#624](https://github.com/ttoss/ttoss/issues/624)) ([0da1e16](https://github.com/ttoss/ttoss/commit/0da1e16c577e1fde1ccc4b2df2e94acda35fd249))
+
 ## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.8.1...@ttoss/graphql-api-server@0.8.2) (2024-12-04)
 
 **Note:** Version bump only for package @ttoss/graphql-api-server

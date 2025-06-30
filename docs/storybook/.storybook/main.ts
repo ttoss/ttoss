@@ -1,5 +1,11 @@
-import { dirname, join } from 'path';
+import { dirname, join } from 'node:path';
+
 import type { StorybookConfig } from '@storybook/react-webpack5';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getAbsolutePath = (value: string): any => {
+  return dirname(require.resolve(join(value, 'package.json')));
+};
 
 const config: StorybookConfig = {
   /**
@@ -11,17 +17,13 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-interactions'),
-    getAbsolutePath("@storybook/addon-webpack5-compiler-babel"),
+    getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+    getAbsolutePath('@storybook/addon-a11y'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
   },
-  docs: {},
 };
 
 export default config;
-
-function getAbsolutePath(value: string): any {
-  return dirname(require.resolve(join(value, 'package.json')));
-}

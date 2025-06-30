@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.24 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## 0.1.23 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.1.22](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.1.21...@ttoss-challenge/api-graphql-with-dynamodb@0.1.22) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.1.21](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.1.20...@ttoss-challenge/api-graphql-with-dynamodb@0.1.21) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.1.20](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.1.19...@ttoss-challenge/api-graphql-with-dynamodb@0.1.20) (2024-12-05)
+
+### Bug Fixes
+
+- graphql-api-cli ([5ef07ac](https://github.com/ttoss/ttoss/commit/5ef07ac906ff100f88471fcf935efbd901132c03))
+
 ## [0.1.19](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.1.18...@ttoss-challenge/api-graphql-with-dynamodb@0.1.19) (2024-12-04)
 
 **Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb

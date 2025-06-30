@@ -1,6 +1,6 @@
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 import { Button, Input } from '@ttoss/ui';
 import { Form, FormField, useForm, yup, yupResolver } from 'src/index';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const onSubmit = jest.fn();
 
@@ -18,6 +18,27 @@ const RenderForm = () => {
       <FormField
         name="firstName"
         label="First Name"
+        defaultValue={''}
+        render={({ field }) => {
+          return <Input {...field} />;
+        }}
+      />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+};
+
+const RenderFormWithWarning = () => {
+  const formMethods = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={onSubmit}>
+      <FormField
+        name="firstName"
+        label="First Name"
+        warning="Warning"
         defaultValue={''}
         render={({ field }) => {
           return <Input {...field} />;
@@ -47,5 +68,21 @@ test('should display error message', async () => {
 
   await user.click(screen.getByText('Submit'));
 
-  expect(screen.getByText('First name is required')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('First name is required')).toBeInTheDocument();
+  });
+});
+
+test('should display warning message and icon', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  render(<RenderFormWithWarning />);
+
+  await user.type(screen.getByLabelText('First Name'), 'pedro');
+
+  expect(screen.getByText('Warning')).toBeInTheDocument();
+  expect(screen.getByTestId('iconify-icon')).toHaveAttribute(
+    'icon',
+    'warning-alt'
+  );
 });

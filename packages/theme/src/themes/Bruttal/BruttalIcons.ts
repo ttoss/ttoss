@@ -1,4 +1,3 @@
-import { IconifyIcon, addIcon } from '@ttoss/react-icons';
 import addFilledIcon from '@iconify/icons-carbon/add-filled';
 import arrowRightIcon from '@iconify/icons-carbon/arrow-right';
 import arrowUpRightIcon from '@iconify/icons-carbon/arrow-up-right';
@@ -6,17 +5,17 @@ import attachmentIcon from '@iconify/icons-carbon/attachment';
 import calendarIcon from '@iconify/icons-carbon/calendar';
 import caretDownIcon from '@iconify/icons-carbon/caret-down';
 import caretUpIcon from '@iconify/icons-carbon/caret-up';
+import checkboxIcon from '@iconify/icons-carbon/checkbox';
+import checkboxCheckedFilled from '@iconify/icons-carbon/checkbox-checked-filled';
+import checkboxIndeterminateFilledIcon from '@iconify/icons-carbon/checkbox-indeterminate-filled';
 import checkMarkIcon from '@iconify/icons-carbon/checkmark';
 import checkMarkOutlineIcon from '@iconify/icons-carbon/checkmark-outline';
-import checkboxCheckedFilled from '@iconify/icons-carbon/checkbox-checked-filled';
-import checkboxIcon from '@iconify/icons-carbon/checkbox';
-import checkboxIndeterminateFilledIcon from '@iconify/icons-carbon/checkbox-indeterminate-filled';
 import chevronDownIcon from '@iconify/icons-carbon/chevron-down';
 import chevronLeftIcon from '@iconify/icons-carbon/chevron-left';
 import chevronRightIcon from '@iconify/icons-carbon/chevron-right';
 import chevronUpIcon from '@iconify/icons-carbon/chevron-up';
-import closeFilledIcon from '@iconify/icons-carbon/close-filled';
 import closeIcon from '@iconify/icons-carbon/close';
+import closeFilledIcon from '@iconify/icons-carbon/close-filled';
 import copyIcon from '@iconify/icons-carbon/copy';
 import downloadIcon from '@iconify/icons-carbon/download';
 import editIcon from '@iconify/icons-carbon/edit';
@@ -24,16 +23,14 @@ import emailIcon from '@iconify/icons-carbon/email';
 import errorFilledIcon from '@iconify/icons-carbon/error-filled';
 import informationFilledIcon from '@iconify/icons-carbon/information-filled';
 import languageIcon from '@iconify/icons-carbon/language';
-import loadingIcon from '@iconify/icons-eos-icons/loading';
 import menuIcon from '@iconify/icons-carbon/menu';
 import pasteIcon from '@iconify/icons-carbon/paste';
-import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked';
 import radioButtonIcon from '@iconify/icons-carbon/radio-button';
+import radioButtonCheckedIcon from '@iconify/icons-carbon/radio-button-checked';
 import renewIcon from '@iconify/icons-carbon/renew';
 import searchIcon from '@iconify/icons-carbon/search';
+import settingsIcon from '@iconify/icons-carbon/settings';
 import shareIcon from '@iconify/icons-carbon/share';
-import successCircleIcon from '@iconify/icons-mdi/success-circle';
-import threeDotsLoadingIcon from '@iconify/icons-eos-icons/three-dots-loading';
 import timeIcon from '@iconify/icons-carbon/time';
 import trashCanIcon from '@iconify/icons-carbon/trash-can';
 import uploadIcon from '@iconify/icons-carbon/upload';
@@ -42,6 +39,10 @@ import viewFilledIcon from '@iconify/icons-carbon/view-filled';
 import viewOffFilledIcon from '@iconify/icons-carbon/view-off-filled';
 import warningAltIcon from '@iconify/icons-carbon/warning-alt';
 import warningFilledIcon from '@iconify/icons-carbon/warning-filled';
+import loadingIcon from '@iconify/icons-eos-icons/loading';
+import threeDotsLoadingIcon from '@iconify/icons-eos-icons/three-dots-loading';
+import successCircleIcon from '@iconify/icons-mdi/success-circle';
+import { addIcon, IconifyIcon } from '@ttoss/react-icons';
 
 const replicateIcon: IconifyIcon = {
   body: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,6 +60,22 @@ const subtractIcon: IconifyIcon = {
   `,
   width: 48,
   height: 48,
+};
+
+const ouiMenuLeft: IconifyIcon = {
+  body: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+	<path fill="#465A69" d="M1.014 7.382a.5.5 0 0 0-.013.152c-.014.4.133.806.439 1.112l2.12 2.122a.5.5 0 1 0 .708-.708L2.208 8H14.5a.5.5 0 0 0 0-1H2.379l1.889-1.89a.5.5 0 0 0-.707-.706L1.44 6.524a1.5 1.5 0 0 0-.426.858M14.5 3h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1m0 8h-7a.5.5 0 1 0 0 1h7a.5.5 0 1 0 0-1" />
+  </svg>`,
+  width: 16,
+  height: 16,
+};
+
+const ouiMenuRight: IconifyIcon = {
+  body: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+	<path fill="#465A69" d="M14.986 7.382a.5.5 0 0 1 .013.152c.014.4-.133.806-.439 1.112l-2.12 2.122a.5.5 0 1 1-.708-.708L13.792 8H1.5a.5.5 0 0 1 0-1h12.121l-1.889-1.89a.5.5 0 0 1 .707-.706l2.121 2.12a1.5 1.5 0 0 1 .426.858M1.5 3h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1m0 8h7a.5.5 0 1 1 0 1h-7a.5.5 0 1 1 0-1" />
+  </svg>`,
+  width: 16,
+  height: 16,
 };
 
 export const BrutalIcons: Record<
@@ -103,7 +120,10 @@ export const BrutalIcons: Record<
   refresh: renewIcon,
   replicate: replicateIcon,
   search: searchIcon,
+  settings: settingsIcon,
   share: shareIcon,
+  'sidebar-close': ouiMenuRight,
+  'sidebar-open': ouiMenuLeft,
   subtract: subtractIcon,
   'success-circle': successCircleIcon,
   'small-close': closeFilledIcon,
@@ -116,15 +136,15 @@ export const BrutalIcons: Record<
   'warning-alt': warningAltIcon,
 };
 
-Object.entries(BrutalIcons).forEach(([key, icon]) => {
+for (const [key, icon] of Object.entries(BrutalIcons)) {
   /**
    * "It happens when an ES module imports a CommonJS module with the default property present and the __esModule property set to true."
    * https://github.com/evanw/esbuild/issues/1719#issuecomment-953470495
    */
   if ('default' in icon) {
     addIcon(key, icon.default);
-    return;
+    continue;
   }
 
   addIcon(key, icon);
-});
+}

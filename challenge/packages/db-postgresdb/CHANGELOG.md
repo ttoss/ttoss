@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.20](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.19...@ttoss-challenge/db-postgresdb@0.1.20) (2025-06-20)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## [0.1.19](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.18...@ttoss-challenge/db-postgresdb@0.1.19) (2025-05-05)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## [0.1.18](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.17...@ttoss-challenge/db-postgresdb@0.1.18) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## 0.1.17 (2025-02-23)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## 0.1.16 (2025-01-20)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## [0.1.15](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.14...@ttoss-challenge/db-postgresdb@0.1.15) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## [0.1.14](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.13...@ttoss-challenge/db-postgresdb@0.1.14) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
 ## [0.1.13](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.12...@ttoss-challenge/db-postgresdb@0.1.13) (2024-12-03)
 
 **Note:** Version bump only for package @ttoss-challenge/db-postgresdb

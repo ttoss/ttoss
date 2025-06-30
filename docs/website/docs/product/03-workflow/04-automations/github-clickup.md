@@ -39,32 +39,28 @@ The **subtask** is divided into two parts, the first is the task description and
 
 ## 🗂 Github
 
-### 4 - Link Clickup Task to Github
+### 4 - Link ClickUp Task to GitHub
 
-Before starting the task is necessary to link your **Clickup** task with the repository on **Github**, so that the code can be _stored_, _corrected_ and _merged_.
+Before development begins, the task needs to be linked between **ClickUp** and **GitHub** to enable proper tracking and collaboration.
 
-Following these steps:
+**Product team responsibilities:**
 
-- Link **branch** to _Github_;
-- Copy the branch description: `Create & Checkout a new branch:`;
-- At the paste in the terminal from the main branch;
-- This way, push the new branch to _Github_, using this command in the terminal: `git push origin HEAD`.
+- **Ensure task clarity**: Verify that requirements and acceptance criteria are clearly defined
+- **Provide GitHub integration**: Link the ClickUp task to the appropriate GitHub repository
+- **Set up tracking**: Enable status synchronization between ClickUp and GitHub
 
-<br />
+**Technical implementation**: The engineering team handles the technical aspects of branch creation and repository management as described in the [Engineering Workflow](/docs/engineering/workflow).
 
-<h3 align="center">
-      <img title="#clickupTask" width="100%" src="https://tt-sandbox-general-purpose.s3.amazonaws.com/Clickup-Github.gif"/>
-<br />
-</h3>
+### 5 - Task Development
 
-### 5 - Doing task
+Once the task is defined and linked between **ClickUp** and **GitHub**, the development team follows the [engineering workflow](/docs/engineering/workflow) to implement the solution.
 
-As the _branch_ linked to **Clickup** and **Github**, development can be done and delivered.
+**Product responsibilities during development:**
 
-Following these steps:
+- **Monitor progress**: Track task status through ClickUp
+- **Provide clarifications**: Answer questions about requirements when needed
+- **Review deliverables**: Validate that acceptance criteria are met
+- **Test staging environment**: Use staging links to validate functionality
+- **Approve completion**: Confirm task meets product requirements before deployment
 
-- Make the commits in the correct branch;
-- To upload commits just put the command in the terminal: `git push origin HEAD` ;
-- Then open _PR_ on **Github**, to check the team;
-- Get the _staging_ link on **Carlin** and put it on the **Clickup** chat to share with the team;
-- Finally, wait for the team's approval to _merge_;
+**For technical implementation details**, see the [Engineering Development Process](/docs/engineering/workflow/development-process).

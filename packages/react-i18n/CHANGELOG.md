@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.0.12 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## 2.0.11 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## 2.0.10 (2025-01-31)
+
+### Bug Fixes
+
+- react-auth notifications ([#650](https://github.com/ttoss/ttoss/issues/650)) ([6eed312](https://github.com/ttoss/ttoss/commit/6eed3128d17633d7d9555f3dcd7705f050107c6c))
+
+## [2.0.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.8...@ttoss/react-i18n@2.0.9) (2025-01-02)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.7...@ttoss/react-i18n@2.0.8) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## 2.0.7 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [2.0.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.5...@ttoss/react-i18n@2.0.6) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/react-i18n

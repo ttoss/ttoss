@@ -20,8 +20,8 @@ export const HelpText = ({
       variant={variant}
       sx={{
         fontSize: 'sm',
-        fontFamily: 'caption',
-        lineHeight: 'base',
+        fontFamily: 'body',
+        lineHeight: 'normal',
         ...sx,
       }}
       aria-disabled={disabled ? 'true' : undefined}

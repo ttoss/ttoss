@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.16 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
+## [0.2.15](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.14...@ttoss/postgresdb@0.2.15) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
+## 0.2.14 (2025-02-23)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
+## 0.2.13 (2025-01-20)
+
+### Bug Fixes
+
+- lambda query text decoder and error message ([#653](https://github.com/ttoss/ttoss/issues/653)) ([63c00fc](https://github.com/ttoss/ttoss/commit/63c00fcea10a61bc581ccddaebdddc7b47cfccfc))
+
+## [0.2.12](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.11...@ttoss/postgresdb@0.2.12) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
+## [0.2.11](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.10...@ttoss/postgresdb@0.2.11) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
 ## [0.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.9...@ttoss/postgresdb@0.2.10) (2024-12-03)
 
 ### Bug Fixes

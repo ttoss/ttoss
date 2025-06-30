@@ -1,7 +1,8 @@
-import * as fs from 'fs';
-import fg from 'fast-glob';
-import * as path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { compile, extract } from '@formatjs/cli-lib';
+import fg from 'fast-glob';
 import minimist from 'minimist';
 
 const DEFAULT_DIR = 'i18n';
@@ -13,6 +14,8 @@ const EXTRACT_FILE = path.join(EXTRACT_DIR, 'en.json');
 const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled');
 
 const MISSING_DIR = path.join(DEFAULT_DIR, 'missing');
+
+const UNUSED_DIR = path.join(DEFAULT_DIR, 'unused');
 
 const argv = minimist(process.argv.slice(2));
 
@@ -28,12 +31,10 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Get all dependencies and devDependencies that start with "@ttoss"
    */
-  const ttossDependencies = Object.keys(
-    {
-      ...packageJson.dependencies,
-      ...packageJson.peerDependencies,
-    } || {}
-  )
+  const ttossDependencies = Object.keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies,
+  })
     .filter((dependency) => {
       return dependency.startsWith('@ttoss');
     })
@@ -46,7 +47,7 @@ const getTtossExtractedTranslations = async () => {
     /**
      * Remove duplicates
      */
-    // eslint-disable-next-line max-params
+
     .filter((dependency, index, array) => {
       return array.indexOf(dependency) === index;
     });
@@ -63,28 +64,30 @@ const getTtossExtractedTranslations = async () => {
         dependency
       );
       const requirePath = path.join(dependencyPathFromCwd, EXTRACT_FILE);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const extractedTranslations = require(requirePath);
       /**
        * Add "module: dependency" to the extracted translations
        */
       const extractedTranslationsWithModule = Object.keys(
         extractedTranslations
-      ).reduce((acc, key) => {
-        return {
-          ...acc,
-          [key]: {
-            ...extractedTranslations[key],
+      ).reduce(
+        (accumulator, key) => {
+          accumulator[key] = {
             module: dependency,
-          },
-        };
-      }, {});
+            ...extractedTranslations[key],
+          };
+          return accumulator;
+        },
+        {} as Record<string, Record<string, string>>
+      );
 
       Object.assign(
         ttossExtractedTranslations,
         extractedTranslationsWithModule
       );
-    } catch (error: unknown) {
+    } catch {
       continue;
     }
   }
@@ -92,7 +95,7 @@ const getTtossExtractedTranslations = async () => {
   return ttossExtractedTranslations;
 };
 
-(async () => {
+const executeI18nCli = async () => {
   /**
    * Extract
    */
@@ -121,7 +124,7 @@ const getTtossExtractedTranslations = async () => {
       ...ttossExtractedTranslations,
     };
 
-    return JSON.stringify(finalExtractedData, null, 2);
+    return JSON.stringify(finalExtractedData, undefined, 2);
   })();
 
   await fs.promises.mkdir(EXTRACT_DIR, { recursive: true });
@@ -135,7 +138,10 @@ const getTtossExtractedTranslations = async () => {
   /**
    * Compile
    */
-  const translations = fg.sync('**/*.json', { cwd: EXTRACT_DIR, absolute: true });
+  const translations = fg.sync('**/*.json', {
+    cwd: EXTRACT_DIR,
+    absolute: true,
+  });
 
   await fs.promises.mkdir(COMPILE_DIR, {
     recursive: true,
@@ -162,6 +168,13 @@ const getTtossExtractedTranslations = async () => {
     recursive: true,
   });
 
+  /**
+   * Unused
+   */
+  await fs.promises.mkdir(UNUSED_DIR, {
+    recursive: true,
+  });
+
   for (const translation of translations) {
     const filename = translation.split('/').pop();
 
@@ -174,18 +187,50 @@ const getTtossExtractedTranslations = async () => {
 
     const extractedTranslations = JSON.parse(finalExtractedData);
 
-    const obj = JSON.parse(fs.readFileSync(translation, { encoding: 'utf-8' }));
+    const object = JSON.parse(
+      fs.readFileSync(translation, { encoding: 'utf8' })
+    );
 
     /**
      * List all missing translations that exist in en.json but not in the current translation.
      */
     const missingTranslations = Object.keys(extractedTranslations).reduce(
-      (acc, key) => {
-        if (!obj[key]) {
-          acc[key] = extractedTranslations[key];
+      (accumulator, key) => {
+        if (!object[key]) {
+          accumulator[key] = extractedTranslations[key];
         }
 
-        return acc;
+        return accumulator;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as Record<string, any>
+    );
+
+    /**
+     * generate file with translations that doesnt exist in lang/en.json
+     */
+    const unusedTranslations = Object.keys(object).reduce(
+      (accumulator, key) => {
+        if (!extractedTranslations[key]) {
+          accumulator[key] = object[key];
+        }
+
+        return accumulator;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as Record<string, any>
+    );
+
+    /**
+     * generate list without unnecessary translations
+     */
+    const withoutUnnecessaryTranslations = Object.keys(object).reduce(
+      (accumulator, key) => {
+        if (object[key] !== unusedTranslations[key]) {
+          accumulator[key] = object[key];
+        }
+
+        return accumulator;
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<string, any>
@@ -194,8 +239,57 @@ const getTtossExtractedTranslations = async () => {
     if (filename) {
       await fs.promises.writeFile(
         path.join(MISSING_DIR, filename),
-        JSON.stringify(missingTranslations, null, 2)
+        JSON.stringify(missingTranslations, undefined, 2)
+      );
+
+      /**
+       * Read unused file to get all old unused translation
+       */
+      try {
+        const existentUnusedJsonAsString = await fs.promises.readFile(
+          path.join(UNUSED_DIR, filename)
+        );
+
+        if (existentUnusedJsonAsString) {
+          const existentUnusedJson = JSON.parse(
+            existentUnusedJsonAsString.toString()
+          );
+
+          /**
+           * append existent unused translations and news unused translations
+           */
+          const updatedUnusedTranslations = {
+            ...existentUnusedJson,
+            ...unusedTranslations,
+          };
+
+          /**
+           * add Unused translations
+           */
+          await fs.promises.writeFile(
+            path.join(UNUSED_DIR, filename),
+            JSON.stringify(updatedUnusedTranslations, undefined, 2)
+          );
+        }
+      } catch {
+        /**
+         * add Unused translations
+         */
+        await fs.promises.writeFile(
+          path.join(UNUSED_DIR, filename),
+          JSON.stringify(unusedTranslations, undefined, 2)
+        );
+      }
+
+      /**
+       * remove unnecessary translations from lang/filename
+       */
+      await fs.promises.writeFile(
+        path.join(EXTRACT_DIR, filename),
+        JSON.stringify(withoutUnnecessaryTranslations, undefined, 2)
       );
     }
   }
-})();
+};
+
+executeI18nCli();

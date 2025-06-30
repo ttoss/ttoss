@@ -1,4 +1,4 @@
-import { type SchemaComposer, graphql } from '@ttoss/graphql-api';
+import { graphql, type SchemaComposer } from '@ttoss/graphql-api';
 
 /**
  * Absolute path to avoid:
@@ -158,7 +158,7 @@ export const createApiTemplate = ({
           Layers: lambdaFunction.layers,
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
-          Runtime: 'nodejs20.x',
+          Runtime: 'nodejs22.x',
           /**
            * https://docs.aws.amazon.com/general/latest/gr/appsync.html
            * Request execution time for mutations, queries, and subscriptions: 30 seconds
@@ -208,7 +208,7 @@ export const createApiTemplate = ({
     },
   };
 
-  resolveMethodsEntries.forEach(({ fieldName, typeName }) => {
+  for (const { fieldName, typeName } of resolveMethodsEntries) {
     template.Resources[`${fieldName}${typeName}AppSyncResolver`] = {
       Type: 'AWS::AppSync::Resolver',
       DependsOn: AppSyncGraphQLSchemaLogicalId,
@@ -224,7 +224,7 @@ export const createApiTemplate = ({
         },
       },
     };
-  });
+  }
 
   const apiKey =
     additionalAuthenticationProviders?.includes('API_KEY') ||

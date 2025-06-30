@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.35.4 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/config
+
+## 1.35.3 (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
+## [1.35.2](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.35.1...@ttoss/config@1.35.2) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/config
+
+## 1.35.1 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 # [1.35.0](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.34.2...@ttoss/config@1.35.0) (2024-12-02)
 
 ### Features

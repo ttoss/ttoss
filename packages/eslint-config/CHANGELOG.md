@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.26.4 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/eslint-config
+
+## [1.26.3](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.26.2...@ttoss/eslint-config@1.26.3) (2025-04-09)
+
+**Note:** Version bump only for package @ttoss/eslint-config
+
+## [1.26.2](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.26.1...@ttoss/eslint-config@1.26.2) (2025-03-24)
+
+### Bug Fixes
+
+- add screen in auth provider to render with specific step ([#681](https://github.com/ttoss/ttoss/issues/681)) ([a492c79](https://github.com/ttoss/ttoss/commit/a492c79c96da1d3ddfc25897e54bbf884c0a2811))
+
+## 1.26.1 (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
+# 1.26.0 (2025-01-23)
+
+### Bug Fixes
+
+- stack component ([1c647e3](https://github.com/ttoss/ttoss/commit/1c647e34e520850f19817e366bdeb91fc9411d88))
+
+### Features
+
+- add a new tooltip ([#652](https://github.com/ttoss/ttoss/issues/652)) ([a331fc1](https://github.com/ttoss/ttoss/commit/a331fc11cd83fb4f4cca96142a0bc136dc914d0f))
+
+## [1.25.1](https://github.com/ttoss/ttoss/compare/@ttoss/eslint-config@1.25.0...@ttoss/eslint-config@1.25.1) (2025-01-02)
+
+### Bug Fixes
+
+- eslint import rule ([#636](https://github.com/ttoss/ttoss/issues/636)) ([acb178f](https://github.com/ttoss/ttoss/commit/acb178f0a92b236b86af044b305ddea02bf0a714))
+
+# 1.25.0 (2025-01-01)
+
+### Features
+
+- update eslint ([#635](https://github.com/ttoss/ttoss/issues/635)) ([8036c30](https://github.com/ttoss/ttoss/commit/8036c30f419f1c0bb30d3e483b5fe71057985cad))
+
 ## 1.24.9 (2024-10-03)
 
 ### Bug Fixes

@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.55.10](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.9...@docs/website@1.55.10) (2025-06-29)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.9](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.8...@docs/website@1.55.9) (2025-06-20)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.8](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.7...@docs/website@1.55.8) (2025-06-20)
+
+**Note:** Version bump only for package @docs/website
+
+## 1.55.7 (2025-06-10)
+
+### Bug Fixes
+
+- website build ([e0d17c0](https://github.com/ttoss/ttoss/commit/e0d17c03f159b474b03938033ed7cc2025269d71))
+
+## [1.55.6](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.5...@docs/website@1.55.6) (2025-04-09)
+
+**Note:** Version bump only for package @docs/website
+
+## 1.55.5 (2025-03-02)
+
+### Bug Fixes
+
+- eslint config ([#679](https://github.com/ttoss/ttoss/issues/679)) ([060a8d4](https://github.com/ttoss/ttoss/commit/060a8d44c2acbeb63074ed1513b198c160488df7))
+
+## [1.55.4](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.3...@docs/website@1.55.4) (2025-01-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.3](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.2...@docs/website@1.55.3) (2025-01-02)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.1...@docs/website@1.55.2) (2025-01-01)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.55.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.55.0...@docs/website@1.55.1) (2024-12-31)
+
+**Note:** Version bump only for package @docs/website
+
+# [1.55.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.2...@docs/website@1.55.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
+## [1.54.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.1...@docs/website@1.54.2) (2024-12-31)
+
+**Note:** Version bump only for package @docs/website
+
+## [1.54.1](https://github.com/ttoss/ttoss/compare/@docs/website@1.54.0...@docs/website@1.54.1) (2024-12-17)
+
+**Note:** Version bump only for package @docs/website
+
+# 1.54.0 (2024-12-05)
+
+### Bug Fixes
+
+- docs add new package ([f996740](https://github.com/ttoss/ttoss/commit/f9967409b10d47d56c442ab949adeaaee48698ec))
+
+### Features
+
+- add type module to auth-core ([209427d](https://github.com/ttoss/ttoss/commit/209427dae2448ff568ccce688a9141f5c8791e96))
+
 ## [1.53.15](https://github.com/ttoss/ttoss/compare/@docs/website@1.53.14...@docs/website@1.53.15) (2024-12-02)
 
 **Note:** Version bump only for package @docs/website

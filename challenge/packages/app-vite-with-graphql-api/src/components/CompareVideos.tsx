@@ -1,7 +1,8 @@
-import { CompareVideosQuery } from './__generated__/CompareVideosQuery.graphql';
 import { Grid } from '@ttoss/ui';
-import { VideoCard } from './VideoCard';
 import { graphql, useLazyLoadQuery } from 'react-relay';
+
+import { CompareVideosQuery } from './__generated__/CompareVideosQuery.graphql';
+import { VideoCard } from './VideoCard';
 
 export const CompareVideos = () => {
   const data = useLazyLoadQuery<CompareVideosQuery>(

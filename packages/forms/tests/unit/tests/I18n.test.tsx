@@ -1,6 +1,10 @@
-import * as React from 'react';
+import { defineMessage, I18nProvider, useI18n } from '@ttoss/react-i18n';
+import { render, screen, userEvent } from '@ttoss/test-utils';
 import { Button, HelpText, Text } from '@ttoss/ui';
+import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { setLocale } from 'yup';
+
 import {
   Form,
   FormFieldInput,
@@ -9,9 +13,6 @@ import {
   yup,
   yupResolver,
 } from '../../../src';
-import { I18nProvider, defineMessage, useI18n } from '@ttoss/react-i18n';
-import { render, screen, userEvent } from '@ttoss/test-utils';
-import { setLocale } from 'yup';
 
 describe('test i18n messages', () => {
   const user = userEvent.setup({ delay: null });
@@ -190,11 +191,11 @@ describe('test i18n messages', () => {
     });
 
     renderForm(true, CustomI18nProvider);
+
     await click();
 
-    [mixed_requiredMessage, string_minMessage].forEach(async (message) => {
-      expect(await screen.findByText(message)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(mixed_requiredMessage)).toBeInTheDocument();
+    expect(await screen.findByText(string_minMessage)).toBeInTheDocument();
   });
 
   test('should render a custom message provided in schema definition', async () => {

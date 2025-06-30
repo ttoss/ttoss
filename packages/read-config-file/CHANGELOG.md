@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.0.10 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/read-config-file
+
+## 2.0.9 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/read-config-file
+
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@ttoss/read-config-file@2.0.7...@ttoss/read-config-file@2.0.8) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/read-config-file
+
+## 2.0.7 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [2.0.6](https://github.com/ttoss/ttoss/compare/@ttoss/read-config-file@2.0.5...@ttoss/read-config-file@2.0.6) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/read-config-file

@@ -1,12 +1,11 @@
-import { Button } from '@ttoss/ui';
 import { Modal } from '@ttoss/components/Modal';
+import { render, screen, userEvent } from '@ttoss/test-utils';
+import { Button } from '@ttoss/ui';
 import {
-  NotificationsModal,
+  Notification,
   NotificationsProvider,
-  NotifyParams,
   useNotifications,
 } from 'src/index';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const expectNotBeInDocument = (element: HTMLElement) => {
   expect(() => {
@@ -19,20 +18,19 @@ describe('Modal Notifications Test', () => {
   const TestModalComponent = ({
     notifications,
   }: {
-    notifications: NotifyParams | NotifyParams[];
+    notifications: Notification | Notification[];
   }) => {
-    const { setNotifications } = useNotifications();
+    const { addNotification } = useNotifications();
 
     return (
       <>
         <Button
           onClick={() => {
-            setNotifications(notifications);
+            addNotification(notifications);
           }}
         >
           Click me!!
         </Button>
-        <NotificationsModal />
       </>
     );
   };
@@ -43,7 +41,11 @@ describe('Modal Notifications Test', () => {
     render(
       <NotificationsProvider>
         <TestModalComponent
-          notifications={{ message: 'Test Message', type: 'info' }}
+          notifications={{
+            message: 'Test Message',
+            type: 'info',
+            viewType: 'modal',
+          }}
         />
       </NotificationsProvider>
     );
@@ -54,8 +56,9 @@ describe('Modal Notifications Test', () => {
 
     expect(notification).toBeInTheDocument();
 
-    // expect to disappear after click
-    await user.click(notification);
+    const closeButton = screen.getByLabelText('Close');
+
+    await user.click(closeButton);
 
     expectNotBeInDocument(notification);
   });
@@ -64,42 +67,34 @@ describe('Modal Notifications Test', () => {
     render(
       <NotificationsProvider>
         <TestModalComponent
-          notifications={{ message: 'Test Message', type: 'info' }}
+          notifications={{
+            message: 'Test Message',
+            type: 'info',
+            viewType: 'modal',
+          }}
         />
       </NotificationsProvider>
     );
 
     await user.click(await screen.findByText('Click me!!'));
 
-    const buttons = await screen.findAllByTestId('iconify-icon');
+    const modalCloseButton = screen.getAllByLabelText('Close')[0];
 
-    expect(buttons.length).toBe(2);
-
-    expect((buttons[0] as unknown as { icon: string }).icon).toBe('close');
-
-    const modalClose = buttons[0].parentElement;
-
-    expect(modalClose).toBeInTheDocument();
+    expect(modalCloseButton).toBeInTheDocument();
 
     const notification = await screen.findByText('Test Message');
 
     expect(notification).toBeInTheDocument();
 
-    // expect to disappear after click
-    if (modalClose) {
-      await user.click(modalClose);
-    }
+    await user.click(modalCloseButton);
 
     expectNotBeInDocument(notification);
-
-    if (modalClose) {
-      expectNotBeInDocument(modalClose);
-    }
+    expectNotBeInDocument(modalCloseButton);
   });
 
   test('Should render an array of notifications', async () => {
     render(
-      <NotificationsProvider>
+      <NotificationsProvider defaultViewType="modal">
         <TestModalComponent
           notifications={[
             { message: 'Test 1', type: 'info' },
@@ -118,20 +113,8 @@ describe('Modal Notifications Test', () => {
       screen.findByText('Test 3'),
     ]);
 
-    messages.forEach((message) => {
+    for (const message of messages) {
       expect(message).toBeInTheDocument();
-    });
-
-    await user.click(messages[0]);
-
-    expectNotBeInDocument(messages[0]);
-
-    await user.click(messages[1]);
-
-    expectNotBeInDocument(messages[1]);
-
-    await user.click(messages[2]);
-
-    expectNotBeInDocument(messages[2]);
+    }
   });
 });

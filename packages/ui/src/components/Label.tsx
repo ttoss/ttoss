@@ -1,44 +1,70 @@
 import { Icon } from '@ttoss/react-icons';
-import { type LabelProps as LabelPropsUi, Label as LabelUi } from 'theme-ui';
+import * as React from 'react';
+import { Label as LabelUi, type LabelProps as LabelPropsUi } from 'theme-ui';
+
 import { Text } from '..';
+import { Tooltip } from '..';
 
 const TOOLTIP_LABEL = 'tooltip';
 
 export type LabelProps = LabelPropsUi & {
-  tooltip?: boolean;
-  onTooltipClick?: () => void;
+  tooltip?: {
+    render: string | React.ReactNode;
+    place: 'top' | 'right' | 'bottom' | 'left';
+    openOnClick?: boolean;
+    clickable?: boolean;
+    variant?: 'dark' | 'light' | 'success' | 'warning' | 'error' | 'info';
+    hidden?: boolean;
+    setIsOpen?: (value: boolean) => void;
+    isOpen?: boolean;
+    icon?: string;
+  };
 };
 
-export const Label = ({
-  children,
-  onTooltipClick,
-  tooltip,
-  sx,
-  ...props
-}: LabelProps) => {
+export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
+  const id = React.useId();
+
+  const tooltipId = `${id}-tooltip`;
+
   return (
     <LabelUi
+      data-tooltip-id={tooltipId}
       sx={{
-        fontFamily: 'caption',
         alignItems: 'center',
         fontSize: 'sm',
-        lineHeight: 'base',
+        lineHeight: 'normal',
+        width: 'fit-content',
+        color: 'input.text.secondary.default',
         ...sx,
       }}
       {...props}
     >
       {children}
-
       {tooltip && (
         <Text
           sx={{
             color: 'currentcolor',
-            cursor: onTooltipClick ? 'pointer' : undefined,
+            cursor: 'pointer',
           }}
-          onClick={onTooltipClick}
           aria-label={TOOLTIP_LABEL}
         >
-          <Icon inline icon="info" />
+          {tooltip.icon ? (
+            <Icon inline icon={tooltip.icon} />
+          ) : (
+            <Icon inline icon="fluent:info-24-regular" />
+          )}
+          <Tooltip
+            id={tooltipId}
+            openOnClick={tooltip.openOnClick}
+            clickable={tooltip.clickable}
+            place={tooltip.place}
+            hidden={tooltip.hidden}
+            variant={tooltip.variant}
+            setIsOpen={tooltip.setIsOpen}
+            isOpen={tooltip.isOpen}
+          >
+            {tooltip.render}
+          </Tooltip>
         </Text>
       )}
     </LabelUi>

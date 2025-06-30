@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth",
-  "version": "2.3.2",
+  "version": "2.6.21",
   "description": "ttoss authentication module for React apps.",
   "license": "MIT",
   "author": "ttoss",
@@ -27,11 +27,12 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@ttoss/forms": "workspace:^",
-    "@xstate/react": "^3.2.2",
-    "xstate": "^4.38.3"
+    "react-error-boundary": "^5.0.0"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -41,17 +42,20 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@ttoss/cloud-auth": "workspace:^",
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/logger": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^18.3.12",
-    "aws-amplify": "^6.0.28",
-    "jest": "^29.7.0",
-    "react": "^18.3.1",
-    "tsup": "^8.3.5"
+    "@types/react": "^19.1.8",
+    "aws-amplify": "^6.11.0",
+    "jest": "^30.0.2",
+    "react": "^19.1.0",
+    "tsup": "^8.5.0"
   },
   "keywords": [
     "React",

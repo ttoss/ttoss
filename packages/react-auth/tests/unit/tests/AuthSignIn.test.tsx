@@ -1,6 +1,6 @@
-import { AuthSignIn } from 'src/AuthSignIn';
 import { jest } from '@jest/globals';
 import { render, screen, userEvent } from '@ttoss/test-utils';
+import { AuthSignIn } from 'src/AuthSignIn';
 
 const onSignIn = jest.fn();
 
@@ -31,8 +31,8 @@ test('Should not call the onSubmit function if click on the login button without
   expect(onSignIn).toHaveBeenCalledTimes(0);
 });
 
-test('Should call the onSubmit function if click on the login button with filling in the fields', async () => {
-  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+test('Should call the onSubmit function if click on the login button with the fields filled', async () => {
+  const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
 
   render(
     <AuthSignIn
@@ -48,6 +48,7 @@ test('Should call the onSubmit function if click on the login button with fillin
 
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);
+
   await user.click(buttonSubmit);
 
   expect(onSignIn).toHaveBeenCalledWith(userForm);

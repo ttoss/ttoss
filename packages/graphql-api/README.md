@@ -9,25 +9,13 @@ This package offers an opinionated approach to building a GraphQL API using the 
    As **Relay** is the primary GraphQL client in the ttoss ecosystem, this package implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/) for seamless client-server interaction.
 
 1. **Schema Building**:  
-   Generate the GraphQL schema required for Relay's introspection queries by running:
-
-   ```bash
-   ttoss-graphql-api build-schema
-   ```
+   Generate the GraphQL schema required for Relay's introspection queries with [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/).
 
 1. **TypeScript Types Generation**:
-   Automatically generate TypeScript types for your GraphQL schema with the same command:
-
-   ```bash
-   ttoss-graphql-api build-schema
-   ```
+   Automatically generate TypeScript types for your GraphQL schema with [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/).
 
 1. **AWS AppSync Support**:
    Create GraphQL APIs compatible with AWS AppSync. Additionally, this package includes support for running a local GraphQL API server for development and testing purposes.
-
-## ESM Only
-
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
 
 ## Installation
 
@@ -37,7 +25,7 @@ pnpm add @ttoss/graphql-api graphql
 
 ## Usage
 
-This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-export all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
+This library uses [`graphql-compose`](https://graphql-compose.github.io/) to create the GraphQL schema. It re-exports all the [`graphql-compose`](https://graphql-compose.github.io/) types and methods, so you can use it directly from this package.
 
 ### Type Creation
 
@@ -55,7 +43,7 @@ const UserTC = schemaComposer.createObjectTC({
 });
 ```
 
-This library uses the `tsconfig.json` file from the target package it is being applied on. If you are using relative imports in your package you can skip this section, but, if you use path aliases in your typescript code by leveraging the [`paths`](https://www.typescriptlang.org/tsconfig#paths) property, the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) must be filled accordingly.This is needed because in order to interpret the path aliases, `ts-node` uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that uses this config, and `tsconfig-paths` needs both `baseUrl` and `paths` values to be non-null. A `tsconfig.json` example that follows such recommendations is given below:
+This library uses the `tsconfig.json` file from the target package it is being applied on. If you are using relative imports in your package you can skip this section, but, if you use path aliases in your typescript code by leveraging the [`paths`](https://www.typescriptlang.org/tsconfig#paths) property, the [`baseUrl`](https://www.typescriptlang.org/tsconfig#baseUrl) must be filled accordingly. This is needed because in order to interpret the path aliases, `ts-node` uses [`tsconfig-paths`](https://github.com/dividab/tsconfig-paths) to resolve the modules that uses this config, and `tsconfig-paths` needs both `baseUrl` and `paths` values to be non-null. A `tsconfig.json` example that follows such recommendations is given below:
 
 ```json
 {
@@ -70,7 +58,23 @@ This library uses the `tsconfig.json` file from the target package it is being a
 
 ### Resolvers
 
-TODO
+#### Creating Resolvers
+
+Resolvers are functions that resolve a value for a type or field in your schema. Here’s a simple example of how to create a resolver for the `User` type:
+
+```ts
+UserTC.addResolver({
+  name: 'findById',
+  type: UserTC,
+  args: {
+    id: 'String!',
+  },
+  resolve: async ({ args }) => {
+    // Implement your logic to find a user by ID
+    return await findUserById(args.id);
+  },
+});
+```
 
 ### Integrate All Modules
 
@@ -183,7 +187,7 @@ _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github
 
 ### Connections
 
-This packages provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
+This package provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
 
 ```typescript
 import { composeWithConnection } from '@ttoss/graphql-api';
@@ -288,40 +292,10 @@ The resolver that will be used to find the nodes. It receives the following argu
         name: 'String',
         book: 'String',
       },
+      // other args
     },
-    resolve: async ({
-      args,
-    }: {
-      args: {
-        first?: number;
-        after?: string;
-        last?: number;
-        before?: string;
-        /**
-         * It's the `first` or `last` argument plus one.
-         */
-        limit: number;
-        /**
-         * The `filter` argument, if provided on the query.
-         */
-        filter?: {
-          name: string;
-          book: string;
-        };
-        /**
-         * The `sort` argument, if provided on the query as
-         * they keys of the `sort` object. In our example
-         * above, it's `ASC` and `DESC`. `scanIndexForward`
-         * is the value of the `value` property on the sort
-         * object. In our example above, it's `true` for
-         * `ASC` and `false` for `DESC`.
-         */
-        sort: {
-          scanIndexForward: boolean;
-        };
-      };
-    }) => {
-      //
+    resolve: async ({ args }) => {
+      // find many
     },
   });
   ```
@@ -450,39 +424,7 @@ import { allow, deny, shield } from '@ttoss/graphql-api/shield';
 
 ## Building Schema and Types
 
-As Relay needs an introspection query to work, this package provides a way to build the GraphQL schema by running `ttoss-graphl-api build-schema`. It build the schema using the `schemaComposer` from `src/schemaComposer.ts` file and save the schema in `schema/schema.graphql` file and TypeScript types in `schema/types.ts` file.
-
-```bash
-ttoss-graphl-api build-schema
-```
-
-You can add the `build-schema` script to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "build-schema": "ttoss-graphl-api build-schema"
-  }
-}
-```
-
-### Options
-
-#### `--directory`/`-d`
-
-If your `schemaComposer` is in a different directory, you can pass the `--directory`/`-d` option to `ttoss-graphl-api build-schema` command:
-
-```bash
-ttoss-graphl-api build-schema -d tests
-```
-
-#### `--external`
-
-External dependencies to ignore during build. If you don't set this option, the `build-schema` command will use the `dependencies` and `devDependencies` from your `package.json` file.
-
-```bash
-ttoss-graphl-api build-schema --external graphql-compose,graphql
-```
+Check [@ttoss/graphql-api-cli](https://ttoss.dev/docs/modules/packages/graphql-api-cli/) for more information about how to build the schema and types.
 
 ## How to Create Tests
 

@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.6.2 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/logger
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.6.0...@ttoss/logger@0.6.1) (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/logger
+
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.5.0...@ttoss/logger@0.6.0) (2025-03-01)
+
+### Features
+
+- improve logger ([#677](https://github.com/ttoss/ttoss/issues/677)) ([6e958b6](https://github.com/ttoss/ttoss/commit/6e958b6b87f6fe157f0c532e669625524a0815eb))
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.4.0...@ttoss/logger@0.5.0) (2025-02-24)
+
+### Features
+
+- add notifications to react-auth ([#671](https://github.com/ttoss/ttoss/issues/671)) ([b0cd4ef](https://github.com/ttoss/ttoss/commit/b0cd4ef687e3c372d3c378d12adefbae931a34e4))
+
+# 0.4.0 (2025-02-24)
+
+### Features
+
+- logger ([#670](https://github.com/ttoss/ttoss/issues/670)) ([453ba8e](https://github.com/ttoss/ttoss/commit/453ba8eed092da40dde5c31cb04eca4ac1fe2f28))
+
+## [0.3.17](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.16...@ttoss/logger@0.3.17) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/logger
+
+## 0.3.16 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.3.15](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.3.14...@ttoss/logger@0.3.15) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/logger

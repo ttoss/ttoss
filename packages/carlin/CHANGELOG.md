@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.38.5](https://github.com/ttoss/ttoss/compare/carlin@1.38.4...carlin@1.38.5) (2025-06-20)
+
+### Bug Fixes
+
+- closed pr commands ([#704](https://github.com/ttoss/ttoss/issues/704)) ([ebe515f](https://github.com/ttoss/ttoss/commit/ebe515ff699fdea1fb44913548e746f3e2e6c742))
+
+## 1.38.4 (2025-06-20)
+
+**Note:** Version bump only for package carlin
+
+## [1.38.3](https://github.com/ttoss/ttoss/compare/carlin@1.38.2...carlin@1.38.3) (2025-04-09)
+
+**Note:** Version bump only for package carlin
+
+## 1.38.2 (2025-03-02)
+
+**Note:** Version bump only for package carlin
+
+## [1.38.1](https://github.com/ttoss/ttoss/compare/carlin@1.38.0...carlin@1.38.1) (2025-01-02)
+
+**Note:** Version bump only for package carlin
+
+# [1.38.0](https://github.com/ttoss/ttoss/compare/carlin@1.37.1...carlin@1.38.0) (2025-01-01)
+
+### Features
+
+- update eslint ([#635](https://github.com/ttoss/ttoss/issues/635)) ([8036c30](https://github.com/ttoss/ttoss/commit/8036c30f419f1c0bb30d3e483b5fe71057985cad))
+
+## [1.37.1](https://github.com/ttoss/ttoss/compare/carlin@1.37.0...carlin@1.37.1) (2024-12-31)
+
+**Note:** Version bump only for package carlin
+
+# [1.37.0](https://github.com/ttoss/ttoss/compare/carlin@1.36.21...carlin@1.37.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
+## 1.36.21 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [1.36.20](https://github.com/ttoss/ttoss/compare/carlin@1.36.19...carlin@1.36.20) (2024-12-02)
 
 **Note:** Version bump only for package carlin

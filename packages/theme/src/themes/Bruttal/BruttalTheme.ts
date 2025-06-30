@@ -1,15 +1,11 @@
 import { Theme } from 'theme-ui';
-import { fontSizes } from './tokens/fontSizes';
-import { fontWeights } from './tokens/fontWeights';
-import { letterSpacings } from './tokens/letterSpacings';
-import { lineHeights } from './tokens/lineHeights';
-import { space } from './tokens/space';
-import { zIndices } from './tokens/zIndices';
+
+import { defaultTheme } from '../default/defaultTheme';
 
 const coreFonts = {
-  main: '"Atkinson Hyperlegible", sans-serif',
-  contrast: '"Work Sans", sans-serif',
-  monospace: '"Inconsolata", sans-serif',
+  body: '"Atkinson Hyperlegible", sans-serif',
+  heading: '"Work Sans", sans-serif',
+  mono: '"Inconsolata", sans-serif',
 };
 
 const brandColors = {
@@ -44,83 +40,164 @@ const coreColors = {
   teal600: '#0d9488',
 };
 
-const coreBorders = {
-  none: '0px solid',
-  thin: '1px solid',
-  medium: '2px solid',
-  thick: '4px solid',
-};
-
-const coreRadii = {
-  sharp: '0px',
-  xs: '2px',
-  sm: '4px',
-  md: '6px',
-  lg: '8px',
-  xl: '12px',
-  '2xl': '16px',
-  '3xl': '24px',
-  circle: '9999px',
+const radii = {
+  none: '0',
+  '2xs': '0.0625rem',
+  xs: '0.125rem',
+  sm: '0.25rem',
+  md: '0.375rem',
+  lg: '0.25rem',
+  xl: '0.25rem',
+  '2xl': '0.25rem',
+  '3xl': '0.25rem',
+  '4xl': '0.25rem',
+  full: '9999px',
 };
 
 export const BruttalTheme: Theme = {
   /**
    * Tokens
    */
-  fontSizes,
-  fontWeights,
-  letterSpacings,
-  space,
-  lineHeights,
-  zIndices,
+  borders: defaultTheme.borders,
+  sizes: defaultTheme.sizes,
+  fontSizes: defaultTheme.fontSizes,
+  fontWeights: defaultTheme.fontWeights,
+  letterSpacings: defaultTheme.letterSpacings,
+  space: defaultTheme.space,
+  lineHeights: defaultTheme.lineHeights,
+  zIndices: defaultTheme.zIndices,
   colors: {
-    background: coreColors.complimentary,
-    text: coreColors.black,
-    muted: coreColors.gray200,
-    onMuted: coreColors.gray600,
-    mutedOutline: coreColors.gray300,
-    danger: coreColors.red700,
-    onDanger: coreColors.white,
-    notice: coreColors.amber600,
-    onNotice: coreColors.white,
-    positive: coreColors.teal600,
-    onPositive: coreColors.white,
-    surface: coreColors.white,
-    contentHeader: coreColors.gray200,
-    onContentHeader: coreColors.black,
-    outline: coreColors.gray500,
-    primary: coreColors.main,
-    onPrimary: coreColors.white,
-    secondary: coreColors.gray100,
-    onSecondary: coreColors.black,
-    highlight: coreColors.darkNeutral,
-    onHighlight: coreColors.complimentary,
-    accent: coreColors.accent,
-    onAccent: coreColors.white,
-    neutral: coreColors.darkNeutral,
-    onNeutral: coreColors.lightNeutral,
-    underemphasize: coreColors.gray300,
+    navigation: {
+      background: {
+        primary: { default: coreColors.complimentary },
+        muted: { default: coreColors.complimentary },
+      },
+      text: {
+        primary: { default: coreColors.black },
+        accent: { default: coreColors.darkNeutral },
+        muted: { default: coreColors.gray600 },
+        negative: { default: coreColors.red700 },
+      },
+    },
+    action: {
+      text: {
+        primary: { default: coreColors.black },
+        secondary: {
+          default: coreColors.white,
+          active: coreColors.complimentary,
+        },
+        accent: { default: coreColors.white },
+        negative: { default: coreColors.white },
+        caution: { default: coreColors.white },
+        muted: { default: coreColors.gray600 },
+      },
+      background: {
+        primary: {
+          default: coreColors.main,
+          active: coreColors.gray600,
+          disabled: coreColors.gray200,
+        },
+        secondary: {
+          default: coreColors.gray100,
+          active: coreColors.darkNeutral,
+        },
+        negative: { default: coreColors.red700 },
+        accent: {
+          default: coreColors.accent,
+          active: coreColors.teal600,
+        },
+        caution: { default: coreColors.amber600 },
+        muted: { default: coreColors.gray200 },
+      },
+      border: {
+        primary: { default: coreColors.black },
+        secondary: {
+          default: coreColors.gray500,
+          active: coreColors.darkNeutral,
+        },
+        muted: { default: coreColors.gray600 },
+        accent: { default: coreColors.accent },
+      },
+    },
+    input: {
+      text: {
+        primary: { default: coreColors.white },
+        secondary: { default: coreColors.black },
+        muted: {
+          default: coreColors.gray200,
+          active: coreColors.gray600,
+        },
+        accent: { default: coreColors.accent },
+        negative: { default: coreColors.red700 },
+      },
+      background: {
+        primary: {
+          default: coreColors.main,
+          active: coreColors.complimentary,
+        },
+        secondary: {
+          default: coreColors.gray200,
+          active: coreColors.white,
+        },
+        muted: {
+          default: coreColors.gray600,
+          active: coreColors.gray200,
+          disabled: coreColors.gray200,
+        },
+        accent: { default: coreColors.accent },
+        negative: { default: coreColors.red700 },
+      },
+      border: {
+        primary: { default: coreColors.main },
+        secondary: {
+          default: coreColors.black,
+          active: coreColors.darkNeutral,
+        },
+        muted: { default: coreColors.gray600 },
+        accent: { default: coreColors.accent },
+        caution: { default: coreColors.gray500 },
+        negative: { default: coreColors.red700 },
+      },
+    },
+    display: {
+      background: {
+        primary: { default: coreColors.main },
+        secondary: { default: coreColors.white },
+        muted: { default: coreColors.gray200 },
+      },
+      text: {
+        primary: { default: coreColors.black },
+        secondary: { default: coreColors.darkNeutral },
+        muted: {
+          default: coreColors.gray600,
+          active: coreColors.gray200,
+        },
+        accent: coreColors.accent,
+        negative: { default: coreColors.red700 },
+      },
+      border: {
+        primary: { default: coreColors.main },
+        secondary: { default: coreColors.black },
+        muted: {
+          default: coreColors.gray600,
+          active: coreColors.darkNeutral,
+        },
+        accent: { default: coreColors.accent },
+        negative: { default: coreColors.red700 },
+      },
+    },
+    feedback: {
+      background: {
+        primary: { default: coreColors.white },
+      },
+      text: {
+        primary: { default: coreColors.white },
+        secondary: { default: coreColors.black },
+      },
+    },
   },
-  fonts: {
-    main: coreColors.main,
-    contrast: coreFonts.contrast,
-    body: coreFonts.main,
-    highlight: coreFonts.main,
-    caption: coreFonts.main,
-  },
-  borders: {
-    default: coreBorders.thin,
-    secondary: coreBorders.medium,
-    muted: coreBorders.thin,
-    interaction: coreBorders.medium,
-    danger: coreBorders.medium,
-    highlight: coreBorders.medium,
-  },
-  radii: {
-    informative: coreRadii.xs,
-    default: coreRadii.sm,
-    action: coreRadii.sm,
-  },
+  fonts: coreFonts,
+  radii,
   /**
    * Global styles
    */
@@ -128,11 +205,15 @@ export const BruttalTheme: Theme = {
     root: {
       fontFamily: 'body',
       fontWeight: 'normal',
-      fontSize: 'base',
+      fontSize: 'md',
       zIndex: 'base',
       margin: 0,
       padding: 0,
-      backgroundColor: 'background',
+      backgroundColor: 'navigation.background.primary.default',
+      '.react-select__control': {
+        border: 'md',
+        borderRadius: 'sm',
+      },
       /**
        * HTML elements
        */
@@ -140,27 +221,33 @@ export const BruttalTheme: Theme = {
         borderCollapse: 'collapse',
       },
       th: {
-        paddingX: 'md',
-        paddingY: 'md',
+        paddingX: '4',
+        paddingY: '4',
       },
       tr: {
         borderBottom: 'default',
       },
       td: {
-        paddingX: 'xl',
-        paddingY: 'md',
+        paddingX: '6',
+        paddingY: '4',
       },
-    },
-    a: {
-      color: 'text',
-      fontFamily: 'body',
-      textDecorationLine: 'underline',
-      lineHeight: 'base',
-      '&.quiet:not(:hover)': {
-        textDecorationLine: 'none',
-      },
-      ':visited': {
-        color: 'highlight',
+      a: {
+        fontFamily: 'body',
+        textDecorationLine: 'underline',
+        lineHeight: 'normal',
+        color: 'navigation.text.primary.default',
+        '&[aria-invalid="true"]': {
+          color: 'feedback.text.negative.default',
+        },
+        '&.quiet:not(:hover)': {
+          textDecorationLine: 'none',
+        },
+        ':visited': {
+          color: 'navigation.text.accent.default',
+        },
+        '&.warning': {
+          color: 'feedback.text.caution.default',
+        },
       },
     },
   },
@@ -169,192 +256,151 @@ export const BruttalTheme: Theme = {
    */
   badges: {
     positive: {
-      color: 'onPositive',
-      bg: 'positive',
+      color: 'action.text.accent.default',
+      bg: 'action.background.accent.active',
     },
     negative: {
-      color: 'onDanger',
-      bg: 'danger',
+      color: 'action.text.negative.default',
+      bg: 'action.background.negative.default',
     },
     neutral: {
-      color: 'onSecondary',
-      bg: 'secondary',
-      border: 'muted',
-      borderColor: 'onMuted',
+      color: 'action.text.primary.default',
+      bg: 'action.background.secondary.default',
+      border: 'sm',
+      borderColor: 'action.border.muted.default',
     },
     informative: {
-      color: 'onNotice',
-      bg: 'notice',
+      color: 'action.text.caution.default',
+      bg: 'action.background.caution.default',
     },
     muted: {
-      color: 'onMuted',
-      bg: 'muted',
+      color: 'action.text.muted.default',
+      bg: 'action.background.muted.default',
     },
   },
   buttons: {
     accent: {
-      backgroundColor: 'accent',
-      color: 'onAccent',
-      borderRadius: 'action',
-      borderColor: 'accent',
+      backgroundColor: 'action.background.accent.default',
+      color: 'action.text.accent.default',
+      borderRadius: 'sm',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
-        backgroundColor: 'muted',
-        borderColor: 'muted',
-        color: 'onMuted',
+        backgroundColor: 'action.background.muted.default',
+        borderColor: 'action.border.muted.default',
+        color: 'action.text.muted.default',
       },
     },
     primary: {
-      backgroundColor: 'primary',
-      color: 'onPrimary',
-      borderRadius: 'action',
-      borderColor: 'primary',
+      backgroundColor: 'action.background.primary.default',
+      color: 'action.text.secondary.default',
+      borderRadius: 'sm',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':active': {
-        backgroundColor: 'primary',
-        color: 'onPrimary',
-        borderColor: 'outline',
+        backgroundColor: 'action.background.primary.default',
+        color: 'action.text.secondary.default',
       },
       ':disabled': {
         cursor: 'default',
-        backgroundColor: 'muted',
-        borderColor: 'muted',
-        color: 'onMuted',
+        backgroundColor: 'action.background.muted.default',
+        borderColor: 'action.border.muted.default',
+        color: 'action.text.muted.default',
       },
     },
     secondary: {
-      backgroundColor: 'secondary',
-      color: 'onSecondary',
-      borderRadius: 'action',
-      border: 'secondary',
-      borderColor: 'onSecondary',
+      backgroundColor: 'action.background.secondary.default',
+      color: 'action.text.primary.default',
+      borderRadius: 'sm',
+      border: 'md',
+      borderColor: 'action.border.primary.default',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
-        backgroundColor: 'muted',
-        borderColor: 'muted',
-        color: 'onMuted',
+        backgroundColor: 'action.background.muted.default',
+        borderColor: 'action.border.muted.default',
+        color: 'action.text.muted.default',
       },
     },
     destructive: {
-      color: 'onDanger',
-      backgroundColor: 'danger',
+      color: 'action.text.negative.default',
+      backgroundColor: 'action.background.negative.default',
       ':hover:not(:active,[disabled])': {
         filter: 'brightness(90%)',
       },
       ':disabled': {
         cursor: 'default',
-        backgroundColor: 'muted',
-        borderColor: 'muted',
-        color: 'onMuted',
+        backgroundColor: 'action.background.muted.default',
+        borderColor: 'action.border.muted.default',
+        color: 'action.text.muted.default',
       },
     },
-    closeButton: {
-      backgroundColor: 'background',
-      color: 'primary',
-      border: 'default',
-      borderColor: 'primary',
-      borderRadius: 'action',
+    close: {
+      color: 'action.background.primary.default',
+      ':hover:not(:active,[disabled])': {
+        filter: 'brightness(90%)',
+        cursor: 'pointer',
+      },
+      ':active': {
+        color: 'action.background.primary.active',
+      },
       ':disabled': {
-        border: 'muted',
-        borderColor: 'onMuted',
-        backgroundColor: 'muted',
-        color: 'onMuted',
-        cursor: 'not-allowed',
+        cursor: 'default',
+        color: 'action.background.primary.disabled',
       },
-      ':is(:focus-within, :hover):not(:disabled)': {
-        color: 'onHighlight',
-        backgroundColor: 'highlight',
-        borderColor: 'highlight',
-      },
-    },
-    actionButton: {
-      default: {
-        backgroundColor: 'secondary',
-        color: 'onSecondary',
-        border: 'default',
-        borderColor: 'onSecondary',
-        transition: 'all 0.2s',
-        ':is(:focus-within, :hover)': {
-          backgroundColor: 'highlight',
-          borderColor: 'highlight',
-          color: 'onHighlight',
-        },
-      },
-      accent: {
-        backgroundColor: 'accent',
-        color: 'onAccent',
-        border: 'none',
-      },
-      quiet: {
-        backgroundColor: 'transparent',
-        color: 'text',
-        border: 'none',
-        borderColor: 'transparent',
-      },
-    },
-  },
-  cards: {
-    primary: {
-      backgroundColor: 'primary',
-      border: '1px solid black',
-      padding: [4, 5],
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      width: 'fit-content',
     },
   },
   forms: {
     label: {
-      color: 'text',
+      color: 'display.text.primary.default',
       '&:is([aria-disabled="true"])': {
-        color: 'onMuted',
+        color: 'display.text.muted.default',
       },
       '& > span[aria-label="tooltip"]': {
         fontSize: 'sm',
-        marginLeft: '2xs',
+        marginLeft: '2',
       },
       '&:has(input[type="checkbox"])': {
-        fontSize: 'base',
-        gap: 'md',
+        fontSize: 'md',
+        gap: '2',
       },
       '& > div:has(input[type="checkbox"]) > svg': {
         marginRight: 0,
       },
       '&:has(input[type="checkbox"]:disabled)': {
-        color: 'onMuted',
+        color: 'display.text.muted.default',
       },
       '&:has(div > input[type="radio"])': {
         alignItems: 'center',
       },
       '&:has(div > input[type="radio"]:disabled)': {
-        color: 'muted',
+        color: 'display.text.muted.active',
       },
     },
     radio: {
-      color: 'text',
+      color: 'input.text.secondary.default',
       fontFamily: 'body',
       fontSize: 'lg',
       'input:disabled ~ &': {
-        color: 'muted',
+        color: 'input.text.muted.default',
+      },
+      'input:checked ~ &': {
+        color: 'input.text.accent.default',
       },
       'input[aria-invalid="true"] ~ &': {
-        color: 'danger',
+        color: 'input.text.negative.default',
       },
       'input:focus ~ &': {
         bg: 'transparent',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.base,
-        height: fontSizes.base,
+        width: 'min',
+        height: 'min',
       },
     },
     checkbox: {
@@ -362,207 +408,220 @@ export const BruttalTheme: Theme = {
         bg: 'transparent',
       },
       'input:not(:checked) ~ &': {
-        color: 'primary',
+        color: 'input.text.secondary.default',
+      },
+      'input:checked ~ &': {
+        color: 'input.text.accent.default',
       },
       'input:disabled ~ &': {
-        color: 'muted',
+        color: 'input.text.muted.default',
       },
       'input:disabled ~ & path': {
-        backgroundColor: 'onMuted',
+        backgroundColor: 'input.background.muted.default',
       },
       'input[aria-invalid="true"] ~ &': {
-        color: 'danger',
+        color: 'display.text.negative.default',
       },
       '&:is(svg, svg + svg)': {
-        width: fontSizes.base,
-        height: fontSizes.base,
+        width: 'min',
+        height: 'min',
       },
     },
     input: {
-      color: 'text',
-      border: 'interaction',
-      borderColor: 'onMuted',
-      borderRadius: 'action',
-      backgroundColor: 'surface',
-      fontSize: 'base',
-      lineHeight: 'base',
+      color: 'display.text.primary.default',
+      border: 'md',
+      borderColor: 'display.border.muted.default',
+      borderRadius: 'sm',
+      backgroundColor: 'display.background.secondary.default',
+      fontSize: 'md',
+      lineHeight: 'normal',
       '::placeholder': {
-        color: 'onMuted',
+        color: 'display.text.muted.default',
       },
       ':focus-within': {
-        outlineColor: 'neutral',
+        outlineColor: 'display.border.muted.active',
       },
       ':disabled': {
-        backgroundColor: 'muted',
-        color: 'onMuted',
-        border: 'muted',
-        borderColor: 'onMuted',
+        backgroundColor: 'display.background.muted.default',
+        color: 'display.text.muted.default',
+        border: 'sm',
+        borderColor: 'display.border.muted.default',
       },
       '&[aria-invalid="true"]': {
-        borderColor: 'danger',
+        borderColor: 'display.border.negative.default',
+        ':focus-within': {
+          outlineColor: 'display.border.negative.default',
+        },
       },
       '&[aria-invalid="true"] ~ span:has(iconify-icon)': {
-        color: 'danger',
+        color: 'display.text.negative.default',
+      },
+      '.is-warning &': {
+        border: 'md',
+        borderColor: 'feedback.border.caution.active',
+        ':focus-within': {
+          outlineColor: 'feedback.border.caution.active',
+        },
       },
     },
     inputNumber: {
-      color: 'text',
-      border: 'interaction',
-      borderColor: 'onMuted',
-      borderRadius: 'action',
+      color: 'display.text.primary.default',
+      border: 'md',
+      borderColor: 'display.border.muted.default',
+      borderRadius: 'sm',
       ':disabled': {
-        border: 'muted',
-        borderColor: 'onMuted',
-        color: 'muted',
+        border: 'sm',
+        borderColor: 'display.border.muted.default',
+        color: 'display.text.muted.active',
       },
       ':disabled ~ span > iconify-icon': {
-        color: 'muted',
+        color: 'display.text.muted.active',
         cursor: 'default',
       },
       ':focus-within': {
-        outlineColor: 'highlight',
+        outlineColor: 'display.border.muted.active',
       },
       ':not(:disabled, [aria-invalid="true"]):hover': {
-        borderColor: 'highlight',
+        borderColor: 'display.border.muted.active',
       },
       ':not(:disabled, [aria-invalid="true"]) ~ span:has(iconify-icon):hover': {
-        color: 'highlight',
+        color: 'display.text.accent.default',
       },
       '& ~ span:has(iconify-icon)': {
-        fontSize: 'base',
+        fontSize: 'md',
       },
       '&[aria-invalid="true"]': {
-        border: 'danger',
-        borderColor: 'danger',
-        color: 'danger',
-        outlineColor: 'danger',
+        border: 'md',
+        borderColor: 'display.border.negative.default',
+        color: 'display.text.negative.default',
+        outlineColor: 'display.border.negative.default',
       },
       '&[aria-invalid="true"] ~ span>iconify-icon': {
-        color: 'danger',
+        color: 'display.text.negative.default',
       },
     },
     select: {
-      color: 'text',
-      backgroundColor: 'surface',
-      border: 'interaction',
-      borderColor: 'onMuted',
-      borderRadius: 'action',
+      color: 'display.text.primary.default',
+      backgroundColor: 'display.background.secondary.default',
+      border: 'md',
+      borderColor: 'display.border.muted.default',
+      borderRadius: 'sm',
       ':disabled': {
-        border: 'muted',
-        borderColor: 'onMuted',
-        backgroundColor: 'muted',
-        color: 'onMuted',
+        border: 'sm',
+        borderColor: 'display.border.muted.default',
+        backgroundColor: 'display.background.muted.default',
+        color: 'display.text.muted.default',
       },
       ':disabled ~ * > span:has(iconify-icon)': {
-        color: 'onMuted',
+        color: 'display.text.muted.default',
       },
       '&[aria-invalid="true"]': {
-        border: 'danger',
-        borderColor: 'danger',
-        outlineColor: 'danger',
+        border: 'md',
+        borderColor: 'display.border.negative.default',
+        outlineColor: 'display.border.negative.default',
       },
       '&[aria-invalid="true"] ~ * > span.error-icon': {
-        color: 'danger',
+        color: 'display.text.negative.default',
       },
     },
     textarea: {
-      color: 'text',
-      border: 'interaction',
-      borderColor: 'onMuted',
-      backgroundColor: 'surface',
-      borderRadius: 'action',
+      color: 'display.text.primary.default',
+      border: 'md',
+      borderColor: 'input.border.muted.default',
+      backgroundColor: 'display.background.secondary.default',
+      borderRadius: 'sm',
       ':focus-within': {
-        outlineColor: 'primary',
+        outlineColor: 'input.border.primary.default',
       },
       ':disabled::placeholder': {
-        color: 'onMuted',
+        color: 'input.text.muted.active',
       },
       ':disabled': {
-        borderColor: 'onMuted',
-        backgroundColor: 'muted',
-        border: 'muted',
-        color: 'onMuted',
+        borderColor: 'input.border.muted.default',
+        backgroundColor: 'input.background.muted.active',
+        border: 'sm',
+        color: 'input.text.muted.active',
       },
       '&[aria-invalid="true"]': {
-        borderColor: 'danger',
-        outlineColor: 'danger',
+        borderColor: 'input.border.negative.default',
+        outlineColor: 'input.border.negative.default',
       },
       '&[aria-invalid="true"]+span>iconify-icon': {
-        color: 'danger',
-        fontSize: 'base',
+        color: 'input.text.negative.default',
+        fontSize: 'lg',
       },
     },
   },
   text: {
     default: {
-      color: 'text',
+      color: 'navigation.text.primary.default',
       fontFamily: 'body',
     },
     title: {
       fontFamily: 'heading',
-      fontSize: 4,
+      fontSize: '5xl',
       lineSpace: '3.5',
     },
     help: {
-      color: 'text',
+      color: 'navigation.text.primary.default',
       '&[aria-disabled="true"]': {
-        color: 'onMuted',
+        color: 'navigation.text.muted.default',
       },
       negative: {
-        color: 'danger',
+        color: 'navigation.text.negative.default',
         '&[aria-disabled="true"]': {
-          color: 'onMuted',
+          color: 'navigation.text.muted.default',
         },
       },
     },
     headline: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
-      lineHeight: 'flat',
+      lineHeight: 'moderate',
       fontSize: '5xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     subheadline: {
-      fontFamily: 'main',
+      fontFamily: 'body',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h1: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'extrabold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: '3xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h2: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: '2xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h3: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'bold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'xl',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h4: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'semibold',
-      lineHeight: 'base',
+      lineHeight: 'normal',
       fontSize: 'lg',
-      letterSpacing: 'regular',
+      letterSpacing: 'wide',
     },
     h5: {
-      fontFamily: 'contrast',
+      fontFamily: 'heading',
       fontWeight: 'semibold',
-      lineHeight: 'base',
-      fontSize: 'base',
-      letterSpacing: 'regular',
+      lineHeight: 'normal',
+      fontSize: 'md',
+      letterSpacing: 'wide',
     },
   },
 };

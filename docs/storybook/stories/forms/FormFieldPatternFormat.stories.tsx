@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Button, Flex } from '@ttoss/ui';
+import { action } from '@storybook/addon-actions';
+import { Meta, Story } from '@storybook/react';
 import {
   Form,
   FormFieldPatternFormat,
@@ -7,8 +7,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta, Story } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Forms/FormFieldPatterFormat',
@@ -35,7 +35,7 @@ const Template: Story = () => {
 
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="CreditcardNumber"
           label="Numero do cartão:"
@@ -44,7 +44,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="document"
           label="CPF:"
@@ -53,7 +53,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="cnpj"
           label="CNPJ:"
@@ -62,7 +62,7 @@ const Template: Story = () => {
         />
       </Flex>
 
-      <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <FormFieldPatternFormat
           name="cnpj"
           label="CNPJ:"
@@ -71,7 +71,17 @@ const Template: Story = () => {
           disabled
         />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldPatternFormat
+          name="cnpj"
+          label="CNPJ:"
+          format="##.###.###/####-##"
+          placeholder="12.345.678/0000-00"
+          warning="WARNING"
+        />
+      </Flex>
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>

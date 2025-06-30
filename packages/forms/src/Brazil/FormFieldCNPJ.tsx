@@ -1,10 +1,20 @@
-import { FormField } from '..';
-import { Input } from '@ttoss/ui';
+import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
+
+import { FormField } from '..';
 
 export type FormFieldCNPJProps = {
   label: string;
   name: string;
+  warning?: string | React.ReactNode;
+  inputTooltip?: {
+    render: string | React.ReactNode;
+    place: 'bottom' | 'top' | 'left' | 'right';
+    openOnClick?: boolean;
+    clickable?: boolean;
+    variant?: 'info' | 'warning' | 'success' | 'error';
+    sx?: ThemeUIStyleObject<Theme>;
+  } & SxProp;
 } & Partial<PatternFormatProps>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +82,8 @@ export const FormFieldCNPJ = ({
     <FormField
       name={name}
       label={label}
+      warning={patternFormatProps.warning}
+      inputTooltip={patternFormatProps.inputTooltip}
       render={({ field }) => {
         return (
           <PatternFormat

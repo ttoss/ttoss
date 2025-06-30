@@ -9,6 +9,7 @@ export type OnSignUpInput = {
   email: string;
   password: string;
   confirmPassword: string;
+  signUpTerms?: boolean;
 };
 
 export type OnSignUp = (input: OnSignUpInput) => void;

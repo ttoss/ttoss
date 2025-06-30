@@ -1,36 +1,49 @@
 import { Box, BoxProps } from '@ttoss/ui';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export * from '@tanstack/react-table';
+export {
+  createCell,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
 export const Table = (props: BoxProps) => {
   return <Box as="table" {...props} />;
 };
 
-export const TableHead = (props: BoxProps) => {
+const TableHead = (props: BoxProps) => {
   return <Box as="thead" {...props} />;
 };
 
-export const TableBody = (props: BoxProps) => {
+const TableBody = (props: BoxProps) => {
   return <Box as="tbody" {...props} />;
 };
 
-export const TableRow = (props: BoxProps) => {
+const TableRow = (props: BoxProps) => {
   return <Box as="tr" {...props} />;
 };
 
-export const TableCell = (props: BoxProps) => {
+const TableCell = (props: BoxProps) => {
   return <Box as="td" {...props} />;
 };
 
-export const TableHeader = (props: BoxProps) => {
+const TableHeader = (props: BoxProps) => {
   return <Box as="th" {...props} />;
 };
 
-export const TableCaption = (props: BoxProps) => {
+const TableCaption = (props: BoxProps) => {
   return <Box as="caption" {...props} />;
 };
 
-export const TableFooter = (props: BoxProps) => {
+const TableFooter = (props: BoxProps) => {
   return <Box as="tfoot" {...props} />;
 };
+
+Table.Head = TableHead;
+Table.Body = TableBody;
+Table.Row = TableRow;
+Table.Cell = TableCell;
+Table.Header = TableHeader;
+Table.Caption = TableCaption;
+Table.Footer = TableFooter;

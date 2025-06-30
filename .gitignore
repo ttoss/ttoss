@@ -121,4 +121,5 @@ github-app/
 .turbo
 **/i18n/compiled/
 **/i18n/missing/
+**/i18n/unused/
 tsup.config.bundled*.mjs

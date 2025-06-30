@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.12.29 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## 0.12.28 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.12.27](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.12.26...@ttoss/cloud-auth@0.12.27) (2025-01-02)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.12.26](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.12.25...@ttoss/cloud-auth@0.12.26) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## 0.12.25 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [0.12.24](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.12.23...@ttoss/cloud-auth@0.12.24) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

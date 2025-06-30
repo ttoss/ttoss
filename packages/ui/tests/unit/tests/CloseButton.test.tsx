@@ -1,30 +1,28 @@
-import { CloseButton } from '../../../src';
 import { render, screen, userEvent } from '@ttoss/test-utils';
 
-test('should render CloseButton without label', () => {
-  render(<CloseButton />);
-  expect(screen.getByTestId('iconify-icon')).toBeInTheDocument();
-  expect(screen.getByTestId('iconify-icon')).toHaveAttribute('icon', 'close');
-});
+import { CloseButton } from '../../../src';
 
-test('should render CloseButton with label', () => {
-  const LABEL = 'Close Modal';
-  render(<CloseButton label={LABEL} />);
-  expect(screen.getByText(LABEL)).toBeInTheDocument();
-});
+describe('CloseButton', () => {
+  test('should render CloseButton', () => {
+    render(<CloseButton data-testid="close-btn" />);
+    expect(screen.getByTestId('close-btn')).toBeInTheDocument();
+  });
 
-test('should not render CloseButton with no label and onlyText property as true', () => {
-  render(<CloseButton onlyText />);
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
-});
+  test('should accept sx prop', () => {
+    render(
+      <CloseButton data-testid="close-btn" sx={{ backgroundColor: 'red' }} />
+    );
+    expect(screen.getByTestId('close-btn')).toHaveStyleRule(
+      'background-color',
+      'red'
+    );
+  });
 
-test('should call onClick function', async () => {
-  const LABEL = 'Close Modal';
-  const user = userEvent.setup({ delay: null });
-  const onClick = jest.fn();
-
-  render(<CloseButton label={LABEL} onClick={onClick} />);
-
-  await user.click(screen.getByText(LABEL));
-  expect(onClick).toHaveBeenCalled();
+  test('should call onClick function', async () => {
+    const onClick = jest.fn();
+    const user = userEvent.setup({ delay: null });
+    render(<CloseButton data-testid="close-btn" onClick={onClick} />);
+    await user.click(screen.getByTestId('close-btn'));
+    expect(onClick).toHaveBeenCalled();
+  });
 });

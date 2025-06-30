@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { Flex, Text } from '..';
 import { Icon, type IconType } from '@ttoss/react-icons';
-import { InputProps as InputPropsUI, Input as InputUI } from 'theme-ui';
+import * as React from 'react';
+import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
+
+import { Flex, Text } from '..';
 
 export interface InputProps extends InputPropsUI {
   leadingIcon?: IconType;
@@ -27,9 +28,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ? 'warning-alt'
       : trailingIconProp;
 
+    const isWarning =
+      !inputProps['aria-invalid'] && trailingIcon === 'warning-alt';
+
     return (
       <Flex
-        className={className}
+        className={`${className} ${isWarning ? 'is-warning' : ''}`}
         sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
       >
         {leadingIcon && (
@@ -50,11 +54,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           sx={{
             fontFamily: 'body',
-            paddingY: 'lg',
-            paddingX: 'xl',
+            paddingY: '3',
+            paddingX: '4',
             ...sx,
-            paddingLeft: leadingIcon ? '3xl' : undefined,
-            paddingRight: trailingIcon ? '3xl' : undefined,
+            paddingLeft: leadingIcon ? '10' : undefined,
+            paddingRight: trailingIcon ? '10' : undefined,
             margin: 0,
           }}
           className={className}
@@ -67,7 +71,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
+              color: isWarning ? 'feedback.text.caution.default' : undefined,
               cursor: onTrailingIconClick ? 'pointer' : 'default',
+              fontSize: 'xl',
             }}
             variant="trailing-icon"
             onClick={onTrailingIconClick}

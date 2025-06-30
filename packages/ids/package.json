@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ids",
-  "version": "0.3.0",
+  "version": "0.3.4",
   "description": "A library to handle the different ids used in the ttoss ecosystem applications",
   "license": "MIT",
   "author": "ttoss",
@@ -26,8 +26,8 @@
   "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "jest": "^29.7.0",
-    "tsup": "^8.3.5"
+    "jest": "^30.0.2",
+    "tsup": "^8.5.0"
   },
   "keywords": [
     "api",

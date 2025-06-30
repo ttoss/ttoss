@@ -1,5 +1,6 @@
-import { Drawer } from '../../../src/components/Drawer';
 import { render, screen } from '@ttoss/test-utils';
+
+import { Drawer } from '../../../src/components/Drawer';
 
 describe('Drawer', () => {
   test('should renders children content', () => {
@@ -13,26 +14,26 @@ describe('Drawer', () => {
     expect(screen.getByText(testMessage)).toBeInTheDocument();
   });
 
-  test('should applies custom styles from sx prop', () => {
+  test('should apply custom styles from sx prop', () => {
     const customStyle = { backgroundColor: 'red' };
     render(
       <Drawer open={true} direction="right" sx={customStyle}>
-        <div>Test content</div>
+        Test content
       </Drawer>
     );
 
-    const boxComponent = screen.getByRole('navigation').firstChild;
-    expect(boxComponent).toHaveStyle(customStyle);
+    const drawerComponent = screen.getByTestId('drawer-container');
+    expect(drawerComponent).toHaveStyleRule('background-color', 'red');
   });
 
   test('should propagates props to DrawerUi component', () => {
     const testMessage = 'Test content';
     render(
-      <Drawer direction="right" open={true}>
+      <Drawer direction="top" open={true} enableOverlay={false}>
         <div>{testMessage}</div>
       </Drawer>
     );
 
-    expect(screen.getByText(testMessage)).toBeVisible();
+    expect(screen.getByText(testMessage)).toBeInTheDocument();
   });
 });

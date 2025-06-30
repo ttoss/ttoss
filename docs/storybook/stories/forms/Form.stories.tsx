@@ -1,10 +1,14 @@
-import { Box, Button, Flex } from '@ttoss/ui';
+import alertIcon from '@iconify-icons/mdi-light/alert';
+import { action } from '@storybook/addon-actions';
+import { Meta, StoryFn } from '@storybook/react';
 import {
   Form,
   FormFieldCheckbox,
   FormFieldInput,
   FormFieldPassword,
+  FormFieldRadio,
   FormFieldSelect,
+  FormFieldSwitch,
   FormFieldTextarea,
   FormGroup,
   useForm,
@@ -12,22 +16,29 @@ import {
   yupResolver,
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
-import { Meta, StoryFn } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import alertIcon from '@iconify-icons/mdi-light/alert';
+import { Box, Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
-    case 'pt-BR':
+    case 'pt-BR': {
       return (await import('../../i18n/compiled/pt-BR.json')).default;
-    default:
+    }
+    default: {
       return (await import('../../i18n/compiled/en.json')).default;
+    }
   }
 };
 
 export default {
   title: 'Forms/Form',
   component: Form,
+  argTypes: {
+    showTooltip: { control: 'boolean' },
+  },
+  args: {
+    showTooltip: true,
+  },
   decorators: [
     (Story) => {
       return (
@@ -39,7 +50,11 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn = () => {
+type StoryArguments = {
+  showTooltip: boolean;
+};
+
+const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
   const schema = yup.object({
     firstName: yup.string().required('First Name is required'),
     age: yup.number().required('Age is required'),
@@ -47,10 +62,15 @@ const Template: StoryFn = () => {
       .string()
       .min(6, 'Min of 6 caracteres')
       .required('Password is a required field'),
-    receiveEmails: yup
+    receiveAlertEmails: yup
       .boolean()
       .oneOf([true], 'It needs to be checked')
       .required(),
+    receiveMarketingEmails: yup
+      .boolean()
+      .oneOf([true], 'It needs to be checked')
+      .required(),
+    emailFrequency: yup.string().required('Email Frequency is required'),
     version: yup.string().required('Version is required'),
   });
 
@@ -59,40 +79,89 @@ const Template: StoryFn = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       version: 'v15',
-      receiveEmails: false,
+      receiveAlertEmails: false,
+      receiveMarketingEmails: false,
     },
   });
 
+  const tooltip = properties.showTooltip
+    ? {
+        render: 'tooltip message',
+        place: 'top' as const,
+        openOnClick: false,
+        clickable: true,
+      }
+    : undefined;
+
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+      <Flex sx={{ flexDirection: 'column', gap: '4' }}>
         <FormFieldInput
+          warning={
+            <>
+              {'Warning message'}
+              <a className="warning" href="https://example.com">
+                {'Saiba mais'}
+              </a>
+            </>
+          }
           name="firstName"
           label="First Name"
           placeholder="First Name"
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
-          onTooltipClick={action('onTooltipClick')}
-          tooltip
+          tooltip={tooltip}
         />
         <FormFieldInput
           name="age"
           label="Age"
           placeholder="Age"
-          type="number"
-          tooltip
+          tooltip={tooltip}
         />
-
         <FormFieldPassword
           name="password"
           label="Password"
           placeholder="Password"
           showPasswordByDefault
+          tooltip={tooltip}
         />
-        <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
-        <FormFieldInput name="version" label="Version (disabled)" disabled />
+        <FormFieldCheckbox
+          name="receiveAlertEmails"
+          label="Receive Alert Emails"
+          tooltip={tooltip}
+        />
+        <FormFieldSwitch
+          name="receiveMarketingEmails"
+          label="Receive Marketing Emails"
+          tooltip={tooltip}
+        />
+        <FormFieldRadio
+          name="emailFrequency"
+          label="Email Frequency"
+          tooltip={tooltip}
+          options={[
+            {
+              label: 'Daily',
+              value: 'daily',
+            },
+            {
+              label: 'Weekly',
+              value: 'weekly',
+            },
+            {
+              label: 'Monthly',
+              value: 'monthly',
+            },
+          ]}
+        />
+        <FormFieldInput
+          name="version"
+          label="Version (disabled)"
+          disabled
+          tooltip={tooltip}
+        />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
+      <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>
     </Form>
@@ -122,7 +191,7 @@ const Template2: StoryFn = () => {
       <Box
         sx={{
           backgroundColor: 'white',
-          padding: 'lg',
+          padding: '4',
           border: 'default',
           borderColor: 'muted',
         }}
@@ -156,7 +225,6 @@ const Template2: StoryFn = () => {
             label="First Name"
             placeholder="First Name"
             options={options}
-            sx={{ flex: 1 }}
           />
 
           <FormFieldSelect
@@ -164,7 +232,6 @@ const Template2: StoryFn = () => {
             label="Last Name"
             placeholder="Last Name"
             options={options}
-            sx={{ flex: 1 }}
           />
         </FormGroup>
         <FormGroup
@@ -202,25 +269,31 @@ const TemplateWithInternationalization: StoryFn = () => {
     },
   });
 
+  const tooltip = {
+    render: 'tooltip message',
+    place: 'top' as const,
+    openOnClick: false,
+    clickable: true,
+  };
+
   return (
     <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
       <Form {...formMethods} onSubmit={action('onSubmit')}>
-        <Flex sx={{ flexDirection: 'column', gap: 'lg' }}>
+        <Flex sx={{ flexDirection: 'column', gap: '4' }}>
           <FormFieldInput
             name="firstName"
             label="First Name"
             placeholder="First Name"
             trailingIcon={alertIcon}
             leadingIcon="ic:baseline-supervised-user-circle"
-            onTooltipClick={action('onTooltipClick')}
-            tooltip
+            tooltip={tooltip}
           />
           <FormFieldInput
             name="age"
             label="Age"
             placeholder="Age"
             type="number"
-            tooltip
+            tooltip={tooltip}
           />
 
           <FormFieldPassword
@@ -232,7 +305,7 @@ const TemplateWithInternationalization: StoryFn = () => {
           <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
           <FormFieldInput name="version" label="Version (disabled)" disabled />
         </Flex>
-        <Button sx={{ marginTop: 'lg' }} type="submit">
+        <Button sx={{ marginTop: '4' }} type="submit">
           Submit
         </Button>
       </Form>
@@ -245,3 +318,69 @@ export const Example2 = Template2.bind({});
 export const WithInternationalization = TemplateWithInternationalization.bind(
   {}
 );
+
+/**
+ * This story shows how fields are aligned vertically when label has different
+ * sizes and an error message is displayed.
+ */
+export const VerticalAlignment: StoryFn = () => {
+  const schema = yup.object({
+    firstName: yup.string(),
+    middleName: yup.string(),
+    lastName: yup.string().required('Last Name is required'),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+  });
+
+  const { setError } = formMethods;
+
+  React.useEffect(() => {
+    setError('lastName', {
+      message: 'Some message to break alignment',
+    });
+  }, [setError]);
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <Flex
+        sx={{
+          gap: 4,
+          display: 'grid',
+          gridTemplateRows: '[label] auto [input] auto [error] auto', // Nomeando as linhas
+          gridAutoFlow: 'column',
+        }}
+      >
+        <FormFieldInput
+          name="firstName"
+          label="First Name with big label"
+          placeholder="First Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="middleName"
+          label="Middle Name"
+          placeholder="Middle Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <FormFieldInput
+          name="lastName"
+          label="Last Name"
+          placeholder="Last Name"
+          sx={{
+            width: '100px',
+          }}
+        />
+        <Button sx={{ marginTop: '4' }} type="submit">
+          Submit
+        </Button>
+      </Flex>
+    </Form>
+  );
+};

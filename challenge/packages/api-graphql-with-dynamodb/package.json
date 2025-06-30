@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss-challenge/api-graphql-with-dynamodb",
-  "version": "0.1.19",
+  "version": "0.1.24",
   "scripts": {
     "build-schema": "ttoss-graphql-api build-schema",
     "dev": "tsx watch ./src/server.ts"
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsx": "^4.6.2"
+    "@ttoss/graphql-api": "workspace:^",
+    "tsx": "^4.19.2"
   }
 }

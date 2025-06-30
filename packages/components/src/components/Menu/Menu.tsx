@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Icon, IconifyIcon } from '@ttoss/react-icons';
 import {
   Box,
   BoxProps,
@@ -7,8 +7,9 @@ import {
   Text,
   useResponsiveValue,
 } from '@ttoss/ui';
+import * as React from 'react';
+
 import { Drawer } from '../Drawer';
-import { Icon, IconifyIcon } from '@ttoss/react-icons';
 
 export type MenuProps = {
   onClose: () => void;
@@ -62,12 +63,12 @@ export const Menu = ({
             height: '100%',
             backgroundColor: 'background',
             width: '100%',
-            maxWidth: 'md',
+            maxWidth: '2',
             right: 0,
-            boxShadow: 'lg',
-            paddingX: 'xl',
-            paddingTop: 'lg',
-            paddingBottom: '2xl',
+            boxShadow: '4',
+            paddingX: '5',
+            paddingTop: '4',
+            paddingBottom: '6',
             ...sx,
           }}
         >
@@ -79,9 +80,11 @@ export const Menu = ({
                 height: '44px',
                 objectFit: 'cover',
               }}
+              data-testid="img"
             />
 
             <Text
+              data-testid="button"
               sx={{
                 marginLeft: 'auto',
                 fontSize: '2xl',
@@ -97,7 +100,7 @@ export const Menu = ({
             </Text>
           </Flex>
 
-          <Box sx={{ paddingTop: '3xl' }} as="nav">
+          <Box sx={{ paddingTop: '6' }} as="nav">
             {children}
           </Box>
         </Box>

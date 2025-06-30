@@ -1,35 +1,27 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
+  "globalEnv": [
+    "AWS_*",
+    "CARLIN_*",
+    "ENVIRONMENT",
+    "NODE_ENV",
+    "TTOSS_MONOREPO"
+  ],
   "tasks": {
-    "//#build:config": {
-      "dependsOn": [],
-      "outputs": ["packages/config/dist/**"]
-    },
-    "//#lint": {
-      "dependsOn": ["//#build:config"],
-      "inputs": []
-    },
-    "//#syncpack:list": {
-      "dependsOn": []
-    },
-    "topo": {
-      "dependsOn": ["//#build:config", "//#lint", "//#syncpack:list"]
-    },
     "build-config": {
-      "dependsOn": ["//#build:config"],
+      "dependsOn": ["^build-config"],
       "outputs": ["dist/**"]
     },
     "i18n": {
-      "dependsOn": ["^build-config"],
-      "outputs": ["i18n/lang/**"]
+      "dependsOn": ["@ttoss/i18n-cli#build-config"],
+      "outputs": ["i18n/lang/**", "i18n/compiled/**"]
     },
     "build": {
-      "dependsOn": ["topo", "build-config", "i18n", "^build"],
+      "dependsOn": ["^build", "i18n"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "test": {
-      "dependsOn": ["topo", "i18n"],
+      "dependsOn": ["i18n"],
       "outputs": [],
       "inputs": [
         "src/**/*.tsx",
@@ -39,7 +31,7 @@
       ]
     },
     "deploy": {
-      "dependsOn": ["topo", "i18n", "build", "carlin#build", "^deploy"],
+      "dependsOn": ["i18n", "build", "carlin#build", "^deploy"],
       "outputs": [".carlin/**"]
     }
   }

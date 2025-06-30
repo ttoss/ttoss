@@ -1,6 +1,7 @@
-import { CompareVideos } from './components/CompareVideos';
-import { Footer, Header, Main, StackedLayout } from '@ttoss/layouts';
+import { Layout, StackedLayout } from '@ttoss/layouts';
 import { Heading, Link, Text } from '@ttoss/ui';
+
+import { CompareVideos } from './components/CompareVideos';
 
 export const App = () => {
   return (
@@ -10,7 +11,7 @@ export const App = () => {
         gap: '2xl',
       }}
     >
-      <Header
+      <Layout.Header
         sx={{
           paddingY: 'xl',
           backgroundColor: 'secondary',
@@ -20,15 +21,15 @@ export const App = () => {
         }}
       >
         <Heading as="h1">The Best YouTube Video of All Time</Heading>
-      </Header>
-      <Main
+      </Layout.Header>
+      <Layout.Main
         sx={{
           paddingY: '3xl',
         }}
       >
         <CompareVideos />
-      </Main>
-      <Footer
+      </Layout.Main>
+      <Layout.Footer
         sx={{
           width: '100%',
           backgroundColor: 'primary',
@@ -57,7 +58,7 @@ export const App = () => {
             ttoss Challenge
           </Link>
         </Text>
-      </Footer>
+      </Layout.Footer>
     </StackedLayout>
   );
 };

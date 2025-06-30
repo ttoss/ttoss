@@ -3,6 +3,14 @@
 exports[`defaultTokens cannot be changed 1`] = `
 {
   "__esModule": true,
+  "borders": {
+    "lg": "4px solid",
+    "md": "2px solid",
+    "none": "0px solid",
+    "sm": "1px solid",
+    "xl": "8px solid",
+    "xs": "0.5px solid",
+  },
   "breakpoints": {
     "2xl": "1536px",
     "lg": "1024px",

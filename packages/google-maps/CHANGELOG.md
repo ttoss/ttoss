@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.1.8 (2025-06-20)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## 2.1.7 (2025-03-02)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## 2.1.6 (2025-01-12)
+
+### Bug Fixes
+
+- i18n ([12cffa2](https://github.com/ttoss/ttoss/commit/12cffa27cc4780e561e594af869c36bd64d045d3))
+
+## [2.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.1.4...@ttoss/google-maps@2.1.5) (2025-01-02)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## [2.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.1.3...@ttoss/google-maps@2.1.4) (2024-12-31)
+
+**Note:** Version bump only for package @ttoss/google-maps
+
+## 2.1.3 (2024-12-31)
+
+### Bug Fixes
+
+- remove sequelize-typescript import star ([df41d4d](https://github.com/ttoss/ttoss/commit/df41d4d03b7696cb2f30648e91f56e9e2cad8013))
+
 ## [2.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.1.1...@ttoss/google-maps@2.1.2) (2024-12-02)
 
 **Note:** Version bump only for package @ttoss/google-maps

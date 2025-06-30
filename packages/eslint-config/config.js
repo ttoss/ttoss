@@ -1,163 +1,133 @@
-/**
- * See https://modules.ttoss.dev/docs/core/config/default-configs#eslint
- * for more details about plugins and extensions.
- */
-module.exports = {
-  parser: '@typescript-eslint/parser',
-  env: {
-    browser: true,
-    node: true,
-  },
-  settings: {
-    react: {
-      version: 'detect',
+import eslint from '@eslint/js';
+import tsParser from '@typescript-eslint/parser';
+import turboConfig from 'eslint-config-turbo/flat';
+import formatjs from 'eslint-plugin-formatjs';
+import importPlugin from 'eslint-plugin-import';
+import jest from 'eslint-plugin-jest';
+import jestDom from 'eslint-plugin-jest-dom';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import relay from 'eslint-plugin-relay';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config([
+  ...turboConfig,
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  importPlugin.flatConfigs.recommended,
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat['jsx-runtime'],
+  relay.configs.recommended,
+  reactHooks.configs['recommended-latest'],
+  {
+    plugins: {
+      relay,
+      formatjs,
+      'jsx-a11y': jsxA11y,
+      'prefer-arrow-functions': preferArrowFunctions,
+      'react-namespace-import': reactNamespaceImport,
+      'react-refresh': reactRefresh,
+      'simple-import-sort': simpleImportSort,
+      unicorn: eslintPluginUnicorn,
     },
-    import: {
-      ignore: ['node_modules'],
+    languageOptions: {
+      globals: globals.builtin,
+      parser: tsParser,
     },
-    'import/resolver': {
-      typescript: true,
-      node: true,
-    },
-  },
-  plugins: [
-    '@typescript-eslint',
-    'formatjs',
-    'react',
-    'react-hooks',
-    'relay',
-    'jsx-a11y',
-    'sort-imports-es6-autofix',
-    'prefer-arrow-functions',
-    'prettier',
-    'jest-dom',
-    'import',
-    'react-namespace-import',
-    'react-refresh',
-  ],
-  extends: [
-    'eslint:recommended',
-    'turbo',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended',
-    'plugin:relay/recommended',
-    'plugin:prettier/recommended',
-    'plugin:jest-dom/recommended',
-    'plugin:import/typescript',
-  ],
-  rules: {
-    /**
-     * https://stackoverflow.com/a/76818791/8786986
-     */
-    '@typescript-eslint/ban-types': [
-      'error',
-      {
-        types: {
-          'React.FC':
-            'Useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
-          'React.FunctionComponent':
-            'Useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
-          'React.FunctionalComponent':
-            'Preact specific, useless and has some drawbacks, see https://github.com/facebook/create-react-app/pull/8177',
-        },
+    settings: {
+      react: {
+        version: 'detect',
       },
-    ],
-    '@typescript-eslint/no-non-null-assertion': 'error',
-    /**
-     * https://eslint.org/docs/latest/rules/curly#all
-     */
-    curly: 'error',
-    /**
-     * https://formatjs.io/docs/tooling/linter
-     */
-    'formatjs/enforce-default-message': ['error', 'literal'],
-    'formatjs/enforce-placeholders': ['error'],
-    'formatjs/no-camel-case': ['error'],
-    'formatjs/no-emoji': ['error'],
-    'formatjs/no-literal-string-in-jsx': 'warn',
-    'formatjs/no-multiple-whitespaces': ['error'],
-    'formatjs/no-multiple-plurals': 'error',
-    'formatjs/no-offset': 'error',
-    'formatjs/no-id': 'error',
-    'formatjs/no-complex-selectors': 'error',
-    'import/no-default-export': 'warn',
-    /**
-     * 3 parameters because some array methods as reduce, map, filter
-     * can have 3 parameters.
-     */
-    'max-params': ['error', 3],
-    'no-console': 'error',
-    'no-use-before-define': ['error'],
-    'object-shorthand': ['error', 'always'],
-    'prefer-arrow-callback': 'error',
-    /**
-     * https://github.com/JamieMason/eslint-plugin-prefer-arrow-functions
-     */
-    'prefer-arrow-functions/prefer-arrow-functions': [
-      'error',
-      {
-        returnStyle: 'explicit',
+      import: {
+        ignore: ['node_modules'],
       },
-    ],
-    /**
-     * https://github.com/gonstoll/eslint-plugin-react-namespace-import
-     * https://github.com/jsx-eslint/eslint-plugin-react/issues/2628
-     */
-    'react-namespace-import/no-namespace-import': 'error',
-    /**
-     * https://github.com/ArnaudBarre/eslint-plugin-react-refresh
-     */
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-    'relay/generated-flow-types': 'off',
-    'sort-imports-es6-autofix/sort-imports-es6': [
-      2,
-      {
-        ignoreCase: false,
-        ignoreMemberSort: false,
-        memberSyntaxSortOrder: ['all', 'multiple', 'single', 'none'],
-      },
-    ],
-  },
-  overrides: [
-    {
-      files: ['**/*.js', '**/*.jsx', '**/*.cjs'],
-      rules: {
-        '@typescript-eslint': 'off',
-        '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/camelcase': 'off',
-      },
-    },
-    {
-      files: ['**/*.stories.tsx', '**/*.stories.jsx'],
-      rules: {
-        'import/no-default-export': 'off',
-      },
-    },
-    {
-      files: ['*.spec.ts', '*.test.ts', '*.spec.tsx', '*.test.tsx'],
-      plugins: ['jest'],
-      env: {
-        es6: true,
+      'import/resolver': {
+        typescript: true,
         node: true,
-        'jest/globals': true,
-      },
-      extends: ['plugin:jest/recommended'],
-      parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
-      },
-      rules: {
-        'jest/consistent-test-it': [
-          'error',
-          { fn: 'test', withinDescribe: 'test' },
-        ],
       },
     },
-  ],
-};
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      curly: 'error',
+      'formatjs/enforce-default-message': ['error', 'literal'],
+      'formatjs/enforce-placeholders': ['error'],
+      'formatjs/no-camel-case': ['error'],
+      'formatjs/no-emoji': ['error'],
+      'formatjs/no-literal-string-in-jsx': 'warn',
+      'formatjs/no-multiple-whitespaces': ['error'],
+      'formatjs/no-multiple-plurals': 'error',
+      'formatjs/no-offset': 'error',
+      'formatjs/no-id': 'error',
+      'formatjs/no-complex-selectors': 'error',
+      'import/no-default-export': 'off',
+      'import/no-unresolved': 'off',
+      'max-params': ['error', 3],
+      'no-console': 'error',
+      'no-use-before-define': ['error'],
+      'object-shorthand': ['error', 'always'],
+      'prefer-arrow-callback': 'error',
+      'prefer-arrow-functions/prefer-arrow-functions': [
+        'error',
+        {
+          returnStyle: 'explicit',
+        },
+      ],
+      'react-namespace-import/no-namespace-import': 'error',
+      'react-refresh/only-export-components': [
+        'warn',
+        {
+          allowConstantExport: true,
+        },
+      ],
+      'relay/generated-flow-types': 'off',
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+      'unicorn/no-array-for-each': 'error',
+      'unicorn/catch-error-name': 'error',
+      'unicorn/prefer-node-protocol': 'error',
+    },
+  },
+  {
+    files: ['**/*.js', '**/*.jsx', '**/*.cjs'],
+    rules: {
+      '@typescript-eslint': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/camelcase': 'off',
+    },
+  },
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/*.spec.tsx', '**/*.test.tsx'],
+    ...jestDom.configs['flat/recommended'],
+    plugins: {
+      jest,
+      ...jestDom.configs['flat/recommended'].plugins,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...jest.environments.globals.globals,
+      },
+
+      ecmaVersion: 2019,
+      sourceType: 'module',
+    },
+    rules: {
+      'jest/consistent-test-it': [
+        'error',
+        {
+          fn: 'test',
+          withinDescribe: 'test',
+        },
+      ],
+    },
+  },
+  eslintPluginPrettierRecommended,
+]);

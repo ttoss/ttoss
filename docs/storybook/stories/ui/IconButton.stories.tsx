@@ -1,17 +1,17 @@
-import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
+import { Meta, StoryFn } from '@storybook/react';
 import { Icon } from '@ttoss/react-icons';
-import { Meta, Story } from '@storybook/react';
+import { Flex, IconButton, IconButtonProps } from '@ttoss/ui';
 
 export default {
   title: 'UI/IconButton',
   component: IconButton,
 } as Meta;
 
-const Template: Story<IconButtonProps> = (args) => {
+const ChildrenTemplate: StoryFn<IconButtonProps> = (args) => {
   return (
     <Flex
       sx={{
-        gap: 'lg',
+        gap: '4',
         flexDirection: 'row',
         alignItems: 'start',
       }}
@@ -26,12 +26,38 @@ const Template: Story<IconButtonProps> = (args) => {
   );
 };
 
-export const Primary = Template.bind({});
-Primary.args = {
+const IconPropTemplate: StoryFn<IconButtonProps> = (args) => {
+  return (
+    <Flex
+      sx={{
+        gap: '4',
+        flexDirection: 'row',
+        alignItems: 'start',
+      }}
+    >
+      <IconButton {...args} icon="delete" />
+      <IconButton {...args} icon="ant-design:down-square-filled" />
+    </Flex>
+  );
+};
+
+export const WithChildren = ChildrenTemplate.bind({});
+WithChildren.args = {
   variant: 'primary',
 };
 
-export const Accent = Template.bind({});
+export const WithIconProp = IconPropTemplate.bind({});
+WithIconProp.args = {
+  variant: 'primary',
+};
+
+export const Accent = ChildrenTemplate.bind({});
 Accent.args = {
   variant: 'accent',
+};
+
+export const Disabled = ChildrenTemplate.bind({});
+Disabled.args = {
+  variant: 'primary',
+  disabled: true,
 };

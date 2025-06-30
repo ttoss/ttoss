@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.9 (2025-06-20)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.7...@terezinha-farm/api@0.19.8) (2025-04-09)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.7](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.6...@terezinha-farm/api@0.19.7) (2025-03-24)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.6 (2025-03-02)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.5 (2025-01-23)
+
+### Bug Fixes
+
+- stack component ([1c647e3](https://github.com/ttoss/ttoss/commit/1c647e34e520850f19817e366bdeb91fc9411d88))
+
+## [0.19.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.3...@terezinha-farm/api@0.19.4) (2025-01-07)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.2...@terezinha-farm/api@0.19.3) (2025-01-02)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.1...@terezinha-farm/api@0.19.2) (2025-01-01)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.0...@terezinha-farm/api@0.19.1) (2024-12-31)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.6...@terezinha-farm/api@0.19.0) (2024-12-31)
+
+### Features
+
+- update to nodejs20 ([#633](https://github.com/ttoss/ttoss/issues/633)) ([cdc68c6](https://github.com/ttoss/ttoss/commit/cdc68c631c05ed1814ca1fc34e2cd52ba4a67172))
+
+## [0.18.6](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.5...@terezinha-farm/api@0.18.6) (2024-12-31)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.18.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.4...@terezinha-farm/api@0.18.5) (2024-12-17)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.18.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.3...@terezinha-farm/api@0.18.4) (2024-12-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.18.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.2...@terezinha-farm/api@0.18.3) (2024-12-05)
+
+### Bug Fixes
+
+- graphql-api-cli ([5ef07ac](https://github.com/ttoss/ttoss/commit/5ef07ac906ff100f88471fcf935efbd901132c03))
+
 ## [0.18.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.18.1...@terezinha-farm/api@0.18.2) (2024-12-04)
 
 **Note:** Version bump only for package @terezinha-farm/api

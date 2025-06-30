@@ -1,6 +1,6 @@
+import { action } from '@storybook/addon-actions';
 import { Meta, StoryObj } from '@storybook/react';
 import { Select } from '@ttoss/ui';
-import { action } from '@storybook/addon-actions';
 
 type Story = StoryObj<typeof Select>;
 
@@ -53,7 +53,7 @@ export const WithSxProps: Story = {
     ...Default.args,
     sx: {
       width: '300px',
-      margin: 'xl',
+      margin: '5',
     },
   },
 };
