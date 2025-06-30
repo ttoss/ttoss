@@ -30,12 +30,6 @@
   }
 }
 
-@media (max-width: 1024px) {
-  .grid4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .textCenter {
   text-align: center;
 }
@@ -149,6 +143,12 @@
   gap: 3rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .benefitsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .benefitSection h3 {
