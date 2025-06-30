@@ -23,6 +23,9 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "dependencies": {
+    "react-error-boundary": "^5.0.0"
+  },
   "peerDependencies": {
     "react": ">=16.8.0"
   },

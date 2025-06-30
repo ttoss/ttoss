@@ -116,3 +116,43 @@ jest.config.ts
    ```shell
    pnpm e2e
    ```
+
+## Test Coverage Requirements
+
+### Minimum Coverage Baseline
+
+All packages must maintain **minimum 10% test coverage** as a baseline requirement. This ensures basic testing discipline while remaining achievable for all team members.
+
+### Coverage Improvement Strategy
+
+- **Package-specific goals**: Each package can set higher coverage targets based on complexity and criticality
+- **Incremental improvement**: Increase coverage gradually when the team has capacity
+- **Flexible timeline**: No rigid schedule—improve when sustainable for the team
+- **Focus on critical paths**: Prioritize testing of core functionality and user flows
+
+### Coverage Tracking
+
+Monitor coverage using Jest's built-in coverage reporting:
+
+```bash
+# Generate coverage report
+pnpm test -- --coverage
+
+# Set coverage thresholds in jest.config.ts
+export default {
+  coverageThreshold: {
+    global: {
+      lines: 10,
+      functions: 10,
+      branches: 10,
+      statements: 10,
+    },
+  },
+};
+```
+
+### Integration with Pull Requests
+
+- **Baseline maintenance**: PRs should not decrease overall package coverage below 10%
+- **New feature testing**: New features should include appropriate test coverage
+- **Coverage reporting**: Use coverage reports to guide testing priorities

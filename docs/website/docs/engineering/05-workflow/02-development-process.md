@@ -12,17 +12,38 @@ Our engineering development process is based on agility and velocity, following 
 
 <!-- truncate -->
 
+## Development Workflow
+
+```mermaid
+flowchart TD
+    A[Task Assignment<br/>From Product Workflow] --> B[Create Feature Branch<br/>from main]
+    B --> C[Local Development<br/>Following Guidelines]
+    C --> D[Create Pull Request<br/>Small & Daily]
+    D --> E{PR Requirements Met?}
+    E -->|No| F[Update PR<br/>- User Flow Testing<br/>- Feature Flags<br/>- Test Coverage]
+    F --> E
+    E -->|Yes| G[Ephemeral Deploy<br/>Automatic CI/CD]
+    G --> H[Code Review<br/>Mandatory Approval]
+    H --> I{Review Approved?}
+    I -->|No| J[Address Feedback]
+    J --> H
+    I -->|Yes| K[Squash Merge to main]
+    K --> L[Staging Deploy<br/>Automatic]
+    L --> M[Tag Creation<br/>If Successful]
+    M --> N[Production Deploy<br/>Automatic]
+    N --> O[Developer Monitoring<br/>30min minimum]
+    O --> P{Issues Detected?}
+    P -->|Yes| Q[Fix or Rollback]
+    P -->|No| R[Task Complete]
+```
+
 ## Development Process
 
-### 1. Task Assignment
+### Task Assignment
 
-The developer receives a task that was previously defined in the [product workflow](/docs/product/workflow), already containing:
+Tasks come from the [product workflow](/docs/product/workflow) with defined requirements, acceptance criteria, and priority.
 
-- Defined technical requirements
-- Clear acceptance criteria
-- Established prioritization
-
-### 2. Local Development
+### Local Development
 
 #### Trunk-Based Development
 
@@ -46,106 +67,53 @@ We follow the [Trunk-Based Development](https://trunkbaseddevelopment.com/) mode
 
 3. **Create Pull Request** on GitHub when the feature is ready
 
-### 3. Ephemeral Deploy
+#### Pull Request Requirements
 
-Automatically, our CI/CD system creates an **ephemeral deploy** for each Pull Request:
+Every PR must include:
 
-- Temporary environment with PR changes
-- Unique URL for testing and review
-- Allows validation before merge
+- **User Flow Validation**: Complete the PR template checklist confirming which user flows were tested
+- **Size Limitation**: PRs should be small and focused (ideally daily submissions)
+- **Feature Flags**: New features must use [feature flags](/docs/engineering/guidelines/feature-flags) for controlled rollout
+- **Test Coverage**: Maintain or improve package test coverage baseline
 
-### 4. Code Review
+#### Small Daily Pull Requests
 
-- **Mandatory approval** from at least one team member
-- Code review focusing on:
-  - Code quality and maintainability
-  - Adherence to established practices
-  - Adequate testing
-  - Documentation when necessary
+To ensure thorough code review and faster feedback:
 
-### 5. Squash Merge
+- **Maximum one PR per developer per day**
+- **Focus on single functionality** or bug fix
+- **Limit scope** to 200-400 lines of code when possible
+- **Break large features** into smaller, incremental changes
+- **Frequent integration** reduces merge conflicts and review complexity
 
-After approval:
+### 3. Ephemeral Deploy & Code Review
 
-- **Squash merge** to maintain clean history
-- Automatic deletion of feature branch
-- Integration of changes into `main`
+Each PR automatically gets an ephemeral deploy for testing before mandatory code review approval.
 
-## Deployment Pipeline
+### 4. Deployment Pipeline
 
-### Staging Deploy
+After merge to `main`: **Staging Deploy** → **Tag Creation** → **Production Deploy**
 
-1. **Automatic trigger**: Any change to the `main` branch triggers staging deployment
-2. **Staging environment**: Production replica for final testing
-3. **Validation**: Automated and manual tests are executed
-4. **Tag creation**: If staging deployment is successful, a tag is automatically created
-
-### Production Deploy
-
-1. **Tag trigger**: Tag creation triggers production deployment
-2. **Automated deployment**: CI/CD system executes deployment without manual intervention
-3. **Monitoring**: Monitoring system tracks the application
+All deployments are automated through GitHub Actions.
 
 ## Developer Responsibilities
 
-### Post-Deploy Monitoring
+**Post-Deploy Monitoring**: Monitor production for 30+ minutes after deployment. Fix issues quickly or rollback if necessary.
 
-**It is the developer's responsibility** to monitor their application in production after deployment to:
-
-- **Verify functionality**: Confirm that the feature is operating correctly
-- **Monitor errors**: Observe logs and metrics for at least 30 minutes after deployment
-- **Resolve issues**: Act quickly if problems are identified
-- **Rollback if necessary**: Decide on rollback in critical cases
-
-### Complete Responsibility Cycle
-
-The developer is responsible for the **complete cycle** of the task:
-
-1. Feature development
-2. Testing and validation
-3. Deployment and monitoring
-4. Post-deployment support
-5. Fixes and improvements when necessary
+**Complete Ownership**: Responsible for the entire cycle from development through post-deployment support.
 
 ## Tools and Technologies
 
-### CI/CD System
+- **GitHub Actions**: CI/CD automation
+- **Ephemeral deploys**: Temporary PR environments
+- **Monitoring**: Centralized logs, metrics, and alerts
+- **Communication**: Slack (alerts), GitHub (reviews), ClickUp (tasks)
 
-- **GitHub Actions**: Workflow automation
-- **Ephemeral deploy**: Temporary environments for each PR
-- **Automated deployment**: Staging and production
+## Core Principles
 
-### Monitoring
-
-- **Centralized logs**: Execution tracking
-- **Application metrics**: Performance and availability
-- **Alerts**: Automatic problem notifications
-
-### Communication
-
-- **Slack**: Deployment notifications and alerts
-- **GitHub**: Code reviews and technical discussions
-- **ClickUp**: Task tracking (integration with product)
-
-## Fundamental Principles
-
-### Velocity with Quality
-
-- **Fast cycles**: Daily deployment or more frequent when necessary
-- **Fast feedback**: Continuous validation through automated testing
-- **Small batches**: Incremental and testable changes
-
-### Shared Responsibility
-
-- **Autonomy**: Developers have autonomy to make technical decisions
-- **Accountability**: Responsibility for code from start to finish
-- **Collaboration**: Code review and mutual team support
-
-### Continuous Improvement
-
-- **Retrospectives**: Regular process analysis
-- **Experimentation**: Testing new tools and practices
-- **Adaptation**: Adjustments based on feedback and results
+- **Velocity with Quality**: Fast cycles, continuous testing, small incremental changes
+- **Shared Responsibility**: Developer autonomy with full accountability from code to production
+- **Continuous Improvement**: Regular retrospectives and process adaptation
 
 ## Product Integration
 
