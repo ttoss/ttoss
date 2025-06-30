@@ -171,4 +171,4 @@ This enables seamless theme switching while maintaining component structure.
 
 ## Next Steps
 
-- **[Semantic Colors](/docs/design/design-system/semantic-tokens/colors)**: How core colors are applied
+- **[Semantic Colors](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors)**: How core colors are applied

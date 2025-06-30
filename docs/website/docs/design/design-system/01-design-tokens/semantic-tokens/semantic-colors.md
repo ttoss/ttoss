@@ -418,6 +418,4 @@ display.background.secondary.default + display.text.primary.default = 12:1 (AAA)
 
 ## Next Steps
 
-- **[Semantic Typography](/docs/design/semantic-tokens/typography)**: Text styling tokens
-- **[Interaction States](/docs/design/semantic-tokens/interaction-states)**: State-specific tokens
 - **[Component Implementation](https://storybook.ttoss.dev)**: See semantic colors in action

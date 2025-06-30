@@ -25,7 +25,7 @@ Core tokens use **descriptive naming** that reflects **what** the value is, not 
 
 ## Token Categories
 
-### [Colors](/docs/design/design-system/core-tokens/colors)
+### [Colors](/docs/design/design-system/design-tokens/core-tokens/colors)
 
 Brand colors organized by type and variation:
 
@@ -36,7 +36,7 @@ core.colors.gray.500: #929292
 core.colors.red.700: #c62121
 ```
 
-### [Typography](/docs/design/design-system/core-tokens/typography)
+### [Typography](/docs/design/design-system/design-tokens/core-tokens/typography)
 
 Font families, sizes, weights, and spacing:
 
@@ -47,7 +47,7 @@ core.fonts.fontWeight.bold: 700
 core.fonts.letterSpacing.wide: 0.05em
 ```
 
-### [Spacing](/docs/design/design-system/core-tokens/spacing)
+### [Spacing](/docs/design/design-system/design-tokens/core-tokens/spacing)
 
 Base spacing scale for margins, padding, and gaps:
 
@@ -58,7 +58,7 @@ core.spacing.xl: 32px
 core.spacing.2xl: 48px
 ```
 
-### [Sizing](/docs/design/design-system/core-tokens/sizing)
+### [Sizing](/docs/design/design-system/design-tokens/core-tokens/sizing)
 
 Size values for components and layout:
 
@@ -68,7 +68,7 @@ core.sizes.container.lg: 1024px
 core.sizes.icon.md: 24px
 ```
 
-### [Borders](/docs/design/design-system/core-tokens/borders)
+### [Borders](/docs/design/design-system/design-tokens/core-tokens/borders)
 
 Border weights and border radius values:
 
@@ -138,6 +138,6 @@ action.background.primary.default: core.colors.main
 
 ## Next Steps
 
-- **[Core Colors](/docs/design/design-system/core-tokens/colors)**: Complete color system
-- **[Core Typography](/docs/design/design-system/core-tokens/typography)**: Font and text tokens
-- **[Semantic Tokens](/docs/design/design-system/semantic-tokens)**: How core tokens are used
+- **[Core Colors](/docs/design/design-system/design-tokens/core-tokens/colors)**: Complete color system
+- **[Core Typography](/docs/design/design-system/design-tokens/core-tokens/typography)**: Font and text tokens
+- **[Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)**: How core tokens are used

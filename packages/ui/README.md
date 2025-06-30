@@ -43,7 +43,7 @@ export const App = () => (
 );
 ```
 
-Now, you can use the components of the library in your application and access the [design tokens](/docs/design/design-tokens) defined in your theme through the [`sx` prop](https://theme-ui.com/getting-started#sx-prop).
+Now, you can use the components of the library in your application and access the [design tokens](/docs/design/design-system/design-tokens) defined in your theme through the [`sx` prop](https://theme-ui.com/getting-started#sx-prop).
 
 ```tsx
 import { Flex, Text, Box, Button } from '@ttoss/ui';

@@ -460,6 +460,6 @@ Cannot read property 'default' of undefined at action.background.primary.default
 
 ## Next Steps
 
+- **[Theme Definition](/docs/design/design-system/theme)**: Understanding complete theme architecture
 - **[Component Development](/docs/design/design-system/components)**: Building components with tokens
-- **[Theme Customization](/docs/design/design-system/themes)**: Creating custom themes
 - **[Storybook Integration](https://storybook.ttoss.dev)**: Testing tokens in components

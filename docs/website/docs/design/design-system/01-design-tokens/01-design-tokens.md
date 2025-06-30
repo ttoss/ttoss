@@ -165,4 +165,6 @@ const MyComponent = () => {
 
 - **[Core Tokens](/docs/design/design-system/design-tokens/core-tokens)**: Explore foundation tokens
 - **[Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)**: Understand contextual usage
+- **[Theme Definition](/docs/design/design-system/theme)**: Complete theme implementation
+- **[Components](/docs/design/design-system/components)**: How tokens are used in components
 - **[Implementation Guide](/docs/design/design-system/design-tokens/implementation)**: Technical details

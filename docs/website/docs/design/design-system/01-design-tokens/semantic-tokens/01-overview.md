@@ -60,7 +60,7 @@ navigation.text.secondary.active
 
 ## UX Context Categories
 
-### [Action](/docs/design/semantic-tokens/colors#action-context)
+### [Action](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors#action-context)
 
 Interactive elements that trigger user actions:
 
@@ -69,7 +69,7 @@ Interactive elements that trigger user actions:
 - Interactive cards
 - Toggle switches
 
-### [Input](/docs/design/semantic-tokens/colors#input-context)
+### [Input](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors#input-context)
 
 Form elements and data entry:
 
@@ -78,7 +78,7 @@ Form elements and data entry:
 - Checkboxes and radios
 - Form validation states
 
-### [Display](/docs/design/semantic-tokens/colors#display-context)
+### [Display](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors#display-context)
 
 Content presentation and information:
 
@@ -87,7 +87,7 @@ Content presentation and information:
 - Data tables
 - Content areas
 
-### [Feedback](/docs/design/semantic-tokens/colors#feedback-context)
+### [Feedback](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors#feedback-context)
 
 Status communication and user feedback:
 
@@ -96,7 +96,7 @@ Status communication and user feedback:
 - Warning notifications
 - Loading states
 
-### [Navigation](/docs/design/semantic-tokens/colors#navigation-context)
+### [Navigation](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors#navigation-context)
 
 Wayfinding and site navigation:
 
@@ -107,7 +107,7 @@ Wayfinding and site navigation:
 
 ## Token Categories
 
-### [Colors](/docs/design/semantic-tokens/colors)
+### [Colors](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors)
 
 Context-specific color applications:
 
@@ -115,26 +115,6 @@ Context-specific color applications:
 action.background.primary.default: core.colors.main
 input.border.error.default: core.colors.red700
 display.text.secondary.default: core.colors.gray600
-```
-
-### [Typography](/docs/design/semantic-tokens/typography)
-
-Text styles for specific use cases:
-
-```
-display.text.headline: { fontSize: '3xl', fontWeight: 'bold' }
-input.text.label: { fontSize: 'sm', fontWeight: 'medium' }
-navigation.text.link: { fontSize: 'md', textDecoration: 'underline' }
-```
-
-### [Interaction States](/docs/design/semantic-tokens/interaction-states)
-
-State-specific styling:
-
-```
-action.background.primary.hover: { filter: 'brightness(110%)' }
-input.border.default.focused: { borderWidth: 'md' }
-display.text.link.visited: { color: 'core.colors.accent' }
 ```
 
 ## Implementation in Components
@@ -245,6 +225,7 @@ Semantic tokens improve accessibility by:
 
 ## Next Steps
 
-- **[Semantic Colors](/docs/design/semantic-tokens/colors)**: Color token implementation
-- **[Semantic Typography](/docs/design/semantic-tokens/typography)**: Text styling tokens
+- **[Semantic Colors](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors)**: Color token implementation
+- **[Theme Definition](/docs/design/design-system/theme)**: Complete theme implementation
+- **[Components](/docs/design/design-system/components)**: How semantic tokens are used in components
 - **[Implementation Guide](/docs/design/design-system/design-tokens/implementation)**: Technical implementation

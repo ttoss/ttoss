@@ -45,6 +45,7 @@ graph TD
 
 - **[Core Tokens](/docs/design/design-system/design-tokens/core-tokens)**: Raw brand values (colors, fonts, spacing)
 - **[Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)**: Context-specific applications (button colors, text hierarchy)
+- **[Theme Definition](/docs/design/design-system/theme)**: Complete implementations combining tokens and component styles
 
 ### Layer 3: [UI Components](/docs/design/design-system/components)
 
@@ -82,4 +83,3 @@ Our system excels at supporting multiple brands through:
 1. **[Install the packages](/docs/design/getting-started)** - Quick setup guide
 2. **[Explore tokens](/docs/design/design-system/design-tokens)** - Understand the foundation
 3. **[Browse components](https://storybook.ttoss.dev)** - See what's available
-4. **[View examples](/docs/design/examples)** - Real-world usage patterns
