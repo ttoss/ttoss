@@ -1,64 +1,423 @@
 ---
-id: colorsSemanticTokens
 title: Semantic Colors
-slug: /design/semantic-tokens/colors
 ---
 
-Our token structure is organized into three main categories: Context, Nature, and State. This structure ensures clarity, consistency, and flexibility across various UI components.
+# Semantic Colors
 
-> Name Pattern: `colors.{ux}.{context}.{nature}`
+Semantic color tokens provide contextual meaning to color usage, organizing colors by **where** and **how** they're used rather than their visual appearance.
 
-## Semantic Structure of Design Color Tokens
+## Token Structure
 
-### UX Tokens
+Semantic colors follow a consistent hierarchy:
 
-| UX token     | Description                                                                                      | Elements examples                                                                                                                                                 |
-| :----------- | :----------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `navigation` | Elements that allow users to explore and find content within the interface.                      | - Navigation Menus: Main menus, secondary menus, and hamburger menus.<br />- Breadcrumbs: Navigation paths.<br />- Footer Links: Additional navigation.           |
-| `input`      | Elements that allow user data entry or selection.                                                | - Forms: Text fields, checkboxes, radio buttons.<br />- File Upload: Tools for uploading files.<br />- Date/Time Picker: Calendars and clocks.                    |
-| `action`     | Elements that trigger user-driven actions or changes.                                            | - Buttons: Click to execute actions.<br />- Switches and Toggles: Activate/deactivate options.<br />- Dropdowns: Select options.                                  |
-| `feedback`   | Elements that communicate the status, results of actions, outcomes, or instructions to the user. | - Error/Success Messages: Validation and confirmation of actions.<br />- Notifications: Alerts and important information.<br />- Tooltips: Tips and instructions. |
-| `display`    | Elements that present content or information to the user.                                        | - Texts: Articles, descriptions.<br />- Images and Videos: Multimedia content.<br />- Charts and Tables: Data presentation.                                       |
+```
+{ux}.{context}.{nature}.{state?}
 
-### Context
+Examples:
+action.background.primary.default
+input.text.error.focused
+display.border.muted.hover
+```
 
-The Context defines where the color will be applied within the interface.
+## UX Context Categories
 
-| Name         | Description              |
-| :----------- | :----------------------- |
-| `background` | General backgrounds.     |
-| `text`       | Text elements.           |
-| `border`     | Borders around elements. |
+### Action Context
 
-### Nature
+**Usage**: Interactive elements that trigger user actions
 
-Nature specifies the type or intent of the color, such as the importance or status of the element.
+Colors for buttons, CTAs, links, and other actionable elements:
 
-| Name        | Description                                                                                                      |
-| :---------- | :--------------------------------------------------------------------------------------------------------------- |
-| `primary`   | Primary color.                                                                                                   |
-| `secondary` | A secondary color for alternative styling.                                                                       |
-| `accent`    | A contrast color for emphasizing UI.                                                                             |
-| `muted`     | A faint color for backgrounds, borders, and accents that do not require high contrast with the background color. |
-| `negative`  | Cores associated with errors, failures or critical states.                                                       |
-| `caution`   | Colors that indicate attention or caution.                                                                       |
-| `positive`  | Colors associated with success, confirmation or ideal states.                                                    |
+```typescript
+action: {
+  background: {
+    primary: {
+      default: core.colors.main,
+      hover: core.colors.complimentary,
+      active: core.colors.accent
+    },
+    secondary: {
+      default: core.colors.gray200,
+      hover: core.colors.white,
+      active: core.colors.darkNeutral
+    },
+    accent: {
+      default: core.colors.accent,
+      hover: 'brightness(110%)',
+      active: core.colors.teal600
+    },
+    negative: {
+      default: core.colors.red700
+    }
+  },
+  text: {
+    primary: { default: core.colors.black },
+    secondary: {
+      default: core.colors.white,
+      active: core.colors.complimentary
+    },
+    accent: { default: core.colors.white },
+    negative: { default: core.colors.white }
+  },
+  border: {
+    primary: { default: core.colors.main },
+    secondary: { default: core.colors.black },
+    muted: { default: core.colors.gray600 }
+  }
+}
+```
 
-## Extended
+**Component Examples:**
 
-### State
+```tsx
+// Primary button
+<Button variant="primary">
+  {/* Uses action.background.primary.default */}
+  {/* Uses action.text.secondary.default */}
+</Button>
 
-The State differentiates between different conditions or interactions of the components.
+// Destructive button
+<Button variant="destructive">
+  {/* Uses action.background.negative.default */}
+  {/* Uses action.text.negative.default */}
+</Button>
+```
 
-| Name       | Description                                                                                                                           |
-| :--------- | :------------------------------------------------------------------------------------------------------------------------------------ |
-| `default`  | The default state of the component when no interaction or user input occurs.                                                          |
-| `hover`    | The state when a user hovers over the component with a pointer device.                                                                |
-| `active`   | The state of the component when it is actively clicked or engaged.                                                                    |
-| `disabled` | The state when the component is unavailable for interaction or input.                                                                 |
-| `focused`  | The state when the component is selected or highlighted for interaction, typically via keyboard navigation or assistive technologies. |
-| `selected` | The state when the component represents a user choice or is marked as chosen.                                                         |
+### Input Context
 
-## Mode
+**Usage**: Form elements and data entry components
 
-For theme change, like dark mode and light mode we create another theme and do not change by token.
+Colors for inputs, selects, checkboxes, and form validation:
+
+```typescript
+input: {
+  background: {
+    primary: { default: core.colors.white },
+    muted: {
+      default: core.colors.gray200,
+      disabled: core.colors.gray300
+    }
+  },
+  text: {
+    primary: { default: core.colors.black },
+    secondary: { default: core.colors.darkNeutral },
+    muted: { default: core.colors.gray600 },
+    accent: { default: core.colors.accent },
+    negative: { default: core.colors.red700 }
+  },
+  border: {
+    default: {
+      default: core.colors.gray300,
+      focused: core.colors.accent
+    },
+    muted: { default: core.colors.gray200 },
+    negative: { default: core.colors.red700 }
+  }
+}
+```
+
+**Component Examples:**
+
+```tsx
+// Standard input
+<Input>
+  {/* Uses input.background.primary.default */}
+  {/* Uses input.border.default.default */}
+</Input>
+
+// Error state input
+<Input variant="error">
+  {/* Uses input.border.negative.default */}
+  {/* Uses input.text.negative.default for helper text */}
+</Input>
+```
+
+### Display Context
+
+**Usage**: Content presentation and information display
+
+Colors for text, cards, containers, and data presentation:
+
+```typescript
+display: {
+  background: {
+    primary: { default: core.colors.main },
+    secondary: { default: core.colors.white },
+    muted: { default: core.colors.gray200 }
+  },
+  text: {
+    primary: { default: core.colors.black },
+    secondary: { default: core.colors.darkNeutral },
+    muted: {
+      default: core.colors.gray600,
+      active: core.colors.gray200
+    },
+    accent: { default: core.colors.accent },
+    negative: { default: core.colors.red700 }
+  },
+  border: {
+    primary: { default: core.colors.main },
+    secondary: { default: core.colors.black },
+    muted: {
+      default: core.colors.gray600,
+      active: core.colors.darkNeutral
+    }
+  }
+}
+```
+
+**Component Examples:**
+
+```tsx
+// Content card
+<Card>
+  {/* Uses display.background.secondary.default */}
+  {/* Uses display.border.muted.default */}
+</Card>
+
+// Primary text
+<Text variant="body">
+  {/* Uses display.text.primary.default */}
+</Text>
+
+// Secondary text
+<Text variant="caption">
+  {/* Uses display.text.muted.default */}
+</Text>
+```
+
+### Feedback Context
+
+**Usage**: Status communication and user feedback
+
+Colors for alerts, notifications, and status indicators:
+
+```typescript
+feedback: {
+  background: {
+    primary: { default: core.colors.white },
+    positive: { default: core.colors.teal600 },
+    negative: { default: core.colors.red700 },
+    caution: { default: core.colors.amber600 }
+  },
+  text: {
+    primary: { default: core.colors.white },
+    secondary: { default: core.colors.black },
+    positive: { default: core.colors.white },
+    negative: { default: core.colors.white },
+    caution: { default: core.colors.white }
+  },
+  border: {
+    positive: { default: core.colors.teal600 },
+    negative: { default: core.colors.red700 },
+    caution: { default: core.colors.amber600 }
+  }
+}
+```
+
+**Component Examples:**
+
+```tsx
+// Success alert
+<Alert variant="success">
+  {/* Uses feedback.background.positive.default */}
+  {/* Uses feedback.text.positive.default */}
+</Alert>
+
+// Error notification
+<Notification variant="error">
+  {/* Uses feedback.background.negative.default */}
+  {/* Uses feedback.text.negative.default */}
+</Notification>
+```
+
+### Navigation Context
+
+**Usage**: Wayfinding and site navigation
+
+Colors for menus, links, breadcrumbs, and navigation elements:
+
+```typescript
+navigation: {
+  background: {
+    primary: { default: core.colors.complimentary },
+    muted: { default: core.colors.complimentary }
+  },
+  text: {
+    primary: { default: core.colors.black },
+    accent: { default: core.colors.darkNeutral },
+    muted: { default: core.colors.gray600 },
+    negative: { default: core.colors.red700 }
+  },
+  border: {
+    primary: { default: core.colors.black },
+    muted: { default: core.colors.gray600 }
+  }
+}
+```
+
+**Component Examples:**
+
+```tsx
+// Navigation link
+<Link>
+  {/* Uses navigation.text.primary.default */}
+  {/* Uses navigation.text.accent.default on :visited */}
+</Link>
+
+// Main navigation
+<Nav>
+  {/* Uses navigation.background.primary.default */}
+</Nav>
+```
+
+## Interaction States
+
+All interactive semantic tokens include state variations:
+
+### State Modifiers
+
+- `default`: Base state
+- `hover`: Mouse hover state
+- `active`: Pressed/clicked state
+- `focused`: Keyboard focus state
+- `disabled`: Disabled state
+- `selected`: Selected state (for toggles)
+
+### State Examples
+
+```typescript
+// Complete button state system
+action: {
+  background: {
+    primary: {
+      default: core.colors.main,
+      hover: 'brightness(110%)',      // Lighter on hover
+      active: core.colors.accent,     // Different color on press
+      disabled: core.colors.gray300   // Muted when disabled
+    }
+  }
+}
+```
+
+## Theme Mode Support
+
+Semantic tokens adapt to different theme modes (light/dark) by referencing different core tokens:
+
+```typescript
+// Light mode theme
+display: {
+  background: {
+    primary: { default: core.colors.white },
+    secondary: { default: core.colors.gray100 }
+  },
+  text: {
+    primary: { default: core.colors.black }
+  }
+}
+
+// Dark mode theme (same structure, different core values)
+display: {
+  background: {
+    primary: { default: core.colors.black },
+    secondary: { default: core.colors.gray900 }
+  },
+  text: {
+    primary: { default: core.colors.white }
+  }
+}
+```
+
+## Implementation Patterns
+
+### Component Styling
+
+```tsx
+// Using semantic tokens in custom components
+const StyledCard = styled.div`
+  background-color: ${(props) =>
+    props.theme.colors.display.background.secondary.default};
+  border: 1px solid
+    ${(props) => props.theme.colors.display.border.muted.default};
+  color: ${(props) => props.theme.colors.display.text.primary.default};
+`;
+
+// With Theme UI sx prop
+<Box
+  sx={{
+    backgroundColor: 'display.background.secondary.default',
+    borderColor: 'display.border.muted.default',
+    color: 'display.text.primary.default',
+  }}
+>
+  Content
+</Box>;
+```
+
+### Responsive Usage
+
+```tsx
+// Semantic tokens work with responsive arrays
+<Box
+  sx={{
+    backgroundColor: [
+      'display.background.primary.default',
+      'display.background.secondary.default',
+    ],
+    color: ['display.text.primary.default', 'display.text.secondary.default'],
+  }}
+>
+  Responsive semantic colors
+</Box>
+```
+
+## Accessibility Considerations
+
+Semantic tokens ensure accessible color usage:
+
+- **Sufficient contrast**: Color combinations meet WCAG guidelines
+- **Consistent relationships**: Same semantic meaning maintains contrast across themes
+- **Focus indicators**: Dedicated focus state colors for keyboard navigation
+- **Error communication**: Clear error state colors for form validation
+
+### Contrast Testing
+
+```typescript
+// Semantic tokens maintain contrast ratios
+action.background.primary.default + action.text.secondary.default = 4.5:1 (AA)
+input.background.primary.default + input.text.primary.default = 7:1 (AAA)
+display.background.secondary.default + display.text.primary.default = 12:1 (AAA)
+```
+
+## Best Practices
+
+### Token Usage
+
+- **Use semantic over core**: Always prefer semantic tokens in components
+- **Match context to usage**: Use `action.*` for buttons, `input.*` for forms
+- **Include all states**: Define hover, focus, disabled states for interactive elements
+- **Test across themes**: Ensure tokens work in all theme variations
+
+### Component Integration
+
+```tsx
+// Good: Using appropriate semantic context
+<Button sx={{
+  backgroundColor: 'action.background.primary.default'  // ✅ Correct context
+}} />
+
+// Avoid: Using wrong context
+<Button sx={{
+  backgroundColor: 'display.background.primary.default' // ❌ Wrong context
+}} />
+
+// Bad: Using core tokens directly
+<Button sx={{
+  backgroundColor: 'main'                               // ❌ Too direct
+}} />
+```
+
+## Next Steps
+
+- **[Semantic Typography](/docs/design/semantic-tokens/typography)**: Text styling tokens
+- **[Interaction States](/docs/design/semantic-tokens/interaction-states)**: State-specific tokens
+- **[Component Implementation](https://storybook.ttoss.dev)**: See semantic colors in action

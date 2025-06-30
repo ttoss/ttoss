@@ -12,6 +12,8 @@ tags:
 
 In software development, trust is not established at the moment a system is deployed. Even if a system passes all unit tests, integration tests, and manual QA processes, there remains a psychological barrier: the "Test of Time." This concept suggests that a system only becomes truly trusted after it has run in production for a period without issues.
 
+<!-- truncate -->
+
 ## The Psychological Nature of Trust in Software
 
 Unlike mathematical proofs or deterministic logic, software trust is built through real-world usage. Developers, stakeholders, and users may recognize that a system has been thoroughly tested, but they still harbor a level of skepticism until it has been operational for some time. This phenomenon is psychological rather than technical—no matter how rigorously a system is tested, confidence in its reliability grows only with prolonged uptime and observed stability.
