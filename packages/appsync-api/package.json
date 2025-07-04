@@ -37,7 +37,7 @@
     "@types/aws-lambda": "^8.10.146",
     "graphql": "^16.9.0",
     "graphql-shield": "^7.6.5",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "tsup": "^8.5.0"
   },
   "keywords": [

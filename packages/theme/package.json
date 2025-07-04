@@ -39,7 +39,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "theme-ui": "^0.17.1",
     "tsup": "^8.5.0"
   },

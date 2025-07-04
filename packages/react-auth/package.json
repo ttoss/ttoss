@@ -53,7 +53,7 @@
     "@ttoss/ui": "workspace:^",
     "@types/react": "^19.1.8",
     "aws-amplify": "^6.11.0",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "react": "^19.1.0",
     "tsup": "^8.5.0"
   },

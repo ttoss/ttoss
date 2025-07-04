@@ -32,7 +32,7 @@
     "@aws-sdk/types": "^3.502.0",
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "tsup": "^8.5.0"
   },
   "keywords": [],
