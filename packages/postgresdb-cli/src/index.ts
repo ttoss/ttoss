@@ -22,6 +22,7 @@ program
   .command('erd')
   .description('Generate ERD')
   .action(erd)
-  .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts');
+  .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts')
+  .option('--engine <engine>', 'Layout engine to use', 'circo');
 
 program.parse(process.argv);

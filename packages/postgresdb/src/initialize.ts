@@ -19,14 +19,20 @@ export const initialize = async <Models extends { [key: string]: ModelCtor }>({
     sequelize: Sequelize;
   } & Models
 > => {
+  const username = process.env.DB_USERNAME,
+    password = process.env.DB_PASSWORD,
+    database = process.env.DB_NAME,
+    host = process.env.DB_HOST,
+    port = Number(process.env.DB_PORT) || 5432;
+
   if (!sequelize) {
     sequelize = new Sequelize({
       logging: false,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 5432,
+      username,
+      password,
+      database,
+      host,
+      port,
       ...restOptions,
       define: {
         underscored: true,
@@ -41,7 +47,9 @@ export const initialize = async <Models extends { [key: string]: ModelCtor }>({
     });
   }
 
-  await sequelize.authenticate();
+  if (username && password && database && host && port) {
+    await sequelize.authenticate();
+  }
 
   const close = sequelize.close;
 

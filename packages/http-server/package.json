@@ -38,7 +38,7 @@
     "@types/koa__cors": "^5.0.0",
     "@types/koa__multer": "^2.0.7",
     "@types/koa__router": "^12.0.4",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "supertest": "^7.0.0",
     "tsup": "^8.5.0"
   },

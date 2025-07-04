@@ -14,7 +14,7 @@
     "@ttoss-challenge/seed": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/postgresdb-cli": "workspace:^",
-    "dotenv": "^16.4.5",
+    "dotenv": "^17.0.1",
     "tsx": "^4.19.2"
   }
 }

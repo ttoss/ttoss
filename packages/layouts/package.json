@@ -37,7 +37,7 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.1.8",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "react": "^19.1.0",
     "tsup": "^8.5.0"
   },

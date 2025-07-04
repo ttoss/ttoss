@@ -28,7 +28,7 @@
     "@aws-sdk/client-lambda": "^3.731.1",
     "@ttoss/cloudformation": "workspace:^",
     "camelcase-keys": "^7.0.2",
-    "pg": "^8.13.1"
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -36,7 +36,7 @@
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.11.10",
     "aws-sdk-client-mock": "^4.1.0",
-    "jest": "^30.0.2",
+    "jest": "^30.0.4",
     "tsup": "^8.5.0"
   },
   "keywords": [

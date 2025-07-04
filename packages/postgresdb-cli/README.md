@@ -28,6 +28,16 @@ To [sync](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchr
 pnpm dlx @ttoss/postgresdb-cli sync
 ```
 
+Or you can add the command to your `package.json` scripts for easier access:
+
+```json
+{
+  "scripts": {
+    "sync": "ttoss-postgresdb sync"
+  }
+}
+```
+
 #### Options
 
 - `--db-path` or `-d`: Path to the file where the `db` object is defined. Default: `./src/db.js`.
@@ -41,6 +51,17 @@ To generate an [ERD](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_m
 pnpm dlx @ttoss/postgresdb-cli erd
 ```
 
+Or you can add the command to your `package.json` scripts for easier access:
+
+```json
+{
+  "scripts": {
+    "erd": "ttoss-postgresdb erd"
+  }
+}
+```
+
 #### Options
 
 - `--db-path` or `-d`: Path to the file where the `db` object is defined. Default: `./src/db.js`.
+- `--engine`: Layout engine to use, options are "circo", "dot", "fdp", "neato", "osage", "twopi". Default to "circo"
