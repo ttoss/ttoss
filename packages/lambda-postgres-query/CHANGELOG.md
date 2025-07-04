@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.6](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.3.5...@ttoss/lambda-postgres-query@0.3.6) (2025-07-04)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
 ## 0.3.5 (2025-06-20)
 
 **Note:** Version bump only for package @ttoss/lambda-postgres-query

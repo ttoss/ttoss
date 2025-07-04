@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.11](https://github.com/ttoss/ttoss/compare/@ttoss/read-config-file@2.0.10...@ttoss/read-config-file@2.0.11) (2025-07-04)
+
+**Note:** Version bump only for package @ttoss/read-config-file
+
 ## 2.0.10 (2025-06-20)
 
 **Note:** Version bump only for package @ttoss/read-config-file
