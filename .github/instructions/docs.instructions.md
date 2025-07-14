@@ -152,7 +152,7 @@ tags:
 - `gitgraph`: For branching strategies and release workflows
 - `journey`: For user experience flows
 - `timeline`: For chronological processes or milestones
-- `xyChart`: For data relationships, trends, correlations, and quantitative analysis
+- `xychart`: For data relationships, trends, correlations, and quantitative analysis
 
 **Best Practices:**
 
@@ -305,7 +305,7 @@ This creates a living document that becomes more valuable with each documentatio
 **June 30, 2025 - Enhanced Mermaid Diagram Guidelines with XY Charts**:
 
 - **Pattern Identified**: Need for quantitative data visualization in product development documentation, especially for economic analysis, performance metrics, and trend visualization
-- **Solution**: Added xyChart to the list of recommended Mermaid diagram types with specific guidance and examples for data relationships and trends
+- **Solution**: Added xychart to the list of recommended Mermaid diagram types with specific guidance and examples for data relationships and trends
 - **Impact**: Documentation can now include data-driven visualizations for capacity utilization, cost analysis, performance trends, and other quantitative concepts that are central to product development principles
 
 **June 30, 2025 - Added Mermaid Diagram Guidelines**:
