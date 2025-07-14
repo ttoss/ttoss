@@ -152,6 +152,7 @@ tags:
 - `gitgraph`: For branching strategies and release workflows
 - `journey`: For user experience flows
 - `timeline`: For chronological processes or milestones
+- `xychart`: For data relationships, trends, correlations, and quantitative analysis
 
 **Best Practices:**
 
@@ -173,6 +174,16 @@ flowchart TD
     F -->|Yes| G[Deploy to production]
     F -->|No| H[Fix issues]
     H --> E
+```
+
+**XY Chart Example:**
+
+```mermaid
+xychart-beta
+    title "Queue Length vs Capacity Utilization"
+    x-axis "Capacity Utilization %" [50, 60, 70, 80, 90, 95]
+    y-axis "Average Queue Size" 0 --> 20
+    line [1, 1.5, 2.3, 4, 9, 19]
 ```
 
 ### Content Organization
@@ -290,6 +301,12 @@ When you update `docs.instructions.md`, briefly note:
 This creates a living document that becomes more valuable with each documentation task, without becoming bloated or unwieldy.
 
 ### Recent Updates
+
+**June 30, 2025 - Enhanced Mermaid Diagram Guidelines with XY Charts**:
+
+- **Pattern Identified**: Need for quantitative data visualization in product development documentation, especially for economic analysis, performance metrics, and trend visualization
+- **Solution**: Added xychart to the list of recommended Mermaid diagram types with specific guidance and examples for data relationships and trends
+- **Impact**: Documentation can now include data-driven visualizations for capacity utilization, cost analysis, performance trends, and other quantitative concepts that are central to product development principles
 
 **June 30, 2025 - Added Mermaid Diagram Guidelines**:
 

@@ -130,23 +130,17 @@ Since each package has different complexity and requirements, teams can increase
 
 ## How These Changes Align with Our Principles
 
-Our 4-task approach directly implements several [product development principles](/docs/product/product-development/principles):
+Our 4-task approach directly implements core [product development principles](/docs/product/product-development/principles):
 
-### Fast Feedback (FF7): Queue Reduction Through Better Feedback
+- **[Small Experiments (V7)](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one)**: Daily small PRs with feature flags create less overall risk than large releases, following the principle that many small experiments produce less variation than one big one.
 
-Fast feedback from PR templates and small PRs reduces the queue of issues that reach production.
+- **[Queue Reduction via Fast Feedback (FF7)](/docs/product/product-development/principles#ff7-the-queue-reduction-principle-of-feedback-fast-feedback-enables-smaller-queues)**: PR templates and small PRs provide faster feedback loops that reduce the queue of issues reaching production, enabling smaller buffers and minimizing delays.
 
-### Small Batch Size (B17): Proximity Enables Small Batches
+- **[Small Batch Proximity (B17)](/docs/product/product-development/principles#b17-the-proximity-principle-proximity-enables-small-batch-sizes)**: Daily small PRs enable thorough code review by reducing communication costs and enabling real-time collaboration, unlocking the full advantages of small batch sizes.
 
-Daily small PRs make thorough code review feasible, enabling higher quality with faster integration.
+- **[Leading Indicators (FF3)](/docs/product/product-development/principles#ff3-the-principle-of-leading-indicators-select-control-variables-that-predict-future-system-behavior)**: Test coverage metrics and PR checklist completion serve as predictive control variables that enable early interventions before issues reach production.
 
-### Beneficial Variability (V7): Small Experiments Reduce Risk
-
-Multiple small features with feature flags create less overall risk than large releases.
-
-### Leading Indicators (FF3): Predictive Control Variables
-
-Test coverage and PR checklist completion serve as leading indicators of code quality.
+- **[Watching Work Products (E5)](/docs/product/product-development/principles#e5-the-inactivity-principle-watch-the-work-product-not-the-worker)**: Our focus shifts from monitoring developer activity to tracking work products moving through quality gates, addressing the biggest waste—work sitting idle in queues.
 
 ## Expected Results
 

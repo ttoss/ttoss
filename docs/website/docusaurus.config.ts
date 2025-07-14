@@ -293,6 +293,25 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
+    mermaid: {
+      options: {
+        themeVariables: {
+          xyChart: {
+            titleColor: '#903314',
+            xAxisLabelColor: '#666666',
+            xAxisTitleColor: '#b9421a',
+            xAxisTickColor: '#999999',
+            xAxisLineColor: '#cccccc',
+            yAxisLabelColor: '#666666',
+            yAxisTitleColor: '#b9421a',
+            yAxisTickColor: '#999999',
+            yAxisLineColor: '#cccccc',
+            plotColorPalette:
+              '#cd491d, #e05122, #e1592c, #e5714b, #b9421a, #ae3e19',
+          },
+        },
+      },
+    },
   } satisfies Preset.ThemeConfig,
 
   markdown: {

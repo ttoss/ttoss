@@ -206,6 +206,29 @@ The opportunity cost helps the company understand that choosing **Project B** wo
 
 This example illustrates how opportunity cost can guide decision-making by highlighting the financial impact of forgoing one option in favor of another.
 
+## Proxy Variable
+
+A proxy variable is a measurable metric used to represent or estimate another variable that is difficult or impossible to measure directly. In product development, proxy variables serve as substitutes for more complex economic outcomes, allowing teams to make decisions based on observable data rather than abstract concepts.
+
+Proxy variables are interconnected because they often represent the same underlying economic factors from different perspectives. Changes in one proxy variable typically affect others, making it crucial to understand these relationships when making product decisions.
+
+### Common Examples in Product Development
+
+- **Velocity** (as a proxy for team productivity)
+- **Code coverage** (as a proxy for software quality)
+- **User engagement metrics** (as a proxy for product value)
+- **Feature completion rate** (as a proxy for project progress)
+- **Defect count** (as a proxy for technical debt)
+
+### Key Considerations
+
+- **Avoid proxy variable tunnel vision**: Don't optimize individual proxy variables without considering their economic impact
+- **Transform to economic terms**: Convert proxy variables to life-cycle profit comparisons when possible
+- **Understand interconnections**: Recognize how changes in one proxy variable affect others
+- **Question the proxy**: Regularly evaluate whether the proxy variable still accurately represents the underlying economic factor
+
+The goal is to use proxy variables as tools for better economic decision-making, not as ends in themselves.
+
 ## Queue Capacity
 
 Queue capacity refers to the maximum number of items, tasks, or jobs that a queue can hold at any given time. It represents the limit beyond which new tasks cannot be added to the queue until space is made available, either by processing or removing existing tasks. Queue capacity is an important factor in managing workflow, as it influences system efficiency, wait times, and overall throughput.
