@@ -120,7 +120,7 @@ The [First Mile phase](/blog/2025/07/09/the-lifecycle-of-a-saas-feature-from-ide
 **Common Manifestations:**
 
 - Starting new features before existing ones reach maturity
-- Maintaining 5+ features in experimental states
+- Maintaining many features in experimental states
 - Constantly switching context between unfinished initiatives
 - Celebrating launches without measuring post-launch success
 
