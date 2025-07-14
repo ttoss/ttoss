@@ -179,7 +179,7 @@ flowchart TD
 **XY Chart Example:**
 
 ```mermaid
-xyChart-beta
+xychart-beta
     title "Queue Length vs Capacity Utilization"
     x-axis "Capacity Utilization %" [50, 60, 70, 80, 90, 95]
     y-axis "Average Queue Size" 0 --> 20
