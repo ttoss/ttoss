@@ -1,7 +1,10 @@
+skipDeploy: true
+
 environments:
   Production:
     acm: arn:aws:acm:us-east-1:483684946879:certificate/7223ba1a-9788-4b1c-8f0d-229e865631a5
     aliases:
       - storybook.ttoss.dev
     cloudfront: true
+    skipDeploy: false
     stackName: TtossStorybook

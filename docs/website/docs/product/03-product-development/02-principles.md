@@ -211,19 +211,173 @@ Choice A is the best economic choice and the most uncertain. Choice C has zero u
 
 The economics of each discrete choice depends on two factors: the probability and the payoff function. We can't make good economic choices if we only pay attention to probabilities. So you need to pay attention to both probability and payoff functions.
 
+### V2: The Principle of Asymmetric Payoffs: Payoff asymmetries enable variability to create economic value.
+
+### V3: The Principle of Optimum Variability: Variability should neither be minimized nor maximized.
+
+### V4: The Principle of Optimum Failure Rate: Fifty percent failure rate is usually optimum for generating information.
+
+### V5: The Principle of Variability Pooling: Overall variation decreases when uncorrelated random tasks are combined.
+
+### V6: The Principle of Short-Term Forecasting: Forecasting becomes exponentially easier at short time-horizons.
+
 ### V7: The Principle of Small Experiments: Many small experiments produce less variation than one big one.
 
 This principle emphasizes that breaking a large risk into many smaller, independent risks reduces the overall variation in outcomes. This idea stems from statistics, where repeated small trials (a binomial distribution) result in a smaller coefficient of variation compared to a single large trial. This is because, as the number of trials increases, the mean grows faster than the standard deviation, lowering the overall risk of failure.
 
 For example, dividing a single high-risk bet (e.g., a 50% chance of losing $15,000) into multiple smaller bets significantly decreases the chance of total loss. Similarly, in product development, launching several smaller innovations rather than one blockbuster product reduces the risk of complete failure, offering more consistent and stable outcomes.
 
+### V8: The Repetition Principle: Repetition reduces variation.
+
+### V9: The Reuse Principle: Reuse reduces variability.
+
+### V10: The Principle of Negative Covariance: We can reduce variance by applying a counterbalancing effect.
+
+### V11: The Buffer Principle: Buffers trade money for variability reduction.
+
+### V12: The Principle of Variability Consequence: Reducing consequences is usually the best way to reduce the cost of variability.
+
+### V13: The Nonlinearity Principle: Operate in the linear range of system performance.
+
+### V14: The Principle of Variability Substitution: Substitute cheap variability for expensive variability.
+
+### V15: The Principle of Iteration Speed: It is usually better to improve iteration speed then defect rate.
+
+### V16: The Principle of Variability Displacement: Move variability to the process stage where its cost is lowest.
+
 ## Reducing Batch Size
+
+### B1: The Batch Size Queueing Principle: Reducing batch size reduces cycle time.
+
+### B2: The Batch Size Variability Principle: Reducing batch sizes reduces variability in flow.
+
+### B3: The Batch Size Feedback Principle: Reducing batch sizes accelerates feedback.
+
+### B4: The Batch Size Risk Principle: Reducing batch size reduces risk.
+
+### B5: The Batch Size Overhead Principle: Reducing batch size reduces overhead.
+
+### B6: The Batch Size Efficiency Principle: Large batches reduce efficiency.
+
+### B7: The Psychology Principle of Batch Size: Large batches inherently lower motivation and urgency.
+
+### B8: The Batch Size Slippage Principle: Large batches cause exponential cost and schedule growth.
+
+### B9: The Batch Size Death Spiral Principle: Large batches lead to even larger batches.
+
+### B10: The Least Common Denominator Principle of Batch Size: The entire batch is limited by its worst element.
+
+### B11: The Principle of Batch Size Economics: Economic batch size is a U-curve optimization.
+
+### B12: The Principle of Low Transaction Cost: Reducing transaction cost per batch lowers overall costs.
+
+### B13: The Principle of Batch Size Diseconomies: Batch size reduction saves much more than you think.
+
+### B14: The Batch Size Packing Principle: Small batches allow finer tuning of capacity utilization.
+
+### B15: The Fluidity Principle: Loose coupling between product subsystems enables small batches.
+
+### B16: The Principle of Transport Batches: The most important batch is the transport batch.
 
 ### B17: The Proximity Principle: Proximity enables small batch sizes.
 
 Proximity reduces the cost of transporting or communicating in small batches, making processes faster and more efficient. In manufacturing, close distances enable one-piece flow and greater flexibility, while in product development, colocated teams benefit from real-time, face-to-face communication. This eliminates delays inherent to asynchronous communication, unlocking the full advantages of small batch sizes and enhancing responsiveness to emerging needs.
 
+### B18: The Run Length Principle: Short run lengths reduce queues.
+
+### B19: The Infrastructure Principle: Good infrastructure enables small batches.
+
+### B20: The Principle of Batch Content: Sequence first that which adds value most cheaply.
+
+### B21: The Batch Size First Principle: Reduce batch size before you attack bottlenecks.
+
+### B22: The Principle of Dynamic Batch Size: Adjust batch size dynamically to respond to changing economics.
+
+## Applying WIP Constraints
+
+### W1: The Principle of WIP Constraints: Constrain WIP to control cycle time and flow.
+
+### W2: The Principle of Rate-Matching: WIP constraints force rate-matching.
+
+### W3: The Principle of Global Constraints: Use global constraints for predictable and permanent bottlenecks.
+
+### W4: The Principle of Local Constraints: If possible, constrain local WIP pools.
+
+### W5: The Batch Size Decoupling Principle: Use WIP ranges to decouple the batch sizes of adjacent processes.
+
+### W6: The Principle of Demand Blocking: Block all demand when WIP reaches its upper limit.
+
+### W7: The Principle of WIP Purging: When WIP is high, purge low-value projects.
+
+### W8: The Principle of Flexible Requirements: Control WIP by shedding requirements.
+
+### W9: The Principle of Resource Pulling: Quickly apply extra resources to an emerging queue.
+
+### W10: The Principle of Part-Time Resources: Use part-time resources for high variability tasks.
+
+### W11: The Big Gun Principle: Pull high-powered experts to emerging bottlenecks.
+
+### W12: The Principle of T-Shaped Resources: Develop people who are deep in one area and broad in many.
+
+### W13: The Principle of Skill Overlap: Cross-train resources at adjacent processes.
+
+### W14: The Mix Change Principle: Use upstream mix changes to regulate queue size.
+
+### W15: The Aging Principle: Watch the outliers.
+
+### W16: The Escalation Principle: Create a preplanned escalation process for outliers.
+
+### W17: The Principle of Progressive Throttling: Increase throttling as you approach the queue limit.
+
+### W18: The Principle of Differential Service: Differentiate quality of service by workstream.
+
+### W19: The Principle of Adaptive WIP Constraints: Adjust WIP constraints as capacity changes.
+
+### W20: The Expansion Control Principle: Prevent uncontrolled expansion of work.
+
+### W21: The Principle of the Critical Queue: Constrain WIP in the section of the system where the queue is most expensive.
+
+### W22: The Cumulative Reduction Principle: Small WIP reductions accumulate.
+
+### W23: The Principle of Visual WIP: Make WIP continuously visible.
+
 ## Controlling Flow Under Uncertainty
+
+### F1: The Principle of Congestion Collapse: When loading becomes too high, we will see a sudden and catastrophic drop in output.
+
+### F2: The Peak Throughput Principle: Control occupancy to sustain high throughput in systems prone to congestion.
+
+### F3: The Principle of Visible Congestion: Use forecasts of expected flow time to make congestion visible.
+
+### F4: The Principle of Congestion Pricing: Use pricing to reduce demand during congested periods.
+
+### F5: The Principle of Periodic Resynchronization: Use a regular cadence to limit the accumulation of variance.
+
+### F6: The Cadence Capacity Margin Principle: Provide sufficient capacity margin to enable cadence.
+
+### F7: The Cadence Reliability Principle: Use cadence to make waiting times predictable.
+
+### F8: The Cadence Batch Size Enabling Principle: Use a regular cadence to enable small batch sizes.
+
+### F9: The Principle of Cadenced Meetings: Schedule frequent meetings using a predictable cadence.
+
+### F10: The Synchronization Capacity Margin Principle: To enable synchronization, provide sufficient capacity margin.
+
+### F11: The Principle of Multiproject Synchronization: Exploit scale economies by synchronizing work from multiple projects.
+
+### F12: The Principle of Cross-Functional Synchronization: Use synchronized events to facilitate cross function trade-offs.
+
+### F13: The Synchronization Queueing Principle: To reduce queues, synchronize the batch size and timing of adjacent processes.
+
+### F14: The Harmonic Principle: Make nested cadences harmonic multiples.
+
+### F15: The SJF Scheduling Principle: When delay costs are homogeneous, do the shortest job first.
+
+### F16: The HDCF Scheduling Principle: When job durations are homogeneous, do the high cost-of-delay job first.
+
+### F17: The WSJF Scheduling Principle: When job durations and delay costs are not homogeneous, use WSJF.
+
+### F18: The Local Priority Principle: Priorities are inherently local.
 
 ### F19: The Round-Robin Principle: When task duration is unknown, share time among tasks.
 
@@ -233,6 +387,22 @@ The [round-robin scheduling](/docs/product/product-development/definitions#round
 
 The key decision is setting the quantum size. If too large, the system behaves like FIFO; if too small, frequent context switching increases overhead. A useful heuristic is setting the quantum so that 80% of tasks are completed within a single time slice.
 
+### F20: The Preemption Principle: Only preempt when switching costs are low.
+
+### F21: The Principle of Work Matching: Use sequence to match jobs to appropriate resources.
+
+### F22: The Principle of Tailored Routing: Select and tailor the sequence of subprocesses to the task at hand.
+
+### F23: The Principle of Flexible Routing: Route work based on the current most economic route.
+
+### F24: The Principle of Alternate Routes: Develop and maintain alternate routes around points of congestion.
+
+### F25: The Principle of Flexible Resources: Use flexible resources to absorb variation.
+
+### F26: The Principle of Late Binding: The later we bind demand to resources, the smoother the flow.
+
+### F27: The Principle of Local Transparency: Make tasks and resources reciprocally visible at adjacent processes.
+
 ### F28: The Principle of Preplanned Flexibility: For fast responses, preplan and invest in flexibility.
 
 Flexibility comes from early decisions and careful planning. By preparing in advance, teams can respond quickly to changes.
@@ -240,6 +410,10 @@ Flexibility comes from early decisions and careful planning. By preparing in adv
 For instance, if maintaining schedules is crucial, pre-identify nonessential requirements, classifying them as mandatory, important, or optional. This way, optional features are loosely coupled with the core architecture, making it easier to drop them if needed.
 
 Similarly, if you anticipate needing to reallocate resources quickly, invest in keeping backup resources informed and ready. This reduces their response time and ensures they can become productive on short notice.
+
+### F29: The Principle of Resource Centralization: Correctly managed, centralized resources can reduce queues.
+
+### F30: The Principle of Flow Conditioning: Reduce variability before a bottleneck.
 
 ## Using Fast Feedback
 
@@ -261,6 +435,8 @@ For instance, a manager focused on monitoring task start times instead of comple
 
 However, these conditions—predictive [leading indicators](/docs/product/product-development/definitions#leading-indicators) and the potential for impactful early interventions—may not always be present. When absent, the benefits of using [leading indicators](/docs/product/product-development/definitions#leading-indicators) can diminish or even become counterproductive.
 
+### FF4: The Principle of Balanced Set Points: Set tripwires at points of equal economic impact.
+
 ### FF5: The Moving Target Principle: Know when to pursue a dynamic goal.
 
 Many companies create harmful control systems by failing to distinguish between static and dynamic goals. They assume that following the plan is always correct and any deviation is negative. In stable environments, like manufacturing, this can be true, where frameworks like Six Sigma prevent deviations to optimize efficiency.
@@ -268,6 +444,8 @@ Many companies create harmful control systems by failing to distinguish between 
 However, in product development, goals constantly shift as better information emerges. Stable goals require preventing deviations and avoiding risk, while dynamic goals demand quick adjustments and reduced inertia to close the gap between the current state and the desired outcome.
 
 Recognizing when your goals are dynamic or stable is crucial, especially in the highly variable world of product development. For example, in developing a new software feature, user feedback may shift priorities, requiring the team to pivot and adjust the goal to meet evolving customer needs.
+
+### FF6: The Exploitation Principle: Exploit unplanned economic opportunities.
 
 ### FF7: The Queue Reduction Principle of Feedback: Fast feedback enables smaller queues.
 
@@ -277,6 +455,8 @@ Fast feedback loops not only provide insights more quickly but also reduce the n
 
 Fast feedback is essential for accelerating learning and making it more precise. It achieves this by shortening the time between cause and effect, reducing noise, and improving clarity in the results. Investing in environments that enhance feedback, like Team New Zealand's (they designed the yacht that won the America's Cup) use of two boats for direct comparison, allows for more cycles of testing and better insights in each iteration. This approach demonstrates that faster feedback not only provides quicker answers but also leads to more efficient and reliable learning processes.
 
+### FF6: The Exploitation Principle: Exploit unplanned economic opportunities.
+
 ### FF10: The First Agility Principle: We don't need long planning horizons when we have a short turning radius.
 
 In product development, agility is the ability to quickly shift focus or direction without needing to plan too far ahead. A smaller, more focused project is much easier to adapt than a large, rigid one. Just like turning a small object is easier than moving a massive one, agile teams can change direction quickly when they have fewer moving parts.
@@ -285,9 +465,35 @@ To maintain this agility, it's important to have enough resources ready to make 
 
 When teams are set up to pivot quickly—by working on manageable projects and keeping resources flexible—they can move faster and more confidently, even in uncertain environments. This short "turning radius" means you don't need to plan everything in detail far into the future, because you can make quick adjustments as new information emerges. This approach reduces the complexity of managing changes and allows teams to operate at a higher speed without losing control.
 
+### FF11: The Batch Size Principle of Feedback: Small batches yield fast feedback.
+
+### FF12: The Signal to Noise Principle: To detect a smaller signal, reduce the noise.
+
+### FF13: The Second Decision Rule Principle: Control the economic logic behind a decision, not the entire decision.
+
+### FF14: The Locality Principle of Feedback: Whenever possible, make feedback local.
+
+### FF15: The Relief Valve Principle: Have a clear, predetermined relief valve.
+
+### FF16: The Principle of Multiple Control Loops: Embed fast control loops inside slow loops.
+
+### FF17: The Principle of Controlled Excursions: Keep deviations within the control range.
+
+### FF18: The Feedforward Principle: Provide advance notice of heavy arrival rates to minimize queues.
+
 ### FF19: The Principle of Colocation: Colocation improves almost all aspects of communication.
 
 Colocation accelerates feedback by fostering real-time, face-to-face communication, which is more efficient and includes both verbal and nonverbal cues (the principle [B17: The Proximity Principle](#b17-the-proximity-principle-proximity-enables-small-batch-sizes) discussed the value of physical proximity). It reduces communication costs, enabling frequent, small-batch interactions and immediate issue resolution. Beyond speed, colocation strengthens team cohesion through informal, non-task-related interactions, helping team members see each other as complex individuals and reducing negative biases. This leads to more cohesive and effective teams. Despite its proven benefits, colocation remains underutilized, but it is one of the simplest and most impactful ways to boost team performance and development speed.
+
+### FF20: The Empowerment Principle of Feedback: Fast feedback gives a sense of control.
+
+### FF21: The Hurry-Up-and-Wait Principle: Large queues make it hard to create urgency.
+
+### FF22: The Amplification Principle: The human element tends to amplify large excursions.
+
+### FF23: The Principle of Overlapping Measurement: To align behaviors, reward people for the work of others.
+
+### FF24: The Attention Principle: Time counts more than money.
 
 ## Achieving Decentralized Control
 
@@ -326,6 +532,8 @@ It's often inefficient to keep centralized resources idle for rare large demands
 For example, cities can train civilians in firefighting and collaborate with nearby fire departments for mutual aid, providing centralized response capacity without maintaining a large permanent fire department.
 
 In product development, some companies use "tiger teams"—highly skilled, experienced employees who handle critical crises but perform their regular duties during normal times. This strategy enables the company to mobilize expert resources quickly in emergencies.
+
+### D6: The Inefficiency Principle: The inefficiency of decentralization can cost less than the value of faster response time.
 
 ### D7: The Principle of Alignment: More value is created with overall alignment than local excellence.
 
@@ -366,3 +574,25 @@ It's not enough to decide to change direction quickly—you must be able to exec
 Additionally, designing flexible product architecture helps absorb changes. For example, segregating uncertainty into specific parts of the design allows for adjustments without affecting the entire system. This enables swift changes without disrupting overall progress.
 
 This ties directly into [Principle FF10: The First Agility Principle](#ff10-the-first-agility-principle-we-dont-need-long-planning-horizons-when-we-have-a-short-turning-radius), which emphasizes that you don't need long-term planning when you can quickly adjust course. A short "turning radius" allows teams to adapt to changing conditions and maintain control, even at high speeds.
+
+### D13: The Principle of Peer-Level Coordination: Tactical coordination should be local.
+
+### D14: The Principle of Flexible Plans: Use simple modular plans.
+
+### D15: The Principle of Tactical Reserves: Decentralize a portion of reserves.
+
+### D16: The Principle of Early Contact: Make early and meaningful contact with the problem.
+
+### D17: The Principle of Decentralized Information: For decentralized decisions, disseminate key information widely.
+
+### D18: The Frequency Response Principle: We can’t respond faster than our frequency response.
+
+### D19: The Quality of Service Principle: When response time is important, measure response time.
+
+### D20: The Second Market Principle: Use internal and external markets to decentralize control.
+
+### D21: The Principle of Regenerative Initiative: Cultivating initiative enables us to use initiative.
+
+### D22: The Principle of Face-to-Face Communication: Exploit the speed and bandwidth of face-to-face communications.
+
+### D23: The Trust Principle: Trust is built through experience.

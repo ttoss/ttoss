@@ -100,6 +100,23 @@ tags:
 3. **Include Practical Examples**: Provide code examples, configurations, or real-world scenarios when applicable
 4. **Cross-Reference Related Content**: Link to related documentation using relative paths
 
+### ttoss Principles Integration
+
+**CRITICAL**: The [Product Development Principles](/docs/product/product-development/principles) documented in `/docs/website/docs/product/03-product-development/02-principles.md` are the **foundational framework** for all ttoss operations and decision-making.
+
+**When Writing Any Documentation:**
+
+- **Reference Principles When Relevant**: Always link to specific principles that support or explain the concepts being documented
+- **Use Principle-Based Reasoning**: When explaining "why" something is done a certain way, reference the underlying economic principles
+- **Maintain Consistency**: Ensure all processes, tools, and guidelines align with and reinforce these core principles
+- **Cross-Reference Format**: Use descriptive links like `[The Economic View](/docs/product/product-development/principles#the-economic-view)` or `[E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)`
+
+**Example Integration:**
+Instead of: "We use small iterations to get faster feedback"
+Write: "We use small iterations to get faster feedback, following [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) and [FF8: The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)"
+
+This approach transforms documentation from isolated instructions into an interconnected system grounded in proven economic principles.
+
 ### Writing Style
 
 - **Use English Language**: All documentation must be written in English to ensure consistency and accessibility for the international team
@@ -202,6 +219,7 @@ Before publishing documentation:
 - [ ] **Cross-Documentation Analysis Complete**: Searched for related content across all sections
 - [ ] **No Redundancy**: Confirmed content doesn't duplicate existing documentation
 - [ ] **Internal Links Added**: Included relevant cross-references to strengthen documentation web
+- [ ] **Principles Integration**: Connected content to relevant ttoss principles with proper links and reasoning
 - [ ] **Consistency Check**: Ensured terminology and messaging aligns with existing content
 - [ ] **Impact Assessment**: Identified other documents that might need updates
 - [ ] **Scannable Format**: Used bullet points, short paragraphs, and clear headers
@@ -301,6 +319,12 @@ When you update `docs.instructions.md`, briefly note:
 This creates a living document that becomes more valuable with each documentation task, without becoming bloated or unwieldy.
 
 ### Recent Updates
+
+**July 23, 2025 - Added ttoss Principles Integration Guidelines**:
+
+- **Pattern Identified**: All ttoss documentation should be grounded in the foundational Product Development Principles to create consistency and economic reasoning across all content
+- **Solution**: Added mandatory integration of ttoss principles in all documentation, with specific guidance on linking, cross-referencing, and principle-based reasoning
+- **Impact**: Documentation will now be interconnected through shared economic principles, providing readers with consistent frameworks for decision-making and enabling better understanding of "why" behind processes and guidelines
 
 **June 30, 2025 - Enhanced Mermaid Diagram Guidelines with XY Charts**:
 
