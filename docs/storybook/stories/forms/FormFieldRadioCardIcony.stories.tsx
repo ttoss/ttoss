@@ -86,7 +86,7 @@ const Template: StoryFn = () => {
 
 export const Example = Template.bind({});
 
-const HorizontalTemplate: StoryFn = () => {
+const VerticalTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -107,4 +107,4 @@ const HorizontalTemplate: StoryFn = () => {
   );
 };
 
-export const Horizontal = HorizontalTemplate.bind({});
+export const Vertical = VerticalTemplate.bind({});
