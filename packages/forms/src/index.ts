@@ -9,6 +9,8 @@ export { FormFieldNumericFormat } from './FormFieldNumericFormat';
 export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldPatternFormat } from './FormFieldPatternFormat';
 export { FormFieldRadio } from './FormFieldRadio';
+export { FormFieldRadioCard } from './FormFieldRadioCard';
+export { FormFieldRadioCardIcony } from './FormFieldRadioCardIcony';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
