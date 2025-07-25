@@ -200,6 +200,7 @@ export const FormField = <
           sx={{
             width: 'full',
             flexDirection: 'column',
+            gap: '2',
           }}
         >
           {label && (
