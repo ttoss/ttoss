@@ -23,7 +23,7 @@ The mathematics are unforgiving: teams operating above 80% capacity utilization 
 
 Most organizations treat team capacity like a manufacturing line: maximize utilization, minimize "waste." This intuition fails catastrophically in knowledge work because of queueing dynamics that don't exist in physical systems.
 
-**The Core Formula**: For any team processing work (modeled as an M/M/1 queue), where ρ represents capacity utilization:
+**The Core Formula**: For any team processing work (modeled as an [M/M/1 queue](https://en.wikipedia.org/wiki/M/M/1_queue)), where ρ represents capacity utilization:
 
 $$
 \text{Cycle Time Multiplier} = \cfrac{1}{1-\rho}
