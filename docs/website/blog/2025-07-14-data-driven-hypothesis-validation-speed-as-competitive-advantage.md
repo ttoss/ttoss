@@ -87,7 +87,7 @@ Learning faster than competitors creates substantial economic advantages when in
 
 Creating fast feedback loops requires intentional system design and organizational capabilities. Teams must optimize for speed of learning, not just speed of delivery.
 
-[Fast feedback loops reduce work-in-progress and delays](/blog/2024/12/17/first-we-aim-for-velocity-driving-fast-and-adaptive-product-development#reducing-queues-for-faster-feedback). By minimizing time between hypothesis formation and data collection, teams operate with smaller experiments, increase experiment frequency, and reduce context switching.
+[Fast feedback loops reduce work-in-progress and delays](/blog/2024/12/17/first-we-aim-for-velocity-driving-fast-and-adaptive-product-development#reducing-queues-for-fast-feedback). By minimizing time between hypothesis formation and data collection, teams operate with smaller experiments, increase experiment frequency, and reduce context switching.
 
 Successful teams invest in systems that make experimentation effortless: feature flags for controlled rollouts, real-time analytics dashboards, automated A/B testing frameworks, and user feedback collection systems. Instead of building complete features before testing, they create minimum viable tests, validate incrementally, and iterate based on data from each feedback cycle.
 
