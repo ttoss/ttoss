@@ -140,6 +140,42 @@ Inventory in product development isn't physical objects but information. Then, i
 
 ### Q3: The Principle of Queueing Capacity Utilization: Capacity utilization increases queues exponentially.
 
+As teams approach 100% capacity utilization, queue lengths grow exponentially, not linearly. This creates a dramatic impact on cycle times and team velocity.
+
+For an M/M/1 queue system, where ρ (rho) represents capacity utilization as a decimal (0.75 = 75% utilization):
+
+**Core Queueing Formulas**:
+
+- $\text{Percent Capacity Utilization} = \rho$
+- $\text{Percent Unblocked Time} = 1 - \rho$
+- $\text{Number of Items in Queue} = \cfrac{\rho^2}{1-\rho}$
+- $\text{Numbers of Items in System} = \cfrac{\rho}{1-\rho}$
+- $\text{Percent Queue Time} = \rho$
+- $\cfrac{\text{Cycle Time}}{\text{Value-Added Time}} = \cfrac{1}{1-\rho}$
+
+Here's how capacity utilization affects average queue size:
+
+```mermaid
+xychart-beta
+    title "Queue Length vs Capacity Utilization"
+    x-axis "Capacity Utilization %" [50, 60, 70, 80, 90, 95]
+    y-axis "Average Queue Size" 0 --> 20
+    line [1, 1.5, 2.3, 4, 9, 19]
+```
+
+| Capacity Utilization | Average Queue Size | Relative Delay | Cycle Time Multiplier |
+| -------------------- | ------------------ | -------------- | --------------------- |
+| 50%                  | 1.0                | 1x             | 2x                    |
+| 60%                  | 1.5                | 1.5x           | 2.5x                  |
+| 70%                  | 2.3                | 2.3x           | 3.3x                  |
+| 80%                  | 4.0                | 4x             | 5x                    |
+| 90%                  | 9.0                | 9x             | 10x                   |
+| 95%                  | 19.0               | 19x            | 20x                   |
+
+Note that as you halve the amount of excess capacity, you roughly double the average queue size. From 70% to 80%, you double the queue size. From 80% to 90%, you double it again. From 90% to 95%, you double it once more.
+
+In practice, it's hard to measure capacity utilization directly. As you shall see in this principles, you find more practical ways to estimate it, like queue size and WIP (work in process).
+
 ### Q4: The Principle of High-Queues States: Most of the damage done by a queue is caused by high-queues states.
 
 Queues spend more time in low-queue states, but high-queue states cause the most harm. When a queue is overloaded, it delays more tasks, increases cycle times, and leads to greater economic waste. Even though high-queue states are less frequent, they have a much bigger impact on overall performance and efficiency.

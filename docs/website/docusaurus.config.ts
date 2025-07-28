@@ -134,6 +134,8 @@ const config: Config = {
         blog: {
           showReadingTime: true,
           editUrl: 'https://github.com/ttoss/ttoss/tree/main/docs/website/',
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
         },
         theme: {
           customCss: './src/css/custom.css',
