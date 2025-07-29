@@ -22,12 +22,10 @@ export const FormFieldRadioCardIcony = <
   sx,
   options,
   tooltip,
-  onChange,
 }: {
   options: FormRadioOption[];
   direction?: 'column' | 'row';
   width?: string;
-  onChange?: (value: string | number) => void;
 } & FormFieldProps<TFieldValues, TName>) => {
   return (
     <FormField
@@ -39,9 +37,6 @@ export const FormFieldRadioCardIcony = <
         const handleOptionClick = (optionValue: string | number) => {
           field.onChange(optionValue);
           field.onBlur();
-          if (onChange) {
-            onChange(optionValue);
-          }
         };
 
         return (
@@ -60,6 +55,8 @@ export const FormFieldRadioCardIcony = <
                 <Box
                   key={key}
                   as="button"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  {...({ type: 'button' } as any)}
                   onClick={() => {
                     return handleOptionClick(option.value);
                   }}
