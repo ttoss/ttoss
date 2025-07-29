@@ -54,7 +54,6 @@ export const FormFieldRadioCardIcony = <
               return (
                 <Box
                   key={key}
-                  as="button"
                   onClick={() => {
                     return handleOptionClick(option.value);
                   }}
