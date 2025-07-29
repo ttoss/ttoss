@@ -125,7 +125,7 @@ This approach transforms documentation from isolated instructions into an interc
 - **Be Concise but Complete**: Provide all necessary information without unnecessary verbosity - favor removing over adding
 - **Technical Accuracy**: Ensure all technical information is accurate and up-to-date
 - **Consistent Terminology**: Use consistent terms throughout documentation
-- **Scannable Format**: Use bullet points, headers, and short paragraphs for easy scanning
+- **Minimize Structural Breaks**: Prefer flowing paragraphs over excessive bullet points and subheadings to improve readability
 
 ### Blog Post Specific Guidelines
 
@@ -210,6 +210,41 @@ xychart-beta
 - **Progressive Disclosure**: Start with high-level concepts before diving into details
 - **Call-to-Action**: End sections with clear next steps when appropriate
 
+### Reducing Visual Fragmentation
+
+**CRITICAL**: Minimize excessive structural breaks that fragment reader attention and interrupt content flow.
+
+**Guidelines for Structural Elements:**
+
+- **Limit Subheadings**: Use H3 (###) and H4 (####) sparingly - prefer flowing paragraphs over fragmenting content into micro-sections
+- **Consolidate Lists**: Transform bullet points into flowing sentences when the information doesn't require explicit enumeration
+- **Combine Related Sections**: Merge closely related topics into cohesive paragraphs rather than separate subsections
+- **Preserve Essential Structure**: Maintain clear H2 (##) sections for major topics, but avoid over-segmentation within them
+
+**When to Use Lists vs. Paragraphs:**
+
+- **Use Lists**: For actionable steps, distinct options, or items that readers need to reference individually
+- **Use Paragraphs**: For explanatory content, connected concepts, or information that flows naturally together
+- **Use Tables**: For structured data comparisons or specifications
+
+**Example Transformation:**
+Instead of:
+
+```markdown
+### Benefits of WIP Limits
+
+- Faster delivery
+- Better quality
+- Improved morale
+- Economic optimization
+```
+
+Write:
+
+```markdown
+WIP limits unlock faster delivery, better quality, improved morale, and economic optimization by constraining work-in-process flow.
+```
+
 ### Quality Checklist
 
 Before publishing documentation:
@@ -223,6 +258,7 @@ Before publishing documentation:
 - [ ] **Consistency Check**: Ensured terminology and messaging aligns with existing content
 - [ ] **Impact Assessment**: Identified other documents that might need updates
 - [ ] **Scannable Format**: Used bullet points, short paragraphs, and clear headers
+- [ ] **Reduced Fragmentation**: Minimized excessive subheadings and consolidated lists into flowing content where appropriate
 - [ ] Front matter is complete and accurate
 - [ ] All internal links work correctly
 - [ ] Code examples are tested and functional
@@ -319,6 +355,12 @@ When you update `docs.instructions.md`, briefly note:
 This creates a living document that becomes more valuable with each documentation task, without becoming bloated or unwieldy.
 
 ### Recent Updates
+
+**July 29, 2025 - Added Visual Fragmentation Reduction Guidelines**:
+
+- **Pattern Identified**: Documentation was becoming fragmented with excessive subheadings and bullet points that interrupted reading flow and made content feel choppy
+- **Solution**: Added specific guidance on minimizing structural breaks, consolidating lists into flowing paragraphs when appropriate, and limiting excessive subsectioning
+- **Impact**: Documentation will now have better readability with improved flow, while maintaining scannability for essential information that truly requires enumeration
 
 **July 23, 2025 - Added ttoss Principles Integration Guidelines**:
 

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.31.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.30.3...@ttoss/forms@0.31.0) (2025-07-25)
+
+### Features
+
+- component form field radio card ([#714](https://github.com/ttoss/ttoss/issues/714)) ([a2ec0a1](https://github.com/ttoss/ttoss/commit/a2ec0a1083ab9f787e1797d3b23172f5cfbc4d46))
+
 ## [0.30.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.30.2...@ttoss/forms@0.30.3) (2025-07-04)
 
 **Note:** Version bump only for package @ttoss/forms
