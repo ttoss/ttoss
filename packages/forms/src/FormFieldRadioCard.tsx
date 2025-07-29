@@ -20,11 +20,13 @@ export const FormFieldRadioCard = <
   sx,
   options,
   tooltip,
+  onChange,
   ...radioProps
 }: {
   options: FormRadioOption[];
   direction?: 'column' | 'row';
   width?: string;
+  onChange?: (value: string | number) => void;
 } & FormFieldProps<TFieldValues, TName> &
   RadioProps) => {
   return (
@@ -64,7 +66,12 @@ export const FormFieldRadioCard = <
                   >
                     <Radio
                       ref={field.ref}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (onChange) {
+                          onChange(e.target.value);
+                        }
+                      }}
                       onBlur={field.onBlur}
                       value={option.value}
                       checked={field.value === option.value}
