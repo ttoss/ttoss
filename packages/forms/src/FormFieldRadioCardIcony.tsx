@@ -54,9 +54,6 @@ export const FormFieldRadioCardIcony = <
               return (
                 <Box
                   key={key}
-                  as="button"
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  {...({ type: 'button' } as any)}
                   onClick={() => {
                     return handleOptionClick(option.value);
                   }}
