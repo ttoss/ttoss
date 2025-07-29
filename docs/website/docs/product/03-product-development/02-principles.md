@@ -333,6 +333,14 @@ Proximity reduces the cost of transporting or communicating in small batches, ma
 
 ### W1: The Principle of WIP Constraints: Constrain WIP to control cycle time and flow.
 
+Limiting work-in-process (WIP) prevents the catastrophic high-queue states described in [Q15: The Diffusion Principle](#q15-the-diffusion-principle-over-time-queues-will-randomly-spin-seriously-out-of-control-and-will-remain-in-this-state-for-long-periods).
+
+WIP constraints work by blocking new work when queue size reaches a predetermined limit (k), creating an M/M/1/k queueing system. This creates three effects, one positive and two negative. The positive is dramatically reduced average [cycle time](/docs/product/product-development/definitions#cycle-time) by preventing queue explosions.
+
+The negative effects are rejected potentially valuable work during congestion periods and reduced capacity utilization when demand is blocked.
+
+The cycle time reduction typically provides **10x more economic value** than the costs of blocked demand and capacity underutilization.
+
 ### W2: The Principle of Rate-Matching: WIP constraints force rate-matching.
 
 ### W3: The Principle of Global Constraints: Use global constraints for predictable and permanent bottlenecks.
@@ -485,7 +493,7 @@ Recognizing when your goals are dynamic or stable is crucial, especially in the 
 
 ### FF7: The Queue Reduction Principle of Feedback: Fast feedback enables smaller queues.
 
-Fast feedback loops not only provide insights more quickly but also reduce the need for work-in-progress (WIP) in a system. By rapidly addressing variability, these loops allow processes to operate with smaller buffers, minimizing delays caused by excessive WIP. Smaller WIP, in turn, reduces overall system delays, enabling even faster feedback. This creates a positive feedback cycle: faster feedback reduces WIP, which lowers delays, further accelerating feedback and improving system efficiency. This principle highlights the compounding benefits of designing systems with rapid feedback mechanisms.
+Fast feedback loops not only provide insights more quickly but also reduce the need for work-in-process (WIP) in a system. By rapidly addressing variability, these loops allow processes to operate with smaller buffers, minimizing delays caused by excessive WIP. Smaller WIP, in turn, reduces overall system delays, enabling even faster feedback. This creates a positive feedback cycle: faster feedback reduces WIP, which lowers delays, further accelerating feedback and improving system efficiency. This principle highlights the compounding benefits of designing systems with rapid feedback mechanisms.
 
 ### FF8: The Fast-Learning Principle: Use fast feedback to make learning faster and more efficient.
 
