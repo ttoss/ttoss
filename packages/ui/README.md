@@ -1,10 +1,6 @@
 # @ttoss/ui
 
-**@ttoss/ui** is a library of React low level components for building user interfaces and defining the design system of your application. It is built on top of [Theme UI: The Design Graph Framework](https://theme-ui.com/), so that you'll be able to consult the [Theme UI documentation](https://theme-ui.com/getting-started) to learn more about the design system and the components.
-
-## ESM Only
-
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
+React component library built on [Theme UI](https://theme-ui.com/) for building consistent, accessible user interfaces with [design token](https://ttoss.dev/docs/design/design-system/design-tokens) integration.
 
 ## Installation
 
@@ -12,101 +8,171 @@ This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908
 pnpm add @ttoss/ui @ttoss/react-icons @emotion/react
 ```
 
-## Quickstart
+**ESM Only**: This package requires ES modules support.
 
-Create a theme object to define the design tokens of your application.
+## Quick Start
 
-```ts
-import type { Theme } from '@ttoss/ui';
-
-export const theme: Theme = {
-  colors: {
-    text: '#000',
-    background: '#fff',
-    primary: '#33e',
-  },
-};
-```
-
-Pass your theme to the `ThemeProvider` component at the root of your application.
+### 1. Setup Theme Provider
 
 ```tsx
-import { Heading, ThemeProvider } from '@ttoss/ui';
-import { theme } from './theme';
+import { ThemeProvider } from '@ttoss/ui';
+import { BruttalTheme } from '@ttoss/theme/Bruttal';
 
 export const App = () => (
-  <ThemeProvider theme={theme}>
-    <Heading as="h1" sx={{ color: 'primary' }}>
-      Hello
-    </Heading>
+  <ThemeProvider theme={BruttalTheme}>
+    <YourAppContent />
   </ThemeProvider>
 );
 ```
 
-Now, you can use the components of the library in your application and access the [design tokens](/docs/design/design-system/design-tokens) defined in your theme through the [`sx` prop](https://theme-ui.com/getting-started#sx-prop).
+### 2. Use Components
 
 ```tsx
-import { Flex, Text, Box, Button } from '@ttoss/ui';
+import { Flex, Text, Button, Box } from '@ttoss/ui';
 
-export const Component = () => {
-  return (
-    <Flex sx={{ flexDirection: 'column' }}>
-      <Text>Text Value</Text>
-      <Button
-        sx={{
-          backgroundColor: 'primary',
-        }}
-      >
-        Button Primary
-      </Button>
+export const Example = () => (
+  <Box sx={{ padding: 'lg' }}>
+    <Text variant="heading">Welcome</Text>
+    <Flex sx={{ gap: 'md', flexDirection: 'column' }}>
+      <Button variant="primary">Get Started</Button>
+      <Text>
+        Access [design
+        tokens](https://ttoss.dev/docs/design/design-system/design-tokens) via
+        the `sx` prop
+      </Text>
     </Flex>
-  );
+  </Box>
+);
+```
+
+### 3. Custom Themes (Optional)
+
+```tsx
+import type { Theme } from '@ttoss/ui';
+
+export const customTheme: Theme = {
+  colors: {
+    primary: '#007acc',
+    background: '#ffffff',
+    text: '#000000',
+  },
 };
 ```
 
-:::note Note
+**Note**: No custom JSX pragma needed when using `sx` prop directly on library components.
 
-You don't need to use the custom `/** @jsxImportSource theme-ui */` pragma if you use the `sx` prop directly on the components of the library.
+## Available Components
 
-:::
+**Browse all components**: [Storybook Documentation](https://storybook.ttoss.dev/?path=/story/ui)
 
-## Components
+### Layout & Structure
 
-You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/ui).
+- `Box` - Basic container with styling capabilities
+- `Flex` - Flexbox container for flexible layouts
+- `Grid` - CSS Grid container for complex layouts
+- `Container` - Centered container with max-width
+- `Stack` - Vertical/horizontal stack layouts
+- `Divider` - Visual content separators
+- `Card` - Content containers with styling
 
-### Global
+### Typography
 
-Wrapper around the Emotion Global component, made Theme UI theme-aware.
+- `Text` - Text display with variants
+- `Heading` - Heading elements (h1-h6)
+- `Paragraph` - Paragraph text blocks
+- `Link` - Styled anchor elements
+- `Label` - Form labels
+
+### Form Controls
+
+- `Button` - Interactive buttons with variants
+- `ActionButton` - Action-specific buttons
+- `IconButton` - Icon-only buttons
+- `CloseButton` - Close/dismiss buttons
+- `Input` - Text input fields
+- `InputNumber` - Numeric input fields
+- `InputPassword` - Password input with reveal
+- `Textarea` - Multi-line text input
+- `Select` - Dropdown selection
+- `Checkbox` - Checkbox controls
+- `Radio` - Radio button controls
+- `Switch` - Toggle switches
+- `Slider` - Range slider controls
+- `SegmentedControl` - Multi-option selector
+
+### Feedback & Status
+
+- `Badge` - Status indicators and labels
+- `Tag` - Tagging and categorization
+- `Spinner` - Loading indicators
+- `LinearProgress` - Progress bars
+- `InfiniteLinearProgress` - Indeterminate progress
+- `Tooltip` - Contextual help text
+- `HelpText` - Form help and validation text
+
+### Media
+
+- `Image` - Responsive image component
+
+### Advanced Features
+
+#### Global Styles
+
+Theme-aware global CSS using Emotion:
 
 ```tsx
 import { Global } from '@ttoss/ui';
 
-export const Provider = (props) => {
-  return (
-    <Global
-      styles={{
-        button: {
-          m: 0,
-          bg: 'primary',
-          color: 'background',
-          border: 0,
-        },
-      }}
-    />
-  );
-};
+export const AppStyles = () => (
+  <Global
+    styles={{
+      body: {
+        margin: 0,
+        fontFamily: 'body',
+        backgroundColor: 'background',
+      },
+    }}
+  />
+);
 ```
 
-## Misc
-
-### keyframes
+#### Animations
 
 ```tsx
 import { Box, keyframes } from '@ttoss/ui';
 
-const fadeIn = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
+const fadeIn = keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
 
-export const Component = (props) => {
-  return <Box {...props} sx={{ animation: `${fadeIn} 1s backwards` }} />;
+export const AnimatedBox = () => (
+  <Box sx={{ animation: `${fadeIn} 1s ease-in` }}>Animated content</Box>
+);
+```
+
+#### Theme Access
+
+```tsx
+import { useTheme } from '@ttoss/ui';
+
+export const CustomComponent = () => {
+  const { theme } = useTheme();
+  const primaryColor = theme.colors.primary;
+
+  return <div style={{ color: primaryColor }}>Themed content</div>;
 };
 ```
+
+## Integration
+
+- **Design System**: Part of the [ttoss Design System](https://ttoss.dev/docs/design/design-system)
+- **Theme Integration**: Uses [semantic tokens](https://ttoss.dev/docs/design/design-system/design-tokens/semantic-tokens)
+- **Accessibility**: Built-in WCAG compliance
+- **TypeScript**: Full type safety with Theme UI integration
+
+## Related Packages
+
+- **[@ttoss/theme](https://ttoss.dev/docs/modules/packages/theme)**: Pre-built themes (Bruttal, Oca)
+- **[@ttoss/components](https://ttoss.dev/docs/modules/packages/components)**: Higher-level composed components
+- **[@ttoss/react-icons](https://ttoss.dev/docs/modules/packages/react-icons)**: Icon library integration

@@ -3,7 +3,6 @@
   "version": "independent",
   "npmClient": "pnpm",
   "stream": true,
-  "all": true,
   "command": {
     "publish": {
       "allowBranch": "main",
