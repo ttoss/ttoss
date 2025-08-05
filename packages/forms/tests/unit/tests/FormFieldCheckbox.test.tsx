@@ -93,6 +93,7 @@ test('multiples checkboxes cannot interfere with each other', async () => {
    * Changing one checkbox should not affect the other
    */
   await userEvent.click(checkboxesTexts[1]);
+  await userEvent.click(submitButtons[1]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
@@ -100,6 +101,7 @@ test('multiples checkboxes cannot interfere with each other', async () => {
   });
 
   await userEvent.click(checkboxesTexts[1]);
+  await userEvent.click(submitButtons[1]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
@@ -107,6 +109,7 @@ test('multiples checkboxes cannot interfere with each other', async () => {
   });
 
   await userEvent.click(checkboxesTexts[0]);
+  await userEvent.click(submitButtons[0]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: false },
@@ -114,6 +117,7 @@ test('multiples checkboxes cannot interfere with each other', async () => {
   });
 
   await userEvent.click(checkboxesTexts[0]);
+  await userEvent.click(submitButtons[0]);
 
   expect(optimizationsData).toEqual({
     '0': { isActivated: true },
