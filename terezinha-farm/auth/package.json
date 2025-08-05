@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/auth",
-  "version": "0.3.51",
+  "version": "0.3.52",
   "scripts": {
     "deploy": "carlin deploy"
   },

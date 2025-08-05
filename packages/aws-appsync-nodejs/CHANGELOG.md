@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.25](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.24...@ttoss/aws-appsync-nodejs@1.8.25) (2025-08-05)
+
+**Note:** Version bump only for package @ttoss/aws-appsync-nodejs
+
 ## [1.8.24](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.23...@ttoss/aws-appsync-nodejs@1.8.24) (2025-07-04)
 
 **Note:** Version bump only for package @ttoss/aws-appsync-nodejs
