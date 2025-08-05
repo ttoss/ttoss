@@ -33,10 +33,10 @@ const importSchemaComposer = async ({
 
   const parsedPackageJson = JSON.parse(packageJson);
 
-  const dependencies = Object.keys([
+  const dependencies = Object.keys({
     ...(parsedPackageJson.dependencies || {}),
     ...(parsedPackageJson.devDependencies || {}),
-  ]).filter((dependency) => {
+  }).filter((dependency) => {
     /**
      * ttoss packages cannot be market as external because it'd break the CI.
      * On CI, ttoss packages point to the TS main file, not the compiled
