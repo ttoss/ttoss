@@ -31,30 +31,33 @@ const importSchemaComposer = async ({
 
   const packageJson = await fs.promises.readFile(packageJsonPath, 'utf-8');
 
-  const dependencies = Object.keys(JSON.parse(packageJson).dependencies).filter(
-    (dependency) => {
-      /**
-       * ttoss packages cannot be market as external because it'd break the CI.
-       * On CI, ttoss packages point to the TS main file, not the compiled
-       * ones, causing the following error:
-       * Unknown file extension ".ts" for /ttoss/packages/graphql-api/src/index.ts
-       */
-      if (isMonorepo && dependency.startsWith('@ttoss/')) {
-        return false;
-      }
+  const parsedPackageJson = JSON.parse(packageJson);
 
-      /**
-       * graphql cannot be marked as external because it breaks the build,
-       * raising the following error:
-       * Error: Dynamic require of "graphql" is not supported
-       */
-      if (dependency === 'graphql') {
-        return false;
-      }
-
-      return true;
+  const dependencies = Object.keys([
+    ...(parsedPackageJson.dependencies || {}),
+    ...(parsedPackageJson.devDependencies || {}),
+  ]).filter((dependency) => {
+    /**
+     * ttoss packages cannot be market as external because it'd break the CI.
+     * On CI, ttoss packages point to the TS main file, not the compiled
+     * ones, causing the following error:
+     * Unknown file extension ".ts" for /ttoss/packages/graphql-api/src/index.ts
+     */
+    if (isMonorepo && dependency.startsWith('@ttoss/')) {
+      return false;
     }
-  );
+
+    /**
+     * graphql cannot be marked as external because it breaks the build,
+     * raising the following error:
+     * Error: Dynamic require of "graphql" is not supported
+     */
+    if (dependency === 'graphql') {
+      return false;
+    }
+
+    return true;
+  });
 
   const result = await esbuild.build({
     bundle: true,

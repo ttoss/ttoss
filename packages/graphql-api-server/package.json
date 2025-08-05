@@ -37,7 +37,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
     "@types/supertest": "^6.0.2",
-    "graphql": "^16.9.0",
+    "graphql": "^16.11.0",
     "jest": "^30.0.4",
     "supertest": "^7.0.0",
     "tsup": "^8.5.0"
