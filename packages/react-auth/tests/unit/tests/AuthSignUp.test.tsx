@@ -18,10 +18,10 @@ test('Should render the correct error message for password requirement', async (
   render(<AuthSignUp {...{ onSignUp, onReturnToSignIn }} />);
 
   const password = screen.getByLabelText('Password');
-  const buttonSubmit = screen.getByLabelText('submit-button');
+  const confirmPassword = screen.getByLabelText('Confirm password');
 
   await user.type(password, 'pass');
-  await user.click(buttonSubmit);
+  await user.type(confirmPassword, 'pass');
 
   expect(
     screen.getByText('Password requires 8 characters')
@@ -51,6 +51,8 @@ test('Should call the onSubmit function if click on the Signup button with the f
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);
   await user.type(confirmPassword, userForm.password);
+
+  await user.tab();
 
   await user.click(buttonSubmit);
 
@@ -128,6 +130,8 @@ describe('sign up terms', () => {
     await user.type(password, userForm.password);
     await user.type(confirmPassword, userForm.password);
 
+    await user.tab();
+
     await user.click(buttonSubmit);
 
     expect(onSignUp).toHaveBeenCalledTimes(0);
@@ -165,6 +169,8 @@ describe('sign up terms', () => {
     await user.type(confirmPassword, userForm.password);
     await user.click(checkbox);
 
+    await user.tab();
+
     await user.click(buttonSubmit);
 
     expect(onSignUp).toHaveBeenCalledTimes(1);
@@ -199,6 +205,8 @@ describe('sign up terms', () => {
     await user.type(emailInput, userForm.email);
     await user.type(password, userForm.password);
     await user.type(confirmPassword, userForm.password);
+
+    await user.tab();
 
     await user.click(buttonSubmit);
 
@@ -236,6 +244,8 @@ describe('sign up terms', () => {
     await user.type(password, userForm.password);
     await user.type(confirmPassword, userForm.password);
     await user.click(checkbox);
+
+    await user.tab();
 
     await user.click(buttonSubmit);
 
