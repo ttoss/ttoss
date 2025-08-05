@@ -25,10 +25,10 @@
   "sideEffects": false,
   "dependencies": {
     "@graphql-codegen/core": "^4.0.2",
-    "@graphql-codegen/typescript": "^4.1.2",
+    "@graphql-codegen/typescript": "^4.1.6",
     "commander": "^14.0.0",
-    "esbuild": "^0.25.5",
-    "graphql": "^16.9.0",
+    "esbuild": "^0.25.8",
+    "graphql": "^16.11.0",
     "npmlog": "^7.0.1"
   },
   "peerDependencies": {

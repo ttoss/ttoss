@@ -1,7 +1,6 @@
-import { AuthSignIn } from 'src/AuthSignIn';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
 import { signIn } from 'aws-amplify/auth';
-import { waitFor } from '@ttoss/test-utils';
+import { AuthSignIn } from 'src/AuthSignIn';
 
 /**
  * mock signIn aws-amplify to return value RESET_PASSWORD
@@ -57,6 +56,9 @@ test('Should show error notification if the nextStep.signInStep is RESET_PASSWOR
 
   await user.type(emailInput, userForm.username);
   await user.type(password, userForm.password);
+
+  await user.tab(); // blur password field
+
   await user.click(buttonSubmit);
 
   await waitFor(() => {

@@ -24,7 +24,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.25.8",
     "import-sync": "^2.2.2",
     "js-yaml": "^4.1.0"
   },

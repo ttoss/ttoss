@@ -43,6 +43,9 @@ test('should call Amplify Auth.signIn', async () => {
 
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
+
+  await user.tab(); // blur password field
+
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.signIn).toHaveBeenCalledWith({
@@ -73,6 +76,9 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
   await user.type(screen.getByLabelText('Confirm password'), password);
+
+  await user.tab();
+
   await user.click(screen.getByLabelText('submit-button'));
 
   expect(amplifyAuth.signUp).toHaveBeenCalledWith({
@@ -128,6 +134,9 @@ test('should render confirmation code if email not confirmed', async () => {
 
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
+
+  await user.tab();
+
   await user.click(screen.getByLabelText('submit-button'));
 
   await waitFor(() => {

@@ -28,6 +28,8 @@ test('Should not call the onSubmit function if click on the login button without
 
   await user.click(submitButton);
 
+  await user.tab();
+
   expect(onSignIn).toHaveBeenCalledTimes(0);
 });
 
@@ -48,6 +50,8 @@ test('Should call the onSubmit function if click on the login button with the fi
 
   await user.type(emailInput, userForm.email);
   await user.type(password, userForm.password);
+
+  await user.tab();
 
   await user.click(buttonSubmit);
 
