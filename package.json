@@ -25,22 +25,26 @@
     "syncpack:fix": "syncpack fix-mismatches",
     "syncpack:list": "syncpack list-mismatches"
   },
+  "resolutions": {
+    "@types/parse-path": "7.0.3",
+    "@types/json-stable-stringify": "1.1.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
-    "@lerna-lite/changed": "^4.4.1",
-    "@lerna-lite/cli": "^4.4.1",
-    "@lerna-lite/list": "^4.4.1",
-    "@lerna-lite/version": "^4.4.1",
+    "@lerna-lite/changed": "^4.6.2",
+    "@lerna-lite/cli": "^4.6.2",
+    "@lerna-lite/list": "^4.6.2",
+    "@lerna-lite/version": "^4.6.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.29.0",
+    "eslint": "^9.32.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "prettier": "^3.5.3",
+    "lint-staged": "^16.1.4",
+    "prettier": "^3.6.2",
     "syncpack": "13.0.4",
-    "turbo": "^2.5.4",
+    "turbo": "^2.5.5",
     "typescript": "~5.7.2"
   },
   "keywords": [],
@@ -48,5 +52,5 @@
     "node": "^22.0.0",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.14.0"
 }
