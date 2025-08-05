@@ -1,8 +1,9 @@
-import * as typescriptConfig from './typescriptConfig';
-import { Plugin, PluginBuild } from 'esbuild';
-import { configCreator } from './configCreator';
 import { transformAsync } from '@babel/core';
+import { Plugin, PluginBuild } from 'esbuild';
 import type { Options } from 'tsup';
+
+import { configCreator } from './configCreator';
+import * as typescriptConfig from './typescriptConfig';
 
 /**
  * This plugin is used to extract messages from source code and compile them,
