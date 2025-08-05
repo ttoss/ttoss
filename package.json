@@ -25,9 +25,11 @@
     "syncpack:fix": "syncpack fix-mismatches",
     "syncpack:list": "syncpack list-mismatches"
   },
-  "resolutions": {
-    "@types/parse-path": "7.0.3",
-    "@types/json-stable-stringify": "1.1.0"
+  "pnpm": {
+    "overrides": {
+      "@types/parse-path": "7.0.3",
+      "@types/json-stable-stringify": "1.1.0"
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
