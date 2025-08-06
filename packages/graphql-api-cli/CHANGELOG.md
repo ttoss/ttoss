@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-cli@0.9.2...@ttoss/graphql-api-cli@0.9.3) (2025-08-06)
+
+### Bug Fixes
+
+- esbuild build ts ([#721](https://github.com/ttoss/ttoss/issues/721)) ([13783ef](https://github.com/ttoss/ttoss/commit/13783efe5ad42c30463e300dfff96896c693cb14))
+- graphql api cli ([cda4465](https://github.com/ttoss/ttoss/commit/cda4465117e192440fed51bbd5c00469066b62ba))
+
 ## [0.9.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-cli@0.9.1...@ttoss/graphql-api-cli@0.9.2) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/graphql-api-cli

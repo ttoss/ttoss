@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.13](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.12...@terezinha-farm/api@0.19.13) (2025-08-06)
+
+### Bug Fixes
+
+- graphql api cli ([cda4465](https://github.com/ttoss/ttoss/commit/cda4465117e192440fed51bbd5c00469066b62ba))
+
 ## [0.19.12](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.11...@terezinha-farm/api@0.19.12) (2025-08-05)
 
 **Note:** Version bump only for package @terezinha-farm/api
