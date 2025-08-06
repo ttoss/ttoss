@@ -158,9 +158,9 @@ Here's how capacity utilization affects average queue size:
 ```mermaid
 xychart-beta
     title "Queue Length vs Capacity Utilization"
-    x-axis "Capacity Utilization %" [50, 60, 70, 80, 90, 95]
+    x-axis "Capacity Utilization %" [50, 55, 60, 65, 70, 75, 80, 85, 90, 95]
     y-axis "Average Queue Size" 0 --> 20
-    line [1, 1.5, 2.3, 4, 9, 19]
+    line [1, 1.22, 1.5, 1.86, 2.33, 3, 4, 5.67, 9, 19]
 ```
 
 | Capacity Utilization | Average Queue Size | Relative Delay | Cycle Time Multiplier |

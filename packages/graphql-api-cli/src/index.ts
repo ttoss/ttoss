@@ -12,8 +12,6 @@ import pkg from '../package.json';
 
 const logPrefix = 'graphql-api';
 
-const isMonorepo = process.env.TTOSS_MONOREPO === 'true';
-
 const importSchemaComposer = async ({
   external,
   schemaComposerPath,
@@ -35,18 +33,7 @@ const importSchemaComposer = async ({
 
   const dependencies = Object.keys({
     ...(parsedPackageJson.dependencies || {}),
-    ...(parsedPackageJson.devDependencies || {}),
   }).filter((dependency) => {
-    /**
-     * ttoss packages cannot be market as external because it'd break the CI.
-     * On CI, ttoss packages point to the TS main file, not the compiled
-     * ones, causing the following error:
-     * Unknown file extension ".ts" for /ttoss/packages/graphql-api/src/index.ts
-     */
-    if (isMonorepo && dependency.startsWith('@ttoss/')) {
-      return false;
-    }
-
     /**
      * graphql cannot be marked as external because it breaks the build,
      * raising the following error:
@@ -68,6 +55,12 @@ const importSchemaComposer = async ({
     platform: 'node',
     target: 'ES2023',
     treeShaking: true,
+    loader: {
+      '.ts': 'ts',
+      '.tsx': 'tsx',
+    },
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
+    tsconfig: path.resolve(process.cwd(), 'tsconfig.json'),
   });
 
   if (result.errors.length > 0) {

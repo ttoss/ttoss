@@ -1,5 +1,4 @@
 export ENVIRONMENT=Production
-export TTOSS_MONOREPO=true
 
 # Fetch tags.
 git fetch --tags --quiet

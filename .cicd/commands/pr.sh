@@ -1,5 +1,3 @@
-export TTOSS_MONOREPO=true
-
 # Retrieve the latest tag.
 export LATEST_TAG=$(git describe --tags --abbrev=0)
 
