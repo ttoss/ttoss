@@ -36,6 +36,14 @@ const importSchemaComposer = async ({
     for (const [dependency, version] of Object.entries<string>(
       parsedPackageJson.dependencies || {}
     )) {
+      /**
+       * Avoid issue:
+       * Error: Dynamic require of "graphql" is not supported
+       */
+      if (dependency === 'graphql') {
+        continue;
+      }
+
       if (version.startsWith('file:')) {
         continue; // Ignore local file dependencies
       }
