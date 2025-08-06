@@ -57,15 +57,13 @@ ttoss-graphql-api build-schema --directory tests
 
 ### External Dependencies (`--external`)
 
-Control which dependencies are marked as external during the bundling process:
+Control which additional dependencies are marked as external during the bundling process:
 
 ```bash
 ttoss-graphql-api build-schema --external graphql-compose,@aws-sdk/client-dynamodb
 ```
 
-**Default behavior:** Automatically excludes all dependencies and devDependencies from your `package.json`, except:
-
-- `graphql` package (required for proper schema generation)
+**Default behavior:** Automatically excludes all package.json dependencies (except workspace packages) and appends any specified external dependencies to this list. Workspace dependencies (those with `workspace:` prefix) are automatically excluded from external handling to prevent bundling issues in monorepo environments.
 
 ## Integration Examples
 
@@ -120,7 +118,9 @@ ttoss-graphql-api build-schema \
 
 **ESM Only**: This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c) and requires Node.js with ES modules support.
 
-**Bundling Process**: Uses esbuild to bundle your schema composer and its dependencies, ensuring all imports are resolved correctly before schema extraction.
+**Bundling Process**: Uses esbuild to bundle your schema composer and its dependencies, ensuring all imports are resolved correctly before schema extraction. Automatically excludes all package.json dependencies as external (except workspace packages), with support for additional external dependencies via the `--external` option.
+
+**Workspace Dependencies**: Dependencies with `workspace:` prefix are automatically excluded from external handling to prevent TypeScript import errors in monorepo environments where workspace packages may export `.ts` files directly.
 
 **Type Generation**: Leverages [@graphql-codegen/typescript](https://www.npmjs.com/package/@graphql-codegen/typescript) for precise TypeScript type generation with interface declarations and preserved naming conventions.
 

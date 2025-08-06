@@ -13,7 +13,7 @@ import pkg from '../package.json';
 const logPrefix = 'graphql-api';
 
 const importSchemaComposer = async ({
-  external,
+  external = [],
   schemaComposerPath,
 }: {
   external?: string[];
@@ -27,40 +27,52 @@ const importSchemaComposer = async ({
 
   const packageJsonPath = path.resolve(process.cwd(), 'package.json');
 
-  const packageJson = await fs.promises.readFile(packageJsonPath, 'utf-8');
+  const getPackageDependencies = (packageJsonPath: string) => {
+    const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
+    const parsedPackageJson = JSON.parse(packageJson);
 
-  const parsedPackageJson = JSON.parse(packageJson);
+    const dependencies: string[] = [];
 
-  const dependencies = Object.keys({
-    ...(parsedPackageJson.dependencies || {}),
-  }).filter((dependency) => {
-    /**
-     * graphql cannot be marked as external because it breaks the build,
-     * raising the following error:
-     * Error: Dynamic require of "graphql" is not supported
-     */
-    if (dependency === 'graphql') {
-      return false;
+    for (const [dependency, version] of Object.entries<string>(
+      parsedPackageJson.dependencies || {}
+    )) {
+      if (version.startsWith('file:')) {
+        continue; // Ignore local file dependencies
+      }
+
+      /**
+       * Ignore workspace dependencies. This is useful in monorepos because
+       * those dependencies may export a ".ts" file and "import" will fail
+       * with the error 'Unknown file extension ".ts"'.
+       */
+      if (version.startsWith('workspace:')) {
+        continue;
+      }
+
+      dependencies.push(dependency);
     }
 
-    return true;
-  });
+    return dependencies;
+  };
+
+  const dependencies = getPackageDependencies(packageJsonPath)
+    // Remove duplicates
+    .filter((dep, index, self) => {
+      return self.indexOf(dep) === index;
+    })
+    .sort((a, b) => {
+      return a.localeCompare(b);
+    });
 
   const result = await esbuild.build({
     bundle: true,
     entryPoints: [schemaComposerPath],
-    external: external || dependencies,
+    external: [...external, ...dependencies],
     format: 'esm',
     outfile,
     platform: 'node',
     target: 'ES2023',
     treeShaking: true,
-    loader: {
-      '.ts': 'ts',
-      '.tsx': 'tsx',
-    },
-    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
-    tsconfig: path.resolve(process.cwd(), 'tsconfig.json'),
   });
 
   if (result.errors.length > 0) {
