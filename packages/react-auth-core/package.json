@@ -1,0 +1,73 @@
+{
+  "name": "@ttoss/react-auth-core",
+  "version": "0.1.0",
+  "description": "Core authentication components and abstractions for React apps.",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-auth-core"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "i18n"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "i18n": "ttoss-i18n",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "react-error-boundary": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/logger": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@ttoss/components": "workspace:^",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/logger": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "@types/react": "^19.1.8",
+    "jest": "^30.0.4",
+    "react": "^19.1.0",
+    "tsup": "^8.5.0"
+  },
+  "keywords": [
+    "React",
+    "UI components",
+    "authentication",
+    "core"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/esm/index.js"
+      }
+    },
+    "provenance": true
+  }
+}
