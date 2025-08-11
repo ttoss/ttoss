@@ -1,7 +1,17 @@
-import { jestConfig } from '@ttoss/config';
+import { jestUnitConfig } from '@ttoss/config';
 
-const config = jestConfig({
-  setupFilesAfterEnv: ['<rootDir>/setupTests.tsx'],
+const config = jestUnitConfig({
+  coverageThreshold: {
+    global: {
+      branches: 50,
+      functions: 50,
+      lines: 50,
+      statements: 50,
+    },
+  },
+  setupFilesAfterEnv: ['./setupTests.tsx'],
+  testEnvironment: 'jsdom',
+  transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
 });
 
 export default config;

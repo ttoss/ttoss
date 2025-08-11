@@ -26,10 +26,6 @@ export const AuthProvider = (props: AuthProviderProps) => {
     isAuthenticated: undefined,
   });
 
-  const [screen, setScreen] = React.useState<AuthScreen>(
-    props.initialScreen || { value: 'signIn', context: {} }
-  );
-
   const signOut = React.useCallback(async () => {
     await props.signOut?.();
     setAuthState({
@@ -37,7 +33,6 @@ export const AuthProvider = (props: AuthProviderProps) => {
       tokens: null,
       isAuthenticated: false,
     });
-    setScreen({ value: 'signIn', context: {} });
   }, [props]);
 
   if (authState.isAuthenticated === undefined) {
@@ -51,11 +46,17 @@ export const AuthProvider = (props: AuthProviderProps) => {
         isAuthenticated: authState.isAuthenticated ?? false,
         user: authState.user,
         tokens: authState.tokens,
-        screen,
-        setScreen,
       }}
     >
       {props.children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = (): AuthContextValue => {
+  const context = React.useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

@@ -1,6 +1,4 @@
-// Core components
 export { Auth, type AuthProps } from './Auth';
-export { AuthCard, type LogoContextProps, LogoProvider } from './AuthCard';
 export {
   AuthConfirmSignUp,
   type AuthConfirmSignUpProps,
@@ -14,21 +12,15 @@ export {
   type AuthForgotPasswordResetPasswordProps,
 } from './AuthForgotPasswordResetPassword';
 export { AuthFullScreen, type AuthFullScreenProps } from './AuthFullScreen';
-export { AuthProvider, type AuthProviderProps } from './AuthProvider';
+export { AuthProvider, type AuthProviderProps, useAuth } from './AuthProvider';
 export { AuthSignIn, type AuthSignInProps } from './AuthSignIn';
 export { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
 export { ErrorBoundary } from './ErrorBoundary';
-
-// Hooks
-export { useAuth } from './useAuth';
-
-// Types
 export type {
   AuthContextValue,
   AuthScreen,
   AuthTokens,
   AuthUser,
-  AuthProvider as IAuthProvider,
   OnConfirmSignUp,
   OnConfirmSignUpInput,
   OnForgotPassword,
@@ -41,3 +33,4 @@ export type {
   OnSignUpInput,
   SignUpTerms,
 } from './types';
+export { useAuthScreen } from './useAuthScreen';

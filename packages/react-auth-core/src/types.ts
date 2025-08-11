@@ -1,26 +1,31 @@
 // Core authentication types
+export type AuthContextValue = {
+  signOut?: () => Promise<void>;
+  isAuthenticated: boolean;
+  user: AuthUser | null;
+  tokens: AuthTokens | null;
+};
+
 export type AuthUser = {
   id: string;
   email: string;
   emailVerified?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
 } | null;
 
 export type AuthTokens = {
-  idToken: string;
   accessToken: string;
-  refreshToken: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  refreshToken?: string;
+  idToken?: string;
+  expiresIn?: number;
+  expiresAt?: number;
 } | null;
 
 export type AuthScreen =
-  | { value: 'signIn'; context: { email?: string } }
-  | { value: 'signUp'; context: Record<string, never> }
+  | { value: 'signIn' }
+  | { value: 'signUp' }
   | { value: 'confirmSignUp'; context: { email: string } }
   | { value: 'resendSignUpCode'; context: { email: string } }
-  | { value: 'forgotPassword'; context: Record<string, never> }
+  | { value: 'forgotPassword' }
   | { value: 'confirmResetPassword'; context: { email: string } };
 
 // Input types for authentication actions

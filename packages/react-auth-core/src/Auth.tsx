@@ -33,7 +33,7 @@ type AuthLogicProps = {
 
 const AuthLogic = (props: AuthLogicProps) => {
   const onGoToSignIn = () => {
-    props.setScreen({ value: 'signIn', context: {} });
+    props.setScreen({ value: 'signIn' });
   };
 
   const onGoToSignUp = React.useCallback(() => {
@@ -41,7 +41,7 @@ const AuthLogic = (props: AuthLogicProps) => {
       return undefined;
     }
 
-    props.setScreen({ value: 'signUp', context: {} });
+    props.setScreen({ value: 'signUp' });
   }, [props]);
 
   const onGoToForgotPassword = React.useCallback(() => {
@@ -49,7 +49,7 @@ const AuthLogic = (props: AuthLogicProps) => {
       return undefined;
     }
 
-    props.setScreen({ value: 'forgotPassword', context: {} });
+    props.setScreen({ value: 'forgotPassword' });
   }, [props]);
 
   if (props.screen.value === 'signIn') {
@@ -118,7 +118,6 @@ type AuthLayout = {
 export type AuthProps = LogoContextProps &
   AuthLogicProps & {
     layout?: AuthLayout;
-    initialScreen?: AuthScreen;
   };
 
 export const Auth = (props: AuthProps) => {
@@ -128,11 +127,11 @@ export const Auth = (props: AuthProps) => {
     return (
       <LogoProvider logo={props.logo}>
         <ErrorBoundary>
-          <AuthLogic signUpTerms={props.signUpTerms} />
+          <AuthLogic {...props} />
         </ErrorBoundary>
       </LogoProvider>
     );
-  }, [props.logo, props.signUpTerms]);
+  }, [props]);
 
   if (layout.fullScreen) {
     if (layout.sideContentPosition) {
