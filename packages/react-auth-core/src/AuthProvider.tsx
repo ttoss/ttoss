@@ -1,43 +1,73 @@
+import { useNotifications } from '@ttoss/react-notifications';
 import * as React from 'react';
 
-import type { AuthContextValue, AuthScreen, AuthState } from './types';
+import type { AuthContextValue, AuthData, AuthScreen } from './types';
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);
 
 export type AuthProviderProps = {
   children: React.ReactNode;
   initialScreen?: AuthScreen;
+  getAuthData?: () => Promise<AuthData | null>;
   signOut?: () => Promise<void>;
 };
 
+const UNAUTHENTICATED_USER: AuthData = {
+  user: null,
+  tokens: null,
+  isAuthenticated: false,
+};
+
 export const AuthProvider = (props: AuthProviderProps) => {
-  const [authState, setAuthState] = React.useState<AuthState>({
+  const { getAuthData, signOut: signOutProp } = props;
+
+  const { setLoading } = useNotifications();
+
+  const [authData, setAuthData] = React.useState<AuthData>({
     user: null,
     tokens: null,
     isAuthenticated: undefined,
   });
 
-  const signOut = React.useCallback(async () => {
-    await props.signOut?.();
-    setAuthState({
-      user: null,
-      tokens: null,
-      isAuthenticated: false,
-    });
-  }, [props]);
+  /**
+   * Update the loading state based on authentication status.
+   */
+  React.useEffect(() => {
+    setLoading(authData.isAuthenticated === undefined);
+  }, [authData.isAuthenticated, setLoading]);
 
-  // if (authState.isAuthenticated === undefined) {
-  //   return null; // Loading state
-  // }
+  /**
+   * Fetch the authentication data when the component mounts.
+   */
+  React.useEffect(() => {
+    const fetchAuthData = async () => {
+      const data = await getAuthData?.();
+      if (data) {
+        setAuthData(data);
+      } else {
+        setAuthData(UNAUTHENTICATED_USER);
+      }
+    };
+    fetchAuthData();
+  }, [getAuthData]);
+
+  const signOut = React.useCallback(async () => {
+    await signOutProp?.();
+    setAuthData(UNAUTHENTICATED_USER);
+  }, [signOutProp]);
+
+  if (authData.isAuthenticated === undefined) {
+    return null; // Loading state
+  }
 
   return (
     <AuthContext.Provider
       value={{
         signOut,
-        isAuthenticated: authState.isAuthenticated ?? false,
-        user: authState.user,
-        tokens: authState.tokens,
-        setAuthState,
+        isAuthenticated: authData.isAuthenticated ?? false,
+        user: authData.user,
+        tokens: authData.tokens,
+        setAuthData,
       }}
     >
       {props.children}

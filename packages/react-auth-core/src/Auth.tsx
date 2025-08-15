@@ -36,6 +36,19 @@ type AuthLogicProps = {
 };
 
 const AuthLogic = (props: AuthLogicProps) => {
+  const {
+    screen,
+    setScreen,
+    onSignUp,
+    onForgotPassword,
+    onSignIn,
+    onConfirmSignUpCheckEmail,
+    onConfirmSignUpWithCode,
+    onForgotPasswordResetPassword,
+    passwordMinimumLength,
+    signUpTerms,
+  } = props;
+
   const { clearNotifications, setLoading } = useNotifications();
 
   /**
@@ -43,7 +56,7 @@ const AuthLogic = (props: AuthLogicProps) => {
    */
   React.useEffect(() => {
     clearNotifications();
-  }, [props.screen.value, clearNotifications]);
+  }, [screen.value, clearNotifications]);
 
   /**
    * Clear notifications when the component unmounts
@@ -53,24 +66,24 @@ const AuthLogic = (props: AuthLogicProps) => {
   }, [clearNotifications]);
 
   const onGoToSignIn = () => {
-    props.setScreen({ value: 'signIn' });
+    setScreen({ value: 'signIn' });
   };
 
   const onGoToSignUp = React.useCallback(() => {
-    if (!props.onSignUp) {
+    if (!onSignUp) {
       return undefined;
     }
 
-    props.setScreen({ value: 'signUp' });
-  }, [props]);
+    setScreen({ value: 'signUp' });
+  }, [onSignUp, setScreen]);
 
   const onGoToForgotPassword = React.useCallback(() => {
-    if (!props.onForgotPassword) {
+    if (!onForgotPassword) {
       return undefined;
     }
 
-    props.setScreen({ value: 'forgotPassword' });
-  }, [props]);
+    setScreen({ value: 'forgotPassword' });
+  }, [onForgotPassword, setScreen]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const notificationsWrapper = (fn: any) => {
@@ -86,74 +99,66 @@ const AuthLogic = (props: AuthLogicProps) => {
     };
   };
 
-  if (props.screen.value === 'signIn') {
+  if (screen.value === 'signIn') {
     return (
       <AuthSignIn
-        onSignIn={notificationsWrapper(props.onSignIn)}
-        onGoToSignUp={props.onSignUp && onGoToSignUp}
-        onGoToForgotPassword={props.onForgotPassword && onGoToForgotPassword}
-        passwordMinimumLength={props.passwordMinimumLength}
+        onSignIn={notificationsWrapper(onSignIn)}
+        onGoToSignUp={onSignUp && onGoToSignUp}
+        onGoToForgotPassword={onForgotPassword && onGoToForgotPassword}
+        passwordMinimumLength={passwordMinimumLength}
       />
     );
   }
 
-  if (props.screen.value === 'signUp' && props.onSignUp) {
+  if (screen.value === 'signUp' && onSignUp) {
     return (
       <AuthSignUp
-        onSignUp={notificationsWrapper(props.onSignUp)}
-        passwordMinimumLength={props.passwordMinimumLength}
+        onSignUp={notificationsWrapper(onSignUp)}
+        passwordMinimumLength={passwordMinimumLength}
         onGoToSignIn={onGoToSignIn}
-        signUpTerms={props.signUpTerms}
+        signUpTerms={signUpTerms}
       />
     );
   }
 
-  if (props.screen.value === 'forgotPassword' && props.onForgotPassword) {
+  if (screen.value === 'forgotPassword' && onForgotPassword) {
     return (
       <AuthForgotPassword
-        onForgotPassword={notificationsWrapper(props.onForgotPassword)}
+        onForgotPassword={notificationsWrapper(onForgotPassword)}
         onGoToSignIn={onGoToSignIn}
-        onGoToSignUp={props.onSignUp && onGoToSignUp}
+        onGoToSignUp={onSignUp && onGoToSignUp}
       />
     );
   }
 
   if (
-    props.screen.value === 'confirmResetPassword' &&
-    props.onForgotPasswordResetPassword
+    screen.value === 'confirmResetPassword' &&
+    onForgotPasswordResetPassword
   ) {
     return (
       <AuthForgotPasswordResetPassword
         onForgotPasswordResetPassword={notificationsWrapper(
-          props.onForgotPasswordResetPassword
+          onForgotPasswordResetPassword
         )}
         onGoToSignIn={onGoToSignIn}
-        email={props.screen.context.email}
+        email={screen.context.email}
       />
     );
   }
 
-  if (
-    props.screen.value === 'confirmSignUpWithCode' &&
-    props.onConfirmSignUpWithCode
-  ) {
+  if (screen.value === 'confirmSignUpWithCode' && onConfirmSignUpWithCode) {
     return (
       <AuthConfirmSignUpWithCode
-        onConfirmSignUpWithCode={notificationsWrapper(
-          props.onConfirmSignUpWithCode
-        )}
-        email={props.screen.context.email}
+        onConfirmSignUpWithCode={notificationsWrapper(onConfirmSignUpWithCode)}
+        email={screen.context.email}
       />
     );
   }
 
-  if (
-    props.screen.value === 'confirmSignUpCheckEmail' &&
-    props.onConfirmSignUpCheckEmail
-  ) {
+  if (screen.value === 'confirmSignUpCheckEmail' && onConfirmSignUpCheckEmail) {
     return (
       <AuthConfirmSignUpCheckEmail
-        onConfirmSignUpCheckEmail={props.onConfirmSignUpCheckEmail}
+        onConfirmSignUpCheckEmail={onConfirmSignUpCheckEmail}
       />
     );
   }

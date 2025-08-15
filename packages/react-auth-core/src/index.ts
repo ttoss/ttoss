@@ -20,22 +20,5 @@ export { AuthProvider, type AuthProviderProps, useAuth } from './AuthProvider';
 export { AuthSignIn, type AuthSignInProps } from './AuthSignIn';
 export { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
 export { ErrorBoundary } from './ErrorBoundary';
-export type {
-  AuthContextValue,
-  AuthScreen,
-  AuthTokens,
-  AuthUser,
-  OnConfirmSignUpCheckEmail,
-  OnConfirmSignUpWithCode,
-  OnConfirmSignUpWithCodeInput,
-  OnForgotPassword,
-  OnForgotPasswordInput,
-  OnForgotPasswordResetPassword,
-  OnForgotPasswordResetPasswordInput,
-  OnSignIn,
-  OnSignInInput,
-  OnSignUp,
-  OnSignUpInput,
-  SignUpTerms,
-} from './types';
+export * from './types';
 export { useAuthScreen } from './useAuthScreen';

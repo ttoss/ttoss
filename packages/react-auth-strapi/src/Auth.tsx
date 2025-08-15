@@ -7,138 +7,149 @@ import {
   useAuthScreen,
 } from '@ttoss/react-auth-core';
 import { useNotifications } from '@ttoss/react-notifications';
+import * as React from 'react';
 
 import { useAuth } from './AuthProvider';
-
-const API_URL = 'https://api.suryaenergia.com/api';
+import { storage } from './storage';
 
 export const Auth = () => {
-  const { setAuthState } = useAuth();
+  const { setAuthData, apiUrl } = useAuth();
 
   const { screen, setScreen } = useAuthScreen();
 
   const { addNotification } = useNotifications();
 
-  const onSignIn: OnSignIn = async ({ email, password }) => {
-    const response = await fetch(`${API_URL}/auth/local`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        identifier: email,
-        password,
-      }),
-    });
+  const onSignIn: OnSignIn = React.useCallback(
+    async ({ email, password }) => {
+      const response = await fetch(`${apiUrl}/auth/local`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: email,
+          password,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      const errorMessage = data.error?.message;
+      if (!response.ok) {
+        const errorMessage = data.error?.message;
 
-      if (errorMessage === 'Your account email is not confirmed') {
-        const resendResponse = await fetch(
-          `${API_URL}/auth/send-email-confirmation`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
+        if (errorMessage === 'Your account email is not confirmed') {
+          const resendResponse = await fetch(
+            `${apiUrl}/auth/send-email-confirmation`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email }),
+            }
+          );
+
+          if (!resendResponse.ok) {
+            const resendData = await resendResponse.json();
+            addNotification({
+              title: 'Resend confirmation email failed',
+              message:
+                resendData.error?.message ||
+                'An error occurred while resending the confirmation email.',
+              type: 'error',
+            });
+            return;
           }
-        );
 
-        if (!resendResponse.ok) {
-          const resendData = await resendResponse.json();
-          addNotification({
-            title: 'Resend confirmation email failed',
-            message:
-              resendData.error?.message ||
-              'An error occurred while resending the confirmation email.',
-            type: 'error',
-          });
+          setScreen({ value: 'confirmSignUpCheckEmail' });
           return;
         }
 
-        setScreen({ value: 'confirmSignUpCheckEmail' });
+        addNotification({
+          title: 'Sign in failed',
+          message: data.error?.message || 'An error occurred during sign in.',
+          type: 'error',
+        });
         return;
       }
 
-      addNotification({
-        title: 'Sign in failed',
-        message: data.error?.message || 'An error occurred during sign in.',
-        type: 'error',
+      storage.setRefreshToken(data.refreshToken);
+
+      setAuthData({
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          emailVerified: data.user.confirmed,
+        },
+        tokens: {
+          accessToken: data.jwt,
+          refreshToken: data.refreshToken,
+        },
+        isAuthenticated: true,
       });
-      return;
-    }
+    },
+    [setAuthData, setScreen, addNotification, apiUrl]
+  );
 
-    setAuthState({
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        emailVerified: data.user.confirmed,
-      },
-      tokens: {
-        accessToken: data.jwt,
-      },
-      isAuthenticated: true,
-    });
-
-    // console.log('Sign in successful:', data);
-  };
-
-  const onSignUp: OnSignUp = async ({ email, password }) => {
-    const response = await fetch(`${API_URL}/auth/local/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: email, // Assuming username is the same as email
-        email,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      addNotification({
-        title: 'Sign up failed',
-        message: data.error?.message || 'An error occurred during sign up.',
-        type: 'error',
+  const onSignUp: OnSignUp = React.useCallback(
+    async ({ email, password }) => {
+      const response = await fetch(`${apiUrl}/auth/local/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: email, // Assuming username is the same as email
+          email,
+          password,
+        }),
       });
-      return;
-    }
 
-    setScreen({ value: 'signIn' });
-  };
+      const data = await response.json();
 
-  const onForgotPassword: OnForgotPassword = async ({ email }) => {
-    const response = await fetch(`${API_URL}/auth/forgot-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
+      if (!response.ok) {
+        addNotification({
+          title: 'Sign up failed',
+          message: data.error?.message || 'An error occurred during sign up.',
+          type: 'error',
+        });
+        return;
+      }
 
-    const data = await response.json();
+      setScreen({ value: 'confirmSignUpCheckEmail' });
+    },
+    [addNotification, setScreen, apiUrl]
+  );
 
-    if (!response.ok) {
-      addNotification({
-        title: 'Forgot password failed',
-        message:
-          data.error?.message || 'An error occurred during forgot password.',
-        type: 'error',
+  const onForgotPassword: OnForgotPassword = React.useCallback(
+    async ({ email }) => {
+      const response = await fetch(`${apiUrl}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
-      return;
-    }
-  };
 
-  const onConfirmSignUpCheckEmail: OnConfirmSignUpCheckEmail = async () => {
-    setScreen({ value: 'signIn' });
-  };
+      const data = await response.json();
+
+      if (!response.ok) {
+        addNotification({
+          title: 'Forgot password failed',
+          message:
+            data.error?.message || 'An error occurred during forgot password.',
+          type: 'error',
+        });
+        return;
+      }
+    },
+    [addNotification, apiUrl]
+  );
+
+  const onConfirmSignUpCheckEmail: OnConfirmSignUpCheckEmail =
+    React.useCallback(async () => {
+      setScreen({ value: 'signIn' });
+    }, [setScreen]);
 
   return (
     <AuthCore

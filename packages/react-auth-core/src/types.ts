@@ -12,7 +12,7 @@ export type AuthTokens = {
   expiresAt?: number;
 };
 
-export type AuthState = {
+export type AuthData = {
   user: AuthUser | null;
   tokens: AuthTokens | null;
   isAuthenticated: boolean | undefined;
@@ -23,7 +23,7 @@ export type AuthContextValue = {
   isAuthenticated: boolean;
   user: AuthUser | null;
   tokens: AuthTokens | null;
-  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>;
+  setAuthData: React.Dispatch<React.SetStateAction<AuthData>>;
 };
 
 export type AuthScreen =
