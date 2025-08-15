@@ -1432,9 +1432,15 @@ importers:
 
   packages/react-auth-strapi:
     devDependencies:
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
       '@ttoss/react-auth-core':
         specifier: workspace:^
         version: link:../react-auth-core
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/react-notifications':
         specifier: workspace:^
         version: link:../react-notifications
