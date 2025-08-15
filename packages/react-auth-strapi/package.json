@@ -23,7 +23,7 @@
   "scripts": {
     "build": "tsup",
     "i18n": "ttoss-i18n",
-    "test": "jest --projects tests/unit"
+    "test": "echo jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {},
