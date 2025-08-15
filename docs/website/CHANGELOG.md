@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.57.0](https://github.com/ttoss/ttoss/compare/@docs/website@1.56.9...@docs/website@1.57.0) (2025-08-15)
+
+### Features
+
+- react auth core ([#722](https://github.com/ttoss/ttoss/issues/722)) ([027faed](https://github.com/ttoss/ttoss/commit/027faedc769a2449f1b92a51472106ba116fbcf6))
+
 ## [1.56.9](https://github.com/ttoss/ttoss/compare/@docs/website@1.56.8...@docs/website@1.56.9) (2025-08-06)
 
 ### Bug Fixes

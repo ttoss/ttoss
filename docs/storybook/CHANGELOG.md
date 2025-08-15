@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.20.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.19.3...@docs/storybook@2.20.0) (2025-08-15)
+
+### Features
+
+- react auth core ([#722](https://github.com/ttoss/ttoss/issues/722)) ([027faed](https://github.com/ttoss/ttoss/commit/027faedc769a2449f1b92a51472106ba116fbcf6))
+
 ## [2.19.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.19.2...@docs/storybook@2.19.3) (2025-08-05)
 
 **Note:** Version bump only for package @docs/storybook

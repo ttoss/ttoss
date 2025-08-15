@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-strapi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Authentication components and abstractions for React apps using Strapi.",
   "license": "MIT",
   "author": "ttoss",
@@ -26,7 +26,6 @@
     "test": "echo jest --projects tests/unit"
   },
   "sideEffects": false,
-  "dependencies": {},
   "peerDependencies": {
     "@ttoss/react-auth-core": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
