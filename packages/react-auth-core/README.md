@@ -1,14 +1,6 @@
 # @ttoss/react-auth-core
 
-Core authentication components and abstractions for React applications. This package provides UI components and screen-based authentication flows that work with any authentication provider.
-
-## Features
-
-- Screen-based authentication flow management
-- Flexible authentication UI components
-- Authentication context and provider
-- Type-safe authentication interfaces
-- Provider-agnostic implementation
+Provider-agnostic authentication components and abstractions for React applications with screen-based flow management.
 
 ## Installation
 
@@ -16,166 +8,170 @@ Core authentication components and abstractions for React applications. This pac
 pnpm add @ttoss/react-auth-core
 ```
 
-## Architecture
-
-This package uses a screen-based architecture where authentication flows are managed through different screens (signIn, signUp, forgotPassword, etc.). Each screen can transition to other screens based on user actions.
-
-## Basic Usage
-
-### Auth Provider Setup
+## Quickstart
 
 ```tsx
-import { AuthProvider, useAuth } from '@ttoss/react-auth-core';
+import {
+  AuthProvider,
+  Auth,
+  useAuth,
+  useAuthScreen,
+} from '@ttoss/react-auth-core';
 
+// 1. Wrap your app with AuthProvider
 function App() {
-  const handleSignOut = async () => {
-    // Your sign out implementation
-    await myAuthService.signOut();
-  };
-
   return (
-    <AuthProvider signOut={handleSignOut}>
-      <MyApp />
+    <AuthProvider signOut={async () => await myAuthService.signOut()}>
+      <AuthenticatedApp />
     </AuthProvider>
   );
 }
 
-function MyComponent() {
-  const { isAuthenticated, user, tokens, signOut } = useAuth();
+// 2. Create auth flow with handlers
+function LoginPage() {
+  const { screen, setScreen } = useAuthScreen();
+
+  return (
+    <Auth
+      screen={screen}
+      setScreen={setScreen}
+      onSignIn={async ({ email, password }) => {
+        await myAuthService.signIn(email, password);
+      }}
+      onSignUp={async ({ email, password }) => {
+        await myAuthService.signUp(email, password);
+        setScreen({ value: 'confirmSignUpCheckEmail' });
+      }}
+    />
+  );
+}
+
+// 3. Use authentication state
+function AuthenticatedApp() {
+  const { isAuthenticated, user, signOut } = useAuth();
 
   if (!isAuthenticated) {
-    return <div>Please sign in</div>;
+    return <LoginPage />;
   }
 
   return (
     <div>
-      <p>Welcome, {user?.name}</p>
+      <p>Welcome, {user?.email}</p>
       <button onClick={signOut}>Sign Out</button>
     </div>
   );
 }
 ```
 
-### Complete Auth Flow
+## Features
 
-```tsx
-import { Auth, useAuthScreen } from '@ttoss/react-auth-core';
+- **Screen-based flows**: Manages authentication through distinct screens (signIn, signUp, forgotPassword, etc.)
+- **Provider agnostic**: Works with any authentication service - you provide the handlers
+- **Type-safe**: Full TypeScript support with comprehensive type definitions
+- **UI components**: Pre-built forms and layouts for common authentication flows
+- **Error handling**: Built-in error boundaries and proper error management
 
-function AuthPage() {
-  const { screen, setScreen } = useAuthScreen({ value: 'signIn' });
+## Core Concepts
 
-  const handleSignIn = async (email: string, password: string) => {
-    // Your sign in implementation
-    const result = await myAuthService.signIn(email, password);
-    if (result.success) {
-      // Handle successful sign in
-    }
-  };
+### Authentication Screens
 
-  const handleSignUp = async (email: string, password: string) => {
-    // Your sign up implementation
-    const result = await myAuthService.signUp(email, password);
-    if (result.requiresConfirmation) {
-      setScreen({
-        value: 'confirmSignUp',
-        context: { email },
-      });
-    }
-  };
-
-  const handleForgotPassword = async (email: string) => {
-    // Your forgot password implementation
-    await myAuthService.forgotPassword(email);
-    setScreen({
-      value: 'confirmResetPassword',
-      context: { email },
-    });
-  };
-
-  return (
-    <Auth
-      screen={screen}
-      setScreen={setScreen}
-      onSignIn={handleSignIn}
-      onSignUp={handleSignUp}
-      onForgotPassword={handleForgotPassword}
-      passwordMinimumLength={8}
-    />
-  );
-}
+```mermaid
+flowchart TD
+    A[signIn] --> B[signUp]
+    A --> C[forgotPassword]
+    B --> D[confirmSignUpWithCode]
+    B --> E[confirmSignUpCheckEmail]
+    C --> F[confirmResetPassword]
+    D --> A
+    E --> A
+    F --> A
 ```
 
-### Available Screens
+### Provider Pattern
 
-The authentication flow supports these screens:
+The package uses React Context to manage authentication state across your application. You provide the authentication logic, and the components handle the UI and flow management.
 
-- `signIn` - Main sign in form
-- `signUp` - User registration form
-- `forgotPassword` - Password recovery form
-- `confirmSignUp` - Email confirmation after registration
-- `confirmResetPassword` - Password reset confirmation
+## API Reference
 
-### Screen Transitions
+### AuthProvider
 
-Users can navigate between screens through built-in links:
-
-- From sign in: go to sign up or forgot password
-- From sign up: go to sign in
-- From forgot password: go to sign in or sign up
-- Programmatic transitions via `setScreen()`
-
-### Layout Options
+Wraps your application to provide authentication context.
 
 ```tsx
-// Full screen layout (default)
-<Auth
-  screen={screen}
-  setScreen={setScreen}
-  onSignIn={handleSignIn}
-  layout={{ fullScreen: true }}
-/>
+<AuthProvider
+  getAuthData={() => Promise<AuthData>} // Optional: fetch initial auth state
+  signOut={() => Promise<void>} // Required: sign out handler
+>
+  {children}
+</AuthProvider>
+```
 
-// With side content
+### useAuth Hook
+
+Access authentication state and actions.
+
+```tsx
+const {
+  isAuthenticated, // boolean
+  user, // AuthUser | null
+  tokens, // AuthTokens | null
+  signOut, // () => Promise<void>
+  setAuthData, // Update auth state manually
+} = useAuth();
+```
+
+### Auth Component
+
+Main authentication flow component.
+
+```tsx
 <Auth
-  screen={screen}
-  setScreen={setScreen}
-  onSignIn={handleSignIn}
+  screen={screen} // Current screen state
+  setScreen={setScreen} // Screen navigation function
+  onSignIn={handleSignIn} // Sign in handler
+  onSignUp={handleSignUp} // Sign up handler (optional)
+  onForgotPassword={handleForgotPassword} // Forgot password handler (optional)
+  passwordMinimumLength={8} // Password validation (optional)
+  logo={<MyLogo />} // Custom logo (optional)
   layout={{
+    // Layout configuration (optional)
     fullScreen: true,
-    sideContent: <MyBrandingContent />,
-    sideContentPosition: 'left'
+    sideContent: <BrandingContent />,
+    sideContentPosition: 'left',
   }}
 />
-
-// Inline layout
-<Auth
-  screen={screen}
-  setScreen={setScreen}
-  onSignIn={handleSignIn}
-  layout={{ fullScreen: false }}
-/>
 ```
 
-### Custom Logo
+### useAuthScreen Hook
+
+Manages authentication screen state and transitions.
 
 ```tsx
-<Auth
-  screen={screen}
-  setScreen={setScreen}
-  onSignIn={handleSignIn}
-  logo={<MyLogo />}
-/>
+const { screen, setScreen } = useAuthScreen({
+  value: 'signIn', // Initial screen (optional, defaults to 'signIn')
+});
 ```
 
-## TypeScript Support
+## TypeScript Types
 
-All components and hooks are fully typed. Key types include:
+Key type definitions for implementing authentication handlers:
 
-- `AuthScreen` - Screen configuration with value and context
-- `OnSignIn`, `OnSignUp` - Handler function signatures
-- `AuthUser`, `AuthTokens` - User and token data structures
-- `AuthContextValue` - Authentication context interface
+```tsx
+type AuthUser = {
+  id: string;
+  email: string;
+  emailVerified?: boolean;
+};
 
-## Error Handling
+type AuthTokens = {
+  accessToken: string;
+  refreshToken?: string;
+  idToken?: string;
+  expiresIn?: number;
+  expiresAt?: number;
+};
 
-The package includes built-in error boundaries and proper error handling for authentication flows. Errors are managed at the component level and can be customized through the provider implementations.
+type OnSignIn = (params: { email: string; password: string }) => Promise<void>;
+type OnSignUp = (params: { email: string; password: string }) => Promise<void>;
+type OnForgotPassword = (params: { email: string }) => Promise<void>;
+```
