@@ -1,11 +1,6 @@
 import * as React from 'react';
 
-import type {
-  AuthContextValue,
-  AuthScreen,
-  AuthTokens,
-  AuthUser,
-} from './types';
+import type { AuthContextValue, AuthScreen, AuthState } from './types';
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);
 
@@ -16,11 +11,7 @@ export type AuthProviderProps = {
 };
 
 export const AuthProvider = (props: AuthProviderProps) => {
-  const [authState, setAuthState] = React.useState<{
-    user: AuthUser;
-    tokens: AuthTokens;
-    isAuthenticated: boolean | undefined;
-  }>({
+  const [authState, setAuthState] = React.useState<AuthState>({
     user: null,
     tokens: null,
     isAuthenticated: undefined,
@@ -35,9 +26,9 @@ export const AuthProvider = (props: AuthProviderProps) => {
     });
   }, [props]);
 
-  if (authState.isAuthenticated === undefined) {
-    return null; // Loading state
-  }
+  // if (authState.isAuthenticated === undefined) {
+  //   return null; // Loading state
+  // }
 
   return (
     <AuthContext.Provider
@@ -46,6 +37,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
         isAuthenticated: authState.isAuthenticated ?? false,
         user: authState.user,
         tokens: authState.tokens,
+        setAuthState,
       }}
     >
       {props.children}

@@ -3,17 +3,17 @@ import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
 
 import { AuthCard } from './AuthCard';
-import type { OnConfirmSignUp } from './types';
+import type { OnConfirmSignUpWithCode } from './types';
 
-export type AuthConfirmSignUpProps = {
+export type AuthConfirmSignUpWithCodeProps = {
   email: string;
-  onConfirmSignUp: OnConfirmSignUp;
+  onConfirmSignUpWithCode: OnConfirmSignUpWithCode;
 };
 
-export const AuthConfirmSignUp = ({
+export const AuthConfirmSignUpWithCode = ({
   email,
-  onConfirmSignUp,
-}: AuthConfirmSignUpProps) => {
+  onConfirmSignUpWithCode,
+}: AuthConfirmSignUpWithCodeProps) => {
   const { intl } = useI18n();
 
   const schema = yup
@@ -48,7 +48,7 @@ export const AuthConfirmSignUp = ({
     <Form
       {...formMethods}
       onSubmit={({ code }: { code: string }) => {
-        return onConfirmSignUp({ code, email });
+        return onConfirmSignUpWithCode({ code, email });
       }}
     >
       <AuthCard

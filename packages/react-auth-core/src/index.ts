@@ -1,8 +1,12 @@
 export { Auth, type AuthProps } from './Auth';
 export {
-  AuthConfirmSignUp,
-  type AuthConfirmSignUpProps,
-} from './AuthConfirmSignUp';
+  AuthConfirmSignUpCheckEmail,
+  type AuthConfirmSignUpCheckEmailProps,
+} from './AuthConfirmSignUpCheckEmail';
+export {
+  AuthConfirmSignUpWithCode,
+  type AuthConfirmSignUpWithCodeProps,
+} from './AuthConfirmSignUpWithCode';
 export {
   AuthForgotPassword,
   type AuthForgotPasswordProps,
@@ -21,8 +25,9 @@ export type {
   AuthScreen,
   AuthTokens,
   AuthUser,
-  OnConfirmSignUp,
-  OnConfirmSignUpInput,
+  OnConfirmSignUpCheckEmail,
+  OnConfirmSignUpWithCode,
+  OnConfirmSignUpWithCodeInput,
   OnForgotPassword,
   OnForgotPasswordInput,
   OnForgotPasswordResetPassword,

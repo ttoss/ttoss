@@ -1,16 +1,8 @@
-// Core authentication types
-export type AuthContextValue = {
-  signOut?: () => Promise<void>;
-  isAuthenticated: boolean;
-  user: AuthUser | null;
-  tokens: AuthTokens | null;
-};
-
 export type AuthUser = {
   id: string;
   email: string;
   emailVerified?: boolean;
-} | null;
+};
 
 export type AuthTokens = {
   accessToken: string;
@@ -18,13 +10,27 @@ export type AuthTokens = {
   idToken?: string;
   expiresIn?: number;
   expiresAt?: number;
-} | null;
+};
+
+export type AuthState = {
+  user: AuthUser | null;
+  tokens: AuthTokens | null;
+  isAuthenticated: boolean | undefined;
+};
+
+export type AuthContextValue = {
+  signOut?: () => Promise<void>;
+  isAuthenticated: boolean;
+  user: AuthUser | null;
+  tokens: AuthTokens | null;
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>;
+};
 
 export type AuthScreen =
   | { value: 'signIn' }
   | { value: 'signUp' }
-  | { value: 'confirmSignUp'; context: { email: string } }
-  | { value: 'resendSignUpCode'; context: { email: string } }
+  | { value: 'confirmSignUpWithCode'; context: { email: string } }
+  | { value: 'confirmSignUpCheckEmail' }
   | { value: 'forgotPassword' }
   | { value: 'confirmResetPassword'; context: { email: string } };
 
@@ -41,7 +47,7 @@ export type OnSignUpInput = {
   signUpTerms?: boolean;
 };
 
-export type OnConfirmSignUpInput = {
+export type OnConfirmSignUpWithCodeInput = {
   email: string;
   code: string;
 };
@@ -58,13 +64,19 @@ export type OnForgotPasswordResetPasswordInput = {
 
 // Handler function types
 export type OnSignIn = (input: OnSignInInput) => Promise<void> | void;
+
 export type OnSignUp = (input: OnSignUpInput) => Promise<void> | void;
-export type OnConfirmSignUp = (
-  input: OnConfirmSignUpInput
+
+export type OnConfirmSignUpCheckEmail = () => Promise<void> | void;
+
+export type OnConfirmSignUpWithCode = (
+  input: OnConfirmSignUpWithCodeInput
 ) => Promise<void> | void;
+
 export type OnForgotPassword = (
   input: OnForgotPasswordInput
 ) => Promise<void> | void;
+
 export type OnForgotPasswordResetPassword = (
   input: OnForgotPasswordResetPasswordInput
 ) => Promise<void> | void;

@@ -1,0 +1,1 @@
+# @ttoss/react-auth-strapi

@@ -1,8 +1,10 @@
+import { useNotifications } from '@ttoss/react-notifications';
 import { Flex } from '@ttoss/ui';
 import * as React from 'react';
 
 import { LogoContextProps, LogoProvider } from './AuthCard';
-import { AuthConfirmSignUp } from './AuthConfirmSignUp';
+import { AuthConfirmSignUpCheckEmail } from './AuthConfirmSignUpCheckEmail';
+import { AuthConfirmSignUpWithCode } from './AuthConfirmSignUpWithCode';
 import { AuthForgotPassword } from './AuthForgotPassword';
 import { AuthForgotPasswordResetPassword } from './AuthForgotPasswordResetPassword';
 import { AuthFullScreen } from './AuthFullScreen';
@@ -11,7 +13,8 @@ import { AuthSignUp } from './AuthSignUp';
 import { ErrorBoundary } from './ErrorBoundary';
 import type {
   AuthScreen,
-  OnConfirmSignUp,
+  OnConfirmSignUpCheckEmail,
+  OnConfirmSignUpWithCode,
   OnForgotPassword,
   OnForgotPasswordResetPassword,
   OnSignIn,
@@ -26,12 +29,29 @@ type AuthLogicProps = {
   passwordMinimumLength?: number;
   onSignIn: OnSignIn;
   onSignUp?: OnSignUp;
-  onConfirmSignUp?: OnConfirmSignUp;
+  onConfirmSignUpCheckEmail?: OnConfirmSignUpCheckEmail;
+  onConfirmSignUpWithCode?: OnConfirmSignUpWithCode;
   onForgotPassword?: OnForgotPassword;
   onForgotPasswordResetPassword?: OnForgotPasswordResetPassword;
 };
 
 const AuthLogic = (props: AuthLogicProps) => {
+  const { clearNotifications, setLoading } = useNotifications();
+
+  /**
+   * Clear notifications when the state changes
+   */
+  React.useEffect(() => {
+    clearNotifications();
+  }, [props.screen.value, clearNotifications]);
+
+  /**
+   * Clear notifications when the component unmounts
+   */
+  React.useEffect(() => {
+    return clearNotifications;
+  }, [clearNotifications]);
+
   const onGoToSignIn = () => {
     props.setScreen({ value: 'signIn' });
   };
@@ -52,12 +72,26 @@ const AuthLogic = (props: AuthLogicProps) => {
     props.setScreen({ value: 'forgotPassword' });
   }, [props]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const notificationsWrapper = (fn: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return async (input: any) => {
+      if (fn) {
+        clearNotifications();
+        setLoading(true);
+        const result = await fn(input);
+        setLoading(false);
+        return result;
+      }
+    };
+  };
+
   if (props.screen.value === 'signIn') {
     return (
       <AuthSignIn
-        onSignIn={props.onSignIn}
-        onGoToSignUp={onGoToSignUp}
-        onGoToForgotPassword={onGoToForgotPassword}
+        onSignIn={notificationsWrapper(props.onSignIn)}
+        onGoToSignUp={props.onSignUp && onGoToSignUp}
+        onGoToForgotPassword={props.onForgotPassword && onGoToForgotPassword}
         passwordMinimumLength={props.passwordMinimumLength}
       />
     );
@@ -66,7 +100,7 @@ const AuthLogic = (props: AuthLogicProps) => {
   if (props.screen.value === 'signUp' && props.onSignUp) {
     return (
       <AuthSignUp
-        onSignUp={props.onSignUp}
+        onSignUp={notificationsWrapper(props.onSignUp)}
         passwordMinimumLength={props.passwordMinimumLength}
         onGoToSignIn={onGoToSignIn}
         signUpTerms={props.signUpTerms}
@@ -77,9 +111,9 @@ const AuthLogic = (props: AuthLogicProps) => {
   if (props.screen.value === 'forgotPassword' && props.onForgotPassword) {
     return (
       <AuthForgotPassword
-        onForgotPassword={props.onForgotPassword}
+        onForgotPassword={notificationsWrapper(props.onForgotPassword)}
         onGoToSignIn={onGoToSignIn}
-        onGoToSignUp={onGoToSignUp}
+        onGoToSignUp={props.onSignUp && onGoToSignUp}
       />
     );
   }
@@ -90,18 +124,36 @@ const AuthLogic = (props: AuthLogicProps) => {
   ) {
     return (
       <AuthForgotPasswordResetPassword
-        onForgotPasswordResetPassword={props.onForgotPasswordResetPassword}
+        onForgotPasswordResetPassword={notificationsWrapper(
+          props.onForgotPasswordResetPassword
+        )}
         onGoToSignIn={onGoToSignIn}
         email={props.screen.context.email}
       />
     );
   }
 
-  if (props.screen.value === 'confirmSignUp' && props.onConfirmSignUp) {
+  if (
+    props.screen.value === 'confirmSignUpWithCode' &&
+    props.onConfirmSignUpWithCode
+  ) {
     return (
-      <AuthConfirmSignUp
-        onConfirmSignUp={props.onConfirmSignUp}
+      <AuthConfirmSignUpWithCode
+        onConfirmSignUpWithCode={notificationsWrapper(
+          props.onConfirmSignUpWithCode
+        )}
         email={props.screen.context.email}
+      />
+    );
+  }
+
+  if (
+    props.screen.value === 'confirmSignUpCheckEmail' &&
+    props.onConfirmSignUpCheckEmail
+  ) {
+    return (
+      <AuthConfirmSignUpCheckEmail
+        onConfirmSignUpCheckEmail={props.onConfirmSignUpCheckEmail}
       />
     );
   }

@@ -1,0 +1,59 @@
+{
+  "name": "@ttoss/react-auth-strapi",
+  "version": "0.1.0",
+  "description": "Authentication components and abstractions for React apps using Strapi.",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-auth-strapi"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "i18n"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "i18n": "ttoss-i18n",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "dependencies": {},
+  "peerDependencies": {
+    "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@types/react": "^19.1.8",
+    "jest": "^30.0.4",
+    "react": "^19.1.0",
+    "tsup": "^8.5.0"
+  },
+  "keywords": [
+    "React",
+    "UI components",
+    "authentication",
+    "strapi"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/esm/index.js"
+      }
+    },
+    "provenance": true
+  }
+}
