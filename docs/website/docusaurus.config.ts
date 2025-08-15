@@ -65,6 +65,8 @@ const config: Config = {
           'postgresdb',
           'postgresdb-cli',
           'react-auth',
+          'react-auth-core',
+          'react-auth-strapi',
           'react-feature-flags',
           'react-hooks',
           'react-i18n',

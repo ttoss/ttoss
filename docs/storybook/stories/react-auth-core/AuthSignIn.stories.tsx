@@ -1,10 +1,11 @@
+import { Meta, StoryFn } from '@storybook/react';
+import { Box } from '@ttoss/ui';
+
+import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
 import {
   AuthSignIn,
   AuthSignInProps,
 } from '../../../../packages/react-auth/src/AuthSignIn';
-import { Box } from '@ttoss/ui';
-import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
-import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'React Auth/AuthSignIn',

@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { Auth, type AuthProps } from '@ttoss/react-auth';
+import { Auth, type AuthProps } from '@ttoss/react-auth-core';
 import { Image } from '@ttoss/ui';
 
 export default {

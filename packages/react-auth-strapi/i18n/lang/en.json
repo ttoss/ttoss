@@ -1,19 +1,4 @@
 {
-  "D1C6fR": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Field must be at least {min} characters",
-    "description": "Min length field"
-  },
-  "MfWGyg": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Field is required",
-    "description": "Field is required"
-  },
-  "ZhaPt0": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Invalid Value for Field of type {type}",
-    "description": "Invalid Value"
-  },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Required field",
@@ -187,5 +172,20 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
+  },
+  "D1C6fR": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field must be at least {min} characters",
+    "description": "Min length field"
+  },
+  "MfWGyg": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field is required",
+    "description": "Field is required"
+  },
+  "ZhaPt0": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {type}",
+    "description": "Invalid Value"
   }
 }
