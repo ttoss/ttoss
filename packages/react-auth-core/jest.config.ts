@@ -1,7 +1,3 @@
-import { jestConfig } from '@ttoss/config';
+import { jestRootConfig } from '@ttoss/config';
 
-const config = jestConfig({
-  setupFilesAfterEnv: ['<rootDir>/setupTests.tsx'],
-});
-
-export default config;
+export default jestRootConfig();

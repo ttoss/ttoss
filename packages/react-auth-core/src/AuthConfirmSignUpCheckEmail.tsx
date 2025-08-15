@@ -14,7 +14,12 @@ export const AuthConfirmSignUpCheckEmail = ({
   const { intl } = useI18n();
 
   return (
-    <form onSubmit={onConfirmSignUpCheckEmail}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onConfirmSignUpCheckEmail();
+      }}
+    >
       <AuthCard
         isValidForm={true}
         buttonLabel={intl.formatMessage({
