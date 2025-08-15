@@ -29,11 +29,14 @@
   "dependencies": {},
   "peerDependencies": {
     "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@types/react": "^19.1.8",
     "jest": "^30.0.4",
