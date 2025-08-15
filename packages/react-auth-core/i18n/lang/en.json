@@ -1,1 +1,155 @@
-{}
+{
+  "0XOzcH": {
+    "defaultMessage": "Required field",
+    "description": "Required field."
+  },
+  "38HSjr": {
+    "defaultMessage": "Sign In",
+    "description": "Sign In"
+  },
+  "5E12mO": {
+    "defaultMessage": "Email",
+    "description": "Email label."
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancel",
+    "description": "Cancel"
+  },
+  "8GMUPk": {
+    "defaultMessage": "I'm already registered",
+    "description": "Link to sign in on sign up."
+  },
+  "9cApwd": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Invalid email."
+  },
+  "BtK6KR": {
+    "defaultMessage": "Forgot password?",
+    "description": "Forgot password?"
+  },
+  "Co3exe": {
+    "defaultMessage": "By signing up, you agree to the following Terms and Conditions."
+  },
+  "EZ3YF2": {
+    "defaultMessage": "Sign up",
+    "description": "Sign up"
+  },
+  "HT4tSM": {
+    "defaultMessage": "Reset Password",
+    "description": "Reset Password"
+  },
+  "KY2T6J": {
+    "defaultMessage": "Code",
+    "description": "Sign up confirmation code"
+  },
+  "NJ57Qj": {
+    "defaultMessage": "Confirm password field is required",
+    "description": "Confirm Password is required."
+  },
+  "OhDL0i": {
+    "defaultMessage": "Invalid email",
+    "description": "Invalid email."
+  },
+  "PylVqx": {
+    "defaultMessage": "Password",
+    "description": "Password label."
+  },
+  "S3pjKw": {
+    "defaultMessage": "Minimum {value} characters",
+    "description": "Minimum {value} characters."
+  },
+  "S4bbEj": {
+    "defaultMessage": "Recovering Password",
+    "description": "Recovering Password"
+  },
+  "SQJto2": {
+    "defaultMessage": "Sign in"
+  },
+  "SfWKyS": {
+    "defaultMessage": "Maximum {value} characters",
+    "description": "Maximum {value} characters."
+  },
+  "TZ4WUk": {
+    "defaultMessage": "Password requires {value} characters",
+    "description": "Password must be at least {value} characters long."
+  },
+  "UNttd+": {
+    "defaultMessage": "Confirm",
+    "description": "Confirm"
+  },
+  "URJDrG": {
+    "defaultMessage": "Sign up",
+    "description": "Create account."
+  },
+  "WU/CqP": {
+    "defaultMessage": "Passwords are not the same",
+    "description": "Passwords are not the same"
+  },
+  "XreZg+": {
+    "defaultMessage": "Registered Email",
+    "description": "Registered Email"
+  },
+  "cGR2eI": {
+    "defaultMessage": "Confirmation",
+    "description": "Confirmation"
+  },
+  "d1YCuH": {
+    "defaultMessage": "Enter your email address",
+    "description": "Email is a required field."
+  },
+  "e3IQoc": {
+    "defaultMessage": "New Password",
+    "description": "New Password"
+  },
+  "kdFYba": {
+    "defaultMessage": "Password field is required",
+    "description": "Password is required."
+  },
+  "khMx/2": {
+    "defaultMessage": "An error occurred with your authentication. Please try again."
+  },
+  "lY+cuM": {
+    "defaultMessage": "Confirm password",
+    "description": "Confirm Password label."
+  },
+  "lZvoYL": {
+    "defaultMessage": "Sign up now",
+    "description": "Sign up now"
+  },
+  "mZzmNV": {
+    "defaultMessage": "Recover Password",
+    "description": "Recover Password"
+  },
+  "oayEC3": {
+    "defaultMessage": "Sign up",
+    "description": "Title on sign up."
+  },
+  "pwv2cR": {
+    "defaultMessage": "We have sent a confirmation code to your email address. Please enter the code below."
+  },
+  "qTQ4hP": {
+    "defaultMessage": "An email has been sent to your address. Please check your inbox and follow the instructions to confirm your sign up."
+  },
+  "qnQYqN": {
+    "defaultMessage": "You must accept the terms and conditions"
+  },
+  "s1OmP0": {
+    "defaultMessage": "Confirmation code",
+    "description": "Confirmation code"
+  },
+  "D1C6fR": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field must be at least {min} characters",
+    "description": "Min length field"
+  },
+  "MfWGyg": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field is required",
+    "description": "Field is required"
+  },
+  "ZhaPt0": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {type}",
+    "description": "Invalid Value"
+  }
+}

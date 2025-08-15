@@ -200,9 +200,9 @@ importers:
       '@ttoss/layouts':
         specifier: workspace:^
         version: link:../../packages/layouts
-      '@ttoss/react-auth':
+      '@ttoss/react-auth-core':
         specifier: workspace:^
-        version: link:../../packages/react-auth
+        version: link:../../packages/react-auth-core
       '@ttoss/react-hooks':
         specifier: workspace:^
         version: link:../../packages/react-hooks
