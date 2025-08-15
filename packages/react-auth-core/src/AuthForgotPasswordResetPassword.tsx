@@ -59,7 +59,7 @@ export const AuthForgotPasswordResetPassword = (
             description: 'Password must be at least {value} characters long.',
             defaultMessage: 'Password requires {value} characters',
           },
-          { value: props.passwordMinimumLength }
+          { value: props.passwordMinimumLength || 8 }
         )
       )
       .trim(),
@@ -103,6 +103,7 @@ export const AuthForgotPasswordResetPassword = (
         extraButton={
           props.onGoToSignIn ? (
             <Button
+              type="button"
               sx={{ textAlign: 'center', display: 'initial' }}
               variant="secondary"
               onClick={props.onGoToSignIn}

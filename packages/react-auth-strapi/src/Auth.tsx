@@ -21,126 +21,154 @@ export const Auth = () => {
 
   const onSignIn: OnSignIn = React.useCallback(
     async ({ email, password }) => {
-      const response = await fetch(`${apiUrl}/auth/local`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          identifier: email,
-          password,
-        }),
-      });
+      try {
+        const response = await fetch(`${apiUrl}/auth/local`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            identifier: email,
+            password,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        const errorMessage = data.error?.message;
+        if (!response.ok) {
+          const errorMessage = data.error?.message;
 
-        if (errorMessage === 'Your account email is not confirmed') {
-          const resendResponse = await fetch(
-            `${apiUrl}/auth/send-email-confirmation`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email }),
+          if (errorMessage === 'Your account email is not confirmed') {
+            const resendResponse = await fetch(
+              `${apiUrl}/auth/send-email-confirmation`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+              }
+            );
+
+            if (!resendResponse.ok) {
+              const resendData = await resendResponse.json();
+              addNotification({
+                title: 'Resend confirmation email failed',
+                message:
+                  resendData.error?.message ||
+                  'An error occurred while resending the confirmation email.',
+                type: 'error',
+              });
+              return;
             }
-          );
 
-          if (!resendResponse.ok) {
-            const resendData = await resendResponse.json();
-            addNotification({
-              title: 'Resend confirmation email failed',
-              message:
-                resendData.error?.message ||
-                'An error occurred while resending the confirmation email.',
-              type: 'error',
-            });
+            setScreen({ value: 'confirmSignUpCheckEmail' });
             return;
           }
 
-          setScreen({ value: 'confirmSignUpCheckEmail' });
+          addNotification({
+            title: 'Sign in failed',
+            message: data.error?.message || 'An error occurred during sign in.',
+            type: 'error',
+          });
           return;
         }
 
+        storage.setRefreshToken(data.refreshToken);
+
+        setAuthData({
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            emailVerified: data.user.confirmed,
+          },
+          tokens: {
+            accessToken: data.jwt,
+            refreshToken: data.refreshToken,
+          },
+          isAuthenticated: true,
+        });
+      } catch {
         addNotification({
-          title: 'Sign in failed',
-          message: data.error?.message || 'An error occurred during sign in.',
+          title: 'Network Error',
+          message:
+            'Unable to connect to the server. Please check your connection.',
           type: 'error',
         });
-        return;
       }
-
-      storage.setRefreshToken(data.refreshToken);
-
-      setAuthData({
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          emailVerified: data.user.confirmed,
-        },
-        tokens: {
-          accessToken: data.jwt,
-          refreshToken: data.refreshToken,
-        },
-        isAuthenticated: true,
-      });
     },
     [setAuthData, setScreen, addNotification, apiUrl]
   );
 
   const onSignUp: OnSignUp = React.useCallback(
     async ({ email, password }) => {
-      const response = await fetch(`${apiUrl}/auth/local/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: email, // Assuming username is the same as email
-          email,
-          password,
-        }),
-      });
+      try {
+        const response = await fetch(`${apiUrl}/auth/local/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: email, // Assuming username is the same as email
+            email,
+            password,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
+        if (!response.ok) {
+          addNotification({
+            title: 'Sign up failed',
+            message: data.error?.message || 'An error occurred during sign up.',
+            type: 'error',
+          });
+          return;
+        }
+
+        setScreen({ value: 'confirmSignUpCheckEmail' });
+      } catch {
         addNotification({
-          title: 'Sign up failed',
-          message: data.error?.message || 'An error occurred during sign up.',
+          title: 'Network Error',
+          message:
+            'Unable to connect to the server. Please check your connection.',
           type: 'error',
         });
-        return;
       }
-
-      setScreen({ value: 'confirmSignUpCheckEmail' });
     },
     [addNotification, setScreen, apiUrl]
   );
 
   const onForgotPassword: OnForgotPassword = React.useCallback(
     async ({ email }) => {
-      const response = await fetch(`${apiUrl}/auth/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+      try {
+        const response = await fetch(`${apiUrl}/auth/forgot-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
+        if (!response.ok) {
+          addNotification({
+            title: 'Forgot password failed',
+            message:
+              data.error?.message ||
+              'An error occurred during forgot password.',
+            type: 'error',
+          });
+          return;
+        }
+      } catch {
         addNotification({
-          title: 'Forgot password failed',
+          title: 'Network Error',
           message:
-            data.error?.message || 'An error occurred during forgot password.',
+            'Unable to connect to the server. Please check your connection.',
           type: 'error',
         });
-        return;
       }
     },
     [addNotification, apiUrl]
