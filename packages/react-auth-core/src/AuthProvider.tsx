@@ -40,28 +40,20 @@ export const AuthProvider = (props: AuthProviderProps) => {
    * Fetch the authentication data when the component mounts.
    */
   React.useEffect(() => {
-    let isMounted = true;
-
     const fetchAuthData = async () => {
       try {
         const data = await getAuthData?.();
-        if (!isMounted) return;
         if (data) {
           setAuthData(data);
         } else {
           setAuthData(UNAUTHENTICATED_USER);
         }
       } catch {
-        if (!isMounted) return;
         setAuthData(UNAUTHENTICATED_USER);
       }
     };
 
     fetchAuthData();
-
-    return () => {
-      isMounted = false;
-    };
   }, [getAuthData]);
 
   const signOut = React.useCallback(async () => {

@@ -1,5 +1,6 @@
 import {
   Auth as AuthCore,
+  type AuthProps,
   type OnConfirmSignUpCheckEmail,
   type OnForgotPassword,
   type OnSignIn,
@@ -12,7 +13,7 @@ import * as React from 'react';
 import { useAuth } from './AuthProvider';
 import { storage } from './storage';
 
-export const Auth = () => {
+export const Auth = (props: Pick<AuthProps, 'logo' | 'layout'>) => {
   const { setAuthData, apiUrl } = useAuth();
 
   const { screen, setScreen } = useAuthScreen();
@@ -181,6 +182,7 @@ export const Auth = () => {
 
   return (
     <AuthCore
+      {...props}
       screen={screen}
       setScreen={setScreen}
       onSignIn={onSignIn}
