@@ -64,6 +64,8 @@ export const AuthProvider = (
         return null;
       }
 
+      storage.setRefreshToken(refreshData.refreshToken);
+
       return {
         user: {
           id: data.id,
