@@ -1,11 +1,10 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-import { glob } from 'glob';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import AWS from 'aws-sdk';
-import fs from 'fs';
-import log from 'npmlog';
+import { glob } from 'glob';
 import mime from 'mime-types';
-import path from 'path';
+import log from 'npmlog';
 
 const logPrefix = 's3';
 
@@ -117,9 +116,9 @@ export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
         })
         .promise();
     }
-  } catch (err) {
+  } catch (error) {
     log.error(logPrefix, `Cannot copy 404.html to 404/index.html`);
-    throw err;
+    throw error;
   }
 };
 
@@ -155,7 +154,7 @@ export const uploadDirectoryToS3 = async ({
    * Divide all files and create "numberOfGroups" groups of files whose max
    * length is GROUP_MAX_LENGTH.
    */
-  // eslint-disable-next-line max-params
+
   const aoaOfFiles = allFiles.reduce<string[][]>((acc, file, index) => {
     const groupIndex = index % numberOfGroups;
     if (!acc[groupIndex]) {
@@ -233,12 +232,20 @@ export const emptyS3Directory = async ({
         return [...acc, ...objectWithVersionsIds];
       }, []);
 
-      await s3
-        .deleteObjects({
-          Bucket: bucket,
-          Delete: { Objects: objectsWithVersionsIds },
-        })
-        .promise();
+      /**
+       * Batch delete operations in groups of 1000 (AWS limit)
+       * https://stackoverflow.com/a/61474768
+       */
+      const BATCH_SIZE = 1000;
+      for (let i = 0; i < objectsWithVersionsIds.length; i += BATCH_SIZE) {
+        const batch = objectsWithVersionsIds.slice(i, i + BATCH_SIZE);
+        await s3
+          .deleteObjects({
+            Bucket: bucket,
+            Delete: { Objects: batch },
+          })
+          .promise();
+      }
     }
 
     /**
@@ -249,9 +256,9 @@ export const emptyS3Directory = async ({
     }
 
     log.info(logPrefix, `${bucket}/${directory} is empty.`);
-  } catch (err) {
+  } catch (error) {
     log.error(logPrefix, `Cannot empty ${bucket}/${directory}.`);
-    throw err;
+    throw error;
   }
 };
 
