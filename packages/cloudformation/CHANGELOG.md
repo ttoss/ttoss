@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.10.20...@ttoss/cloudformation@0.11.0) (2025-09-02)
+
+### Features
+
+- cloud auth lambda triggers ([#724](https://github.com/ttoss/ttoss/issues/724)) ([78d268a](https://github.com/ttoss/ttoss/commit/78d268a19bf82bc7c9a449fc4f672d6cd66aba51))
+
 ## [0.10.20](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.10.19...@ttoss/cloudformation@0.10.20) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/cloudformation
