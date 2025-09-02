@@ -1,10 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import log from 'npmlog';
+
 import { buildLambdaCode } from './buildLambdaCode';
 import { deployLambdaLayers } from './deployLambdaLayers';
 import { uploadCodeToECR } from './uploadCodeToECR';
 import { uploadCodeToS3 } from './uploadCodeToS3';
-import fs from 'node:fs';
-import log from 'npmlog';
-import path from 'node:path';
 
 const logPrefix = 'lambda';
 

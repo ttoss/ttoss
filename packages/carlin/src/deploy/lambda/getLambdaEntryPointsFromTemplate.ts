@@ -1,4 +1,4 @@
-import { type CloudFormationTemplate } from '../../utils';
+import { type CloudFormationTemplate } from '@ttoss/cloudformation';
 
 export const getLambdaEntryPointsFromTemplate = (
   template: CloudFormationTemplate
@@ -13,9 +13,13 @@ export const getLambdaEntryPointsFromTemplate = (
     );
   });
 
-  const handlers = lambdaResources.map((key) => {
-    return template.Resources[key].Properties.Handler;
-  });
+  const handlers = lambdaResources
+    .map((key) => {
+      return template.Resources[key].Properties?.Handler;
+    })
+    .filter((handler): handler is string => {
+      return !!handler;
+    });
 
   const handlersPaths = handlers.map((handler) => {
     return handler.split('.')[0] + '.ts';

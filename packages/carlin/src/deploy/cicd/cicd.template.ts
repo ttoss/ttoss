@@ -1,3 +1,9 @@
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import { pascalCase } from 'change-case';
+import yaml from 'js-yaml';
+
+import { NODE_RUNTIME } from '../../config';
+import { getEnvironment, getIamPath, getProjectName } from '../../utils';
 import {
   BASE_STACK_BUCKET_NAME_EXPORTED_NAME,
   BASE_STACK_VPC_DEFAULT_SECURITY_GROUP_EXPORTED_NAME,
@@ -7,21 +13,12 @@ import {
 } from '../baseStack/config';
 import { CicdCommandOptions, getCicdConfig } from './command.options';
 import {
-  CloudFormationTemplate,
-  getEnvironment,
-  getIamPath,
-  getProjectName,
-} from '../../utils';
-import {
   ECS_TASK_DEFAULT_CPU,
   ECS_TASK_DEFAULT_MEMORY,
   PIPELINE_ECS_TASK_EXECUTION_MANUAL_APPROVAL_ACTION_NAME,
   PIPELINE_ECS_TASK_EXECUTION_STAGE_NAME,
 } from './config';
-import { NODE_RUNTIME } from '../../config';
 import { getTriggerPipelinesObjectKey } from './getTriggerPipelineObjectKey';
-import { pascalCase } from 'change-case';
-import yaml from 'js-yaml';
 import type { Pipeline } from './pipelines';
 
 export const API_LOGICAL_ID = 'ApiV1ServerlessApi';
@@ -433,6 +430,7 @@ export const getCicdTemplate = ({
     resources[REPOSITORY_IMAGE_CODE_BUILD_PROJECT_LOGICAL_ID] =
       getRepositoryImageBuilder();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cicdConfig: CicdCommandOptions & { environment: any } = {
       ...getCicdConfig(),
       'ssh-key': '/root/.ssh/id_rsa',
@@ -764,7 +762,6 @@ export const getCicdTemplate = ({
             ],
             Image: {
               'Fn::Sub': [
-                // eslint-disable-next-line no-template-curly-in-string
                 '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${RepositoryECR}:latest',
                 {
                   RepositoryECR: { Ref: ECR_REPOSITORY_LOGICAL_ID },

@@ -1,13 +1,14 @@
-import { BASE_STACK_NAME } from './config';
-import { CloudFormationTemplate } from '../../utils';
+import { type CloudFormationTemplate } from '@ttoss/cloudformation';
+import deepmerge from 'deepmerge';
+
 import { deploy } from '../cloudformation.core';
+import { handleDeployError, handleDeployInitialization } from '../utils';
+import { BASE_STACK_NAME } from './config';
 import { getBucketTemplate } from './getBucketTemplate';
 import { getCloudFrontTemplate } from './getCloudFrontTemplate';
 import { getLambdaImageBuilderTemplate } from './getLambdaImageBuilderTemplate';
 import { getLambdaLayerBuilderTemplate } from './getLambdaLayerBuilderTemplate';
 import { getVpcTemplate } from './getVpcTemplate';
-import { handleDeployError, handleDeployInitialization } from '../utils';
-import deepmerge from 'deepmerge';
 
 const logPrefix = 'base-stack';
 

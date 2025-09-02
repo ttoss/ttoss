@@ -59,13 +59,17 @@ and deploy accordingly to the following algorithm:
 
 ### Stack Name
 
-<Carlin /> creates automatically the <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-console-create-stack-parameters.html">
+<Carlin /> creates automatically the
+<a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-console-create-stack-parameters.html">
   CloudFormation stack name
-</a>, unless it is already specified at the <OptionAliasesInline
+</a>
+, unless it is already specified at the
+<OptionAliasesInline
   options={deployCommandOptions}
   option="stack-name"
   to="/docs/carlin/commands/deploy#options"
-/> option. This name is very important because it'll track the deployment when a
+/>
+option. This name is very important because it'll track the deployment when a
 update or a delete is performed.
 
 :::caution
@@ -78,33 +82,26 @@ update or a delete is performed.
 
 ## Lambda
 
-If your template has Lambda functions, <Carlin /> will handle the Lambda code build and deploy. First, it analyzes the CloudFormation template to find all [`Handler`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-handler) properties in the [`AWS::Lambda::Function`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html) and [`AWS::Serverless::Function`](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html) resources. If there are no Lambda functions in the template, <Carlin /> will deploy the stack without the Lambda algorithm. If it finds Lambda functions in the template or if the <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points" to="/docs/carlin/commands/deploy#options" /> option is passed, <Carlin /> will build the Lambda code and upload it to an S3 bucket.
+Carlin automatically handles Lambda functions in your CloudFormation templates by building and deploying code to S3. When Lambda functions are detected, Carlin analyzes `Handler` properties in `AWS::Lambda::Function` and `AWS::Serverless::Function` resources, builds the code, and uploads it to S3.
 
-Your [`Handler`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-handler) property must be in the format `path/to/my/file.myMethodHandler`, where `path/to/my/file` is the file path and `myMethodHandler` is the exported function name. For example, if you have a file named `src/Module/index.ts` with an export function named `getModuleProperty`, the `Handler` property must be `Module/index.getModuleProperty`. Note that `src` is the base directory and you can defined it in the <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points-base-dir" to="/docs/carlin/commands/deploy#options" /> option (default is `src`).
+### Handler Format
 
-Once <Carlin /> uploads the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` [parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html), the S3 bucket parameters that the Lambda code was stored, to the CloudFormation template:
+Your `Handler` property must follow the format `path/to/file.exportedFunction`. For example, if you have `src/auth/index.ts` with export `validateUser`, set `Handler` to `auth/index.validateUser`. The base directory defaults to `src` but can be configured with <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points-base-dir" to="/docs/carlin/commands/deploy#options" />.
+
+### Automatic S3 Parameters
+
+Carlin automatically injects S3 parameters into your CloudFormation template:
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
 
     ```ts
-    {
-      // ...
-      Parameters: {
-        LambdaS3Bucket: {
-          Type: 'String',
-          Description: 'The S3 bucket where the Lambda code is stored.',
-        },
-        LambdaS3Key: {
-          Type: 'String',
-          Description: 'The S3 key where the Lambda code is stored.',
-        },
-        LambdaS3ObjectVersion: {
-          Type: 'String',
-          Description: 'The S3 object version of the Lambda code.',
-        },
-      },
-    };
+    // Carlin adds these parameters automatically
+    Parameters: {
+      LambdaS3Bucket: { Type: 'String' },
+      LambdaS3Key: { Type: 'String' },
+      LambdaS3ObjectVersion: { Type: 'String' },
+    }
     ```
 
   </TabItem>
@@ -112,67 +109,51 @@ Once <Carlin /> uploads the code to S3, it sets the `LambdaS3Bucket`, `LambdaS3K
   <TabItem value="yaml" label="Yaml">
     
     ```yml
+    # Carlin adds these parameters automatically
     Parameters:
       LambdaS3Bucket:
         Type: String
-        Description: The S3 bucket where the Lambda code is stored.
       LambdaS3Key:
         Type: String
-        Description: The S3 key where the Lambda code is stored.
       LambdaS3ObjectVersion:
         Type: String
-        Description: The S3 object version of the Lambda code. 
     ```
     
   </TabItem>
 </Tabs>
 
-Once defined as parameters, you can reference them in your CloudFormation template using the [intrinsic function `Ref`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html). For example, you can set the [`Code`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html)
-property of the [AWS::Lambda::Function resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html)
-or [`CodeUri`](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-functioncode.html) property
-of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html), referencing the `LambdaS3Bucket`, `LambdaS3Key` and `LambdaS3ObjectVersion` parameters. For example, you can set the `Code` or `CodeUri` properties as shown in the following example:
+### Lambda Resource Configuration
+
+Reference the S3 parameters in your Lambda resources. If `Code` or `CodeUri` properties are undefined, Carlin sets them automatically:
 
 <Tabs groupId="cfnTemplate">
   <TabItem value="ts" label="TypeScript" default>
 
     ```ts
-    {
-      // ...
-      Resources: {
-        LambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: {
-                Ref: 'LambdaS3Bucket',
-              },
-              S3Key: {
-                Ref: 'LambdaS3Key',
-              },
-              S3ObjectVersion: {
-                Ref: 'LambdaS3ObjectVersion',
-              },
-            },
-          },
-        },
-        ServerlessFunction: {
-          Type: 'AWS::Serverless::Function',
-          Properties: {
-            CodeUri: {
-              Bucket: {
-                Ref: 'LambdaS3Bucket',
-              },
-              Key: {
-                Ref: 'LambdaS3Key',
-              },
-              Version: {
-                Ref: 'LambdaS3ObjectVersion',
-              },
-            },
+    Resources: {
+      MyLambda: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Handler: 'auth/index.validateUser',
+          Code: {
+            S3Bucket: { Ref: 'LambdaS3Bucket' },
+            S3Key: { Ref: 'LambdaS3Key' },
+            S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
           },
         },
       },
-    };
+      MyServerlessFunction: {
+        Type: 'AWS::Serverless::Function',
+        Properties: {
+          Handler: 'users/create.handler',
+          CodeUri: {
+            Bucket: { Ref: 'LambdaS3Bucket' },
+            Key: { Ref: 'LambdaS3Key' },
+            Version: { Ref: 'LambdaS3ObjectVersion' },
+          },
+        },
+      },
+    }
     ```
 
   </TabItem>
@@ -181,16 +162,18 @@ of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverle
 
     ```yml
     Resources:
-      LambdaFunction:
+      MyLambda:
         Type: AWS::Lambda::Function
         Properties:
+          Handler: auth/index.validateUser
           Code:
             S3Bucket: !Ref LambdaS3Bucket
             S3Key: !Ref LambdaS3Key
             S3ObjectVersion: !Ref LambdaS3ObjectVersion
-      ServerlessFunction:
+      MyServerlessFunction:
         Type: AWS::Serverless::Function
         Properties:
+          Handler: users/create.handler
           CodeUri:
             Bucket: !Ref LambdaS3Bucket
             Key: !Ref LambdaS3Key
@@ -201,13 +184,24 @@ of the [AWS::Serverless::Function resource](https://docs.aws.amazon.com/serverle
 
 </Tabs>
 
-If `Code` or `CodeUri` is not set, <Carlin /> will automatically set them to the values of the parameters, as shown in the example above (if `Code` or `CodeUri` is defined, <Carlin /> won't modify them).
+### Lambda Build Process
 
-### Format
+```mermaid
+flowchart TD
+    A[Analyze CloudFormation template] --> B{Lambda functions found?}
+    B -->|No| C[Deploy without Lambda build]
+    B -->|Yes| D[Extract Handler properties]
+    D --> E[Build Lambda code bundle]
+    E --> F[Upload to S3 bucket]
+    F --> G[Inject S3 parameters]
+    G --> H[Deploy CloudFormation stack]
+```
+
+### Format Configuration
 
 <InnerHTML html={buildLambdaCodeComment} />
 
-Use the <OptionAliasesInline options={deployCommandOptions} option="lambda-format" to="/docs/carlin/commands/deploy#options" /> option to define the format of the Lambda code. The default is `esm`.
+Configure output format with <OptionAliasesInline options={deployCommandOptions} option="lambda-format" to="/docs/carlin/commands/deploy#options" />. Default is `esm` for modern JavaScript modules.
 
 ## Destroy
 

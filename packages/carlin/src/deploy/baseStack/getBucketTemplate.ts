@@ -1,4 +1,4 @@
-import { CloudFormationTemplate } from '../../utils';
+import { type CloudFormationTemplate } from '@ttoss/cloudformation';
 
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,

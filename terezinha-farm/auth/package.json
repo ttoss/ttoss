@@ -7,5 +7,8 @@
   },
   "dependencies": {
     "@ttoss/cloud-auth": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152"
   }
 }

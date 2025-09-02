@@ -14,7 +14,7 @@ export const getStaticAppBucket = async ({
   try {
     const { StackResourceDetail } = await describeStackResource(params);
     return StackResourceDetail?.PhysicalResourceId;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

@@ -1,10 +1,12 @@
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import yaml from 'js-yaml';
+
+import { getIamPath } from '../../utils';
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_LAMBDA_IMAGE_BUILDER_EXPORTED_NAME,
   BASE_STACK_LAMBDA_IMAGE_BUILDER_LOGICAL_NAME,
 } from './config';
-import { CloudFormationTemplate, getIamPath } from '../../utils';
-import yaml from 'js-yaml';
 
 export const getLambdaImageBuilderTemplate = (): CloudFormationTemplate => {
   const CODE_BUILD_PROJECT_LOGS_LOGICAL_ID = 'CodeBuildProjectLogsLogGroup';
@@ -69,7 +71,6 @@ export const getLambdaImageBuilderTemplate = (): CloudFormationTemplate => {
                     Resource: [
                       {
                         'Fn::Sub': [
-                          // eslint-disable-next-line no-template-curly-in-string
                           'arn:aws:s3:::${BucketName}/*',
                           {
                             BucketName: {

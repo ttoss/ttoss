@@ -1,5 +1,10 @@
+import type {
+  CloudFormationGetAtt,
+  CloudFormationTemplate,
+  Policy,
+} from '@ttoss/cloudformation';
+
 import { PASSWORD_MINIMUM_LENGTH } from './config';
-import type { CloudFormationTemplate, Policy } from '@ttoss/cloudformation';
 
 const CognitoUserPoolLogicalId = 'CognitoUserPool';
 
@@ -24,44 +29,65 @@ export const defaultPrincipalTags = {
   userId: 'sub',
 };
 
+type SchemaAttribute = {
+  attributeDataType?: 'Boolean' | 'DateTime' | 'Number' | 'String';
+  developerOnlyAttribute?: boolean;
+  mutable?: boolean;
+  name?: string;
+  numberAttributeConstraints?: {
+    maxValue?: string;
+    minValue?: string;
+  };
+  required?: boolean;
+  stringAttributeConstraints?: {
+    maxLength: string;
+    minLength: string;
+  };
+};
+
+type IdentityPoolConfig = {
+  enabled?: boolean;
+  name?: string;
+  allowUnauthenticatedIdentities?: boolean;
+  authenticatedRoleArn?: string;
+  authenticatedPolicies?: Policy[];
+  unauthenticatedRoleArn?: string;
+  unauthenticatedPolicies?: Policy[];
+  principalTags?: Record<string, string> | boolean;
+};
+
+type LambdaTriggers = {
+  preSignUp?: string | CloudFormationGetAtt;
+  postConfirmation?: string | CloudFormationGetAtt;
+  preAuthentication?: string | CloudFormationGetAtt;
+  postAuthentication?: string | CloudFormationGetAtt;
+  defineAuthChallenge?: string | CloudFormationGetAtt;
+  createAuthChallenge?: string | CloudFormationGetAtt;
+  verifyAuthChallengeResponse?: string | CloudFormationGetAtt;
+  preTokenGeneration?: string | CloudFormationGetAtt;
+  userMigration?: string | CloudFormationGetAtt;
+  customMessage?: string | CloudFormationGetAtt;
+  customEmailSender?: string | CloudFormationGetAtt;
+  customSMSSender?: string | CloudFormationGetAtt;
+};
+
+type CreateAuthTemplateParams = {
+  autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
+  identityPool?: IdentityPoolConfig;
+  schema?: SchemaAttribute[];
+  usernameAttributes?: Array<'email' | 'phone_number'> | null;
+  lambdaTriggers?: LambdaTriggers;
+  deletionProtection?: 'ACTIVE' | 'INACTIVE';
+};
+
 export const createAuthTemplate = ({
   autoVerifiedAttributes = ['email'],
   identityPool,
   schema,
   usernameAttributes = ['email'],
-}: {
-  autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
-  identityPool?: {
-    enabled?: boolean;
-    name?: string;
-    allowUnauthenticatedIdentities?: boolean;
-    authenticatedRoleArn?: string;
-    authenticatedPolicies?: Policy[];
-    unauthenticatedRoleArn?: string;
-    unauthenticatedPolicies?: Policy[];
-    principalTags?: Record<string, string> | boolean;
-  };
-  /**
-   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-schemaattribute.html
-   */
-  schema?: {
-    attributeDataType?: 'Boolean' | 'DateTime' | 'Number' | 'String';
-    developerOnlyAttribute?: boolean;
-    mutable?: boolean;
-    name?: string;
-    numberAttributeConstraints?: {
-      maxValue?: string;
-      minValue?: string;
-    };
-    required?: boolean;
-    stringAttributeConstraints?: {
-      maxLength: string;
-      minLength: string;
-    };
-  }[];
-  usernameAttributes?: Array<'email' | 'phone_number'> | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} = {}): any => {
+  lambdaTriggers,
+  deletionProtection,
+}: CreateAuthTemplateParams = {}): CloudFormationTemplate => {
   const AutoVerifiedAttributes =
     Array.isArray(autoVerifiedAttributes) && autoVerifiedAttributes.length > 0
       ? autoVerifiedAttributes
@@ -94,6 +120,7 @@ export const createAuthTemplate = ({
           UserPoolName: {
             Ref: 'AWS::StackName',
           },
+          ...(deletionProtection && { DeletionProtection: deletionProtection }),
         },
       },
       [CognitoUserPoolClientLogicalId]: {
@@ -178,7 +205,10 @@ export const createAuthTemplate = ({
       };
     });
 
-    template.Resources[CognitoUserPoolLogicalId].Properties.Schema = Schema;
+    template.Resources[CognitoUserPoolLogicalId].Properties = {
+      ...template.Resources[CognitoUserPoolLogicalId].Properties,
+      Schema,
+    };
   }
 
   if (identityPool?.enabled) {
@@ -204,9 +234,10 @@ export const createAuthTemplate = ({
     };
 
     if (identityPool.name) {
-      template.Resources[
-        CognitoIdentityPoolLogicalId
-      ].Properties.IdentityPoolName = identityPool.name;
+      template.Resources[CognitoIdentityPoolLogicalId].Properties = {
+        ...template.Resources[CognitoIdentityPoolLogicalId].Properties,
+        IdentityPoolName: identityPool.name,
+      };
     }
 
     template.Resources.CognitoIdentityPoolRoleAttachment = {
@@ -260,13 +291,21 @@ export const createAuthTemplate = ({
         },
       };
 
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles.authenticated =
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
         {
-          'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
-        };
+          authenticated: {
+            'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+        }
+      );
     } else {
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles.authenticated =
-        identityPool.authenticatedRoleArn;
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
+        {
+          authenticated: identityPool.authenticatedRoleArn,
+        }
+      );
     }
 
     if (!identityPool.unauthenticatedRoleArn) {
@@ -295,7 +334,7 @@ export const createAuthTemplate = ({
               },
             ],
           },
-          Policies: identityPool.authenticatedPolicies || [
+          Policies: identityPool.unauthenticatedPolicies || [
             {
               PolicyName: 'IdentityPoolUnauthenticatedIAMRolePolicyName',
               PolicyDocument: {
@@ -307,13 +346,21 @@ export const createAuthTemplate = ({
         },
       };
 
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles.unauthenticated =
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
         {
-          'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
-        };
+          unauthenticated: {
+            'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+        }
+      );
     } else {
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles.unauthenticated =
-        identityPool.unauthenticatedRoleArn;
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
+        {
+          unauthenticated: identityPool.unauthenticatedRoleArn,
+        }
+      );
     }
 
     /**
@@ -350,24 +397,73 @@ export const createAuthTemplate = ({
       };
     }
 
-    if (!template.Outputs) {
-      template.Outputs = {};
-    }
-
-    template.Outputs.IdentityPoolId = {
-      Description: 'You use this value on Amplify Auth `identityPoolId`.',
-      Value: {
-        Ref: CognitoIdentityPoolLogicalId,
-      },
-      Export: {
-        Name: {
-          'Fn::Join': [
-            ':',
-            [{ Ref: 'AWS::StackName' }, 'CognitoIdentityPoolId'],
-          ],
+    template.Outputs = {
+      ...template.Outputs,
+      IdentityPoolId: {
+        Description: 'You use this value on Amplify Auth `identityPoolId`.',
+        Value: {
+          Ref: CognitoIdentityPoolLogicalId,
+        },
+        Export: {
+          Name: {
+            'Fn::Join': [
+              ':',
+              [{ Ref: 'AWS::StackName' }, 'CognitoIdentityPoolId'],
+            ],
+          },
         },
       },
     };
+  }
+
+  // Apply Lambda triggers if provided
+  if (lambdaTriggers) {
+    const LambdaConfig: Record<string, string | CloudFormationGetAtt> = {};
+
+    if (lambdaTriggers.preSignUp) {
+      LambdaConfig.PreSignUp = lambdaTriggers.preSignUp;
+    }
+    if (lambdaTriggers.postConfirmation) {
+      LambdaConfig.PostConfirmation = lambdaTriggers.postConfirmation;
+    }
+    if (lambdaTriggers.preAuthentication) {
+      LambdaConfig.PreAuthentication = lambdaTriggers.preAuthentication;
+    }
+    if (lambdaTriggers.postAuthentication) {
+      LambdaConfig.PostAuthentication = lambdaTriggers.postAuthentication;
+    }
+    if (lambdaTriggers.defineAuthChallenge) {
+      LambdaConfig.DefineAuthChallenge = lambdaTriggers.defineAuthChallenge;
+    }
+    if (lambdaTriggers.createAuthChallenge) {
+      LambdaConfig.CreateAuthChallenge = lambdaTriggers.createAuthChallenge;
+    }
+    if (lambdaTriggers.verifyAuthChallengeResponse) {
+      LambdaConfig.VerifyAuthChallengeResponse =
+        lambdaTriggers.verifyAuthChallengeResponse;
+    }
+    if (lambdaTriggers.preTokenGeneration) {
+      LambdaConfig.PreTokenGeneration = lambdaTriggers.preTokenGeneration;
+    }
+    if (lambdaTriggers.userMigration) {
+      LambdaConfig.UserMigration = lambdaTriggers.userMigration;
+    }
+    if (lambdaTriggers.customMessage) {
+      LambdaConfig.CustomMessage = lambdaTriggers.customMessage;
+    }
+    if (lambdaTriggers.customEmailSender) {
+      LambdaConfig.CustomEmailSender = lambdaTriggers.customEmailSender;
+    }
+    if (lambdaTriggers.customSMSSender) {
+      LambdaConfig.CustomSMSSender = lambdaTriggers.customSMSSender;
+    }
+
+    if (Object.keys(LambdaConfig).length > 0) {
+      template.Resources[CognitoUserPoolLogicalId].Properties = {
+        ...template.Resources[CognitoUserPoolLogicalId].Properties,
+        LambdaConfig,
+      };
+    }
   }
 
   return template;
