@@ -1,9 +1,9 @@
 import { deploy } from '../cloudformation.core';
-import { getStaticAppBucket } from './getStaticAppBucket';
-import { getStaticAppTemplate } from './staticApp.template';
 import { handleDeployError, handleDeployInitialization } from '../utils';
+import { getStaticAppBucket } from './getStaticAppBucket';
 import { invalidateCloudFront } from './invalidateCloudFront';
 import { removeOldVersions } from './removeOldVersions';
+import { getStaticAppTemplate } from './staticApp.template';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
 
 const logPrefix = 'static-app';

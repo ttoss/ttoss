@@ -1,9 +1,9 @@
+import { NODE_VERSION } from '../../config';
+import { getIamPath } from '../../utils';
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
 } from './config';
-import { NODE_VERSION } from '../../config';
-import { getIamPath } from '../../utils';
 
 const CODE_BUILD_PROJECT_LOGS_GROUP_LOGICAL_ID = `${BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME}LogsLogGroup`;
 
@@ -69,7 +69,6 @@ export const getLambdaLayerBuilderTemplate = () => {
                     Resource: [
                       {
                         'Fn::Sub': [
-                          // eslint-disable-next-line no-template-curly-in-string
                           'arn:aws:s3:::${BucketName}',
                           {
                             BucketName: {
@@ -80,7 +79,6 @@ export const getLambdaLayerBuilderTemplate = () => {
                       },
                       {
                         'Fn::Sub': [
-                          // eslint-disable-next-line no-template-curly-in-string
                           'arn:aws:s3:::${BucketName}/*',
                           {
                             BucketName: {

@@ -1,9 +1,10 @@
+import { type CloudFormationTemplate } from '@ttoss/cloudformation';
+
 import {
   BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN,
   BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
   BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_LOGICAL_NAME,
 } from './config';
-import { CloudFormationTemplate } from '../../utils';
 
 /**
  * https://juffalow.com/blog/other/how-to-deploy-docusaurus-page-using-aws-s3-and-cloudfront#cloudfront-functions

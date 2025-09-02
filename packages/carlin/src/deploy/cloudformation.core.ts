@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import {
   CloudFormationClient,
   CloudFormationClientConfig,
@@ -18,19 +18,21 @@ import {
   ValidateTemplateCommand,
   ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import AWS from 'aws-sdk';
+import log from 'npmlog';
+
 import {
-  CloudFormationTemplate,
-  getEnvVar,
   getEnvironment,
+  getEnvVar,
   getPackageName,
   getProjectName,
 } from '../utils';
-import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 import { addDefaults } from './addDefaults.cloudformation';
-import { emptyS3Directory, uploadFileToS3 } from './s3';
+import { BASE_STACK_BUCKET_TEMPLATES_FOLDER } from './baseStack/config';
 import { getBaseStackResource } from './baseStack/getBaseStackResource';
-import AWS from 'aws-sdk';
-import log from 'npmlog';
+import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
+import { emptyS3Directory, uploadFileToS3 } from './s3';
 
 const logPrefix = 'cloudformation';
 log.addLevel('event', 10000, { fg: 'yellow' });
@@ -159,9 +161,10 @@ export const describeStackEvents = async ({
      */
     .reverse();
 
-  events.forEach(({ LogicalResourceId, ResourceStatusReason }) => {
-    return log.event(LogicalResourceId, ResourceStatusReason);
-  });
+  for (const { LogicalResourceId, ResourceStatusReason } of events) {
+    log.event(LogicalResourceId, ResourceStatusReason);
+    continue;
+  }
 
   return events;
 };
@@ -270,7 +273,7 @@ export const printStackOutputsAfterDeploy = async ({
   log.output('Describe Stack');
   log.output('StackName', StackName);
   log.output('EnableTerminationProtection', EnableTerminationProtection);
-  Outputs.forEach(({ OutputKey, OutputValue, Description, ExportName }) => {
+  for (const { OutputKey, OutputValue, Description, ExportName } of Outputs) {
     log.output(
       `${OutputKey}`,
       [
@@ -282,7 +285,7 @@ export const printStackOutputsAfterDeploy = async ({
         '',
       ].join('\n')
     );
-  });
+  }
 };
 
 export const deleteStack = async ({ stackName }: { stackName: string }) => {
@@ -292,10 +295,10 @@ export const deleteStack = async ({ stackName }: { stackName: string }) => {
     await cloudFormationV2()
       .waitFor('stackDeleteComplete', { StackName: stackName })
       .promise();
-  } catch (err) {
+  } catch (error) {
     log.error(logPrefix, `An error occurred when deleting stack ${stackName}.`);
     await describeStackEvents({ stackName });
-    throw err;
+    throw error;
   }
   log.info(logPrefix, `Stack ${stackName} deleted.`);
 };
@@ -312,11 +315,11 @@ export const createStack = async ({
     await cloudFormationV2()
       .waitFor('stackCreateComplete', { StackName: stackName })
       .promise();
-  } catch (err) {
+  } catch (error) {
     log.error(logPrefix, `An error occurred when creating stack ${stackName}.`);
     await describeStackEvents({ stackName });
     await deleteStack({ stackName });
-    throw err;
+    throw error;
   }
   log.info(logPrefix, `Stack ${stackName} was created.`);
 };
@@ -360,12 +363,12 @@ export const enableTerminationProtection = async ({
         StackName: stackName,
       })
     );
-  } catch (err) {
+  } catch (error) {
     log.error(
       logPrefix,
       'An error occurred when enabling termination protection'
     );
-    throw err;
+    throw error;
   }
 };
 
@@ -462,13 +465,12 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
       // await getBuckets({ nextToken: NextToken });
     }
 
-    (StackResourceSummaries || []).forEach(
-      ({ ResourceType, PhysicalResourceId }) => {
-        if (ResourceType === 'AWS::S3::Bucket' && PhysicalResourceId) {
-          buckets.push(PhysicalResourceId);
-        }
+    for (const { ResourceType, PhysicalResourceId } of StackResourceSummaries ||
+      []) {
+      if (ResourceType === 'AWS::S3::Bucket' && PhysicalResourceId) {
+        buckets.push(PhysicalResourceId);
       }
-    );
+    }
   })({});
 
   return Promise.all(

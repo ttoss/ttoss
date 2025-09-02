@@ -1,9 +1,7 @@
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { pascalCase } from 'change-case';
 
 import { NAME } from '../../config';
-
-import { CloudFormationTemplate } from '../../utils';
-
 import {
   BASE_STACK_VPC_DEFAULT_SECURITY_GROUP_EXPORTED_NAME,
   BASE_STACK_VPC_ID_EXPORTED_NAME,
@@ -111,14 +109,18 @@ export const getVpcTemplate = () => {
     },
   };
 
-  [
+  for (const [index, publicSubnetExportedName] of [
     BASE_STACK_VPC_PUBLIC_SUBNET_0_EXPORTED_NAME,
     BASE_STACK_VPC_PUBLIC_SUBNET_1_EXPORTED_NAME,
     BASE_STACK_VPC_PUBLIC_SUBNET_2_EXPORTED_NAME,
-  ].forEach((publicSubnetExportedName, index) => {
+  ].entries()) {
     const publicSubnetLogicalId = `PublicSubnet${index}EC2Subnet`;
 
     const publicSubnetCidrMappings = `PublicSubnet${index}`;
+
+    if (!template.Mappings) {
+      template.Mappings = {};
+    }
 
     template.Mappings.CidrMappings[publicSubnetCidrMappings] = {
       CIDR: `10.0.${index}.0/24`,
@@ -182,7 +184,7 @@ export const getVpcTemplate = () => {
         Name: publicSubnetExportedName,
       },
     };
-  });
+  }
 
   return template;
 };

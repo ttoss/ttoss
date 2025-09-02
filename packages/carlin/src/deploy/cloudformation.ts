@@ -1,9 +1,11 @@
 import {
-  CloudFormationTemplate,
-  getEnvironment,
-  getPackageName,
-  getProjectName,
-} from '../utils';
+  type CloudFormationTemplate,
+  findAndReadCloudFormationTemplate,
+} from '@ttoss/cloudformation';
+import AWS from 'aws-sdk';
+import log from 'npmlog';
+
+import { getEnvironment, getPackageName, getProjectName } from '../utils';
 import {
   canDestroyStack,
   cloudFormationV2,
@@ -13,13 +15,10 @@ import {
   validateTemplate,
 } from './cloudformation.core';
 import { deployLambdaCode } from './lambda/deployLambdaCode';
-import { emptyS3Directory } from './s3';
-import { findAndReadCloudFormationTemplate } from '@ttoss/cloudformation';
 import { getLambdaEntryPointsFromTemplate } from './lambda/getLambdaEntryPointsFromTemplate';
+import { emptyS3Directory } from './s3';
 import { getStackName } from './stackName';
 import { handleDeployError, handleDeployInitialization } from './utils';
-import AWS from 'aws-sdk';
-import log from 'npmlog';
 
 const logPrefix = 'cloudformation';
 log.addLevel('event', 10000, { fg: 'yellow' });
@@ -117,33 +116,34 @@ export const deployCloudFormation = async (cliOptions: {
      * Add Parameters passed on CLI to CloudFormation template if they don't exist.
      * Also, automatically add the Type of the parameter.
      */
-    parameters?.forEach((parameter) => {
-      if (cloudFormationTemplate.Parameters?.[parameter.key]) {
-        return;
-      }
-
-      if (!cloudFormationTemplate.Parameters) {
-        cloudFormationTemplate.Parameters = {};
-      }
-
-      const type = (() => {
-        if (typeof parameter.value === 'string') {
-          return 'String';
+    if (parameters)
+      for (const parameter of parameters) {
+        if (cloudFormationTemplate.Parameters?.[parameter.key]) {
+          continue;
         }
 
-        if (typeof parameter.value === 'number') {
-          return 'Number';
+        if (!cloudFormationTemplate.Parameters) {
+          cloudFormationTemplate.Parameters = {};
         }
 
-        throw new Error(
-          `Parameter assertion failed. Parameter ${parameter.key} value ${parameter.value} is not mapped.`
-        );
-      })();
+        const type = (() => {
+          if (typeof parameter.value === 'string') {
+            return 'String';
+          }
 
-      cloudFormationTemplate.Parameters[parameter.key] = {
-        Type: type,
-      };
-    });
+          if (typeof parameter.value === 'number') {
+            return 'Number';
+          }
+
+          throw new Error(
+            `Parameter assertion failed. Parameter ${parameter.key} value ${parameter.value} is not mapped.`
+          );
+        })();
+
+        cloudFormationTemplate.Parameters[parameter.key] = {
+          Type: type,
+        };
+      }
 
     await validateTemplate({ stackName, template: cloudFormationTemplate });
 
@@ -233,29 +233,35 @@ export const deployCloudFormation = async (cliOptions: {
            * `CodeUri` property to every AWS::Serverless::Function resource if
            * they are NOT already defined.
            */
-          Object.keys(cloudFormationTemplate.Resources).forEach((key) => {
+          for (const key of Object.keys(cloudFormationTemplate.Resources)) {
             const resource = cloudFormationTemplate.Resources[key];
 
             if (resource.Type === 'AWS::Lambda::Function') {
-              if (!resource.Properties.Code) {
-                resource.Properties.Code = {
-                  S3Bucket: { Ref: 'LambdaS3Bucket' },
-                  S3Key: { Ref: 'LambdaS3Key' },
-                  S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
+              if (!resource.Properties?.Code) {
+                resource.Properties = {
+                  ...resource.Properties,
+                  Code: {
+                    S3Bucket: { Ref: 'LambdaS3Bucket' },
+                    S3Key: { Ref: 'LambdaS3Key' },
+                    S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
+                  },
                 };
               }
             }
 
             if (resource.Type === 'AWS::Serverless::Function') {
-              if (!resource.Properties.CodeUri) {
-                resource.Properties.CodeUri = {
-                  Bucket: { Ref: 'LambdaS3Bucket' },
-                  Key: { Ref: 'LambdaS3Key' },
-                  Version: { Ref: 'LambdaS3ObjectVersion' },
+              if (!resource.Properties?.CodeUri) {
+                resource.Properties = {
+                  ...resource.Properties,
+                  CodeUri: {
+                    Bucket: { Ref: 'LambdaS3Bucket' },
+                    Key: { Ref: 'LambdaS3Key' },
+                    Version: { Ref: 'LambdaS3ObjectVersion' },
+                  },
                 };
               }
             }
-          });
+          }
         }
       }
     };
@@ -289,13 +295,12 @@ const emptyStackBuckets = async ({ stackName }: { stackName: string }) => {
     //   await getBuckets({ nextToken: NextToken });
     // }
 
-    (StackResourceSummaries || []).forEach(
-      ({ ResourceType, PhysicalResourceId }) => {
-        if (ResourceType === 'AWS::S3::Bucket' && PhysicalResourceId) {
-          buckets.push(PhysicalResourceId);
-        }
+    for (const { ResourceType, PhysicalResourceId } of StackResourceSummaries ||
+      []) {
+      if (ResourceType === 'AWS::S3::Bucket' && PhysicalResourceId) {
+        buckets.push(PhysicalResourceId);
       }
-    );
+    }
   })({});
 
   return Promise.all(

@@ -2,10 +2,10 @@ import {
   CreateStackCommandInput,
   UpdateStackCommandInput,
 } from '@aws-sdk/client-cloudformation';
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 
 import { NAME } from '../config';
 import {
-  CloudFormationTemplate,
   getCurrentBranch,
   getEnvironment,
   getPackageName,
@@ -133,7 +133,9 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
 
   for (const [, resource] of resourcesEntries) {
     if (resource.Type === 'AWS::Lambda::Function') {
-      const { Properties } = resource;
+      if (!resource.Properties) {
+        resource.Properties = {};
+      }
 
       /**
        * Lambda@Edege does not support environment variables.
@@ -141,7 +143,11 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
        * Then every function that has "Lambda@Edge" in its description will not
        * have the variables passed to Environment.Variables.
        */
-      if (((Properties.Description as string) || '').includes('Lambda@Edge')) {
+      if (
+        ((resource.Properties.Description as string) || '').includes(
+          'Lambda@Edge'
+        )
+      ) {
         continue;
       }
 
@@ -149,15 +155,15 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
         continue;
       }
 
-      if (!Properties.Environment) {
-        Properties.Environment = {};
+      if (!resource.Properties.Environment) {
+        resource.Properties.Environment = {};
       }
 
-      if (!Properties.Environment.Variables) {
-        Properties.Environment.Variables = {};
+      if (!resource.Properties.Environment.Variables) {
+        resource.Properties.Environment.Variables = {};
       }
 
-      Properties.Environment.Variables.ENVIRONMENT = environment;
+      resource.Properties.Environment.Variables.ENVIRONMENT = environment;
     }
   }
 };

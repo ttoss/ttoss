@@ -1,11 +1,13 @@
-import { CloudFormationTemplate, waitCodeBuildFinish } from '../../utils';
-import { NODE_RUNTIME } from '../../config';
-import { deploy, doesStackExist } from '../cloudformation.core';
-import { getBaseStackResource } from '../baseStack/getBaseStackResource';
-import { getPackageLambdaLayerStackName } from './getPackageLambdaLayerStackName';
-import { handleDeployError } from '../utils';
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
+
+import { NODE_RUNTIME } from '../../config';
+import { waitCodeBuildFinish } from '../../utils';
+import { getBaseStackResource } from '../baseStack/getBaseStackResource';
+import { deploy, doesStackExist } from '../cloudformation.core';
+import { handleDeployError } from '../utils';
+import { getPackageLambdaLayerStackName } from './getPackageLambdaLayerStackName';
 
 const logPrefix = 'lambda-layer';
 

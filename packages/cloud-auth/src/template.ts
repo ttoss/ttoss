@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type {
   CloudFormationGetAtt,
   CloudFormationTemplate,
@@ -206,7 +205,10 @@ export const createAuthTemplate = ({
       };
     });
 
-    template.Resources[CognitoUserPoolLogicalId].Properties!.Schema = Schema;
+    template.Resources[CognitoUserPoolLogicalId].Properties = {
+      ...template.Resources[CognitoUserPoolLogicalId].Properties,
+      Schema,
+    };
   }
 
   if (identityPool?.enabled) {
@@ -232,9 +234,10 @@ export const createAuthTemplate = ({
     };
 
     if (identityPool.name) {
-      template.Resources[
-        CognitoIdentityPoolLogicalId
-      ].Properties!.IdentityPoolName = identityPool.name;
+      template.Resources[CognitoIdentityPoolLogicalId].Properties = {
+        ...template.Resources[CognitoIdentityPoolLogicalId].Properties,
+        IdentityPoolName: identityPool.name,
+      };
     }
 
     template.Resources.CognitoIdentityPoolRoleAttachment = {
@@ -288,13 +291,21 @@ export const createAuthTemplate = ({
         },
       };
 
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties!.Roles.authenticated =
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
         {
-          'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
-        };
+          authenticated: {
+            'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+        }
+      );
     } else {
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties!.Roles.authenticated =
-        identityPool.authenticatedRoleArn;
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
+        {
+          authenticated: identityPool.authenticatedRoleArn,
+        }
+      );
     }
 
     if (!identityPool.unauthenticatedRoleArn) {
@@ -335,13 +346,21 @@ export const createAuthTemplate = ({
         },
       };
 
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties!.Roles.unauthenticated =
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
         {
-          'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
-        };
+          unauthenticated: {
+            'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
+          },
+        }
+      );
     } else {
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties!.Roles.unauthenticated =
-        identityPool.unauthenticatedRoleArn;
+      Object.assign(
+        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
+        {
+          unauthenticated: identityPool.unauthenticatedRoleArn,
+        }
+      );
     }
 
     /**
@@ -378,17 +397,20 @@ export const createAuthTemplate = ({
       };
     }
 
-    template.Outputs!.IdentityPoolId = {
-      Description: 'You use this value on Amplify Auth `identityPoolId`.',
-      Value: {
-        Ref: CognitoIdentityPoolLogicalId,
-      },
-      Export: {
-        Name: {
-          'Fn::Join': [
-            ':',
-            [{ Ref: 'AWS::StackName' }, 'CognitoIdentityPoolId'],
-          ],
+    template.Outputs = {
+      ...template.Outputs,
+      IdentityPoolId: {
+        Description: 'You use this value on Amplify Auth `identityPoolId`.',
+        Value: {
+          Ref: CognitoIdentityPoolLogicalId,
+        },
+        Export: {
+          Name: {
+            'Fn::Join': [
+              ':',
+              [{ Ref: 'AWS::StackName' }, 'CognitoIdentityPoolId'],
+            ],
+          },
         },
       },
     };
@@ -437,8 +459,10 @@ export const createAuthTemplate = ({
     }
 
     if (Object.keys(LambdaConfig).length > 0) {
-      template.Resources[CognitoUserPoolLogicalId].Properties!.LambdaConfig =
-        LambdaConfig;
+      template.Resources[CognitoUserPoolLogicalId].Properties = {
+        ...template.Resources[CognitoUserPoolLogicalId].Properties,
+        LambdaConfig,
+      };
     }
   }
 

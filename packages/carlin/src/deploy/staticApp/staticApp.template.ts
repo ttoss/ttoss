@@ -1,10 +1,11 @@
-import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from '../baseStack/config';
-import {
+import type {
   CloudFormationTemplate,
   Output,
   Resource,
-  getPackageVersion,
-} from '../../utils';
+} from '@ttoss/cloudformation';
+
+import { getPackageVersion } from '../../utils';
+import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from '../baseStack/config';
 
 const PACKAGE_VERSION = getPackageVersion();
 
@@ -290,6 +291,10 @@ const getCloudFrontTemplate = ({
     /**
      * Add ACM to CloudFront template.
      */
+    if (!cloudFrontResources.CloudFrontDistribution.Properties) {
+      cloudFrontResources.CloudFrontDistribution.Properties = {};
+    }
+
     cloudFrontResources.CloudFrontDistribution.Properties.DistributionConfig = {
       ...cloudFrontResources.CloudFrontDistribution.Properties
         .DistributionConfig,
@@ -376,6 +381,10 @@ const getCloudFrontTemplate = ({
   );
 
   if (appendIndexHtml) {
+    if (!template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties) {
+      template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties = {};
+    }
+
     template.Resources[
       CLOUDFRONT_DISTRIBUTION_LOGICAL_ID
     ].Properties.DistributionConfig.DefaultCacheBehavior.FunctionAssociations =
