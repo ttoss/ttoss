@@ -5,7 +5,7 @@ describe('user pool', () => {
   test('do not add schema if not provided', () => {
     const template = createAuthTemplate();
     expect(
-      template.Resources.CognitoUserPool.Properties.Schema
+      template.Resources.CognitoUserPool.Properties?.Schema
     ).toBeUndefined();
   });
 
@@ -25,7 +25,7 @@ describe('user pool', () => {
     ];
 
     const template = createAuthTemplate({ schema });
-    expect(template.Resources.CognitoUserPool.Properties.Schema).toEqual([
+    expect(template.Resources.CognitoUserPool.Properties?.Schema).toEqual([
       {
         AttributeDataType: 'String',
         DeveloperOnlyAttribute: false,
@@ -40,17 +40,71 @@ describe('user pool', () => {
     ]);
   });
 
+  test('add schema with numberAttributeConstraints if provided', () => {
+    const schema = [
+      {
+        attributeDataType: 'Number' as const,
+        developerOnlyAttribute: false,
+        mutable: true,
+        name: 'age',
+        required: false,
+        numberAttributeConstraints: {
+          maxValue: '120',
+          minValue: '0',
+        },
+      },
+    ];
+
+    const template = createAuthTemplate({ schema });
+    expect(template.Resources.CognitoUserPool.Properties?.Schema).toEqual([
+      {
+        AttributeDataType: 'Number',
+        DeveloperOnlyAttribute: false,
+        Mutable: true,
+        Name: 'age',
+        Required: false,
+        NumberAttributeConstraints: {
+          MaxValue: '120',
+          MinValue: '0',
+        },
+      },
+    ]);
+  });
+
+  test('schema without constraints should not include constraint properties', () => {
+    const schema = [
+      {
+        attributeDataType: 'Boolean' as const,
+        name: 'isActive',
+        required: false,
+      },
+    ];
+
+    const template = createAuthTemplate({ schema });
+    expect(template.Resources.CognitoUserPool.Properties?.Schema).toEqual([
+      {
+        AttributeDataType: 'Boolean',
+        Name: 'isActive',
+        Required: false,
+        DeveloperOnlyAttribute: undefined,
+        Mutable: undefined,
+        NumberAttributeConstraints: undefined,
+        StringAttributeConstraints: undefined,
+      },
+    ]);
+  });
+
   test('should have autoVerifiedAttributes equal email by default', () => {
     const template = createAuthTemplate();
     expect(
-      template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
+      template.Resources.CognitoUserPool.Properties?.AutoVerifiedAttributes
     ).toEqual(['email']);
   });
 
   test('default usernameAttributes should be email', () => {
     const template = createAuthTemplate();
     expect(
-      template.Resources.CognitoUserPool.Properties.UsernameAttributes
+      template.Resources.CognitoUserPool.Properties?.UsernameAttributes
     ).toEqual(['email']);
   });
 
@@ -60,7 +114,7 @@ describe('user pool', () => {
     (autoVerifiedAttributes: any) => {
       const template = createAuthTemplate({ autoVerifiedAttributes });
       expect(
-        template.Resources.CognitoUserPool.Properties.AutoVerifiedAttributes
+        template.Resources.CognitoUserPool.Properties?.AutoVerifiedAttributes
       ).toEqual([]);
     }
   );
@@ -73,6 +127,23 @@ describe('user pool', () => {
     const template = createAuthTemplate();
     expect(template.Resources.CognitoUserPool.DeletionPolicy).toBeUndefined();
   });
+
+  test('should not add DeletionProtection if not provided', () => {
+    const template = createAuthTemplate();
+    expect(
+      template.Resources.CognitoUserPool.Properties?.DeletionProtection
+    ).toBeUndefined();
+  });
+
+  test.each(['ACTIVE', 'INACTIVE'] as const)(
+    'should add DeletionProtection when provided: %s',
+    (deletionProtection) => {
+      const template = createAuthTemplate({ deletionProtection });
+      expect(
+        template.Resources.CognitoUserPool.Properties?.DeletionProtection
+      ).toEqual(deletionProtection);
+    }
+  );
 });
 
 describe('identity pool', () => {
@@ -192,7 +263,7 @@ describe('identity pool', () => {
     });
 
     expect(
-      template.Resources.CognitoIdentityPool.Properties.IdentityPoolName
+      template.Resources.CognitoIdentityPool.Properties?.IdentityPoolName
     ).toEqual(identityPoolName);
   });
 
@@ -204,7 +275,7 @@ describe('identity pool', () => {
     });
 
     expect(
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles
         .authenticated
     ).toEqual({
       'Fn::GetAtt': [
@@ -222,7 +293,7 @@ describe('identity pool', () => {
     });
 
     expect(
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles
         .unauthenticated
     ).toEqual({
       'Fn::GetAtt': [
@@ -243,7 +314,7 @@ describe('identity pool', () => {
     });
 
     expect(
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles
         .authenticated
     ).toEqual(authenticatedRoleArn);
   });
@@ -259,7 +330,7 @@ describe('identity pool', () => {
     });
 
     expect(
-      template.Resources.CognitoIdentityPoolRoleAttachment.Properties.Roles
+      template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles
         .unauthenticated
     ).toEqual(unauthenticatedRoleArn);
   });
@@ -273,7 +344,7 @@ describe('identity pool', () => {
 
     expect(
       template.Resources.CognitoIdentityPool.Properties
-        .AllowUnauthenticatedIdentities
+        ?.AllowUnauthenticatedIdentities
     ).toEqual(false);
   });
 
@@ -289,8 +360,180 @@ describe('identity pool', () => {
 
       expect(
         template.Resources.CognitoIdentityPool.Properties
-          .AllowUnauthenticatedIdentities
+          ?.AllowUnauthenticatedIdentities
       ).toEqual(allowUnauthenticatedIdentities);
     }
   );
+});
+
+describe('lambda triggers', () => {
+  test('should not add LambdaConfig if no lambda triggers provided', () => {
+    const template = createAuthTemplate();
+    expect(
+      template.Resources.CognitoUserPool.Properties?.LambdaConfig
+    ).toBeUndefined();
+  });
+
+  test('should not add LambdaConfig if empty lambda triggers object provided', () => {
+    const template = createAuthTemplate({
+      lambdaTriggers: {},
+    });
+    expect(
+      template.Resources.CognitoUserPool.Properties?.LambdaConfig
+    ).toBeUndefined();
+  });
+
+  test('should add single lambda trigger', () => {
+    const template = createAuthTemplate({
+      lambdaTriggers: {
+        preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+      },
+    });
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        PreSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+      }
+    );
+  });
+
+  test('should add multiple lambda triggers', () => {
+    const template = createAuthTemplate({
+      lambdaTriggers: {
+        preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        postConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+        preAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreAuth',
+      },
+    });
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        PreSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        PostConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+        PreAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreAuth',
+      }
+    );
+  });
+
+  test('should handle CloudFormation Ref intrinsic functions', () => {
+    const template = createAuthTemplate({
+      lambdaTriggers: {
+        preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        postConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+      },
+    });
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        PreSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        PostConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+      }
+    );
+  });
+
+  test('should handle CloudFormation GetAtt intrinsic functions', () => {
+    const template = createAuthTemplate({
+      lambdaTriggers: {
+        preTokenGeneration: { 'Fn::GetAtt': ['PreTokenFunction', 'Arn'] },
+        userMigration: { 'Fn::GetAtt': ['UserMigrationFunction', 'Arn'] },
+      },
+    });
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        PreTokenGeneration: { 'Fn::GetAtt': ['PreTokenFunction', 'Arn'] },
+        UserMigration: { 'Fn::GetAtt': ['UserMigrationFunction', 'Arn'] },
+      }
+    );
+  });
+
+  test.each([
+    ['preSignUp', 'PreSignUp'],
+    ['postConfirmation', 'PostConfirmation'],
+    ['preAuthentication', 'PreAuthentication'],
+    ['postAuthentication', 'PostAuthentication'],
+    ['defineAuthChallenge', 'DefineAuthChallenge'],
+    ['createAuthChallenge', 'CreateAuthChallenge'],
+    ['verifyAuthChallengeResponse', 'VerifyAuthChallengeResponse'],
+    ['preTokenGeneration', 'PreTokenGeneration'],
+    ['userMigration', 'UserMigration'],
+    ['customMessage', 'CustomMessage'],
+    ['customEmailSender', 'CustomEmailSender'],
+    ['customSMSSender', 'CustomSMSSender'],
+  ])('should map %s to %s in LambdaConfig', (inputKey, outputKey) => {
+    const lambdaTriggers = {
+      [inputKey]: 'arn:aws:lambda:us-east-1:123456789012:function:TestFunction',
+    };
+
+    const template = createAuthTemplate({ lambdaTriggers });
+
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        [outputKey]:
+          'arn:aws:lambda:us-east-1:123456789012:function:TestFunction',
+      }
+    );
+  });
+
+  test('should add all lambda triggers when provided', () => {
+    const allTriggers = {
+      preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+      postConfirmation:
+        'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+      preAuthentication:
+        'arn:aws:lambda:us-east-1:123456789012:function:PreAuthentication',
+      postAuthentication:
+        'arn:aws:lambda:us-east-1:123456789012:function:PostAuthentication',
+      defineAuthChallenge:
+        'arn:aws:lambda:us-east-1:123456789012:function:DefineAuthChallenge',
+      createAuthChallenge:
+        'arn:aws:lambda:us-east-1:123456789012:function:CreateAuthChallenge',
+      verifyAuthChallengeResponse:
+        'arn:aws:lambda:us-east-1:123456789012:function:VerifyAuthChallengeResponse',
+      preTokenGeneration:
+        'arn:aws:lambda:us-east-1:123456789012:function:PreTokenGeneration',
+      userMigration:
+        'arn:aws:lambda:us-east-1:123456789012:function:UserMigration',
+      customMessage:
+        'arn:aws:lambda:us-east-1:123456789012:function:CustomMessage',
+      customEmailSender:
+        'arn:aws:lambda:us-east-1:123456789012:function:CustomEmailSender',
+      customSMSSender:
+        'arn:aws:lambda:us-east-1:123456789012:function:CustomSMSSender',
+    };
+
+    const template = createAuthTemplate({
+      lambdaTriggers: allTriggers,
+    });
+
+    expect(template.Resources.CognitoUserPool.Properties?.LambdaConfig).toEqual(
+      {
+        PreSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        PostConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+        PreAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreAuthentication',
+        PostAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostAuthentication',
+        DefineAuthChallenge:
+          'arn:aws:lambda:us-east-1:123456789012:function:DefineAuthChallenge',
+        CreateAuthChallenge:
+          'arn:aws:lambda:us-east-1:123456789012:function:CreateAuthChallenge',
+        VerifyAuthChallengeResponse:
+          'arn:aws:lambda:us-east-1:123456789012:function:VerifyAuthChallengeResponse',
+        PreTokenGeneration:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreTokenGeneration',
+        UserMigration:
+          'arn:aws:lambda:us-east-1:123456789012:function:UserMigration',
+        CustomMessage:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomMessage',
+        CustomEmailSender:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomEmailSender',
+        CustomSMSSender:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomSMSSender',
+      }
+    );
+  });
 });

@@ -1,76 +1,135 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// CloudFormation intrinsic functions
+export type CloudFormationRef = { Ref: string };
+export type CloudFormationGetAtt = { 'Fn::GetAtt': [string, string] };
+export type CloudFormationJoin = {
+  'Fn::Join': [string, (string | CloudFormationRef)[]];
+};
+export type CloudFormationSub = {
+  'Fn::Sub': string | [string, Record<string, any>];
+};
+export type CloudFormationSelect = { 'Fn::Select': [number, string[]] };
+export type CloudFormationSplit = { 'Fn::Split': [string, string] };
+
+export type CloudFormationIntrinsic =
+  | CloudFormationRef
+  | CloudFormationGetAtt
+  | CloudFormationJoin
+  | CloudFormationSub
+  | CloudFormationSelect
+  | CloudFormationSplit;
+
+export type CloudFormationValue<T = any> = T | CloudFormationIntrinsic;
+
 export type Parameter = {
   AllowedValues?: string[];
-  Default?: string | number;
+  Default?: string | number | boolean;
   Description?: string;
-  Type: string;
+  Type:
+    | 'String'
+    | 'Number'
+    | 'List<Number>'
+    | 'CommaDelimitedList'
+    | 'AWS::EC2::KeyPair::KeyName'
+    | 'AWS::EC2::SecurityGroup::Id'
+    | 'AWS::EC2::Subnet::Id'
+    | 'AWS::EC2::VPC::Id'
+    | 'List<AWS::EC2::VPC::Id>'
+    | 'List<AWS::EC2::SecurityGroup::Id>'
+    | 'List<AWS::EC2::Subnet::Id>';
   NoEcho?: boolean;
+  MinLength?: number;
+  MaxLength?: number;
+  MinValue?: number;
+  MaxValue?: number;
+  AllowedPattern?: string;
+  ConstraintDescription?: string;
 };
 
-export type Parameters = { [key: string]: Parameter };
+export type Parameters = Record<string, Parameter>;
 
-export type Resource = {
-  Type: string;
-  DeletionPolicy?: 'Delete' | 'Retain';
-  Description?: string;
-  DependsOn?: string[] | string;
-  Condition?: string;
-  Properties: any;
+export type Condition = Record<string, any>;
+export type Conditions = Record<string, Condition>;
+
+export type PolicyStatement = {
+  Sid?: string;
+  Effect: 'Allow' | 'Deny';
+  Action: string | string[];
+  Resource?: CloudFormationValue<string | string[]>;
+  Principal?: CloudFormationValue<string | Record<string, string | string[]>>;
+  Condition?: Record<
+    string,
+    Record<string, CloudFormationValue<string | string[]>>
+  >;
+  NotAction?: string | string[];
+  NotResource?: CloudFormationValue<string | string[]>;
+  NotPrincipal?: CloudFormationValue<
+    string | Record<string, string | string[]>
+  >;
+};
+
+export type PolicyDocument = {
+  Version: '2012-10-17';
+  Id?: string;
+  Statement: PolicyStatement[];
 };
 
 export type Policy = {
   PolicyName: string;
-  PolicyDocument: {
-    Version: '2012-10-17';
-    Statement: {
-      Sid?: string;
-      Effect: 'Allow' | 'Deny';
-      Action: string | string[];
-      Resource:
-        | string
-        | string[]
-        | { [key: string]: any }
-        | { [key: string]: any }[];
-    }[];
-  };
+  PolicyDocument: PolicyDocument;
 };
 
-export type IAMRoleResource = Resource & {
+export type BaseResource = {
+  Type: string;
+  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot';
+  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot';
+  Description?: string;
+  DependsOn?: string | string[];
+  Condition?: string;
+  Metadata?: Record<string, any>;
+  CreationPolicy?: Record<string, any>;
+  UpdatePolicy?: Record<string, any>;
+};
+
+export type Resource = BaseResource & {
+  Properties?: Record<string, any>;
+};
+
+export type IAMRoleResource = BaseResource & {
   Type: 'AWS::IAM::Role';
   Properties: {
-    AssumeRolePolicyDocument: {
-      Version: '2012-10-17';
-      Statement: {
-        Effect: 'Allow' | 'Deny';
-        Action: string;
-        Principal: any;
-        Condition?: { [key: string]: any };
-      }[];
-    };
-    ManagedPolicyArns?: string[];
+    AssumeRolePolicyDocument: PolicyDocument;
+    Description?: string;
+    ManagedPolicyArns?: CloudFormationValue<string[]>;
+    MaxSessionDuration?: number;
     Path?: string;
+    PermissionsBoundary?: CloudFormationValue<string>;
     Policies?: Policy[];
+    RoleName?: CloudFormationValue<string>;
+    Tags?: Array<{ Key: string; Value: CloudFormationValue<string> }>;
   };
 };
 
-export type Resources = { [key: string]: IAMRoleResource | Resource };
+export type Resources = Record<string, Resource>;
 
 export type Output = {
   Description?: string;
-  Value: string | any;
+  Value: CloudFormationValue;
   Export?: {
-    Name: string | any;
+    Name: CloudFormationValue<string>;
   };
+  Condition?: string;
 };
 
-export type Outputs = { [key: string]: Output };
+export type Outputs = Record<string, Output>;
 
 export type CloudFormationTemplate = {
   AWSTemplateFormatVersion: '2010-09-09';
-  Metadata?: any;
+  Metadata?: Record<string, any>;
   Description?: string;
-  Transform?: 'AWS::Serverless-2016-10-31';
-  Mappings?: any;
-  Conditions?: any;
+  Transform?: 'AWS::Serverless-2016-10-31' | string[];
+  Mappings?: Record<string, Record<string, Record<string, string | number>>>;
+  Conditions?: Conditions;
   Parameters?: Parameters;
   Resources: Resources;
   Outputs?: Outputs;

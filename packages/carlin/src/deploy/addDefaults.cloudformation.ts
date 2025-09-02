@@ -1,4 +1,10 @@
 import {
+  CreateStackCommandInput,
+  UpdateStackCommandInput,
+} from '@aws-sdk/client-cloudformation';
+
+import { NAME } from '../config';
+import {
   CloudFormationTemplate,
   getCurrentBranch,
   getEnvironment,
@@ -6,11 +12,6 @@ import {
   getPackageVersion,
   getProjectName,
 } from '../utils';
-import {
-  CreateStackCommandInput,
-  UpdateStackCommandInput,
-} from '@aws-sdk/client-cloudformation';
-import { NAME } from '../config';
 
 // const logPrefix = 'addDefaultsCloudFormation';
 
@@ -92,7 +93,7 @@ const addLogGroupToResources = (template: CloudFormationTemplate) => {
 
   const resourcesEntries = Object.entries(Resources);
 
-  resourcesEntries.forEach(([key, resource]) => {
+  for (const [key, resource] of resourcesEntries) {
     if (
       ['AWS::Lambda::Function', 'AWS::Serverless::Function'].includes(
         resource.Type
@@ -115,11 +116,12 @@ const addLogGroupToResources = (template: CloudFormationTemplate) => {
           DeletionPolicy: 'Delete',
           Properties: {
             LogGroupName: { 'Fn::Join': ['/', ['/aws/lambda', { Ref: key }]] },
+            RetentionInDays: 14,
           },
         };
       }
     }
-  });
+  }
 };
 
 const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
@@ -129,7 +131,7 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
 
   const resourcesEntries = Object.entries(Resources);
 
-  resourcesEntries.forEach(([, resource]) => {
+  for (const [, resource] of resourcesEntries) {
     if (resource.Type === 'AWS::Lambda::Function') {
       const { Properties } = resource;
 
@@ -140,11 +142,11 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
        * have the variables passed to Environment.Variables.
        */
       if (((Properties.Description as string) || '').includes('Lambda@Edge')) {
-        return;
+        continue;
       }
 
       if (!environment) {
-        return;
+        continue;
       }
 
       if (!Properties.Environment) {
@@ -157,7 +159,7 @@ const addEnvironmentsToLambdaResources: TemplateModifier = async (template) => {
 
       Properties.Environment.Variables.ENVIRONMENT = environment;
     }
-  });
+  }
 };
 
 export const CRITICAL_RESOURCES_TYPES = [
@@ -173,17 +175,17 @@ export const CRITICAL_RESOURCES_TYPES = [
 const addRetainToCriticalResources: TemplateModifier = async (template) => {
   const environment = getEnvironment();
 
-  Object.entries(template.Resources).forEach(([, resource]) => {
+  for (const [, resource] of Object.entries(template.Resources)) {
     if (CRITICAL_RESOURCES_TYPES.includes(resource.Type)) {
       if (!resource.DeletionPolicy && environment) {
         resource.DeletionPolicy = 'Retain';
       }
     }
-  });
+  }
 };
 
 const addAppSyncApiOutputs: TemplateModifier = async (template) => {
-  Object.entries(template.Resources).forEach(([key, resource]) => {
+  for (const [key, resource] of Object.entries(template.Resources)) {
     if (resource.Type === 'AWS::AppSync::GraphQLApi') {
       template.Outputs = {
         [key]: {
@@ -198,7 +200,7 @@ const addAppSyncApiOutputs: TemplateModifier = async (template) => {
         ...template.Outputs,
       };
     }
-  });
+  }
 };
 
 export const addDefaults = async ({

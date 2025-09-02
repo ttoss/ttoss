@@ -357,7 +357,7 @@ importers:
         specifier: workspace:^
         version: link:../ids
       '@types/aws-lambda':
-        specifier: ^8.10.146
+        specifier: ^8.10.152
         version: 8.10.152
       graphql:
         specifier: ^16.11.0
@@ -507,7 +507,7 @@ importers:
         specifier: ^0.5.6
         version: 0.5.7
       '@types/aws-lambda':
-        specifier: ^8.10.146
+        specifier: ^8.10.152
         version: 8.10.152
       '@types/deep-equal':
         specifier: ^1.0.4
@@ -1835,6 +1835,10 @@ importers:
       '@ttoss/cloud-auth':
         specifier: workspace:^
         version: link:../../packages/cloud-auth
+    devDependencies:
+      '@types/aws-lambda':
+        specifier: ^8.10.152
+        version: 8.10.152
 
   terezinha-farm/config:
     dependencies:

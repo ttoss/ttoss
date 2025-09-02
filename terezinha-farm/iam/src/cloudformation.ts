@@ -57,8 +57,27 @@ const template = createRolesTemplate({
         ],
       },
     },
+    CognitoTriggersLambdaFunctionIAMRole: {
+      Type: 'AWS::IAM::Role',
+      Properties: {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17' as const,
+          Statement: [
+            {
+              Effect: 'Allow' as const,
+              Action: 'sts:AssumeRole',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+        ManagedPolicyArns: [
+          'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+        ],
+      },
+    },
   },
 });
 
-// eslint-disable-next-line import/no-default-export
 export default template;
