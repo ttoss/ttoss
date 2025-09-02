@@ -235,14 +235,16 @@ export const createApiTemplate = ({
     authenticationType === 'AMAZON_COGNITO_USER_POOLS';
 
   if (additionalAuthenticationProviders) {
-    template.Resources[
-      AppSyncGraphQLApiLogicalId
-    ].Properties.AdditionalAuthenticationProviders =
-      additionalAuthenticationProviders?.map((provider) => {
-        return {
-          AuthenticationType: provider,
-        };
-      });
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties = {
+      ...template.Resources[AppSyncGraphQLApiLogicalId].Properties,
+      AdditionalAuthenticationProviders: additionalAuthenticationProviders?.map(
+        (provider) => {
+          return {
+            AuthenticationType: provider,
+          };
+        }
+      ),
+    };
   }
 
   if (apiKey) {
@@ -271,19 +273,24 @@ export const createApiTemplate = ({
       );
     }
 
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties.UserPoolConfig = {
-      AppIdClientRegex: userPoolConfig.appIdClientRegex,
-      AwsRegion: userPoolConfig.awsRegion,
-      DefaultAction: userPoolConfig.defaultAction,
-      UserPoolId: userPoolConfig.userPoolId,
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties = {
+      ...template.Resources[AppSyncGraphQLApiLogicalId].Properties,
+      UserPoolConfig: {
+        AppIdClientRegex: userPoolConfig.appIdClientRegex,
+        AwsRegion: userPoolConfig.awsRegion,
+        DefaultAction: userPoolConfig.defaultAction,
+        UserPoolId: userPoolConfig.userPoolId,
+      },
     };
   }
 
   if (lambdaFunction.environment?.variables) {
-    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Environment =
-      {
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties = {
+      ...template.Resources[AppSyncLambdaFunctionLogicalId].Properties,
+      Environment: {
         Variables: lambdaFunction.environment.variables,
-      };
+      },
+    };
   }
 
   if (customDomain) {
