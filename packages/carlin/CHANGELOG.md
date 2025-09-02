@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.39.1](https://github.com/ttoss/ttoss/compare/carlin@1.39.0...carlin@1.39.1) (2025-09-02)
+
+### Bug Fixes
+
+- delete objects s3 ([1c0278a](https://github.com/ttoss/ttoss/commit/1c0278aeb37dd37e304090122bd198a6b9a0c645))
+
 # [1.39.0](https://github.com/ttoss/ttoss/compare/carlin@1.38.7...carlin@1.39.0) (2025-09-02)
 
 ### Features
