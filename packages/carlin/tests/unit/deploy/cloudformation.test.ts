@@ -1,12 +1,12 @@
-/* eslint-disable no-var */
-import { CloudFormationTemplate } from 'src/utils/cloudFormationTemplate';
-import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
-import { deploy } from 'src/deploy/cloudformation.core';
-import { deployLambdaCode } from 'src/deploy/lambda/deployLambdaCode';
-import { faker } from '@ttoss/test-utils/faker';
-import { generateTemplate } from 'tests/fixtures/templates/cloudformation';
-import { getStackName } from 'src/deploy/stackName';
 import path from 'node:path';
+
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
+import { faker } from '@ttoss/test-utils/faker';
+import { deploy } from 'src/deploy/cloudformation.core';
+import { buildLambdaCode } from 'src/deploy/lambda/buildLambdaCode';
+import { deployLambdaCode } from 'src/deploy/lambda/deployLambdaCode';
+import { getStackName } from 'src/deploy/stackName';
+import { generateTemplate } from 'tests/fixtures/templates/cloudformation';
 
 const mockWorkingCloudFormationTemplate: CloudFormationTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -65,9 +65,9 @@ beforeAll(() => {
 });
 
 test('all templates paths should start with .src', () => {
-  defaultTemplatePaths.forEach((path) => {
+  for (const path of defaultTemplatePaths) {
     expect(path.startsWith('./src/cloudformation.')).toBeTruthy();
-  });
+  }
 });
 
 const lambdaEntryPoints = [faker.word.sample(), faker.word.sample()];
