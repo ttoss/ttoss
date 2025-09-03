@@ -10,7 +10,7 @@ const mockDescribeStacksOutput = {
   Stacks: [
     {
       StackName: faker.lorem.word(),
-      CreationTime: faker.date.past(3),
+      CreationTime: faker.date.past(),
       StackStatus: 'CREATE_COMPLETE',
       Outputs: [
         {
@@ -25,7 +25,7 @@ const mockDescribeStacksOutput = {
     },
     {
       StackName: faker.lorem.word(),
-      CreationTime: faker.date.past(3),
+      CreationTime: faker.date.past(),
       StackStatus: 'CREATE_COMPLETE',
       Outputs: [],
     },
@@ -64,7 +64,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
                     ) as DescribeStacksOutput['Stacks'],
                   });
                 } else {
-                  // eslint-disable-next-line prefer-promise-reject-errors
                   reject({
                     Code: 'ValidationError',
                   });
@@ -80,7 +79,8 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
   };
 });
 
-import * as fs from 'fs';
+import * as fs from 'node:fs';
+
 import {
   describeStack,
   describeStacks,

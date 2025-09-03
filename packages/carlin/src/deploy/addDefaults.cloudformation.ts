@@ -15,7 +15,9 @@ import {
 
 // const logPrefix = 'addDefaultsCloudFormation';
 
-type CloudFormationParams = CreateStackCommandInput | UpdateStackCommandInput;
+export type CloudFormationParams =
+  | CreateStackCommandInput
+  | UpdateStackCommandInput;
 
 export type Args = {
   params: CloudFormationParams;

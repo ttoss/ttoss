@@ -1,4 +1,5 @@
 import { jestConfig } from '@ttoss/config';
+
 import coverageThreshold from './jest.coverageThreshold.cjs';
 
 /**
@@ -12,6 +13,7 @@ const transformIgnorePatterns = [
 
 const config = jestConfig({
   collectCoverage: true,
+  coveragePathIgnorePatterns: ['<rootDir>/tests/'],
   coverageThreshold,
   moduleNameMapper: {
     'src/(.*)': '<rootDir>/src/$1',
@@ -22,5 +24,4 @@ const config = jestConfig({
   transformIgnorePatterns,
 });
 
-// eslint-disable-next-line import/no-default-export
 export default config;

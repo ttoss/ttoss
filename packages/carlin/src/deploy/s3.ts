@@ -239,12 +239,20 @@ export const emptyS3Directory = async ({
       const BATCH_SIZE = 1000;
       for (let i = 0; i < objectsWithVersionsIds.length; i += BATCH_SIZE) {
         const batch = objectsWithVersionsIds.slice(i, i + BATCH_SIZE);
-        await s3
+
+        const result = await s3
           .deleteObjects({
             Bucket: bucket,
             Delete: { Objects: batch },
           })
           .promise();
+
+        if (result.Errors && result.Errors.length > 0) {
+          const firstError = result.Errors[0];
+          throw new Error(
+            `Error deleting objects from ${bucket}/${directory}: ${JSON.stringify(firstError)}`
+          );
+        }
       }
     }
 

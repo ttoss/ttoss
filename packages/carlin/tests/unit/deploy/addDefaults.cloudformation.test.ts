@@ -9,22 +9,100 @@ jest.mock('../../src/utils', () => {
   };
 });
 
+import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import {
-  CRITICAL_RESOURCES_TYPES,
   addDefaults,
-} from '../../../src/deploy/addDefaults.cloudformation';
-import { CloudFormationTemplate } from '../../../src/utils/cloudFormationTemplate';
-import {
-  getCurrentBranch,
-  getEnvironment,
-  getProjectName,
-} from '../../../src/utils';
+  type CloudFormationParams,
+  CRITICAL_RESOURCES_TYPES,
+} from 'src/deploy/addDefaults.cloudformation';
+import { getCurrentBranch, getEnvironment, getProjectName } from 'src/utils';
 
 beforeEach(() => {
   (getEnvironment as jest.Mock).mockReturnValue(undefined);
   (getProjectName as jest.Mock).mockReturnValue(projectName);
   (getCurrentBranch as jest.Mock).mockReturnValue('main');
 });
+
+test.each<{
+  originalTemplate: CloudFormationTemplate;
+  params: CloudFormationParams;
+  finalTemplate: CloudFormationTemplate;
+}>([
+  {
+    originalTemplate: {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Resources: {
+        MyFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            FunctionName: 'my-function',
+            Handler: 'index.handler',
+            Runtime: 'nodejs14.x',
+            Code: {
+              ZipFile:
+                'exports.handler = async (event) => { return "Hello World"; };',
+            },
+          },
+        },
+      },
+    },
+    params: {
+      StackName: 'stackName',
+      Parameters: [],
+      Tags: [],
+    },
+    finalTemplate: {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Parameters: {
+        Project: {
+          Default: 'MyProjectNameForTesting',
+          Type: 'String',
+        },
+      },
+      Resources: {
+        MyFunction: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            FunctionName: 'my-function',
+            Handler: 'index.handler',
+            Runtime: 'nodejs14.x',
+            Code: {
+              ZipFile:
+                'exports.handler = async (event) => { return "Hello World"; };',
+            },
+          },
+        },
+        MyFunctionLogsLogGroup: {
+          DeletionPolicy: 'Delete',
+          Properties: {
+            LogGroupName: {
+              'Fn::Join': [
+                '/',
+                [
+                  '/aws/lambda',
+                  {
+                    Ref: 'MyFunction',
+                  },
+                ],
+              ],
+            },
+            RetentionInDays: 14,
+          },
+          Type: 'AWS::Logs::LogGroup',
+        },
+      },
+    },
+  },
+])(
+  'should transform CloudFormation template',
+  async ({ originalTemplate, finalTemplate, params }) => {
+    const newTemplate = await addDefaults({
+      params,
+      template: originalTemplate,
+    });
+    expect(newTemplate.template).toEqual(finalTemplate);
+  }
+);
 
 test.each([
   {
@@ -220,7 +298,6 @@ describe('testing template update', () => {
         },
       },
     ],
-    // eslint-disable-next-line max-params
   ])('%s', async (_, template, newTemplate) => {
     const params = { StackName: 'stackName' };
     expect((await addDefaults({ params, template })).template).toEqual(
