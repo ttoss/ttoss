@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.39.2](https://github.com/ttoss/ttoss/compare/carlin@1.39.1...carlin@1.39.2) (2025-09-03)
+
+### Bug Fixes
+
+- empty buckets ([#725](https://github.com/ttoss/ttoss/issues/725)) ([a521447](https://github.com/ttoss/ttoss/commit/a52144736213b64b09bb2a3377dcc526b08f03c2))
+
 ## [1.39.1](https://github.com/ttoss/ttoss/compare/carlin@1.39.0...carlin@1.39.1) (2025-09-02)
 
 ### Bug Fixes
