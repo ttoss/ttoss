@@ -1,2 +1,2 @@
 export * from './config';
-export { createAuthTemplate } from './template';
+export { type CloudFormationTemplate, createAuthTemplate } from './template';
