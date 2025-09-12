@@ -4,6 +4,8 @@ import type {
   Policy,
 } from '@ttoss/cloudformation';
 
+export { CloudFormationTemplate };
+
 import { PASSWORD_MINIMUM_LENGTH } from './config';
 
 const CognitoUserPoolLogicalId = 'CognitoUserPool';
@@ -462,6 +464,23 @@ export const createAuthTemplate = ({
       template.Resources[CognitoUserPoolLogicalId].Properties = {
         ...template.Resources[CognitoUserPoolLogicalId].Properties,
         LambdaConfig,
+      };
+    }
+
+    for (const [key, lambdaTrigger] of Object.entries(LambdaConfig)) {
+      const permissionLogicalId =
+        `${key}PermissionFor${CognitoUserPoolLogicalId}`.slice(0, 255);
+
+      template.Resources[permissionLogicalId] = {
+        Type: 'AWS::Lambda::Permission',
+        Properties: {
+          Action: 'lambda:InvokeFunction',
+          FunctionName: lambdaTrigger,
+          Principal: 'cognito-idp.amazonaws.com',
+          SourceArn: {
+            'Fn::GetAtt': [CognitoUserPoolLogicalId, 'Arn'],
+          },
+        },
       };
     }
   }

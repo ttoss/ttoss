@@ -536,4 +536,202 @@ describe('lambda triggers', () => {
       }
     );
   });
+
+  describe('AWS Lambda Permissions', () => {
+    test('should create Lambda permission for single trigger', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {
+          preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        },
+      });
+
+      const permissionKey = 'PreSignUpPermissionForCognitoUserPool';
+      expect(template.Resources[permissionKey]).toEqual({
+        Type: 'AWS::Lambda::Permission',
+        Properties: {
+          Action: 'lambda:InvokeFunction',
+          FunctionName:
+            'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+          Principal: 'cognito-idp.amazonaws.com',
+          SourceArn: {
+            'Fn::GetAtt': ['CognitoUserPool', 'Arn'],
+          },
+        },
+      });
+    });
+
+    test('should create Lambda permissions for multiple triggers', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {
+          preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+          postConfirmation:
+            'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+        },
+      });
+
+      const preSignUpPermissionKey = 'PreSignUpPermissionForCognitoUserPool';
+      const postConfirmationPermissionKey =
+        'PostConfirmationPermissionForCognitoUserPool';
+
+      expect(template.Resources[preSignUpPermissionKey]).toBeDefined();
+      expect(template.Resources[postConfirmationPermissionKey]).toBeDefined();
+
+      expect(template.Resources[preSignUpPermissionKey].Type).toBe(
+        'AWS::Lambda::Permission'
+      );
+      expect(template.Resources[postConfirmationPermissionKey].Type).toBe(
+        'AWS::Lambda::Permission'
+      );
+    });
+
+    test('should create Lambda permission for CloudFormation GetAtt reference', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {
+          preTokenGeneration: { 'Fn::GetAtt': ['PreTokenFunction', 'Arn'] },
+        },
+      });
+
+      const permissionKey = 'PreTokenGenerationPermissionForCognitoUserPool';
+      expect(template.Resources[permissionKey]).toEqual({
+        Type: 'AWS::Lambda::Permission',
+        Properties: {
+          Action: 'lambda:InvokeFunction',
+          FunctionName: { 'Fn::GetAtt': ['PreTokenFunction', 'Arn'] },
+          Principal: 'cognito-idp.amazonaws.com',
+          SourceArn: {
+            'Fn::GetAtt': ['CognitoUserPool', 'Arn'],
+          },
+        },
+      });
+    });
+
+    test('should handle function names with special characters in permission logical ID', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {
+          customMessage:
+            'arn:aws:lambda:us-east-1:123456789012:function:my-custom-message_function',
+        },
+      });
+
+      const permissionKey = 'CustomMessagePermissionForCognitoUserPool';
+      expect(template.Resources[permissionKey]).toBeDefined();
+      expect(template.Resources[permissionKey].Type).toBe(
+        'AWS::Lambda::Permission'
+      );
+      expect(template.Resources[permissionKey].Properties?.FunctionName).toBe(
+        'arn:aws:lambda:us-east-1:123456789012:function:my-custom-message_function'
+      );
+    });
+
+    test('should create permissions for all supported lambda trigger types', () => {
+      const allTriggers = {
+        preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+        postConfirmation:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostConfirmation',
+        preAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreAuthentication',
+        postAuthentication:
+          'arn:aws:lambda:us-east-1:123456789012:function:PostAuthentication',
+        defineAuthChallenge:
+          'arn:aws:lambda:us-east-1:123456789012:function:DefineAuthChallenge',
+        createAuthChallenge:
+          'arn:aws:lambda:us-east-1:123456789012:function:CreateAuthChallenge',
+        verifyAuthChallengeResponse:
+          'arn:aws:lambda:us-east-1:123456789012:function:VerifyAuthChallengeResponse',
+        preTokenGeneration:
+          'arn:aws:lambda:us-east-1:123456789012:function:PreTokenGeneration',
+        userMigration:
+          'arn:aws:lambda:us-east-1:123456789012:function:UserMigration',
+        customMessage:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomMessage',
+        customEmailSender:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomEmailSender',
+        customSMSSender:
+          'arn:aws:lambda:us-east-1:123456789012:function:CustomSMSSender',
+      };
+
+      const template = createAuthTemplate({
+        lambdaTriggers: allTriggers,
+      });
+
+      // Count permission resources
+      const permissionResources = Object.keys(template.Resources).filter(
+        (key) => {
+          return template.Resources[key].Type === 'AWS::Lambda::Permission';
+        }
+      );
+
+      expect(permissionResources).toHaveLength(12);
+
+      // Check that all permissions have correct properties
+      for (const key of permissionResources) {
+        const permission = template.Resources[key];
+        expect(permission.Properties?.Action).toBe('lambda:InvokeFunction');
+        expect(permission.Properties?.Principal).toBe(
+          'cognito-idp.amazonaws.com'
+        );
+        expect(permission.Properties?.SourceArn).toEqual({
+          'Fn::GetAtt': ['CognitoUserPool', 'Arn'],
+        });
+        expect(permission.Properties?.FunctionName).toBeDefined();
+      }
+    });
+
+    test('should not create Lambda permissions when no triggers provided', () => {
+      const template = createAuthTemplate();
+
+      const permissionResources = Object.keys(template.Resources).filter(
+        (key) => {
+          return template.Resources[key].Type === 'AWS::Lambda::Permission';
+        }
+      );
+
+      expect(permissionResources).toHaveLength(0);
+    });
+
+    test('should not create Lambda permissions for empty triggers object', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {},
+      });
+
+      const permissionResources = Object.keys(template.Resources).filter(
+        (key) => {
+          return template.Resources[key].Type === 'AWS::Lambda::Permission';
+        }
+      );
+
+      expect(permissionResources).toHaveLength(0);
+    });
+
+    test('should handle mixed string and CloudFormation reference triggers', () => {
+      const template = createAuthTemplate({
+        lambdaTriggers: {
+          preSignUp: 'arn:aws:lambda:us-east-1:123456789012:function:PreSignUp',
+          postConfirmation: {
+            'Fn::GetAtt': ['PostConfirmationFunction', 'Arn'],
+          },
+          customMessage:
+            'arn:aws:lambda:us-east-1:123456789012:function:CustomMessage',
+        },
+      });
+
+      const permissionResources = Object.keys(template.Resources).filter(
+        (key) => {
+          return template.Resources[key].Type === 'AWS::Lambda::Permission';
+        }
+      );
+
+      expect(permissionResources).toHaveLength(3);
+
+      // Check specific permissions exist
+      const preSignUpKey = 'PreSignUpPermissionForCognitoUserPool';
+      const postConfirmationKey =
+        'PostConfirmationPermissionForCognitoUserPool';
+      const customMessageKey = 'CustomMessagePermissionForCognitoUserPool';
+
+      expect(template.Resources[preSignUpKey]).toBeDefined();
+      expect(template.Resources[postConfirmationKey]).toBeDefined();
+      expect(template.Resources[customMessageKey]).toBeDefined();
+    });
+  });
 });
