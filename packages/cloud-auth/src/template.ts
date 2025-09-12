@@ -468,25 +468,6 @@ export const createAuthTemplate = ({
     }
 
     for (const [key, lambdaTrigger] of Object.entries(LambdaConfig)) {
-      const functionName = (() => {
-        if (typeof lambdaTrigger === 'string') {
-          return lambdaTrigger;
-        }
-
-        if ('Fn::GetAtt' in lambdaTrigger) {
-          const getAtt = lambdaTrigger['Fn::GetAtt'];
-          if (Array.isArray(getAtt) && getAtt.length > 0) {
-            return getAtt[0];
-          }
-        }
-
-        return null;
-      })();
-
-      if (!functionName) {
-        continue;
-      }
-
       const permissionLogicalId =
         `${key}PermissionFor${CognitoUserPoolLogicalId}`.slice(0, 255);
 

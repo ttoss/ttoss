@@ -733,24 +733,5 @@ describe('lambda triggers', () => {
       expect(template.Resources[postConfirmationKey]).toBeDefined();
       expect(template.Resources[customMessageKey]).toBeDefined();
     });
-
-    test('trigger is not string neither getAtt', () => {
-      const template = createAuthTemplate({
-        lambdaTriggers: {
-          preSignUp: { Ref: 'PreSignUpFunction' } as unknown as string,
-          postConfirmation: {
-            'Fn::GetAtt': 'arn',
-          } as unknown as string,
-        },
-      });
-
-      const permissionResources = Object.keys(template.Resources).filter(
-        (key) => {
-          return template.Resources[key].Type === 'AWS::Lambda::Permission';
-        }
-      );
-
-      expect(permissionResources).toHaveLength(0);
-    });
   });
 });
