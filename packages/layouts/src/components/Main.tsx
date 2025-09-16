@@ -1,21 +1,25 @@
 import { Box, BoxProps } from '@ttoss/ui';
 
-export const Main = (props: BoxProps) => {
+export interface MainProps extends BoxProps {
+  Header?: React.ReactNode;
+}
+
+export const Main = (props: MainProps) => {
+  const { Header, children, sx, ...rest } = props;
   return (
     <Box
       variant="layout.main"
-      {...props}
+      {...rest}
       as="main"
       sx={{
-        paddingX: '10',
-        paddingY: '6',
         overflowY: 'auto',
         width: 'full',
         height: 'full',
-        ...props.sx,
+        ...sx,
       }}
     >
-      {props.children}
+      {Header && <>{Header}</>}
+      <Box sx={{ paddingX: '10', paddingY: '6' }}>{children}</Box>
     </Box>
   );
 };
