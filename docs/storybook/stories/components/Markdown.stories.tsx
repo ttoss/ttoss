@@ -1,6 +1,6 @@
-import { Box, Heading, Link } from '@ttoss/ui';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Markdown } from '@ttoss/components/Markdown';
-import { Meta, StoryFn } from '@storybook/react';
+import { Box, Heading, Link } from '@ttoss/ui';
 
 export default {
   title: 'Components/Markdown',

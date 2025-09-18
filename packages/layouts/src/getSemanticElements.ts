@@ -5,6 +5,8 @@ const semanticComponents = {
   Sidebar: 'sidebar',
   Footer: 'footer',
   Main: 'main',
+  MainHeader: 'mainHeader',
+  MainFooter: 'mainFooter',
 } as const;
 
 type SemanticComponents = keyof typeof semanticComponents;

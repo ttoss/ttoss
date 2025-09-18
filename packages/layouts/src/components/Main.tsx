@@ -1,5 +1,8 @@
 import { Box, BoxProps } from '@ttoss/ui';
 
+import { MainFooter } from './MainFooter';
+import { MainHeader } from './MainHeader';
+
 export const Main = (props: BoxProps) => {
   return (
     <Box
@@ -21,3 +24,6 @@ export const Main = (props: BoxProps) => {
 };
 
 Main.displayName = 'Main';
+
+Main.Header = MainHeader;
+Main.Footer = MainFooter;

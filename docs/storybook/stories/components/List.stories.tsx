@@ -1,5 +1,5 @@
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { List, ListItem } from '@ttoss/components/List';
-import { Meta, StoryFn } from '@storybook/react';
 
 export default {
   title: 'Components/List',

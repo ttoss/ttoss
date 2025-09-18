@@ -1,6 +1,6 @@
+import { Meta, Story } from '@storybook/react-webpack5';
 import { Flex, Label, Select, Text, TextProps, useTheme } from '@ttoss/ui';
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
+import * as React from 'react';
 
 type TypographyProps = {
   tag: TextProps['as'];
@@ -68,20 +68,24 @@ const TemplateFontSizes: Story = () => {
     }
 
     if (Array.isArray(theme.fontSizes)) {
-      return theme.fontSizes.map((font, i) => ({
-        key: `Index ${i}`,
-        valueDisplay: `${font}px`,
-        value: i,
-      }));
+      return theme.fontSizes.map((font, i) => {
+        return {
+          key: `Index ${i}`,
+          valueDisplay: `${font}px`,
+          value: i,
+        };
+      });
     }
 
     const entries = Object.entries(theme.fontSizes);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-      valueDisplay: value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+        valueDisplay: value,
+      };
+    });
   }, [theme.fontSizes]);
 
   return (
@@ -113,10 +117,12 @@ const TemplateFontWeights: Story = () => {
 
     const entries = Object.entries(theme.fontWeights);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.fontWeights]);
 
   return (
@@ -151,10 +157,12 @@ const TemplateLetterSpacing: Story = () => {
 
     const entries = Object.entries(theme.letterSpacings);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.letterSpacings]);
 
   return (
@@ -189,10 +197,12 @@ const TemplateFontFamily: Story = () => {
 
     const entries = Object.entries(theme.fonts);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.fonts]);
 
   return (
@@ -227,10 +237,12 @@ const TemplateDynamic: Story = (args) => {
 
     const entries = Object.entries(theme.fonts);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.fonts]);
 
   const letterSpacings = React.useMemo(() => {
@@ -240,10 +252,12 @@ const TemplateDynamic: Story = (args) => {
 
     const entries = Object.entries(theme.letterSpacings);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.letterSpacings]);
 
   const fontWeights = React.useMemo(() => {
@@ -253,10 +267,12 @@ const TemplateDynamic: Story = (args) => {
 
     const entries = Object.entries(theme.fontWeights);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+      };
+    });
   }, [theme.fontWeights]);
 
   const fontSizes = React.useMemo(() => {
@@ -265,20 +281,24 @@ const TemplateDynamic: Story = (args) => {
     }
 
     if (Array.isArray(theme.fontSizes)) {
-      return theme.fontSizes.map((font, i) => ({
-        key: `Index ${i}`,
-        valueDisplay: `${font}px`,
-        value: i,
-      }));
+      return theme.fontSizes.map((font, i) => {
+        return {
+          key: `Index ${i}`,
+          valueDisplay: `${font}px`,
+          value: i,
+        };
+      });
     }
 
     const entries = Object.entries(theme.fontSizes);
 
-    return entries.map(([key, value]) => ({
-      key,
-      value,
-      valueDisplay: value,
-    }));
+    return entries.map(([key, value]) => {
+      return {
+        key,
+        value,
+        valueDisplay: value,
+      };
+    });
   }, [theme.fontSizes]);
 
   const [fontFamily, setFontFamily] = React.useState(
@@ -303,42 +323,66 @@ const TemplateDynamic: Story = (args) => {
 
       <Flex sx={{ flexDirection: 'column', alignItems: 'start' }}>
         <Label>Font Family</Label>
-        <Select onChange={(e) => setFontFamily(e.target.value)}>
-          {fontFamilies.map(({ key, value }) => (
-            <option key={key} value={value as string}>
-              {`${key}: ${value}`}
-            </option>
-          ))}
+        <Select
+          onChange={(e) => {
+            return setFontFamily(e.target.value);
+          }}
+        >
+          {fontFamilies.map(({ key, value }) => {
+            return (
+              <option key={key} value={value as string}>
+                {`${key}: ${value}`}
+              </option>
+            );
+          })}
         </Select>
 
         <Label sx={{ marginTop: 3 }}>Letter Spacing</Label>
 
-        <Select onChange={(e) => setLetterSpacing(e.target.value)}>
-          {letterSpacings.map(({ key, value }) => (
-            <option key={key} value={value as string}>
-              {`${key}: ${value}`}
-            </option>
-          ))}
+        <Select
+          onChange={(e) => {
+            return setLetterSpacing(e.target.value);
+          }}
+        >
+          {letterSpacings.map(({ key, value }) => {
+            return (
+              <option key={key} value={value as string}>
+                {`${key}: ${value}`}
+              </option>
+            );
+          })}
         </Select>
 
         <Label sx={{ marginTop: 3 }}>Font Weight</Label>
 
-        <Select onChange={(e) => setFontWeight(e.target.value)}>
-          {fontWeights.map(({ key, value }) => (
-            <option key={key} value={value as string}>
-              {`${key}: ${value}`}
-            </option>
-          ))}
+        <Select
+          onChange={(e) => {
+            return setFontWeight(e.target.value);
+          }}
+        >
+          {fontWeights.map(({ key, value }) => {
+            return (
+              <option key={key} value={value as string}>
+                {`${key}: ${value}`}
+              </option>
+            );
+          })}
         </Select>
 
         <Label sx={{ marginTop: 3 }}>Font Size</Label>
 
-        <Select onChange={(e) => setFontSize(e.target.value)}>
-          {fontSizes.map(({ key, value }) => (
-            <option key={key} value={value as string}>
-              {`${key}: ${value}`}
-            </option>
-          ))}
+        <Select
+          onChange={(e) => {
+            return setFontSize(e.target.value);
+          }}
+        >
+          {fontSizes.map(({ key, value }) => {
+            return (
+              <option key={key} value={value as string}>
+                {`${key}: ${value}`}
+              </option>
+            );
+          })}
         </Select>
       </Flex>
     </Flex>

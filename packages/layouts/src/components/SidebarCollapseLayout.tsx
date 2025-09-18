@@ -7,7 +7,9 @@ export const SidebarCollapseLayout = ({
   children,
   ...props
 }: React.PropsWithChildren<StackProps>) => {
-  const { header, main, sidebar } = getSematicElements({ children });
+  const { header, main, sidebar, mainFooter, mainHeader } = getSematicElements({
+    children,
+  });
 
   return (
     <LayoutProvider>
@@ -30,7 +32,17 @@ export const SidebarCollapseLayout = ({
           }}
         >
           {sidebar}
-          {main}
+          <Stack
+            sx={{
+              flex: 1,
+              height: 'full',
+              overflow: 'hidden',
+            }}
+          >
+            {mainHeader}
+            {main}
+            {mainFooter}
+          </Stack>
         </Flex>
       </Stack>
     </LayoutProvider>

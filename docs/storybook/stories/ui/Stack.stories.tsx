@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Box, Stack } from '@ttoss/ui';
 
 const meta: Meta<typeof Stack> = {

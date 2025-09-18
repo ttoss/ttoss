@@ -1,4 +1,4 @@
-import { ComponentMeta, Story } from '@storybook/react';
+import { ComponentMeta, Story } from '@storybook/react-webpack5';
 import { Badge, BadgeProps, Flex } from '@ttoss/ui';
 import * as React from 'react';
 
