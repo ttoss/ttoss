@@ -29,21 +29,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
-    "@storybook/addon-a11y": "^8.5.0",
-    "@storybook/addon-actions": "^8.5.0",
-    "@storybook/addon-essentials": "^8.5.0",
-    "@storybook/addon-interactions": "^8.5.0",
-    "@storybook/addon-links": "^8.5.0",
-    "@storybook/addon-webpack5-compiler-babel": "^3.0.5",
-    "@storybook/manager-api": "^8.5.0",
-    "@storybook/react": "^8.5.0",
-    "@storybook/react-webpack5": "^8.5.0",
-    "@storybook/test": "^8.5.0",
+    "@storybook/addon-a11y": "^9.1.6",
+    "@storybook/addon-docs": "^9.1.6",
+    "@storybook/addon-links": "^9.1.6",
+    "@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+    "@storybook/react-webpack5": "^9.1.6",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.2.1",
+    "eslint-plugin-storybook": "9.1.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "storybook": "^8.5.0"
+    "storybook": "^9.1.6"
   }
 }

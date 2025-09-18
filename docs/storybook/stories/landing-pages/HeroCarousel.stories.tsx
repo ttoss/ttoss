@@ -1,5 +1,5 @@
+import { Meta, Story } from '@storybook/react-webpack5';
 import { HeroCarousel, HeroCarouselProps } from '@ttoss/landing-pages';
-import { Meta, Story } from '@storybook/react';
 
 export default {
   title: 'Landing Pages/HeroCarousel',
@@ -20,5 +20,7 @@ const IMAGES = [
 export const Example = Template.bind({});
 
 Example.args = {
-  images: IMAGES.map((src) => ({ src, id: src, alt: `alt ${src}` })),
+  images: IMAGES.map((src) => {
+    return { src, id: src, alt: `alt ${src}` };
+  }),
 };

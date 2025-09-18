@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react-webpack5';
 import { addIcon, Icon, type IconType } from '@ttoss/react-icons';
 import { Flex, Grid, Label, Select, Slider, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';

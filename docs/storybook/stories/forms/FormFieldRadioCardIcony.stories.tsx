@@ -1,5 +1,4 @@
-import { action } from '@storybook/addon-actions';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldRadioCardIcony,
@@ -9,6 +8,7 @@ import {
 } from '@ttoss/forms';
 import { Icon } from '@ttoss/react-icons';
 import { Button } from '@ttoss/ui';
+import { action } from 'storybook/actions';
 
 export default {
   title: 'Forms/FormFieldRadioCardIcony',

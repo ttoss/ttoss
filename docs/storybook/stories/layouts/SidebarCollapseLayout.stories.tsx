@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   Notification,
   NotificationsMenu,
@@ -55,7 +55,21 @@ const SidebarCollapseLayoutTemplate = ({
           <Flex>Sidebar item 9 </Flex>
         </Flex>
       </Layout.Sidebar>
+      <Layout.Main.Header
+        sx={{
+          borderBottom: '1px solid gray',
+        }}
+      >
+        Main Header
+      </Layout.Main.Header>
       <Layout.Main>{mainContent}</Layout.Main>
+      <Layout.Main.Footer
+        sx={{
+          borderTop: '1px solid gray',
+        }}
+      >
+        Main Footer
+      </Layout.Main.Footer>
     </SidebarCollapseLayout>
   );
 };

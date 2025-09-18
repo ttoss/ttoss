@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Tabs } from '@ttoss/components/Tabs';
 import { Icon } from '@ttoss/react-icons';
 import { Flex } from '@ttoss/ui';

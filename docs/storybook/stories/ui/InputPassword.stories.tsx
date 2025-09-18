@@ -1,6 +1,6 @@
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { InputPassword } from '@ttoss/ui';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 type Story = StoryObj<typeof InputPassword>;
 

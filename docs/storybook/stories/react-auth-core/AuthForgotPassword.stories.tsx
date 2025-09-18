@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Box } from '@ttoss/ui';
 
 import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
