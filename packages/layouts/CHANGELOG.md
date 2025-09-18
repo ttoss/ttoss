@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.37...@ttoss/layouts@0.5.0) (2025-09-18)
+
+### Features
+
+- layouts main ([#729](https://github.com/ttoss/ttoss/issues/729)) ([35b143a](https://github.com/ttoss/ttoss/commit/35b143a9fa127ba8157b8a0715089a912a73a6b7))
+
 ## [0.4.37](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.4.36...@ttoss/layouts@0.4.37) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/layouts
