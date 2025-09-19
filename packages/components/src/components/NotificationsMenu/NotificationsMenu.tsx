@@ -1,5 +1,5 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, Flex, IconButton, Text } from '@ttoss/ui';
+import { Box, Button, Card, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import {
@@ -20,6 +20,7 @@ type Props = {
   onLoadMore?: () => void;
   onOpenChange?: (isOpen: boolean) => void;
   onClose?: () => void;
+  onClearAll?: () => void;
 };
 
 export const NotificationsMenu = ({
@@ -30,6 +31,7 @@ export const NotificationsMenu = ({
   onOpenChange,
   count,
   onClose,
+  onClearAll,
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [openToLeft, setOpenToLeft] = React.useState(false);
@@ -151,52 +153,91 @@ export const NotificationsMenu = ({
         </IconButton>
 
         {isOpen && (
-          <Card
-            sx={{
-              position: 'absolute',
-              top: 'calc(100% + 8px)',
-              left: openToLeft ? 'auto' : 0,
-              right: openToLeft ? 0 : 'auto',
-              width: ['90vw', '500px'],
-              maxHeight: '400px',
-              overflowY: 'auto',
-              zIndex: 10,
-              padding: 0,
-              boxShadow: 'xl',
-              borderRadius: '2xl',
-              backgroundColor: 'display.background.secondary.default',
-            }}
-          >
-            <Box ref={containerRef} sx={{ width: '100%' }}>
-              <Flex sx={{ flexDirection: 'column', gap: 2 }}>
-                {notifications.length === 0 ? (
-                  <Text
-                    sx={{
-                      color: 'display.text.muted.default',
-                      textAlign: 'center',
-                      p: 4,
-                    }}
-                  >
-                    Nenhuma notificação
-                  </Text>
-                ) : (
-                  notifications.map((notification) => {
-                    return (
-                      <NotificationCard
-                        key={notification.id}
-                        {...notification}
-                        onClose={() => {
-                          notification.onClose?.();
-                          onClose?.();
+          <div ref={containerRef}>
+            <Card
+              sx={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                left: openToLeft ? 'auto' : 0,
+                right: openToLeft ? 0 : 'auto',
+                width: ['90vw', '550px'],
+                maxHeight: '400px',
+                overflowY: 'auto',
+                zIndex: 10,
+                padding: 0,
+                boxShadow: 'xl',
+                borderRadius: '2xl',
+                backgroundColor: 'display.background.secondary.default',
+              }}
+            >
+              <Box sx={{ width: '100%' }}>
+                <Flex sx={{ flexDirection: 'column', gap: 4 }}>
+                  {notifications.length > 0 && onClearAll && (
+                    <Flex
+                      sx={{
+                        justifyContent: 'flex-end',
+                        p: 2,
+                        marginBottom: -2,
+                      }}
+                    >
+                      <Button
+                        variant="ghost"
+                        sx={{
+                          borderRadius: 'md',
+                          padding: 1,
+                          paddingLeft: 10,
+                          paddingRight: 10,
+                          fontSize: 'md',
+                          color: 'display.text.muted.default',
+                          border: '1px solid',
+                          borderColor: 'display.border.default',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          '&:hover': {
+                            backgroundColor: 'action.background.muted.default',
+                            color: 'display.text.default',
+                            borderColor: 'action.border.default',
+                          },
                         }}
-                      />
-                    );
-                  })
-                )}
-                {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
-              </Flex>
-            </Box>
-          </Card>
+                        onClick={onClearAll}
+                      >
+                        <Icon icon="mdi:delete-sweep" width={18} height={18} />
+                        <Text sx={{ ml: -1, marginTop: -0.4 }}>
+                          Limpar Tudo
+                        </Text>
+                      </Button>
+                    </Flex>
+                  )}
+                  {notifications.length === 0 ? (
+                    <Text
+                      sx={{
+                        color: 'display.text.muted.default',
+                        textAlign: 'center',
+                        p: 4,
+                      }}
+                    >
+                      Nenhuma notificação
+                    </Text>
+                  ) : (
+                    notifications.map((notification) => {
+                      return (
+                        <NotificationCard
+                          key={notification.id}
+                          {...notification}
+                          onClose={() => {
+                            notification.onClose?.();
+                            onClose?.();
+                          }}
+                        />
+                      );
+                    })
+                  )}
+                  {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
+                </Flex>
+              </Box>
+            </Card>
+          </div>
         )}
       </Box>
     </Flex>
