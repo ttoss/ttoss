@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.0...@docs/storybook@2.21.1) (2025-09-19)
+
+### Bug Fixes
+
+- stories ([4e00547](https://github.com/ttoss/ttoss/commit/4e00547237545d06cacb5af33ff6b2ef85755677))
+
 # [2.21.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.20.1...@docs/storybook@2.21.0) (2025-09-18)
 
 ### Features
