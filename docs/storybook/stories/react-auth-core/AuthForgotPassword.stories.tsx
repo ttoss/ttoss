@@ -1,11 +1,11 @@
 import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Box } from '@ttoss/ui';
 
-import { LogoProvider } from '../../../../packages/react-auth/src/AuthCard';
+import { LogoProvider } from '../../../../packages/react-auth-core/src/AuthCard';
 import {
   AuthForgotPassword,
   type AuthForgotPasswordProps,
-} from '../../../../packages/react-auth/src/AuthForgotPassword';
+} from '../../../../packages/react-auth-core/src/AuthForgotPassword';
 
 export default {
   title: 'React Auth/AuthForgotPassword',
