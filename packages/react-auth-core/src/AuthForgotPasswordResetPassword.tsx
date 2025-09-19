@@ -67,7 +67,7 @@ export const AuthForgotPasswordResetPassword = (
 
   const formMethods = useForm<yup.InferType<typeof schema>>({
     resolver: yupResolver(schema),
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   return (

@@ -19,7 +19,7 @@ export type AuthData = {
 };
 
 export type AuthContextValue = {
-  signOut?: () => Promise<void>;
+  signOut: () => Promise<void>;
   isAuthenticated: boolean;
   user: AuthUser | null;
   tokens: AuthTokens | null;

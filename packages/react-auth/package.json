@@ -27,6 +27,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "@ttoss/react-auth-core": "workspace:^",
     "react-error-boundary": "^5.0.0"
   },
   "peerDependencies": {

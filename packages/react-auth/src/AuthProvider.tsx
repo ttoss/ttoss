@@ -1,136 +1,49 @@
 import {
-  fetchAuthSession,
-  fetchUserAttributes,
-  getCurrentUser,
-  signOut as awsSignOut,
-} from 'aws-amplify/auth';
+  AuthProvider as AuthProviderCore,
+  useAuth,
+} from '@ttoss/react-auth-core';
+import { signOut } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import * as React from 'react';
 
-type User = {
-  id: string;
-  email: string;
-  emailVerified: string;
-} | null;
+import { getAuthData } from './getAuthData';
 
-type Tokens = {
-  idToken: string;
-  accessToken: string;
-  refreshToken: string;
-} | null;
+export const AuthProvider = (props: { children: React.ReactNode }) => {
+  const [authListenerCount, setAuthListenerCount] = React.useState(0);
 
-type AuthScreen =
-  | { value: 'signIn'; context: { email?: string } }
-  | { value: 'signUp'; context: Record<string, never> }
-  | { value: 'signUpConfirm'; context: { email: string } }
-  | { value: 'signUpResendConfirmation'; context: { email: string } }
-  | { value: 'forgotPassword'; context: Record<string, never> }
-  | { value: 'forgotPasswordResetPassword'; context: { email: string } };
-
-const signOut = () => {
-  return awsSignOut();
-};
-
-const AuthContext = React.createContext<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  signOut: () => Promise<any>;
-  isAuthenticated: boolean;
-  user: User;
-  tokens: Tokens;
-  screen: AuthScreen;
-  setScreen: React.Dispatch<React.SetStateAction<AuthScreen>>;
-}>({
-  signOut,
-  isAuthenticated: false,
-  user: null,
-  tokens: null,
-  screen: { value: 'signIn', context: {} },
-  setScreen: () => {},
-});
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [authState, setAuthState] = React.useState<{
-    user: User;
-    tokens: Tokens;
-    isAuthenticated: boolean | undefined;
-  }>({
-    user: null,
-    tokens: null,
-    isAuthenticated: undefined,
-  });
-
-  const [screen, setScreen] = React.useState<AuthScreen>({
-    value: 'signIn',
-    context: {},
-  });
-
+  /**
+   * Listen to auth events to update the auth data.
+   * This is needed because the Auth module does not provide a way to listen to auth changes.
+   * We use a counter to trigger the getAuthData callback when an auth event occurs.
+   */
   React.useEffect(() => {
-    const updateUser = () => {
-      getCurrentUser()
-        .then(async ({ userId }) => {
-          const [session, user] = await Promise.all([
-            fetchAuthSession(),
-            fetchUserAttributes(),
-          ]);
-
-          const idToken = session.tokens?.idToken?.toString() ?? '';
-          const accessToken = session.tokens?.accessToken.toString() ?? '';
-
-          setAuthState({
-            user: {
-              id: userId,
-              email: user.email ?? '',
-              emailVerified: user.email_verified ?? '',
-            },
-            tokens: {
-              idToken,
-              accessToken,
-              refreshToken: '',
-            },
-            isAuthenticated: true,
-          });
-        })
-        .catch(() => {
-          setAuthState({
-            user: null,
-            tokens: null,
-            isAuthenticated: false,
-          });
-        });
+    const listener = () => {
+      setAuthListenerCount((count) => {
+        return count + 1;
+      });
     };
 
-    const updateUserListener = Hub.listen('auth', updateUser);
-
-    /**
-     * Check manually the first time.
-     */
-    updateUser();
+    const stopHubListener = Hub.listen('auth', listener);
 
     return () => {
-      updateUserListener();
+      stopHubListener();
     };
   }, []);
 
-  if (authState.isAuthenticated === undefined) {
-    return null;
-  }
+  const getAuthDataCallback = React.useCallback(async () => {
+    try {
+      return getAuthData();
+    } catch {
+      return null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authListenerCount]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        signOut,
-        isAuthenticated: authState.isAuthenticated ?? false,
-        user: authState.user,
-        tokens: authState.tokens,
-        screen,
-        setScreen,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthProviderCore getAuthData={getAuthDataCallback} signOut={signOut}>
+      {props.children}
+    </AuthProviderCore>
   );
 };
 
-export const useAuth = () => {
-  return React.useContext(AuthContext);
-};
+export { useAuth };
