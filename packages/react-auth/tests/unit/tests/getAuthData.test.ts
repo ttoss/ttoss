@@ -9,16 +9,6 @@ jest.mock('aws-amplify/auth', () => {
   };
 });
 
-test('getAuthData should return null when not authenticated', async () => {
-  (awsAmplifyAuth.getCurrentUser as jest.Mock).mockResolvedValue(null);
-  const authData = await getAuthData();
-  expect(authData).toStrictEqual({
-    isAuthenticated: false,
-    tokens: null,
-    user: null,
-  });
-});
-
 test('getAuthData should include tokens when includeTokens is true', async () => {
   const mockUserSub = '35bc053d-23b5-458d-9b36-94614ed0c117';
 

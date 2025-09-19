@@ -1,147 +1,194 @@
 {
-  "0XOzcH": {
-    "defaultMessage": "Required field",
-    "description": "Required field."
-  },
-  "42HafR": {
-    "defaultMessage": "Code",
-    "description": "Code"
-  },
-  "5E12mO": {
-    "defaultMessage": "Email",
-    "description": "Email label."
-  },
-  "5oOshZ": {
-    "defaultMessage": "Enter your email address",
-    "description": "Required field."
-  },
-  "6PdOcy": {
-    "defaultMessage": "Cancel",
-    "description": "Cancel"
-  },
-  "8GMUPk": {
-    "defaultMessage": "I'm already registered",
-    "description": "Link to sign in on sign up."
-  },
-  "9cApwd": {
-    "defaultMessage": "Please, insert a valid e-mail",
-    "description": "Invalid email."
-  },
-  "BtK6KR": {
-    "defaultMessage": "Forgot password?",
-    "description": "Forgot password?"
-  },
-  "Co3exe": {
-    "defaultMessage": "By signing up, you agree to the following Terms and Conditions."
-  },
   "EO/33N": {
     "defaultMessage": "Signed in successfully"
   },
+  "0XOzcH": {
+    "defaultMessage": "Required field",
+    "description": "Required field.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "38HSjr": {
+    "defaultMessage": "Sign In",
+    "description": "Sign In",
+    "module": "@ttoss/react-auth-core"
+  },
+  "5E12mO": {
+    "defaultMessage": "Email",
+    "description": "Email label.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancel",
+    "description": "Cancel",
+    "module": "@ttoss/react-auth-core"
+  },
+  "8GMUPk": {
+    "defaultMessage": "I'm already registered",
+    "description": "Link to sign in on sign up.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "9cApwd": {
+    "defaultMessage": "Please, insert a valid e-mail",
+    "description": "Invalid email.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "BtK6KR": {
+    "defaultMessage": "Forgot password?",
+    "description": "Forgot password?",
+    "module": "@ttoss/react-auth-core"
+  },
+  "Co3exe": {
+    "defaultMessage": "By signing up, you agree to the following Terms and Conditions.",
+    "module": "@ttoss/react-auth-core"
+  },
   "EZ3YF2": {
     "defaultMessage": "Sign up",
-    "description": "Sign up"
+    "description": "Sign up",
+    "module": "@ttoss/react-auth-core"
+  },
+  "HT4tSM": {
+    "defaultMessage": "Reset Password",
+    "description": "Reset Password",
+    "module": "@ttoss/react-auth-core"
   },
   "KY2T6J": {
     "defaultMessage": "Code",
-    "description": "Sign up confirmation code"
+    "description": "Sign up confirmation code",
+    "module": "@ttoss/react-auth-core"
   },
   "NJ57Qj": {
     "defaultMessage": "Confirm password field is required",
-    "description": "Confirm Password is required."
+    "description": "Confirm Password is required.",
+    "module": "@ttoss/react-auth-core"
   },
   "OhDL0i": {
     "defaultMessage": "Invalid email",
-    "description": "Invalid email."
+    "description": "Invalid email.",
+    "module": "@ttoss/react-auth-core"
   },
   "PylVqx": {
     "defaultMessage": "Password",
-    "description": "Password label."
+    "description": "Password label.",
+    "module": "@ttoss/react-auth-core"
   },
   "S3pjKw": {
     "defaultMessage": "Minimum {value} characters",
-    "description": "Minimum {value} characters."
+    "description": "Minimum {value} characters.",
+    "module": "@ttoss/react-auth-core"
   },
   "S4bbEj": {
     "defaultMessage": "Recovering Password",
-    "description": "Recovering Password"
+    "description": "Recovering Password",
+    "module": "@ttoss/react-auth-core"
   },
   "SQJto2": {
-    "defaultMessage": "Sign in"
+    "defaultMessage": "Sign in",
+    "module": "@ttoss/react-auth-core"
   },
-  "SnONhb": {
-    "defaultMessage": "Please, insert a valid e-mail",
-    "description": "Please, insert a valid e-mail"
+  "SfWKyS": {
+    "defaultMessage": "Maximum {value} characters",
+    "description": "Maximum {value} characters.",
+    "module": "@ttoss/react-auth-core"
   },
   "TZ4WUk": {
     "defaultMessage": "Password requires {value} characters",
-    "description": "Password must be at least {value} characters long."
+    "description": "Password must be at least {value} characters long.",
+    "module": "@ttoss/react-auth-core"
   },
   "UNttd+": {
     "defaultMessage": "Confirm",
-    "description": "Confirm"
+    "description": "Confirm",
+    "module": "@ttoss/react-auth-core"
   },
   "URJDrG": {
     "defaultMessage": "Sign up",
-    "description": "Create account."
+    "description": "Create account.",
+    "module": "@ttoss/react-auth-core"
   },
   "WU/CqP": {
     "defaultMessage": "Passwords are not the same",
-    "description": "Passwords are not the same"
+    "description": "Passwords are not the same",
+    "module": "@ttoss/react-auth-core"
   },
   "XreZg+": {
     "defaultMessage": "Registered Email",
-    "description": "Registered Email"
+    "description": "Registered Email",
+    "module": "@ttoss/react-auth-core"
   },
   "cGR2eI": {
     "defaultMessage": "Confirmation",
-    "description": "Confirmation"
+    "description": "Confirmation",
+    "module": "@ttoss/react-auth-core"
   },
   "d1YCuH": {
     "defaultMessage": "Enter your email address",
-    "description": "Email is a required field."
+    "description": "Email is a required field.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "e3IQoc": {
+    "defaultMessage": "New Password",
+    "description": "New Password",
+    "module": "@ttoss/react-auth-core"
   },
   "kdFYba": {
     "defaultMessage": "Password field is required",
-    "description": "Password is required."
+    "description": "Password is required.",
+    "module": "@ttoss/react-auth-core"
   },
   "khMx/2": {
-    "defaultMessage": "An error occurred with your authentication. Please try again."
+    "defaultMessage": "An error occurred with your authentication. Please try again.",
+    "module": "@ttoss/react-auth-core"
   },
   "lY+cuM": {
     "defaultMessage": "Confirm password",
-    "description": "Confirm Password label."
+    "description": "Confirm Password label.",
+    "module": "@ttoss/react-auth-core"
   },
   "lZvoYL": {
     "defaultMessage": "Sign up now",
-    "description": "Sign up now"
+    "description": "Sign up now",
+    "module": "@ttoss/react-auth-core"
   },
   "mZzmNV": {
     "defaultMessage": "Recover Password",
-    "description": "Recover Password"
+    "description": "Recover Password",
+    "module": "@ttoss/react-auth-core"
   },
   "oayEC3": {
     "defaultMessage": "Sign up",
-    "description": "Title on sign up."
+    "description": "Title on sign up.",
+    "module": "@ttoss/react-auth-core"
   },
   "pwv2cR": {
-    "defaultMessage": "We have sent a confirmation code to your email address. Please enter the code below."
+    "defaultMessage": "We have sent a confirmation code to your email address. Please enter the code below.",
+    "module": "@ttoss/react-auth-core"
+  },
+  "qTQ4hP": {
+    "defaultMessage": "An email has been sent to your address. Please check your inbox and follow the instructions to confirm your sign up.",
+    "module": "@ttoss/react-auth-core"
   },
   "qnQYqN": {
-    "defaultMessage": "You must accept the terms and conditions"
+    "defaultMessage": "You must accept the terms and conditions",
+    "module": "@ttoss/react-auth-core"
+  },
+  "s1OmP0": {
+    "defaultMessage": "Confirmation code",
+    "description": "Confirmation code",
+    "module": "@ttoss/react-auth-core"
   },
   "D1C6fR": {
-    "module": "@ttoss/forms",
     "defaultMessage": "Field must be at least {min} characters",
-    "description": "Min length field"
+    "description": "Min length field",
+    "module": "@ttoss/forms"
   },
   "MfWGyg": {
-    "module": "@ttoss/forms",
     "defaultMessage": "Field is required",
-    "description": "Field is required"
+    "description": "Field is required",
+    "module": "@ttoss/forms"
   },
   "ZhaPt0": {
-    "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
-    "description": "Invalid Value"
+    "description": "Invalid Value",
+    "module": "@ttoss/forms"
   }
 }

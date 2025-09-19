@@ -14,21 +14,13 @@ export const getAuthData = async ({
 } = {}): Promise<AuthData | null> => {
   const currentUser = await getCurrentUser();
 
-  if (!currentUser) {
-    return {
-      user: null,
-      tokens: null,
-      isAuthenticated: false,
-    };
-  }
-
   const [session, user] = await Promise.all([
     includeTokens ? fetchAuthSession() : Promise.resolve(null),
     fetchUserAttributes(),
   ]);
 
   const idToken = session?.tokens?.idToken?.toString() ?? '';
-  const accessToken = session?.tokens?.accessToken.toString() ?? '';
+  const accessToken = session?.tokens?.accessToken?.toString() ?? '';
   const refreshToken = '';
 
   return {

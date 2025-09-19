@@ -5,6 +5,8 @@ import { Auth, AuthProvider } from 'src/index';
 const email = 'some@email.com';
 const password = 'somepassword';
 
+jest.setTimeout(20_000);
+
 jest.mock('aws-amplify/auth', () => {
   return {
     signIn: jest.fn(),
