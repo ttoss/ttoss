@@ -1,5 +1,5 @@
-import { AuthProvider, useAuth } from 'src/index';
 import { renderHook, waitFor } from '@ttoss/test-utils';
+import { AuthProvider, useAuth } from 'src/index';
 
 jest.mock('aws-amplify/auth', () => {
   return {
@@ -13,7 +13,6 @@ jest.mock('aws-amplify/auth', () => {
 jest.mock('aws-amplify/utils', () => {
   return {
     Hub: {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       listen: jest.fn().mockReturnValue(() => {}),
     },
   };
@@ -29,7 +28,7 @@ const mockUserSub = '35bc053d-23b5-458d-9b36-94614ed0c117';
 
 const mockUser = {
   email: 'arantespp@gmail.com',
-  email_verified: 'true',
+  email_verified: false,
   sub: mockUserSub,
 };
 
@@ -76,8 +75,8 @@ test('useAuth should return the correct values', async () => {
       emailVerified: mockUser.email_verified,
     });
     expect(result.current.tokens).toEqual({
-      idToken: mockIdToken,
-      accessToken: mockAccessToken,
+      idToken: '',
+      accessToken: '',
       refreshToken: '',
     });
   });

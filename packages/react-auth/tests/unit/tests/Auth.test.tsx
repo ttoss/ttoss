@@ -46,7 +46,8 @@ test('should call Amplify Auth.signIn', async () => {
 
   await user.tab(); // blur password field
 
-  await user.click(screen.getByLabelText('submit-button'));
+  const submitButton = screen.getByRole('button', { name: /Sign in/i });
+  await user.click(submitButton);
 
   expect(amplifyAuth.signIn).toHaveBeenCalledWith({
     username: email,
@@ -79,7 +80,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
 
   await user.tab();
 
-  await user.click(screen.getByLabelText('submit-button'));
+  await user.click(screen.getByRole('button', { name: /Sign up/i }));
 
   expect(amplifyAuth.signUp).toHaveBeenCalledWith({
     username: email,
@@ -91,7 +92,7 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
 
   const confirmationCode = '123456';
   await user.type(screen.getByLabelText('Code'), confirmationCode);
-  await user.click(screen.getByLabelText('submit-button'));
+  await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
   expect(amplifyAuth.confirmSignUp).toHaveBeenCalledWith({
     confirmationCode,
@@ -137,7 +138,7 @@ test('should render confirmation code if email not confirmed', async () => {
 
   await user.tab();
 
-  await user.click(screen.getByLabelText('submit-button'));
+  await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
   await waitFor(() => {
     expect(amplifyAuth.resendSignUpCode).toHaveBeenCalledWith({
@@ -148,7 +149,7 @@ test('should render confirmation code if email not confirmed', async () => {
 
   const confirmationCode = '111114';
   await user.type(screen.getByLabelText('Code'), confirmationCode);
-  await user.click(screen.getByLabelText('submit-button'));
+  await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
   expect(amplifyAuth.confirmSignUp).toHaveBeenCalledWith({
     confirmationCode,
