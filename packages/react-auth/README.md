@@ -27,6 +27,9 @@ This package provides AWS Cognito-specific implementations of the authentication
 ```ts
 import { Amplify, type ResourcesConfig } from 'aws-amplify';
 
+/**
+ * https://docs.amplify.aws/gen1/react/build-a-backend/auth/set-up-auth/
+ */
 const authConfig: ResourcesConfig['Auth'] = {
   Cognito: {
     // ... your Cognito config
