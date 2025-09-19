@@ -45,3 +45,12 @@ export const getAuthData = async ({
     isAuthenticated: true,
   };
 };
+
+export const checkAuth = async (): Promise<boolean> => {
+  try {
+    const currentUser = await getCurrentUser();
+    return !!currentUser;
+  } catch {
+    return false;
+  }
+};

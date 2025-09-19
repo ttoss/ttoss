@@ -29,7 +29,13 @@ beforeEach(() => {
 });
 
 test('should call Amplify Auth.signIn', async () => {
-  const user = userEvent.setup();
+  (amplifyAuth.signIn as jest.Mock).mockResolvedValueOnce({
+    nextStep: {
+      signInStep: 'DONE',
+    },
+  });
+
+  const user = userEvent.setup({ delay: null });
 
   render(
     <AuthProvider>
@@ -37,14 +43,10 @@ test('should call Amplify Auth.signIn', async () => {
     </AuthProvider>
   );
 
-  await waitFor(() => {
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-  });
+  await screen.findByLabelText('Email');
 
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
-
-  await user.tab(); // blur password field
 
   const submitButton = screen.getByRole('button', { name: /Sign in/i });
   await user.click(submitButton);
@@ -53,6 +55,10 @@ test('should call Amplify Auth.signIn', async () => {
     username: email,
     password,
   });
+
+  expect(
+    screen.getByText('Signed in successfully', { exact: false })
+  ).toBeInTheDocument();
 });
 
 test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
@@ -77,8 +83,6 @@ test('should call Amplify Auth.signUp and Auth.confirmSignUp', async () => {
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
   await user.type(screen.getByLabelText('Confirm password'), password);
-
-  await user.tab();
 
   await user.click(screen.getByRole('button', { name: /Sign up/i }));
 
@@ -136,8 +140,6 @@ test('should render confirmation code if email not confirmed', async () => {
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Password'), password);
 
-  await user.tab();
-
   await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
   await waitFor(() => {
@@ -160,5 +162,50 @@ test('should render confirmation code if email not confirmed', async () => {
     expect(screen.queryByLabelText('Code')).not.toBeInTheDocument();
     const signInElements = screen.getAllByText('Sign in');
     expect(signInElements).toHaveLength(2);
+  });
+});
+
+test('should call Amplify Auth.resetPassword when forgot password is triggered', async () => {
+  const user = userEvent.setup();
+
+  render(
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
+
+  // Click "Forgot password?" link
+  await user.click(screen.getByText('Forgot password?'));
+
+  // Should be on forgot password screen
+  expect(screen.getByText('Recovering Password')).toBeInTheDocument();
+  expect(screen.getByLabelText('Registered Email')).toBeInTheDocument();
+
+  // Enter email and submit
+  await user.type(screen.getByLabelText('Registered Email'), email);
+  await user.click(screen.getByRole('button', { name: 'Recover Password' }));
+
+  // Should call resetPassword with correct email
+  expect(amplifyAuth.resetPassword).toHaveBeenCalledWith({
+    username: email,
+  });
+
+  await waitFor(() => {
+    expect(screen.getByLabelText('Confirmation code')).toBeInTheDocument();
+  });
+
+  const code = '678901';
+  await user.type(screen.getByLabelText('Confirmation code'), code);
+  await user.type(screen.getByLabelText('New Password'), password);
+  await user.click(screen.getByRole('button', { name: 'Reset Password' }));
+
+  expect(amplifyAuth.confirmResetPassword).toHaveBeenCalledWith({
+    confirmationCode: code,
+    newPassword: password,
+    username: email,
   });
 });
