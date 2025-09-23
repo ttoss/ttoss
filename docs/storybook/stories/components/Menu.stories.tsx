@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Box, Flex, Link } from '@ttoss/ui';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Menu } from '@ttoss/components/Menu';
-import { Meta, StoryFn } from '@storybook/react';
+import { Box, Flex, Link } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Components/Menu',

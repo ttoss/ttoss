@@ -1,4 +1,4 @@
-import { ComponentMeta, Story } from '@storybook/react';
+import { ComponentMeta, Story } from '@storybook/react-webpack5';
 import { Flex, HelpText, HelpTextProps } from '@ttoss/ui';
 
 export default {

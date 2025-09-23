@@ -1,5 +1,5 @@
+import { Meta, Story } from '@storybook/react-webpack5';
 import { Hero, HeroProps } from '@ttoss/landing-pages';
-import { Meta, Story } from '@storybook/react';
 
 export default {
   title: 'Landing Pages/Hero',

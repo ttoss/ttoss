@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react-webpack5';
 import { Box, Flex, Grid, Text, useTheme } from '@ttoss/ui';
 
 type ColorProps = {

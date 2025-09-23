@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { JsonEditor } from '@ttoss/components/JsonEditor';
 import { useTheme } from '@ttoss/ui';
 

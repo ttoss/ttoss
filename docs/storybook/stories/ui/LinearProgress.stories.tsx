@@ -1,5 +1,5 @@
+import { Meta, Story } from '@storybook/react-webpack5';
 import { LinearProgress } from '@ttoss/ui';
-import { Meta, Story } from '@storybook/react';
 
 export default {
   title: 'UI/LinearProgress',

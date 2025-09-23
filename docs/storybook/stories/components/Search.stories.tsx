@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Search } from '@ttoss/components/Search';
 import { Text } from '@ttoss/ui';
+import * as React from 'react';
 
 export default {
   title: 'Components/Search',

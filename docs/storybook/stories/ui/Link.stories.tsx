@@ -1,5 +1,5 @@
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Link } from '@ttoss/ui';
-import { Meta, StoryObj } from '@storybook/react';
 
 type Story = StoryObj<typeof Link>;
 

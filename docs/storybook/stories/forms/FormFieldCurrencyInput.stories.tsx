@@ -1,5 +1,4 @@
-import { action } from '@storybook/addon-actions';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldCurrencyInput,
@@ -9,6 +8,7 @@ import {
 } from '@ttoss/forms';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
+import { action } from 'storybook/actions';
 
 export default {
   title: 'Forms/FormFieldCurrencyInput',

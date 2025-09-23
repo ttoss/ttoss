@@ -1,9 +1,9 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 
 import {
   AuthSignUp,
   AuthSignUpProps,
-} from '../../../../packages/react-auth/src/AuthSignUp';
+} from '../../../../packages/react-auth-core/src/AuthSignUp';
 
 export default {
   title: 'React Auth/AuthSignUp',

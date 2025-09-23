@@ -1,4 +1,4 @@
-import { Preview } from '@storybook/react';
+import { Preview } from '@storybook/react-webpack5';
 import { I18nProvider } from '@ttoss/react-i18n';
 
 import { defaultThemeObject, themesObjects } from '../themes/themesObject';

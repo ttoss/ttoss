@@ -3,10 +3,10 @@ import { jestUnitConfig } from '@ttoss/config';
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      branches: 68,
-      functions: 68,
-      lines: 75,
-      statements: 75,
+      statements: 85.48,
+      branches: 80,
+      lines: 85.48,
+      functions: 85.71,
     },
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],

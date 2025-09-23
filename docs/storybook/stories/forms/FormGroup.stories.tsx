@@ -1,4 +1,4 @@
-import { Button } from '@ttoss/ui';
+import { Meta } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldInput,
@@ -8,8 +8,8 @@ import {
   yup,
   yupResolver,
 } from '@ttoss/forms';
-import { Meta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Button } from '@ttoss/ui';
+import { action } from 'storybook/actions';
 
 export default {
   title: 'Forms/FormGroup',

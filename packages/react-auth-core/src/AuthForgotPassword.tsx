@@ -32,7 +32,7 @@ export const AuthForgotPassword = (props: AuthForgotPasswordProps) => {
 
   const formMethods = useForm<yup.InferType<typeof schema>>({
     resolver: yupResolver(schema),
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   return (

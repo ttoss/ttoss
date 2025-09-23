@@ -1,5 +1,4 @@
-import { action } from '@storybook/addon-actions';
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldNumericFormat,
@@ -9,6 +8,7 @@ import {
 } from '@ttoss/forms';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
+import { action } from 'storybook/actions';
 
 export default {
   title: 'Forms/FormFieldNumericFormat',
