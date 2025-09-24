@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.2.27 (2025-09-24)
+
+### Bug Fixes
+
+- auth strapi ([#723](https://github.com/ttoss/ttoss/issues/723)) ([645b845](https://github.com/ttoss/ttoss/commit/645b8452612a970780f6a92fc9dc4a2a5cfe9e26))
+- fixing card and add an clear all notifications ([#727](https://github.com/ttoss/ttoss/issues/727)) ([e4d82ee](https://github.com/ttoss/ttoss/commit/e4d82eeee408b510a383337cce3587341ac527f7))
+
 ## [2.2.26](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.25...@ttoss/components@2.2.26) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/components

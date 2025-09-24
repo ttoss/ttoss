@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.1...@docs/storybook@2.21.2) (2025-09-24)
+
+### Bug Fixes
+
+- fixing card and add an clear all notifications ([#727](https://github.com/ttoss/ttoss/issues/727)) ([e4d82ee](https://github.com/ttoss/ttoss/commit/e4d82eeee408b510a383337cce3587341ac527f7))
+
 ## [2.21.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.0...@docs/storybook@2.21.1) (2025-09-19)
 
 ### Bug Fixes

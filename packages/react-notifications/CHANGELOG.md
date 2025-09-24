@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.4.4 (2025-09-24)
+
+### Bug Fixes
+
+- auth strapi ([#723](https://github.com/ttoss/ttoss/issues/723)) ([645b845](https://github.com/ttoss/ttoss/commit/645b8452612a970780f6a92fc9dc4a2a5cfe9e26))
+
 ## [2.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.2...@ttoss/react-notifications@2.4.3) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/react-notifications
