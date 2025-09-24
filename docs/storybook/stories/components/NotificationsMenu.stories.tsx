@@ -94,6 +94,7 @@ export const Default: StoryObj = {
       return n.tags;
     }).length,
     onClose: () => {},
+    onClearAll: () => {},
   },
 };
 
@@ -159,6 +160,7 @@ export const WithInfiniteScroll: StoryObj = {
         onOpenChange={setIsOpen}
         count={count}
         onClose={() => {}}
+        onClearAll={() => {}}
       />
     );
   },
@@ -176,6 +178,10 @@ export const WithCloseButton: StoryObj = {
           return n.id !== id;
         });
       });
+    };
+
+    const handleClearAll = () => {
+      setNotifications([]);
     };
 
     const orderedNotifications = React.useMemo(() => {
@@ -206,6 +212,7 @@ export const WithCloseButton: StoryObj = {
           return setIsOpen(false);
         }}
         count={count}
+        onClearAll={handleClearAll}
       />
     );
   },
