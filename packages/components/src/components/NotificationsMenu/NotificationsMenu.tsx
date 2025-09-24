@@ -202,11 +202,7 @@ export const NotificationsMenu = ({
                         }}
                         onClick={onClearAll}
                       >
-                        <Icon
-                          icon="fluent:delete-20-regular"
-                          width={18}
-                          height={18}
-                        />
+                        <Icon icon="delete" width={18} height={18} />
                         <Text sx={{ ml: -1, marginTop: -0.4 }}>
                           Limpar Tudo
                         </Text>
