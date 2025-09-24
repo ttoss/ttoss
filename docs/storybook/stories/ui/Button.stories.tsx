@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react-webpack5';
 import { Button, ButtonProps, Flex } from '@ttoss/ui';
 
 export default {

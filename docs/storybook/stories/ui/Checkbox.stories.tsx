@@ -1,5 +1,5 @@
 /* eslint-disable formatjs/no-literal-string-in-jsx */
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story } from '@storybook/react-webpack5';
 import { Checkbox, type CheckboxProps, Label } from '@ttoss/ui';
 
 const Template: Story<CheckboxProps> = (args) => {

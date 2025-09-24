@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Auth, type AuthProps } from '@ttoss/react-auth-core';
 import { Image } from '@ttoss/ui';
 

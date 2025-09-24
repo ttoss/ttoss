@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { CloseButton, type CloseButtonProps, Flex } from '@ttoss/ui';
+import { action } from 'storybook/actions';
 
 type Story = StoryObj<typeof CloseButton>;
 

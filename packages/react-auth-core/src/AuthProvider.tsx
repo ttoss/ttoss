@@ -1,15 +1,14 @@
 import { useNotifications } from '@ttoss/react-notifications';
 import * as React from 'react';
 
-import type { AuthContextValue, AuthData, AuthScreen } from './types';
+import type { AuthContextValue, AuthData } from './types';
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);
 
 export type AuthProviderProps = {
   children: React.ReactNode;
-  initialScreen?: AuthScreen;
-  getAuthData?: () => Promise<AuthData | null>;
-  signOut?: () => Promise<void>;
+  getAuthData: () => Promise<AuthData | null>;
+  signOut: () => Promise<void>;
 };
 
 const UNAUTHENTICATED_USER: AuthData = {
