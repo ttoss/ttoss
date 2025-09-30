@@ -55,21 +55,24 @@ const SidebarCollapseLayoutTemplate = ({
           <Flex>Sidebar item 9 </Flex>
         </Flex>
       </Layout.Sidebar>
-      <Layout.Main.Header
-        sx={{
-          borderBottom: '1px solid gray',
-        }}
-      >
-        Main Header
-      </Layout.Main.Header>
-      <Layout.Main>{mainContent}</Layout.Main>
-      <Layout.Main.Footer
-        sx={{
-          borderTop: '1px solid gray',
-        }}
-      >
-        Main Footer
-      </Layout.Main.Footer>
+
+      <Layout.Main>
+        <Layout.Main.Header
+          sx={{
+            borderBottom: '1px solid gray',
+          }}
+        >
+          Main Header
+        </Layout.Main.Header>
+        <Layout.Main.Body>{mainContent}</Layout.Main.Body>
+        <Layout.Main.Footer
+          sx={{
+            borderTop: '1px solid gray',
+          }}
+        >
+          Main Footer
+        </Layout.Main.Footer>
+      </Layout.Main>
     </SidebarCollapseLayout>
   );
 };
@@ -235,7 +238,11 @@ export const WithNotificationsMenu: Story = {
             <Flex>Sidebar item 6 </Flex>
           </Flex>
         </Layout.Sidebar>
-        <Layout.Main>{args.content || 'Main starts here'}</Layout.Main>
+        <Layout.Main>
+          <Layout.Main.Body>
+            {args.content || 'Main starts here'}
+          </Layout.Main.Body>
+        </Layout.Main>
       </SidebarCollapseLayout>
     );
   },
@@ -271,10 +278,12 @@ export const WithHeaderNotifications: Story = {
             </Flex>
           </Layout.Sidebar>
           <Layout.Main>
-            <Box sx={{ p: '4' }}>
-              <p>Clique no botão do header para adicionar uma notificação!</p>
-              <p>A notificação aparecerá no topo da página.</p>
-            </Box>
+            <Layout.Main.Body>
+              <Box sx={{ p: '4' }}>
+                <p>Clique no botão do header para adicionar uma notificação!</p>
+                <p>A notificação aparecerá no topo da página.</p>
+              </Box>
+            </Layout.Main.Body>
           </Layout.Main>
         </SidebarCollapseLayout>
       </NotificationsProvider>

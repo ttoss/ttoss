@@ -15,7 +15,11 @@ const Header = () => {
 Header.displayName = Layout.Header.displayName;
 
 const Main = () => {
-  return <Layout.Main sx={{}}>Main</Layout.Main>;
+  return (
+    <Layout.Main sx={{}}>
+      <Layout.Main.Body>Main</Layout.Main.Body>
+    </Layout.Main>
+  );
 };
 
 Main.displayName = Layout.Main.displayName;
