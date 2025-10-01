@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.2...@docs/storybook@2.21.3) (2025-10-01)
+
+### Bug Fixes
+
+- add main header,main body and main foot in collapse layout ([#731](https://github.com/ttoss/ttoss/issues/731)) ([6865756](https://github.com/ttoss/ttoss/commit/68657564eae36c7d38d8faa1206d03c342466d94))
+
 ## [2.21.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.1...@docs/storybook@2.21.2) (2025-09-24)
 
 ### Bug Fixes

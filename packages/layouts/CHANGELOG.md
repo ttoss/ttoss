@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.1...@ttoss/layouts@0.5.2) (2025-10-01)
+
+### Bug Fixes
+
+- add main header,main body and main foot in collapse layout ([#731](https://github.com/ttoss/ttoss/issues/731)) ([6865756](https://github.com/ttoss/ttoss/commit/68657564eae36c7d38d8faa1206d03c342466d94))
+
 ## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.0...@ttoss/layouts@0.5.1) (2025-09-24)
 
 **Note:** Version bump only for package @ttoss/layouts
