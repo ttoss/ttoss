@@ -10,7 +10,9 @@ test('should render layout from SidebarCollapseLayout component', () => {
   render(
     <SidebarCollapseLayout>
       <Layout.Header>Header</Layout.Header>
-      <Layout.Main>Main</Layout.Main>
+      <Layout.Main>
+        <Layout.Main.Body>Main</Layout.Main.Body>
+      </Layout.Main>
       <Layout.Sidebar>Sidebar</Layout.Sidebar>
       <div>Extra</div>
     </SidebarCollapseLayout>
@@ -30,7 +32,9 @@ test('should toggle sidebar visibility with proper accessibility', async () => {
   render(
     <SidebarCollapseLayout>
       <Layout.Header showSidebarButton>Header</Layout.Header>
-      <Layout.Main>Main</Layout.Main>
+      <Layout.Main>
+        <Layout.Main.Body>Main</Layout.Main.Body>
+      </Layout.Main>
       <Layout.Sidebar>Sidebar</Layout.Sidebar>
     </SidebarCollapseLayout>
   );
@@ -60,7 +64,9 @@ test('should support keyboard navigation', async () => {
   render(
     <SidebarCollapseLayout>
       <Layout.Header showSidebarButton>Header</Layout.Header>
-      <Layout.Main>Main</Layout.Main>
+      <Layout.Main>
+        <Layout.Main.Body>Main</Layout.Main.Body>
+      </Layout.Main>
       <Layout.Sidebar>Sidebar</Layout.Sidebar>
     </SidebarCollapseLayout>
   );
