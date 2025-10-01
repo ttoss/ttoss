@@ -19,3 +19,12 @@ describe('MainFooter', () => {
     expect(footer).toBeInTheDocument();
   });
 });
+
+describe('MainBody', () => {
+  test('should render MainBody with correct semantic element', () => {
+    render(<Layout.Main.Body>Main Body Content</Layout.Main.Body>);
+
+    const body = screen.getByText('Main Body Content');
+    expect(body).toBeInTheDocument();
+  });
+});

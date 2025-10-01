@@ -6,6 +6,7 @@ const semanticComponents = {
   Footer: 'footer',
   Main: 'main',
   MainHeader: 'mainHeader',
+  MainBody: 'mainBody',
   MainFooter: 'mainFooter',
 } as const;
 

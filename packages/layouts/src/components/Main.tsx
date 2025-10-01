@@ -1,29 +1,26 @@
-import { Box, BoxProps } from '@ttoss/ui';
+import { BoxProps, Stack } from '@ttoss/ui';
 
+import { MainBody } from './MainBody';
 import { MainFooter } from './MainFooter';
 import { MainHeader } from './MainHeader';
 
 export const Main = (props: BoxProps) => {
   return (
-    <Box
+    <Stack
       variant="layout.main"
-      {...props}
-      as="main"
       sx={{
-        paddingX: '10',
-        paddingY: '6',
-        overflowY: 'auto',
-        width: 'full',
+        flex: 1,
         height: 'full',
-        ...props.sx,
+        overflow: 'hidden',
       }}
     >
       {props.children}
-    </Box>
+    </Stack>
   );
 };
 
 Main.displayName = 'Main';
 
 Main.Header = MainHeader;
+Main.Body = MainBody;
 Main.Footer = MainFooter;

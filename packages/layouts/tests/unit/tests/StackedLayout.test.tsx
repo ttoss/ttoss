@@ -5,7 +5,9 @@ test('should render stacked layout from StackedLayout components', () => {
   render(
     <StackedLayout>
       <Layout.Header>Header</Layout.Header>
-      <Layout.Main>Main</Layout.Main>
+      <Layout.Main>
+        <Layout.Main.Body>Main</Layout.Main.Body>
+      </Layout.Main>
       <Layout.Footer>Footer</Layout.Footer>
       <div>Extra</div>
     </StackedLayout>
