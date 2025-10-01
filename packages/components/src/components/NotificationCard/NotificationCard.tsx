@@ -63,6 +63,11 @@ export const NotificationCard = (props: NotificationCardProps) => {
     neutral: 'info',
   };
 
+  const hasCaption = Boolean(props.caption);
+  const hasActions = Boolean(props.actions && props.actions.length > 0);
+  const hasTitle = Boolean(props.title);
+  const shouldCenterVertically = !hasCaption && !hasActions && !hasTitle;
+
   return (
     <Card sx={{ ...sxMap[props.type].card, width: 'full' }}>
       {props.title && (
@@ -98,12 +103,25 @@ export const NotificationCard = (props: NotificationCardProps) => {
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-end',
+            alignItems: shouldCenterVertically ? 'center' : 'flex-end',
             width: '100%',
             gap: '4',
           }}
         >
-          <Box sx={{ flex: 1 }}>{props.message}</Box>
+          <Box
+            sx={{
+              flex: 1,
+              // altura mínima da área de texto — ajuste conforme necessário
+              minHeight: shouldCenterVertically ? '56px' : 'auto',
+              // garantir centralização vertical do conteúdo quando for uma única linha
+              display: 'flex',
+              alignItems: shouldCenterVertically ? 'center' : 'flex-start',
+              // centralizar texto horizontalmente se quiser (opcional)
+              textAlign: 'left',
+            }}
+          >
+            {props.message}
+          </Box>
         </Box>
         {props.actions && props.actions.length > 0 && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
@@ -125,13 +143,13 @@ export const NotificationCard = (props: NotificationCardProps) => {
             })}
           </Box>
         )}
-        <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
-          {props.caption && (
+        {props.caption && (
+          <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
             <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>
               {props.caption}
             </Text>
-          )}
-        </Box>
+          </Box>
+        )}
         {!props.title && props.onClose && (
           <Box sx={{ alignSelf: 'flex-end' }}>
             <CloseButton onClick={props.onClose} />
