@@ -37,9 +37,11 @@ const Dashboard = () => (
   <SidebarCollapseLayout>
     <Layout.Header showSidebarButton>App Header with Menu Toggle</Layout.Header>
     <Layout.Sidebar>Navigation Menu</Layout.Sidebar>
-    <Layout.Main.Header>Page Title & Actions</Layout.Main.Header>
-    <Layout.Main>Dashboard Content</Layout.Main>
-    <Layout.Main.Footer>Status Bar</Layout.Main.Footer>
+    <Layout.Main>
+      <Layout.Main.Header>Page Title & Actions</Layout.Main.Header>
+      <Layout.Main.Body>Dashboard Content</Layout.Main.Body>
+      <Layout.Main.Footer>Status Bar</Layout.Main.Footer>
+    </Layout.Main>
   </SidebarCollapseLayout>
 );
 ```
@@ -48,22 +50,37 @@ const Dashboard = () => (
 
 ### Layout.Main Sub-Components
 
-Enhanced main content area with optional header and footer sections.
+The Main component provides a structured content area with three distinct sections:
 
 ```tsx
-<Layout.Main.Header>
-  <h1>Page Title</h1>
-  <button>Action Button</button>
-</Layout.Main.Header>
-
 <Layout.Main>
-  Main content with consistent padding and overflow handling
-</Layout.Main>
+  <Layout.Main.Header>
+    <h1>Page Title</h1>
+    <button>Action Button</button>
+  </Layout.Main.Header>
 
-<Layout.Main.Footer>
-  <span>Last updated: Today</span>
-</Layout.Main.Footer>
+  <Layout.Main.Body>
+    Main content with consistent padding and scroll handling
+  </Layout.Main.Body>
+
+  <Layout.Main.Footer>
+    <span>Last updated: Today</span>
+  </Layout.Main.Footer>
+</Layout.Main>
 ```
+
+**Key Features:**
+
+- **Main.Header**: Page-level header with title and actions
+- **Main.Body**: Scrollable content area with auto overflow handling
+- **Main.Footer**: Status bar or secondary actions
+
+**Benefits of This Structure:**
+
+- **Clear Content Hierarchy**: Separates page header, content, and footer concerns
+- **Automatic Scroll Management**: Body handles overflow while keeping header/footer fixed
+- **Consistent Spacing**: Each section has optimized padding and layout
+- **Accessibility**: Proper semantic HTML elements (`<header>`, `<main>`, `<footer>`)
 
 ## Automatic Layout Composition
 
@@ -88,15 +105,15 @@ const AppLayout = () => (
 
 // pages/Dashboard.tsx - Page-specific components
 const Dashboard = () => (
-  <>
+  <Layout.Main>
     <Layout.Main.Header>
       <h1>Dashboard</h1>
     </Layout.Main.Header>
-    <Layout.Main>
+    <Layout.Main.Body>
       <DashboardCharts />
-    </Layout.Main>
+    </Layout.Main.Body>
     <Layout.Main.Footer>Last updated: {lastUpdate}</Layout.Main.Footer>
-  </>
+  </Layout.Main>
 );
 ```
 
@@ -106,12 +123,17 @@ The layout **automatically composes** itself by finding components with matching
 
 ```tsx
 // These components can be anywhere in your component tree:
-<Layout.Header />     // → Detected as "Header"
-<Layout.Sidebar />    // → Detected as "Sidebar"
-<Layout.Main />       // → Detected as "Main"
-<Layout.Footer />     // → Detected as "Footer"
-<Layout.Main.Header />  // → Detected as "MainHeader"
-<Layout.Main.Footer />  // → Detected as "MainFooter"
+<Layout.Header />        // → Detected as "Header"
+<Layout.Sidebar />       // → Detected as "Sidebar"
+<Layout.Main />          // → Detected as "Main"
+<Layout.Footer />        // → Detected as "Footer"
+
+// Main sub-components are contained within Main:
+<Layout.Main>
+  <Layout.Main.Header />  // → Detected as "MainHeader"
+  <Layout.Main.Body />    // → Detected as "MainBody"
+  <Layout.Main.Footer />  // → Detected as "MainFooter"
+</Layout.Main>
 ```
 
 ## Component Properties
@@ -127,14 +149,17 @@ The layout **automatically composes** itself by finding components with matching
 All components integrate seamlessly with `@ttoss/ui` theme system via `sx` prop:
 
 ```tsx
-<Layout.Header
-  sx={{
-    backgroundColor: 'brand.primary',
-    borderBottom: '2px solid',
-  }}
->
-  Custom styled header
-</Layout.Header>
+<Layout.Main>
+  <Layout.Main.Header
+    sx={{
+      backgroundColor: 'brand.primary',
+      borderBottom: '2px solid',
+    }}
+  >
+    Custom styled header
+  </Layout.Main.Header>
+  <Layout.Main.Body>Content</Layout.Main.Body>
+</Layout.Main>
 ```
 
 ## Advanced Usage
