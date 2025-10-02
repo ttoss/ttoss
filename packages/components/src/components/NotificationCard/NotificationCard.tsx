@@ -66,7 +66,10 @@ export const NotificationCard = (props: NotificationCardProps) => {
   const hasCaption = Boolean(props.caption);
   const hasActions = Boolean(props.actions && props.actions.length > 0);
   const hasTitle = Boolean(props.title);
-  const shouldCenterVertically = !hasCaption && !hasActions && !hasTitle;
+  const shouldCenterVerticallyWithoutTitle =
+    !hasCaption && !hasActions && !hasTitle;
+  const shouldCenterVerticallyWithTitle =
+    !hasCaption && !hasActions && hasTitle;
   const shouldAddMinHeight = !hasCaption && !hasActions;
 
   return (
@@ -114,7 +117,11 @@ export const NotificationCard = (props: NotificationCardProps) => {
               flex: 1,
               minHeight: shouldAddMinHeight ? '40px' : 'auto',
               display: 'flex',
-              alignItems: shouldCenterVertically ? 'center' : 'flex-start',
+              alignItems: shouldCenterVerticallyWithoutTitle
+                ? 'center'
+                : shouldCenterVerticallyWithTitle
+                  ? 'center'
+                  : 'flex-start',
               textAlign: 'left',
             }}
           >
