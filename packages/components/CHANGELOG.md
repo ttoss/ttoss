@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.28](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.27...@ttoss/components@2.2.28) (2025-10-02)
+
+### Bug Fixes
+
+- notification card ([#732](https://github.com/ttoss/ttoss/issues/732)) ([71c0ee5](https://github.com/ttoss/ttoss/commit/71c0ee50779a05f8ddcc39a3de1b2f062f51d44e))
+
 ## 2.2.27 (2025-09-24)
 
 ### Bug Fixes
