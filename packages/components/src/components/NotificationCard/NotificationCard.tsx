@@ -103,7 +103,6 @@ export const NotificationCard = (props: NotificationCardProps) => {
         <Box
           sx={{
             display: 'flex',
-            minHeight: shouldAddMinHeight ? '40px' : 'auto',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             width: '100%',
