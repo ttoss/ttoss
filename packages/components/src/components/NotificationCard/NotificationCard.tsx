@@ -67,6 +67,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
   const hasActions = Boolean(props.actions && props.actions.length > 0);
   const hasTitle = Boolean(props.title);
   const shouldCenterVertically = !hasCaption && !hasActions && !hasTitle;
+  const shouldAddMinHeight = !hasCaption && !hasActions;
 
   return (
     <Card sx={{ ...sxMap[props.type].card, width: 'full' }}>
@@ -102,7 +103,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
         <Box
           sx={{
             display: 'flex',
-            minHeight: '40px',
+            minHeight: shouldAddMinHeight ? '40px' : 'auto',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             width: '100%',
@@ -112,7 +113,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
           <Box
             sx={{
               flex: 1,
-              minHeight: shouldCenterVertically ? '40px' : 'auto',
+              minHeight: shouldAddMinHeight ? '40px' : 'auto',
               display: 'flex',
               alignItems: shouldCenterVertically ? 'center' : 'flex-start',
               textAlign: 'left',
