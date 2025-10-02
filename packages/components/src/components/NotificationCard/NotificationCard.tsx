@@ -111,12 +111,9 @@ export const NotificationCard = (props: NotificationCardProps) => {
           <Box
             sx={{
               flex: 1,
-              // altura mínima da área de texto — ajuste conforme necessário
               minHeight: shouldCenterVertically ? '56px' : 'auto',
-              // garantir centralização vertical do conteúdo quando for uma única linha
               display: 'flex',
               alignItems: shouldCenterVertically ? 'center' : 'flex-start',
-              // centralizar texto horizontalmente se quiser (opcional)
               textAlign: 'left',
             }}
           >
