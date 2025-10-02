@@ -102,8 +102,9 @@ export const NotificationCard = (props: NotificationCardProps) => {
         <Box
           sx={{
             display: 'flex',
+            minHeight: '40px',
             justifyContent: 'space-between',
-            alignItems: shouldCenterVertically ? 'center' : 'flex-end',
+            alignItems: 'flex-start',
             width: '100%',
             gap: '4',
           }}
@@ -111,7 +112,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
           <Box
             sx={{
               flex: 1,
-              minHeight: shouldCenterVertically ? '56px' : 'auto',
+              minHeight: shouldCenterVertically ? '40px' : 'auto',
               display: 'flex',
               alignItems: shouldCenterVertically ? 'center' : 'flex-start',
               textAlign: 'left',
