@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.29](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.28...@ttoss/components@2.2.29) (2025-10-02)
+
+### Bug Fixes
+
+- condition to center text with title ([#733](https://github.com/ttoss/ttoss/issues/733)) ([ddbc0f4](https://github.com/ttoss/ttoss/commit/ddbc0f4c42edb6f9c6fa84c3982e5c1c7f42f8e6))
+
 ## [2.2.28](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.27...@ttoss/components@2.2.28) (2025-10-02)
 
 ### Bug Fixes
