@@ -138,9 +138,5 @@ export const WithOCANotification: StoryObj = {
       </>
     ),
     type: 'success',
-    presentation: 'SIMPLE',
-    target: 'USER',
-    targetIds: [1, 34],
-    expiresAt: '2025-06-29 00:00:00-300',
   },
 };

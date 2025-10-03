@@ -309,7 +309,7 @@ export const WithOCANotificationOnly: StoryObj = {
         tags: ['Nova'],
       },
     ],
-    count: 1,
+    count: 2,
     onClose: () => {},
     onClearAll: () => {},
   },
