@@ -217,3 +217,100 @@ export const WithCloseButton: StoryObj = {
     );
   },
 };
+
+export const WithOCANotificationOnly: StoryObj = {
+  args: {
+    notifications: [
+      {
+        id: '7',
+        title: `Sua campanha está ganhando performance!`,
+        message: (
+          <>
+            <p>
+              🎯 BOAS NOTÍCIAS! O OneClick Ads reduziu significativamente o
+              Custo por Conversão da sua Campanha!
+            </p>
+            <p>
+              Nome da Campanha:{' '}
+              <strong>
+                $🤖 [Simbiose Digital ON] TESTE VENDAS ADV FEVEREIRO. Campanha —
+                mussela
+              </strong>
+            </p>
+            <p>
+              Nome da Conta de Anúncio: <strong>BM 02 | Ecommerce | RDD</strong>
+            </p>
+            <p>Custo por conversão do dia 29/08 até 11/09: R$ 37,17</p>
+            <p>
+              Custo por conversão dos últimos 14 dias (12/09 até 25/09) com o
+              OneClick Ads: R$ 32,86
+            </p>
+            <p>Redução total no Custo por Conversão: 12%</p>
+            <p>
+              🚀 Continue otimizando mais campanhas com o OneClickAds para
+              manter a performance e escalar suas campanhas!
+            </p>
+            <p>
+              Precisa de ajuda?{' '}
+              <a
+                href="https://api.whatsapp.com/send?phone=5516936180293&text=%22Ol%C3%A1,%20Sou%20usuario%20ativo%20e%20tenho%20perguntas%20sobre%20o%20OneClick%20Ads.%20Podem%20me%20orientar?%22"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Clique aqui
+              </a>{' '}
+              para falar com nossos especialistas.
+            </p>
+          </>
+        ),
+        type: 'success',
+        caption: '20 min ago',
+        tags: ['Nova'],
+      },
+      {
+        id: '8',
+        title: `Sua Conta de Anúncios está ESCALANDO! 🚀`,
+        message: (
+          <>
+            <p>
+              🎯 BOAS NOTÍCIAS! Usando o OneClick Ads você está escalando mais
+              seus anúncios!
+            </p>
+            <p>
+              Conta de Anúncios: <strong>Conta Tannus</strong>
+            </p>
+            <p>Investimento do dia 20/09 até 22/09: R$ 656,10</p>
+            <p>
+              Investimento dos últimos 3 dias (23/09 até 25/09) com o OneClick
+              Ads: R$ 1.176,84
+            </p>
+            <p>
+              Aumento de <strong>79%</strong> no investimento!
+            </p>
+            <p>
+              🚀 Continue otimizando mais campanhas com o OneClickAds para
+              manter a performance e escalar suas campanhas!
+            </p>
+            <p>
+              Precisa de ajuda?{' '}
+              <a
+                href="https://api.whatsapp.com/send?phone=5516936180293&text=%22Ol%C3%A1,%20Sou%20usuario%20ativo%20e%20tenho%20perguntas%20sobre%20o%20OneClick%20Ads.%20Podem%20me%20orientar?%22"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Clique aqui
+              </a>{' '}
+              para falar com nossos especialistas.
+            </p>
+          </>
+        ),
+        type: 'success',
+        caption: 'há 7 dias',
+        tags: ['Nova'],
+      },
+    ],
+    count: 2,
+    onClose: () => {},
+    onClearAll: () => {},
+  },
+};
