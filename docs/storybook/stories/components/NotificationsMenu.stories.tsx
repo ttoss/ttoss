@@ -305,11 +305,8 @@ export const WithOCANotificationOnly: StoryObj = {
           </>
         ),
         type: 'success',
-        tags: ['Nova'],
-        presentation: 'SIMPLE',
-        target: 'USER',
-        channels: ['EMAIL'],
         caption: 'há 7 dias',
+        tags: ['Nova'],
       },
     ],
     count: 1,
