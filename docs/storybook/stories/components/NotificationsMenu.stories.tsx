@@ -265,7 +265,51 @@ export const WithOCANotificationOnly: StoryObj = {
         ),
         type: 'success',
         caption: '20 min ago',
-        tags: ['New'],
+        tags: ['Nova'],
+      },
+      {
+        id: '8',
+        title: `Sua Conta de Anúncios está ESCALANDO! 🚀`,
+        message: (
+          <>
+            <p>
+              🎯 BOAS NOTÍCIAS! Usando o OneClick Ads você está escalando mais
+              seus anúncios!
+            </p>
+            <p>
+              Conta de Anúncios: <strong>Conta Tannus</strong>
+            </p>
+            <p>Investimento do dia 20/09 até 22/09: R$ 656,10</p>
+            <p>
+              Investimento dos últimos 3 dias (23/09 até 25/09) com o OneClick
+              Ads: R$ 1.176,84
+            </p>
+            <p>
+              Aumento de <strong>79%</strong> no investimento!
+            </p>
+            <p>
+              🚀 Continue otimizando mais campanhas com o OneClickAds para
+              manter a performance e escalar suas campanhas!
+            </p>
+            <p>
+              Precisa de ajuda?{' '}
+              <a
+                href="https://api.whatsapp.com/send?phone=5516936180293&text=%22Ol%C3%A1,%20Sou%20usuario%20ativo%20e%20tenho%20perguntas%20sobre%20o%20OneClick%20Ads.%20Podem%20me%20orientar?%22"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Clique aqui
+              </a>{' '}
+              para falar com nossos especialistas.
+            </p>
+          </>
+        ),
+        type: 'success',
+        tags: ['Nova'],
+        presentation: 'SIMPLE',
+        target: 'USER',
+        channels: ['EMAIL'],
+        caption: 'há 7 dias',
       },
     ],
     count: 1,
