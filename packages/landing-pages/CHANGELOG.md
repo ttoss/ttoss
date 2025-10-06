@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.12.48 (2025-10-06)
+
+### Bug Fixes
+
+- cloud auth permissions ([#726](https://github.com/ttoss/ttoss/issues/726)) ([afeee5a](https://github.com/ttoss/ttoss/commit/afeee5a008b4cf0dd70945a1867fc384f17b7b7f))
+
 ## [0.12.47](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.46...@ttoss/landing-pages@0.12.47) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/landing-pages
