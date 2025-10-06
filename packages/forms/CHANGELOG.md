@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.31.4 (2025-10-06)
+
+### Bug Fixes
+
+- cloud auth permissions ([#726](https://github.com/ttoss/ttoss/issues/726)) ([afeee5a](https://github.com/ttoss/ttoss/commit/afeee5a008b4cf0dd70945a1867fc384f17b7b7f))
+
 ## [0.31.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.2...@ttoss/forms@0.31.3) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/forms

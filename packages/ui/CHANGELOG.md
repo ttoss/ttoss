@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.9.3 (2025-10-06)
+
+### Bug Fixes
+
+- cloud auth permissions ([#726](https://github.com/ttoss/ttoss/issues/726)) ([afeee5a](https://github.com/ttoss/ttoss/commit/afeee5a008b4cf0dd70945a1867fc384f17b7b7f))
+- switch button ([8ab6b71](https://github.com/ttoss/ttoss/commit/8ab6b71039d8169a2438fa5dd3d3388aca940a5b))
+
 ## [5.9.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.9.1...@ttoss/ui@5.9.2) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/ui
