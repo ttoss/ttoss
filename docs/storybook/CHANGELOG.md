@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.6...@docs/storybook@2.21.7) (2025-10-07)
+
+### Bug Fixes
+
+- remove alignItems that broke notifications and add OCA notification to stories ([#734](https://github.com/ttoss/ttoss/issues/734)) ([7dc408d](https://github.com/ttoss/ttoss/commit/7dc408d69d795cb02c62b955cd08e9bf9238e60f))
+
 ## [2.21.6](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.21.5...@docs/storybook@2.21.6) (2025-10-06)
 
 ### Bug Fixes
