@@ -80,7 +80,9 @@ export const NotificationCard = (props: NotificationCardProps) => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            fontSize: 'xl',
+            fontSize: ['md', 'xl'],
+            paddingY: ['1', '2', '4'],
+            paddingX: ['2', '4', '8'],
           }}
         >
           <Text sx={{ display: 'inline-flex', alignItems: 'center', gap: '2' }}>
@@ -101,6 +103,8 @@ export const NotificationCard = (props: NotificationCardProps) => {
           display: 'flex',
           flexDirection: 'column',
           gap: '2',
+          paddingY: ['1', '2', '4'],
+          paddingX: ['2', '4', '8'],
         }}
       >
         <Box
@@ -122,7 +126,13 @@ export const NotificationCard = (props: NotificationCardProps) => {
               flex: 1,
             }}
           >
-            {props.message}
+            <Text
+              sx={{
+                fontSize: ['sm', 'md'],
+              }}
+            >
+              {props.message}
+            </Text>
           </Box>
         </Box>
         {props.actions && props.actions.length > 0 && (
