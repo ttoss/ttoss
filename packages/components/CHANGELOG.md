@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.32](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.31...@ttoss/components@2.2.32) (2025-10-09)
+
+### Bug Fixes
+
+- zindex notifications menu ([#735](https://github.com/ttoss/ttoss/issues/735)) ([f3ca753](https://github.com/ttoss/ttoss/commit/f3ca7534ea71e970ab76bda47ff63e18f82cf8f7))
+
 ## [2.2.31](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.30...@ttoss/components@2.2.31) (2025-10-07)
 
 ### Bug Fixes
