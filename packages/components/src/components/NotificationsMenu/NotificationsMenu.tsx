@@ -163,7 +163,7 @@ export const NotificationsMenu = ({
                 width: ['90vw', '550px'],
                 maxHeight: '400px',
                 overflowY: 'auto',
-                zIndex: 10,
+                zIndex: 'modal',
                 padding: 0,
                 boxShadow: 'xl',
                 borderRadius: '2xl',
