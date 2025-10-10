@@ -233,8 +233,8 @@ export const WithOCANotificationOnly: StoryObj = {
             <p>
               Nome da Campanha:{' '}
               <strong>
-                $🤖 [Simbiose Digital ON] TESTE VENDAS ADV FEVEREIRO. Campanha —
-                mussela
+                🤖 [OneClick ON] [oneclick-tracking]
+                YGOR_VENDA_DIRETA_CONVERSÃO_TOUR_P1_COMPRA_VITORIA_28_09_25
               </strong>
             </p>
             <p>
@@ -265,7 +265,7 @@ export const WithOCANotificationOnly: StoryObj = {
         ),
         type: 'success',
         caption: '20 min ago',
-        tags: ['Nova'],
+        tags: ['Nova', 'OneClick Ads', 'Performance'],
       },
       {
         id: '8',

@@ -160,8 +160,11 @@ export const NotificationsMenu = ({
                 top: 'calc(100% + 8px)',
                 left: openToLeft ? 'auto' : 0,
                 right: openToLeft ? 0 : 'auto',
-                width: ['90vw', '550px'],
-                maxHeight: '400px',
+                width:
+                  notifications.length === 0
+                    ? ['60vw', '300px']
+                    : ['90vw', '600px'],
+                maxHeight: '550px',
                 overflowY: 'auto',
                 zIndex: 'modal',
                 padding: 0,
@@ -202,8 +205,14 @@ export const NotificationsMenu = ({
                         }}
                         onClick={onClearAll}
                       >
-                        <Icon icon="delete" width={18} height={18} />
-                        <Text sx={{ ml: -1, marginTop: -0.4 }}>
+                        <Icon icon="delete" width={16} height={16} />
+                        <Text
+                          sx={{
+                            ml: -1,
+                            marginTop: -0.4,
+                            fontSize: 'sm',
+                          }}
+                        >
                           Limpar Tudo
                         </Text>
                       </Button>
