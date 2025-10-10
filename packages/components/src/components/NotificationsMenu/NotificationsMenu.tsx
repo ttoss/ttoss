@@ -35,6 +35,8 @@ export const NotificationsMenu = ({
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [openToLeft, setOpenToLeft] = React.useState(false);
+  const [menuWidth, setMenuWidth] = React.useState(600); // Default width, will be adjusted
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
@@ -50,15 +52,50 @@ export const NotificationsMenu = ({
   };
 
   React.useEffect(() => {
+    const handleResize = () => {
+      return setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      return window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  React.useEffect(() => {
     if (!isOpen || !buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
     const spaceRight = window.innerWidth - rect.right;
     const spaceLeft = rect.left;
+    const desiredWidth = notifications.length === 0 ? 300 : 600;
+    const margin = 10; // Small margin to avoid touching edges
 
+    let newOpenToLeft = false;
+    let newWidth = desiredWidth;
+
+    if (spaceRight >= desiredWidth + margin) {
+      // Enough space on the right
+      newOpenToLeft = false;
+      newWidth = desiredWidth;
+    } else if (spaceLeft >= desiredWidth + margin) {
+      // Enough space on the left
+      newOpenToLeft = true;
+      newWidth = desiredWidth;
+    } else {
+      // Not enough space on either side, reduce size and position to the side with more space
+      if (spaceRight > spaceLeft) {
+        newOpenToLeft = false;
+        newWidth = Math.max(spaceRight - margin, 200); // Minimum width of 200px
+      } else {
+        newOpenToLeft = true;
+        newWidth = Math.max(spaceLeft - margin, 200);
+      }
+    }
+
+    setOpenToLeft(newOpenToLeft);
+    setMenuWidth(newWidth);
     setShowCount(false);
-    setOpenToLeft(spaceRight < 500 && spaceLeft > spaceRight);
-  }, [isOpen]);
+  }, [isOpen, notifications.length, windowWidth]);
 
   React.useEffect(() => {
     if (!hasMore || !onLoadMore || !loadMoreRef.current) return;
@@ -160,10 +197,7 @@ export const NotificationsMenu = ({
                 top: 'calc(100% + 8px)',
                 left: openToLeft ? 'auto' : 0,
                 right: openToLeft ? 0 : 'auto',
-                width:
-                  notifications.length === 0
-                    ? ['60vw', '300px']
-                    : ['90vw', '600px'],
+                width: `${menuWidth}px`,
                 maxHeight: '550px',
                 overflowY: 'auto',
                 zIndex: 'modal',
