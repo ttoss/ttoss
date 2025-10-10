@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.32...@ttoss/components@2.3.0) (2025-10-10)
+
+### Features
+
+- changing notifications card and menu for mobile ([#736](https://github.com/ttoss/ttoss/issues/736)) ([e2d5234](https://github.com/ttoss/ttoss/commit/e2d52347d004585a3e1dd486abff8ac31bb90b4e))
+
 ## [2.2.32](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.31...@ttoss/components@2.2.32) (2025-10-09)
 
 ### Bug Fixes
