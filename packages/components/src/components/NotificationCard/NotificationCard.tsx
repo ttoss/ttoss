@@ -85,9 +85,18 @@ export const NotificationCard = (props: NotificationCardProps) => {
             paddingX: ['2', '4', '8'],
           }}
         >
-          <Text sx={{ display: 'inline-flex', alignItems: 'center', gap: '2' }}>
-            <Icon icon={icon[props.type]} />
-            {props.title}
+          <Text
+            sx={{
+              display: 'inline-flex',
+              alignItems: ['flex-start', 'center'], // Alinha à esquerda em mobile
+              gap: '2',
+              flexDirection: ['column', 'row'], // Empilha em mobile, linha em desktop
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '2' }}>
+              <Icon icon={icon[props.type]} />
+              {props.title}
+            </Box>
             {props.tags && <Tag>{props.tags}</Tag>}
           </Text>
           {props.onClose && (
