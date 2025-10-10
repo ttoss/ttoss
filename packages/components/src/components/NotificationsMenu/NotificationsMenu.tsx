@@ -210,7 +210,7 @@ export const NotificationsMenu = ({
                           sx={{
                             ml: -1,
                             marginTop: -0.4,
-                            fontSize: ['sm', 'sm'],
+                            fontSize: 'sm',
                           }}
                         >
                           Limpar Tudo
