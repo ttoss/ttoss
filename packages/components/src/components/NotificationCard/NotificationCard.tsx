@@ -88,16 +88,25 @@ export const NotificationCard = (props: NotificationCardProps) => {
           <Text
             sx={{
               display: 'inline-flex',
-              alignItems: ['flex-start', 'center'], // Alinha à esquerda em mobile
+              alignItems: 'flex-start',
               gap: '2',
-              flexDirection: ['column', 'row'], // Empilha em mobile, linha em desktop
+              flexDirection: 'row',
+              flexWrap: 'wrap',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '2' }}>
               <Icon icon={icon[props.type]} />
               {props.title}
             </Box>
-            {props.tags && <Tag>{props.tags}</Tag>}
+            {props.tags &&
+              (Array.isArray(props.tags) ? props.tags.length > 0 : true) &&
+              (Array.isArray(props.tags) ? (
+                props.tags.map((tag, index) => {
+                  return <Tag key={index}>{tag}</Tag>;
+                })
+              ) : (
+                <Tag>{props.tags}</Tag>
+              ))}
           </Text>
           {props.onClose && (
             <Box sx={{ marginLeft: 'auto' }}>
