@@ -160,7 +160,10 @@ export const NotificationsMenu = ({
                 top: 'calc(100% + 8px)',
                 left: openToLeft ? 'auto' : 0,
                 right: openToLeft ? 0 : 'auto',
-                width: ['90vw', '600px'],
+                width:
+                  notifications.length === 0
+                    ? ['60vw', '300px']
+                    : ['90vw', '600px'],
                 maxHeight: '550px',
                 overflowY: 'auto',
                 zIndex: 'modal',
