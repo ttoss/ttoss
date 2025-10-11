@@ -8,7 +8,7 @@ import {
 } from '../../../../packages/react-auth-core/src/AuthForgotPassword';
 
 export default {
-  title: 'React Auth/AuthForgotPassword',
+  title: 'React Auth Core/AuthForgotPassword',
   component: AuthForgotPassword,
 } as Meta;
 

@@ -3,7 +3,7 @@ import { Auth, type AuthProps } from '@ttoss/react-auth-core';
 import { Image } from '@ttoss/ui';
 
 export default {
-  title: 'React Auth/Auth',
+  title: 'React Auth Core/Auth',
   component: Auth,
 } as Meta;
 

@@ -8,7 +8,7 @@ import {
 } from '../../../../packages/react-auth-core/src/AuthSignIn';
 
 export default {
-  title: 'React Auth/AuthSignIn',
+  title: 'React Auth Core/AuthSignIn',
   component: AuthSignIn,
 } as Meta;
 
