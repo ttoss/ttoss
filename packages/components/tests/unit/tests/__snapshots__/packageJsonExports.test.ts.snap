@@ -1,9 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`package.json exports should export all components 1`] = `
 {
   "./Accordion": "./src/components/Accordion/index.ts",
   "./Drawer": "./src/components/Drawer/index.ts",
+  "./FileUploader": "./src/components/FileUploader/index.ts",
   "./InstallPwa": "./src/components/InstallPwa/index.ts",
   "./JsonEditor": "./src/components/JsonEditor/index.ts",
   "./JsonView": "./src/components/JsonView/index.ts",
@@ -29,6 +30,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Drawer": {
     "import": "./dist/esm/Drawer/index.js",
     "types": "./dist/Drawer/index.d.ts",
+  },
+  "./FileUploader": {
+    "import": "./dist/esm/FileUploader/index.js",
+    "types": "./dist/FileUploader/index.d.ts",
   },
   "./InstallPwa": {
     "import": "./dist/esm/InstallPwa/index.js",

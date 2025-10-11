@@ -5,6 +5,35 @@ import { Flex, Input, InputProps } from '@ttoss/ui';
 export default {
   title: 'UI/Input',
   component: Input,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Text input component with validation states, icons, and full theme integration. Supports various input types and accessibility features.',
+      },
+    },
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: { type: 'select' },
+      options: ['default', 'filled', 'outline'],
+      description: 'Visual variant of the input',
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['small', 'medium', 'large'],
+      description: 'Input size',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disable input interaction',
+    },
+    error: {
+      control: 'boolean',
+      description: 'Error state styling',
+    },
+  },
 } as Meta;
 
 const Template: StoryFn<InputProps> = (args) => {
@@ -12,10 +41,16 @@ const Template: StoryFn<InputProps> = (args) => {
 };
 
 export const Default = Template.bind({});
-
 Default.args = {
   placeholder: 'Placeholder text',
   value: 'Text',
+};
+Default.parameters = {
+  docs: {
+    description: {
+      story: 'Basic text input with placeholder and default value.',
+    },
+  },
 };
 
 export const Disabled = Template.bind({});

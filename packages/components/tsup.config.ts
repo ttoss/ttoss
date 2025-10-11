@@ -8,6 +8,7 @@ export const components = [
   'Accordion',
   'Drawer',
   'InstallPwa',
+  'FileUploader',
   'JsonEditor',
   'JsonView',
   'List',

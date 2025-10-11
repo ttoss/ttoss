@@ -11,6 +11,14 @@ import { Text } from '@ttoss/ui';
 export default {
   title: 'Components/Accordion',
   component: Accordion,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Accessible accordion component with collapsible content sections. Built on react-accessible-accordion.',
+      },
+    },
+  },
 } as Meta;
 
 const Template: StoryFn = () => {

@@ -7,6 +7,15 @@ import { action } from 'storybook/actions';
 export default {
   title: 'Components/Modal',
   component: Modal,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Accessible modal component with theme integration. Built on react-modal with accessibility features like focus management and keyboard navigation. Supports custom styling with theme tokens.',
+      },
+    },
+  },
+  tags: ['autodocs'],
 } as Meta;
 
 const Template: StoryFn<{
@@ -70,11 +79,27 @@ SmallModal.args = {
   width: small,
   height: small,
 };
+SmallModal.parameters = {
+  docs: {
+    description: {
+      story:
+        'Small modal (200x200px) for compact content like confirmations or quick forms.',
+    },
+  },
+};
 
 export const LargeWidthModal = Template.bind({});
 LargeWidthModal.args = {
   width: large,
   height: small,
+};
+LargeWidthModal.parameters = {
+  docs: {
+    description: {
+      story:
+        'Wide modal for content that needs horizontal space like tables or forms.',
+    },
+  },
 };
 
 export const LargeHeightModal = Template.bind({});
@@ -82,9 +107,24 @@ LargeHeightModal.args = {
   width: small,
   height: large,
 };
+LargeHeightModal.parameters = {
+  docs: {
+    description: {
+      story: 'Tall modal for content lists or detailed information display.',
+    },
+  },
+};
 
 export const LargeModal = Template.bind({});
 LargeModal.args = {
   width: large,
   height: large,
+};
+LargeModal.parameters = {
+  docs: {
+    description: {
+      story:
+        'Full-size modal for complex content like detailed forms or dashboards.',
+    },
+  },
 };

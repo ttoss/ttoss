@@ -17,6 +17,7 @@
     "./Accordion": "./src/components/Accordion/index.ts",
     "./Drawer": "./src/components/Drawer/index.ts",
     "./InstallPwa": "./src/components/InstallPwa/index.ts",
+    "./FileUploader": "./src/components/FileUploader/index.ts",
     "./JsonEditor": "./src/components/JsonEditor/index.ts",
     "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
@@ -59,12 +60,14 @@
   },
   "peerDependencies": {
     "@ttoss/react-hooks": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
@@ -93,6 +96,10 @@
       "./InstallPwa": {
         "types": "./dist/InstallPwa/index.d.ts",
         "import": "./dist/esm/InstallPwa/index.js"
+      },
+      "./FileUploader": {
+        "types": "./dist/FileUploader/index.d.ts",
+        "import": "./dist/esm/FileUploader/index.js"
       },
       "./JsonEditor": {
         "types": "./dist/JsonEditor/index.d.ts",

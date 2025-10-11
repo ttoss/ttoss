@@ -41,6 +41,27 @@ const Component = (args: DrawerProps) => {
 export default {
   title: 'Components/Drawer',
   component: Component,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Slide-out drawer component that can appear from any screen edge. Built on react-modern-drawer with theme integration and customizable size/direction.',
+      },
+    },
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    direction: {
+      control: { type: 'select' },
+      options: ['left', 'right', 'top', 'bottom'],
+      description: 'Direction from which the drawer slides in',
+    },
+    size: {
+      control: { type: 'text' },
+      description:
+        'Size of the drawer (width for left/right, height for top/bottom)',
+    },
+  },
 } as Meta<typeof Drawer>;
 
 export const Default: Story = {
@@ -48,11 +69,57 @@ export const Default: Story = {
     direction: 'right',
     size: '300px',
   },
-  argTypes: {
-    direction: {
-      defaultValue: 'right',
-      options: ['right', 'left', 'top', 'bottom'],
-      control: { type: 'radio' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Basic drawer sliding from the right side. Try different directions and sizes using the controls.',
+      },
+    },
+  },
+};
+
+export const LeftDrawer: Story = {
+  args: {
+    direction: 'left',
+    size: '250px',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Drawer sliding from the left - commonly used for navigation menus.',
+      },
+    },
+  },
+};
+
+export const TopDrawer: Story = {
+  args: {
+    direction: 'top',
+    size: '200px',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Drawer sliding from the top - useful for notifications or quick actions.',
+      },
+    },
+  },
+};
+
+export const BottomDrawer: Story = {
+  args: {
+    direction: 'bottom',
+    size: '40%',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Drawer sliding from the bottom - great for mobile-friendly actions or forms.',
+      },
     },
   },
 };
