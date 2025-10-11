@@ -10,6 +10,15 @@ import * as React from 'react';
 
 const meta: Meta = {
   title: 'Components/Table',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Flexible table component built on TanStack Table with support for sorting, filtering, pagination, and custom rendering. Fully theme-integrated with responsive design.',
+      },
+    },
+  },
+  tags: ['autodocs'],
 };
 
 export default meta;
@@ -185,4 +194,12 @@ const RenderTable = () => {
 
 export const Example: StoryObj = {
   render: RenderTable,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Basic table example with TanStack Table integration. Shows header, body, and footer sections with custom column definitions and data rendering.',
+      },
+    },
+  },
 };

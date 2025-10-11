@@ -5,6 +5,15 @@ import { Flex } from '@ttoss/ui';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Tab navigation component with content panels. Supports icons, disabled states, and customizable styling. Built with accessibility in mind.',
+      },
+    },
+  },
+  tags: ['autodocs'],
 };
 
 export default meta;

@@ -4,6 +4,15 @@ import { Button } from '@ttoss/ui';
 
 export default {
   title: 'Components/Toast',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Toast notification system for displaying temporary messages. Supports different types (success, error, warning, info) with auto-dismiss and manual control.',
+      },
+    },
+  },
+  tags: ['autodocs'],
 } as Meta;
 
 const Template: StoryFn = () => {

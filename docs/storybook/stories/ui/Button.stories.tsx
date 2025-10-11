@@ -4,7 +4,30 @@ import { Button, ButtonProps, Flex } from '@ttoss/ui';
 export default {
   title: 'UI/Button',
   component: Button,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Primary button component for actions and navigation. Supports different variants, sizes, and states with full theme integration.',
+      },
+    },
+  },
+  tags: ['autodocs'],
   argTypes: {
+    variant: {
+      control: { type: 'select' },
+      options: ['primary', 'secondary', 'close'],
+      description: 'Visual style variant',
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['small', 'medium', 'large'],
+      description: 'Button size',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disable button interaction',
+    },
     backgroundColor: { control: 'color' },
   },
 } as Meta;

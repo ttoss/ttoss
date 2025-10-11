@@ -29,6 +29,12 @@ const meta: Meta<typeof FileUploader> = {
   component: FileUploader,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Drag-and-drop file uploader with progress tracking, multiple file support, and customizable upload logic. Provides real-time feedback during upload process.',
+      },
+    },
   },
   tags: ['autodocs'],
   argTypes: {
@@ -48,5 +54,13 @@ export const Default: Story = {
     onUploadComplete: action('Upload completed'),
     onUploadError: action('Upload failed'),
     placeholder: 'Drag files here or click to select',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Basic file uploader with drag-and-drop support. Try dragging files or clicking to select. Shows upload progress and completion status.',
+      },
+    },
   },
 };

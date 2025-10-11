@@ -33,8 +33,20 @@ const loadLocaleData = async (locale: string) => {
 export default {
   title: 'Forms/Form',
   component: Form,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Complete form component built on React Hook Form with yup validation, i18n support, and theme integration. Provides validation states, error handling, and accessibility features.',
+      },
+    },
+  },
+  tags: ['autodocs'],
   argTypes: {
-    showTooltip: { control: 'boolean' },
+    showTooltip: {
+      control: 'boolean',
+      description: 'Show validation tooltips on form fields',
+    },
   },
   args: {
     showTooltip: true,

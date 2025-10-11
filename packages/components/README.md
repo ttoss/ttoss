@@ -1,366 +1,279 @@
 # @ttoss/components
 
-<strong>@ttoss/components</strong> is a set of React components that you can use to build your apps using ttoss ecosystem.
+React components for the ttoss ecosystem. **ESM only** package.
 
-## ESM Only
-
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c) because [react-markdown](https://github.com/remarkjs/react-markdown).
-
-## Getting Started
-
-### Install @ttoss/components
+## Quick Start
 
 ```shell
 pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
 ```
 
-## Components
+**📖 [View all components in Storybook](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)**
 
-You can check all the components of the library `@ttoss/ui` on the [Storybook](https://storybook.ttoss.dev/?path=/story/components).
+## Components Overview
+
+All components are theme-aware and integrate seamlessly with `@ttoss/ui`.
+
+### Accordion
+
+Collapsible content sections. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemButton,
+  AccordionItemHeading,
+  AccordionItemPanel,
+} from '@ttoss/components/Accordion';
+
+<Accordion allowMultipleExpanded>
+  <AccordionItem>
+    <AccordionItemHeading>
+      <AccordionItemButton>Section Title</AccordionItemButton>
+    </AccordionItemHeading>
+    <AccordionItemPanel>Section content</AccordionItemPanel>
+  </AccordionItem>
+</Accordion>;
+```
+
+### Drawer
+
+Slide-out panels from screen edges. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-drawer--docs)
+
+```tsx
+import { Drawer } from '@ttoss/components/Drawer';
+
+<Drawer open={isOpen} direction="right" size="300px">
+  <div>Drawer content</div>
+</Drawer>;
+```
+
+### FileUploader
+
+Drag-and-drop file upload with progress tracking. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
+
+```tsx
+import { FileUploader } from '@ttoss/components/FileUploader';
+
+<FileUploader
+  uploadFn={async (file) => ({ url: 'file-url', id: 'file-id' })}
+  onUploadComplete={(file, result) => console.log('Uploaded:', result)}
+/>;
+```
+
+### InstallPwa
+
+PWA installation prompt component. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-installpwa--docs)
+
+```tsx
+import { InstallPwa } from '@ttoss/components/InstallPwa';
+
+<InstallPwa />;
+```
+
+### JsonEditor
+
+JSON editor component. Re-exports from [json-edit-react](https://carlosdevpereira.github.io/json-edit-react/). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
+
+```tsx
+import { JsonEditor } from '@ttoss/components/JsonEditor';
+
+<JsonEditor data={jsonData} setData={setJsonData} />;
+```
+
+### JsonView
+
+JSON viewer component. Re-exports from [react-json-view-lite](https://github.com/AnyRoad/react-json-view-lite). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-jsonview--docs)
+
+```tsx
+import { JsonView } from '@ttoss/components/JsonView';
+
+<JsonView data={jsonData} />;
+```
 
 ### List
 
-The `List` component is a React component that renders an unordered list `(<ul>)` and accepts
-`ListItem` as its children. Each ListItem can contain any React content, including other components.
+Unordered lists with customizable items. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-list--docs)
 
 ```tsx
-import React from 'react';
-import { List, ListItem } from '@ttoss/components/list';
+import { List, ListItem } from '@ttoss/components/List';
 
-const MyComponent = () => (
-  <List>
-    <ListItem>Item 1</ListItem>
-    <ListItem>Item 2</ListItem>
-    <ListItem>Item 3</ListItem>
-    <ListItem>
-      <CustomComponent />
-    </ListItem>
-  </List>
-);
+<List>
+  <ListItem>First item</ListItem>
+  <ListItem>Second item</ListItem>
+</List>;
 ```
-
-In this example, `List` is used to render an `<ul>` list with four items. The last item contains a custom React component (CustomComponent), demonstrating that ListItem can receive any React content as its children.
-
-This is a basic example of how to use the `List` component with `ListItem`. You can customize the content and styles as needed to fit your project requirements.
 
 ### Markdown
 
-Markdown uses [react-markdown](https://remarkjs.github.io/react-markdown/) under the hood, so the props are the same. You can update the elements as you want. Ex:
+Render markdown content with theme integration. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-markdown--docs)
 
 ```tsx
-const MARKDOWN_CONTENT = `
-# Heading 1
-## Heading 2
-### Heading 3
-#### Heading 4
-##### Heading 5
+import { Markdown } from '@ttoss/components/Markdown';
 
-Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit quasi dolorum aperiam fugiat earum expedita non eligendi similique id minus explicabo, eum facere nihil aspernatur libero! Sapiente aliquid tenetur dolor.
+<Markdown
+  components={{
+    a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
+  }}
+>
+  # Heading Some **bold** text
+</Markdown>;
+```
 
-- Item 1
-- Item 2
-- Item 3
+### Menu
 
-![Alt Text](https://fastly.picsum.photos/id/436/200/300.jpg?hmac=OuJRsPTZRaNZhIyVFbzDkMYMyORVpV86q5M8igEfM3Y "Alt Text")
+Dropdown menus with customizable triggers. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
 
-[Google](https://google.com)
-`;
+```tsx
+import { Menu } from '@ttoss/components/Menu';
 
-const Component = () => {
-  return (
-    <Markdown
-      components={{
-        a: ({ children, ...props }) => (
-          <Link {...props} quiet>
-            {children}
-          </Link>
-        ),
-      }}
-    >
-      {MARKDOWN_CONTENT}
-    </Markdown>
-  );
-};
+<Menu trigger={<Button>Open Menu</Button>}>
+  <Menu.Item onClick={() => {}}>Action 1</Menu.Item>
+  <Menu.Item onClick={() => {}}>Action 2</Menu.Item>
+</Menu>;
 ```
 
 ### Modal
 
-Modal uses [react-modal](https://reactcommunity.org/react-modal/) under the hood, so the props are the same. The only difference is that the styles are theme-aware. You can [style the modal](https://reactcommunity.org/react-modal/styles/) using theme tokens, except that [array as value](https://theme-ui.com/sx-prop#responsive-values) don't work.
+Theme-aware modals with accessibility features. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-modal--docs)
 
 ```tsx
-import { Modal } from '@ttoss/components';
-import { Box, Button, Flex, Text } from '@ttoss/ui';
+import { Modal } from '@ttoss/components/Modal';
 
-/**
- * See https://reactcommunity.org/react-modal/accessibility/#app-element
- */
-// Modal.setAppElement('#root'); Prefer using this static method over setting it on the component.
+<Modal
+  isOpen={isOpen}
+  onRequestClose={() => setIsOpen(false)}
+  style={{ content: { backgroundColor: 'secondary' } }}
+>
+  Modal content
+</Modal>;
+```
 
-Modal.setAppElement('#modal-root');
+### NotificationCard
 
-const Component = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+Display notification messages with actions. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationcard--docs)
 
-  return (
-    <Box id="modal-root">
-      <Modal
-        isOpen={isOpen}
-        onAfterOpen={action('onAfterOpen')}
-        onAfterClose={action('onAfterClose')}
-        onRequestClose={() => {
-          action('onRequestClose')();
-          setIsOpen(false);
-        }}
-        style={{
-          overlay: {
-            backgroundColor: 'primary',
-          },
-          content: {
-            backgroundColor: 'secondary',
-            padding: ['lg', 'xl'], // Array as value don't work.
-          },
-        }}
-      >
-        <Flex>
-          <Text>This is a modal.</Text>
-          <Text>Here is the content.</Text>
-          <Button
-            onClick={() => {
-              setIsOpen(false);
-            }}
-          >
-            Close Modal
-          </Button>
-        </Flex>
-      </Modal>
-      <Button
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        Open Modal
-      </Button>
-    </Box>
-  );
-};
+```tsx
+import { NotificationCard } from '@ttoss/components/NotificationCard';
+
+<NotificationCard
+  title="Notification Title"
+  message="Notification message"
+  onClose={() => {}}
+/>;
+```
+
+### NotificationsMenu
+
+Menu component for displaying notifications. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationsmenu--docs)
+
+```tsx
+import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
+
+<NotificationsMenu
+  notifications={[{ id: '1', title: 'New message', read: false }]}
+  onNotificationClick={(notification) => {}}
+/>;
 ```
 
 ### Search
 
-`Search` is a component that integrates an input field with debouncing functionality, making it ideal for search bars where you want to limit the rate of search queries based on user input.
-
-It uses the `useDebounce` hook from `@ttoss/react-hooks` to delay the search action until the user has stopped typing for a specified duration, which helps to prevent unnecessary or excessive queries.
+Debounced search input with loading states. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-search--docs)
 
 ```tsx
-import React, { useState } from 'react';
-import { Search } from '@ttoss/components';
-import { Box } from '@ttoss/ui';
+import { Search } from '@ttoss/components/Search';
 
-const SearchComponent = () => {
-  const [searchText, setSearchText] = useState('');
-
-  const handleSearchChange = (newValue) => {
-    setSearchText(newValue);
-    // Perform search or update logic here
-  };
-
-  return (
-    <Box>
-      <Search
-        value={searchText}
-        onChange={handleSearchChange}
-        loading={/* loading state here */}
-        debounce={500} // Adjust the debounce time as needed
-      />
-    </Box>
-  );
-};
+<Search
+  value={searchText}
+  onChange={setSearchText}
+  loading={isLoading}
+  debounce={300}
+/>;
 ```
-
-In this example, the `Search` component receives the current search text and a handler function to update this text. The `loading` prop can be used to display a loading indicator, and the `debounce` prop controls the debounce delay.
 
 ### Table
 
-The `Table` component is a flexible and customizable table that supports sorting, filtering, and pagination. It is designed to be easy to use and integrate with your data sources. It exports all [TanStack Table](https://tanstack.com/table/latest) hooks and methods.
-
-#### Basic Usage
+Flexible tables with sorting and pagination. Uses [TanStack Table](https://tanstack.com/table/latest). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
 
 ```tsx
-import * as React from 'react';
 import {
   Table,
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
   useReactTable,
-} from '@ttoss/components/table';
-
-type Person = {
-  firstName: string;
-  lastName: string;
-  age: number;
-  visits: number;
-  status: string;
-  progress: number;
-};
-
-const defaultData: Person[] = [
-  {
-    firstName: 'tanner',
-    lastName: 'linsley',
-    age: 24,
-    visits: 100,
-    status: 'In Relationship',
-    progress: 50,
-  },
-  {
-    firstName: 'tandy',
-    lastName: 'miller',
-    age: 40,
-    visits: 40,
-    status: 'Single',
-    progress: 80,
-  },
-  {
-    firstName: 'joe',
-    lastName: 'dirte',
-    age: 45,
-    visits: 20,
-    status: 'Complicated',
-    progress: 10,
-  },
-];
-
-const columnHelper = createColumnHelper<Person>();
+  createColumnHelper,
+} from '@ttoss/components/Table';
 
 const columns = [
-  columnHelper.accessor('firstName', {
-    cell: (info) => {
-      return info.getValue();
-    },
-    footer: (info) => {
-      return info.column.id;
-    },
-  }),
-  columnHelper.accessor(
-    (row) => {
-      return row.lastName;
-    },
-    {
-      id: 'lastName',
-      cell: (info) => {
-        return <i>{info.getValue()}</i>;
-      },
-      header: () => {
-        return <span>Last Name</span>;
-      },
-      footer: (info) => {
-        return info.column.id;
-      },
-    }
-  ),
-  columnHelper.accessor('age', {
-    header: () => {
-      return 'Age';
-    },
-    cell: (info) => {
-      return info.renderValue();
-    },
-    footer: (info) => {
-      return info.column.id;
-    },
-  }),
-  columnHelper.accessor('visits', {
-    header: () => {
-      return <span>Visits</span>;
-    },
-    footer: (info) => {
-      return info.column.id;
-    },
-  }),
-  columnHelper.accessor('status', {
-    header: 'Status',
-    footer: (info) => {
-      return info.column.id;
-    },
-  }),
-  columnHelper.accessor('progress', {
-    header: 'Profile Progress',
-    footer: (info) => {
-      return info.column.id;
-    },
-  }),
+  columnHelper.accessor('name', { header: 'Name' }),
+  columnHelper.accessor('email', { header: 'Email' }),
 ];
 
-const RenderTable = () => {
-  const [data] = React.useState(() => {
-    return [...defaultData];
-  });
+const table = useReactTable({
+  data,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+<Table>
+  <Table.Head>
+    {table.getHeaderGroups().map((headerGroup) => (
+      <Table.Row key={headerGroup.id}>
+        {headerGroup.headers.map((header) => (
+          <Table.Header key={header.id}>
+            {flexRender(header.column.columnDef.header, header.getContext())}
+          </Table.Header>
+        ))}
+      </Table.Row>
+    ))}
+  </Table.Head>
+  <Table.Body>
+    {table.getRowModel().rows.map((row) => (
+      <Table.Row key={row.id}>
+        {row.getVisibleCells().map((cell) => (
+          <Table.Cell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </Table.Cell>
+        ))}
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table>;
+```
 
-  return (
-    <Table>
-      <Table.Head>
-        {table.getHeaderGroups().map((headerGroup) => {
-          return (
-            <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <Table.Header key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </Table.Header>
-                );
-              })}
-            </Table.Row>
-          );
-        })}
-      </Table.Head>
-      <Table.Body>
-        {table.getRowModel().rows.map((row) => {
-          return (
-            <Table.Row key={row.id}>
-              {row.getVisibleCells().map((cell) => {
-                return (
-                  <Table.Cell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Table.Cell>
-                );
-              })}
-            </Table.Row>
-          );
-        })}
-      </Table.Body>
-      <Table.Footer>
-        {table.getFooterGroups().map((footerGroup) => {
-          return (
-            <Table.Row key={footerGroup.id}>
-              {footerGroup.headers.map((header) => {
-                return (
-                  <Table.Header key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
-                        )}
-                  </Table.Header>
-                );
-              })}
-            </Table.Row>
-          );
-        })}
-      </Table.Footer>
-    </Table>
-  );
-};
+### Tabs
+
+Tab navigation with content panels. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-tabs--docs)
+
+```tsx
+import { Tabs } from '@ttoss/components/Tabs';
+
+<Tabs>
+  <Tabs.TabList>
+    <Tabs.Tab>Tab 1</Tabs.Tab>
+    <Tabs.Tab>Tab 2</Tabs.Tab>
+  </Tabs.TabList>
+  <Tabs.TabContent>
+    <Tabs.TabPanel>Content 1</Tabs.TabPanel>
+    <Tabs.TabPanel>Content 2</Tabs.TabPanel>
+  </Tabs.TabContent>
+</Tabs>;
+```
+
+### Toast
+
+Toast notification system. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-toast--docs)
+
+```tsx
+import { Toast } from '@ttoss/components/Toast';
+
+<Toast
+  message="Success message"
+  type="success"
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+/>;
+```
+
+```
+
 ```

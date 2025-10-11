@@ -6,6 +6,15 @@ import * as React from 'react';
 
 export default {
   title: 'Components/Search',
+  component: Search,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Search input component with debouncing functionality to limit API calls. Includes loading state support.',
+      },
+    },
+  },
 } as Meta;
 
 const sleep = (timeout: number) => {
@@ -44,3 +53,11 @@ const Template: StoryFn = () => {
 };
 
 export const Example = Template.bind({});
+Example.parameters = {
+  docs: {
+    description: {
+      story:
+        'Search component with debounced input and loading state. Try typing to see the debounce effect.',
+    },
+  },
+};
