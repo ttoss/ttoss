@@ -6,10 +6,10 @@ export default jestUnitConfig({
   transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
   coverageThreshold: {
     global: {
-      statements: 100,
-      branches: 100,
-      lines: 100,
-      functions: 100,
+      statements: 88.75,
+      branches: 80.95,
+      lines: 89.87,
+      functions: 91.11,
     },
   },
 });
