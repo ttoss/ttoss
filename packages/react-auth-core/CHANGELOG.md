@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.2.9...@ttoss/react-auth-core@0.2.10) (2025-10-11)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
 ## [0.2.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.2.8...@ttoss/react-auth-core@0.2.9) (2025-10-10)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

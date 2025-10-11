@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.9.3...@ttoss/ui@5.10.0) (2025-10-11)
+
+### Features
+
+- fileuploader ([#738](https://github.com/ttoss/ttoss/issues/738)) ([c5eaf6f](https://github.com/ttoss/ttoss/commit/c5eaf6f9d0b0cb5d67fdcef651f55cb63ae86b8d))
+
 ## 5.9.3 (2025-10-06)
 
 ### Bug Fixes

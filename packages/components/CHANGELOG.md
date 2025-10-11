@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.3.0...@ttoss/components@2.4.0) (2025-10-11)
+
+### Features
+
+- fileuploader ([#738](https://github.com/ttoss/ttoss/issues/738)) ([c5eaf6f](https://github.com/ttoss/ttoss/commit/c5eaf6f9d0b0cb5d67fdcef651f55cb63ae86b8d))
+
 # [2.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.2.32...@ttoss/components@2.3.0) (2025-10-10)
 
 ### Features
