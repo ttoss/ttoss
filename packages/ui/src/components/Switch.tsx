@@ -10,9 +10,6 @@ export const Switch = (props: SwitchProps) => {
       aria-checked={props.checked || false}
       sx={{
         backgroundColor: 'input.background.muted.disabled',
-        '& > input': {
-          position: 'relative',
-        },
         'input:checked ~ &': {
           backgroundColor: 'input.background.accent.default',
         },

@@ -688,6 +688,9 @@ importers:
       '@ttoss/react-hooks':
         specifier: workspace:^
         version: link:../react-hooks
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons
