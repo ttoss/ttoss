@@ -34,7 +34,11 @@ export const NotificationsMenu = ({
   onClearAll,
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
-  const [openToLeft, setOpenToLeft] = React.useState(false);
+  const [menuWidth, setMenuWidth] = React.useState(600); // Default width, will be adjusted
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+  const [menuLeft, setMenuLeft] = React.useState(0);
+  const [menuTop, setMenuTop] = React.useState(0);
+
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
@@ -50,15 +54,62 @@ export const NotificationsMenu = ({
   };
 
   React.useEffect(() => {
+    const handleResize = () => {
+      return setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      return window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  React.useEffect(() => {
     if (!isOpen || !buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
-    const spaceRight = window.innerWidth - rect.right;
-    const spaceLeft = rect.left;
+    const margin = 12;
+    const desiredWidth = notifications.length === 0 ? 300 : 600;
+    const buttonCenterX = rect.left + rect.width / 2;
 
+    if (
+      window.innerWidth <= 480 ||
+      desiredWidth + margin * 2 > window.innerWidth
+    ) {
+      const newWidth = Math.max(window.innerWidth - margin * 2, 320);
+      const left = Math.round((window.innerWidth - newWidth) / 2);
+      setMenuLeft(left);
+      setMenuTop(Math.round(rect.bottom + 8));
+      setMenuWidth(newWidth);
+      setShowCount(false);
+      return;
+    }
+
+    const centeredLeft = Math.round(buttonCenterX - desiredWidth / 2);
+    const fitsWhenCentered =
+      centeredLeft >= margin &&
+      centeredLeft + desiredWidth <= window.innerWidth - margin;
+
+    let newWidth = desiredWidth;
+
+    if (!fitsWhenCentered) {
+      const spaceRight = window.innerWidth - rect.right;
+      const spaceLeft = rect.left;
+
+      const available = Math.max(spaceLeft, spaceRight);
+      newWidth = Math.min(desiredWidth, Math.max(available - margin, 300));
+    }
+
+    let left = Math.round(buttonCenterX - newWidth / 2);
+    left = Math.max(
+      margin,
+      Math.min(left, window.innerWidth - newWidth - margin)
+    );
+
+    setMenuLeft(left);
+    setMenuTop(Math.round(rect.bottom + 8));
+    setMenuWidth(newWidth);
     setShowCount(false);
-    setOpenToLeft(spaceRight < 500 && spaceLeft > spaceRight);
-  }, [isOpen]);
+  }, [isOpen, notifications.length, windowWidth]);
 
   React.useEffect(() => {
     if (!hasMore || !onLoadMore || !loadMoreRef.current) return;
@@ -156,14 +207,11 @@ export const NotificationsMenu = ({
           <div ref={containerRef}>
             <Card
               sx={{
-                position: 'absolute',
-                top: 'calc(100% + 8px)',
-                left: openToLeft ? 'auto' : 0,
-                right: openToLeft ? 0 : 'auto',
-                width:
-                  notifications.length === 0
-                    ? ['60vw', '300px']
-                    : ['90vw', '600px'],
+                position: 'fixed',
+                top: `${menuTop}px`,
+                left: `${menuLeft}px`,
+                right: 'auto',
+                width: `${menuWidth}px`,
                 maxHeight: '550px',
                 overflowY: 'auto',
                 zIndex: 'modal',
