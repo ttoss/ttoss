@@ -176,6 +176,18 @@
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
   },
+  "JEsxDw": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Uploading..."
+  },
+  "fDCMA6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select Files"
+  },
+  "gy0Ynb": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Click or drag files here"
+  },
   "D1C6fR": {
     "module": "@ttoss/forms",
     "defaultMessage": "Field must be at least {min} characters",
@@ -190,17 +202,5 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
-  },
-  "JEsxDw": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Uploading..."
-  },
-  "fDCMA6": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Select Files"
-  },
-  "gy0Ynb": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Click or drag files here"
   }
 }
