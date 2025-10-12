@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  type InterfaceTypeComposer,
-  type ObjectTypeComposerFieldConfigDefinition,
-  getProjectionFromAST,
-} from 'graphql-compose';
 import { fromGlobalId } from '@ttoss/ids';
+import {
+  getProjectionFromAST,
+  InterfaceTypeComposer,
+  ObjectTypeComposer,
+  ObjectTypeComposerFieldConfigDefinition,
+  Resolver,
+} from 'graphql-compose';
 import type { GraphQLResolveInfo } from 'graphql-compose/lib/graphql';
-import type { ObjectTypeComposer, Resolver } from 'graphql-compose';
 
 export type TypeMapForRelayNode<TSource, TContext> = {
   [typeName: string]: {

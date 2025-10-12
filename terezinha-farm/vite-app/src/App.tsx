@@ -1,4 +1,5 @@
 // import * as React from 'react';
+import { FileUploader } from '@ttoss/components/FileUploader';
 import { Markdown } from '@ttoss/components/Markdown';
 import { Auth, useAuth } from '@ttoss/react-auth';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
@@ -33,9 +34,17 @@ export const App = () => {
       </Button>
       <Markdown>{markdown}</Markdown>
 
+      <FileUploader
+        onUpload={() => {
+          return Promise.resolve({
+            url: 'https://placehold.co/600x400',
+            id: 'file-id',
+          });
+        }}
+      />
+
       <Flex sx={{ paddingX: 'xl' }}>
         <Box sx={{ flex: 1 }}>{/* <FarmWrongPagination /> */}</Box>
-
         <Box sx={{ flex: 1 }}>{/* <FarmCorrectPagination /> */}</Box>
       </Flex>
     </Stack>

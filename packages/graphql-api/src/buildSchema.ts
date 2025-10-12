@@ -1,10 +1,10 @@
 import { type GraphQLSchema } from 'graphql';
+import { type SchemaComposer } from 'graphql-compose';
 import {
+  applyMiddleware,
   type IMiddleware as Middleware,
   type IMiddlewareGenerator as MiddlewareGenerator,
-  applyMiddleware,
 } from 'graphql-middleware';
-import { type SchemaComposer } from 'graphql-compose';
 
 export type { Middleware, MiddlewareGenerator };
 

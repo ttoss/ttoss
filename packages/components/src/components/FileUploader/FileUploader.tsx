@@ -1,4 +1,4 @@
-import { FormattedMessage } from '@ttoss/react-i18n';
+import { useI18n } from '@ttoss/react-i18n';
 import { Box, Button, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -15,20 +15,29 @@ export type FileUploadState = {
   error?: Error;
 };
 
+export type OnUpload = (
+  file: File,
+  onProgress?: (progress: number) => void
+) => Promise<UploadResult>;
+
+export type OnUploadStart = (file: File) => void;
+export type OnUploadProgress = (file: File, progress: number) => void;
+export type OnUploadComplete = (file: File, result: UploadResult) => void;
+export type OnUploadError = (file: File, error: Error) => void;
+export type OnFilesChange = (files: FileUploadState[]) => void;
+export type OnRemoveFile = (file: FileUploadState, index: number) => void;
+
 export type FileUploaderProps = {
   // Upload function
-  uploadFn: (
-    file: File,
-    onProgress?: (progress: number) => void
-  ) => Promise<UploadResult>;
+  onUpload: OnUpload;
 
   // Callbacks
-  onUploadStart?: (file: File) => void;
-  onUploadProgress?: (file: File, progress: number) => void;
-  onUploadComplete?: (file: File, result: UploadResult) => void;
-  onUploadError?: (file: File, error: Error) => void;
-  onFilesChange?: (files: FileUploadState[]) => void;
-  onRemoveFile?: (file: FileUploadState, index: number) => void;
+  onUploadStart?: OnUploadStart;
+  onUploadProgress?: OnUploadProgress;
+  onUploadComplete?: OnUploadComplete;
+  onUploadError?: OnUploadError;
+  onFilesChange?: OnFilesChange;
+  onRemoveFile?: OnRemoveFile;
 
   // File constraints
   accept?: string;
@@ -53,7 +62,7 @@ export type FileUploaderProps = {
 };
 
 export const FileUploader = ({
-  uploadFn,
+  onUpload,
   onUploadStart,
   onUploadProgress,
   onUploadComplete,
@@ -73,6 +82,7 @@ export const FileUploader = ({
   showFileList = true,
   FileListComponent,
 }: FileUploaderProps) => {
+  const { intl } = useI18n();
   const [files, setFiles] = React.useState<FileUploadState[]>([]);
   const [isDragOver, setIsDragOver] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -127,7 +137,7 @@ export const FileUploader = ({
 
         updateFileState(fileState.file, { status: 'uploading', progress: 0 });
 
-        const result = await uploadFn(fileState.file, (progress) => {
+        const result = await onUpload(fileState.file, (progress) => {
           updateFileState(fileState.file, { progress });
           onUploadProgress?.(fileState.file, progress);
         });
@@ -156,7 +166,7 @@ export const FileUploader = ({
       }
     },
     [
-      uploadFn,
+      onUpload,
       onUploadStart,
       onUploadProgress,
       onUploadComplete,
@@ -402,13 +412,12 @@ export const FileUploader = ({
             <Text sx={{ fontSize: '3xl' }}>📁</Text>
             <Box sx={{ textAlign: 'center' }}>
               <Text variant="body" sx={{ color: 'text.default', mb: 1 }}>
-                {isUploading ? (
-                  <FormattedMessage defaultMessage="Uploading..." />
-                ) : (
-                  placeholder || (
-                    <FormattedMessage defaultMessage="Click or drag files here" />
-                  )
-                )}
+                {isUploading
+                  ? intl.formatMessage({ defaultMessage: 'Uploading...' })
+                  : placeholder ||
+                    intl.formatMessage({
+                      defaultMessage: 'Click or drag files here',
+                    })}
               </Text>
               <Text variant="caption" sx={{ color: 'text.muted' }}>
                 {[
@@ -422,7 +431,7 @@ export const FileUploader = ({
             </Box>
             {!isUploading && (
               <Button variant="secondary" disabled={disabled}>
-                <FormattedMessage defaultMessage="Select Files" />
+                {intl.formatMessage({ defaultMessage: 'Select Files' })}
               </Button>
             )}
           </Flex>

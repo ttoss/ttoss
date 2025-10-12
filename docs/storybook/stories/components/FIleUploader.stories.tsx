@@ -3,7 +3,7 @@ import { FileUploader } from '@ttoss/components/FileUploader';
 import { action } from 'storybook/actions';
 
 // Mock upload function for stories
-const mockUploadFn = (
+const mockOnUpload = (
   file: File,
   onProgress?: (progress: number) => void
 ): Promise<{ url: string; id: string }> => {
@@ -50,7 +50,7 @@ type Story = StoryObj<typeof meta>;
 // Basic story with automatic upload
 export const Default: Story = {
   args: {
-    uploadFn: mockUploadFn,
+    onUpload: mockOnUpload,
     onUploadComplete: action('Upload completed'),
     onUploadError: action('Upload failed'),
     placeholder: 'Drag files here or click to select',

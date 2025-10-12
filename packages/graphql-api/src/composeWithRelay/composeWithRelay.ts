@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { toGlobalId } from '@ttoss/ids';
 import { ObjectTypeComposer } from 'graphql-compose';
+
 import { getNodeFieldConfig } from './nodeFieldConfig';
 import { getNodeInterface } from './nodeInterface';
-import { toGlobalId } from '@ttoss/ids';
 
 // all wrapped typeComposers with Relay, stored in this variable
 // for futher type resolving via NodeInterface.resolveType method
