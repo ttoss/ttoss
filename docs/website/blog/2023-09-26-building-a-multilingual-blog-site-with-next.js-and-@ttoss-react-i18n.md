@@ -1,6 +1,6 @@
 ---
 title: 'Building a Multilingual Blog Site with Next.js and @ttoss/react-i18n'
-description: In this comprehensive tutorial, we will guide you through the process of building a multilingual blog site using Next.js and the powerful @ttoss/react-i18n library. Internationalization (i18n) is a crucial aspect of modern web development, especially when targeting a diverse global audience. You will learn how to set up a Next.js project, integrate i18n support, configure locales, create localized components, and enable users to seamlessly switch between languages. Additionally, we'll cover the extraction and compilation of translations, ensuring that your blog site is accessible and engaging for users from various language backgrounds. By the end of this tutorial, you'll have the skills to create a dynamic and inclusive multilingual blog site that caters to a worldwide readership.
+description: Learn how to build a multilingual blog site using Next.js routing and @ttoss/react-i18n for component-level internationalization. This tutorial covers both approaches to i18n, helping you choose the right strategy for your project needs.
 authors:
   - rayza
 tags:
@@ -12,208 +12,339 @@ tags:
   - localization
 ---
 
-Internationalization (i18n) is an essential part of building modern websites, especially for those aiming to reach a global audience. In this tutorial, we will explore how to create a multilingual blog site using Next.js and the @ttoss/i18n library. This combination will allow us to provide an engaging reading experience for users in different languages.
+Building websites for global audiences requires effective internationalization (i18n) strategies. This tutorial demonstrates how to create a multilingual blog site using Next.js and @ttoss/react-i18n, covering both routing-level and component-level internationalization approaches.
+
+You'll learn when to use each approach, how to implement them together, and build a complete workflow for managing translations in your Next.js applications.
 
 <!-- truncate -->
 
-## Two Facets of i18n in Next.js
+## Two Approaches to i18n in Next.js
 
-Before we dive into the nitty-gritty, let's establish an essential distinction within Next.js's i18n capabilities:
+Next.js applications benefit from combining two complementary internationalization strategies:
 
-### **1. Next.js-Integrated i18n for Routing**
+### Routing-Level i18n (Next.js Built-in)
 
-**Why It Matters:** This mode focuses on managing different language versions of your website at the routing level. It's invaluable when you need to handle multilingual content that goes beyond simple text changes. For instance, if you're running a Content Management System (CMS) and want to optimize for Search Engine Optimization (SEO) with language-specific metadata, this approach is your go-to.
+**Best for**: SEO optimization, CMS content, URL localization, and server-side rendering requirements.
 
-**What It Solves:** This mode efficiently manages routes and server-side rendering for distinct locales. However, when it comes to straightforward text translation, it may fall short.
+Next.js handles route management and server-side rendering for different locales, making it ideal for:
 
-### **2. Component-Level i18n with @ttoss/react-i18n and @ttoss/i18n-cli**
+- Multi-language URL structures (`/en/blog` vs `/pt-br/blog`)
+- SEO metadata localization
+- Static content from CMS systems
+- Server-side performance optimization
 
-**Why It Matters:** Here, we move inside the components themselves, addressing the finer details of internationalization. This approach is perfect for scenarios where you need to translate simple text elements like buttons, labels, and headings, making your site more user-friendly.
+### Component-Level i18n (@ttoss/react-i18n)
 
-**What It Solves:** The Component-Level i18n enables you to tackle those everyday translation needs. For example, switching "Submit" to "Submeter" in a form.
+**Best for**: UI text elements, form labels, buttons, and dynamic content translation.
 
-## Prerequisites
+@ttoss/react-i18n handles in-component text translation, perfect for:
 
-Before we get started, make sure you have Node.js and npm (or yarn or pnpm) installed on your system.
+- Button labels, form fields, and navigation text
+- User interface elements that change dynamically
+- Client-side language switching
+- Formatted numbers, dates, and pluralization
 
-## Setting Up a Next.js Project
+**Combined Power**: Use both approaches together—Next.js for routing and static content, @ttoss/react-i18n for interactive UI elements.
 
-To create a new Next.js project, run the following command:
+## Project Setup
+
+### 1. Create Next.js Project
 
 ```bash
-npx create-next-app my-blog
-cd my-blog
+npx create-next-app@latest my-multilingual-blog --typescript
+cd my-multilingual-blog
 ```
 
-## Adding @ttoss/react-i18n
-
-Let's integrate `@ttoss/react-i18n` into our project:
+### 2. Install Dependencies
 
 ```bash
-npm install @ttoss/react-i18n
-# or
-yarn add @ttoss/react-i18n
-# or
-pnpm install @ttoss/react-i18n
+pnpm add @ttoss/react-i18n
+pnpm add -D @ttoss/i18n-cli
 ```
 
-## Routing with Next.js i18n
+### 3. Configure Next.js i18n
 
-Let's first explore the robust routing capabilities that Next.js offers for internationalization. This method is indispensable when your website's multilingual needs extend to intricate content variations, such as managing a CMS or optimizing for SEO.
+Create or update `next.config.js`:
 
-In this mode:
-
-- You can efficiently handle routes for different locales, ensuring that users are directed to the appropriate language versions of your pages.
-- Server-side rendering takes care of delivering pre-rendered pages, optimizing the performance and SEO of your site.
-- Metadata and SEO parameters can be tailored for each language, elevating your website's search engine visibility.
-
-But here's the catch: while it excels at managing routes and complex content, this approach may not be the most efficient for handling straightforward text translation needs. For example, changing a simple button label from "Submit" to "Submeter" across the site may become cumbersome.
-
-## Component-Level i18n with @ttoss/react-i18n
-
-Now, let's zoom in on the component-level internationalization. This aspect of i18n focuses on addressing those everyday translation requirements, allowing you to effortlessly switch text elements within your components.
-
-Here's why this approach shines:
-
-- It enables you to handle simple text changes throughout your website with ease. For instance, translating buttons, labels, and headings is a breeze.
-- Users experience a more intuitive interface, as common text elements are seamlessly translated into their preferred language.
-
-So, whether you're dealing with a call-to-action button or a form label, Component-Level i18n with `@ttoss/react-i18n` and `@ttoss/i18n-cli` has you covered.
-
-## Configuring Next.js
-
-This configuration defines the available languages in your application and sets the default language to `en-US`. Now, Next.js will use this configuration to handle server-side internationalization.
-
-```jsx
-// next.config.js
-
+```js title="next.config.js"
 module.exports = {
   i18n: {
-    locales: ['en-US', 'pt-BR'],
-    defaultLocale: 'en-US',
-    // This `localeDetection` property is optional.
-    // When set to false, you can freely switch between locales.
-    localeDetection: false,
+    locales: ['en', 'pt-BR', 'es'],
+    defaultLocale: 'en',
+    localeDetection: false, // Allows manual language switching
   },
 };
 ```
 
-## Configuring the `I18nProvider`
+### 4. Setup I18nProvider
 
-In your `_app.js` file inside the `pages` folder, import and configure the `I18nProvider` to provide internationalization support. The file should look like this:
+Configure the provider in `pages/_app.tsx`:
 
-**pages/\_app.ts**:
+```tsx title="pages/_app.tsx"
+import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
+import { useRouter } from 'next/router';
+import type { AppProps } from 'next/app';
 
-```jsx
-import { I18nProvider, LoadLocaleData } from "@ttoss/react-i18n";
-import { useRouter } from "next/router";
-
-const loadLocaleData: LoadLocaleData = (locale) => {
+const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
-    case "pt-BR":
-      return import("../../i18n/compiled/pt-BR.json");
+    case 'pt-BR':
+      return (await import('../../i18n/compiled/pt-BR.json')).default;
+    case 'es':
+      return (await import('../../i18n/compiled/es.json')).default;
     default:
-      return import("../../i18n/compiled/en-US.json");
+      return (await import('../../i18n/compiled/en.json')).default;
   }
 };
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   const { locale } = useRouter();
+
   return (
     <I18nProvider locale={locale} loadLocaleData={loadLocaleData}>
       <Component {...pageProps} />
     </I18nProvider>
   );
 }
-
-export default MyApp;
 ```
 
-## Creating Localized Components
+## Creating Internationalized Components
 
-Now, we can use the library to write text that will be extracted and translated later. For example, to create a blog post component:
+Now you can use @ttoss/react-i18n to create components with translatable text:
 
-```jsx
+```tsx title="components/BlogPost.tsx"
 import { useI18n } from '@ttoss/react-i18n';
 
-function BlogPost() {
+interface BlogPostProps {
+  title: string;
+  content: string;
+  publishedAt: Date;
+}
+
+export default function BlogPost({
+  title,
+  content,
+  publishedAt,
+}: BlogPostProps) {
   const { intl } = useI18n();
 
   return (
-    <div>
-      <h2>
-        {intl.formatMessage({
-          description: 'My blog post title',
-          defaultMessage: 'How to work with translation on nextjs projects',
-        })}
-      </h2>
-      <p>
-        {intl.formatMessage({
-          description: 'My blog post content',
-          defaultMessage: 'Here, you can type all content',
-        })}
+    <article>
+      <h2>{title}</h2>
+      <p className="meta">
+        {intl.formatMessage(
+          {
+            description: 'Blog post publication date',
+            defaultMessage: 'Published on {date}',
+          },
+          {
+            date: intl.formatDate(publishedAt, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }),
+          }
+        )}
       </p>
-    </div>
+      <div className="content">{content}</div>
+      <footer>
+        <button>
+          {intl.formatMessage({
+            description: 'Share blog post button',
+            defaultMessage: 'Share this post',
+          })}
+        </button>
+      </footer>
+    </article>
   );
 }
-
-export default BlogPost;
 ```
 
-## Switching Language
+## Language Switching Component
 
-Now, we can add a language selector to our site, allowing users to choose their preferred language. If you have the `localeDetection: true` option in `next.config.js`, when switching the language, Next.js will automatically update the route, and the `I18nProvider` will take care of displaying the content in the correct language. If this property is set to `false`, you can do it as follows:
+Create a language selector that works with both Next.js routing and @ttoss/react-i18n:
 
-```tsx
+```tsx title="components/LanguageSelector.tsx"
 import { useI18n } from '@ttoss/react-i18n';
 import { useRouter } from 'next/router';
 
-function LanguageSelector() {
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'pt-BR', name: 'Português' },
+  { code: 'es', name: 'Español' },
+];
+
+export default function LanguageSelector() {
   const { intl, setLocale } = useI18n();
   const router = useRouter();
 
-  const handleChangeLanguage = (locale: string) => {
-    setLocale(locale);
+  const handleLanguageChange = (newLocale: string) => {
+    // Update @ttoss/react-i18n state
+    setLocale(newLocale);
 
+    // Update Next.js route
     router.push(router.asPath, router.asPath, {
-      locale,
+      locale: newLocale,
       shallow: true,
     });
   };
 
   return (
     <div>
-      <select onChange={(e) => handleChangeLanguage(e.target.value)}>
-        <option value="en-US">English</option>
-        <option value="pt-BR">Portuguese</option>
+      <label>
+        {intl.formatMessage({
+          description: 'Language selector label',
+          defaultMessage: 'Select language:',
+        })}
+      </label>
+      <select
+        value={router.locale}
+        onChange={(e) => handleLanguageChange(e.target.value)}
+      >
+        {languages.map((lang) => (
+          <option key={lang.code} value={lang.code}>
+            {lang.name}
+          </option>
+        ))}
       </select>
     </div>
   );
 }
-
-export default LanguageSelector;
 ```
 
-## Extracting Texts and Compiling Translations
+## Translation Workflow
 
-Add these script command to your project's package.json:
+### 1. Setup Translation Scripts
 
-```json
-"scripts": {
-  "i18n": "ttoss-i18n"
-},
+Add the i18n script to your `package.json`:
+
+```json title="package.json"
+{
+  "scripts": {
+    "i18n": "ttoss-i18n",
+    "i18n:extract": "ttoss-i18n --no-compile"
+  }
+}
 ```
 
-The last step is where the magic happens. First, you need to extract all the texts that have been added using `intl` from `useI18n` by running the `pnpm run i18n` command. Then, all the extracted texts will be added to the file `i18n/lang/en.json`.
+### 2. Extract Messages
 
-Now you need to duplicate this file for the other languages and translate them. When you finish translating, run again the `pnpm run i18n` command to compile all the languages. This command will create a folder called `compiled` inside `i18n` folder with the translations that are gonna be used by `@ttoss/react-i18n` lib to show the correct language on screen.
+Extract all translatable messages from your components:
+
+```bash
+pnpm run i18n:extract
+```
+
+This creates `i18n/lang/en.json` with all extracted messages:
+
+```json title="i18n/lang/en.json"
+{
+  "blog-post-publication-date": {
+    "defaultMessage": "Published on {date}",
+    "description": "Blog post publication date"
+  },
+  "share-blog-post-button": {
+    "defaultMessage": "Share this post",
+    "description": "Share blog post button"
+  },
+  "language-selector-label": {
+    "defaultMessage": "Select language:",
+    "description": "Language selector label"
+  }
+}
+```
+
+### 3. Create Translations
+
+Copy and translate the base file for each locale:
+
+```bash
+# Create translation files
+cp i18n/lang/en.json i18n/lang/pt-BR.json
+cp i18n/lang/en.json i18n/lang/es.json
+```
+
+Edit each translation file:
+
+```json title="i18n/lang/pt-BR.json"
+{
+  "blog-post-publication-date": {
+    "defaultMessage": "Publicado em {date}",
+    "description": "Blog post publication date"
+  },
+  "share-blog-post-button": {
+    "defaultMessage": "Compartilhar post",
+    "description": "Share blog post button"
+  },
+  "language-selector-label": {
+    "defaultMessage": "Selecionar idioma:",
+    "description": "Language selector label"
+  }
+}
+```
+
+### 4. Compile Translations
+
+Compile all translations for production:
+
+```bash
+pnpm run i18n
+```
+
+This generates optimized files in `i18n/compiled/` that your application will load.
+
+### 5. Folder Structure
+
+Your final i18n folder structure:
+
+```
+i18n/
+├── lang/           # Source translation files (edit these)
+│   ├── en.json
+│   ├── pt-BR.json
+│   └── es.json
+├── compiled/       # Generated files (used by app)
+│   ├── en.json
+│   ├── pt-BR.json
+│   └── es.json
+└── missing/        # Missing translations (generated)
+```
+
+Add to `.gitignore`:
+
+```gitignore
+i18n/compiled/
+i18n/missing/
+```
+
+## Next Steps
+
+### Production Considerations
+
+- **Performance**: Translation files are loaded asynchronously and cached automatically
+- **SEO**: Next.js i18n handles URL structure and metadata for search engines
+- **Accessibility**: Use `lang` attributes on HTML elements for screen readers
+- **Testing**: Test language switching and content rendering across all supported locales
+
+### Advanced Features
+
+- **Pluralization**: Handle complex plural rules using ICU message format
+- **Number/Date Formatting**: Locale-specific formatting for currencies, dates, and numbers
+- **Rich Text**: Embed React components within translated messages
+- **Lazy Loading**: Load translations on-demand to optimize bundle size
 
 ## Conclusion
 
-In this journey through Next.js and `@ttoss/react-i18n`, we've explored the two facets of internationalization that can transform your website into a multilingual masterpiece.
+Combining Next.js routing-level i18n with @ttoss/react-i18n component-level translation creates a powerful, flexible internationalization solution:
 
-- **Routing with Next.js i18n** is your go-to when you need to manage complex content variations, optimize SEO, and handle metadata intricacies. It's a powerful choice for scenarios like CMS-driven websites.
+- **Next.js i18n** handles SEO, routing, and static content translation
+- **@ttoss/react-i18n** manages dynamic UI text, user interactions, and client-side formatting
+- **@ttoss/i18n-cli** streamlines the extraction and compilation workflow
 
-- **Component-Level i18n** steps in to effortlessly manage those everyday translation needs. It makes tasks like changing button labels, form fields, and headings in your components a breeze, enhancing your website's user-friendliness.
+This dual approach enables you to build scalable multilingual applications that provide excellent user experience and search engine optimization.
 
-By understanding and implementing both aspects of i18n, you'll have the tools needed to create inclusive and impactful multilingual websites that cater to a global audience.
+## Related Resources
+
+- **[@ttoss/react-i18n Documentation](https://ttoss.dev/docs/modules/packages/react-i18n/)** - Complete API reference and advanced usage patterns
+- **[@ttoss/i18n-cli Documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/)** - Message extraction and compilation workflow
+- **[Next.js Internationalization](https://nextjs.org/docs/advanced-features/i18n-routing)** - Official Next.js i18n routing documentation
+- **[FormatJS Documentation](https://formatjs.io/)** - ICU message format and advanced formatting features

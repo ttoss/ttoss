@@ -50,11 +50,11 @@ import App from './App';
 const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
     case 'pt-BR':
-      return import('../i18n/compiled/pt-BR.json');
+      return (await import('../i18n/compiled/pt-BR.json')).default;
     case 'es':
-      return import('../i18n/compiled/es.json');
+      return (await import('../i18n/compiled/es.json')).default;
     default:
-      return import('../i18n/compiled/en.json');
+      return (await import('../i18n/compiled/en.json')).default;
   }
 };
 
@@ -219,9 +219,11 @@ import type { AppProps } from 'next/app';
 const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
     case 'pt-BR':
-      return import('../../i18n/compiled/pt-BR.json');
+      return (await import('../../i18n/compiled/pt-BR.json')).default;
+    case 'es':
+      return (await import('../../i18n/compiled/es.json')).default;
     default:
-      return import('../../i18n/compiled/en.json');
+      return (await import('../../i18n/compiled/en.json')).default;
   }
 };
 
@@ -649,11 +651,9 @@ Enable verbose logging during development:
 const loadLocaleData: LoadLocaleData = async (locale) => {
   console.log(`Loading locale: ${locale}`);
   try {
-    const data = await import(`../i18n/compiled/${locale}.json`);
-    console.log(
-      `Loaded ${Object.keys(data.default).length} messages for ${locale}`
-    );
-    return data.default;
+    const data = (await import(`../i18n/compiled/${locale}.json`)).default;
+    console.log(`Loaded ${Object.keys(data).length} messages for ${locale}`);
+    return data;
   } catch (error) {
     console.error(`Failed to load locale ${locale}:`, error);
     throw error;
@@ -673,6 +673,6 @@ const loadLocaleData: LoadLocaleData = async (locale) => {
 
 - **[FormatJS Documentation](https://formatjs.io/)** - Complete guide to ICU message format and FormatJS features
 - **[ICU Message Format](https://unicode-org.github.io/icu/userguide/format_parse/messages/)** - Specification for message formatting
-- **[Building a Multilingual Blog with Next.js and @ttoss/react-i18n](/blog/building-a-multilingual-blog-site-with-next.js-and-@ttoss-react-i18n)** - Comprehensive tutorial
+- **[Building a Multilingual Blog with Next.js and @ttoss/react-i18n](https://ttoss.dev/blog/2023/09/26/building-a-multilingual-blog-site-with-next.js-and-@ttoss-react-i18n)** - Comprehensive tutorial
 
 This library enables efficient internationalization following FormatJS standards while integrating seamlessly with the ttoss development ecosystem. For complete workflow setup including message extraction and compilation, see the [@ttoss/i18n-cli documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/).
