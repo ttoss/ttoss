@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.31.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.5...@ttoss/forms@0.31.6) (2025-10-12)
+
+**Note:** Version bump only for package @ttoss/forms
+
 ## [0.31.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.4...@ttoss/forms@0.31.5) (2025-10-11)
 
 **Note:** Version bump only for package @ttoss/forms
