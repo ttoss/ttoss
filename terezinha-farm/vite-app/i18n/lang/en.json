@@ -1,4 +1,16 @@
 {
+  "JEsxDw": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Uploading..."
+  },
+  "fDCMA6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select Files"
+  },
+  "gy0Ynb": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Click or drag files here"
+  },
   "EO/33N": {
     "module": "@ttoss/react-auth",
     "defaultMessage": "Signed in successfully"

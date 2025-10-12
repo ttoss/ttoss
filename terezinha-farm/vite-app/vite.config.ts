@@ -1,21 +1,30 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-import { babelConfig } from '@ttoss/config';
-import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
 import { visualizer } from 'rollup-plugin-visualizer';
-import react from '@vitejs/plugin-react';
-import relay from 'vite-plugin-relay';
+import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
-// eslint-disable-next-line import/no-default-export
 export default defineConfig(async () => {
   return {
     plugins: [
-      relay,
       react({
-        babel: {
-          plugins: babelConfig().plugins,
-        },
+        tsDecorators: true,
+        plugins: [
+          [
+            '@swc/plugin-relay',
+            {
+              rootDir: __dirname,
+              language: 'typescript',
+              eagerEsModules: true,
+            },
+          ],
+          [
+            '@swc/plugin-formatjs',
+            {
+              idInterpolationPattern: '[sha512:contenthash:base64:6]',
+              ast: true,
+            },
+          ],
+        ],
       }),
       visualizer({
         filename: 'stats/index.html',

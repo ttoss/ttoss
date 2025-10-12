@@ -1,12 +1,15 @@
 # @ttoss/i18n-cli
 
-**@ttoss/i18n-cli** is a CLI to [extract](https://formatjs.io/docs/getting-started/message-extraction) and [compile](https://formatjs.io/docs/getting-started/message-distribution) translations from your code. It implements [FormatJS Application Workflow](https://formatjs.io/docs/getting-started/application-workflow).
+A CLI tool for extracting and compiling translations from your code using [FormatJS](https://formatjs.io/docs/getting-started/application-workflow). Automatically handles translations from your application and all ttoss packages.
 
-This package is part of the ttoss ecosystem, so it simplifies the process of extracting and compiling translations of your application and all ttoss packages that it uses. For example, if your application uses the [@ttoss/react-i18n](/docs/modules/packages/react-i18n/), `@ttoss/i18n-cli` will extract and compile the translations of this package as well.
+## Key Features
 
-:::note
-You should declare your messages as describe in the [FormatJS](https://formatjs.io/docs/getting-started/message-declaration) documentation.
-:::
+- **Automatic extraction** from source code using FormatJS patterns
+- **Unified translation management** for your app and ttoss packages
+- **Missing translation detection** with detailed reports
+- **Unused translation cleanup** to maintain clean translation files
+- **Flexible compilation** with optional steps
+- **Custom file patterns** and ignore rules
 
 ## Installation
 
@@ -14,9 +17,9 @@ You should declare your messages as describe in the [FormatJS](https://formatjs.
 pnpm add @ttoss/i18n-cli --dev
 ```
 
-## Setup
+## Quick Start
 
-Add this script to your `package.json`
+Add script to your `package.json`:
 
 ```json
 {
@@ -26,104 +29,211 @@ Add this script to your `package.json`
 }
 ```
 
-Add to your `.gitignore`:
+Add to `.gitignore`:
 
 ```
 i18n/compiled/
 i18n/missing/
+i18n/unused/
+```
+
+Run extraction and compilation:
+
+```sh
+pnpm i18n
+```
+
+## How It Works
+
+The CLI creates a structured workflow for managing translations:
+
+```
+📁 i18n/
+├── 📁 lang/              # Translation files
+│   ├── 📄 en.json        # Auto-generated (don't edit)
+│   └── 📄 pt-BR.json     # Edit with your translations
+├── 📁 compiled/          # Auto-generated (production files)
+│   ├── 📄 en.json        # Compiled for runtime
+│   └── 📄 pt-BR.json     # Compiled for runtime
+├── 📁 missing/           # Auto-generated (analysis reports)
+│   └── 📄 pt-BR.json     # What needs translation
+└── 📁 unused/            # Auto-generated (cleanup reports)
+    └── 📄 pt-BR.json     # Unused translations per language
 ```
 
 ## Usage
 
-### Extract only:
+### Basic Commands
+
+**Extract and compile everything:**
 
 ```sh
-pnpm i18n --no-compile # ttoss-i18n --no-compile
+pnpm i18n
 ```
 
-This command extracts translations from your code but doesn't compile them. And created a new path (`i18n/lang/en.json`) if doesn't exists with extracted translations. As followed below:
+**Extract only (no compilation):**
 
-- 📂 i18n
-  - 📂 lang
-    - 📄 en.json
+```sh
+pnpm i18n --no-compile
+```
+
+**Ignore ttoss package translations:**
+
+```sh
+pnpm i18n --ignore-ttoss-packages
+```
+
+**Custom file patterns:**
+
+```sh
+pnpm i18n --pattern "src/**/*.{ts,tsx}" --ignore "**/*.test.*"
+```
+
+### Translation Workflow
+
+Follow this step-by-step process to set up internationalization:
+
+#### Step 1: Write Code with FormatJS Messages
+
+```tsx
+import { FormattedMessage } from 'react-intl';
+
+<FormattedMessage
+  defaultMessage="Welcome to our app!"
+  description="Main welcome message"
+/>;
+```
+
+#### Step 2: Extract Messages from Source Code
+
+```sh
+pnpm i18n --no-compile
+```
+
+**Result:** Creates `i18n/lang/en.json` directly with all messages found in your code:
 
 ```json
-// i18n/lang/en.json
 {
-  "0XOzcH": {
-    "defaultMessage": "My title page",
-    "description": "Page title"
+  "2mAHlQ": {
+    "defaultMessage": "Welcome to our app!",
+    "description": "Main welcome message"
   }
 }
 ```
 
-To translate your text, you only need to duplicate the file `i18n/lang/en.json` to your new language and translate it, as followed below:
+> **Important**: Don't edit `en.json` manually - it will be overwritten on next extraction.
+
+#### Step 3: Create Translation Files
+
+Copy the base English file to create other language files:
+
+```sh
+# Create files for other languages
+cp i18n/lang/en.json i18n/lang/pt-BR.json
+cp i18n/lang/en.json i18n/lang/es.json
+```
+
+#### Step 4: Translate Your Messages
+
+Edit each language file with the appropriate translations:
+
+> **These are the ONLY files you should edit manually**
+
+**`i18n/lang/pt-BR.json`:**
 
 ```json
-// i18n/lang/pt-BR.json
 {
-  "0XOzcH": {
-    "defaultMessage": "Título da minha página",
-    "description": "Título da página"
+  "2mAHlQ": {
+    "defaultMessage": "Bem-vindo ao nosso app!",
+    "description": "Mensagem principal de boas-vindas"
   }
 }
 ```
 
-`en` is the default language, so you don't need to create a file for it. But you need to create a file for each language you want to translate.
-
-### Extract and compile:
-
-```sh
-pnpm i18n # ttoss-i18n
-```
-
-This command extracts translations from your code and compiles them into a usable format. And create a new path (`i18n/compiled/LANG.json` and `i18n/missing/LANG.json`) if doesn't exists with compiled translations based in all of the files on path `i18n/lang`. As followed below:
-
-- 📂 i18n
-  - 📂 compiled
-    - 📄 en.json
-    - 📄 pt-BR.json
-  - 📂 lang
-    - 📄 en.json
-    - 📄 pt-BR.json
-  - 📂 missing
-    - 📄 en.json
-    - 📄 pt-BR.json
-
-#### i18n/compiled/en.json
+**`i18n/lang/es.json`:**
 
 ```json
-// i18n/compiled/en.json
 {
-  "0XOzcH": [
+  "2mAHlQ": {
+    "defaultMessage": "¡Bienvenido a nuestra app!",
+    "description": "Mensaje principal de bienvenida"
+  }
+}
+```
+
+#### Step 5: Compile for Production
+
+```sh
+pnpm i18n
+```
+
+**Result:** Generates optimized compiled files and analysis reports:
+
+- `i18n/compiled/` - Production-ready translation files
+- `i18n/missing/` - Shows untranslated messages
+- `i18n/unused/` - Identifies unused translations
+
+### Generated Files
+
+**Base Language File (`i18n/lang/en.json`) - Auto-generated:**
+
+```json
+{
+  "2mAHlQ": {
+    "defaultMessage": "Welcome to our app!",
+    "description": "Main welcome message"
+  }
+}
+```
+
+**Translation Files (`i18n/lang/pt-BR.json`) - Edit with your translations:**
+
+```json
+{
+  "2mAHlQ": {
+    "defaultMessage": "Bem-vindo ao nosso app!",
+    "description": "Mensagem principal de boas-vindas"
+  }
+}
+```
+
+**Compiled Output (`i18n/compiled/pt-BR.json`) - Auto-generated:**
+
+```json
+{
+  "2mAHlQ": [
     {
       "type": 0,
-      "value": "My title page"
+      "value": "Bem-vindo ao nosso app!"
     }
   ]
 }
 ```
 
-#### i18n/compiled/pt-BR.json
+### Analysis Reports
 
-```json
-// i18n/compiled/pt-BR.json
-{
-  "0XOzcH": [
-    {
-      "type": 0,
-      "value": "Título da minha página"
-    }
-  ]
-}
-```
+The CLI automatically generates helpful reports to assist with translation management:
 
-The `i18n/missing` folder contains all the translations that are missing in the `i18n/lang/LANG.json` file, compared with `i18n/lang/en.json`. This folder is useful to know which translations are missing in your application.
+- **Missing translations** (`i18n/missing/LANG.json`): Shows what needs translation
+- **Unused translations** (`i18n/unused/LANG.json`): Identifies translations to remove per language
 
-### Ignoring ttoss packages:
+> **Note**: All reports are auto-generated - use them as reference only.
 
-```sh
-pnpm i18n --ignore-ttoss-packages # ttoss-i18n --ignore-ttoss-packages
-```
+## Command Options
 
-This command extracts and compiles translations, ignoring translations from all ttoss packages, if you have them installed in your project.
+| Option                    | Description                                                              |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `--no-compile`            | Extract only, skip compilation step                                      |
+| `--ignore-ttoss-packages` | Skip extraction from ttoss dependencies                                  |
+| `--pattern <glob>`        | Custom file pattern for extraction (default: `src/**/*.{js,jsx,ts,tsx}`) |
+| `--ignore <patterns>`     | Files/patterns to ignore during extraction                               |
+
+## Integration with ttoss Ecosystem
+
+When using ttoss packages like [@ttoss/react-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/), the CLI automatically:
+
+- Extracts translations from installed ttoss packages
+- Merges them with your application translations
+- Provides unified translation management
+
+This eliminates manual copying of package translations and ensures consistency across your application.

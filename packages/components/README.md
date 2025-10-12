@@ -57,7 +57,7 @@ Drag-and-drop file upload with progress tracking. [📖 Docs](https://storybook.
 import { FileUploader } from '@ttoss/components/FileUploader';
 
 <FileUploader
-  uploadFn={async (file) => ({ url: 'file-url', id: 'file-id' })}
+  onUpload={async (file) => ({ url: 'file-url', id: 'file-id' })}
   onUploadComplete={(file, result) => console.log('Uploaded:', result)}
 />;
 ```

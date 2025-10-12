@@ -22,7 +22,7 @@ describe('FileUploader', () => {
     id: 'file-123',
   };
 
-  const mockUploadFn = jest.fn();
+  const mockOnUpload = jest.fn();
   const mockOnUploadStart = jest.fn();
   const mockOnUploadProgress = jest.fn();
   const mockOnUploadComplete = jest.fn();
@@ -30,7 +30,7 @@ describe('FileUploader', () => {
   const mockOnFilesChange = jest.fn();
 
   const defaultProps: FileUploaderProps = {
-    uploadFn: mockUploadFn,
+    onUpload: mockOnUpload,
     onUploadStart: mockOnUploadStart,
     onUploadProgress: mockOnUploadProgress,
     onUploadComplete: mockOnUploadComplete,
@@ -40,7 +40,7 @@ describe('FileUploader', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUploadFn.mockImplementation(
+    mockOnUpload.mockImplementation(
       (file: File, onProgress?: (progress: number) => void) => {
         return new Promise((resolve) => {
           // Simulate upload progress
@@ -91,7 +91,7 @@ describe('FileUploader', () => {
     ]);
 
     // Verify upload function is called
-    expect(mockUploadFn).toHaveBeenCalledWith(mockFile, expect.any(Function));
+    expect(mockOnUpload).toHaveBeenCalledWith(mockFile, expect.any(Function));
 
     // Wait for upload to complete
     await waitFor(() => {
@@ -124,7 +124,7 @@ describe('FileUploader', () => {
     const uploadError = new Error('Upload failed');
 
     // Mock upload function to fail immediately
-    mockUploadFn.mockImplementation(() => {
+    mockOnUpload.mockImplementation(() => {
       return Promise.reject(uploadError);
     });
 
@@ -164,7 +164,7 @@ describe('FileUploader', () => {
     jest.clearAllMocks();
 
     // Test retry functionality - reset mock to succeed
-    mockUploadFn.mockImplementation(
+    mockOnUpload.mockImplementation(
       (file: File, onProgress?: (progress: number) => void) => {
         return new Promise((resolve) => {
           if (onProgress) {

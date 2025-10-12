@@ -38,6 +38,7 @@
     "build": "tsup",
     "postbuild": "pnpm run update-package-json-exports",
     "dev": "pnpm -r --filter=@docs/storybook run dev",
+    "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit",
     "update-package-json-exports": "tsx scripts/updatePackageJsonExports.ts"
   },
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",

@@ -23,7 +23,6 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.11.0",
-    "babel-plugin-relay": "^16.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-relay": "^18.2.0",
@@ -32,6 +31,8 @@
     "vite-plugin-relay": "^2.1.0"
   },
   "devDependencies": {
+    "@swc/plugin-formatjs": "^6.1.0",
+    "@swc/plugin-relay": "^9.1.0",
     "@terezinha-farm/api": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
@@ -40,7 +41,7 @@
     "@types/react-dom": "^19.0.2",
     "@types/react-relay": "^16.0.6",
     "@types/relay-runtime": "^14.1.23",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^4.1.0",
     "relay-compiler": "^18.2.0",
     "rollup-plugin-visualizer": "^5.12.0",
     "serve": "^14.2.1",
