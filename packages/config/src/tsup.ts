@@ -53,6 +53,76 @@ const formatjsPlugin: Plugin = {
   },
 };
 
+/**
+ * ESBuild plugin to automatically inject React import.
+ *
+ * Adds "import * as React from 'react';" if:
+ * - Code uses React. (like React.createElement)
+ * - No basic React import exists
+ *
+ * Fix: https://github.com/egoist/tsup/issues/792
+ */
+export const injectReactImport = (): Plugin => {
+  return {
+    name: '@ttoss/esbuild-inject-react-import',
+    setup: (build) => {
+      build.onEnd((result) => {
+        if (result.outputFiles) {
+          for (const outputFile of result.outputFiles) {
+            if (outputFile.path.endsWith('.js')) {
+              let contents = outputFile.text;
+
+              // Check if React is used in the code
+              const usesReact = /React\./.test(contents);
+
+              if (usesReact) {
+                // Check if basic React import already exists
+                const hasBasicReactImport =
+                  /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(
+                    contents
+                  );
+
+                if (!hasBasicReactImport) {
+                  // Match various comment styles at the start
+                  const bannerMatch = contents.match(
+                    /^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/
+                  );
+                  const insertPosition = bannerMatch
+                    ? bannerMatch[0].length
+                    : 0;
+
+                  // Add basic React import
+                  const isESM = /\bimport\b|\bexport\b/.test(contents);
+                  const isCJS = /\brequire\(|module\.exports\b/.test(contents);
+
+                  const importStatement = (() => {
+                    if (isESM && !isCJS) {
+                      return `import * as React from 'react';\n`;
+                    } else if (isCJS && !isESM) {
+                      return `const React = require('react');\n`;
+                    } else {
+                      // If both ESM and CJS patterns are found, default to ESM import
+                      return `import * as React from 'react';\n`;
+                    }
+                  })();
+
+                  contents =
+                    contents.slice(0, insertPosition) +
+                    importStatement +
+                    contents.slice(insertPosition);
+
+                  // Update file contents
+                  outputFile.contents = new TextEncoder().encode(contents);
+                }
+              }
+            }
+          }
+        }
+      });
+    },
+  };
+};
+
 export const defaultConfig: Options = {
   clean: true,
   dts: true,
@@ -69,7 +139,7 @@ export const defaultConfig: Options = {
   banner: {
     js: `/** Powered by @ttoss/config. https://ttoss.dev/docs/modules/packages/config/ */`,
   },
-  esbuildPlugins: [formatjsPlugin],
+  esbuildPlugins: [formatjsPlugin, injectReactImport()],
   target: typescriptConfig.target,
 };
 
