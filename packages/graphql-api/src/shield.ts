@@ -5,10 +5,10 @@ export * from 'graphql-shield';
  * This is likely not portable. A type annotation is necessary."
  */
 export type {
-  IMiddlewareGenerator,
   IMiddleware,
   IMiddlewareFieldMap,
   IMiddlewareFunction,
+  IMiddlewareGenerator,
   IMiddlewareGeneratorConstructor,
   IMiddlewareTypeMap,
 } from 'graphql-middleware';

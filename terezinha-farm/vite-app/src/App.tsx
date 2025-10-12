@@ -35,7 +35,7 @@ export const App = () => {
       <Markdown>{markdown}</Markdown>
 
       <FileUploader
-        uploadFn={() => {
+        onUpload={() => {
           return Promise.resolve({
             url: 'https://placehold.co/600x400',
             id: 'file-id',

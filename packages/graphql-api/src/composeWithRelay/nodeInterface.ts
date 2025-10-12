@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { InterfaceTypeComposer, type SchemaComposer } from 'graphql-compose';
 
 const NodeTC = InterfaceTypeComposer.createTemp({
