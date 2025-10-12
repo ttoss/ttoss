@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { post } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import {
   Environment,
   FetchFunction,
@@ -7,14 +9,13 @@ import {
   RecordSource,
   Store,
 } from 'relay-runtime';
+
 import { encodeCredentials } from './encodeCredentials';
-import { fetchAuthSession } from 'aws-amplify/auth';
-import { post } from 'aws-amplify/api';
 
 export {
-  encodeCredentials,
   decodeCredentials,
-  ICredentials,
+  encodeCredentials,
+  type ICredentials,
 } from './encodeCredentials';
 
 export const fetchQuery: FetchFunction = async (operation, variables) => {
@@ -37,9 +38,9 @@ export const fetchQuery: FetchFunction = async (operation, variables) => {
         authenticated: true,
       });
     }
-  } catch (err: any) {
+  } catch (error: any) {
     // eslint-disable-next-line no-console
-    console.error(err?.message);
+    console.error(error?.message);
     credentials = undefined;
   }
 
