@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.17 (2025-10-12)
+
+**Note:** Version bump only for package @ttoss/postgresdb-cli
+
 ## [0.1.16](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.15...@ttoss/postgresdb-cli@0.1.16) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/postgresdb-cli

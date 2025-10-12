@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.35.7 (2025-10-12)
+
+### Bug Fixes
+
+- import react libs ([#741](https://github.com/ttoss/ttoss/issues/741)) ([cfd5739](https://github.com/ttoss/ttoss/commit/cfd5739e404a054351f8bdb3f885b5e725167a21))
+
 ## [1.35.6](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.35.5...@ttoss/config@1.35.6) (2025-08-05)
 
 **Note:** Version bump only for package @ttoss/config

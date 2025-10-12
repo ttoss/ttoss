@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-feature-flags",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "description": "React Feature Flags",
   "license": "MIT",
   "author": "ttoss",
