@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.11](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.10...@ttoss/layouts@0.5.11) (2025-10-12)
+
+**Note:** Version bump only for package @ttoss/layouts
+
 ## [0.5.10](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.9...@ttoss/layouts@0.5.10) (2025-10-12)
 
 **Note:** Version bump only for package @ttoss/layouts

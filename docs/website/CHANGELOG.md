@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.58.3 (2025-10-12)
+
+### Bug Fixes
+
+- docs ([044c673](https://github.com/ttoss/ttoss/commit/044c6731751e8b3ad2d51399e9407e0621f3df78))
+
 ## [1.58.2](https://github.com/ttoss/ttoss/compare/@docs/website@1.58.1...@docs/website@1.58.2) (2025-09-03)
 
 **Note:** Version bump only for package @docs/website

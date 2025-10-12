@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.0.15...@ttoss/react-i18n@2.0.16) (2025-10-12)
+
+### Bug Fixes
+
+- docs ([044c673](https://github.com/ttoss/ttoss/commit/044c6731751e8b3ad2d51399e9407e0621f3df78))
+
 ## 2.0.15 (2025-10-12)
 
 ### Bug Fixes
