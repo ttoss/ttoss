@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.35.8](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.35.7...@ttoss/config@1.35.8) (2025-10-12)
+
+### Bug Fixes
+
+- react inject plugin ([165be47](https://github.com/ttoss/ttoss/commit/165be47ad51379a155a1ee9c8cf5e924f3ec464a))
+
 ## 1.35.7 (2025-10-12)
 
 ### Bug Fixes

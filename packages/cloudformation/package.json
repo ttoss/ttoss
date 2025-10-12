@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloudformation",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "CloudFormation utils.",
   "license": "MIT",
   "author": "ttoss",
