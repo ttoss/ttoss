@@ -190,5 +190,17 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "JEsxDw": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Uploading..."
+  },
+  "fDCMA6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select Files"
+  },
+  "gy0Ynb": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Click or drag files here"
   }
 }
