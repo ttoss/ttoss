@@ -62,67 +62,63 @@ const formatjsPlugin: Plugin = {
  *
  * Fix: https://github.com/egoist/tsup/issues/792
  */
-export const injectReactImport = () => {
+export const injectReactImport = (): Plugin => {
   return {
     name: '@ttoss/esbuild-inject-react-import',
-    setup: (build: unknown) => {
-      const buildTyped = build as {
-        onEnd: (
-          callback: (result: {
-            outputFiles?: Array<{
-              path: string;
-              text: string;
-              contents: Uint8Array;
-            }>;
-          }) => void
-        ) => void;
-      };
+    setup: (build) => {
+      build.onEnd((result) => {
+        if (result.outputFiles) {
+          for (const outputFile of result.outputFiles) {
+            if (outputFile.path.endsWith('.js')) {
+              let contents = outputFile.text;
 
-      buildTyped.onEnd(
-        (result: {
-          outputFiles?: Array<{
-            path: string;
-            text: string;
-            contents: Uint8Array;
-          }>;
-        }) => {
-          if (result.outputFiles) {
-            for (const outputFile of result.outputFiles) {
-              if (outputFile.path.endsWith('.js')) {
-                let contents = outputFile.text;
+              // Check if React is used in the code
+              const usesReact = /React\./.test(contents);
 
-                // Check if React is used in the code
-                const usesReact = /React\./.test(contents);
+              if (usesReact) {
+                // Check if basic React import already exists
+                const hasBasicReactImport =
+                  /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(
+                    contents
+                  );
 
-                if (usesReact) {
-                  // Check if basic React import already exists
-                  const hasBasicReactImport =
-                    /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(
-                      contents
-                    );
+                if (!hasBasicReactImport) {
+                  // Match various comment styles at the start
+                  const bannerMatch = contents.match(
+                    /^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/
+                  );
+                  const insertPosition = bannerMatch
+                    ? bannerMatch[0].length
+                    : 0;
 
-                  if (!hasBasicReactImport) {
-                    // Find position after banner/comments
-                    const bannerMatch = contents.match(/^(\/\*\*[^]*?\*\/\s*)/);
-                    const insertPosition = bannerMatch
-                      ? bannerMatch[0].length
-                      : 0;
+                  // Add basic React import
+                  const isESM = /\bimport\b|\bexport\b/.test(contents);
+                  const isCJS = /\brequire\(|module\.exports\b/.test(contents);
 
-                    // Add basic React import
-                    contents =
-                      contents.slice(0, insertPosition) +
-                      'import * as React from "react";\n' +
-                      contents.slice(insertPosition);
+                  const importStatement = (() => {
+                    if (isESM && !isCJS) {
+                      return `import * as React from 'react';\n`;
+                    } else if (isCJS && !isESM) {
+                      return `const React = require('react');\n`;
+                    } else {
+                      // If both ESM and CJS patterns are found, default to ESM import
+                      return `import * as React from 'react';\n`;
+                    }
+                  })();
 
-                    // Update file contents
-                    outputFile.contents = new TextEncoder().encode(contents);
-                  }
+                  contents =
+                    contents.slice(0, insertPosition) +
+                    importStatement +
+                    contents.slice(insertPosition);
+
+                  // Update file contents
+                  outputFile.contents = new TextEncoder().encode(contents);
                 }
               }
             }
           }
         }
-      );
+      });
     },
   };
 };
