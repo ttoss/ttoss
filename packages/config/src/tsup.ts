@@ -76,13 +76,18 @@ export const injectReactImport = (): Plugin => {
               const usesReact = /React\./.test(contents);
 
               if (usesReact) {
-                // Check if basic React import already exists
-                const hasBasicReactImport =
+                // Check if star React import already exists (e.g., import * as React from 'react';)
+                const hasStarReactImport =
                   /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(
                     contents
                   );
 
-                if (!hasBasicReactImport) {
+                // Check if any basic React import exists (e.g., import React from 'react'; or const React = require('react');)
+                const hasDefaultReactImport =
+                  /import\s+React\s+from\s+['"]react['"]/.test(contents) ||
+                  /const\s+React\s+=\s+require\(['"]react['"]\)/.test(contents);
+
+                if (!hasStarReactImport && !hasDefaultReactImport) {
                   // Match various comment styles at the start
                   const bannerMatch = contents.match(
                     /^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/
