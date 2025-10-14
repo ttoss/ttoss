@@ -202,5 +202,21 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "G/yZLu": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Remove"
+  },
+  "XKyo5X": {
+    "module": "@ttoss/components",
+    "defaultMessage": "File Upload"
+  },
+  "eRShvB": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Maximum files reached"
+  },
+  "fOOwej": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   }
 }
