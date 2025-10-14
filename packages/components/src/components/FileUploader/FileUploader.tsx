@@ -4,7 +4,7 @@ import * as React from 'react';
 
 export type UploadResult = {
   url: string;
-  id: string;
+  id: string | number;
 };
 
 export type FileUploadState = {
@@ -25,7 +25,14 @@ export type OnUploadProgress = (file: File, progress: number) => void;
 export type OnUploadComplete = (file: File, result: UploadResult) => void;
 export type OnUploadError = (file: File, error: Error) => void;
 export type OnFilesChange = (files: FileUploadState[]) => void;
-export type OnRemoveFile = (file: FileUploadState, index: number) => void;
+export type OnRemove = (file: UploadedFile, index: number) => void;
+
+export type UploadedFile = {
+  id: string | number;
+  name: string;
+  imageUrl?: string;
+  url: string;
+};
 
 export type FileUploaderProps = {
   // Upload function
@@ -37,7 +44,7 @@ export type FileUploaderProps = {
   onUploadComplete?: OnUploadComplete;
   onUploadError?: OnUploadError;
   onFilesChange?: OnFilesChange;
-  onRemoveFile?: OnRemoveFile;
+  onRemove?: OnRemove;
 
   // File constraints
   accept?: string;
@@ -56,9 +63,12 @@ export type FileUploaderProps = {
   children?: React.ReactNode;
   showFileList?: boolean;
   FileListComponent?: (props: {
-    files: FileUploadState[];
-    onRemoveFile: (index: number) => void;
+    files: UploadedFile[];
+    onRemove: (index: number) => void;
   }) => React.ReactNode;
+
+  // Arquivos já carregados
+  files?: UploadedFile[];
 };
 
 export const FileUploader = ({
@@ -68,7 +78,7 @@ export const FileUploader = ({
   onUploadComplete,
   onUploadError,
   onFilesChange,
-  onRemoveFile,
+  onRemove,
   accept,
   multiple = true,
   maxSize = 10 * 1024 * 1024, // 10MB
@@ -81,6 +91,7 @@ export const FileUploader = ({
   children,
   showFileList = true,
   FileListComponent,
+  files: uploadedFiles = [],
 }: FileUploaderProps) => {
   const { intl } = useI18n();
   const [files, setFiles] = React.useState<FileUploadState[]>([]);
@@ -99,6 +110,11 @@ export const FileUploader = ({
     const fileArray = Array.from(newFiles);
     const validFiles: File[] = [];
     const currentFileCount = files.length;
+
+    // Check if maxFiles limit is already reached
+    if (currentFileCount >= maxFiles) {
+      return [];
+    }
 
     for (const file of fileArray) {
       // Check file size
@@ -208,7 +224,7 @@ export const FileUploader = ({
     event.preventDefault();
     setIsDragOver(false);
 
-    if (disabled) return;
+    if (disabled || files.length >= maxFiles) return;
 
     const droppedFiles = event.dataTransfer.files;
     if (droppedFiles) {
@@ -219,7 +235,7 @@ export const FileUploader = ({
 
   const handleDragOver = (event: React.DragEvent) => {
     event.preventDefault();
-    if (!disabled) {
+    if (!disabled && files.length < maxFiles) {
       setIsDragOver(true);
     }
   };
@@ -230,58 +246,44 @@ export const FileUploader = ({
   };
 
   const handleClick = () => {
-    if (!disabled && fileInputRef.current) {
+    if (!disabled && files.length < maxFiles && fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
   const handleRemoveFile = React.useCallback(
     (index: number) => {
-      const fileToRemove = files[index];
-      setFiles((prevFiles) => {
-        const newFiles = prevFiles.filter((_, i) => {
-          return i !== index;
-        });
-        onFilesChange?.(newFiles);
-        return newFiles;
-      });
-      onRemoveFile?.(fileToRemove, index);
+      const fileToRemove = uploadedFiles[index];
+      onRemove?.(fileToRemove, index);
     },
-    [files, onFilesChange, onRemoveFile]
-  );
-
-  const retryUpload = React.useCallback(
-    (index: number) => {
-      const fileState = files[index];
-      if (fileState.status === 'error') {
-        uploadFile(fileState);
-      }
-    },
-    [files, uploadFile]
+    [uploadedFiles, onRemove]
   );
 
   const isUploading = files.some((f) => {
     return f.status === 'uploading';
   });
 
+  const isMaxFilesReached = files.length >= maxFiles;
+
   const fileListNode = React.useMemo(() => {
-    if (!showFileList || files.length === 0) {
+    if (!showFileList || (files.length === 0 && uploadedFiles.length === 0)) {
       return null;
     }
 
     if (FileListComponent) {
       return (
-        <FileListComponent files={files} onRemoveFile={handleRemoveFile} />
+        <FileListComponent files={uploadedFiles} onRemove={handleRemoveFile} />
       );
     }
 
     return (
-      <Stack sx={{ gap: 1 }}>
-        {files.map((fileState, index) => {
+      <Stack sx={{ gap: 1, width: '100%' }}>
+        {uploadedFiles.map((file, index) => {
           return (
             <Flex
-              key={index}
+              key={file.id}
               sx={{
+                width: 'full',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 p: 2,
@@ -291,72 +293,121 @@ export const FileUploader = ({
               }}
             >
               <Flex sx={{ alignItems: 'center', gap: 2, flex: 1 }}>
-                <Text sx={{ fontSize: 'lg' }}>
-                  {fileState.status === 'completed'
-                    ? '✓'
-                    : fileState.status === 'error'
-                      ? '✗'
-                      : fileState.status === 'uploading'
-                        ? '↻'
-                        : '📄'}
-                </Text>
-                <Box sx={{ flex: 1 }}>
-                  <Text variant="body" sx={{ fontWeight: 'medium' }}>
-                    {fileState.file.name}
-                  </Text>
-                  {fileState.status === 'uploading' && fileState.progress && (
-                    <Text variant="caption" sx={{ color: 'primary.default' }}>
-                      {fileState.progress.toFixed(0)}%
-                    </Text>
-                  )}
-                  {fileState.status === 'error' && (
-                    <Text variant="caption" sx={{ color: 'error.default' }}>
-                      Failed
-                    </Text>
-                  )}
-                </Box>
-                <Text variant="caption" sx={{ color: 'text.muted' }}>
-                  {formatFileSize(fileState.file.size)}
-                </Text>
-              </Flex>
-
-              <Flex sx={{ gap: 1 }}>
-                {fileState.status === 'error' && (
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      return retryUpload(index);
-                    }}
-                    sx={{ fontSize: 'xs' }}
-                  >
-                    Retry
-                  </Button>
+                {file.imageUrl && (
+                  <Box sx={{ width: 32, height: 32 }}>
+                    <img
+                      src={file.imageUrl}
+                      alt={file.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderRadius: 4,
+                      }}
+                    />
+                  </Box>
                 )}
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    return handleRemoveFile(index);
-                  }}
-                  sx={{
-                    fontSize: 'sm',
-                    color: 'text.muted',
-                    '&:hover': { color: 'error.default' },
-                  }}
-                >
-                  Remove
-                </Button>
+                <Box sx={{ flex: 1 }}>
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      textDecoration: 'none',
+                      color: 'inherit',
+                    }}
+                  >
+                    <Text
+                      variant="body"
+                      sx={{
+                        fontWeight: 'medium',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                          color: 'primary.default',
+                        },
+                      }}
+                    >
+                      {file.name}
+                    </Text>
+                  </a>
+                </Box>
               </Flex>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  return handleRemoveFile(index);
+                }}
+                sx={{
+                  fontSize: 'sm',
+                  color: 'text.muted',
+                  '&:hover': { color: 'error.default' },
+                }}
+              >
+                {intl.formatMessage({ defaultMessage: 'Remove' })}
+              </Button>
             </Flex>
           );
         })}
       </Stack>
     );
-  }, [FileListComponent, files, handleRemoveFile, retryUpload, showFileList]);
+  }, [
+    files.length,
+    uploadedFiles,
+    handleRemoveFile,
+    intl,
+    showFileList,
+    FileListComponent,
+  ]);
+
+  const placeholderTexts = React.useMemo(() => {
+    const texts = [];
+
+    if (isUploading) {
+      texts.push(intl.formatMessage({ defaultMessage: 'Uploading...' }));
+    } else if (isMaxFilesReached) {
+      texts.push(
+        intl.formatMessage({ defaultMessage: 'Maximum files reached' })
+      );
+    } else {
+      texts.push(
+        placeholder ||
+          intl.formatMessage({ defaultMessage: 'Click or drag files here' })
+      );
+    }
+
+    if (!isUploading && !isMaxFilesReached) {
+      if (accept) texts.push(accept);
+      if (maxSize) texts.push(`Max ${formatFileSize(maxSize)}`);
+      if (multiple && maxFiles)
+        texts.push(
+          intl.formatMessage(
+            {
+              defaultMessage:
+                '{max_files, plural, one {Up to # file} other {Up to # files}}',
+            },
+            { max_files: maxFiles }
+          )
+        );
+    }
+
+    return texts.filter(Boolean).join(' • ');
+  }, [
+    isUploading,
+    isMaxFilesReached,
+    intl,
+    placeholder,
+    accept,
+    maxSize,
+    multiple,
+    maxFiles,
+  ]);
 
   return (
     <Stack
       sx={{
         gap: 3,
+        justifyContent: 'stretch',
+        width: '100%',
       }}
     >
       <Box
@@ -365,6 +416,7 @@ export const FileUploader = ({
         onDragLeave={handleDragLeave}
         onClick={handleClick}
         sx={{
+          width: '100%',
           border: '2px dashed',
           borderColor: error
             ? 'error.default'
@@ -374,19 +426,24 @@ export const FileUploader = ({
           borderRadius: 'xl',
           padding: 6,
           textAlign: 'center',
-          cursor: disabled || isUploading ? 'not-allowed' : 'pointer',
+          cursor:
+            disabled || isUploading || isMaxFilesReached
+              ? 'not-allowed'
+              : 'pointer',
           backgroundColor: isDragOver
             ? 'primary.muted'
             : 'display.background.secondary.default',
           transition: 'all 0.2s ease',
-          opacity: disabled ? 0.6 : 1,
+          opacity: disabled || isMaxFilesReached ? 0.6 : 1,
           '&:hover': {
             borderColor:
-              !disabled && !isUploading && !error
+              !disabled && !isUploading && !error && !isMaxFilesReached
                 ? 'primary.default'
                 : undefined,
             backgroundColor:
-              !disabled && !isUploading ? 'primary.muted' : undefined,
+              !disabled && !isUploading && !isMaxFilesReached
+                ? 'primary.muted'
+                : undefined,
           },
         }}
       >
@@ -396,7 +453,7 @@ export const FileUploader = ({
           accept={accept}
           multiple={multiple}
           onChange={handleFileChange}
-          disabled={disabled || isUploading}
+          disabled={disabled || isUploading || isMaxFilesReached}
           style={{ display: 'none' }}
         />
 
@@ -409,27 +466,15 @@ export const FileUploader = ({
               justifyContent: 'center',
             }}
           >
-            <Text sx={{ fontSize: '3xl' }}>📁</Text>
+            <Text sx={{ fontSize: '2xl' }}>
+              {intl.formatMessage({ defaultMessage: 'File Upload' })}
+            </Text>
             <Box sx={{ textAlign: 'center' }}>
               <Text variant="body" sx={{ color: 'text.default', mb: 1 }}>
-                {isUploading
-                  ? intl.formatMessage({ defaultMessage: 'Uploading...' })
-                  : placeholder ||
-                    intl.formatMessage({
-                      defaultMessage: 'Click or drag files here',
-                    })}
-              </Text>
-              <Text variant="caption" sx={{ color: 'text.muted' }}>
-                {[
-                  accept && accept,
-                  maxSize && `Max ${formatFileSize(maxSize)}`,
-                  multiple && maxFiles && `Up to ${maxFiles} files`,
-                ]
-                  .filter(Boolean)
-                  .join(' • ')}
+                {placeholderTexts}
               </Text>
             </Box>
-            {!isUploading && (
+            {!isUploading && !isMaxFilesReached && (
               <Button variant="secondary" disabled={disabled}>
                 {intl.formatMessage({ defaultMessage: 'Select Files' })}
               </Button>

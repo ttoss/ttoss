@@ -51,16 +51,61 @@ import { Drawer } from '@ttoss/components/Drawer';
 
 ### FileUploader
 
-Drag-and-drop file upload with progress tracking. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
+Controlled file uploader with drag-and-drop support. Displays uploaded files with previews, clickable links, and remove functionality. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
 
 ```tsx
 import { FileUploader } from '@ttoss/components/FileUploader';
+import { useState } from 'react';
+
+const [files, setFiles] = useState([
+  {
+    id: 'file-1',
+    name: 'document.pdf',
+    url: 'https://example.com/files/document.pdf',
+  },
+  {
+    id: 'file-2',
+    name: 'image.jpg',
+    imageUrl: 'https://example.com/images/thumb.jpg', // Optional preview
+    url: 'https://example.com/files/image.jpg',
+  },
+]);
 
 <FileUploader
-  onUpload={async (file) => ({ url: 'file-url', id: 'file-id' })}
-  onUploadComplete={(file, result) => console.log('Uploaded:', result)}
+  // Required: Upload handler
+  onUpload={async (file, onProgress) => {
+    // Your upload logic here
+    onProgress?.(50); // Report progress
+    const result = await uploadToServer(file);
+    return { url: result.url, id: result.id, name: result.name };
+  }}
+  // Controlled files list
+  files={files}
+  // Callbacks
+  onUploadComplete={(file, result) => {
+    setFiles([...files, { id: result.id, name: file.name, url: result.url }]);
+  }}
+  onRemove={(file, index) => {
+    setFiles(files.filter((_, i) => i !== index));
+  }}
+  // Optional: Validation
+  accept="image/*,.pdf"
+  maxSize={10 * 1024 * 1024} // 10MB
+  maxFiles={5}
 />;
 ```
+
+**Key Features:**
+
+- **Controlled component**: Pass `files` prop to display uploaded files
+- **Clickable file names**: Names are links that open the file URL
+- **Image previews**: Show thumbnails when `imageUrl` is provided
+- **Remove functionality**: Each file has a remove button
+- **Upload callbacks**: `onUploadStart`, `onUploadProgress`, `onUploadComplete`, `onUploadError`
+- **Validation**: File type, size, and quantity limits
+- **Drag-and-drop**: Native drag-and-drop support
+
+````
 
 ### InstallPwa
 
@@ -70,7 +115,7 @@ PWA installation prompt component. [📖 Docs](https://storybook.ttoss.dev/?path
 import { InstallPwa } from '@ttoss/components/InstallPwa';
 
 <InstallPwa />;
-```
+````
 
 ### JsonEditor
 
