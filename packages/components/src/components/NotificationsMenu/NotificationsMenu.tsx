@@ -120,7 +120,7 @@ export const NotificationsMenu = ({
                 '.EZDrawer__container': {
                   position: 'fixed',
                   height: 'full',
-                  backgroundColor: 'display.background.primary.default',
+                  backgroundColor: 'display.background.secondary.default',
                   width: 'full',
                   maxWidth: '2',
                   boxShadow: '4',
