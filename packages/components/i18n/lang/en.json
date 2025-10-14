@@ -1,9 +1,21 @@
 {
+  "G/yZLu": {
+    "defaultMessage": "Remove"
+  },
   "JEsxDw": {
     "defaultMessage": "Uploading..."
   },
+  "XKyo5X": {
+    "defaultMessage": "File Upload"
+  },
+  "eRShvB": {
+    "defaultMessage": "Maximum files reached"
+  },
   "fDCMA6": {
     "defaultMessage": "Select Files"
+  },
+  "fOOwej": {
+    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
   "gy0Ynb": {
     "defaultMessage": "Click or drag files here"

@@ -176,13 +176,29 @@
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
   },
+  "G/yZLu": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Remove"
+  },
   "JEsxDw": {
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
+  "XKyo5X": {
+    "module": "@ttoss/components",
+    "defaultMessage": "File Upload"
+  },
+  "eRShvB": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Maximum files reached"
+  },
   "fDCMA6": {
     "module": "@ttoss/components",
     "defaultMessage": "Select Files"
+  },
+  "fOOwej": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
   "gy0Ynb": {
     "module": "@ttoss/components",
