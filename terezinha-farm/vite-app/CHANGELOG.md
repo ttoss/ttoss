@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.48](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.47...@terezinha-farm/vite-app@0.12.48) (2025-10-14)
+
+### Bug Fixes
+
+- file uploader ([#742](https://github.com/ttoss/ttoss/issues/742)) ([28b5d4f](https://github.com/ttoss/ttoss/commit/28b5d4f87e3233a7efa523eb9c9ee01dbb7727e2))
+
 ## [0.12.47](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.46...@terezinha-farm/vite-app@0.12.47) (2025-10-12)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

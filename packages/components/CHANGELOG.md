@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.4.4...@ttoss/components@2.4.5) (2025-10-14)
+
+### Bug Fixes
+
+- file uploader ([#742](https://github.com/ttoss/ttoss/issues/742)) ([28b5d4f](https://github.com/ttoss/ttoss/commit/28b5d4f87e3233a7efa523eb9c9ee01dbb7727e2))
+
 ## [2.4.4](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.4.3...@ttoss/components@2.4.4) (2025-10-12)
 
 **Note:** Version bump only for package @ttoss/components
