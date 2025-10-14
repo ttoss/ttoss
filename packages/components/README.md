@@ -105,8 +105,6 @@ const [files, setFiles] = useState([
 - **Validation**: File type, size, and quantity limits
 - **Drag-and-drop**: Native drag-and-drop support
 
-````
-
 ### InstallPwa
 
 PWA installation prompt component. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-installpwa--docs)
@@ -115,7 +113,7 @@ PWA installation prompt component. [📖 Docs](https://storybook.ttoss.dev/?path
 import { InstallPwa } from '@ttoss/components/InstallPwa';
 
 <InstallPwa />;
-````
+```
 
 ### JsonEditor
 
