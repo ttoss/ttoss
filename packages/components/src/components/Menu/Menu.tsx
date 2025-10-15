@@ -12,8 +12,8 @@ export type MenuProps = {
 export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [stylePos, setStylePos] = React.useState<React.CSSProperties>({});
-  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
-  const panelRef = React.useRef<HTMLDivElement | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const panelRef = React.useRef<HTMLDivElement>(null);
 
   const toggle = () => {
     return setIsOpen((v) => {
@@ -21,11 +21,10 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
     });
   };
 
-  // fecha ao clicar fora
   React.useEffect(() => {
     if (!isOpen) return;
     const onDocClick = (e: MouseEvent) => {
-      const t = e.target as Node | null;
+      const t = e.target as Node;
       if (
         panelRef.current &&
         !panelRef.current.contains(t) &&
@@ -41,18 +40,13 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
     };
   }, [isOpen]);
 
-  // calcula posição e evita overflow; usa layout effect para garantir medidas corretas
   React.useLayoutEffect(() => {
     if (!isOpen) return;
     let rafId = 0;
 
-    const getWidthFromSx = (sxObj: unknown) => {
-      if (!sxObj || typeof sxObj !== 'object') return undefined;
-      const obj = sxObj as Record<string, unknown>;
-      const w = obj.width ?? obj.maxWidth ?? obj.minWidth;
-      if (w === undefined) return undefined;
-      if (Array.isArray(w)) return w[w.length - 1]; // pega último valor responsivo
-      return w;
+    const getWidth = () => {
+      const w = sx?.width ?? sx?.maxWidth ?? sx?.minWidth;
+      return Array.isArray(w) ? w[w.length - 1] : w;
     };
 
     const compute = () => {
@@ -60,66 +54,53 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
       const panel = panelRef.current;
       if (!trigger || !panel) return;
 
-      // se o usuário passou width via sx, aplica direto no DOM antes de medir
-      const desiredWidth = getWidthFromSx(sx);
-      if (desiredWidth !== undefined) {
-        const widthStr =
-          typeof desiredWidth === 'number'
-            ? `${desiredWidth}px`
-            : String(desiredWidth);
-        // aplica inline para que getBoundingClientRect reflita imediatamente
-        panel.style.width = widthStr;
-      }
+      const width = getWidth();
+      if (width)
+        panel.style.width =
+          typeof width === 'number' ? `${width}px` : String(width);
 
-      const triggerRect = trigger.getBoundingClientRect();
-      const panelRect = panel.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const margin = 8;
+      const tr = trigger.getBoundingClientRect();
+      const pr = panel.getBoundingClientRect();
+      const vw = window.innerWidth,
+        vh = window.innerHeight,
+        m = 8;
 
-      // largura do painel pode ser responsiva; se width for 0, espera próximo frame
-      if (panelRect.width === 0) {
+      if (pr.width === 0) {
         rafId = requestAnimationFrame(compute);
         return;
       }
 
-      // centraliza horizontalmente no centro do gatilho
-      let left = Math.round(
-        triggerRect.left + triggerRect.width / 2 - panelRect.width / 2
+      const left = Math.max(
+        m,
+        Math.min(tr.left + tr.width / 2 - pr.width / 2, vw - pr.width - m)
       );
-      // clamp horizontal para não sair da viewport
-      left = Math.max(margin, Math.min(left, vw - panelRect.width - margin));
-
-      // prefere abaixo, se não couber, coloca acima
-      const spaceBelow = vh - triggerRect.bottom;
-      const placeAbove = spaceBelow < panelRect.height + margin;
-      const top = placeAbove
-        ? Math.round(triggerRect.top - panelRect.height - margin)
-        : Math.round(triggerRect.bottom + margin);
+      const top =
+        vh - tr.bottom < pr.height + m
+          ? Math.max(m, tr.top - pr.height - m)
+          : tr.bottom + m;
 
       setStylePos({
         position: 'fixed',
         left: `${left}px`,
         top: `${top}px`,
         zIndex: 9999,
+        ...(width && {
+          width: typeof width === 'number' ? `${width}px` : String(width),
+        }),
       });
     };
 
-    // calcular uma vez após render + recalcular em resize/scroll
     rafId = requestAnimationFrame(compute);
-    const onResize = () => {
+    const onResizeScroll = () => {
       return (rafId = requestAnimationFrame(compute));
     };
-    const onScroll = () => {
-      return (rafId = requestAnimationFrame(compute));
-    };
-    window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onResizeScroll);
+    window.addEventListener('scroll', onResizeScroll, true);
 
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onResizeScroll);
+      window.removeEventListener('scroll', onResizeScroll, true);
     };
   }, [isOpen, children, sx]);
 
@@ -127,7 +108,6 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
     <Flex
       ref={panelRef}
       sx={{
-        // position fixed coords applied inline from stylePos so ref measures the actual panel
         ...sx,
         width: ['280px', '320px'],
         maxHeight: '400px',
@@ -167,8 +147,6 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
         >
           <Icon icon={menuIcon} />
         </button>
-
-        {/* renderiza em portal para evitar corte por overflow de pais */}
         {isOpen && createPortal(panel, document.body)}
       </Box>
     </Flex>
