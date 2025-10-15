@@ -1,7 +1,6 @@
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex } from '@ttoss/ui';
 import * as React from 'react';
-import { createPortal } from 'react-dom';
 
 export type MenuProps = {
   children: React.ReactNode;
@@ -147,7 +146,7 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
         >
           <Icon icon={menuIcon} />
         </button>
-        {isOpen && createPortal(panel, document.body)}
+        {isOpen && panel}
       </Box>
     </Flex>
   );
