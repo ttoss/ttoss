@@ -37,39 +37,43 @@ export const Example: StoryFn = () => {
     <Menu>
       {menuItems.map((item) => {
         return (
-          <Flex
+          <a
             key={item.label}
-            onClick={() => {
-              return window.open(item.path, '_blank');
-            }}
-            sx={{
-              backgroundColor: 'input.background.muted.default',
-              textDecoration: 'none',
-              borderRadius: 'md',
-              padding: '3',
-              color: 'display.text.secondary.default',
-              alignItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                backgroundColor: 'display.background.secondary.default',
-                transform: 'translateX(4px)',
-              },
-            }}
+            href={item.path}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', display: 'block' }}
           >
             <Flex
               sx={{
+                backgroundColor: 'input.background.muted.default',
+                textDecoration: 'none',
+                borderRadius: 'md',
+                padding: '3',
+                color: 'display.text.secondary.default',
                 alignItems: 'center',
-                marginLeft: '4',
                 cursor: 'pointer',
-                fontSize: 'md',
-                gap: '2',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: 'display.background.secondary.default',
+                  transform: 'translateX(4px)',
+                },
               }}
             >
-              <Icon icon={item.icon} width={18} height={18} />
-              {item.label}
+              <Flex
+                sx={{
+                  alignItems: 'center',
+                  marginLeft: '4',
+                  cursor: 'pointer',
+                  fontSize: 'md',
+                  gap: '2',
+                }}
+              >
+                <Icon icon={item.icon} width={18} height={18} />
+                {item.label}
+              </Flex>
             </Flex>
-          </Flex>
+          </a>
         );
       })}
     </Menu>

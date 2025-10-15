@@ -349,6 +349,9 @@ describe('Menu', () => {
         return 1;
       });
 
+    const originalInnerHeight = window.innerHeight;
+    const originalInnerWidth = window.innerWidth;
+
     try {
       // set viewport height small to force above placement without using `any`
       Object.defineProperty(window, 'innerHeight', {
@@ -388,6 +391,14 @@ describe('Menu', () => {
         expect(topVal).toBeLessThan(700);
       });
     } finally {
+      Object.defineProperty(window, 'innerHeight', {
+        value: originalInnerHeight,
+        configurable: true,
+      });
+      Object.defineProperty(window, 'innerWidth', {
+        value: originalInnerWidth,
+        configurable: true,
+      });
       gbcrSpy.mockRestore();
       rafSpy.mockRestore();
     }

@@ -107,7 +107,6 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
     <Flex
       ref={panelRef}
       sx={{
-        ...sx,
         width: ['280px', '320px'],
         maxHeight: '400px',
         flexDirection: 'column',
@@ -119,6 +118,7 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
         overflowY: 'auto',
         border: 'md',
         borderColor: 'display.border.muted.default',
+        ...sx,
       }}
       style={{ pointerEvents: 'auto', ...stylePos }}
     >
