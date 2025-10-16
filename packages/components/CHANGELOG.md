@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.4.5...@ttoss/components@2.5.0) (2025-10-16)
+
+### Features
+
+- menu with dropdown itens ([#743](https://github.com/ttoss/ttoss/issues/743)) ([0294540](https://github.com/ttoss/ttoss/commit/02945403630e6c7eee24a342ce63c458f1645c86))
+
 ## [2.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.4.4...@ttoss/components@2.4.5) (2025-10-14)
 
 ### Bug Fixes

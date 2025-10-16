@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.23.7...@docs/storybook@2.24.0) (2025-10-16)
+
+### Features
+
+- menu with dropdown itens ([#743](https://github.com/ttoss/ttoss/issues/743)) ([0294540](https://github.com/ttoss/ttoss/commit/02945403630e6c7eee24a342ce63c458f1645c86))
+
 ## [2.23.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.23.6...@docs/storybook@2.23.7) (2025-10-14)
 
 ### Bug Fixes
