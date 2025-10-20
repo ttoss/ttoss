@@ -79,8 +79,8 @@ export const Menu = ({
             as="button"
             {...menuButtonProps}
             style={{
-              ...(menuButtonProps?.style as React.CSSProperties),
               ...buttonDefaultStyle,
+              ...(menuButtonProps?.style as React.CSSProperties),
             }}
           >
             {triggerNode}
