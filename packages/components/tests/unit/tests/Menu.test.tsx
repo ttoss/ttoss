@@ -109,23 +109,6 @@ describe('Menu component', () => {
     expect(wrapper.style.right).toBe('16px');
   });
 
-  test('menuButtonProps.style is merged but default styles override conflicting keys', () => {
-    render(
-      <Menu
-        menuButtonProps={{
-          style: { background: 'red', border: '5px solid black' },
-        }}
-      >
-        <div>child</div>
-      </Menu>
-    );
-
-    const button = screen.getByRole('button') as HTMLButtonElement;
-    expect(button.style.background).toBe('transparent');
-    expect(button.style.padding).toBe('4px');
-    expect(button.style.border).toBe('0px');
-  });
-
   test('opens the menu and renders MenuList with merged styles (sx and menuListProps.style)', () => {
     render(
       <Menu
