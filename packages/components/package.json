@@ -66,6 +66,9 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@chakra-ui/react": "^2.10.9",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
@@ -75,6 +78,7 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.1.8",
+    "framer-motion": "^6.5.1",
     "jest": "^30.0.4",
     "react": "^19.1.0",
     "tsup": "^8.5.0",
