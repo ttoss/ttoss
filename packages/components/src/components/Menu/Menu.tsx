@@ -1,16 +1,9 @@
-import {
-  Menu as ChakraMenu,
-  MenuButton,
-  MenuButtonProps as ChakraMenuButtonProps,
-  MenuList,
-  MenuListProps as ChakraMenuListProps,
-  MenuProps as ChakraMenuProps,
-} from '@chakra-ui/react';
+import { Menu as ChakraMenu } from '@chakra-ui/react';
 import { Icon } from '@ttoss/react-icons';
 import { Box } from '@ttoss/ui';
 import * as React from 'react';
 
-export type MenuProps = ChakraMenuProps & {
+export type MenuProps = React.ComponentProps<typeof ChakraMenu.Root> & {
   children: React.ReactNode;
   sx?: Record<string, unknown>;
   menuIcon?: string;
@@ -24,8 +17,8 @@ export type MenuProps = ChakraMenuProps & {
     bottom?: number;
     left?: number;
   };
-  menuButtonProps?: ChakraMenuButtonProps;
-  menuListProps?: ChakraMenuListProps;
+  menuButtonProps?: React.ComponentProps<typeof ChakraMenu.Trigger>;
+  menuListProps?: React.ComponentProps<typeof ChakraMenu.Content>;
 };
 
 export const Menu = ({
@@ -41,42 +34,45 @@ export const Menu = ({
   menuListProps,
   ...chakraProps
 }: MenuProps) => {
+  const triggerNode = trigger || triggerIcon || <Icon icon={menuIcon} />;
+
   const triggerStyle: React.CSSProperties = fixedTrigger
     ? {
         position: 'fixed',
-        top: typeof fixedOffset?.top === 'number' ? fixedOffset.top : 16,
-        right: typeof fixedOffset?.right === 'number' ? fixedOffset.right : 16,
-        bottom: fixedOffset?.bottom,
-        left: fixedOffset?.left,
-        zIndex: 9999,
-        display: 'inline-block',
+        zIndex: 1000,
+        ...(fixedOffset?.top !== undefined ? { top: fixedOffset.top } : {}),
+        ...(fixedOffset?.right !== undefined
+          ? { right: fixedOffset.right }
+          : {}),
+        ...(fixedOffset?.bottom !== undefined
+          ? { bottom: fixedOffset.bottom }
+          : {}),
+        ...(fixedOffset?.left !== undefined ? { left: fixedOffset.left } : {}),
       }
-    : { position: 'relative', display: 'inline-block' };
+    : {};
 
   const buttonDefaultStyle: React.CSSProperties = {
-    background: 'transparent',
-    border: 0,
-    padding: 4,
-    cursor: 'pointer',
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
   };
 
-  const triggerNode = trigger ?? triggerIcon ?? <Icon icon={menuIcon} />;
-
-  const mergedMenuListStyle: React.CSSProperties = Object.assign(
-    { minWidth: 240, maxHeight: 400, overflowY: 'auto' },
-    sx as unknown as React.CSSProperties,
-    (menuListProps?.style as React.CSSProperties) ?? {}
-  );
+  const mergedMenuListStyle: React.CSSProperties = {
+    minWidth: '240px',
+    maxHeight: '400px',
+    overflowY: 'auto',
+    ...(sx ?? {}),
+    ...(menuListProps?.style as React.CSSProperties),
+  };
 
   return (
-    <ChakraMenu {...chakraProps}>
+    <ChakraMenu.Root {...chakraProps}>
       <Box style={triggerStyle}>
         {!hideTrigger && (
-          <MenuButton
-            as="button"
+          <ChakraMenu.Trigger
             {...menuButtonProps}
             style={{
               ...buttonDefaultStyle,
@@ -84,13 +80,14 @@ export const Menu = ({
             }}
           >
             {triggerNode}
-          </MenuButton>
+          </ChakraMenu.Trigger>
         )}
-
-        <MenuList {...menuListProps} style={mergedMenuListStyle}>
-          <Box as="nav">{children}</Box>
-        </MenuList>
       </Box>
-    </ChakraMenu>
+      <ChakraMenu.Positioner>
+        <ChakraMenu.Content style={mergedMenuListStyle} {...menuListProps}>
+          {children}
+        </ChakraMenu.Content>
+      </ChakraMenu.Positioner>
+    </ChakraMenu.Root>
   );
 };

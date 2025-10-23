@@ -32,57 +32,56 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export const WithItens: StoryFn = () => {
+export const WithItems: StoryFn = () => {
   return (
     <Menu
-      placement="bottom-start"
       menuButtonProps={{ 'aria-label': 'open-menu' }}
       menuListProps={{ maxH: '400px', p: 0 }}
     >
-      {/* container único para todos os itens */}
       <Box
-        sx={{
-          backgroundColor: 'input.background.muted.default',
-          borderRadius: 'md',
+        style={{
+          backgroundColor:
+            'var(--colors-input-background-muted-default, #f5f5f5)',
+          borderRadius: '8px',
           overflow: 'hidden',
           width: '100%',
         }}
       >
         {menuItems.map((item) => {
           return (
-            <a
-              key={item.label}
-              href={item.path}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none', display: 'block' }}
+            <Flex
+              key={item.path}
+              style={{
+                padding: 12,
+                color: 'var(--colors-display-text-secondary-default, #333)',
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+              }}
+              onMouseOver={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor =
+                  'var(--colors-display-background-secondary-default, #eee)';
+                (e.currentTarget as HTMLElement).style.transform =
+                  'translateX(4px)';
+              }}
+              onMouseOut={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = '';
+                (e.currentTarget as HTMLElement).style.transform = '';
+              }}
             >
               <Flex
-                sx={{
-                  padding: '3',
-                  color: 'display.text.secondary.default',
+                style={{
                   alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    backgroundColor: 'display.background.secondary.default',
-                    transform: 'translateX(4px)',
-                  },
+                  marginLeft: 16,
+                  fontSize: 16,
+                  gap: 8,
                 }}
               >
-                <Flex
-                  sx={{
-                    alignItems: 'center',
-                    marginLeft: '4',
-                    fontSize: 'md',
-                    gap: '2',
-                  }}
-                >
-                  <Icon icon={item.icon} width={18} height={18} />
-                  {item.label}
-                </Flex>
+                <Icon icon={item.icon} width={18} height={18} />
+                {item.label}
               </Flex>
-            </a>
+            </Flex>
           );
         })}
       </Box>
@@ -97,15 +96,18 @@ export const WithNotificationCard: StoryFn = () => {
       fixedTrigger
       fixedOffset={{ top: 12, right: 12 }}
       menuButtonProps={{ 'aria-label': 'notifications' }}
-      menuListProps={{ p: 0 }}
-      sx={{
-        width: '600px',
-        backgroundColor: 'display.border.secondary.default',
+      menuListProps={{
+        p: 0,
+        style: {
+          width: '600px',
+          backgroundColor:
+            'var(--colors-display-border-secondary-default, #eee)',
+        },
       }}
-      placement="bottom-end"
-      isLazy
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '2', p: 0 }}>
+      <Box
+        style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 0 }}
+      >
         <NotificationCard
           title="Notificação de Exemplo"
           message="Esta é uma notificação de exemplo para demonstrar o componente NotificationCard dentro do Menu."
@@ -139,6 +141,24 @@ export const WithNotificationCard: StoryFn = () => {
           type={'info'}
         />
       </Box>
+    </Menu>
+  );
+};
+
+export const mergedMenu: StoryFn = () => {
+  return (
+    <Menu
+      triggerIcon={<Icon icon="mdi:bell-outline" width={20} height={20} />}
+      fixedTrigger
+      fixedOffset={{ top: 12, right: 12 }}
+      menuButtonProps={{ 'aria-label': 'notifications' }}
+      menuListProps={{
+        p: 0,
+        bg: 'bg.primary', // Chakra resolve o token
+        style: { width: '600px' },
+      }}
+    >
+      ...
     </Menu>
   );
 };

@@ -1,3 +1,9 @@
+import {
+  ChakraProvider,
+  createSystem,
+  defaultConfig,
+  defineConfig,
+} from '@chakra-ui/react';
 import { Preview } from '@storybook/react-webpack5';
 import { I18nProvider } from '@ttoss/react-i18n';
 
@@ -34,10 +40,29 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
+      // Constrói um system do Chakra a partir do seu themeObject
+      const config = defineConfig({
+        theme: {
+          semanticTokens: {
+            colors: {
+              bg: {
+                DEFAULT: { value: '{colors.gray.100}' },
+                primary: { value: '{colors.teal.100}' },
+                secondary: { value: '{colors.gray.100}' },
+              },
+            },
+          },
+        },
+      });
+
+      const system = createSystem(defaultConfig, config);
+
       return (
         <I18nProvider>
           <ThemesProvider themeName={context.globals.theme}>
-            <Story />
+            <ChakraProvider value={system}>
+              <Story />
+            </ChakraProvider>
           </ThemesProvider>
         </I18nProvider>
       );
