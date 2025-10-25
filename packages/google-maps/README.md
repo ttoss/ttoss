@@ -1,22 +1,22 @@
 # @ttoss/google-maps
 
-<strong>@ttoss/google-maps</strong> is an opinionated way to use Google Maps in your React application.
+<strong>@ttoss/google-maps</strong> provides a concise, opinionated way to use Google Maps in React apps. This guide covers setup, usage, and key API features so you can get started quickly.
 
 ## Installing
 
-Install `@ttoss/google-maps` in your project:
+Install the package:
 
 ```shell
-$ pnpm add @ttoss/google-maps
+pnpm add @ttoss/google-maps
 ```
 
-If you use TypeScript, install the types for Google Maps:
+For TypeScript support:
 
 ```shell
-$ pnpm add -D @types/google.maps
+pnpm add -D @types/google.maps
 ```
 
-Then, add the following to a declaration file (generally `typings.d.ts`):
+Add this to a declaration file (e.g., `typings.d.ts`):
 
 ```typescript title="typings.d.ts"
 /// <reference types="google.maps" />
@@ -24,31 +24,29 @@ Then, add the following to a declaration file (generally `typings.d.ts`):
 
 ## Getting Started
 
-### Configuring `GoogleMapsProvider`
-
-At the root of your application, configure `GoogleMapsProvider` with your Google Maps API key. This way, the whole application can access the `google` variable.
+Set up `GoogleMapsProvider` at your app root to provide the Google Maps context. This enables all child components to access the Google Maps API.
 
 ```tsx
 import { GoogleMapsProvider } from '@ttoss/google-maps';
 
-const App = ({ children }) => {
-  return (
-    <OtherProviders>
-      <GoogleMapsProvider apiKey={process.env.GOOGLE_MAPS_API_KEY}>
-        {children}
-      </GoogleMapsProvider>
-    </OtherProviders>
-  );
-};
+const App = ({ children }) => (
+  <GoogleMapsProvider apiKey={process.env.GOOGLE_MAPS_API_KEY}>
+    {children}
+  </GoogleMapsProvider>
+);
 ```
 
-### Rendering the Map
+## Rendering the Map
 
-At the component level, render Google Maps using `useMap` hook:
+Use the `useMap` hook to render a map in your component. Define `height` and `width` for the map container:
 
 ```tsx
 import { Box, Text } from '@ttoss/ui';
 import { useMap } from '@ttoss/google-maps';
+import * as React from 'react';
+
+const height = 400;
+const width = '100%';
 
 const MyComponent = () => {
   const { ref, map } = useMap();
@@ -71,59 +69,45 @@ const MyComponent = () => {
 };
 ```
 
-If everything is set up correctly, you should see a map centered at the specified coordinates.
+## Accessing the `google.maps` Object
 
-### Retrieve `google.maps` object
-
-If you need to access the `google.maps` object, you can use the `useGoogleMaps` hook:
+Use the `useGoogleMaps` hook to access the `google.maps` object for advanced API usage:
 
 ```tsx
 import { useGoogleMaps } from '@ttoss/google-maps';
 
 const MyComponent = () => {
   const { google } = useGoogleMaps();
-
   return <Text>{google.maps.version}</Text>;
 };
 ```
 
-With this, you can perform any operation that the `google.maps` object allows, such as creating markers, drawing polygons, etc.
-
 ## Advanced Usage
 
-### Using with Next.js (custom Script component)
+### Using with Next.js
 
-If you use Next.js, you can use the `GoogleMapsProvider` passing [Next.js `Script`](https://nextjs.org/docs/app/api-reference/components/script) component as a prop:
+If you use Next.js, pass the [Next.js `Script`](https://nextjs.org/docs/app/api-reference/components/script) component to `GoogleMapsProvider`:
 
 ```tsx
 import { GoogleMapsProvider } from '@ttoss/google-maps';
 import Script from 'next/script';
 
-const App = ({ children }) => {
-  return (
-    <OtherProviders>
-      <GoogleMapsProvider
-        apiKey={process.env.GOOGLE_MAPS_API_KEY}
-        Script={Script}
-      >
-        {children}
-      </GoogleMapsProvider>
-    </OtherProviders>
-  );
-};
+const App = ({ children }) => (
+  <GoogleMapsProvider apiKey={process.env.GOOGLE_MAPS_API_KEY} Script={Script}>
+    {children}
+  </GoogleMapsProvider>
+);
 ```
 
-### Reusing `map` object
+### Reusing the `map` Object
 
-If you need to access the `map` object in multiple components, you can use `MapProvider` to share it:
+Use `MapProvider` to share the map object between components:
 
 ```tsx
 import { MapProvider, useMap } from '@ttoss/google-maps';
 
 const ChildComponent = () => {
-  // Access the map object created by the parent component
   const { map } = useMap();
-
   React.useEffect(() => {
     if (map) {
       map.setOptions({
@@ -132,13 +116,13 @@ const ChildComponent = () => {
       });
     }
   }, [map]);
-
   return null;
 };
 
 const ParentComponent = () => {
   const { ref, map } = useMap();
-
+  const height = 400;
+  const width = '100%';
   return (
     <MapProvider map={map} ref={ref}>
       <Box>
@@ -151,11 +135,79 @@ const ParentComponent = () => {
 };
 ```
 
+### Adding a Marker
+
+To use markers, include the `marker` library in `GoogleMapsProvider`:
+
+```tsx
+<GoogleMapsProvider
+  apiKey={process.env.GOOGLE_MAPS_API_KEY}
+  libraries={['marker']}
+>
+  {children}
+</GoogleMapsProvider>
+```
+
+Add a marker using `google.maps.marker.AdvancedMarkerElement`:
+
+```tsx
+import { useMap, useGoogleMaps } from '@ttoss/google-maps';
+import React from 'react';
+
+const height = 400;
+const width = '100%';
+
+const MyMapWithMarker = ({ location }) => {
+  const { ref, map } = useMap();
+  const { google } = useGoogleMaps();
+  const markerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (map) {
+      map.setOptions({
+        center: {
+          lat: location.latitude,
+          lng: location.longitude,
+        },
+        zoom: location.zoom || 13,
+      });
+    }
+    if (google?.maps && map && location) {
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: {
+          lat: location.latitude,
+          lng: location.longitude,
+        },
+        map,
+        title: location.name,
+      });
+      markerRef.current = marker;
+    }
+  }, [map, location, google]);
+
+  return <div ref={ref} style={{ height, width }} />;
+};
+```
+
+## Error Handling
+
+You can handle script loading errors using the `onError` prop in `GoogleMapsProvider`:
+
+```tsx
+<GoogleMapsProvider
+  apiKey={process.env.GOOGLE_MAPS_API_KEY}
+  onError={(error) => {
+    // Handle error
+    console.error(error);
+  }}
+>
+  {children}
+</GoogleMapsProvider>
+```
+
 ## API
 
 ### `GoogleMapsProvider`
-
-#### Props
 
 - `apiKey`: string - Google Maps API key.
 - `libraries`: string[] - [Libraries to load](https://developers.google.com/maps/documentation/javascript/libraries).
@@ -165,29 +217,23 @@ const ParentComponent = () => {
 
 ### `MapProvider`
 
-#### Props
-
 - `map`: google.maps.Map | null - Google Maps object.
 - `children`: React.ReactNode - Children to render.
 - `ref`: `React.RefObject<HTMLDivElement>` - Reference to the map container.
 
 ### `useMap`
 
-`useMap` is a hook that returns a reference to the map container and the Google Maps object. It creates a new map object if it doesn't exist or returns the existing map if `MapProvider` wraps the component tree.
-
-#### Returns
+Returns:
 
 - `ref`: `React.RefObject<HTMLDivElement>` - Reference to the map container.
 - `map`: google.maps.Map | null - Google Maps object.
 
 ### `useGoogleMaps`
 
-#### Returns
+Returns:
 
 - `google`: typeof google - `google.maps` object.
 - `status`: 'idle' | 'error' | 'loading' | 'ready' - Status of the script loading.
-- `isReady`: boolean - Whether the script is ready. The same as `status === 'ready'`.
+- `isReady`: boolean - Whether the script is ready (`status === 'ready'`).
 
-```
-
-```
+_For more on product development principles that guide our approach, see [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles)._

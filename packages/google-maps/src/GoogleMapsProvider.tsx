@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { ScriptStatus, useScript } from '@ttoss/react-hooks';
+import * as React from 'react';
 
 type Extends<T, U extends T> = U;
 
@@ -29,7 +29,25 @@ export const GoogleMapsContext = React.createContext<
   },
 });
 
-type Libraries = 'places' | 'visualization' | 'drawing' | 'geometry';
+/**
+ * The libraries that can be loaded from the Google Maps JavaScript API.
+ * https://developers.google.com/maps/documentation/javascript/libraries?hl=pt-br#available-libraries
+ */
+export type Libraries =
+  | 'core'
+  | 'maps'
+  | 'maps3d'
+  | 'places'
+  | 'geocoding'
+  | 'routes'
+  | 'marker'
+  | 'geometry'
+  | 'elevation'
+  | 'streetView'
+  | 'journeySharing'
+  | 'visualization'
+  | 'airQuality'
+  | 'addressValidation';
 
 type ScriptProps = {
   src: string;

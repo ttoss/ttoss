@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { GoogleMapsContext } from './GoogleMapsProvider';
 
 /**
@@ -14,9 +15,5 @@ export const useGoogleMaps = () => {
     isReady,
     status,
     google,
-    /**
-     * @deprecated Use google.maps instead.
-     */
-    googleMaps: google.maps,
   };
 };
