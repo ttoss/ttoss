@@ -35,7 +35,7 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
       return;
     }
 
-    if (!google.maps) {
+    if (!google.maps?.Map) {
       return;
     }
 
