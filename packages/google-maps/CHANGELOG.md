@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.15](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.1.14...@ttoss/google-maps@2.1.15) (2025-10-25)
+
+### Bug Fixes
+
+- check for google.maps.Map instead of google.maps ([3489750](https://github.com/ttoss/ttoss/commit/3489750244e66bbf8b9af3f050c46d4e55ed9686))
+
 ## [2.1.14](https://github.com/ttoss/ttoss/compare/@ttoss/google-maps@2.1.13...@ttoss/google-maps@2.1.14) (2025-10-25)
 
 **Note:** Version bump only for package @ttoss/google-maps
