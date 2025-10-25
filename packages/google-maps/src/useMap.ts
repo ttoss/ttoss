@@ -40,7 +40,7 @@ export const useMap = (options: google.maps.MapOptions = {}) => {
     }
 
     setMap(new google.maps.Map(ref.current, options));
-  }, [map, isReady, ref, google.maps, options]);
+  }, [map, isReady, ref, google.maps?.Map, options]);
 
   /**
    * To avoid re-initializing the map because shallow object comparison.
