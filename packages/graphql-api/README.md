@@ -185,6 +185,61 @@ composeWithRelay(UserTC);
 
 _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github.io/docs/plugins/plugin-relay.html) to create `composeWithRelay`._
 
+### What Is a Node in Relay
+
+In the **Relay Server Specification**, a **Node** is any object that:
+
+Has a **globally unique identity** across your entire GraphQL API.
+Can be **fetched independently** using the `node(id: ID!)`: Node query.
+Implements the `Node` interface.
+
+Only types that are nodes should use `composeWithRelay`.
+
+### When to Use `composeWithRelay` (i.e., When Is a Type a Node?)
+
+| Condition                                                  | Must Be True |
+| ---------------------------------------------------------- | ------------ |
+| Has a unique record ID in your database or external system | Yes          |
+| Can be refetched by ID from anywhere in the app            | Yes          |
+| Clients may cache and reuse it via global ID               | Yes          |
+| Appears nested inside other objects and also stands alone  | Yes          |
+
+#### Examples of Nodes:
+
+```typescript
+(UserTC, SubscriptionTC, AdAccountTC, InvoiceTC);
+```
+
+#### Not Nodes (Don’t Use `composeWithRelay`):
+
+```typescript
+SubscriptionUpcomingInvoiceTC; // Only exists inside Subscription
+PriceDetailsTC; // Embedded value object
+MarketingFeatures; // Just a JSON blob
+```
+
+#### Why Embedded Objects Should Not Be Nodes
+
+Take your example:
+
+```typescript
+upcomingInvoice: SubscriptionUpcomingInvoiceTC;
+```
+
+This object should **not** use `composeWithRelay` because:
+
+- It has no independent identity
+- It is not stored separately
+- It is never queried directly with `node(id: ...)`
+- Its lifecycle is tied 1:1 to the parent `Subscription`
+
+Adding `composeWithRelay` here would:
+
+- Generate unnecessary global IDs
+- Pollute the `node` interface
+- Break Relay cache normalization
+- Add complexity with no benefit
+
 ### Connections
 
 This package provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
@@ -313,7 +368,6 @@ It's an object that defines the sort options. Each key is the sort name and the 
 - `value`: and object that the `args` resolver will receive as the `sort` argument. It'll also be the values of the sort enum composer created (check the implementation details [here](https://github.com/graphql-compose/graphql-compose-connection/blob/master/src/types/sortInputType.ts).)
 - `cursorFields`: an array of fields that will be used to create the cursor.
 - `beforeCursorQuery` and `afterCursorQuery`: methods that will be used to create the `rawQuery` object for the `findManyResolver`. They receive the following arguments:
-
   - `rawQuery`: the `rawQuery` object that will be used to find the nodes.
   - `cursorData`: the data from the cursor define on `cursorFields`. For example, if you define `cursorFields` as `['id', 'name']`, the `cursorData` will an object with the `id` and `name` properties.
   - `resolveParams`: the `resolveParams` object from the resolver. You can access `args`, `context` and `info` and other GraphQL properties from this object.
