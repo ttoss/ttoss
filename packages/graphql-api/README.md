@@ -204,9 +204,9 @@ Only types that are nodes should use `composeWithRelay`.
 | Clients may cache and reuse it via global ID               | Yes          |
 | Appears nested inside other objects and also stands alone  | Yes          |
 
-#### Not Nodes (Don’t Use `composeWithRelay`):
+#### Not Nodes (Don't Use `composeWithRelay`):
 
-Examples of types shoud **never** use `composeWithRelay`
+Examples of types should **never** use `composeWithRelay`
 
 ```typescript
 // Wrong - embedded objects
