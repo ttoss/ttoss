@@ -187,7 +187,7 @@ _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github
 
 ### What Is a Node in Relay
 
-In the **Relay Server Specification**, a **Node** is any object that:
+In the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/), a **Node** is any object that:
 
 Has a **globally unique identity** across your entire GraphQL API.
 Can be **fetched independently** using the `node(id: ID!)`: Node query.
@@ -204,41 +204,52 @@ Only types that are nodes should use `composeWithRelay`.
 | Clients may cache and reuse it via global ID               | Yes          |
 | Appears nested inside other objects and also stands alone  | Yes          |
 
-#### Examples of Nodes:
-
-```typescript
-(UserTC, SubscriptionTC, AdAccountTC, InvoiceTC);
-```
-
 #### Not Nodes (Don’t Use `composeWithRelay`):
 
+These types should **never** use `composeWithRelay`:
+
 ```typescript
+// ❌ Wrong - embedded objects
 SubscriptionUpcomingInvoiceTC; // Only exists inside Subscription
 PriceDetailsTC; // Embedded value object
-MarketingFeatures; // Just a JSON blob
+MarketingFeatures; // Configuration data
+
+// ❌ Wrong - computed values
+UserFullNameTC; // Derived from firstName + lastName
+OrderTotalTC; // Calculated from line items
+
+// ❌ Wrong - transient data
+ValidationErrorTC; // Temporary error state
+SearchResultTC; // Query response wrapper
 ```
 
-#### Why Embedded Objects Should Not Be Nodes
+#### Why Embedded Objects Are Not Nodes
 
-Take your example:
+Consider this embedded object:
 
 ```typescript
-upcomingInvoice: SubscriptionUpcomingInvoiceTC;
+type Subscription {
+  upcomingInvoice: SubscriptionUpcomingInvoice
+}
 ```
 
-This object should **not** use `composeWithRelay` because:
+`SubscriptionUpcomingInvoice` should **not** use `composeWithRelay` because it fails the Node criteria:
 
-- It has no independent identity
-- It is not stored separately
-- It is never queried directly with `node(id: ...)`
-- Its lifecycle is tied 1:1 to the parent `Subscription`
+**Missing Node Requirements:**
 
-Adding `composeWithRelay` here would:
+- No independent identity - exists only within its parent Subscription
+- Cannot be refetched independently - no direct database record
+- Not cached separately - lifecycle tied 1:1 to parent object
+- Never queried directly - accessed only through parent
 
-- Generate unnecessary global IDs
-- Pollute the `node` interface
-- Break Relay cache normalization
-- Add complexity with no benefit
+**Problems Created by `composeWithRelay`:**
+
+- Generates meaningless global IDs for non-independent objects
+- Pollutes the `node` interface with unfetchable objects
+- Breaks Relay's cache normalization expectations
+- Adds unnecessary complexity without any benefit
+
+**Simple Test:** If you cannot write `node(id: "...")` to fetch this object independently, it should not be a Node.
 
 ### Connections
 
