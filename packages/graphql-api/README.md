@@ -206,7 +206,7 @@ Only types that are nodes should use `composeWithRelay`.
 
 #### Not Nodes (Don’t Use `composeWithRelay`):
 
-These types should **never** use `composeWithRelay`:
+Examples of types shoud **never** use `composeWithRelay`
 
 ```typescript
 // Wrong - embedded objects
