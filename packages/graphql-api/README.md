@@ -185,6 +185,72 @@ composeWithRelay(UserTC);
 
 _We inspired ourselves on [graphql-compose-relay](https://graphql-compose.github.io/docs/plugins/plugin-relay.html) to create `composeWithRelay`._
 
+### What Is a Node in Relay
+
+In the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/), a **Node** is any object that:
+
+Has a **globally unique identity** across your entire GraphQL API.
+Can be **fetched independently** using the `node(id: ID!)`: Node query.
+Implements the `Node` interface.
+
+Only types that are nodes should use `composeWithRelay`.
+
+### When to Use `composeWithRelay` (i.e., When Is a Type a Node?)
+
+| Condition                                                  | Must Be True |
+| ---------------------------------------------------------- | ------------ |
+| Has a unique record ID in your database or external system | Yes          |
+| Can be refetched by ID from anywhere in the app            | Yes          |
+| Clients may cache and reuse it via global ID               | Yes          |
+| Appears nested inside other objects and also stands alone  | Yes          |
+
+#### Not Nodes (Don't Use `composeWithRelay`):
+
+Examples of types should **never** use `composeWithRelay`
+
+```typescript
+// Wrong - embedded objects
+SubscriptionUpcomingInvoiceTC; // Only exists inside Subscription
+PriceDetailsTC; // Embedded value object
+MarketingFeatures; // Configuration data
+
+// Wrong - computed values
+UserFullNameTC; // Derived from firstName + lastName
+OrderTotalTC; // Calculated from line items
+
+// Wrong - transient data
+ValidationErrorTC; // Temporary error state
+SearchResultTC; // Query response wrapper
+```
+
+#### Why Embedded Objects Are Not Nodes
+
+Consider this embedded object:
+
+```typescript
+type Subscription {
+  upcomingInvoice: SubscriptionUpcomingInvoice
+}
+```
+
+`SubscriptionUpcomingInvoice` should **not** use `composeWithRelay` because it fails the Node criteria:
+
+**Missing Node Requirements:**
+
+- No independent identity - exists only within its parent Subscription
+- Cannot be refetched independently - no direct database record
+- Not cached separately - lifecycle tied 1:1 to parent object
+- Never queried directly - accessed only through parent
+
+**Problems Created by `composeWithRelay`:**
+
+- Generates meaningless global IDs for non-independent objects
+- Pollutes the `node` interface with unfetchable objects
+- Breaks Relay's cache normalization expectations
+- Adds unnecessary complexity without any benefit
+
+**Simple Test:** If you cannot write `node(id: "...")` to fetch this object independently, it should not be a Node.
+
 ### Connections
 
 This package provides the method `composeWithConnection` to create a connection type and queries for a given type, based on [graphql-compose-connection](https://graphql-compose.github.io/docs/plugins/plugin-connection.html) plugin and following the [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm).
@@ -313,7 +379,6 @@ It's an object that defines the sort options. Each key is the sort name and the 
 - `value`: and object that the `args` resolver will receive as the `sort` argument. It'll also be the values of the sort enum composer created (check the implementation details [here](https://github.com/graphql-compose/graphql-compose-connection/blob/master/src/types/sortInputType.ts).)
 - `cursorFields`: an array of fields that will be used to create the cursor.
 - `beforeCursorQuery` and `afterCursorQuery`: methods that will be used to create the `rawQuery` object for the `findManyResolver`. They receive the following arguments:
-
   - `rawQuery`: the `rawQuery` object that will be used to find the nodes.
   - `cursorData`: the data from the cursor define on `cursorFields`. For example, if you define `cursorFields` as `['id', 'name']`, the `cursorData` will an object with the `id` and `name` properties.
   - `resolveParams`: the `resolveParams` object from the resolver. You can access `args`, `context` and `info` and other GraphQL properties from this object.
