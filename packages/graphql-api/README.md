@@ -209,16 +209,16 @@ Only types that are nodes should use `composeWithRelay`.
 These types should **never** use `composeWithRelay`:
 
 ```typescript
-// ❌ Wrong - embedded objects
+// Wrong - embedded objects
 SubscriptionUpcomingInvoiceTC; // Only exists inside Subscription
 PriceDetailsTC; // Embedded value object
 MarketingFeatures; // Configuration data
 
-// ❌ Wrong - computed values
+// Wrong - computed values
 UserFullNameTC; // Derived from firstName + lastName
 OrderTotalTC; // Calculated from line items
 
-// ❌ Wrong - transient data
+// Wrong - transient data
 ValidationErrorTC; // Temporary error state
 SearchResultTC; // Query response wrapper
 ```
