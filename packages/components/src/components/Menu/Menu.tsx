@@ -1,153 +1,93 @@
+import { Menu as ChakraMenu } from '@chakra-ui/react';
 import { Icon } from '@ttoss/react-icons';
-import { Box, Flex } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
 import * as React from 'react';
 
-export type MenuProps = {
+export type MenuProps = React.ComponentProps<typeof ChakraMenu.Root> & {
   children: React.ReactNode;
   sx?: Record<string, unknown>;
   menuIcon?: string;
+  trigger?: React.ReactNode;
+  triggerIcon?: React.ReactNode;
+  hideTrigger?: boolean;
+  fixedTrigger?: boolean;
+  fixedOffset?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
+  menuButtonProps?: React.ComponentProps<typeof ChakraMenu.Trigger>;
+  menuListProps?: React.ComponentProps<typeof ChakraMenu.Content>;
 };
 
-export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [stylePos, setStylePos] = React.useState<React.CSSProperties>({});
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const panelRef = React.useRef<HTMLDivElement>(null);
+export const Menu = ({
+  children,
+  sx,
+  menuIcon = 'menu-open',
+  trigger,
+  triggerIcon,
+  hideTrigger = false,
+  fixedTrigger = false,
+  fixedOffset,
+  menuButtonProps,
+  menuListProps,
+  ...chakraProps
+}: MenuProps) => {
+  const triggerNode = trigger || triggerIcon || <Icon icon={menuIcon} />;
 
-  const toggle = () => {
-    return setIsOpen((v) => {
-      return !v;
-    });
+  const triggerStyle: React.CSSProperties = fixedTrigger
+    ? {
+        position: 'fixed',
+        zIndex: 1000,
+        ...(fixedOffset?.top !== undefined ? { top: fixedOffset.top } : {}),
+        ...(fixedOffset?.right !== undefined
+          ? { right: fixedOffset.right }
+          : {}),
+        ...(fixedOffset?.bottom !== undefined
+          ? { bottom: fixedOffset.bottom }
+          : {}),
+        ...(fixedOffset?.left !== undefined ? { left: fixedOffset.left } : {}),
+      }
+    : {};
+
+  const buttonDefaultStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
   };
 
-  React.useEffect(() => {
-    if (!isOpen) return;
-    const onDocClick = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(t) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(t)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onDocClick);
-    return () => {
-      return document.removeEventListener('mousedown', onDocClick);
-    };
-  }, [isOpen]);
-
-  React.useLayoutEffect(() => {
-    if (!isOpen) return;
-    let rafId = 0;
-
-    const getWidth = () => {
-      const w = sx?.width ?? sx?.maxWidth ?? sx?.minWidth;
-      return Array.isArray(w) ? w[w.length - 1] : w;
-    };
-
-    const compute = () => {
-      const trigger = triggerRef.current;
-      const panel = panelRef.current;
-      if (!trigger || !panel) return;
-
-      const width = getWidth();
-      if (width)
-        panel.style.width =
-          typeof width === 'number' ? `${width}px` : String(width);
-
-      const tr = trigger.getBoundingClientRect();
-      const pr = panel.getBoundingClientRect();
-      const vw = window.innerWidth,
-        vh = window.innerHeight,
-        m = 8;
-
-      if (pr.width === 0) {
-        rafId = requestAnimationFrame(compute);
-        return;
-      }
-
-      const left = Math.max(
-        m,
-        Math.min(tr.left + tr.width / 2 - pr.width / 2, vw - pr.width - m)
-      );
-      const top =
-        vh - tr.bottom < pr.height + m
-          ? Math.max(m, tr.top - pr.height - m)
-          : tr.bottom + m;
-
-      setStylePos({
-        position: 'fixed',
-        left: `${left}px`,
-        top: `${top}px`,
-        zIndex: 9999,
-        ...(width && {
-          width: typeof width === 'number' ? `${width}px` : String(width),
-        }),
-      });
-    };
-
-    rafId = requestAnimationFrame(compute);
-    const onResizeScroll = () => {
-      return (rafId = requestAnimationFrame(compute));
-    };
-    window.addEventListener('resize', onResizeScroll);
-    window.addEventListener('scroll', onResizeScroll, true);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', onResizeScroll);
-      window.removeEventListener('scroll', onResizeScroll, true);
-    };
-  }, [isOpen, children, sx]);
-
-  const panel = isOpen ? (
-    <Flex
-      ref={panelRef}
-      sx={{
-        width: ['280px', '320px'],
-        maxHeight: '400px',
-        flexDirection: 'column',
-        gap: '3',
-        padding: '3',
-        backgroundColor: 'input.background.muted.default',
-        borderRadius: 'xl',
-        boxShadow: 'xl',
-        overflowY: 'auto',
-        border: 'md',
-        borderColor: 'display.border.muted.default',
-        ...sx,
-      }}
-      style={{ pointerEvents: 'auto', ...stylePos }}
-    >
-      <Box as="nav">{children}</Box>
-    </Flex>
-  ) : null;
+  const mergedMenuListStyle: React.CSSProperties = {
+    minWidth: '240px',
+    maxHeight: '400px',
+    overflowY: 'auto',
+    ...(sx ?? {}),
+    ...(menuListProps?.style as React.CSSProperties),
+  };
 
   return (
-    <Flex sx={{ position: 'relative', display: 'inline-block' }}>
-      <Box sx={{ position: 'relative' }}>
-        <button
-          ref={triggerRef}
-          onClick={toggle}
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-          style={{
-            background: 'transparent',
-            border: 0,
-            padding: 4,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Icon icon={menuIcon} />
-        </button>
-        {isOpen && panel}
+    <ChakraMenu.Root {...chakraProps}>
+      <Box style={triggerStyle}>
+        {!hideTrigger && (
+          <ChakraMenu.Trigger
+            {...menuButtonProps}
+            style={{
+              ...buttonDefaultStyle,
+              ...(menuButtonProps?.style as React.CSSProperties),
+            }}
+          >
+            {triggerNode}
+          </ChakraMenu.Trigger>
+        )}
       </Box>
-    </Flex>
+      <ChakraMenu.Positioner>
+        <ChakraMenu.Content style={mergedMenuListStyle} {...menuListProps}>
+          {children}
+        </ChakraMenu.Content>
+      </ChakraMenu.Positioner>
+    </ChakraMenu.Root>
   );
 };

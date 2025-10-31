@@ -221,10 +221,16 @@ importers:
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
       '@babel/core':
         specifier: ^7.27.4
         version: 7.28.0
+      '@chakra-ui/react':
+        specifier: ^3.4.3
+        version: 3.28.0(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@storybook/addon-a11y':
         specifier: ^9.1.10
         version: 9.1.10(storybook@9.1.10(@testing-library/dom@10.4.1)(prettier@3.6.2)(vite@6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1)))
@@ -246,6 +252,9 @@ importers:
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../../packages/i18n-cli
+      '@types/lodash':
+        specifier: ^4.17.20
+        version: 4.17.20
       babel-loader:
         specifier: ^9.2.1
         version: 9.2.1(@babel/core@7.28.0)(webpack@5.101.0(esbuild@0.25.8))
@@ -355,10 +364,10 @@ importers:
         version: 7.6.5(graphql-middleware@6.1.35(graphql@16.11.0))(graphql@16.11.0)
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/auth-core:
     dependencies:
@@ -371,10 +380,10 @@ importers:
         version: link:../config
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/aws-appsync-nodejs:
     dependencies:
@@ -402,10 +411,10 @@ importers:
         version: 30.0.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/carlin:
     dependencies:
@@ -477,13 +486,13 @@ importers:
         version: 3.28.0
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3)
+        version: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3)
       uglify-js:
         specifier: ^3.19.3
         version: 3.19.3
       vercel:
         specifier: ^39.1.1
-        version: 39.4.2(@swc/core@1.13.5)(encoding@0.1.13)(rollup@4.46.2)
+        version: 39.4.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.46.2)
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -532,10 +541,10 @@ importers:
         version: 17.0.33
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1)
       typescript:
         specifier: ~5.7.2
         version: 5.7.3
@@ -554,10 +563,10 @@ importers:
         version: 30.0.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1)
       typescript:
         specifier: ~5.7.2
         version: 5.7.3
@@ -579,10 +588,10 @@ importers:
         version: 30.0.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/cloud-vpc:
     dependencies:
@@ -601,10 +610,10 @@ importers:
         version: 30.0.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/cloudformation:
     dependencies:
@@ -632,10 +641,10 @@ importers:
         version: 22.17.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/components:
     dependencies:
@@ -682,6 +691,15 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1
     devDependencies:
+      '@chakra-ui/react':
+        specifier: ^3.4.3
+        version: 3.28.0(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.1.9)(react@19.1.1)
+      '@emotion/styled':
+        specifier: ^11.14.1
+        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(@types/react@19.1.9)(react@19.1.1)
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
@@ -709,15 +727,18 @@ importers:
       '@types/react':
         specifier: ^19.1.8
         version: 19.1.9
+      framer-motion:
+        specifier: ^6.5.1
+        version: 6.5.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
       tsx:
         specifier: ^4.19.2
         version: 4.20.3
@@ -775,10 +796,10 @@ importers:
         version: 0.25.8
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/eslint-config:
     dependencies:
@@ -814,7 +835,7 @@ importers:
         version: 2.32.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@9.32.0(jiti@2.5.1))
       eslint-plugin-jest:
         specifier: ^29.0.1
-        version: 29.0.1(@typescript-eslint/eslint-plugin@8.39.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)))(typescript@5.9.2)
+        version: 29.0.1(@typescript-eslint/eslint-plugin@8.39.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)))(typescript@5.9.2)
       eslint-plugin-jest-dom:
         specifier: ^5.5.0
         version: 5.5.0(@testing-library/dom@10.4.1)(eslint@9.32.0(jiti@2.5.1))
@@ -899,7 +920,7 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
@@ -908,7 +929,7 @@ importers:
         version: 5.0.0(react@19.1.1)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/google-maps:
     dependencies:
@@ -936,13 +957,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/graphql-api:
     dependencies:
@@ -973,10 +994,10 @@ importers:
         version: 16.11.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/graphql-api-cli:
     dependencies:
@@ -1004,7 +1025,7 @@ importers:
         version: link:../config
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/graphql-api-server:
     dependencies:
@@ -1032,13 +1053,13 @@ importers:
         version: 16.11.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       supertest:
         specifier: ^7.0.0
         version: 7.1.4
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/http-server:
     dependencies:
@@ -1078,13 +1099,13 @@ importers:
         version: 12.0.4
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       supertest:
         specifier: ^7.0.0
         version: 7.1.4
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/i18n-cli:
     dependencies:
@@ -1109,13 +1130,13 @@ importers:
         version: 1.2.5
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)
+        version: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/ids:
     devDependencies:
@@ -1124,10 +1145,10 @@ importers:
         version: link:../config
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/lambda-postgres-query:
     dependencies:
@@ -1161,10 +1182,10 @@ importers:
         version: 4.1.0
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/landing-pages:
     dependencies:
@@ -1201,10 +1222,10 @@ importers:
         version: 5.0.4
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/layouts:
     devDependencies:
@@ -1231,13 +1252,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/logger:
     devDependencies:
@@ -1249,10 +1270,10 @@ importers:
         version: link:../test-utils
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/monorepo:
     dependencies:
@@ -1277,7 +1298,7 @@ importers:
         version: 17.0.33
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/postgresdb:
     dependencies:
@@ -1296,10 +1317,10 @@ importers:
         version: link:../config
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/postgresdb-cli:
     dependencies:
@@ -1321,10 +1342,10 @@ importers:
         version: link:../config
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-auth:
     dependencies:
@@ -1376,13 +1397,13 @@ importers:
         version: 6.15.4
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-auth-core:
     dependencies:
@@ -1425,13 +1446,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-auth-strapi:
     devDependencies:
@@ -1452,13 +1473,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-feature-flags:
     dependencies:
@@ -1477,13 +1498,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-hooks:
     devDependencies:
@@ -1498,13 +1519,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-i18n:
     dependencies:
@@ -1529,13 +1550,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-icons:
     dependencies:
@@ -1557,13 +1578,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/react-notifications:
     devDependencies:
@@ -1587,13 +1608,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/read-config-file:
     dependencies:
@@ -1624,10 +1645,10 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/read-config-file-test: {}
 
@@ -1644,13 +1665,13 @@ importers:
         version: 6.15.4
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       relay-runtime:
         specifier: ^18.2.0
         version: 18.2.0(encoding@0.1.13)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/test-utils:
     dependencies:
@@ -1699,7 +1720,7 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
@@ -1708,10 +1729,10 @@ importers:
         version: 19.1.1(react@19.1.1)
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)
+        version: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/theme:
     dependencies:
@@ -1739,13 +1760,13 @@ importers:
         version: link:../test-utils
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       theme-ui:
         specifier: ^0.17.1
-        version: 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+        version: 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   packages/ui:
     dependencies:
@@ -1766,7 +1787,7 @@ importers:
         version: 5.29.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       theme-ui:
         specifier: ^0.17.1
-        version: 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+        version: 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
     devDependencies:
       '@emotion/react':
         specifier: ^11.14.0
@@ -1791,13 +1812,13 @@ importers:
         version: 19.1.9
       jest:
         specifier: ^30.0.4
-        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+        version: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       react:
         specifier: ^19.1.0
         version: 19.1.1
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   terezinha-farm/api:
     dependencies:
@@ -1854,7 +1875,7 @@ importers:
         version: link:../../packages/config
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1)
 
   terezinha-farm/iam:
     dependencies:
@@ -1939,7 +1960,7 @@ importers:
         version: 14.1.24
       '@vitejs/plugin-react-swc':
         specifier: ^4.1.0
-        version: 4.1.0(vite@6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
+        version: 4.1.0(@swc/helpers@0.5.17)(vite@6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
       relay-compiler:
         specifier: ^18.2.0
         version: 18.2.0
@@ -2055,6 +2076,12 @@ packages:
     hasBin: true
     peerDependencies:
       graphql: '*'
+
+  '@ark-ui/react@5.26.2':
+    resolution: {integrity: sha512-qB2i9AoxhXbADTo+LEphrf/mOnxJJP18ya/0lmoZ4LZ4/K7rY4gStPaj79gKJzIkLYpOO1G4sS5ycPk/Btmiig==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
@@ -3036,6 +3063,13 @@ packages:
   '@braintree/sanitize-url@7.1.1':
     resolution: {integrity: sha512-i1L7noDNxtFyL5DmZafWy1wRVhGehQmzZaz1HiN5e7iylJMSZR7ekOV7NsIqa5qBldlLrsKv4HbgFUVlQrz8Mw==}
 
+  '@chakra-ui/react@3.28.0':
+    resolution: {integrity: sha512-Rm9Fppqmc4NleAhNhbvE/fiA6IfSYpzRE5IQcQ39v27yFmWwSC8M1q7E5CYF36JJp1jmMG3CBPv4JRox/WESBg==}
+    peerDependencies:
+      '@emotion/react': '>=11'
+      react: '>=18'
+      react-dom: '>=18'
+
   '@chevrotain/cst-dts-gen@11.0.3':
     resolution: {integrity: sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ==}
 
@@ -3646,6 +3680,9 @@ packages:
   '@emotion/is-prop-valid@0.8.8':
     resolution: {integrity: sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==}
 
+  '@emotion/is-prop-valid@1.4.0':
+    resolution: {integrity: sha512-QgD4fyscGcbbKwJmqNvUMSE02OsHUa+lAWKdEUIJKgqe5IwRSKd7+KhibEWdaKwgjLj0DRSHA9biAIqGBk05lw==}
+
   '@emotion/jest@11.13.0':
     resolution: {integrity: sha512-XyoUbJ9fthKdlXjTvjzd6aQ8yVWe68InZawFdGTFkJQRW44rsLHK1qjKB/+L7RiGgdm0BYFv7+tz8znQzRQOBw==}
     peerDependencies:
@@ -3680,6 +3717,16 @@ packages:
 
   '@emotion/sheet@1.4.0':
     resolution: {integrity: sha512-fTBW9/8r2w3dXWYM4HCB1Rdp8NLibOw2+XELH5m5+AkWiL/KqYX6dc0kKYlaYyKjrQ6ds33MCdMPEwgs2z1rqg==}
+
+  '@emotion/styled@11.14.1':
+    resolution: {integrity: sha512-qEEJt42DuToa3gurlH4Qqc1kVpNq8wO8cJtDzU46TjlzWjDlsVyevtYCRijVq3SrHsROS+gVQ8Fnea108GnKzw==}
+    peerDependencies:
+      '@emotion/react': ^11.0.0-rc.0
+      '@types/react': '*'
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@emotion/unitless@0.10.0':
     resolution: {integrity: sha512-dFoMUuQA20zvtVTuxZww6OHoJYgrzfKM1t52mVySDJnMSEa08ruEvdYQbhvyu6soU+NeLVd3yKfTfT0NeV6qGg==}
@@ -3934,6 +3981,9 @@ packages:
 
   '@floating-ui/dom@1.7.3':
     resolution: {integrity: sha512-uZA413QEpNuhtb3/iIKoYMSK07keHPYeXF02Zhd6e213j+d1NamLix/mCLxBUDW/Gx52sPH2m+chlUsyaBs/Ag==}
+
+  '@floating-ui/dom@1.7.4':
+    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
@@ -4284,6 +4334,12 @@ packages:
       '@types/node':
         optional: true
 
+  '@internationalized/date@3.10.0':
+    resolution: {integrity: sha512-oxDR/NTEJ1k+UFVQElaNIk65E/Z83HK1z1WI3lQyhTtnNg4R5oVXaPzK3jcpKG8UHKDVuDQHzn+wsxSz8RP3aw==}
+
+  '@internationalized/number@3.6.5':
+    resolution: {integrity: sha512-6hY4Kl4HPBvtfS62asS/R22JzNNy8vi/Ssev7x6EobfCp+9QIB2hKvI2EtbdJ0VSQacxVNtqhE/NmF/NZ0gm6g==}
+
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
     engines: {node: 20 || >=22}
@@ -4554,6 +4610,24 @@ packages:
   '@mermaid-js/parser@0.6.2':
     resolution: {integrity: sha512-+PO02uGF6L6Cs0Bw8RpGhikVvMWEysfAyl27qTlroUB8jSWr1lL0Sf6zi78ZxlSnmgSY2AMMKVgghnN9jTtwkQ==}
 
+  '@motionone/animation@10.18.0':
+    resolution: {integrity: sha512-9z2p5GFGCm0gBsZbi8rVMOAJCtw1WqBTIPw3ozk06gDvZInBPIsQcHgYogEJ4yuHJ+akuW8g1SEIOpTOvYs8hw==}
+
+  '@motionone/dom@10.12.0':
+    resolution: {integrity: sha512-UdPTtLMAktHiqV0atOczNYyDd/d8Cf5fFsd1tua03PqTwwCe/6lwhLSQ8a7TbnQ5SN0gm44N1slBfj+ORIhrqw==}
+
+  '@motionone/easing@10.18.0':
+    resolution: {integrity: sha512-VcjByo7XpdLS4o9T8t99JtgxkdMcNWD3yHU/n6CLEz3bkmKDRZyYQ/wmSf6daum8ZXqfUAgFeCZSpJZIMxaCzg==}
+
+  '@motionone/generators@10.18.0':
+    resolution: {integrity: sha512-+qfkC2DtkDj4tHPu+AFKVfR/C30O1vYdvsGYaR13W/1cczPrrcjdvYCj0VLFuRMN+lP1xvpNZHCRNM4fBzn1jg==}
+
+  '@motionone/types@10.17.1':
+    resolution: {integrity: sha512-KaC4kgiODDz8hswCrS0btrVrzyU2CSQKO7Ps90ibBVSQmjkrt2teqta6/sOG59v7+dPnKMAg13jyqtMKV2yJ7A==}
+
+  '@motionone/utils@10.18.0':
+    resolution: {integrity: sha512-3XVF7sgyTSI2KWvTf6uLlBJ5iAgRgmvp3bpuOiQJvInd4nZ19ET8lX5unn30SlmRH7hXbBbH+Gxd0m0klJ3Xtw==}
+
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
 
@@ -4676,6 +4750,9 @@ packages:
   '@octokit/webhooks@12.3.2':
     resolution: {integrity: sha512-exj1MzVXoP7xnAcAB3jZ97pTvVPkQF9y6GA/dvYC47HV7vLv+24XRS6b/v/XnyikpEuvMhugEXdGtAlU086WkQ==}
     engines: {node: '>= 18'}
+
+  '@pandacss/is-valid-prop@1.4.3':
+    resolution: {integrity: sha512-9xHAFaRGoXikp0SKUyTHdO97mjIRuGFLDqQ+zphaVeNjTIsyac+fZjOS/2jJNuTS1eybU0/ny1FZ3BpS6SkEqw==}
 
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
@@ -5624,6 +5701,9 @@ packages:
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
+  '@swc/helpers@0.5.17':
+    resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
+
   '@swc/plugin-formatjs@6.1.0':
     resolution: {integrity: sha512-5e+azBLPYMSEBhVE8tIsH5LIKBL2DJOl4uZxPF7GKZINJYC0kXQ4cgo7f9dEUBIEa1nV8hHirfAeOgakODj5OQ==}
 
@@ -6568,6 +6648,223 @@ packages:
 
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
+
+  '@zag-js/accordion@1.26.3':
+    resolution: {integrity: sha512-xZgXTc4AhH0vha5zLjjSj3GZml2LFMhJnZ/F9TU0KEci7xML1U0n2ay4KydgtiEG31/A3j3LLE+vON+/N/0jAg==}
+
+  '@zag-js/anatomy@1.26.3':
+    resolution: {integrity: sha512-2HL+BDX05zRtctKwrSlYEtxeLdiJZIV5SbEpqTNvbNJ9aZNxHKgg0ciEi0bYZe8qJ70TqfNfwWb2xwRamzedhg==}
+
+  '@zag-js/angle-slider@1.26.3':
+    resolution: {integrity: sha512-tmOcOLiKN+5enp2YobuZkhVCWY8Q78SnGVO4tJgj+IjZ1PU/EJwipAiAXRM1Adl/6MPIwIMe2ag5g+Qi9xIDuw==}
+
+  '@zag-js/aria-hidden@1.26.3':
+    resolution: {integrity: sha512-F6P7Ff4iqly4VmxBRZaJoG09QonOIlYDmMRgHH8d8vca7aBmR5InTxy3iOjCZvX3U4xFFednEARRPjncy4Vl6Q==}
+
+  '@zag-js/async-list@1.26.3':
+    resolution: {integrity: sha512-rcM4E8ITSpTANSgk6QX7TKbLyewE1iHOYIJ0NKvSLqfLqSXZgjYTVbWnOmt5q3UOhR3paCbxkEtSdX2/ZCNO/A==}
+
+  '@zag-js/auto-resize@1.26.3':
+    resolution: {integrity: sha512-/hIJGEHjknBnrbGjz7NqZbRGCldklJEvePMbMi5JnELZIFRCcCKnvaXwq7DS1mYODjsLqxBZRSL4y0hNxExk4Q==}
+
+  '@zag-js/avatar@1.26.3':
+    resolution: {integrity: sha512-CGQunbcfHzDi1p1B51TN+sGLGaBgLTsgHpqKM8YbR385hMuULcUguOwcnx7rFBq/w79QsdrACwhz3LFlZOsyUQ==}
+
+  '@zag-js/bottom-sheet@1.26.3':
+    resolution: {integrity: sha512-qhlkSmBz/Ch2piku5h7itWNO0Uit4pTlhICVb8lLf0Q17X7SNxGYW+pMKAQMlL2M4EgA9tV1z/xE1pW4R05F6A==}
+
+  '@zag-js/carousel@1.26.3':
+    resolution: {integrity: sha512-zF7RD7SR/nzl2CDPIp06J3eMXbY2Vk4auMzo9R4puuGN3XSh4+KYmKRt6DH5XmkOd/fFknT3eHH2gNRlpxBaMQ==}
+
+  '@zag-js/checkbox@1.26.3':
+    resolution: {integrity: sha512-7WcJChF9jKLr3e5aJfLNiMxmAA8iYt2ZEjEmmaL1KRDUyONpig9JMDX5mg4u3iXQvZdmsxCptIYHXwdYjZjr3Q==}
+
+  '@zag-js/clipboard@1.26.3':
+    resolution: {integrity: sha512-Cx8oafXtujYRlBU0XA2aXb78bs3JgNVZ4ikR6cm7Qo1AMUxh7FejIBNVaWGzHxUc5XrfliKGvQzJotyrGS3GDA==}
+
+  '@zag-js/collapsible@1.26.3':
+    resolution: {integrity: sha512-vPnWRHolQXdXhP0GkNMADZsBuxhLqGzv/krrJitslYOwsKebtrYz3DrIvtLwpRPsED4igzNLv1ihHPa89kaOAA==}
+
+  '@zag-js/collection@1.26.3':
+    resolution: {integrity: sha512-AYiIuZZ3Fr8eVH657uKGobf6WU5t7a4f/HfFiekwfvG0U0vsySBP7eOxukMvQJDCRNEKxARW9JyDj9pl4d7T8Q==}
+
+  '@zag-js/color-picker@1.26.3':
+    resolution: {integrity: sha512-qsmgl1vHIavY+wH9jHLXlVnbSn+HBbIJy9ysC1vyM1nAM8Qm1P+h1PhojxgPkVujI6QcxSBzA+YcY56ZuSUHdw==}
+
+  '@zag-js/color-utils@1.26.3':
+    resolution: {integrity: sha512-II2mfISJc0xLupXHmfc5AABG0pZy0cYwn741yjlbe7orubWnFLZLmVCzLF4b0qpLzYM+c+MnRVAb/YV6t7Mw6A==}
+
+  '@zag-js/combobox@1.26.3':
+    resolution: {integrity: sha512-CejmsLlKhxfSg0FkGMMS8JPGnCa3sCHv4hZrqRrBuhUJaLjiH5/VazV+WFlHEDUrSzVWUNeoYiZuqQlBWuIeCA==}
+
+  '@zag-js/core@1.26.3':
+    resolution: {integrity: sha512-NU/uBGEFE5kUDJfvayZuPom/mcvJjjIytBclIO4/dCt1IBo+C1ETbpQjG/RgpfmSjfAs2G/9pQgdqobakyWU2A==}
+
+  '@zag-js/date-picker@1.26.3':
+    resolution: {integrity: sha512-3JZckrr1EI01bEYfKeB4nAgI4f+bWZLQnfOq8LtiL4HnS0a31Z3DYFxk3r49X4dxg3B62j1tlb6DzdQJARaElg==}
+    peerDependencies:
+      '@internationalized/date': '>=3.0.0'
+
+  '@zag-js/date-utils@1.26.3':
+    resolution: {integrity: sha512-eoWJZzFY3fkTJU7rzFcRLGCecAnJiu1/xHrB317jgHd0eCGUrgJVY2m0h+agWUCIFtt1VdvEbcf9R9rZmQm7LQ==}
+    peerDependencies:
+      '@internationalized/date': '>=3.0.0'
+
+  '@zag-js/dialog@1.26.3':
+    resolution: {integrity: sha512-8fRmRdTrmX5o9IRCo9kpldlM+L4boesyU3mDYCGoCxymzUImg8Crr+8y3uUHEKFWdxnlisYfBGbC586kWaaCSQ==}
+
+  '@zag-js/dismissable@1.26.3':
+    resolution: {integrity: sha512-THAzkq2KLYq7px+pdIZ4QQoRjF02nxa5WXXVyw+cv7yb+CNcemcNaPtAAIORJhKsQC+1XF1JNiT5TKrvhSprhw==}
+
+  '@zag-js/dom-query@1.26.3':
+    resolution: {integrity: sha512-ZI/EzpWRDFjeSuXiHuCHwFUtFXX7ZNiBiOnsqR5AnbQSTEvYv+Oo803RRuQ+zHDpGSFyYluSnT00/zt4vskXDQ==}
+
+  '@zag-js/editable@1.26.3':
+    resolution: {integrity: sha512-DdlBwOqoXbF+X0uM7k5mYxiKI4eDkX+BYar/DnEifnEgpsTkYMtl3J5B9WmuWmFtmSoTauScHQsVe3OmVCTqTA==}
+
+  '@zag-js/file-upload@1.26.3':
+    resolution: {integrity: sha512-SAifHG71HmRyAUHlqj50xjMr0Ua0uDp8qOucgr7kP2xQvxp8ETfJ5LXrvf+IWv67bF4GmXgIH5Tn7OVEY6ETWQ==}
+
+  '@zag-js/file-utils@1.26.3':
+    resolution: {integrity: sha512-chXv4dL4SeBdGuNvHlPRZDDsIqRZ1YHAX7kHTZhQbp8iqXSZR/XCnwnQg93b7pb6rG9P8oN+f/pYAuKfrulXbA==}
+
+  '@zag-js/floating-panel@1.26.3':
+    resolution: {integrity: sha512-Xue020m4gb9K/zboeW+r6bhSzqqwQpuGqfeFqgekP1XZTxGcEBDHO330gngi6hu7gO9DEMVr1sKinJKZ5kgQ2Q==}
+
+  '@zag-js/focus-trap@1.26.3':
+    resolution: {integrity: sha512-mzvt9pzZ80T7O3TDcpUc7kybuWcOEO6yWvDUbJybJsMCKMvLG3HpH14gcPGOL41YZ7RTOh5PixdML8/Xb7/5Iw==}
+
+  '@zag-js/focus-visible@1.26.3':
+    resolution: {integrity: sha512-gjcOCZeVlqDsCes3z5bmVLmVJQXhs+aMFs3+1JCmOUOT9zfLQ4HLlGfoesG3Zf2h/VUiIV6oZIJDLu3t/iUSig==}
+
+  '@zag-js/highlight-word@1.26.3':
+    resolution: {integrity: sha512-AylY/vZMPzN4FfZeeURlMmyvS4ytQDvAYFOGLPwJjK9zajIuP7CuIa6DtkAIvhf1hfb4oHtH4MwHA2TA2hfUAQ==}
+
+  '@zag-js/hover-card@1.26.3':
+    resolution: {integrity: sha512-M6hEQHZnwx4PeGIl3GsMdGFtKvp2f+dYiDttqkhi5DCcWN4S3173mExK7MNFTgqFCGLTqX86w4eIyWRGBWrZ0Q==}
+
+  '@zag-js/i18n-utils@1.26.3':
+    resolution: {integrity: sha512-wFCVuUK3/GjOryQYPbsQMKlE7LX2sFgU0JccbzrvvKLe1fBCznESWrYjPd93hA+Dm6myQYQa9maxnJ2HiVB4vA==}
+
+  '@zag-js/interact-outside@1.26.3':
+    resolution: {integrity: sha512-CBTagsGQ6QXaPISc8SS1wwjdpZNgMJt3ecYCIA0FP7QwUXNSnNVq7izxXwyoSzkO6xLkXS+kiqwd9guKTUBQ0Q==}
+
+  '@zag-js/json-tree-utils@1.26.3':
+    resolution: {integrity: sha512-SubdKHCnAqZAFd4H0YOCBLFS2ZKP9+eq6+sBlj/2M8hmFPltjSDQWHko5u+/RMo3nKae/FpxLu2yo4CsswKpHA==}
+
+  '@zag-js/listbox@1.26.3':
+    resolution: {integrity: sha512-oeD5s8R37xTo+sXIEAb4uNzu+RxTfSdojchg7WGBQMQfbgiTyyzSpZeQ1WpvdiRNiI7RREKfCBwNDEE+EWwwHA==}
+
+  '@zag-js/live-region@1.26.3':
+    resolution: {integrity: sha512-of7L/R3sdDmsRU3JhZ0azKWqveCBSsTU6yT9xDocY+m7g4MRyUtNfzaqpVDQeJI1S7BD6rGhL7podYYuRhJUvg==}
+
+  '@zag-js/menu@1.26.3':
+    resolution: {integrity: sha512-92GHkFKW6PdG8DUnXlZWJskW+rjWtHUgdPUVOI94EN/+Bz7IqJ0AtVTiR9Sc/tuvxP6RRcBelD1pj+8+wVucfg==}
+
+  '@zag-js/number-input@1.26.3':
+    resolution: {integrity: sha512-Ft/Ot4jJpkaTGS1wK7z9YzdKxqAAKOM8EiGFHcMufPpyGwLIxNmScXNVGTjDqdWIIW3rPPrxLtIlA4ovUe4ZsQ==}
+
+  '@zag-js/pagination@1.26.3':
+    resolution: {integrity: sha512-dTuDXWx833UUzVfn0HLoTtj0SIfKr5sJl/CEyLaLLS4+GAhDYsPkkPereLSjAL3ffUoKzqkqACh17wI/IibmgQ==}
+
+  '@zag-js/password-input@1.26.3':
+    resolution: {integrity: sha512-rdItTM+TnhW6Wpzt0fPhqLug0BfHUZYSK3+77gny9ZhrBH9XrPXBbHb3ORzmGZfBFuVG+bmF1shI+wg6YS/6rA==}
+
+  '@zag-js/pin-input@1.26.3':
+    resolution: {integrity: sha512-4e5h3T9UirAd8+StrHJ180PComxXofg2Pc5NxYs1D73dIKRhbB03Gbbt8ONJg0Pys3HCCcMe5IMzhmmwIdTBCw==}
+
+  '@zag-js/popover@1.26.3':
+    resolution: {integrity: sha512-9eohN1s5ha0mwF6AIht9SE6D0Nl40IL4BY8gL4QWiaLZPPuILqzFby7yug+USdQuMNV2sk7ow6khaU2f7DTQEQ==}
+
+  '@zag-js/popper@1.26.3':
+    resolution: {integrity: sha512-rCBhh+yfMUmBKJkzFvOdeeS3z/uHgbts1lXQ9SZqHBXQ8zQNjSREdQt9E1Ge2lR+ZPtwLpS8adrUtLzLRFc7Uw==}
+
+  '@zag-js/presence@1.26.3':
+    resolution: {integrity: sha512-K3jKOcqimLOGRGcywY128NRzUHeUKXVKYALA5yi/gn6EfJRbX/lV/CQGG9dRiVpI+KnpuCIgJ5zr0ojU0d27yw==}
+
+  '@zag-js/progress@1.26.3':
+    resolution: {integrity: sha512-NwCjePJLEhtNypBFvHg74dtzx6TsK4+1lr/2jwDWO7/vTCLzMRa6TzHD/Tt6KJl5SlLKRSPeCRRc3pnOmKC4LA==}
+
+  '@zag-js/qr-code@1.26.3':
+    resolution: {integrity: sha512-Tq3TWpECOlUmYiC+8svYaUaocBYH4/psAAl2tq4f2qQdCYsB3c20DAG/x6GaDZPf6EFPC/jSgIjCDeBZGw2g4A==}
+
+  '@zag-js/radio-group@1.26.3':
+    resolution: {integrity: sha512-3JLamlpsaa5qW2BzQ6qjoSS70DV2E5YBJWdFAYIHKttQMBzxhRux0U3GR7SCVXp6C7xinR+/xxYEt4uexMK2MQ==}
+
+  '@zag-js/rating-group@1.26.3':
+    resolution: {integrity: sha512-4Ki6GtCY5+su2V6080NlYtOwt+DTjvWcJ0SVPqc/TDe6FgefkHhqAlTClKWVR8hocxk5Mq0z3mgZZ/Y2Yzss9Q==}
+
+  '@zag-js/react@1.26.3':
+    resolution: {integrity: sha512-Z+O89rAmpMmNTMmdLAambnnwTwsRYMAiUZe7RF5TjlLuWMtV6Nc5TpBii3fqxZ/5S9vaUMtDMb9gsHPEfOR7Kw==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  '@zag-js/rect-utils@1.26.3':
+    resolution: {integrity: sha512-+ayBRgNO0xo+sJmnGfZDTKxHyWj6acAUjELwlcHbT0LIxMULTPxbA+Sf1d8Zz3x4fah9v2UN6/AaIrYnldFxTQ==}
+
+  '@zag-js/remove-scroll@1.26.3':
+    resolution: {integrity: sha512-vofKmcJqN9AQqH6BXOii6cIQ5wj6w4cMj0psGeMUE5Rh1Xifg6chvp6ZMX0EqlTz5pYuE9e3VLPpuWUEuY+8Hg==}
+
+  '@zag-js/scroll-area@1.26.3':
+    resolution: {integrity: sha512-C35ad+q5tZkZQwgoiUwyB/HoGLiin+DBPKvKcXQjztGMTB8fv/7n0vzKdpbo5BEFV626ys8vKGV/WY9Zkjdj6w==}
+
+  '@zag-js/scroll-snap@1.26.3':
+    resolution: {integrity: sha512-Pzy2p2xAYILg18Z2h8xtVZqxgcITf7igXIJEngR8Tmvg+97NBYHPgl9sp86mNdoVKkQ5FB4ohirYvHrHONIurw==}
+
+  '@zag-js/select@1.26.3':
+    resolution: {integrity: sha512-4T7Y6fd8FZiTuPQWjuBNG6MWDZbVPO74BlEpBJdbDK9LEJnR2yPnDmNS855BAk0ERzw4UWBwX/HbbDDaYwiRiQ==}
+
+  '@zag-js/signature-pad@1.26.3':
+    resolution: {integrity: sha512-2oO06kTt96POPkQ1VvXcfSKihHJAdGSKhIQHpi5pqPl5OWCyD7DlqVeeP+IHsoTSOIyR2w1EzEG9PCQFc9F50Q==}
+
+  '@zag-js/slider@1.26.3':
+    resolution: {integrity: sha512-EIZcljXslieIz6uWe4YOUjrZbLiW5w6LFhlSfszDs4OGnyKxOImiFWEhuArPCGW7CyuyISFy1GWFW+vi5+6Y1w==}
+
+  '@zag-js/splitter@1.26.3':
+    resolution: {integrity: sha512-dN4ZbOXv83bBVsDyZxBFmPB/o/0OMcOTVIdZbt7aOe1y2z/As/8omzg6zzhqrIV+ASVJwFl6R+QHMngS2NZFhQ==}
+
+  '@zag-js/steps@1.26.3':
+    resolution: {integrity: sha512-eM4ytff6eo93J6AlG8OJcKZ7t5XF8SLLHDJFKIGG59GDYtK8oPSdIVkjy6Ud4XvKXhKufZJUqT7qDT8UDOHxww==}
+
+  '@zag-js/store@1.26.3':
+    resolution: {integrity: sha512-mDBylMkKKobJTUCJmuLDRzZsDRBkwQFcjlyCFQa9fLAjVhfCkF2Y3lAp3MuyqeJa+c7X3BbkXDD/kL2UoiTFMg==}
+
+  '@zag-js/switch@1.26.3':
+    resolution: {integrity: sha512-Fc56yuh0cIf0/8AdRtBS9YVoxIIESQiYf61QMQS/pfO8hBeSFQQmbjeAf8MyOd2QadWwoNKABCiUArP2nBl1Rg==}
+
+  '@zag-js/tabs@1.26.3':
+    resolution: {integrity: sha512-3Iqb+TAw49WldJaMczyzhOQl6F/x9QBgMSp7NhE6AIMaityr0ZE3jCU0qYS+F2DPAu7ng87SOCVA0dOaO/J4eg==}
+
+  '@zag-js/tags-input@1.26.3':
+    resolution: {integrity: sha512-BSzQtfx72zhs4mfBsWReY30HhnKg1KSTzCVThm8oHmkcDGvpDuUbylM2KMsQdgYWTGYHI4FiIzUsUd+RVDOAgw==}
+
+  '@zag-js/timer@1.26.3':
+    resolution: {integrity: sha512-VwRvtY8OJSsSii3Is+8iqf48eY2tc5bKEgCOCQ3JKWhlDtj+Z9toXEQzR2aEiCk64M9AnzKFhFjDS+l7GmWIGg==}
+
+  '@zag-js/toast@1.26.3':
+    resolution: {integrity: sha512-JOLvSHXC4hKlzNb2dDU7tvXIY6U4M+z8ewnHSAOO8Sl8OKTE3pbRU3Q9A0B2qW/3qteQA/P7411e5WrWdxn+9Q==}
+
+  '@zag-js/toggle-group@1.26.3':
+    resolution: {integrity: sha512-CL6oOih/7R8r2NAq7U9HuR5MYlDmAPmS2q9VZINb415bKYuFEJyGMClFB3B+NFaLy6KG/voYahOBJ1NRsgMnxQ==}
+
+  '@zag-js/toggle@1.26.3':
+    resolution: {integrity: sha512-nxsVxkQCTzeOCJcOwqrsIccSf+jjAKmVrmFD0l5IjvZWrypukKPmUFd9BgM7QYTtd3STaQPMMjkYzfFQ/SljzA==}
+
+  '@zag-js/tooltip@1.26.3':
+    resolution: {integrity: sha512-givMhlRGWt9PD9JMrA+GBceD2ViQT8MUgb5r/ovDdaahW8xlMkosWIBnjJBafilrg3tw2Oemw1gPwctcPjAlMQ==}
+
+  '@zag-js/tour@1.26.3':
+    resolution: {integrity: sha512-2WqYTpCTo46LWsF/arI+kuCexDDbgyKwE0hYjsK5NKf1BFAsAWpwmZ1Ne1RGDYl52sXMGfGu7tCQhDzGTzWU9w==}
+
+  '@zag-js/tree-view@1.26.3':
+    resolution: {integrity: sha512-3P376SKf/poaUUjeobm/qenxaO8ApB/P/rpplkUE3fZVhnwKJbzKoUeNZiTpVX36FaJBb3AwBavmyQxMuYoxiQ==}
+
+  '@zag-js/types@1.26.3':
+    resolution: {integrity: sha512-fJf2CgNLQuaFCRZzwGP69vWdFPc1bd1sPngzrYxIfT9SpIRFcBUrBa3p8hXlXg3EScx4O8qC0PrMe9NasUXV1Q==}
+
+  '@zag-js/utils@1.26.3':
+    resolution: {integrity: sha512-C5PlGTVfuMYc/GydvyIyxjSoHib9ZNcinLoucZaRjXF4l6ClDPIlujXc11//XZ0EajpxOKNhfjP9m9stj5Vk0A==}
 
   '@zeit/schemas@2.36.0':
     resolution: {integrity: sha512-7kjMwcChYEzMKjeex9ZFXkt1AyNov9R5HZtjBKVsmVpw7pa7ZtlCGvCBC2vnnXctaYN+aRI61HjIqeetZW5ROg==}
@@ -9096,6 +9393,15 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
+  framer-motion@6.5.1:
+    resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==}
+    peerDependencies:
+      react: '>=16.8 || ^17.0.0 || ^18.0.0'
+      react-dom: '>=16.8 || ^17.0.0 || ^18.0.0'
+
+  framesync@6.0.1:
+    resolution: {integrity: sha512-fUY88kXvGiIItgNC7wcTOl0SNRCVXMKSWW2Yzfmn7EKNc+MpCzcz9DhdHcdjbrtN3c6R4H5dTY2jiCpPdysEjA==}
+
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -9456,6 +9762,9 @@ packages:
 
   header-case@2.0.4:
     resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
+
+  hey-listen@1.0.8:
+    resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
 
   history@4.10.1:
     resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
@@ -11638,6 +11947,9 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
+  perfect-freehand@1.2.2:
+    resolution: {integrity: sha512-eh31l019WICQ03pkF3FSzHxB8n07ItqIQ++G5UV8JX0zVOXzgTGCqnRR0jJ2h9U8/2uW4W4mtGJELt9kEV0CFQ==}
+
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
 
@@ -11722,6 +12034,9 @@ packages:
 
   points-on-path@0.2.1:
     resolution: {integrity: sha512-25ClnWWuw7JbWZcgqY/gJ4FQWadKxGWk+3kR/7kD0tCaDtPPMj7oHu2ToLaVhfpnHrZzYby2w6tUA0eOIuUg8g==}
+
+  popmotion@11.0.3:
+    resolution: {integrity: sha512-Y55FLdj3UxkR7Vl3s7Qr4e9m0onSnP8W7d/xQLsoJM40vs6UKHFdygs6SWryasTZYqugMjm3BepCF4CWXDiHgA==}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -12248,8 +12563,14 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
+  proxy-compare@3.0.1:
+    resolution: {integrity: sha512-V9plBAt3qjMlS1+nC8771KNf6oJ12gExvaxnNzN/9yVRLdTv/lc+oJlnSzrdYDAvBfTStPCoiaCOTmTs0adv7Q==}
+
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+
+  proxy-memoize@3.0.1:
+    resolution: {integrity: sha512-VDdG/VYtOgdGkWJx7y0o7p+zArSf2383Isci8C+BP3YXgMYDoPd3cCBjw0JdWb6YBb9sFiOPbAADDVTPJnh+9g==}
 
   pump@3.0.3:
     resolution: {integrity: sha512-todwxLMY7/heScKmntwQG8CXVkWUOdYxIvY2s0VWAAMh/nd8SoYiRaKjlr7+iCs984f2P8zvrfWcDDYVb73NfA==}
@@ -13341,6 +13662,9 @@ packages:
   style-to-object@1.0.9:
     resolution: {integrity: sha512-G4qppLgKu/k6FwRpHiGiKPaPTFcG3g4wNVX/Qsfu+RqQM30E7Tyu/TEgxcL9PNLF5pdRLwQdE3YKKf+KF2Dzlw==}
 
+  style-value-types@5.0.0:
+    resolution: {integrity: sha512-08yq36Ikn4kx4YU6RD7jWEv27v4V+PUsOGa4n/as8Et3CuODMJQ00ENeAVXAeydX4Z2j1XHZF1K2sX4mGl18fA==}
+
   styled-system@5.1.5:
     resolution: {integrity: sha512-7VoD0o2R3RKzOzPK0jYrVnS8iJdfkKsQJNiLRDjikOpQVqQHns/DXWaPZOH4tIKkhAT7I6wIsy9FWTWh2X3q+A==}
 
@@ -13934,6 +14258,9 @@ packages:
 
   upper-case@2.0.2:
     resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
+
+  uqr@0.1.2:
+    resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -14643,6 +14970,72 @@ snapshots:
       signedsource: 1.0.0
     transitivePeerDependencies:
       - encoding
+
+  '@ark-ui/react@5.26.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@internationalized/date': 3.10.0
+      '@zag-js/accordion': 1.26.3
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/angle-slider': 1.26.3
+      '@zag-js/async-list': 1.26.3
+      '@zag-js/auto-resize': 1.26.3
+      '@zag-js/avatar': 1.26.3
+      '@zag-js/bottom-sheet': 1.26.3
+      '@zag-js/carousel': 1.26.3
+      '@zag-js/checkbox': 1.26.3
+      '@zag-js/clipboard': 1.26.3
+      '@zag-js/collapsible': 1.26.3
+      '@zag-js/collection': 1.26.3
+      '@zag-js/color-picker': 1.26.3
+      '@zag-js/color-utils': 1.26.3
+      '@zag-js/combobox': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/date-picker': 1.26.3(@internationalized/date@3.10.0)
+      '@zag-js/date-utils': 1.26.3(@internationalized/date@3.10.0)
+      '@zag-js/dialog': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/editable': 1.26.3
+      '@zag-js/file-upload': 1.26.3
+      '@zag-js/file-utils': 1.26.3
+      '@zag-js/floating-panel': 1.26.3
+      '@zag-js/focus-trap': 1.26.3
+      '@zag-js/highlight-word': 1.26.3
+      '@zag-js/hover-card': 1.26.3
+      '@zag-js/i18n-utils': 1.26.3
+      '@zag-js/json-tree-utils': 1.26.3
+      '@zag-js/listbox': 1.26.3
+      '@zag-js/menu': 1.26.3
+      '@zag-js/number-input': 1.26.3
+      '@zag-js/pagination': 1.26.3
+      '@zag-js/password-input': 1.26.3
+      '@zag-js/pin-input': 1.26.3
+      '@zag-js/popover': 1.26.3
+      '@zag-js/presence': 1.26.3
+      '@zag-js/progress': 1.26.3
+      '@zag-js/qr-code': 1.26.3
+      '@zag-js/radio-group': 1.26.3
+      '@zag-js/rating-group': 1.26.3
+      '@zag-js/react': 1.26.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@zag-js/scroll-area': 1.26.3
+      '@zag-js/select': 1.26.3
+      '@zag-js/signature-pad': 1.26.3
+      '@zag-js/slider': 1.26.3
+      '@zag-js/splitter': 1.26.3
+      '@zag-js/steps': 1.26.3
+      '@zag-js/switch': 1.26.3
+      '@zag-js/tabs': 1.26.3
+      '@zag-js/tags-input': 1.26.3
+      '@zag-js/timer': 1.26.3
+      '@zag-js/toast': 1.26.3
+      '@zag-js/toggle': 1.26.3
+      '@zag-js/toggle-group': 1.26.3
+      '@zag-js/tooltip': 1.26.3
+      '@zag-js/tour': 1.26.3
+      '@zag-js/tree-view': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:
@@ -16538,6 +16931,20 @@ snapshots:
 
   '@braintree/sanitize-url@7.1.1': {}
 
+  '@chakra-ui/react@3.28.0(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@ark-ui/react': 5.26.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@emotion/is-prop-valid': 1.4.0
+      '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
+      '@emotion/serialize': 1.3.3
+      '@emotion/use-insertion-effect-with-fallbacks': 1.2.0(react@19.1.1)
+      '@emotion/utils': 1.4.2
+      '@pandacss/is-valid-prop': 1.4.3
+      csstype: 3.1.3
+      fast-safe-stringify: 2.1.1
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
   '@chevrotain/cst-dts-gen@11.0.3':
     dependencies:
       '@chevrotain/gast': 11.0.3
@@ -17838,6 +18245,10 @@ snapshots:
     dependencies:
       '@emotion/memoize': 0.7.4
 
+  '@emotion/is-prop-valid@1.4.0':
+    dependencies:
+      '@emotion/memoize': 0.9.0
+
   '@emotion/jest@11.13.0(@types/jest@30.0.0)':
     dependencies:
       '@babel/runtime': 7.28.2
@@ -17879,6 +18290,21 @@ snapshots:
       csstype: 3.1.3
 
   '@emotion/sheet@1.4.0': {}
+
+  '@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(@types/react@19.1.9)(react@19.1.1)':
+    dependencies:
+      '@babel/runtime': 7.28.2
+      '@emotion/babel-plugin': 11.13.5
+      '@emotion/is-prop-valid': 1.4.0
+      '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
+      '@emotion/serialize': 1.3.3
+      '@emotion/use-insertion-effect-with-fallbacks': 1.2.0(react@19.1.1)
+      '@emotion/utils': 1.4.2
+      react: 19.1.1
+    optionalDependencies:
+      '@types/react': 19.1.9
+    transitivePeerDependencies:
+      - supports-color
 
   '@emotion/unitless@0.10.0': {}
 
@@ -18053,6 +18479,11 @@ snapshots:
       '@floating-ui/utils': 0.2.10
 
   '@floating-ui/dom@1.7.3':
+    dependencies:
+      '@floating-ui/core': 1.7.3
+      '@floating-ui/utils': 0.2.10
+
+  '@floating-ui/dom@1.7.4':
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/utils': 0.2.10
@@ -18443,6 +18874,14 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.17.0
 
+  '@internationalized/date@3.10.0':
+    dependencies:
+      '@swc/helpers': 0.5.17
+
+  '@internationalized/number@3.6.5':
+    dependencies:
+      '@swc/helpers': 0.5.17
+
   '@isaacs/balanced-match@4.0.1': {}
 
   '@isaacs/brace-expansion@5.0.0':
@@ -18481,7 +18920,7 @@ snapshots:
       jest-util: 30.0.5
       slash: 3.0.0
 
-  '@jest/core@30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))':
+  '@jest/core@30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))':
     dependencies:
       '@jest/console': 30.0.5
       '@jest/pattern': 30.0.1
@@ -18496,7 +18935,7 @@ snapshots:
       exit-x: 0.2.2
       graceful-fs: 4.2.11
       jest-changed-files: 30.0.5
-      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       jest-haste-map: 30.0.5
       jest-message-util: 30.0.5
       jest-regex-util: 30.0.1
@@ -18517,7 +18956,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@jest/core@30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))':
+  '@jest/core@30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))':
     dependencies:
       '@jest/console': 30.0.5
       '@jest/pattern': 30.0.1
@@ -18532,7 +18971,7 @@ snapshots:
       exit-x: 0.2.2
       graceful-fs: 4.2.11
       jest-changed-files: 30.0.5
-      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       jest-haste-map: 30.0.5
       jest-message-util: 30.0.5
       jest-regex-util: 30.0.1
@@ -19042,6 +19481,41 @@ snapshots:
     dependencies:
       langium: 3.3.1
 
+  '@motionone/animation@10.18.0':
+    dependencies:
+      '@motionone/easing': 10.18.0
+      '@motionone/types': 10.17.1
+      '@motionone/utils': 10.18.0
+      tslib: 2.8.1
+
+  '@motionone/dom@10.12.0':
+    dependencies:
+      '@motionone/animation': 10.18.0
+      '@motionone/generators': 10.18.0
+      '@motionone/types': 10.17.1
+      '@motionone/utils': 10.18.0
+      hey-listen: 1.0.8
+      tslib: 2.8.1
+
+  '@motionone/easing@10.18.0':
+    dependencies:
+      '@motionone/utils': 10.18.0
+      tslib: 2.8.1
+
+  '@motionone/generators@10.18.0':
+    dependencies:
+      '@motionone/types': 10.17.1
+      '@motionone/utils': 10.18.0
+      tslib: 2.8.1
+
+  '@motionone/types@10.17.1': {}
+
+  '@motionone/utils@10.18.0':
+    dependencies:
+      '@motionone/types': 10.17.1
+      hey-listen: 1.0.8
+      tslib: 2.8.1
+
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
       '@emnapi/core': 1.4.5
@@ -19201,6 +19675,8 @@ snapshots:
       '@octokit/webhooks-methods': 4.1.0
       '@octokit/webhooks-types': 7.6.1
       aggregate-error: 3.1.0
+
+  '@pandacss/is-valid-prop@1.4.3': {}
 
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
@@ -20386,7 +20862,7 @@ snapshots:
   '@swc/core-win32-x64-msvc@1.13.5':
     optional: true
 
-  '@swc/core@1.13.5':
+  '@swc/core@1.13.5(@swc/helpers@0.5.17)':
     dependencies:
       '@swc/counter': 0.1.3
       '@swc/types': 0.1.25
@@ -20401,8 +20877,13 @@ snapshots:
       '@swc/core-win32-arm64-msvc': 1.13.5
       '@swc/core-win32-ia32-msvc': 1.13.5
       '@swc/core-win32-x64-msvc': 1.13.5
+      '@swc/helpers': 0.5.17
 
   '@swc/counter@0.1.3': {}
+
+  '@swc/helpers@0.5.17':
+    dependencies:
+      tslib: 2.8.1
 
   '@swc/plugin-formatjs@6.1.0':
     dependencies:
@@ -20463,27 +20944,27 @@ snapshots:
     dependencies:
       '@testing-library/dom': 10.4.1
 
-  '@theme-ui/color-modes@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)':
+  '@theme-ui/color-modes@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
       deepmerge: 4.3.1
       react: 19.1.1
 
-  '@theme-ui/components@0.17.2(@emotion/react@11.14.0(react@19.1.1))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1))(react@19.1.1)':
+  '@theme-ui/components@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
       '@styled-system/color': 5.1.2
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
-      '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@types/styled-system': 5.1.23
       react: 19.1.1
 
-  '@theme-ui/core@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)':
+  '@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
@@ -20495,24 +20976,24 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
       csstype: 3.1.3
 
-  '@theme-ui/global@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)':
+  '@theme-ui/global@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
       react: 19.1.1
 
   '@theme-ui/match-media@0.17.2(@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1))(@theme-ui/css@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1)))(react@19.1.1)':
     dependencies:
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
       react: 19.1.1
 
-  '@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)':
+  '@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
-      '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
       react: 19.1.1
 
@@ -21368,7 +21849,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/node@5.0.4(@swc/core@1.13.5)(encoding@0.1.13)(rollup@4.46.2)':
+  '@vercel/node@5.0.4(@swc/core@1.13.5(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.46.2)':
     dependencies:
       '@edge-runtime/node-utils': 2.3.0
       '@edge-runtime/primitives': 4.1.0
@@ -21388,7 +21869,7 @@ snapshots:
       path-to-regexp: 6.2.1
       path-to-regexp-updated: path-to-regexp@6.3.0
       ts-morph: 12.0.0
-      ts-node: 10.9.1(@swc/core@1.13.5)(@types/node@16.18.11)(typescript@4.9.5)
+      ts-node: 10.9.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@16.18.11)(typescript@4.9.5)
       typescript: 4.9.5
       undici: 5.28.4
     transitivePeerDependencies:
@@ -21445,10 +21926,10 @@ snapshots:
       json-schema-to-ts: 1.6.4
       ts-morph: 12.0.0
 
-  '@vitejs/plugin-react-swc@4.1.0(vite@6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))':
+  '@vitejs/plugin-react-swc@4.1.0(@swc/helpers@0.5.17)(vite@6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.35
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
       vite: 6.3.5(@types/node@22.17.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@swc/helpers'
@@ -21607,6 +22088,521 @@ snapshots:
   '@xtuc/ieee754@1.2.0': {}
 
   '@xtuc/long@4.2.2': {}
+
+  '@zag-js/accordion@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/anatomy@1.26.3': {}
+
+  '@zag-js/angle-slider@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/rect-utils': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/aria-hidden@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/async-list@1.26.3':
+    dependencies:
+      '@zag-js/core': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/auto-resize@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/avatar@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/bottom-sheet@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/aria-hidden': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-trap': 1.26.3
+      '@zag-js/remove-scroll': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/carousel@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/scroll-snap': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/checkbox@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-visible': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/clipboard@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/collapsible@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/collection@1.26.3':
+    dependencies:
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/color-picker@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/color-utils': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/color-utils@1.26.3':
+    dependencies:
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/combobox@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/aria-hidden': 1.26.3
+      '@zag-js/collection': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/core@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/date-picker@1.26.3(@internationalized/date@3.10.0)':
+    dependencies:
+      '@internationalized/date': 3.10.0
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/date-utils': 1.26.3(@internationalized/date@3.10.0)
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/live-region': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/date-utils@1.26.3(@internationalized/date@3.10.0)':
+    dependencies:
+      '@internationalized/date': 3.10.0
+
+  '@zag-js/dialog@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/aria-hidden': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-trap': 1.26.3
+      '@zag-js/remove-scroll': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/dismissable@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/interact-outside': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/dom-query@1.26.3':
+    dependencies:
+      '@zag-js/types': 1.26.3
+
+  '@zag-js/editable@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/interact-outside': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/file-upload@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/file-utils': 1.26.3
+      '@zag-js/i18n-utils': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/file-utils@1.26.3':
+    dependencies:
+      '@zag-js/i18n-utils': 1.26.3
+
+  '@zag-js/floating-panel@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/rect-utils': 1.26.3
+      '@zag-js/store': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/focus-trap@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/focus-visible@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/highlight-word@1.26.3': {}
+
+  '@zag-js/hover-card@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/i18n-utils@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/interact-outside@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/json-tree-utils@1.26.3': {}
+
+  '@zag-js/listbox@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/collection': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-visible': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/live-region@1.26.3': {}
+
+  '@zag-js/menu@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/rect-utils': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/number-input@1.26.3':
+    dependencies:
+      '@internationalized/number': 3.6.5
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/pagination@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/password-input@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/pin-input@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/popover@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/aria-hidden': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-trap': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/remove-scroll': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/popper@1.26.3':
+    dependencies:
+      '@floating-ui/dom': 1.7.4
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/presence@1.26.3':
+    dependencies:
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+
+  '@zag-js/progress@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/qr-code@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+      proxy-memoize: 3.0.1
+      uqr: 0.1.2
+
+  '@zag-js/radio-group@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-visible': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/rating-group@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/react@1.26.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@zag-js/core': 1.26.3
+      '@zag-js/store': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
+  '@zag-js/rect-utils@1.26.3': {}
+
+  '@zag-js/remove-scroll@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/scroll-area@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/scroll-snap@1.26.3':
+    dependencies:
+      '@zag-js/dom-query': 1.26.3
+
+  '@zag-js/select@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/collection': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/signature-pad@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+      perfect-freehand: 1.2.2
+
+  '@zag-js/slider@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/splitter@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/steps@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/store@1.26.3':
+    dependencies:
+      proxy-compare: 3.0.1
+
+  '@zag-js/switch@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-visible': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/tabs@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/tags-input@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/auto-resize': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/interact-outside': 1.26.3
+      '@zag-js/live-region': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/timer@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/toast@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/toggle-group@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/toggle@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/tooltip@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-visible': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/tour@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dismissable': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/focus-trap': 1.26.3
+      '@zag-js/interact-outside': 1.26.3
+      '@zag-js/popper': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/tree-view@1.26.3':
+    dependencies:
+      '@zag-js/anatomy': 1.26.3
+      '@zag-js/collection': 1.26.3
+      '@zag-js/core': 1.26.3
+      '@zag-js/dom-query': 1.26.3
+      '@zag-js/types': 1.26.3
+      '@zag-js/utils': 1.26.3
+
+  '@zag-js/types@1.26.3':
+    dependencies:
+      csstype: 3.1.3
+
+  '@zag-js/utils@1.26.3': {}
 
   '@zeit/schemas@2.36.0': {}
 
@@ -23928,13 +24924,13 @@ snapshots:
     optionalDependencies:
       '@testing-library/dom': 10.4.1
 
-  eslint-plugin-jest@29.0.1(@typescript-eslint/eslint-plugin@8.39.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)))(typescript@5.9.2):
+  eslint-plugin-jest@29.0.1(@typescript-eslint/eslint-plugin@8.39.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)))(typescript@5.9.2):
     dependencies:
       '@typescript-eslint/utils': 8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2)
       eslint: 9.32.0(jiti@2.5.1)
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.39.0(@typescript-eslint/parser@8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.2)
-      jest: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      jest: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -24543,6 +25539,23 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
+  framer-motion@6.5.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      '@motionone/dom': 10.12.0
+      framesync: 6.0.1
+      hey-listen: 1.0.8
+      popmotion: 11.0.3
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      style-value-types: 5.0.0
+      tslib: 2.8.1
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
+
+  framesync@6.0.1:
+    dependencies:
+      tslib: 2.8.1
+
   fresh@0.5.2: {}
 
   fs-extra@10.1.0:
@@ -25046,6 +26059,8 @@ snapshots:
     dependencies:
       capital-case: 1.0.4
       tslib: 2.8.1
+
+  hey-listen@1.0.8: {}
 
   history@4.10.1:
     dependencies:
@@ -25706,15 +26721,15 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-cli@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3)):
+  jest-cli@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3)):
     dependencies:
-      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       '@jest/test-result': 30.0.5
       '@jest/types': 30.0.5
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       jest-util: 30.0.5
       jest-validate: 30.0.5
       yargs: 17.7.2
@@ -25725,15 +26740,15 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-cli@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)):
+  jest-cli@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)):
     dependencies:
-      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       '@jest/test-result': 30.0.5
       '@jest/types': 30.0.5
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      jest-config: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       jest-util: 30.0.5
       jest-validate: 30.0.5
       yargs: 17.7.2
@@ -25744,7 +26759,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-config@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3)):
+  jest-config@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3)):
     dependencies:
       '@babel/core': 7.28.0
       '@jest/get-type': 30.0.1
@@ -25773,12 +26788,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.17.0
       esbuild-register: 3.6.0(esbuild@0.25.8)
-      ts-node: 10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3)
+      ts-node: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
 
-  jest-config@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)):
+  jest-config@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)):
     dependencies:
       '@babel/core': 7.28.0
       '@jest/get-type': 30.0.1
@@ -25807,7 +26822,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.17.0
       esbuild-register: 3.6.0(esbuild@0.25.8)
-      ts-node: 10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)
+      ts-node: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -26138,12 +27153,12 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3)):
+  jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3)):
     dependencies:
-      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
       '@jest/types': 30.0.5
       import-local: 3.2.0
-      jest-cli: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3))
+      jest-cli: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -26151,12 +27166,12 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2)):
+  jest@30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2)):
     dependencies:
-      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      '@jest/core': 30.0.5(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
       '@jest/types': 30.0.5
       import-local: 3.2.0
-      jest-cli: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2))
+      jest-cli: 30.0.5(@types/node@22.17.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.25.8))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -27865,6 +28880,8 @@ snapshots:
 
   pend@1.2.0: {}
 
+  perfect-freehand@1.2.2: {}
+
   pg-cloudflare@1.2.7:
     optional: true
 
@@ -27942,6 +28959,13 @@ snapshots:
     dependencies:
       path-data-parser: 0.1.0
       points-on-curve: 0.2.0
+
+  popmotion@11.0.3:
+    dependencies:
+      framesync: 6.0.1
+      hey-listen: 1.0.8
+      style-value-types: 5.0.0
+      tslib: 2.8.1
 
   possible-typed-array-names@1.1.0: {}
 
@@ -28500,7 +29524,13 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
+  proxy-compare@3.0.1: {}
+
   proxy-from-env@1.1.0: {}
+
+  proxy-memoize@3.0.1:
+    dependencies:
+      proxy-compare: 3.0.1
 
   pump@3.0.3:
     dependencies:
@@ -29858,6 +30888,11 @@ snapshots:
     dependencies:
       inline-style-parser: 0.2.4
 
+  style-value-types@5.0.0:
+    dependencies:
+      hey-listen: 1.0.8
+      tslib: 2.8.1
+
   styled-system@5.1.5:
     dependencies:
       '@styled-system/background': 5.1.2
@@ -30025,15 +31060,15 @@ snapshots:
 
   text-extensions@2.4.0: {}
 
-  theme-ui@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1):
+  theme-ui@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1):
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.1.9)(react@19.1.1)
-      '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
-      '@theme-ui/components': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1))(react@19.1.1)
-      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
+      '@theme-ui/components': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1))(react@19.1.1)
+      '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.1.1))
-      '@theme-ui/global': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
-      '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(react@19.1.1))(react@19.1.1)
+      '@theme-ui/global': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
+      '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.1.9)(react@19.1.1))(react@19.1.1)
       react: 19.1.1
 
   thenify-all@1.6.0:
@@ -30134,7 +31169,7 @@ snapshots:
       '@ts-morph/common': 0.11.1
       code-block-writer: 10.1.1
 
-  ts-node@10.9.1(@swc/core@1.13.5)(@types/node@16.18.11)(typescript@4.9.5):
+  ts-node@10.9.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@16.18.11)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -30152,9 +31187,9 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
 
-  ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.7.3):
+  ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.7.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -30172,9 +31207,9 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
 
-  ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.17.0)(typescript@5.9.2):
+  ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@22.17.0)(typescript@5.9.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -30192,7 +31227,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
 
   ts-toolbelt@6.15.5: {}
 
@@ -30219,7 +31254,7 @@ snapshots:
 
   tsscmp@1.0.6: {}
 
-  tsup@8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1):
+  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.7.3)(yaml@2.8.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.8)
       cac: 6.7.14
@@ -30239,7 +31274,7 @@ snapshots:
       tinyglobby: 0.2.14
       tree-kill: 1.2.2
     optionalDependencies:
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
       postcss: 8.5.6
       typescript: 5.7.3
     transitivePeerDependencies:
@@ -30248,7 +31283,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.5.0(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1):
+  tsup@8.5.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.8)
       cac: 6.7.14
@@ -30268,7 +31303,7 @@ snapshots:
       tinyglobby: 0.2.14
       tree-kill: 1.2.2
     optionalDependencies:
-      '@swc/core': 1.13.5
+      '@swc/core': 1.13.5(@swc/helpers@0.5.17)
       postcss: 8.5.6
       typescript: 5.9.2
     transitivePeerDependencies:
@@ -30587,6 +31622,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  uqr@0.1.2: {}
+
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
@@ -30669,14 +31706,14 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vercel@39.4.2(@swc/core@1.13.5)(encoding@0.1.13)(rollup@4.46.2):
+  vercel@39.4.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.46.2):
     dependencies:
       '@vercel/build-utils': 9.1.0
       '@vercel/fun': 1.1.2(encoding@0.1.13)
       '@vercel/go': 3.2.1
       '@vercel/hydrogen': 1.0.11
       '@vercel/next': 4.4.4(encoding@0.1.13)(rollup@4.46.2)
-      '@vercel/node': 5.0.4(@swc/core@1.13.5)(encoding@0.1.13)(rollup@4.46.2)
+      '@vercel/node': 5.0.4(@swc/core@1.13.5(@swc/helpers@0.5.17))(encoding@0.1.13)(rollup@4.46.2)
       '@vercel/python': 4.7.1
       '@vercel/redwood': 2.1.13(encoding@0.1.13)(rollup@4.46.2)
       '@vercel/remix-builder': 5.1.1(encoding@0.1.13)(rollup@4.46.2)
