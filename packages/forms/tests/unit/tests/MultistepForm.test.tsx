@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 
 import { FormFieldInput, yup } from '../../../src';
 import {

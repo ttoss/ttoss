@@ -1,5 +1,6 @@
+import { render, screen } from '@ttoss/test-utils/react';
+
 import { Modal } from '../../../src/components/Modal';
-import { render, screen } from '@ttoss/test-utils';
 
 const modalMessage = 'This is a modal.';
 

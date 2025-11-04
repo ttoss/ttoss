@@ -1,14 +1,15 @@
+import { act, render, renderHook, screen } from '@ttoss/test-utils/react';
 import * as React from 'react';
 import {
   DEFAULT_LOCALE,
-  FormattedMessage,
-  I18nProvider,
   defineMessage,
   defineMessages,
+  FormattedMessage,
+  I18nProvider,
   useI18n,
 } from 'src/index';
-import { Providers, loadLocaleData } from '../setupTests';
-import { act, render, renderHook, screen } from '@ttoss/test-utils';
+
+import { loadLocaleData, Providers } from '../setupTests';
 
 const messages = defineMessages({
   myNameIs: {

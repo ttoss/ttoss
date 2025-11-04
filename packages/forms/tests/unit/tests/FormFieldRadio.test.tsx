@@ -1,7 +1,8 @@
-import * as React from 'react';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
+import * as React from 'react';
+
 import { Form, FormFieldRadio, useForm, yup, yupResolver } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const RADIO_OPTIONS = [
   { value: 'Ferrari', label: 'Ferrari' },

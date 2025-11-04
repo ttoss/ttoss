@@ -1,4 +1,4 @@
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { Button, Input } from '@ttoss/ui';
 import { Form, FormField, useForm, yup, yupResolver } from 'src/index';
 

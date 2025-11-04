@@ -1,5 +1,5 @@
+import { render, screen } from '@ttoss/test-utils/react';
 import { Icon } from 'src/index';
-import { render, screen } from '@ttoss/test-utils';
 
 test('should render iconify-icon', () => {
   render(

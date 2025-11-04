@@ -1,4 +1,4 @@
-import { render, screen } from '@ttoss/test-utils';
+import { render, screen } from '@ttoss/test-utils/react';
 import { Layout, StackedLayout } from 'src/index';
 
 test('should render stacked layout from StackedLayout components', () => {

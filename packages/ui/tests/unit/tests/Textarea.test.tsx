@@ -1,5 +1,6 @@
+import { render, screen } from '@ttoss/test-utils/react';
+
 import { Textarea } from '../../../src';
-import { render, screen } from '@ttoss/test-utils';
 
 test('should not render trailingIcon in Textarea component', () => {
   render(<Textarea />);

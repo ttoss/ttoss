@@ -13,7 +13,7 @@ This package includes `@testing-library/jest-dom` types automatically - other pa
 ## Quick Start
 
 ```tsx
-import { render, screen, userEvent, renderHook } from '@ttoss/test-utils';
+import { render, screen, userEvent, renderHook } from '@ttoss/test-utils/react';
 
 test('example component test', async () => {
   const user = userEvent.setup();
@@ -49,7 +49,7 @@ This package includes:
 Use `setOptions` to configure default render options for all tests:
 
 ```tsx title="jest.setup.ts"
-import { setOptions } from '@ttoss/test-utils';
+import { setOptions } from '@ttoss/test-utils/react';
 import AllProviders from './src/AllProviders';
 
 setOptions({ wrapper: AllProviders });
@@ -71,6 +71,8 @@ const environment = createMockEnvironment();
 // Use for testing Relay components
 ```
 
+For more details (mocking payloads, resolving operations, testing suspense boundaries), see the official Relay guide: [Testing Relay Components](https://relay.dev/docs/guides/testing-relay-components/)
+
 ### Fake Data Generation
 
 ```ts
@@ -81,3 +83,24 @@ const testUser = {
   email: faker.internet.email(),
 };
 ```
+
+#### Jest configuration (ESM support for faker)
+
+If you see `SyntaxError: Cannot use import statement outside a module` when using `faker`, ensure Jest transpiles `@faker-js/faker` by updating `transformIgnorePatterns`:
+
+```ts title="jest.config.ts"
+import { jestUnitConfig } from '@ttoss/config';
+
+const esmModules = ['@faker-js/faker'];
+
+const transformIgnorePatterns = [
+  `node_modules/(?!(?:\\.pnpm/[^/]+/node_modules/)?(${esmModules.join('|')}))`,
+];
+
+export default jestUnitConfig({
+  testEnvironment: 'jsdom',
+  transformIgnorePatterns,
+});
+```
+
+This forces Jest to transform ESM packages like `@faker-js/faker` even inside a pnpm monorepo layout.

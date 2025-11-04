@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@ttoss/test-utils';
+import { renderHook, waitFor } from '@ttoss/test-utils/react';
 import { AuthProvider, useAuth } from 'src/index';
 
 jest.mock('aws-amplify/auth', () => {

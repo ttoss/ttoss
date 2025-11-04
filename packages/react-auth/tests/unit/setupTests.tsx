@@ -1,6 +1,6 @@
 import { I18nProvider } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
-import { setOptions } from '@ttoss/test-utils';
+import { setOptions } from '@ttoss/test-utils/react';
 import { ThemeProvider } from '@ttoss/ui';
 import * as React from 'react';
 

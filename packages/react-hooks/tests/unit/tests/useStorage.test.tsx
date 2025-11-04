@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { fireEvent, render } from '@ttoss/test-utils';
+import { fireEvent, render } from '@ttoss/test-utils/react';
 import { useStorage } from 'src/index';
 
 const TestComponent = ({ storage }: { storage?: Storage }) => {

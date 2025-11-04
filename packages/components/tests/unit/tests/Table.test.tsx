@@ -1,4 +1,4 @@
-import { render, screen } from '@ttoss/test-utils';
+import { render, screen } from '@ttoss/test-utils/react';
 import * as React from 'react';
 import {
   createColumnHelper,

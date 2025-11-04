@@ -4,8 +4,10 @@ jest.mock('fs', () => {
   };
 });
 
-import * as fs from 'fs';
+import * as fs from 'node:fs';
+
 import { faker } from '@ttoss/test-utils/faker';
+
 import { readCloudFormationYamlTemplate } from '../../src/readCloudFormationYamlTemplate';
 
 const subStringPath = 'some-path';

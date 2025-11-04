@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "2.1.28",
+  "version": "3.0.0",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "license": "MIT",
   "author": "ttoss",
@@ -15,6 +15,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",
+    "./react": "./src/react.ts",
     "./relay": "./src/relay.ts"
   },
   "files": [
@@ -70,6 +71,11 @@
         "import": "./dist/esm/faker.js",
         "require": "./dist/faker.js",
         "types": "./dist/faker.d.ts"
+      },
+      "./react": {
+        "import": "./dist/esm/react.js",
+        "require": "./dist/react.js",
+        "types": "./dist/react.d.ts"
       },
       "./relay": {
         "import": "./dist/esm/relay.js",

@@ -1,15 +1,9 @@
 import { jestConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 import coverageThreshold from './jest.coverageThreshold.cjs';
 
-/**
- * https://github.com/facebook/jest/issues/12984#issuecomment-1228392944
- */
-const esmModules = ['change-case'];
-
-const transformIgnorePatterns = [
-  `node_modules/(?!(?:.pnpm/)?(${esmModules.join('|')}))`,
-];
+const esmModules = ['@faker-js/faker', 'change-case'];
 
 const config = jestConfig({
   collectCoverage: true,
@@ -21,7 +15,9 @@ const config = jestConfig({
   },
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
   silent: true,
-  transformIgnorePatterns,
+  transformIgnorePatterns: getTransformIgnorePatterns({
+    esmModules,
+  }),
 });
 
 export default config;

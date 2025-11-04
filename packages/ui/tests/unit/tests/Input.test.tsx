@@ -1,6 +1,7 @@
-import { Input } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 import alertIcon from '@iconify-icons/mdi-light/alert';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
+
+import { Input } from '../../../src';
 
 test('should render Input component without icon', () => {
   render(<Input placeholder="My Input" />);

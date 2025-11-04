@@ -1,5 +1,6 @@
+import { render, screen } from '@ttoss/test-utils/react';
+
 import { Markdown } from '../../../src/components/Markdown';
-import { render, screen } from '@ttoss/test-utils';
 
 const HEADING_1 = 'HEADING_1';
 const HEADING_2 = 'HEADING_2';
@@ -63,17 +64,17 @@ test('markdown should render html tags instead markdown tags', () => {
   const table = screen.getByRole('table');
   expect(table).toBeInTheDocument();
 
-  TABLE.columns.forEach((columnValue) => {
+  for (const columnValue of TABLE.columns) {
     const column = screen.getByText(columnValue);
     expect(column.tagName.toLowerCase()).toEqual('th');
-  });
+  }
 
-  TABLE.rows.forEach((rowValue) => {
+  for (const rowValue of TABLE.rows) {
     const column1 = screen.getByText(rowValue.col1);
     const column2 = screen.getByText(rowValue.col2);
     expect(column1.tagName.toLowerCase()).toEqual('td');
     expect(column2.tagName.toLowerCase()).toEqual('td');
-  });
+  }
 
   const underlineText = screen.getByText(UNDERLINE_TEXT);
   expect(underlineText).toBeInTheDocument();

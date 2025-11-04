@@ -1,4 +1,4 @@
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import * as amplifyAuth from 'aws-amplify/auth';
 import { Auth, AuthProvider } from 'src/index';
 
