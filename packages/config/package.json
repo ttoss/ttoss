@@ -42,9 +42,9 @@
   "devDependencies": {
     "@jest/types": "^30.0.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.15.32",
+    "@types/node": "^22.19.0",
     "esbuild": "^0.25.8",
-    "jest": "^30.0.4",
+    "jest": "^30.2.0",
     "tsup": "^8.5.0"
   },
   "keywords": [],

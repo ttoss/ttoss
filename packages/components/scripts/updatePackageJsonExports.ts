@@ -22,7 +22,7 @@ const newPkg = {
           `./${component}`,
           {
             types: `./dist/${component}/index.d.ts`,
-            import: `./dist/esm/${component}/index.js`,
+            default: `./dist/esm/${component}/index.js`,
           },
         ];
       })

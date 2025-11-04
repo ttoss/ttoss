@@ -74,9 +74,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.1.8",
-    "jest": "^30.0.4",
-    "react": "^19.1.0",
+    "@types/react": "^19.2.2",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
     "tsup": "^8.5.0",
     "tsx": "^4.19.2"
   },
@@ -89,67 +89,67 @@
     "exports": {
       "./Accordion": {
         "types": "./dist/Accordion/index.d.ts",
-        "import": "./dist/esm/Accordion/index.js"
+        "default": "./dist/esm/Accordion/index.js"
       },
       "./Drawer": {
         "types": "./dist/Drawer/index.d.ts",
-        "import": "./dist/esm/Drawer/index.js"
+        "default": "./dist/esm/Drawer/index.js"
       },
       "./InstallPwa": {
         "types": "./dist/InstallPwa/index.d.ts",
-        "import": "./dist/esm/InstallPwa/index.js"
+        "default": "./dist/esm/InstallPwa/index.js"
       },
       "./FileUploader": {
         "types": "./dist/FileUploader/index.d.ts",
-        "import": "./dist/esm/FileUploader/index.js"
+        "default": "./dist/esm/FileUploader/index.js"
       },
       "./JsonEditor": {
         "types": "./dist/JsonEditor/index.d.ts",
-        "import": "./dist/esm/JsonEditor/index.js"
+        "default": "./dist/esm/JsonEditor/index.js"
       },
       "./JsonView": {
         "types": "./dist/JsonView/index.d.ts",
-        "import": "./dist/esm/JsonView/index.js"
+        "default": "./dist/esm/JsonView/index.js"
       },
       "./List": {
         "types": "./dist/List/index.d.ts",
-        "import": "./dist/esm/List/index.js"
+        "default": "./dist/esm/List/index.js"
       },
       "./Markdown": {
         "types": "./dist/Markdown/index.d.ts",
-        "import": "./dist/esm/Markdown/index.js"
+        "default": "./dist/esm/Markdown/index.js"
       },
       "./Menu": {
         "types": "./dist/Menu/index.d.ts",
-        "import": "./dist/esm/Menu/index.js"
+        "default": "./dist/esm/Menu/index.js"
       },
       "./Modal": {
         "types": "./dist/Modal/index.d.ts",
-        "import": "./dist/esm/Modal/index.js"
+        "default": "./dist/esm/Modal/index.js"
       },
       "./NotificationCard": {
         "types": "./dist/NotificationCard/index.d.ts",
-        "import": "./dist/esm/NotificationCard/index.js"
+        "default": "./dist/esm/NotificationCard/index.js"
       },
       "./NotificationsMenu": {
         "types": "./dist/NotificationsMenu/index.d.ts",
-        "import": "./dist/esm/NotificationsMenu/index.js"
+        "default": "./dist/esm/NotificationsMenu/index.js"
       },
       "./Search": {
         "types": "./dist/Search/index.d.ts",
-        "import": "./dist/esm/Search/index.js"
+        "default": "./dist/esm/Search/index.js"
       },
       "./Table": {
         "types": "./dist/Table/index.d.ts",
-        "import": "./dist/esm/Table/index.js"
+        "default": "./dist/esm/Table/index.js"
       },
       "./Tabs": {
         "types": "./dist/Tabs/index.d.ts",
-        "import": "./dist/esm/Tabs/index.js"
+        "default": "./dist/esm/Tabs/index.js"
       },
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",
-        "import": "./dist/esm/Toast/index.js"
+        "default": "./dist/esm/Toast/index.js"
       }
     },
     "provenance": true

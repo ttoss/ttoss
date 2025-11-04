@@ -32,7 +32,7 @@
     "@ttoss/config": "workspace:^",
     "@types/relay-runtime": "^14.1.23",
     "aws-amplify": "^6.11.0",
-    "jest": "^30.0.4",
+    "jest": "^30.2.0",
     "relay-runtime": "^18.2.0",
     "tsup": "^8.5.0"
   },
