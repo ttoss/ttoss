@@ -5,6 +5,7 @@ export const tsup = tsupConfig({
     banner: '/// <reference types="@testing-library/jest-dom" />',
   },
   entryPoints: [
+    'src/index.ts',
     'src/faker.ts',
     'src/react.ts',
     'src/relay.ts',
