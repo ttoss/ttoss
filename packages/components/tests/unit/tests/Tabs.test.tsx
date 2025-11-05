@@ -1,5 +1,5 @@
 import { Icon } from '@ttoss/react-icons';
-import { render, userEvent } from '@ttoss/test-utils';
+import { render, userEvent } from '@ttoss/test-utils/react';
 import { Flex } from '@ttoss/ui';
 
 import { Tabs } from '../../../src/components/Tabs';

@@ -46,9 +46,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.1.8",
-    "jest": "^30.0.4",
-    "react": "^19.1.0",
+    "@types/react": "^19.2.2",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
     "react-error-boundary": "^5.0.0",
     "tsup": "^8.5.0",
     "yup": "^1.6.1"
@@ -57,16 +57,16 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
       },
       "./multistep-form": {
-        "import": "./dist/esm/MultistepForm/index.js",
-        "types": "./dist/MultistepForm/index.d.ts"
+        "types": "./dist/MultistepForm/index.d.ts",
+        "default": "./dist/esm/MultistepForm/index.js"
       },
       "./brazil": {
-        "import": "./dist/esm/Brazil/index.js",
-        "types": "./dist/Brazil/index.d.ts"
+        "types": "./dist/Brazil/index.d.ts",
+        "default": "./dist/esm/Brazil/index.js"
       }
     },
     "provenance": true

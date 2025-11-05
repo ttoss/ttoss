@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "2.1.28",
+  "version": "3.0.0",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "license": "MIT",
   "author": "ttoss",
@@ -15,6 +15,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",
+    "./react": "./src/react.ts",
     "./relay": "./src/relay.ts"
   },
   "files": [
@@ -25,15 +26,15 @@
     "test": "jest"
   },
   "dependencies": {
-    "@emotion/jest": "^11.13.0",
-    "@faker-js/faker": "^9.8.0",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@emotion/jest": "^11.14.2",
+    "@faker-js/faker": "^10.1.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/relay-test-utils": "^19.0.0",
-    "jest-environment-jsdom": "^30.0.2",
-    "relay-test-utils": "^20.0.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "relay-test-utils": "^20.1.1",
     "resize-observer-polyfill": "^1.5.1"
   },
   "peerDependencies": {
@@ -44,11 +45,11 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.15.32",
-    "@types/react": "^19.1.8",
-    "jest": "^30.0.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "@types/node": "^22.19.0",
+    "@types/react": "^19.2.2",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0"
   },
@@ -70,6 +71,11 @@
         "import": "./dist/esm/faker.js",
         "require": "./dist/faker.js",
         "types": "./dist/faker.d.ts"
+      },
+      "./react": {
+        "import": "./dist/esm/react.js",
+        "require": "./dist/react.js",
+        "types": "./dist/react.d.ts"
       },
       "./relay": {
         "import": "./dist/esm/relay.js",

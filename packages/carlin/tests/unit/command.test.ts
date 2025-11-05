@@ -7,21 +7,22 @@ jest.mock('./../../src/deploy/cloudformation', () => {
 
 jest.mock('./../../src/deploy/readDockerfile');
 
-import * as commandModule from '../../src/deploy/command';
-import * as deployLambdaLayerModule from '../../src/deploy/lambdaLayer/deployLambdaLayer';
-import * as deployStaticAppModule from '../../src/deploy/staticApp/deployStaticApp';
+import { faker } from '@ttoss/test-utils/faker';
+import yargs from 'yargs';
+
 import {
   deployCloudFormation,
   destroyCloudFormation,
 } from '../../src/deploy/cloudformation';
-import { faker } from '@ttoss/test-utils/faker';
-import { getEnvVar } from '../../src/utils/environmentVariables';
+import * as commandModule from '../../src/deploy/command';
+import * as deployLambdaLayerModule from '../../src/deploy/lambdaLayer/deployLambdaLayer';
+import { readDockerfile } from '../../src/deploy/readDockerfile';
 import {
   getStackName,
   setPreDefinedStackName,
 } from '../../src/deploy/stackName';
-import { readDockerfile } from '../../src/deploy/readDockerfile';
-import yargs from 'yargs';
+import * as deployStaticAppModule from '../../src/deploy/staticApp/deployStaticApp';
+import { getEnvVar } from '../../src/utils/environmentVariables';
 
 const cli = yargs().command(commandModule.deployCommand);
 

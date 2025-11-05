@@ -1,5 +1,6 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
+
 import { Badge } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const LABEL = 'Badge Label';
 

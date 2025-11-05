@@ -1,90 +1,59 @@
 # @ttoss/test-utils
 
-This package provides re-exports utilities for testing using [Jest](https://jestjs.io/).
+Testing utilities for Jest with React Testing Library, user events, Relay helpers, faker, and optional ESM transform helpers.
 
-## Installing the Package
+## Installation
 
-We suggest installing the package at the root of your project:
-
-```sh
+```bash
 pnpm add -D @ttoss/test-utils
 ```
 
-## Using the Package
+## Entry Points
 
-### Matchers and Helpers
+| Import                    | What it gives you                                                                                                      | Side effects                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `@ttoss/test-utils/react` | `render`, `renderHook`, `userEvent`, emotion matchers, jest-dom matchers, ResizeObserver polyfill, snapshot serializer | Yes (extends `expect`, polyfills) |
+| `@ttoss/test-utils/faker` | `faker` ESM re-export                                                                                                  | No                                |
+| `@ttoss/test-utils/relay` | Relay test utilities                                                                                                   | No                                |
+| `@ttoss/test-utils`       | Utility: `getTransformIgnorePatterns` (ESM Jest helper)                                                                | No                                |
 
-`@ttoss/test-utils` add the following matchers to Jest:
+Future: a lean version without side effects can be added as a distinct entry (e.g. `react-core`)—current `react` entry already includes the jsdom-oriented setup.
 
-- [@testing-library/jest-dom](https://github.com/testing-library/jest-dom): [custom matchers](https://github.com/testing-library/jest-dom#custom-matchers) to test the state of the DOM.
-- [@emotion/jest](https://emotion.sh/docs/testing): [custom matchers](https://emotion.sh/docs/@emotion/jest#custom-matchers) to make more explicit assertions when testing libraries that use [emotion](https://emotion.sh/docs/introduction).
+## Quick Start
 
-If you use `jsdom`, you don't need to [install `jest-environment-jsdom`](https://jestjs.io/docs/upgrading-to-jest28#jsdom), because the library already includes it.
+```tsx
+import { render, screen, userEvent, renderHook } from '@ttoss/test-utils/react';
 
-### React Testing Library
+test('component', async () => {
+  const user = userEvent.setup();
+  render(<Counter />);
+  await user.click(screen.getByText('Increment'));
+  expect(screen.getByText('1')).toBeInTheDocument();
+});
 
-`@ttoss/test-utils` re-exports everything from [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/), like `act`, `screen`, and `render`.
+test('hook', () => {
+  const { result } = renderHook(() => useCounter());
+  expect(result.current.count).toBe(0);
+});
+```
 
-If you want to set options to every test, you can use `setOptions` on Jest setup function. This way, all `render` calls will use the same default options, unless you override them.
+## Global Wrapper
 
-```tsx title=jest.setup.ts
-import { setOptions } from '@ttoss/test-utils';
+```tsx title="jest.setup.ts"
+import { setOptions } from '@ttoss/test-utils/react';
+import AllProviders from './src/AllProviders';
 
-import AllProviders from './paht/to/AllProviders';
-
-/**
- * Add global wrapper to React Testing Library `customRender`.
- */
 setOptions({ wrapper: AllProviders });
 ```
 
-### User Interactions
-
-`@ttoss/test-utils` re-exports `userEvent` from [user event](https://testing-library.com/docs/user-event/intro) library.
-
-For example, you write your tests like this:
-
-```tsx
-import { render, screen, userEvent } from '@ttoss/test-utils';
-
-import Component from './Component';
-
-test('test with render', async () => {
-  const user = userEvent.setup();
-
-  render(<Component />);
-
-  await user.click(screen.getByText('Increment'));
-
-  expect(screen.getByText(1)).toBeInTheDocument();
-});
+```ts title="jest.config.ts"
+export default {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testEnvironment: 'jsdom',
+};
 ```
 
-### Testing Hooks
-
-`@ttoss/test-utils` re-exports `renderHook` from [react-hooks-testing-library](https://react-hooks-testing-library.com/).
-
-Example:
-
-```tsx
-import { renderHook } from '@ttoss/test-utils';
-import useCounter from './useCounter';
-
-test('should use counter', () => {
-  const { result } = renderHook(() => useCounter());
-
-  expect(result.current.count).toBe(0);
-  expect(typeof result.current.increment).toBe('function');
-});
-```
-
-The `setOptions` also works for [`renderHook` options](https://react-hooks-testing-library.com/reference/api#renderhook-options).
-
-### Relay
-
-It re-exports `createMockEnvironment` and `MockPayloadGenerator` from [Relay test utils.](https://relay.dev/docs/guides/testing-relay-components/)
-
-Example:
+## Relay Testing
 
 ```tsx
 import {
@@ -92,45 +61,63 @@ import {
   MockPayloadGenerator,
 } from '@ttoss/test-utils/relay';
 
-// ...
+const environment = createMockEnvironment();
 ```
 
-### Faker
+More patterns: [Testing Relay Components](https://relay.dev/docs/guides/testing-relay-components/)
 
-It exports `faker` functions from [faker](https://fakerjs.dev/). Example:
+## Fake Data
 
 ```ts
 import { faker } from '@ttoss/test-utils/faker';
 
-const randomName = faker.name.findName();
-const randomEmail = faker.internet.email();
-const randomCard = faker.helpers.createCard();
+const testUser = {
+  name: faker.person.fullName(),
+  email: faker.internet.email(),
+};
 ```
 
-### User Event
+## ESM Transform Helper (Jest)
 
-To render components it is recommended that you use a structure similar to the one below. If you need more information about this structure, you can consult this [link here.](https://testing-library.com/docs/user-event/setup)
+Use `getTransformIgnorePatterns` to ensure ESM packages like `@faker-js/faker` are transformed under pnpm layout:
 
-```tsx
-function setup(jsx: any) {
-  return {
-    user: userEvent.setup({
-      // Use this key if you need to make async tests, like having clicks, write, paste, etc...
-      // ref: https://testing-library.com/docs/user-event/options
-      advanceTimers: () => Promise.resolve(),
-    }),
-    ...render(jsx),
-  };
-}
+```ts title="jest.config.ts"
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
-const onOpen = js.fn();
-
-test('Testing something', async () => {
-  const { user } = setup(<Example onOpen={onOpen} />);
-
-  const buttonMenu = screen.getByLabelText('button-menu');
-  await user.click(buttonMenu);
-
-  expect(screen.getByLabelText('menu-container')).toBeTruthy();
+const transformIgnorePatterns = getTransformIgnorePatterns({
+  esmModules: ['@faker-js/faker'],
 });
+
+export default {
+  testEnvironment: 'jsdom',
+  transformIgnorePatterns,
+};
 ```
+
+If you see `SyntaxError: Cannot use import statement outside a module`, add the module name to `esmModules`.
+
+## Features Summary
+
+- React Testing Library (`render`, `renderHook`, queries)
+- User events (`userEvent`)
+- jest-dom matchers
+- Emotion matchers + snapshot serializer
+- ResizeObserver polyfill
+- Relay test utilities
+- Faker ESM helper
+- PNPM-aware ESM transform pattern generator
+
+## FAQ
+
+Q: Why is `getTransformIgnorePatterns` separate?  
+A: It’s a pure configuration helper without runtime side effects; keeping it in the root avoids pulling in DOM matchers unnecessarily.
+
+Q: Do I need to import jest-dom manually?  
+A: Not when using `@ttoss/test-utils/react` (it auto-registers).
+
+Q: How do I add another ESM library?  
+A: Include it in `esmModules`: `getTransformIgnorePatterns({ esmModules: ['@faker-js/faker','some-lib'] })`.
+
+## Minimal Config Only (No side effects)
+
+If you ever need a lean setup (no global matchers), you can create your own thin adapter by importing directly from `@testing-library/react` and `@testing-library/user-event`. Current package focuses on convenience defaults.

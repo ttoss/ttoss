@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { NotificationsProvider, useNotifications } from 'src/index';
 
 const PERSISTENT_MESSAGE = 'persistent notification';

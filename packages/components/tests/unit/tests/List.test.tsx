@@ -1,5 +1,6 @@
+import { render } from '@ttoss/test-utils/react';
+
 import { List, ListItem } from '../../../src/components/List';
-import { render } from '@ttoss/test-utils';
 
 describe('List component', () => {
   test('renders a list with items', () => {

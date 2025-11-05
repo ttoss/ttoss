@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, render, screen, waitFor } from '@ttoss/test-utils';
+import { fireEvent, render, screen, waitFor } from '@ttoss/test-utils/react';
 
 import { Menu } from '../../../src/components/Menu';
 

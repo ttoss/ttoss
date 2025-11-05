@@ -31,7 +31,7 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/minimist": "^1.2.5",
-    "jest": "^30.0.4",
+    "jest": "^30.2.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0"
   },

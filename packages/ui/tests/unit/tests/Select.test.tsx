@@ -1,5 +1,6 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
+
 import { Select } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const OPTIONS = ['orange', 'blue', 'red', 'pink'];
 
@@ -121,9 +122,9 @@ test('should render and select options on Select component with options', async 
 
   await user.click(selectElement);
 
-  OPTIONS.forEach((option) => {
+  for (const option of OPTIONS) {
     expect(screen.getByText(option.toUpperCase())).toBeInTheDocument();
-  });
+  }
 
   const firstOption = screen.getByText(OPTIONS[0].toUpperCase());
 

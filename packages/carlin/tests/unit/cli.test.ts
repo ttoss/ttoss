@@ -1,5 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
-/* eslint-disable no-var */
 import { optionsFromConfigFiles, parseCli } from 'tests/testUtils';
 
 jest.mock('src/deploy/baseStack/deployBaseStack', () => {
@@ -28,18 +26,18 @@ jest.mock('findup-sync', () => {
   };
 });
 
+import { faker } from '@ttoss/test-utils/faker';
+import AWS from 'aws-sdk';
 import * as deepmerge from 'deepmerge';
 import { AWS_DEFAULT_REGION } from 'src/config';
-import { cloudformation } from 'src/deploy/cloudformation.core';
 import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
-import { faker } from '@ttoss/test-utils/faker';
+import { cloudformation } from 'src/deploy/cloudformation.core';
 import {
   getCurrentBranch,
-  getEnvVar,
   getEnvironment,
+  getEnvVar,
   getProjectName,
 } from 'src/utils';
-import AWS from 'aws-sdk';
 
 beforeAll(() => {
   (deepmerge.all as jest.Mock).mockReturnValue(optionsFromConfigFiles);
@@ -124,7 +122,6 @@ describe('validating environment variables', () => {
     expect(argv.project).toEqual(project);
   };
 
-  // eslint-disable-next-line jest/expect-expect
   test('passing by options', async () => {
     const { branch, environment, project } = {
       branch: 'branch1',
@@ -146,7 +143,6 @@ describe('validating environment variables', () => {
     await testExpects({ argv, branch, environment, project });
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test('passing by process.env', async () => {
     const { branch, environment, project } = {
       branch: 'branch2',
@@ -163,7 +159,6 @@ describe('validating environment variables', () => {
     await testExpects({ argv, branch, environment, project });
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test('passing by process.env.ENVIRONMENT instead of CARLIN_ENVIRONMENT', async () => {
     const { branch, environment, project } = {
       branch: 'branch3',

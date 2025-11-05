@@ -8,8 +8,8 @@
 //   },
 // };
 
+import { act, render, screen } from '@ttoss/test-utils/react';
 import { GoogleMapsProvider, useGoogleMaps } from 'src/index';
-import { act, render, screen } from '@ttoss/test-utils';
 
 const mapObject = { map: 'object' };
 const googleMock = {

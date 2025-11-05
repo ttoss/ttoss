@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@ttoss/test-utils';
+import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
 import { SegmentedControl } from '../../../src';
 

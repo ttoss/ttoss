@@ -1,5 +1,5 @@
+import { act, render, screen } from '@ttoss/test-utils/react';
 import { FeatureFlag, FeatureFlagsProvider } from 'src/index';
-import { act, render, screen } from '@ttoss/test-utils';
 
 const loadFeatures = async () => {
   return ['feature1', 'feature2'];

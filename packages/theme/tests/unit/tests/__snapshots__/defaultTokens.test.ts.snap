@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`defaultTokens cannot be changed 1`] = `
 {
@@ -15,7 +15,7 @@ exports[`defaultTokens cannot be changed 1`] = `
     "2xl": "1536px",
     "lg": "1024px",
     "md": "768px",
-    "sm": "640px",
+    "sm": "480px",
     "xl": "1280px",
   },
   "fontSizes": {

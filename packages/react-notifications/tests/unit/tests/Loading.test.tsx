@@ -1,4 +1,10 @@
-import { act, render, renderHook, screen, userEvent } from '@ttoss/test-utils';
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  userEvent,
+} from '@ttoss/test-utils/react';
 import { useNotifications } from 'src/index';
 import { NotificationsProvider } from 'src/Provider';
 

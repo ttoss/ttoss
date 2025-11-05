@@ -1,4 +1,4 @@
-import { cleanup, render, screen, userEvent } from '@ttoss/test-utils';
+import { cleanup, render, screen, userEvent } from '@ttoss/test-utils/react';
 import Modal from 'react-modal';
 import { NotificationsHeader } from 'src/NotificationsHeader';
 import {

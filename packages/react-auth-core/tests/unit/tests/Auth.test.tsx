@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import type { AuthScreen } from 'src/index';
 import { Auth, useAuthScreen } from 'src/index';
 

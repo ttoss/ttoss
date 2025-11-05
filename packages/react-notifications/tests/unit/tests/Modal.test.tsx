@@ -1,5 +1,5 @@
 import { Modal } from '@ttoss/components/Modal';
-import { render, screen, userEvent } from '@ttoss/test-utils';
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 import {
   Notification,

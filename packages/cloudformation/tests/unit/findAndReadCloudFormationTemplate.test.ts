@@ -1,5 +1,6 @@
-import { findAndReadCloudFormationTemplate } from '../../src/findAndReadCloudFormationTemplate';
 import path from 'node:path';
+
+import { findAndReadCloudFormationTemplate } from '../../src/findAndReadCloudFormationTemplate';
 
 test.each(['Production', 'Staging'])(
   'add options to config function',

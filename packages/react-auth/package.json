@@ -52,10 +52,10 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "@types/react": "^19.1.8",
+    "@types/react": "^19.2.2",
     "aws-amplify": "^6.11.0",
-    "jest": "^30.0.4",
-    "react": "^19.1.0",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
     "tsup": "^8.5.0"
   },
   "keywords": [
@@ -67,7 +67,7 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/esm/index.js"
+        "default": "./dist/esm/index.js"
       }
     },
     "provenance": true

@@ -1,5 +1,6 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
+
 import { InputPassword } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 test('should hide password by default if prop showPasswordByDefault is not passed', () => {
   const RenderComponent = () => {

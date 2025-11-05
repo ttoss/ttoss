@@ -1,6 +1,6 @@
 import alertIcon from '@iconify-icons/mdi-light/alert';
 import arrowLeftIcon from '@iconify-icons/mdi-light/arrow-left';
-import { render, screen } from '@ttoss/test-utils';
+import { render, screen } from '@ttoss/test-utils/react';
 
 import { Button } from '../../../src';
 

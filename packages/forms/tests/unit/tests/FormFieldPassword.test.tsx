@@ -1,6 +1,7 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
+
 import { Form, FormFieldPassword, useForm } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 test('should hide password by default if prop showPasswordByDefault is not passed and call onSubmit with correct data', async () => {
   const user = userEvent.setup({ delay: null });

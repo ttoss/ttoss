@@ -1,4 +1,4 @@
-import { render, screen, userEvent, waitFor } from '@ttoss/test-utils';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import {
   FileUploader,
   type FileUploaderProps,

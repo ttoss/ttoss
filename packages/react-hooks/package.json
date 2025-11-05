@@ -29,9 +29,9 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^19.1.8",
-    "jest": "^30.0.4",
-    "react": "^19.1.0",
+    "@types/react": "^19.2.2",
+    "jest": "^30.2.0",
+    "react": "^19.2.0",
     "tsup": "^8.5.0"
   },
   "keywords": [
@@ -42,8 +42,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
       }
     },
     "provenance": true

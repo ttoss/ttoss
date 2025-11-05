@@ -24,67 +24,67 @@ exports[`package.json exports should export all components 1`] = `
 exports[`package.json exports should export all components 2`] = `
 {
   "./Accordion": {
-    "import": "./dist/esm/Accordion/index.js",
+    "default": "./dist/esm/Accordion/index.js",
     "types": "./dist/Accordion/index.d.ts",
   },
   "./Drawer": {
-    "import": "./dist/esm/Drawer/index.js",
+    "default": "./dist/esm/Drawer/index.js",
     "types": "./dist/Drawer/index.d.ts",
   },
   "./FileUploader": {
-    "import": "./dist/esm/FileUploader/index.js",
+    "default": "./dist/esm/FileUploader/index.js",
     "types": "./dist/FileUploader/index.d.ts",
   },
   "./InstallPwa": {
-    "import": "./dist/esm/InstallPwa/index.js",
+    "default": "./dist/esm/InstallPwa/index.js",
     "types": "./dist/InstallPwa/index.d.ts",
   },
   "./JsonEditor": {
-    "import": "./dist/esm/JsonEditor/index.js",
+    "default": "./dist/esm/JsonEditor/index.js",
     "types": "./dist/JsonEditor/index.d.ts",
   },
   "./JsonView": {
-    "import": "./dist/esm/JsonView/index.js",
+    "default": "./dist/esm/JsonView/index.js",
     "types": "./dist/JsonView/index.d.ts",
   },
   "./List": {
-    "import": "./dist/esm/List/index.js",
+    "default": "./dist/esm/List/index.js",
     "types": "./dist/List/index.d.ts",
   },
   "./Markdown": {
-    "import": "./dist/esm/Markdown/index.js",
+    "default": "./dist/esm/Markdown/index.js",
     "types": "./dist/Markdown/index.d.ts",
   },
   "./Menu": {
-    "import": "./dist/esm/Menu/index.js",
+    "default": "./dist/esm/Menu/index.js",
     "types": "./dist/Menu/index.d.ts",
   },
   "./Modal": {
-    "import": "./dist/esm/Modal/index.js",
+    "default": "./dist/esm/Modal/index.js",
     "types": "./dist/Modal/index.d.ts",
   },
   "./NotificationCard": {
-    "import": "./dist/esm/NotificationCard/index.js",
+    "default": "./dist/esm/NotificationCard/index.js",
     "types": "./dist/NotificationCard/index.d.ts",
   },
   "./NotificationsMenu": {
-    "import": "./dist/esm/NotificationsMenu/index.js",
+    "default": "./dist/esm/NotificationsMenu/index.js",
     "types": "./dist/NotificationsMenu/index.d.ts",
   },
   "./Search": {
-    "import": "./dist/esm/Search/index.js",
+    "default": "./dist/esm/Search/index.js",
     "types": "./dist/Search/index.d.ts",
   },
   "./Table": {
-    "import": "./dist/esm/Table/index.js",
+    "default": "./dist/esm/Table/index.js",
     "types": "./dist/Table/index.d.ts",
   },
   "./Tabs": {
-    "import": "./dist/esm/Tabs/index.js",
+    "default": "./dist/esm/Tabs/index.js",
     "types": "./dist/Tabs/index.d.ts",
   },
   "./Toast": {
-    "import": "./dist/esm/Toast/index.js",
+    "default": "./dist/esm/Toast/index.js",
     "types": "./dist/Toast/index.d.ts",
   },
 }

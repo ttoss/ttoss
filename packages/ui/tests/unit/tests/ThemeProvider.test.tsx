@@ -1,6 +1,7 @@
+import { renderHook } from '@ttoss/test-utils/react';
 import { BruttalTheme } from '@ttoss/theme/Bruttal';
+
 import { ThemeProvider, useTheme } from '../../../src';
-import { renderHook } from '@ttoss/test-utils';
 
 test('should return default theme colors', () => {
   const { result } = renderHook(

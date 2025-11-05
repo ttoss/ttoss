@@ -1,5 +1,6 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
+
 import { Input } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 import { useHidePassInput } from '../../../src/components/InputPassword/useHidePassInput';
 
 const INPUT_LABEL = 'INPUT';

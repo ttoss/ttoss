@@ -1,6 +1,7 @@
+import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import * as React from 'react';
+
 import { InputNumber, InputNumberProps } from '../../../src';
-import { render, screen, userEvent } from '@ttoss/test-utils';
 
 const onChange = jest.fn();
 

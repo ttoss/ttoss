@@ -1,4 +1,4 @@
-import { act, renderHook } from '@ttoss/test-utils';
+import { act, renderHook } from '@ttoss/test-utils/react';
 import { useDebounce } from 'src/index';
 
 describe('useDebounce hook', () => {

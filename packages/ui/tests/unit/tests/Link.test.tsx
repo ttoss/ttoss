@@ -1,5 +1,6 @@
+import { render, screen } from '@ttoss/test-utils/react';
+
 import { Link } from '../../../src';
-import { render, screen } from '@ttoss/test-utils';
 
 const CONTENT_LINK = 'Link Text';
 

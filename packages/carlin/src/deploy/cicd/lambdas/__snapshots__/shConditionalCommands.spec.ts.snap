@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`should compile commands 0 1`] = `"if conditional command 1 && conditional command 2; then echo "Success Command" && carlin cicd-ecs-task-report --status=Approved; else echo "Failure Command" && carlin cicd-ecs-task-report --status=Rejected; fi; echo "Finally Command""`;
 

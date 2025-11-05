@@ -1,4 +1,4 @@
-import { render, renderHook, setOptions, userEvent } from '../../src';
+import { render, renderHook, setOptions, userEvent } from '../../src/react';
 
 test('methods should exist', () => {
   expect(render).toBeDefined();
