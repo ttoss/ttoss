@@ -36,51 +36,33 @@ export const WithItems: StoryFn = () => {
   return (
     <Menu
       menuButtonProps={{ 'aria-label': 'open-menu' }}
-      menuListProps={{ maxH: '400px', p: 0 }}
+      sx={{
+        backgroundColor: 'input.background.muted.default',
+        borderRadius: 3,
+        overflow: 'hidden',
+        width: '100%',
+      }}
     >
-      <Box
-        style={{
-          backgroundColor:
-            'var(--colors-input-background-muted-default, #f5f5f5)',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
+      <Box>
         {menuItems.map((item) => {
           return (
             <Flex
               key={item.path}
-              style={{
-                padding: 12,
-                color: 'var(--colors-display-text-secondary-default, #333)',
+              sx={{
+                padding: 3,
+                color: 'display.text.secondary.default',
                 alignItems: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                outline: 'none',
-              }}
-              onMouseOver={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  'var(--colors-display-background-secondary-default, #eee)';
-                (e.currentTarget as HTMLElement).style.transform =
-                  'translateX(4px)';
-              }}
-              onMouseOut={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = '';
-                (e.currentTarget as HTMLElement).style.transform = '';
+                gap: 2,
+                '&:hover': {
+                  backgroundColor: 'display.background.secondary.default',
+                  transform: 'translateX(4px)',
+                },
               }}
             >
-              <Flex
-                style={{
-                  alignItems: 'center',
-                  marginLeft: 16,
-                  fontSize: 16,
-                  gap: 8,
-                }}
-              >
-                <Icon icon={item.icon} width={18} height={18} />
-                {item.label}
-              </Flex>
+              <Icon icon={item.icon} width={18} height={18} />
+              {item.label}
             </Flex>
           );
         })}
@@ -96,18 +78,13 @@ export const WithNotificationCard: StoryFn = () => {
       fixedTrigger
       fixedOffset={{ top: 12, right: 12 }}
       menuButtonProps={{ 'aria-label': 'notifications' }}
-      menuListProps={{
-        p: 0,
-        style: {
-          width: '600px',
-          backgroundColor:
-            'var(--colors-display-border-secondary-default, #eee)',
-        },
+      sx={{
+        width: '600px',
+        backgroundColor: 'display.background.muted.default',
+        padding: 0,
       }}
     >
-      <Box
-        style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 0 }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <NotificationCard
           title="Notificação de Exemplo"
           message="Esta é uma notificação de exemplo para demonstrar o componente NotificationCard dentro do Menu."
@@ -141,24 +118,6 @@ export const WithNotificationCard: StoryFn = () => {
           type={'info'}
         />
       </Box>
-    </Menu>
-  );
-};
-
-export const mergedMenu: StoryFn = () => {
-  return (
-    <Menu
-      triggerIcon={<Icon icon="mdi:bell-outline" width={20} height={20} />}
-      fixedTrigger
-      fixedOffset={{ top: 12, right: 12 }}
-      menuButtonProps={{ 'aria-label': 'notifications' }}
-      menuListProps={{
-        p: 0,
-        bg: 'bg.primary', // Chakra resolve o token
-        style: { width: '600px' },
-      }}
-    >
-      ...
     </Menu>
   );
 };
