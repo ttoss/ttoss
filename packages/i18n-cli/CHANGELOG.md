@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.35](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.34...@ttoss/i18n-cli@0.7.35) (2025-11-05)
+
+### Bug Fixes
+
+- tests utils and change import to default ([#746](https://github.com/ttoss/ttoss/issues/746)) ([21d71f8](https://github.com/ttoss/ttoss/commit/21d71f877dda1f82e02afe377dac18ef23407866))
+
 ## [0.7.34](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.33...@ttoss/i18n-cli@0.7.34) (2025-10-12)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

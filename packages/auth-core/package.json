@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/auth-core",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Core authentication library for ttoss",
   "license": "MIT",
   "author": "ttoss",

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.22.5](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.22.4...@ttoss/appsync-api@0.22.5) (2025-11-05)
+
+### Bug Fixes
+
+- tests utils and change import to default ([#746](https://github.com/ttoss/ttoss/issues/746)) ([21d71f8](https://github.com/ttoss/ttoss/commit/21d71f877dda1f82e02afe377dac18ef23407866))
+
 ## [0.22.4](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.22.3...@ttoss/appsync-api@0.22.4) (2025-10-30)
 
 **Note:** Version bump only for package @ttoss/appsync-api

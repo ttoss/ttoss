@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.39.5](https://github.com/ttoss/ttoss/compare/carlin@1.39.4...carlin@1.39.5) (2025-11-05)
+
+### Bug Fixes
+
+- tests utils and change import to default ([#746](https://github.com/ttoss/ttoss/issues/746)) ([21d71f8](https://github.com/ttoss/ttoss/commit/21d71f877dda1f82e02afe377dac18ef23407866))
+
 ## [1.39.4](https://github.com/ttoss/ttoss/compare/carlin@1.39.3...carlin@1.39.4) (2025-10-12)
 
 **Note:** Version bump only for package carlin

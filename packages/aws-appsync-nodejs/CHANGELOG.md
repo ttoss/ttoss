@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.28](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.27...@ttoss/aws-appsync-nodejs@1.8.28) (2025-11-05)
+
+### Bug Fixes
+
+- tests utils and change import to default ([#746](https://github.com/ttoss/ttoss/issues/746)) ([21d71f8](https://github.com/ttoss/ttoss/commit/21d71f877dda1f82e02afe377dac18ef23407866))
+
 ## [1.8.27](https://github.com/ttoss/ttoss/compare/@ttoss/aws-appsync-nodejs@1.8.26...@ttoss/aws-appsync-nodejs@1.8.27) (2025-10-12)
 
 **Note:** Version bump only for package @ttoss/aws-appsync-nodejs
