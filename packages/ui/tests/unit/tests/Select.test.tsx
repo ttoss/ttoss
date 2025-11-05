@@ -1,6 +1,6 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 
-import { Select } from '../../../src';
+import { Box, Label, Select } from '../../../src';
 
 const OPTIONS = ['orange', 'blue', 'red', 'pink'];
 
@@ -163,4 +163,18 @@ test("should render Select component with trailingIcon 'warning-alt' when it's a
   });
 
   expect(errorIcon).toHaveAttribute('icon', 'warning-alt');
+});
+
+test('should render Select component with disabled state', () => {
+  render(
+    <Box>
+      <Label htmlFor="select-id">My Select</Label>
+      <Select id="select-id" placeholder="Select an option" disabled />
+    </Box>
+  );
+
+  // React Select renders an input element inside that gets disabled
+  const selectInput = screen.getByRole('combobox', { hidden: true });
+
+  expect(selectInput).toBeDisabled();
 });
