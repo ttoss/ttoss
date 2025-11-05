@@ -5,6 +5,7 @@ export const tsup = {
   entryPoints: [
     'src/index.ts',
     'src/themes/Bruttal/Bruttal.ts',
+    'src/themes/Bruttal2/Bruttal2.ts',
     'src/themes/Oca/Oca.ts',
   ],
   format: ['esm'],

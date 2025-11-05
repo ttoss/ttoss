@@ -1,0 +1,831 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Bruttal2 theme snapshot 1`] = `
+{
+  "badges": {
+    "informative": {
+      "bg": "feedback.background.caution.default",
+      "color": "action.text.accent.default",
+    },
+    "muted": {
+      "bg": "content.background.muted.default",
+      "color": "content.text.muted.default",
+    },
+    "negative": {
+      "bg": "action.background.negative.default",
+      "color": "action.text.negative.default",
+    },
+    "neutral": {
+      "bg": "action.background.secondary.default",
+      "border": "sm",
+      "borderColor": "action.border.muted.default",
+      "color": "action.text.primary.default",
+    },
+    "positive": {
+      "bg": "feedback.background.positive.default",
+      "color": "action.text.accent.default",
+    },
+  },
+  "borders": {
+    "lg": "4px solid",
+    "md": "2px solid",
+    "none": "0px solid",
+    "sm": "1px solid",
+    "xl": "8px solid",
+    "xs": "0.5px solid",
+  },
+  "breakpoints": [
+    "640px",
+    "768px",
+    "1024px",
+    "1280px",
+    "1536px",
+  ],
+  "buttons": {
+    "accent": {
+      ":active": {
+        "backgroundColor": "action.background.accent.active",
+      },
+      ":disabled": {
+        "backgroundColor": "action.background.accent.disabled",
+        "color": "action.text.accent.disabled",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "backgroundColor": "action.background.accent.hover",
+      },
+      "backgroundColor": "action.background.accent.default",
+      "borderRadius": "sm",
+      "color": "action.text.accent.default",
+    },
+    "close": {
+      ":active": {
+        "color": "action.background.primary.active",
+      },
+      ":disabled": {
+        "color": "action.background.primary.disabled",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "cursor": "pointer",
+        "filter": "brightness(90%)",
+      },
+      "color": "action.background.primary.default",
+    },
+    "destructive": {
+      ":active": {
+        "backgroundColor": "action.background.negative.active",
+      },
+      ":disabled": {
+        "backgroundColor": "action.background.negative.disabled",
+        "color": "action.text.negative.disabled",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "backgroundColor": "action.background.negative.hover",
+      },
+      "backgroundColor": "action.background.negative.default",
+      "borderRadius": "sm",
+      "color": "action.text.negative.default",
+    },
+    "primary": {
+      ":active": {
+        "backgroundColor": "action.background.primary.active",
+      },
+      ":disabled": {
+        "backgroundColor": "action.background.primary.disabled",
+        "color": "action.text.primary.disabled",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "backgroundColor": "action.background.primary.hover",
+      },
+      "backgroundColor": "action.background.primary.default",
+      "borderRadius": "sm",
+      "color": "action.text.primary.default",
+    },
+    "secondary": {
+      ":active": {
+        "backgroundColor": "action.background.secondary.active",
+      },
+      ":disabled": {
+        "backgroundColor": "action.background.secondary.disabled",
+        "borderColor": "action.border.muted.disabled",
+        "color": "action.text.secondary.disabled",
+        "cursor": "default",
+      },
+      ":hover:not(:active,[disabled])": {
+        "backgroundColor": "action.background.secondary.hover",
+        "borderColor": "action.border.primary.hover",
+      },
+      "backgroundColor": "action.background.secondary.default",
+      "border": "md",
+      "borderColor": "action.border.primary.default",
+      "borderRadius": "sm",
+      "color": "action.text.secondary.default",
+    },
+  },
+  "colors": {
+    "action": {
+      "background": {
+        "accent": {
+          "active": "#ff4444",
+          "default": "#ff4444",
+          "disabled": "#ffebee",
+          "hover": "#ff4444",
+        },
+        "negative": {
+          "active": "#d32f2f",
+          "default": "#e53935",
+          "disabled": "#ffcdd2",
+          "hover": "#f44336",
+        },
+        "primary": {
+          "active": "#000000",
+          "default": "#1a1a1a",
+          "disabled": "#adadad",
+          "hover": "#2d2d2d",
+        },
+        "secondary": {
+          "active": "#c7c7c7",
+          "default": "#fafafa",
+          "disabled": "#f9f9f9",
+          "hover": "#e0e0e0",
+        },
+      },
+      "border": {
+        "muted": {
+          "default": "#c7c7c7",
+          "disabled": "#e0e0e0",
+          "focused": "#ff4444",
+        },
+        "negative": {
+          "default": "#e53935",
+          "focused": "#f44336",
+        },
+        "primary": {
+          "default": "#1a1a1a",
+          "focused": "#ff4444",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#ffffff",
+          "disabled": "#949494",
+        },
+        "negative": {
+          "default": "#ffffff",
+          "disabled": "#949494",
+        },
+        "primary": {
+          "default": "#ffffff",
+          "disabled": "#949494",
+        },
+        "secondary": {
+          "default": "#1a1a1a",
+          "disabled": "#949494",
+        },
+      },
+    },
+    "content": {
+      "background": {
+        "muted": {
+          "default": "#f9f9f9",
+        },
+        "primary": {
+          "default": "#ffffff",
+        },
+        "secondary": {
+          "default": "#fafafa",
+        },
+      },
+      "border": {
+        "muted": {
+          "default": "#e0e0e0",
+        },
+      },
+      "text": {
+        "muted": {
+          "default": "#949494",
+        },
+        "negative": {
+          "default": "#e53935",
+        },
+        "primary": {
+          "default": "#1a1a1a",
+        },
+        "secondary": {
+          "default": "#616161",
+        },
+      },
+    },
+    "discovery": {
+      "background": {
+        "primary": {
+          "default": "#ffffff",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#ff4444",
+        },
+        "primary": {
+          "default": "#1a1a1a",
+        },
+      },
+    },
+    "feedback": {
+      "background": {
+        "caution": {
+          "default": "#ffffff",
+        },
+        "negative": {
+          "default": "#ffffff",
+        },
+        "positive": {
+          "default": "#ffffff",
+        },
+      },
+      "text": {
+        "caution": {
+          "default": "#ff8f00",
+        },
+        "negative": {
+          "default": "#e53935",
+        },
+        "positive": {
+          "default": "#00695c",
+        },
+      },
+    },
+    "guidance": {
+      "background": {
+        "primary": {
+          "default": "#1a1a1a",
+        },
+      },
+      "text": {
+        "primary": {
+          "default": "#ffffff",
+        },
+      },
+    },
+    "input": {
+      "background": {
+        "primary": {
+          "default": "#ffffff",
+          "disabled": "#f9f9f9",
+        },
+      },
+      "border": {
+        "caution": {
+          "default": "#ff8f00",
+          "focused": "#ff4444",
+        },
+        "muted": {
+          "default": "#c7c7c7",
+          "disabled": "#e0e0e0",
+          "focused": "#ff4444",
+          "hover": "#adadad",
+        },
+        "negative": {
+          "default": "#e53935",
+          "focused": "#f44336",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#ff4444",
+        },
+        "muted": {
+          "default": "#adadad",
+          "disabled": "#c7c7c7",
+        },
+        "negative": {
+          "default": "#e53935",
+        },
+        "primary": {
+          "default": "#1a1a1a",
+          "disabled": "#949494",
+        },
+        "secondary": {
+          "default": "#7a7a7a",
+        },
+      },
+    },
+    "navigation": {
+      "background": {
+        "primary": {
+          "default": "#fafafa",
+        },
+      },
+      "text": {
+        "accent": {
+          "default": "#ff4444",
+        },
+        "primary": {
+          "default": "#1a1a1a",
+        },
+      },
+    },
+    "rawColors": {
+      "accent": "#ff4444",
+      "amber600": "#ff8f00",
+      "background": "#ffffff",
+      "black": "#000000",
+      "complimentary": "#f8f8f8",
+      "darkNeutral": "#2d2d2d",
+      "gray100": "#f9f9f9",
+      "gray200": "#e0e0e0",
+      "gray300": "#c7c7c7",
+      "gray400": "#adadad",
+      "gray500": "#949494",
+      "gray600": "#7a7a7a",
+      "gray700": "#616161",
+      "gray800": "#424242",
+      "gray900": "#2d2d2d",
+      "lightNeutral": "#fafafa",
+      "main": "#1a1a1a",
+      "primary": "#1a1a1a",
+      "red100": "#ffebee",
+      "red200": "#ffcdd2",
+      "red300": "#ef9a9a",
+      "red400": "#e57373",
+      "red500": "#f44336",
+      "red600": "#e53935",
+      "red700": "#d32f2f",
+      "secondary": "#fafafa",
+      "teal600": "#00695c",
+      "text": "#1a1a1a",
+      "white": "#ffffff",
+    },
+    "semanticTokens": {
+      "colors": {
+        "action.bg.accent": "#ff4444",
+        "action.bg.accent.active": "#ff4444",
+        "action.bg.accent.disabled": "#ffebee",
+        "action.bg.accent.hover": "#ff4444",
+        "action.bg.primary": "#1a1a1a",
+        "action.bg.primary.active": "#000000",
+        "action.bg.primary.disabled": "#adadad",
+        "action.bg.primary.hover": "#2d2d2d",
+        "action.bg.secondary": "#fafafa",
+        "action.bg.secondary.active": "#c7c7c7",
+        "action.bg.secondary.disabled": "#f9f9f9",
+        "action.bg.secondary.hover": "#e0e0e0",
+        "action.border.muted": "#c7c7c7",
+        "action.border.muted.disabled": "#e0e0e0",
+        "action.border.muted.focused": "#ff4444",
+        "action.border.primary": "#1a1a1a",
+        "action.border.primary.focused": "#ff4444",
+        "action.text.accent": "#ffffff",
+        "action.text.accent.disabled": "#949494",
+        "action.text.primary": "#ffffff",
+        "action.text.primary.disabled": "#949494",
+        "action.text.secondary": "#1a1a1a",
+        "action.text.secondary.disabled": "#949494",
+        "content.bg.primary": "#ffffff",
+        "content.bg.secondary": "#fafafa",
+        "content.text.muted": "#949494",
+        "content.text.negative": "#e53935",
+        "content.text.primary": "#1a1a1a",
+        "content.text.secondary": "#616161",
+        "feedback.bg.caution": "#ffffff",
+        "feedback.bg.negative": "#ffffff",
+        "feedback.bg.positive": "#ffffff",
+        "feedback.text.caution": "#ff8f00",
+        "feedback.text.negative": "#e53935",
+        "feedback.text.positive": "#00695c",
+        "input.bg.primary": "#ffffff",
+        "input.bg.primary.disabled": "#f9f9f9",
+        "input.border.muted": "#c7c7c7",
+        "input.border.muted.focused": "#ff4444",
+        "input.text.muted": "#adadad",
+        "input.text.muted.disabled": "#c7c7c7",
+        "input.text.primary": "#1a1a1a",
+      },
+    },
+  },
+  "fontSizes": {
+    "2xl": "1.5rem",
+    "2xs": "0.625rem",
+    "3xl": "1.875rem",
+    "3xs": "0.5rem",
+    "4xl": "2.25rem",
+    "4xs": "0.375rem",
+    "5xl": "3rem",
+    "6xl": "3.75rem",
+    "7xl": "4.5rem",
+    "8xl": "6rem",
+    "9xl": "8rem",
+    "lg": "1.125rem",
+    "md": "1rem",
+    "sm": "0.875rem",
+    "xl": "1.25rem",
+    "xs": "0.75rem",
+  },
+  "fontWeights": {
+    "black": 900,
+    "bold": 700,
+    "extrabold": 800,
+    "hairline": 100,
+    "light": 300,
+    "medium": 500,
+    "normal": 400,
+    "semibold": 600,
+    "thin": 200,
+  },
+  "fonts": {
+    "body": ""Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif",
+    "heading": ""Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif",
+    "mono": ""JetBrains Mono", "Fira Code", "Consolas", monospace",
+  },
+  "forms": {
+    "checkbox": {
+      "&:is(svg, svg + svg)": {
+        "height": "min",
+        "width": "min",
+      },
+      "input:checked ~ &": {
+        "color": "input.text.accent.default",
+      },
+      "input:disabled ~ &": {
+        "color": "input.text.muted.default",
+      },
+      "input:disabled ~ & path": {
+        "backgroundColor": "input.background.muted.default",
+      },
+      "input:focus ~ &": {
+        "bg": "transparent",
+      },
+      "input:not(:checked) ~ &": {
+        "color": "input.text.secondary.default",
+      },
+      "input[aria-invalid="true"] ~ &": {
+        "color": "content.text.negative.default",
+      },
+    },
+    "input": {
+      "&[aria-invalid="true"]": {
+        ":focus-within": {
+          "outlineColor": "input.border.negative.focused",
+        },
+        "borderColor": "input.border.negative.default",
+      },
+      "&[aria-invalid="true"] ~ span:has(iconify-icon)": {
+        "color": "input.text.negative.default",
+      },
+      ".is-warning &": {
+        ":focus-within": {
+          "outlineColor": "input.border.caution.focused",
+        },
+        "border": "md",
+        "borderColor": "input.border.caution.default",
+      },
+      "::placeholder": {
+        "color": "input.text.muted.default",
+      },
+      ":disabled": {
+        "backgroundColor": "input.background.primary.disabled",
+        "border": "sm",
+        "borderColor": "input.border.muted.disabled",
+        "color": "input.text.primary.disabled",
+      },
+      ":focus-within": {
+        "outlineColor": "input.border.muted.focused",
+      },
+      "backgroundColor": "input.background.primary.default",
+      "border": "md",
+      "borderColor": "input.border.muted.default",
+      "borderRadius": "sm",
+      "color": "content.text.primary.default",
+      "fontSize": "md",
+      "lineHeight": "normal",
+    },
+    "label": {
+      "& > div:has(input[type="checkbox"]) > svg": {
+        "marginRight": 0,
+      },
+      "& > span[aria-label="tooltip"]": {
+        "fontSize": "sm",
+        "marginLeft": "2",
+      },
+      "&:has(div > input[type="radio"])": {
+        "alignItems": "center",
+      },
+      "&:has(div > input[type="radio"]:disabled)": {
+        "color": "content.text.muted.default",
+      },
+      "&:has(input[type="checkbox"])": {
+        "fontSize": "md",
+        "gap": "2",
+      },
+      "&:has(input[type="checkbox"]:disabled)": {
+        "color": "content.text.muted.default",
+      },
+      "&:is([aria-disabled="true"])": {
+        "color": "content.text.muted.default",
+      },
+      "color": "content.text.primary.default",
+    },
+    "radio": {
+      "&:is(svg, svg + svg)": {
+        "height": "min",
+        "width": "min",
+      },
+      "color": "input.text.secondary.default",
+      "fontFamily": "body",
+      "fontSize": "lg",
+      "input:checked ~ &": {
+        "color": "input.text.accent.default",
+      },
+      "input:disabled ~ &": {
+        "color": "input.text.muted.default",
+      },
+      "input:focus ~ &": {
+        "bg": "transparent",
+      },
+      "input[aria-invalid="true"] ~ &": {
+        "color": "input.text.negative.default",
+      },
+    },
+    "select": {
+      "&[aria-invalid="true"]": {
+        "border": "md",
+        "borderColor": "input.border.negative.default",
+        "outlineColor": "input.border.negative.focused",
+      },
+      "&[aria-invalid="true"] ~ * > span.error-icon": {
+        "color": "input.text.negative.default",
+      },
+      ":disabled": {
+        "backgroundColor": "input.background.primary.disabled",
+        "border": "sm",
+        "borderColor": "input.border.muted.disabled",
+        "color": "input.text.primary.disabled",
+      },
+      ":disabled ~ * > span:has(iconify-icon)": {
+        "color": "input.text.primary.disabled",
+      },
+      "backgroundColor": "input.background.primary.default",
+      "border": "md",
+      "borderColor": "input.border.muted.default",
+      "borderRadius": "sm",
+      "color": "content.text.primary.default",
+    },
+    "textarea": {
+      "&[aria-invalid="true"]": {
+        "borderColor": "input.border.negative.default",
+        "outlineColor": "input.border.negative.focused",
+      },
+      "&[aria-invalid="true"]+span>iconify-icon": {
+        "color": "input.text.negative.default",
+        "fontSize": "lg",
+      },
+      ":disabled": {
+        "backgroundColor": "input.background.primary.disabled",
+        "border": "sm",
+        "borderColor": "input.border.muted.disabled",
+        "color": "input.text.primary.disabled",
+      },
+      ":disabled::placeholder": {
+        "color": "input.text.muted.disabled",
+      },
+      ":focus-within": {
+        "outlineColor": "input.border.muted.focused",
+      },
+      "backgroundColor": "input.background.primary.default",
+      "border": "md",
+      "borderColor": "input.border.muted.default",
+      "borderRadius": "sm",
+      "color": "content.text.primary.default",
+    },
+  },
+  "letterSpacings": {
+    "normal": "0",
+    "tight": "-0.025em",
+    "tighter": "-0.05em",
+    "wide": "0.025em",
+    "wider": "0.05em",
+    "widest": "0.1em",
+  },
+  "lineHeights": {
+    "moderate": 1.5,
+    "none": 1,
+    "normal": "normal",
+    "short": 1.375,
+    "shorter": 1.25,
+    "tall": 1.625,
+    "taller": "2",
+  },
+  "radii": {
+    "2xl": "0.125rem",
+    "2xs": "0.0625rem",
+    "3xl": "0.125rem",
+    "4xl": "0.125rem",
+    "full": "9999px",
+    "lg": "0.125rem",
+    "md": "0.125rem",
+    "none": "0",
+    "sm": "0.125rem",
+    "xl": "0.125rem",
+    "xs": "0.125rem",
+  },
+  "sizes": {
+    "2xl": "42rem",
+    "2xs": "16rem",
+    "3xl": "48rem",
+    "3xs": "14rem",
+    "4xl": "56rem",
+    "5xl": "64rem",
+    "6xl": "72rem",
+    "7xl": "80rem",
+    "8xl": "90rem",
+    "container": {
+      "lg": "1024px",
+      "md": "768px",
+      "sm": "640px",
+      "xl": "1280px",
+    },
+    "full": "100%",
+    "lg": "32rem",
+    "max": "max-content",
+    "md": "28rem",
+    "min": "min-content",
+    "sm": "24rem",
+    "xl": "36rem",
+    "xs": "20rem",
+  },
+  "space": {
+    "0.5": "0.125rem",
+    "1": "0.25rem",
+    "1.5": "0.375rem",
+    "10": "2.5rem",
+    "12": "3rem",
+    "14": "3.5rem",
+    "16": "4rem",
+    "2": "0.5rem",
+    "2.5": "0.625rem",
+    "20": "5rem",
+    "24": "6rem",
+    "28": "7rem",
+    "3": "0.75rem",
+    "3.5": "0.875rem",
+    "32": "8rem",
+    "36": "9rem",
+    "4": "1rem",
+    "40": "10rem",
+    "44": "11rem",
+    "48": "12rem",
+    "5": "1.25rem",
+    "52": "13rem",
+    "56": "14rem",
+    "6": "1.5rem",
+    "60": "15rem",
+    "64": "16rem",
+    "7": "1.75rem",
+    "72": "18rem",
+    "8": "2rem",
+    "80": "20rem",
+    "9": "2.25rem",
+    "96": "24rem",
+    "px": "1px",
+  },
+  "styles": {
+    "root": {
+      ".react-select__control": {
+        "border": "md",
+        "borderRadius": "sm",
+      },
+      "a": {
+        "&.quiet:not(:hover)": {
+          "textDecorationLine": "none",
+        },
+        "&.warning": {
+          "color": "feedback.text.caution.default",
+        },
+        "&[aria-invalid="true"]": {
+          "color": "feedback.text.negative.default",
+        },
+        ":visited": {
+          "color": "navigation.text.accent.default",
+        },
+        "color": "navigation.text.primary.default",
+        "fontFamily": "body",
+        "lineHeight": "normal",
+        "textDecorationLine": "underline",
+      },
+      "backgroundColor": "navigation.background.primary.default",
+      "fontFamily": "body",
+      "fontSize": "md",
+      "fontWeight": "normal",
+      "margin": 0,
+      "padding": 0,
+      "table": {
+        "borderCollapse": "collapse",
+      },
+      "td": {
+        "paddingX": "6",
+        "paddingY": "4",
+      },
+      "th": {
+        "paddingX": "4",
+        "paddingY": "4",
+      },
+      "tr": {
+        "borderBottom": "default",
+      },
+      "zIndex": "base",
+    },
+  },
+  "text": {
+    "default": {
+      "color": "content.text.primary.default",
+      "fontFamily": "body",
+    },
+    "h1": {
+      "fontFamily": "heading",
+      "fontSize": "3xl",
+      "fontWeight": "black",
+      "letterSpacing": "tight",
+      "lineHeight": "shorter",
+    },
+    "h2": {
+      "fontFamily": "heading",
+      "fontSize": "2xl",
+      "fontWeight": "extrabold",
+      "letterSpacing": "tight",
+      "lineHeight": "shorter",
+    },
+    "h3": {
+      "fontFamily": "heading",
+      "fontSize": "xl",
+      "fontWeight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "short",
+    },
+    "h4": {
+      "fontFamily": "heading",
+      "fontSize": "lg",
+      "fontWeight": "semibold",
+      "letterSpacing": "normal",
+      "lineHeight": "short",
+    },
+    "h5": {
+      "fontFamily": "heading",
+      "fontSize": "md",
+      "fontWeight": "semibold",
+      "letterSpacing": "normal",
+      "lineHeight": "normal",
+    },
+    "headline": {
+      "fontFamily": "heading",
+      "fontSize": "5xl",
+      "fontWeight": "black",
+      "letterSpacing": "tight",
+      "lineHeight": "shorter",
+    },
+    "help": {
+      "&[aria-disabled="true"]": {
+        "color": "guidance.text.secondary.default",
+      },
+      "color": "guidance.text.primary.default",
+      "negative": {
+        "&[aria-disabled="true"]": {
+          "color": "guidance.text.secondary.default",
+        },
+        "color": "feedback.text.negative.default",
+      },
+    },
+    "subheadline": {
+      "fontFamily": "body",
+      "fontSize": "xl",
+      "fontWeight": "bold",
+      "letterSpacing": "normal",
+      "lineHeight": "short",
+    },
+    "title": {
+      "fontFamily": "heading",
+      "fontSize": "5xl",
+      "fontWeight": "black",
+      "lineHeight": "shorter",
+    },
+  },
+  "zIndices": {
+    "auto": "auto",
+    "banner": 1200,
+    "base": 0,
+    "docked": 10,
+    "dropdown": 1000,
+    "hide": -1,
+    "max": 2147483647,
+    "modal": 1400,
+    "overlay": 1300,
+    "popover": 1500,
+    "skipNav": 1600,
+    "sticky": 1100,
+    "toast": 1700,
+    "tooltip": 1800,
+  },
+}
+`;

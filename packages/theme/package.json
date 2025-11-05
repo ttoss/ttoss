@@ -16,6 +16,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./Bruttal": "./src/themes/Bruttal/Bruttal.ts",
+    "./Bruttal2": "./src/themes/Bruttal2/Bruttal2.ts",
     "./Oca": "./src/themes/Oca/Oca.ts"
   },
   "files": [
@@ -54,6 +55,10 @@
       "./Bruttal": {
         "import": "./dist/esm/themes/Bruttal/Bruttal.js",
         "types": "./dist/themes/Bruttal/Bruttal.d.ts"
+      },
+      "./Bruttal2": {
+        "import": "./dist/esm/themes/Bruttal2/Bruttal2.js",
+        "types": "./dist/themes/Bruttal2/Bruttal2.d.ts"
       },
       "./Oca": {
         "import": "./dist/esm/themes/Oca/Oca.js",
