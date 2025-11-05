@@ -1,52 +1,43 @@
 # @ttoss/test-utils
 
-Testing utilities for [Jest](https://jestjs.io/) with React Testing Library, DOM matchers, and emotion support.
+Testing utilities for Jest with React Testing Library, user events, Relay helpers, faker, and optional ESM transform helpers.
 
 ## Installation
 
-```sh
+```bash
 pnpm add -D @ttoss/test-utils
 ```
 
-This package includes `@testing-library/jest-dom` types automatically - other packages in your monorepo don't need to list it as a dependency.
+## Entry Points
+
+| Import                    | What it gives you                                                                                                      | Side effects                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `@ttoss/test-utils/react` | `render`, `renderHook`, `userEvent`, emotion matchers, jest-dom matchers, ResizeObserver polyfill, snapshot serializer | Yes (extends `expect`, polyfills) |
+| `@ttoss/test-utils/faker` | `faker` ESM re-export                                                                                                  | No                                |
+| `@ttoss/test-utils/relay` | Relay test utilities                                                                                                   | No                                |
+| `@ttoss/test-utils`       | Utility: `getTransformIgnorePatterns` (ESM Jest helper)                                                                | No                                |
+
+Future: a lean version without side effects can be added as a distinct entry (e.g. `react-core`)—current `react` entry already includes the jsdom-oriented setup.
 
 ## Quick Start
 
 ```tsx
 import { render, screen, userEvent, renderHook } from '@ttoss/test-utils/react';
 
-test('example component test', async () => {
+test('component', async () => {
   const user = userEvent.setup();
   render(<Counter />);
-
   await user.click(screen.getByText('Increment'));
-
   expect(screen.getByText('1')).toBeInTheDocument();
 });
 
-test('example hook test', () => {
+test('hook', () => {
   const { result } = renderHook(() => useCounter());
-
   expect(result.current.count).toBe(0);
 });
 ```
 
-## Features
-
-This package includes:
-
-- **React Testing Library**: All exports from [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/) (`render`, `screen`, `act`, etc.)
-- **User Event**: [`userEvent`](https://testing-library.com/docs/user-event/intro) for realistic user interactions
-- **Hook Testing**: `renderHook` from [@testing-library/react](https://testing-library.com/docs/react-testing-library/api/#renderhook)
-- **DOM Matchers**: [@testing-library/jest-dom](https://github.com/testing-library/jest-dom) custom matchers (`toBeInTheDocument`, `toHaveStyle`, etc.)
-- **Emotion Matchers**: [@emotion/jest](https://emotion.sh/docs/@emotion/jest) matchers for CSS-in-JS testing
-- **jsdom Environment**: Built-in `jest-environment-jsdom` - no separate installation needed
-- **Relay Mocking**: `createMockEnvironment` and `MockPayloadGenerator` from `@ttoss/test-utils/relay`
-- **Fake Data**: `faker` from `@ttoss/test-utils/faker` for generating test data
-
-## Global Test Configuration
-
-Use `setOptions` to configure default render options for all tests:
+## Global Wrapper
 
 ```tsx title="jest.setup.ts"
 import { setOptions } from '@ttoss/test-utils/react';
@@ -55,11 +46,14 @@ import AllProviders from './src/AllProviders';
 setOptions({ wrapper: AllProviders });
 ```
 
-This applies to both `render` and `renderHook` calls throughout your test suite.
+```ts title="jest.config.ts"
+export default {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testEnvironment: 'jsdom',
+};
+```
 
-## Additional Utilities
-
-### Relay Testing
+## Relay Testing
 
 ```tsx
 import {
@@ -68,39 +62,62 @@ import {
 } from '@ttoss/test-utils/relay';
 
 const environment = createMockEnvironment();
-// Use for testing Relay components
 ```
 
-For more details (mocking payloads, resolving operations, testing suspense boundaries), see the official Relay guide: [Testing Relay Components](https://relay.dev/docs/guides/testing-relay-components/)
+More patterns: [Testing Relay Components](https://relay.dev/docs/guides/testing-relay-components/)
 
-### Fake Data Generation
+## Fake Data
 
 ```ts
 import { faker } from '@ttoss/test-utils/faker';
 
 const testUser = {
-  name: faker.name.findName(),
+  name: faker.person.fullName(),
   email: faker.internet.email(),
 };
 ```
 
-#### Jest configuration (ESM support for faker)
+## ESM Transform Helper (Jest)
 
-If you see `SyntaxError: Cannot use import statement outside a module` when using `faker`, ensure Jest transpiles `@faker-js/faker` by updating `transformIgnorePatterns`:
+Use `getTransformIgnorePatterns` to ensure ESM packages like `@faker-js/faker` are transformed under pnpm layout:
 
 ```ts title="jest.config.ts"
-import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
-const esmModules = ['@faker-js/faker'];
+const transformIgnorePatterns = getTransformIgnorePatterns({
+  esmModules: ['@faker-js/faker'],
+});
 
-const transformIgnorePatterns = [
-  `node_modules/(?!(?:\\.pnpm/[^/]+/node_modules/)?(${esmModules.join('|')}))`,
-];
-
-export default jestUnitConfig({
+export default {
   testEnvironment: 'jsdom',
   transformIgnorePatterns,
-});
+};
 ```
 
-This forces Jest to transform ESM packages like `@faker-js/faker` even inside a pnpm monorepo layout.
+If you see `SyntaxError: Cannot use import statement outside a module`, add the module name to `esmModules`.
+
+## Features Summary
+
+- React Testing Library (`render`, `renderHook`, queries)
+- User events (`userEvent`)
+- jest-dom matchers
+- Emotion matchers + snapshot serializer
+- ResizeObserver polyfill
+- Relay test utilities
+- Faker ESM helper
+- PNPM-aware ESM transform pattern generator
+
+## FAQ
+
+Q: Why is `getTransformIgnorePatterns` separate?  
+A: It’s a pure configuration helper without runtime side effects; keeping it in the root avoids pulling in DOM matchers unnecessarily.
+
+Q: Do I need to import jest-dom manually?  
+A: Not when using `@ttoss/test-utils/react` (it auto-registers).
+
+Q: How do I add another ESM library?  
+A: Include it in `esmModules`: `getTransformIgnorePatterns({ esmModules: ['@faker-js/faker','some-lib'] })`.
+
+## Minimal Config Only (No side effects)
+
+If you ever need a lean setup (no global matchers), you can create your own thin adapter by importing directly from `@testing-library/react` and `@testing-library/user-event`. Current package focuses on convenience defaults.
