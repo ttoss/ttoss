@@ -65,7 +65,9 @@ export const FormFieldRadioCardIcony = <
                       ? 'input.background.accent.default'
                       : 'input.border.muted.default',
                     borderRadius: 'md',
-                    backgroundColor: 'transparent',
+                    backgroundColor: isSelected
+                      ? 'feedback.background.positive.default'
+                      : 'transparent',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
