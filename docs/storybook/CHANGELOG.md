@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.25.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.24.1...@docs/storybook@2.25.0) (2025-11-11)
+
+### Features
+
+- add NavList ([#749](https://github.com/ttoss/ttoss/issues/749)) ([5921c80](https://github.com/ttoss/ttoss/commit/5921c80253b96535632be128116625d46c641033))
+
 ## [2.24.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.24.0...@docs/storybook@2.24.1) (2025-11-05)
 
 ### Bug Fixes

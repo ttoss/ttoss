@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.4.18...@ttoss/react-icons@0.5.0) (2025-11-11)
+
+### Features
+
+- add NavList ([#749](https://github.com/ttoss/ttoss/issues/749)) ([5921c80](https://github.com/ttoss/ttoss/commit/5921c80253b96535632be128116625d46c641033))
+
 ## [0.4.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.4.17...@ttoss/react-icons@0.4.18) (2025-11-05)
 
 ### Bug Fixes
