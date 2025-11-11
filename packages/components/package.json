@@ -24,6 +24,7 @@
     "./Markdown": "./src/components/Markdown/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
+    "./NavList": "./src/components/NavList/index.ts",
     "./NotificationCard": "./src/components/NotificationCard/index.ts",
     "./NotificationsMenu": "./src/components/NotificationsMenu/index.ts",
     "./Search": "./src/components/Search/index.ts",
@@ -126,6 +127,10 @@
       "./Modal": {
         "types": "./dist/Modal/index.d.ts",
         "default": "./dist/esm/Modal/index.js"
+      },
+      "./NavList": {
+        "types": "./dist/NavList/index.d.ts",
+        "default": "./dist/esm/NavList/index.js"
       },
       "./NotificationCard": {
         "types": "./dist/NotificationCard/index.d.ts",

@@ -101,7 +101,7 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
       window.removeEventListener('resize', onResizeScroll);
       window.removeEventListener('scroll', onResizeScroll, true);
     };
-  }, [isOpen, children, sx]);
+  }, [isOpen, sx]);
 
   const panel = isOpen ? (
     <Flex

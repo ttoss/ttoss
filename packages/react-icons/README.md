@@ -1,6 +1,6 @@
 # @ttoss/react-icons
 
-React icon library built on [Iconify](https://iconify.design/) with 200,000+ open source icons. Provides seamless integration with [@ttoss/ui](https://ttoss.dev/docs/modules/packages/ui) components and theme system.
+Access 200,000+ open source icons through [Iconify](https://iconify.design/) with seamless [@ttoss/ui](https://ttoss.dev/docs/modules/packages/ui) integration.
 
 ## Installation
 
@@ -10,164 +10,119 @@ pnpm add @ttoss/react-icons
 
 ## Quick Start
 
-### Basic Usage
-
 ```tsx
 import { Icon } from '@ttoss/react-icons';
 
-export const Example = () => (
-  <Icon icon="mdi-light:alarm-panel" style={{ color: 'red' }} width={24} />
-);
+// Basic usage
+<Icon icon="mdi:home" width={24} />
+
+// With theme colors
+<Box sx={{ color: 'primary' }}>
+  <Icon icon="heroicons:heart-solid" width={32} />
+</Box>
 ```
 
-### With Theme Integration
+## Finding Icons
+
+Browse and search [200,000+ icons](https://icon-sets.iconify.design/) from popular sets:
+
+- **Material Design**: `mdi:home`, `mdi:user`
+- **Heroicons**: `heroicons:heart-solid`
+- **Tabler**: `tabler:settings`
+- **Feather**: `feather:search`
+- **Bootstrap**: `bi:github`
+- **Font Awesome**: `fa-solid:arrow-right`
+
+## Custom Icons
+
+Add your own SVG icons using `addIcon`:
 
 ```tsx
-import { Icon } from '@ttoss/react-icons';
-import { Box } from '@ttoss/ui';
+import { addIcon, Icon } from '@ttoss/react-icons';
 
-export const ThemedIcon = () => (
-  <Box sx={{ color: 'primary' }}>
-    <Icon icon="heroicons:heart-solid" width={32} />
-  </Box>
-);
+// Register once (e.g., in app initialization)
+addIcon('company-logo', {
+  body: '<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>',
+  width: 24,
+  height: 24,
+});
+
+// Use anywhere
+<Icon icon="company-logo" width={32} />;
 ```
 
-## Available Icons
+## API
 
-Access 200,000+ icons from popular icon sets:
-
-- **Material Design Icons**: `mdi:*` (e.g., `mdi:home`, `mdi:user`)
-- **Heroicons**: `heroicons:*` (e.g., `heroicons:heart-solid`)
-- **Tabler Icons**: `tabler:*` (e.g., `tabler:settings`)
-- **Feather Icons**: `feather:*` (e.g., `feather:search`)
-- **Bootstrap Icons**: `bi:*` (e.g., `bi:github`)
-- **Font Awesome**: `fa:*`, `fa-solid:*`, `fa-brands:*`
-
-**Browse all icons**: [Iconify Icon Sets](https://icon-sets.iconify.design/)
-
-## API Reference
-
-### `<Icon>` Component
+### Icon Props
 
 ```tsx
 interface IconProps {
   icon: string; // Icon name (e.g., "mdi:home")
-  width?: number | string; // Icon width
-  height?: number | string; // Icon height
-  style?: CSSProperties; // Custom CSS styles
-  color?: string; // Icon color
-  rotate?: number; // Rotation angle
-  flip?: 'horizontal' | 'vertical'; // Flip direction
+  width?: number | string; // Size (default: 1em)
+  height?: number | string; // Height (defaults to width)
+  color?: string; // Override color
+  rotate?: number; // Rotation degrees
+  flip?: 'horizontal' | 'vertical';
 }
 ```
 
-### Basic Examples
-
-```tsx
-// Different sizes
-<Icon icon="mdi:home" width={16} />
-<Icon icon="mdi:home" width={24} />
-<Icon icon="mdi:home" width={32} />
-
-// Colors and styling
-<Icon icon="heroicons:heart-solid" style={{ color: '#ff6b6b' }} />
-<Icon icon="tabler:star" color="gold" />
-
-// Transformations
-<Icon icon="mdi:arrow-right" rotate={90} />
-<Icon icon="mdi:arrow-right" flip="horizontal" />
-```
-
-## Custom Icons
-
-### Adding Custom Icons
-
-Extend the library with your own SVG icons using `addIcon`:
-
-```tsx
-import { Icon, addIcon, type IconType } from '@ttoss/react-icons';
-
-const customSearchIcon: IconType = {
-  body: `<path d="M15.8053 15.8013L21 21M10.5 7.5V13.5M7.5 10.5H13.5M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
-  width: 24,
-  height: 24,
-  viewBox: '0 0 24 24',
-};
-
-// Register custom icon
-addIcon('custom-search', customSearchIcon);
-
-// Use custom icon
-export const CustomIconExample = () => <Icon icon="custom-search" width={24} />;
-```
-
-### Custom Icon Properties
+### IconType
 
 ```tsx
 interface IconType {
-  body: string; // SVG path/content (without <svg> wrapper)
+  body: string; // SVG content (without <svg> wrapper)
   width?: number; // Default width
   height?: number; // Default height
-  viewBox?: string; // SVG viewBox attribute
+  viewBox?: string; // SVG viewBox
 }
 ```
 
 ## Theme Integration
 
-### Using with ttoss Design System
-
-Icons automatically inherit colors from the theme context:
+Icons inherit color from parent theme context:
 
 ```tsx
-import { Icon } from '@ttoss/react-icons';
-import { Box, Text } from '@ttoss/ui';
+// Inherits primary color
+<Box sx={{ color: 'primary' }}>
+  <Icon icon="mdi:star" width={24} />
+</Box>
 
-export const ThemedIcons = () => (
-  <Box sx={{ color: 'primary' }}>
-    <Text sx={{ display: 'flex', alignItems: 'center', gap: 'sm' }}>
-      <Icon icon="mdi:check-circle" width={20} />
-      Success message
-    </Text>
-  </Box>
-);
+// Inherits error color
+<Text sx={{ color: 'error' }}>
+  <Icon icon="mdi:alert" width={16} />
+  Error message
+</Text>
 ```
 
-### Responsive Icon Sizes
+Responsive sizing:
 
 ```tsx
-export const ResponsiveIcon = () => (
-  <Icon
-    icon="mdi:menu"
-    width={[16, 20, 24]} // Responsive sizes
-    style={{ color: 'currentColor' }}
-  />
-);
+<Icon icon="mdi:menu" width={[16, 20, 24]} />
 ```
 
 ## Performance
 
-### Automatic Optimization
+- **On-demand loading**: Only requested icons are bundled
+- **SVG rendering**: Direct SVG for optimal performance
+- **No network requests**: Icons embedded in bundle
+- **Tree-shakeable**: Unused icons eliminated automatically
 
-- **Bundle optimization**: Only requested icons are included in the bundle
-- **SVG rendering**: Direct SVG rendering for optimal performance
-- **No external dependencies**: Icons are embedded, no network requests
+## TypeScript
 
-### Best Practices
+Full type safety with `IconType` for custom icons and all props:
 
-- Use consistent icon sizes throughout your application
-- Leverage theme colors instead of hardcoded values
-- Batch icon registrations for custom icons
+```tsx
+import type { IconType, IconProps } from '@ttoss/react-icons';
 
-## Integration
+const myIcon: IconType = {
+  body: '<path d="..." />',
+  width: 24,
+  height: 24,
+};
+```
 
-- **Design System**: Seamlessly integrates with [ttoss Design System](https://ttoss.dev/docs/design/design-system)
-- **Theme Support**: Respects [@ttoss/ui](https://ttoss.dev/docs/modules/packages/ui) theme colors and sizing
-- **TypeScript**: Full type safety for icon names and properties
-- **Accessibility**: Proper ARIA attributes and screen reader support
+## Resources
 
-## Related Resources
-
-- **[Iconify Documentation](https://docs.iconify.design/icon-components/react/)**: Complete React integration guide
-- **[Icon Browser](https://icon-sets.iconify.design/)**: Search and browse available icons
-- **[Storybook Examples](https://storybook.ttoss.dev)**: Interactive examples and usage patterns
+- [Iconify Icon Sets](https://icon-sets.iconify.design/) - Search all available icons
+- [Iconify React Documentation](https://docs.iconify.design/icon-components/react/) - Advanced usage
+- [Storybook Examples](https://storybook.ttoss.dev/?path=/docs/react-icons-icon--docs) - Interactive demos
