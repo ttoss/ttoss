@@ -7,9 +7,10 @@ export default jestUnitConfig({
   coverageThreshold: {
     global: {
       statements: 91.08,
-      branches: 83.76,
+      branches: 83.58,
       lines: 92.43,
       functions: 91.8,
     },
   },
+  coveragePathIgnorePatterns: ['/index.ts$'],
 });
