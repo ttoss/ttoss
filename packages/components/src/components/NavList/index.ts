@@ -1,4 +1,5 @@
 export {
+  type LinkComponentProps,
   NavList,
   type NavListGroup,
   type NavListItem,

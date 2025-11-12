@@ -176,7 +176,7 @@ const NavListItemComponent = ({
   onItemClick?: NavListProps['onItemClick'];
   variantStyles: ReturnType<typeof getVariantStyles>;
   iconSize?: number;
-  LinkComponent?: NavListProps['LinkComponent'];
+  LinkComponent?: React.ComponentType<LinkComponentProps>;
   showDivider?: boolean;
 }) => {
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {

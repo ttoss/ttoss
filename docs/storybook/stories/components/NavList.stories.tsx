@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { NavList } from '@ttoss/components/NavList';
+import { type LinkComponentProps, NavList } from '@ttoss/components/NavList';
 
 const meta: Meta<typeof NavList> = {
   title: 'Components/NavList',
@@ -19,9 +19,74 @@ export default meta;
 
 type Story = StoryObj<typeof NavList>;
 
-export const SidebarVariant: Story = {
-  args: {
-    variant: 'sidebar',
+const itensWithIcons = [
+  {
+    id: '1',
+    label: 'Dashboard',
+    href: '/dashboard',
+    icon: 'fluent:home-24-regular',
+    active: true,
+  },
+  {
+    id: '2',
+    label: 'Projects',
+    href: '/projects',
+    icon: 'fluent:folder-24-regular',
+  },
+  {
+    id: '3',
+    label: 'Tasks',
+    href: '/tasks',
+    icon: 'fluent:task-list-24-regular',
+  },
+  {
+    id: '4',
+    label: 'Calendar',
+    href: '/calendar',
+    icon: 'fluent:calendar-24-regular',
+  },
+  {
+    id: '5',
+    label: 'Settings',
+    href: '/settings',
+    icon: 'fluent:settings-24-regular',
+  },
+  {
+    id: '6',
+    label: 'Help',
+    href: '/help',
+    icon: 'fluent:question-circle-24-regular',
+    disabled: true,
+  },
+];
+
+const itemsWithoutIcons = [
+  {
+    id: '1',
+    label: 'Home',
+    href: '/',
+  },
+  {
+    id: '2',
+    label: 'About',
+    href: '/about',
+  },
+  {
+    id: '3',
+    label: 'Services',
+    href: '/services',
+  },
+  {
+    id: '4',
+    label: 'Contact',
+    href: '/contact',
+  },
+];
+
+const groups = [
+  {
+    id: 'main',
+    label: 'Main',
     items: [
       {
         id: '1',
@@ -36,18 +101,30 @@ export const SidebarVariant: Story = {
         href: '/projects',
         icon: 'fluent:folder-24-regular',
       },
+    ],
+  },
+  {
+    id: 'tools',
+    label: 'Tools',
+    items: [
       {
         id: '3',
-        label: 'Tasks',
-        href: '/tasks',
-        icon: 'fluent:task-list-24-regular',
+        label: 'Analytics',
+        href: '/analytics',
+        icon: 'fluent:data-bar-vertical-24-regular',
       },
       {
         id: '4',
-        label: 'Calendar',
-        href: '/calendar',
-        icon: 'fluent:calendar-24-regular',
+        label: 'Reports',
+        href: '/reports',
+        icon: 'fluent:document-24-regular',
       },
+    ],
+  },
+  {
+    id: 'account',
+    label: 'Account',
+    items: [
       {
         id: '5',
         label: 'Settings',
@@ -56,12 +133,56 @@ export const SidebarVariant: Story = {
       },
       {
         id: '6',
-        label: 'Help',
-        href: '/help',
-        icon: 'fluent:question-circle-24-regular',
-        disabled: true,
+        label: 'Logout',
+        href: '/logout',
+        icon: 'fluent:sign-out-24-regular',
       },
     ],
+  },
+];
+
+const autoGroupedItems = [
+  {
+    id: '1',
+    label: 'Dashboard',
+    href: '/dashboard',
+    icon: 'fluent:home-24-regular',
+    group: 'Main',
+  },
+  {
+    id: '2',
+    label: 'Projects',
+    href: '/projects',
+    icon: 'fluent:folder-24-regular',
+    group: 'Main',
+  },
+  {
+    id: '3',
+    label: 'Analytics',
+    href: '/analytics',
+    icon: 'fluent:data-bar-vertical-24-regular',
+    group: 'Tools',
+  },
+  {
+    id: '4',
+    label: 'Reports',
+    href: '/reports',
+    icon: 'fluent:document-24-regular',
+    group: 'Tools',
+  },
+  {
+    id: '5',
+    label: 'Settings',
+    href: '/settings',
+    icon: 'fluent:settings-24-regular',
+    group: 'Account',
+  },
+];
+
+export const SidebarVariant: Story = {
+  args: {
+    variant: 'sidebar',
+    items: itensWithIcons,
   },
   parameters: {
     docs: {
@@ -73,35 +194,42 @@ export const SidebarVariant: Story = {
   },
 };
 
+const LinkComponent = ({
+  children,
+  ...props
+}: React.PropsWithChildren<LinkComponentProps>) => {
+  return (
+    <a
+      style={{
+        textDecoration: 'none',
+      }}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+};
+
+export const SidebarWithLinkComponent: Story = {
+  args: {
+    variant: 'sidebar',
+    items: itensWithIcons,
+    LinkComponent,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Using a custom Link component (e.g., for Next.js or React Router integration).',
+      },
+    },
+  },
+};
+
 export const MenuVariant: Story = {
   args: {
     variant: 'menu',
-    items: [
-      {
-        id: '1',
-        label: 'Profile',
-        href: '/profile',
-        icon: 'fluent:person-24-regular',
-      },
-      {
-        id: '2',
-        label: 'Settings',
-        href: '/settings',
-        icon: 'fluent:settings-24-regular',
-      },
-      {
-        id: '3',
-        label: 'Notifications',
-        href: '/notifications',
-        icon: 'fluent:alert-24-regular',
-      },
-      {
-        id: '4',
-        label: 'Logout',
-        href: '/logout',
-        icon: 'fluent:sign-out-24-regular',
-      },
-    ],
+    items: itensWithIcons,
   },
   parameters: {
     docs: {
@@ -116,32 +244,7 @@ export const MenuVariant: Story = {
 export const DropdownVariant: Story = {
   args: {
     variant: 'dropdown',
-    items: [
-      {
-        id: '1',
-        label: 'Edit',
-        href: '#',
-        icon: 'fluent:edit-24-regular',
-      },
-      {
-        id: '2',
-        label: 'Duplicate',
-        href: '#',
-        icon: 'fluent:copy-24-regular',
-      },
-      {
-        id: '3',
-        label: 'Archive',
-        href: '#',
-        icon: 'fluent:archive-24-regular',
-      },
-      {
-        id: '4',
-        label: 'Delete',
-        href: '#',
-        icon: 'fluent:delete-24-regular',
-      },
-    ],
+    items: itensWithIcons,
   },
   parameters: {
     docs: {
@@ -156,63 +259,7 @@ export const DropdownVariant: Story = {
 export const WithGroups: Story = {
   args: {
     variant: 'sidebar',
-    groups: [
-      {
-        id: 'main',
-        label: 'Main',
-        items: [
-          {
-            id: '1',
-            label: 'Dashboard',
-            href: '/dashboard',
-            icon: 'fluent:home-24-regular',
-            active: true,
-          },
-          {
-            id: '2',
-            label: 'Projects',
-            href: '/projects',
-            icon: 'fluent:folder-24-regular',
-          },
-        ],
-      },
-      {
-        id: 'tools',
-        label: 'Tools',
-        items: [
-          {
-            id: '3',
-            label: 'Analytics',
-            href: '/analytics',
-            icon: 'fluent:data-bar-vertical-24-regular',
-          },
-          {
-            id: '4',
-            label: 'Reports',
-            href: '/reports',
-            icon: 'fluent:document-24-regular',
-          },
-        ],
-      },
-      {
-        id: 'account',
-        label: 'Account',
-        items: [
-          {
-            id: '5',
-            label: 'Settings',
-            href: '/settings',
-            icon: 'fluent:settings-24-regular',
-          },
-          {
-            id: '6',
-            label: 'Logout',
-            href: '/logout',
-            icon: 'fluent:sign-out-24-regular',
-          },
-        ],
-      },
-    ],
+    groups,
   },
   parameters: {
     docs: {
@@ -227,43 +274,7 @@ export const WithGroups: Story = {
 export const AutoGrouping: Story = {
   args: {
     variant: 'sidebar',
-    items: [
-      {
-        id: '1',
-        label: 'Dashboard',
-        href: '/dashboard',
-        icon: 'fluent:home-24-regular',
-        group: 'Main',
-      },
-      {
-        id: '2',
-        label: 'Projects',
-        href: '/projects',
-        icon: 'fluent:folder-24-regular',
-        group: 'Main',
-      },
-      {
-        id: '3',
-        label: 'Analytics',
-        href: '/analytics',
-        icon: 'fluent:data-bar-vertical-24-regular',
-        group: 'Tools',
-      },
-      {
-        id: '4',
-        label: 'Reports',
-        href: '/reports',
-        icon: 'fluent:document-24-regular',
-        group: 'Tools',
-      },
-      {
-        id: '5',
-        label: 'Settings',
-        href: '/settings',
-        icon: 'fluent:settings-24-regular',
-        group: 'Account',
-      },
-    ],
+    items: autoGroupedItems,
   },
   parameters: {
     docs: {
@@ -278,28 +289,7 @@ export const AutoGrouping: Story = {
 export const WithoutIcons: Story = {
   args: {
     variant: 'menu',
-    items: [
-      {
-        id: '1',
-        label: 'Home',
-        href: '/',
-      },
-      {
-        id: '2',
-        label: 'About',
-        href: '/about',
-      },
-      {
-        id: '3',
-        label: 'Services',
-        href: '/services',
-      },
-      {
-        id: '4',
-        label: 'Contact',
-        href: '/contact',
-      },
-    ],
+    items: itemsWithoutIcons,
   },
   parameters: {
     docs: {

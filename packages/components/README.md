@@ -224,6 +224,28 @@ import NextLink from 'next/link';
   LinkComponent={NextLink}
   onItemClick={(item) => console.log('Clicked:', item)}
 />
+
+// Custom Link Component
+// IMPORTANT: Always spread {...props} to preserve styling
+// React Router example (uses 'to' instead of 'href')
+import { Link as RouterLink } from 'react-router-dom';
+
+const ReactRouterLink = ({
+  href,
+  children,
+  ...props
+}: React.PropsWithChildren<LinkComponentProps>) => {
+  return (
+    <RouterLink
+      to={href}
+      {...props} // Required to preserve NavList styles
+    >
+      {children}
+    </RouterLink>
+  );
+};
+
+<NavList items={items} LinkComponent={ReactRouterLink} />
 ```
 
 **Variants:**
