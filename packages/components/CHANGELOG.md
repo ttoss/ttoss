@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.6.0...@ttoss/components@2.6.1) (2025-11-12)
+
+### Bug Fixes
+
+- navlist ([#750](https://github.com/ttoss/ttoss/issues/750)) ([3e451d9](https://github.com/ttoss/ttoss/commit/3e451d979098da1f88e270ace7b06032daf2978c))
+
 # [2.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.5.1...@ttoss/components@2.6.0) (2025-11-11)
 
 ### Features
