@@ -21,6 +21,13 @@ export type NavListGroup = {
   divider?: boolean; // Show divider below this group
 };
 
+export type LinkComponentProps = {
+  href: string;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  children: React.ReactNode;
+  [key: string]: unknown;
+};
+
 export type NavListProps = {
   items?: NavListItem[];
   groups?: NavListGroup[];
@@ -42,12 +49,7 @@ export type NavListProps = {
    * import { Link as RouterLink } from 'react-router-dom';
    * <NavList LinkComponent={RouterLink} ... />
    */
-  LinkComponent?: React.ComponentType<{
-    href: string;
-    onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-    children: React.ReactNode;
-    [key: string]: unknown;
-  }>;
+  LinkComponent?: React.ComponentType<LinkComponentProps>;
 };
 
 const getVariantStyles = (variant: NavListProps['variant']) => {
@@ -56,24 +58,25 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
       return {
         container: {
           flexDirection: 'column' as const,
-          gap: '6',
+          gap: '1',
           width: 'full',
         },
         item: {
-          padding: '4',
+          backgroundColor: 'transparent',
+          padding: '3',
           borderRadius: 'none',
           fontSize: 'md',
           transition: 'background-color 0.15s ease',
           '&:hover': {
-            backgroundColor: 'navigation.background.muted.default',
+            backgroundColor: 'navigation.background.muted.hover',
             textDecoration: 'none',
           },
         },
         activeItem: {
-          backgroundColor: 'navigation.background.primary.default',
+          backgroundColor: 'navigation.background.muted.default',
           borderLeft: '4px solid',
           borderColor: 'navigation.border.primary.default',
-          paddingLeft: 'calc(1rem - 4px)', // Compensate for border
+          paddingLeft: 'calc(0.75rem - 4px)', // Compensate for border
         },
         icon: {
           size: 20,
@@ -91,17 +94,17 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
       return {
         container: {
           flexDirection: 'column' as const,
-          gap: '3',
+          gap: '1',
           width: 'full',
         },
         item: {
-          backgroundColor: 'display.background.secondary.default',
+          backgroundColor: 'transparent',
           borderRadius: 'md',
-          padding: '3',
+          padding: '2',
           fontSize: 'md',
           transition: 'all 0.2s ease',
           '&:hover': {
-            backgroundColor: 'navigation.background.muted.default',
+            backgroundColor: 'navigation.background.muted.hover',
             transform: 'translateX(4px)',
             textDecoration: 'none',
           },
@@ -129,18 +132,19 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
           width: 'full',
         },
         item: {
+          backgroundColor: 'transparent',
           padding: '2',
           fontSize: 'sm',
           borderBottom: 'sm',
           borderColor: 'display.border.muted.default',
           transition: 'background-color 0.1s ease',
           '&:hover': {
-            backgroundColor: 'display.background.secondary.default',
+            backgroundColor: 'navigation.background.muted.hover',
             textDecoration: 'none',
           },
         },
         activeItem: {
-          backgroundColor: 'display.background.secondary.default',
+          backgroundColor: 'navigation.background.muted.default',
           fontWeight: 'semibold',
         },
         icon: {
@@ -197,35 +201,53 @@ const NavListItemComponent = ({
       : {}),
   };
 
-  const linkProps = {
-    href: item.href,
-    onClick: handleClick,
-    sx: itemStyles,
-    'aria-disabled': item.disabled,
-    'aria-current': item.active ? ('page' as const) : undefined,
-    quiet: true,
-  };
+  const isDefaultLink = LinkComponent === Link;
+
+  const linkContent = (
+    <Flex
+      sx={{
+        alignItems: 'center',
+        gap: '2',
+        color: 'navigation.text.primary.default',
+      }}
+    >
+      {item.icon && (
+        <Icon
+          icon={item.icon}
+          width={iconSize ?? variantStyles.icon.size}
+          height={iconSize ?? variantStyles.icon.size}
+        />
+      )}
+      <Text>{item.label}</Text>
+    </Flex>
+  );
 
   return (
     <>
-      <LinkComponent {...linkProps}>
-        <Flex
-          sx={{
-            alignItems: 'center',
-            gap: '2',
-            color: 'navigation.text.primary.default',
-          }}
+      {isDefaultLink ? (
+        <LinkComponent
+          href={item.href}
+          onClick={handleClick}
+          sx={itemStyles}
+          aria-disabled={item.disabled}
+          aria-current={item.active ? ('page' as const) : undefined}
+          quiet={true}
         >
-          {item.icon && (
-            <Icon
-              icon={item.icon}
-              width={iconSize ?? variantStyles.icon.size}
-              height={iconSize ?? variantStyles.icon.size}
-            />
-          )}
-          <Text>{item.label}</Text>
-        </Flex>
-      </LinkComponent>
+          {linkContent}
+        </LinkComponent>
+      ) : (
+        <Link
+          as={LinkComponent}
+          href={item.href}
+          onClick={handleClick}
+          sx={itemStyles}
+          aria-disabled={item.disabled}
+          aria-current={item.active ? ('page' as const) : undefined}
+          quiet={true}
+        >
+          {linkContent}
+        </Link>
+      )}
       {showDivider && <Divider sx={{ marginY: '2' }} />}
     </>
   );
