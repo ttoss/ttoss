@@ -85,4 +85,25 @@ describe('Tabs Component', () => {
     expect(queryByText('Campaigns content')).not.toBeInTheDocument();
     expect(queryByText('Dataloggers content')).not.toBeInTheDocument();
   });
+
+  test('honors preserveLeftPadding prop (false) by removing left padding on TabList', () => {
+    const { container } = render(
+      <Tabs preserveLeftPadding={false}>
+        <Tabs.TabList>
+          <Tabs.Tab>One</Tabs.Tab>
+          <Tabs.Tab>Two</Tabs.Tab>
+        </Tabs.TabList>
+        <Tabs.TabPanel>One content</Tabs.TabPanel>
+        <Tabs.TabPanel>Two content</Tabs.TabPanel>
+      </Tabs>
+    );
+
+    const tabList = container.querySelector(
+      '.react-tabs__tab-list'
+    ) as HTMLElement | null;
+    expect(tabList).not.toBeNull();
+    // Expect padding-left to be zero when preserveLeftPadding is false
+    if (!tabList) throw new Error('Tab list element not found');
+    expect(getComputedStyle(tabList).paddingLeft).toBe('0px');
+  });
 });
