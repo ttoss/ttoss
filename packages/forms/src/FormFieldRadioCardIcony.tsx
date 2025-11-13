@@ -45,31 +45,31 @@ export const FormFieldRadioCardIcony = <
     positive: {
       bg: 'feedback.background.positive.default',
       color: 'feedback.text.positive.default',
-    },
+    }, //
     accent: {
       bg: 'action.background.accent.default',
       color: 'action.text.accent.default',
-    },
+    }, //
     caution: {
       bg: 'feedback.background.caution.default',
       color: 'feedback.text.caution.default',
-    },
+    }, //
     muted: {
       bg: 'display.background.muted.default',
       color: 'display.text.muted.default',
-    },
+    }, //
     negative: {
       bg: 'feedback.background.negative.default',
       color: 'feedback.text.negative.default',
-    },
+    }, //
     primary: {
       bg: 'action.background.primary.default',
       color: 'action.text.primary.default',
-    },
+    }, //
     secondary: {
       bg: 'action.background.secondary.default',
       color: 'action.text.secondary.default',
-    },
+    }, //
     default: {
       bg: 'action.background.muted.default',
       color: 'action.text.muted.default',
@@ -161,27 +161,31 @@ export const FormFieldRadioCardIcony = <
                         {option.description}
                       </Text>
                     )}
-
-                    {tag && (
-                      <Box
-                        sx={{
-                          padding: '1 3',
-                          borderRadius: 'full',
-                          fontSize: 'xs',
-                          fontWeight: 'semibold',
-                          backgroundColor: tagColors.bg,
-                          color: tagColors.color,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          whiteSpace: 'nowrap',
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        {tag.label}
-                      </Box>
-                    )}
                   </Flex>
+                  {tag && (
+                    <Box
+                      sx={{
+                        px: '3', // padding horizontal
+                        py: '1', // padding vertical
+                        mt: '2', // margin-top entre label e tag
+                        borderRadius: 'full',
+                        fontSize: 'xs',
+                        fontWeight: 'semibold',
+                        backgroundColor: tagColors.bg,
+                        color: tagColors.color,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        width: 'auto', // ajusta ao conteúdo
+                        maxWidth: '100%',
+                        whiteSpace: 'nowrap', // evita quebra dentro da tag
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      {tag.label}
+                    </Box>
+                  )}
                 </Box>
               );
             })}

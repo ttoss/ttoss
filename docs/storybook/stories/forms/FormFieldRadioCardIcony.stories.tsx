@@ -110,7 +110,7 @@ const VerticalTemplate: StoryFn = () => {
 
 export const Vertical = VerticalTemplate.bind({});
 
-const strategyOptions: FormRadioOption[] = [
+const TagsOptions: FormRadioOption[] = [
   {
     value: 'max-performance',
     label: 'Max Performance',
@@ -123,7 +123,7 @@ const strategyOptions: FormRadioOption[] = [
         />
       );
     },
-    tag: { label: 'Modelo Padrão', variant: 'accent' },
+    tag: { label: 'accent', variant: 'accent' },
   },
   {
     value: 'conservative',
@@ -137,6 +137,7 @@ const strategyOptions: FormRadioOption[] = [
         />
       );
     },
+    tag: { label: 'positive', variant: 'positive' },
   },
   {
     value: 'max-scale',
@@ -150,6 +151,7 @@ const strategyOptions: FormRadioOption[] = [
         />
       );
     },
+    tag: { label: 'muted', variant: 'muted' },
   },
   {
     value: 'flexible',
@@ -163,17 +165,74 @@ const strategyOptions: FormRadioOption[] = [
         />
       );
     },
+    tag: { label: 'caution', variant: 'caution' },
+  },
+  {
+    value: 'balanced',
+    label: 'Balanceado',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="mdi:scale-balance"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+    tag: { label: 'negative', variant: 'negative' },
+  },
+  {
+    value: 'custom',
+    label: 'Customizado',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:settings-24-regular"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+    tag: { label: 'primary', variant: 'primary' },
+  },
+  {
+    value: 'automatic',
+    label: 'Automático',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:auto-fit-height-24-regular"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+    tag: { label: 'secondary', variant: 'secondary' },
+  },
+  {
+    value: 'standard',
+    label: 'Padrão',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:checkbox-checked-24-regular"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+    tag: { label: 'default', variant: 'default' },
   },
 ];
 
-const strategySchema = yup.object({
+const TagsSchema = yup.object({
   strategy: yup.string().required('Strategy is required'),
 });
 
-const StrategyTemplate: StoryFn = () => {
+const TagsTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
-    resolver: yupResolver(strategySchema),
+    resolver: yupResolver(TagsSchema),
   });
 
   return (
@@ -181,7 +240,7 @@ const StrategyTemplate: StoryFn = () => {
       <FormFieldRadioCardIcony
         name="strategy"
         label="Escolha uma estratégia"
-        options={strategyOptions}
+        options={TagsOptions}
       />
       <Button sx={{ marginTop: '8' }} type="submit">
         Confirmar
@@ -190,4 +249,4 @@ const StrategyTemplate: StoryFn = () => {
   );
 };
 
-export const Strategies = StrategyTemplate.bind({});
+export const Tags = TagsTemplate.bind({});
