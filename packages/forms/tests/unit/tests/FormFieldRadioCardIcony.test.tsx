@@ -1,6 +1,7 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 
+import type { FormRadioOption } from '../../../src';
 import { Form, FormFieldRadioCardIcony, useForm } from '../../../src';
 
 test('submete o valor correto ao clicar na opção', async () => {
@@ -65,4 +66,30 @@ test('renderiza o ícone quando fornecido na opção', () => {
   render(<RenderForm />);
 
   expect(screen.getByTestId('radio-icon')).toBeInTheDocument();
+});
+
+test('renderiza a tag quando fornecida na opção', () => {
+  const options: FormRadioOption[] = [
+    {
+      value: 'opt1',
+      label: 'Option 1',
+      tag: { label: 'Accent', variant: 'accent' },
+    },
+  ];
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldRadioCardIcony
+          name="choice"
+          label="Choice"
+          options={options}
+        />
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+  expect(screen.getByText('Accent')).toBeInTheDocument();
 });
