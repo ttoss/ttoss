@@ -18,7 +18,7 @@ const meta: Meta<typeof Tabs> = {
 
 export default meta;
 
-const RenderTable = () => {
+const RenderTable = (preserveLeftPadding = true) => {
   const args = {
     triggerList: [
       {
@@ -46,7 +46,7 @@ const RenderTable = () => {
   };
 
   return (
-    <Tabs>
+    <Tabs preserveLeftPadding={preserveLeftPadding}>
       <Tabs.TabList>
         {args.triggerList.map((trigger) => {
           return (
@@ -69,59 +69,13 @@ const RenderTable = () => {
 };
 
 export const Example: StoryObj = {
-  render: RenderTable,
-};
-
-const RenderTableNoPadding = () => {
-  const args = {
-    triggerList: [
-      {
-        value: 'members',
-        name: 'Members',
-        leftIcon: 'fluent:person-24-regular',
-      },
-      {
-        value: 'campaigns',
-        name: 'Campaigns',
-        leftIcon: 'fluent:arrow-trending-lines-20-filled',
-      },
-      {
-        value: 'dataloggers',
-        name: 'Dataloggers',
-        leftIcon: 'fluent:arrow-trending-lines-20-filled',
-        disabled: true,
-      },
-    ],
-    triggerContentList: [
-      { value: 'members', content: <Flex>Members content</Flex> },
-      { value: 'campaigns', content: <Flex>Campaigns content</Flex> },
-      { value: 'dataloggers', content: <Flex>Dataloggers content</Flex> },
-    ],
-  };
-
-  return (
-    <Tabs preserveLeftPadding={false}>
-      <Tabs.TabList>
-        {args.triggerList.map((trigger) => {
-          return (
-            <Tabs.Tab key={trigger.value} disabled={trigger.disabled}>
-              <Flex sx={{ gap: '2' }}>
-                {trigger.leftIcon && <Icon icon={trigger.leftIcon} />}
-                {trigger.name}
-              </Flex>
-            </Tabs.Tab>
-          );
-        })}
-      </Tabs.TabList>
-      {args.triggerContentList.map((content) => {
-        return (
-          <Tabs.TabPanel key={content.value}>{content.content}</Tabs.TabPanel>
-        );
-      })}
-    </Tabs>
-  );
+  render: () => {
+    return RenderTable();
+  },
 };
 
 export const NoLeftPadding: StoryObj = {
-  render: RenderTableNoPadding,
+  render: () => {
+    return RenderTable(false);
+  },
 };
