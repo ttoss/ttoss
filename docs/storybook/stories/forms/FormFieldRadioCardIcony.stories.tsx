@@ -2,6 +2,7 @@ import { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldRadioCardIcony,
+  type FormRadioOption,
   useForm,
   yup,
   yupResolver,
@@ -108,3 +109,85 @@ const VerticalTemplate: StoryFn = () => {
 };
 
 export const Vertical = VerticalTemplate.bind({});
+
+const strategyOptions: FormRadioOption[] = [
+  {
+    value: 'max-performance',
+    label: 'Max Performance',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:target-24-filled"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+    tag: { label: 'Modelo Padrão', variant: 'accent' },
+  },
+  {
+    value: 'conservative',
+    label: 'Conservador',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:shield-checkmark-24-regular"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+  },
+  {
+    value: 'max-scale',
+    label: 'Max Escala',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:arrow-flow-diagonal-up-right-24-filled"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+  },
+  {
+    value: 'flexible',
+    label: 'Flexível',
+    icon: (props: { size?: number; className?: string }) => {
+      return (
+        <Icon
+          icon="fluent:branch-compare-24-filled"
+          width={props.size || 24}
+          className={props.className}
+        />
+      );
+    },
+  },
+];
+
+const strategySchema = yup.object({
+  strategy: yup.string().required('Strategy is required'),
+});
+
+const StrategyTemplate: StoryFn = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: yupResolver(strategySchema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldRadioCardIcony
+        name="strategy"
+        label="Escolha uma estratégia"
+        options={strategyOptions}
+      />
+      <Button sx={{ marginTop: '8' }} type="submit">
+        Confirmar
+      </Button>
+    </Form>
+  );
+};
+
+export const Strategies = StrategyTemplate.bind({});
