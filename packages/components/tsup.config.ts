@@ -15,6 +15,7 @@ export const components = [
   'Markdown',
   'Menu',
   'Modal',
+  'NavList',
   'NotificationCard',
   'NotificationsMenu',
   'Search',

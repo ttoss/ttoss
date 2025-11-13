@@ -177,6 +177,92 @@ import { Menu } from '@ttoss/components/Menu';
 </Menu>;
 ```
 
+### NavList
+
+Navigation lists for sidebars, menus, and dropdowns with icons, grouping, and routing integration. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-navlist--docs)
+
+```tsx
+import { NavList } from '@ttoss/components/NavList';
+
+// Simple navigation
+<NavList
+  items={[
+    { id: '1', label: 'Home', href: '/', icon: 'mdi:home' },
+    { id: '2', label: 'Profile', href: '/profile', icon: 'mdi:account' },
+    { id: '3', label: 'Settings', href: '/settings', icon: 'mdi:cog' },
+  ]}
+  variant="sidebar"
+/>
+
+// With groups
+<NavList
+  groups={[
+    {
+      id: 'main',
+      label: 'Main Menu',
+      items: [
+        { id: '1', label: 'Dashboard', href: '/dashboard', icon: 'mdi:view-dashboard' },
+        { id: '2', label: 'Analytics', href: '/analytics', icon: 'mdi:chart-line' },
+      ],
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      items: [
+        { id: '3', label: 'Account', href: '/account', icon: 'mdi:account-cog' },
+      ],
+      divider: true, // Divider after group
+    },
+  ]}
+/>
+
+// With Next.js routing
+import NextLink from 'next/link';
+
+<NavList
+  items={items}
+  LinkComponent={NextLink}
+  onItemClick={(item) => console.log('Clicked:', item)}
+/>
+
+// Custom Link Component
+// IMPORTANT: Always spread {...props} to preserve styling
+// React Router example (uses 'to' instead of 'href')
+import { Link as RouterLink } from 'react-router-dom';
+
+const ReactRouterLink = ({
+  href,
+  children,
+  ...props
+}: React.PropsWithChildren<LinkComponentProps>) => {
+  return (
+    <RouterLink
+      to={href}
+      {...props} // Required to preserve NavList styles
+    >
+      {children}
+    </RouterLink>
+  );
+};
+
+<NavList items={items} LinkComponent={ReactRouterLink} />
+```
+
+**Variants:**
+
+- `sidebar` - Sidebar navigation with larger icons (20px) and generous spacing
+- `menu` - Card-based menu with hover animations (18px icons)
+- `dropdown` - Compact dropdown with subtle borders (16px icons)
+
+**Features:**
+
+- **Auto-grouping** - Items automatically group by `group` property
+- **Active states** - Highlight active items with `active` prop
+- **Disabled items** - Prevent interaction with `disabled` prop
+- **Dividers** - Visual separators with `divider` prop on items or groups
+- **Icon support** - 200k+ icons via `@ttoss/react-icons`
+- **Custom routing** - Compatible with Next.js, React Router via `LinkComponent`
+
 ### Modal
 
 Theme-aware modals with accessibility features. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-modal--docs)
