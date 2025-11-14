@@ -18,7 +18,7 @@ const meta: Meta<typeof Tabs> = {
 
 export default meta;
 
-const RenderTable = (preserveLeftPadding = true) => {
+const RenderTable = () => {
   const args = {
     triggerList: [
       {
@@ -46,7 +46,7 @@ const RenderTable = (preserveLeftPadding = true) => {
   };
 
   return (
-    <Tabs preserveLeftPadding={preserveLeftPadding}>
+    <Tabs>
       <Tabs.TabList>
         {args.triggerList.map((trigger) => {
           return (
@@ -69,13 +69,5 @@ const RenderTable = (preserveLeftPadding = true) => {
 };
 
 export const Example: StoryObj = {
-  render: () => {
-    return RenderTable();
-  },
-};
-
-export const NoLeftPadding: StoryObj = {
-  render: () => {
-    return RenderTable(false);
-  },
+  render: RenderTable,
 };

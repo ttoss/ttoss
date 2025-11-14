@@ -13,13 +13,8 @@ import {
 
 export type { TabListProps, TabPanelProps, TabProps, TabsProps };
 
-type LocalTabsProps = BoxProps &
-  TabsProps & {
-    preserveLeftPadding?: boolean;
-  };
-
-export const Tabs = (props: LocalTabsProps) => {
-  const { sx: customSx, preserveLeftPadding = true, ...restProps } = props;
+export const Tabs = (props: BoxProps & TabsProps) => {
+  const { sx: customSx, ...restProps } = props;
 
   return (
     <Box
@@ -39,7 +34,7 @@ export const Tabs = (props: LocalTabsProps) => {
           '.react-tabs__tab-list': {
             borderBottom: 'md',
             borderColor: themeColors?.input?.border?.muted?.default,
-            paddingLeft: preserveLeftPadding ? undefined : 0,
+            paddingLeft: 0,
           },
           '.react-tabs__tab--selected': {
             backgroundColor: 'transparent',
