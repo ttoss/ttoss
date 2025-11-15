@@ -1,14 +1,27 @@
 import { Box, Flex, Text } from '@ttoss/ui';
+import { Tag } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
-type FormRadioOption = {
+export type FormRadioOption = {
   value: string | number;
   label: string;
   description?: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
+  tag?: {
+    label: string;
+    variant?:
+      | 'accent'
+      | 'positive'
+      | 'caution'
+      | 'muted'
+      | 'negative'
+      | 'primary'
+      | 'secondary'
+      | 'default';
+  };
 };
 
 export const FormFieldRadioCardIcony = <
@@ -50,6 +63,7 @@ export const FormFieldRadioCardIcony = <
               const key = `form-field-radio-card-${name}-${option.value}`;
               const isSelected = field.value === option.value;
               const IconComponent = option.icon;
+              const tag = option.tag;
 
               return (
                 <Box
@@ -65,7 +79,9 @@ export const FormFieldRadioCardIcony = <
                       ? 'input.background.accent.default'
                       : 'input.border.muted.default',
                     borderRadius: 'md',
-                    backgroundColor: 'transparent',
+                    backgroundColor: isSelected
+                      ? 'feedback.background.positive.default'
+                      : 'transparent',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -108,6 +124,19 @@ export const FormFieldRadioCardIcony = <
                       </Text>
                     )}
                   </Flex>
+                  {tag?.label && (
+                    <Tag
+                      variant={tag?.variant}
+                      sx={{
+                        px: '3',
+                        mt: '2',
+                        fontWeight: 'semibold',
+                        fontSize: 'sm',
+                      }}
+                    >
+                      {tag.label}
+                    </Tag>
+                  )}
                 </Box>
               );
             })}
