@@ -1,18 +1,9 @@
 import { Box, Flex, Text } from '@ttoss/ui';
+import { Tag } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
-
-export type TagVariant =
-  | 'accent'
-  | 'positive'
-  | 'caution'
-  | 'muted'
-  | 'negative'
-  | 'primary'
-  | 'secondary'
-  | 'default';
 
 export type FormRadioOption = {
   value: string | number;
@@ -21,7 +12,15 @@ export type FormRadioOption = {
   icon?: React.ComponentType<{ size?: number; className?: string }>;
   tag?: {
     label: string;
-    variant?: TagVariant;
+    variant?:
+      | 'accent'
+      | 'positive'
+      | 'caution'
+      | 'muted'
+      | 'negative'
+      | 'primary'
+      | 'secondary'
+      | 'default';
   };
 };
 
@@ -41,41 +40,6 @@ export const FormFieldRadioCardIcony = <
   direction?: 'column' | 'row';
   width?: string;
 } & FormFieldProps<TFieldValues, TName>) => {
-  const tagVariantMap: Record<TagVariant, { bg: string; color: string }> = {
-    positive: {
-      bg: 'feedback.background.positive.default',
-      color: 'feedback.text.positive.default',
-    }, //
-    accent: {
-      bg: 'action.background.accent.default',
-      color: 'action.text.accent.default',
-    }, //
-    caution: {
-      bg: 'feedback.background.caution.default',
-      color: 'feedback.text.caution.default',
-    }, //
-    muted: {
-      bg: 'display.background.muted.default',
-      color: 'display.text.muted.default',
-    }, //
-    negative: {
-      bg: 'feedback.background.negative.default',
-      color: 'feedback.text.negative.default',
-    }, //
-    primary: {
-      bg: 'action.background.primary.default',
-      color: 'action.text.primary.default',
-    }, //
-    secondary: {
-      bg: 'action.background.secondary.default',
-      color: 'action.text.secondary.default',
-    }, //
-    default: {
-      bg: 'action.background.muted.default',
-      color: 'action.text.muted.default',
-    },
-  };
-
   return (
     <FormField
       label={label}
@@ -100,8 +64,6 @@ export const FormFieldRadioCardIcony = <
               const isSelected = field.value === option.value;
               const IconComponent = option.icon;
               const tag = option.tag;
-              const variant = tag?.variant ?? 'default';
-              const tagColors = tagVariantMap[variant];
 
               return (
                 <Box
@@ -162,29 +124,18 @@ export const FormFieldRadioCardIcony = <
                       </Text>
                     )}
                   </Flex>
-                  {tag && (
-                    <Box
+                  {tag?.label && (
+                    <Tag
+                      variant={tag?.variant}
                       sx={{
-                        px: '3', // padding horizontal
-                        py: '1', // padding vertical
-                        mt: '2', // margin-top entre label e tag
-                        borderRadius: 'full',
-                        fontSize: 'xs',
+                        px: '3',
+                        mt: '2',
                         fontWeight: 'semibold',
-                        backgroundColor: tagColors.bg,
-                        color: tagColors.color,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        width: 'auto', // ajusta ao conteúdo
-                        maxWidth: '100%',
-                        whiteSpace: 'nowrap', // evita quebra dentro da tag
-                        boxSizing: 'border-box',
+                        fontSize: 'sm',
                       }}
                     >
                       {tag.label}
-                    </Box>
+                    </Tag>
                   )}
                 </Box>
               );
