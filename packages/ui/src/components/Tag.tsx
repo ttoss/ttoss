@@ -1,4 +1,4 @@
-import { Box } from '@ttoss/ui';
+import { Box, ThemeUIStyleObject } from '@ttoss/ui';
 import * as React from 'react';
 
 export type TagVariant =
@@ -14,7 +14,7 @@ export type TagVariant =
 export type TagProps = {
   children: React.ReactNode | React.ReactNode[];
   variant?: TagVariant;
-  sx?: Record<string, unknown>;
+  sx?: ThemeUIStyleObject;
 };
 
 const tagVariantMap: Record<TagVariant, { bg: string; color: string }> = {
@@ -55,7 +55,7 @@ const tagVariantMap: Record<TagVariant, { bg: string; color: string }> = {
 export const Tag = ({ children, variant = 'default', sx }: TagProps) => {
   const colors = tagVariantMap[variant];
 
-  const baseStyles: Record<string, unknown> = {
+  const baseStyles: ThemeUIStyleObject = {
     ml: 2,
     px: 2,
     py: 0,
