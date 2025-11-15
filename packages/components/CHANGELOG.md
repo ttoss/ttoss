@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.6.2...@ttoss/components@2.7.0) (2025-11-14)
+
+### Features
+
+- remove left padding from Tabs component ([#751](https://github.com/ttoss/ttoss/issues/751)) ([7112617](https://github.com/ttoss/ttoss/commit/711261791c199fa672e836098a852e2a29578996))
+
 ## [2.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.6.1...@ttoss/components@2.6.2) (2025-11-12)
 
 ### Bug Fixes

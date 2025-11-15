@@ -34,6 +34,7 @@ export const Tabs = (props: BoxProps & TabsProps) => {
           '.react-tabs__tab-list': {
             borderBottom: 'md',
             borderColor: themeColors?.input?.border?.muted?.default,
+            paddingLeft: 0,
           },
           '.react-tabs__tab--selected': {
             backgroundColor: 'transparent',
@@ -43,7 +44,9 @@ export const Tabs = (props: BoxProps & TabsProps) => {
           },
           '.react-tabs__tab': {
             color: themeColors?.input?.text?.secondary?.default,
-            display: 'inline-block',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '2',
             padding: '3',
             cursor: 'pointer',
             position: 'relative',
@@ -74,7 +77,7 @@ export const Tabs = (props: BoxProps & TabsProps) => {
       }}
       {...restProps}
     >
-      <ReactTabs {...props}>{props.children}</ReactTabs>
+      <ReactTabs {...restProps}>{props.children}</ReactTabs>
     </Box>
   );
 };
