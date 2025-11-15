@@ -10,7 +10,7 @@ export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldPatternFormat } from './FormFieldPatternFormat';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldRadioCard } from './FormFieldRadioCard';
-export type { FormRadioOption, TagVariant } from './FormFieldRadioCardIcony';
+export type { FormRadioOption } from './FormFieldRadioCardIcony';
 export { FormFieldRadioCardIcony } from './FormFieldRadioCardIcony';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
