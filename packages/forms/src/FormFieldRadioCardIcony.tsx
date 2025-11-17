@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@ttoss/ui';
+import { Box, Flex, Text, ThemeUIStyleObject } from '@ttoss/ui';
 import { Tag } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
@@ -21,6 +21,7 @@ export type FormRadioOption = {
       | 'primary'
       | 'secondary'
       | 'default';
+    sx?: ThemeUIStyleObject;
   };
 };
 
@@ -130,8 +131,8 @@ export const FormFieldRadioCardIcony = <
                       sx={{
                         px: '3',
                         mt: '2',
-                        fontWeight: 'semibold',
                         fontSize: 'sm',
+                        ...tag?.sx,
                       }}
                     >
                       {tag.label}

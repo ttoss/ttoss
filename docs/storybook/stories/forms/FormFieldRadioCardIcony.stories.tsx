@@ -264,7 +264,7 @@ const OCAOptions: FormRadioOption[] = [
         />
       );
     },
-    tag: { label: 'Modelo Padrão', variant: 'accent' },
+    tag: { label: 'Modelo Padrão', variant: 'accent', sx: { border: 'none' } },
   },
   {
     value: 'conservative',
