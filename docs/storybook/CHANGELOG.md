@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.26.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.25.4...@docs/storybook@2.26.0) (2025-11-17)
+
+### Features
+
+- enhance FormRadioOption tag styling with custom sx prop ([#752](https://github.com/ttoss/ttoss/issues/752)) ([e46539b](https://github.com/ttoss/ttoss/commit/e46539b5f6fb6eaccc51e60d91e9a5b6d0007f33))
+
 ## [2.25.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.25.3...@docs/storybook@2.25.4) (2025-11-17)
 
 ### Bug Fixes

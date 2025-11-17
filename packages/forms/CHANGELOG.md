@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.32.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.12...@ttoss/forms@0.32.0) (2025-11-17)
+
+### Features
+
+- enhance FormRadioOption tag styling with custom sx prop ([#752](https://github.com/ttoss/ttoss/issues/752)) ([e46539b](https://github.com/ttoss/ttoss/commit/e46539b5f6fb6eaccc51e60d91e9a5b6d0007f33))
+
 ## [0.31.12](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.11...@ttoss/forms@0.31.12) (2025-11-17)
 
 ### Bug Fixes
