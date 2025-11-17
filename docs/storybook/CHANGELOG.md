@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.25.3...@docs/storybook@2.25.4) (2025-11-17)
+
+### Bug Fixes
+
+- update background color logic for selected radio option ([#748](https://github.com/ttoss/ttoss/issues/748)) ([6cd3dcb](https://github.com/ttoss/ttoss/commit/6cd3dcb5f5b2da45ab202852dff1e38623df24fe))
+
 ## [2.25.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@2.25.2...@docs/storybook@2.25.3) (2025-11-14)
 
 **Note:** Version bump only for package @docs/storybook

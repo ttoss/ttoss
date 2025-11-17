@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.31.12](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.11...@ttoss/forms@0.31.12) (2025-11-17)
+
+### Bug Fixes
+
+- update background color logic for selected radio option ([#748](https://github.com/ttoss/ttoss/issues/748)) ([6cd3dcb](https://github.com/ttoss/ttoss/commit/6cd3dcb5f5b2da45ab202852dff1e38623df24fe))
+
 ## [0.31.11](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.31.10...@ttoss/forms@0.31.11) (2025-11-11)
 
 **Note:** Version bump only for package @ttoss/forms
