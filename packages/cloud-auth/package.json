@@ -25,7 +25,7 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "jest": "^30.2.0",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "typescript": "~5.7.2"
   },
   "publishConfig": {

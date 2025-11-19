@@ -1,21 +1,14 @@
-import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
+import { Input } from '@ttoss/ui';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
-import { FormField } from '..';
+import { FormField, type FormFieldProps } from '../FormField';
 
-export type FormFieldCNPJProps = {
-  label: string;
-  name: string;
-  warning?: string | React.ReactNode;
-  inputTooltip?: {
-    render: string | React.ReactNode;
-    place: 'bottom' | 'top' | 'left' | 'right';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'info' | 'warning' | 'success' | 'error';
-    sx?: ThemeUIStyleObject<Theme>;
-  } & SxProp;
-} & Partial<PatternFormatProps>;
+export type FormFieldCNPJProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<PatternFormatProps, 'name' | 'format'>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isCnpjValid = (cnpj: any) => {
@@ -73,20 +66,45 @@ export const isCnpjValid = (cnpj: any) => {
   return true;
 };
 
-export const FormFieldCNPJ = ({
-  label,
-  name,
-  ...patternFormatProps
-}: FormFieldCNPJProps) => {
+export const FormFieldCNPJ = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  disabled,
+  ...props
+}: FormFieldCNPJProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    placeholder = '12.345.678/0000-00',
+    ...patternFormatProps
+  } = props;
+
   return (
     <FormField
-      name={name}
+      id={id}
       label={label}
-      warning={patternFormatProps.warning}
-      inputTooltip={patternFormatProps.inputTooltip}
+      name={name}
+      tooltip={tooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         return (
           <PatternFormat
+            {...patternFormatProps}
             name={field.name}
             value={field.value}
             onBlur={field.onBlur}
@@ -95,8 +113,8 @@ export const FormFieldCNPJ = ({
             }}
             format={'##.###.###/####-##'}
             customInput={Input}
-            placeholder="12.345.678/0000-00"
-            {...patternFormatProps}
+            placeholder={placeholder}
+            disabled={disabled}
           />
         );
       }}

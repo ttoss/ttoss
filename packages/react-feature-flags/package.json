@@ -24,7 +24,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "react-error-boundary": "^5.0.0"
+    "react-error-boundary": "^6.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -32,10 +32,10 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.6",
     "jest": "^30.2.0",
     "react": "^19.2.0",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.1"
   },
   "keywords": [
     "feature-flags",

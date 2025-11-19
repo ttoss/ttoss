@@ -127,6 +127,92 @@ const MyForm = () => {
 };
 ```
 
+## Validation Approaches
+
+There are two ways to validate form fields in `@ttoss/forms`: schema-based validation using Yup schemas with `yupResolver`, and field-level validation using the `rules` prop on individual form fields.
+
+**IMPORTANT:** You cannot mix both validation methods for the same field—choose either schema-based or field-level validation per field.
+
+**When to use schema validation:**
+
+- Cross-field validation
+- Complex business logic
+- Reusable validation patterns
+- Type-safe validation with TypeScript
+
+**When to use `rules`:**
+
+- Simple, field-specific validations
+- Dynamic validation based on component state
+- Quick prototyping
+- Single-field conditional logic
+
+### 1. Schema-based Validation (Recommended)
+
+Use Yup schemas with `yupResolver` for complex validation logic:
+
+```tsx
+const schema = yup.object({
+  email: yup.string().email().required(),
+  age: yup.number().min(18).max(100).required(),
+});
+
+const formMethods = useForm({
+  resolver: yupResolver(schema),
+});
+```
+
+**Advantages:**
+
+- Centralized validation logic
+- Type-safe with TypeScript
+- Reusable schemas
+- Complex validation patterns
+- Schema composition
+
+### 2. Field-level Validation
+
+Use the `rules` prop on individual form fields for simpler validations:
+
+```tsx
+<FormFieldInput
+  name="username"
+  label="Username"
+  rules={{
+    required: 'Username is required',
+    minLength: {
+      value: 3,
+      message: 'Username must be at least 3 characters',
+    },
+    pattern: {
+      value: /^[a-zA-Z0-9_]+$/,
+      message: 'Only letters, numbers, and underscores allowed',
+    },
+  }}
+/>
+
+<FormFieldInput
+  name="email"
+  label="Email"
+  rules={{
+    required: 'Email is required',
+    validate: (value) => {
+      return value.includes('@') || 'Invalid email format';
+    },
+  }}
+/>
+```
+
+**Available validation rules:**
+
+- `required`: Field is required (string message or boolean)
+- `min`: Minimum value (for numbers)
+- `max`: Maximum value (for numbers)
+- `minLength`: Minimum string length
+- `maxLength`: Maximum string length
+- `pattern`: RegExp pattern
+- `validate`: Custom validation function or object of functions
+
 ## Form Field Components
 
 All form field components share common props:
@@ -216,7 +302,11 @@ const options = [
   { value: 'bank', label: 'Bank Transfer', icon: 'bank' },
 ];
 
-<FormFieldRadioCardIcony name="payment" label="Payment Method" options={options} />;
+<FormFieldRadioCardIcony
+  name="payment"
+  label="Payment Method"
+  options={options}
+/>;
 ```
 
 ### FormFieldSelect

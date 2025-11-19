@@ -1,38 +1,48 @@
 import { Select, type SelectProps } from '@ttoss/ui';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormField, FormFieldProps } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 
-type FormFieldSelectProps<
+export type FormFieldSelectProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = Omit<SelectProps, 'defaultValue'> & FormFieldProps<TFieldValues, TName>;
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<SelectProps, 'name' | 'defaultValue'>;
 
 export const FormFieldSelect = <
   TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  id,
-  defaultValue,
-  sx,
-  css,
   disabled,
-  tooltip,
-  ...selectProps
-}: FormFieldSelectProps<TFieldValues>) => {
+  ...props
+}: FormFieldSelectProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    ...selectProps
+  } = props;
+
   return (
     <FormField
-      name={name}
-      label={label}
       id={id}
-      defaultValue={defaultValue}
-      disabled={disabled}
+      label={label}
+      name={name}
       tooltip={tooltip}
-      inputTooltip={selectProps.inputTooltip}
-      warning={selectProps.warning}
+      inputTooltip={inputTooltip}
+      warning={warning}
       sx={sx}
       css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field, fieldState }) => {
         return (
           <Select

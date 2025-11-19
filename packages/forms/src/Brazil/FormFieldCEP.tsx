@@ -1,24 +1,26 @@
+import type { FieldPath, FieldValues } from 'react-hook-form';
+
 import {
   FormFieldPatternFormat,
-  FormFieldPatternFormatProps,
+  type FormFieldPatternFormatProps,
 } from '../FormFieldPatternFormat';
 
-export type FormFieldCEPProps = {
-  label: string;
-  name: string;
-} & Partial<FormFieldPatternFormatProps>;
+export type FormFieldCEPProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Omit<FormFieldPatternFormatProps<TFieldValues, TName>, 'format'>;
 
-export const FormFieldCEP = ({
-  label,
-  name,
+export const FormFieldCEP = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  placeholder = '12345-678',
   ...formFieldPatternFormatProps
-}: FormFieldCEPProps) => {
+}: FormFieldCEPProps<TFieldValues, TName>) => {
   return (
     <FormFieldPatternFormat
-      name={name}
-      label={label}
-      format="#####-###"
-      placeholder="12345-678"
+      format={'#####-###'}
+      placeholder={placeholder}
       {...formFieldPatternFormatProps}
     />
   );

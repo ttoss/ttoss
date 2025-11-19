@@ -1,47 +1,52 @@
-import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
-import * as React from 'react';
+import { Input } from '@ttoss/ui';
+import { FieldPath, FieldValues } from 'react-hook-form';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 
-import { FormField } from './FormField';
+import { FormField, FormFieldProps } from './FormField';
 
-export type FormFieldNumericFormatProps = {
-  label?: string;
-  name: string;
-  warning?: string | React.ReactNode;
-  tooltip?: {
-    render: string | React.ReactNode;
-    place: 'top';
-    openOnClick?: boolean;
-    clickable?: boolean;
-  };
-  inputTooltip?: {
-    render: string | React.ReactNode;
-    place: 'bottom' | 'top' | 'left' | 'right';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'info' | 'warning' | 'success' | 'error';
-    sx?: ThemeUIStyleObject<Theme>;
-  } & SxProp;
-} & NumericFormatProps;
+export type FormFieldNumericFormatProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> & Omit<NumericFormatProps, 'name'>;
 
-export const FormFieldNumericFormat = ({
-  label,
-  name,
-  warning,
-  tooltip,
-  inputTooltip,
-  ...numericFormatProps
-}: FormFieldNumericFormatProps) => {
+export const FormFieldNumericFormat = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  disabled,
+  ...props
+}: FormFieldNumericFormatProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    ...numericFormatProps
+  } = props;
+
   return (
     <FormField
+      id={id}
       label={label}
       name={name}
-      warning={warning}
       tooltip={tooltip}
       inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         return (
           <NumericFormat
+            {...numericFormatProps}
             name={field.name}
             value={field.value}
             onBlur={field.onBlur}
@@ -49,7 +54,7 @@ export const FormFieldNumericFormat = ({
               field.onChange(values.floatValue);
             }}
             customInput={Input}
-            {...numericFormatProps}
+            disabled={disabled}
           />
         );
       }}
