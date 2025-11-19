@@ -16,7 +16,11 @@ program
   .description('Sync database')
   .action(sync)
   .option('--alter', 'Alter sync', false)
-  .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts');
+  .option('-d, --db-path <dbPath>', 'db initialization file path', 'src/db.ts')
+  .requiredOption(
+    '-e, --environment <environment>',
+    'Environment name to load .env.<environment> file'
+  );
 
 program
   .command('erd')
