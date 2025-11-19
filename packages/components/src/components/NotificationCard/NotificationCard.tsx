@@ -147,6 +147,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
             <Text
               sx={{
                 fontSize: ['sm', 'md'],
+                wordBreak: 'break-word',
               }}
             >
               {props.message}
