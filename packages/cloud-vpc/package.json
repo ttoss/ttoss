@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-vpc",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Deploy a VPC with public and private subnets",
   "license": "MIT",
   "author": "ttoss",

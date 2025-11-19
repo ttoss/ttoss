@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-cli",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "A library for building GraphQL APIs types and schema.",
   "license": "MIT",
   "author": "ttoss",
