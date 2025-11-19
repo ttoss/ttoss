@@ -1,38 +1,52 @@
-import { Input, Theme, ThemeUIStyleObject } from '@ttoss/ui';
+import { Input } from '@ttoss/ui';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 
-export type FormFieldPatternFormatProps = {
-  label?: string;
-  name: string;
-  warning?: string | React.ReactNode;
-  inputTooltip?: {
-    render: string | React.ReactNode;
-    place: 'bottom' | 'top' | 'left' | 'right';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'info' | 'warning' | 'success' | 'error';
-    sx?: ThemeUIStyleObject<Theme>;
-  };
-} & PatternFormatProps;
+export type FormFieldPatternFormatProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> & Omit<PatternFormatProps, 'name'>;
 
-export const FormFieldPatternFormat = ({
-  label,
-  name,
-  warning,
-  inputTooltip,
-  ...patternFormatProps
-}: FormFieldPatternFormatProps) => {
+export const FormFieldPatternFormat = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  disabled,
+  ...props
+}: FormFieldPatternFormatProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    ...patternFormatProps
+  } = props;
+
   return (
     <FormField
-      name={name}
+      id={id}
       label={label}
-      warning={warning}
+      name={name}
+      tooltip={tooltip}
       inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat
+            {...patternFormatProps}
             name={field.name}
             value={field.value}
             onBlur={field.onBlur}
@@ -40,8 +54,8 @@ export const FormFieldPatternFormat = ({
               field.onChange(values.value);
             }}
             customInput={Input}
-            aria-invalid={Boolean(fieldState.error).valueOf()}
-            {...patternFormatProps}
+            disabled={disabled}
+            aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );
       }}

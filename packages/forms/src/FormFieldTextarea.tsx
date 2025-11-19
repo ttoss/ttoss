@@ -1,51 +1,53 @@
-import {
-  Textarea,
-  type TextareaProps,
-  Theme,
-  ThemeUIStyleObject,
-} from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import { Textarea, type TextareaProps } from '@ttoss/ui';
+import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
+
+export type FormFieldTextareaProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> & Omit<TextareaProps, 'name'>;
 
 export const FormFieldTextarea = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  warning,
-  inputTooltip,
-  sx,
-  ...textareaProps
-}: {
-  label?: string;
-  name: TName;
-  warning?: string | React.ReactNode;
-  inputTooltip?: {
-    render: string | React.ReactNode;
-    place: 'bottom' | 'top' | 'left' | 'right';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'info' | 'warning' | 'success' | 'error';
-    sx?: ThemeUIStyleObject<Theme>;
-  };
-} & TextareaProps) => {
-  const id = `form-field-textarea-${name}`;
+  defaultValue = '' as FieldPathValue<TFieldValues, TName>,
+  disabled,
+  ...props
+}: FormFieldTextareaProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    ...textareaProps
+  } = props;
 
   return (
     <FormField
+      id={id}
       label={label}
       name={name}
-      id={id}
-      sx={sx}
-      warning={warning}
+      tooltip={tooltip}
       inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field, fieldState }) => {
         return (
           <Textarea
-            {...field}
             {...textareaProps}
+            {...field}
+            disabled={disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

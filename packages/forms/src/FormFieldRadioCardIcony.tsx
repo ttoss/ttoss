@@ -25,32 +25,57 @@ export type FormRadioOption = {
   };
 };
 
+export type FormFieldRadioCardIconyProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> & {
+  options: FormRadioOption[];
+  direction?: 'column' | 'row';
+  width?: string;
+};
+
 export const FormFieldRadioCardIcony = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  direction = 'row',
-  width = 'full',
-  sx,
-  options,
-  tooltip,
-}: {
-  options: FormRadioOption[];
-  direction?: 'column' | 'row';
-  width?: string;
-} & FormFieldProps<TFieldValues, TName>) => {
+  disabled,
+  ...props
+}: FormFieldRadioCardIconyProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    options,
+    direction = 'row',
+    width = 'full',
+  } = props;
+
   return (
     <FormField
+      id={id}
       label={label}
       name={name}
-      sx={sx}
       tooltip={tooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         const handleOptionClick = (optionValue: string | number) => {
-          field.onChange(optionValue);
-          field.onBlur();
+          if (!disabled) {
+            field.onChange(optionValue);
+            field.onBlur();
+          }
         };
 
         return (
@@ -88,7 +113,8 @@ export const FormFieldRadioCardIcony = <
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
-                    cursor: 'pointer',
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    opacity: disabled ? 0.5 : 1,
                     transition: 'all 0.2s ease-in-out',
                   }}
                 >

@@ -2,16 +2,21 @@ import { Box, BoxProps } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldValues, FormProvider, FormProviderProps } from 'react-hook-form';
 
-export const Form = <TFieldValues extends FieldValues = FieldValues>({
+export const Form = <
+  TFieldValues extends FieldValues,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TContext = any,
+  TTransformedValues = TFieldValues,
+>({
   children,
   onSubmit,
   sx,
   ...formMethods
 }: {
   children?: React.ReactNode;
-  onSubmit?: (data: TFieldValues) => Promise<void> | void;
+  onSubmit?: (data: TTransformedValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
-} & FormProviderProps<TFieldValues>) => {
+} & FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
   return (
     <FormProvider {...formMethods}>
       <Box

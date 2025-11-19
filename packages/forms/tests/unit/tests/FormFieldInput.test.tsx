@@ -67,3 +67,50 @@ test('should display error messages and error icon', async () => {
   );
   expect(await screen.findByText('First name is required')).toBeInTheDocument();
 });
+
+test('should display error messages and error icon but using rules', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm({
+      defaultValues: {
+        age: 0,
+      },
+      mode: 'all',
+    });
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldInput
+          name="firstName"
+          label="First Name"
+          rules={{
+            required: 'First name is required',
+          }}
+        />
+        <FormFieldInput
+          name="age"
+          label="Age"
+          rules={{
+            min: {
+              value: 18,
+              message: 'You must be at least 18 years old',
+            },
+          }}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(await screen.findByText('First name is required')).toBeInTheDocument();
+  expect(
+    await screen.findByText('You must be at least 18 years old')
+  ).toBeInTheDocument();
+});

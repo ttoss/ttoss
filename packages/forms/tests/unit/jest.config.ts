@@ -1,17 +1,21 @@
 import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      branches: 71.34,
-      functions: 87.05,
-      lines: 85.4,
-      statements: 85.59,
+      statements: 87.35,
+      branches: 73.83,
+      lines: 87.25,
+      functions: 87.77,
     },
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
+  transformIgnorePatterns: getTransformIgnorePatterns({
+    esmModules: ['react-error-boundary'],
+  }),
 });
 
 export default config;

@@ -1,27 +1,28 @@
+import type { FieldPath, FieldValues } from 'react-hook-form';
+
 import {
   FormFieldNumericFormat,
-  FormFieldNumericFormatProps,
+  type FormFieldNumericFormatProps,
 } from './FormFieldNumericFormat';
 
-export type FormFieldCurrencyInputProps = {
-  label?: string;
-  name: string;
+export type FormFieldCurrencyInputProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldNumericFormatProps<TFieldValues, TName> & {
   prefix: string;
-} & FormFieldNumericFormatProps;
+};
 
-export const FormFieldCurrencyInput = ({
-  label,
-  name,
+export const FormFieldCurrencyInput = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
   prefix,
-  decimalSeparator,
-  thousandSeparator,
+  decimalSeparator = ',',
+  thousandSeparator = '.',
   ...formFieldNumericFormatProps
-}: FormFieldCurrencyInputProps) => {
+}: FormFieldCurrencyInputProps<TFieldValues, TName>) => {
   return (
     <FormFieldNumericFormat
-      name={name}
-      label={label}
-      warning={formFieldNumericFormatProps.warning}
       fixedDecimalScale
       decimalScale={2}
       prefix={prefix}

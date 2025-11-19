@@ -1,4 +1,5 @@
 import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 const config = jestUnitConfig({
   coverageThreshold: {
@@ -11,7 +12,9 @@ const config = jestUnitConfig({
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
-  transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
+  transformIgnorePatterns: getTransformIgnorePatterns({
+    esmModules: ['rehype-raw', 'react-error-boundary'],
+  }),
 });
 
 export default config;

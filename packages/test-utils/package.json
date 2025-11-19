@@ -46,12 +46,12 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.19.0",
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.6",
     "jest": "^30.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.1"
   },
   "keywords": [
     "Jest",

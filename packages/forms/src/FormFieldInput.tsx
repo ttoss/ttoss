@@ -1,40 +1,53 @@
 import { Input, type InputProps } from '@ttoss/ui';
-import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
+import type { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
-export type FormFieldInputProps<TName> = {
-  label?: string;
-  name: TName;
-} & InputProps &
-  FormFieldProps;
+export type FormFieldInputProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> & Omit<InputProps, 'name'>;
 
 export const FormFieldInput = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  tooltip,
-  sx,
-  defaultValue = '',
-  ...inputProps
-}: FormFieldInputProps<TName>) => {
+  defaultValue = '' as FieldPathValue<TFieldValues, TName>,
+  disabled,
+  ...props
+}: FormFieldInputProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    ...inputProps
+  } = props;
+
   return (
     <FormField
-      name={name}
+      id={id}
       label={label}
-      disabled={inputProps.disabled}
+      name={name}
       tooltip={tooltip}
-      warning={inputProps.warning}
-      inputTooltip={inputProps.inputTooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
       sx={sx}
-      defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field, fieldState }) => {
         return (
           <Input
             {...inputProps}
             {...field}
+            disabled={disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

@@ -34,7 +34,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.19.0",
     "jest": "^30.2.0",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.1"
   },
   "keywords": [],
   "publishConfig": {

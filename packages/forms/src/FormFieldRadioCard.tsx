@@ -9,30 +9,53 @@ type FormRadioOption = {
   description?: string;
 };
 
+export type FormFieldRadioCardProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<RadioProps, 'name'> & {
+    options: FormRadioOption[];
+    direction?: 'column' | 'row';
+    width?: string;
+  };
+
 export const FormFieldRadioCard = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  direction = 'column',
-  width = 'full',
-  sx,
-  options,
-  tooltip,
-  ...radioProps
-}: {
-  options: FormRadioOption[];
-  direction?: 'column' | 'row';
-  width?: string;
-} & FormFieldProps<TFieldValues, TName> &
-  RadioProps) => {
+  disabled,
+  ...props
+}: FormFieldRadioCardProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    options,
+    direction = 'column',
+    width = 'full',
+    ...radioProps
+  } = props;
+
   return (
     <FormField
+      id={id}
       label={label}
       name={name}
-      sx={sx}
       tooltip={tooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         return (
           <Flex
@@ -63,13 +86,14 @@ export const FormFieldRadioCard = <
                     }}
                   >
                     <Radio
+                      {...radioProps}
                       ref={field.ref}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       value={option.value}
                       checked={field.value === option.value}
                       name={name}
-                      {...radioProps}
+                      disabled={disabled}
                     />
                     <Flex sx={{ flexDirection: 'column', gap: '1' }}>
                       {option.label && <Text>{option.label}</Text>}

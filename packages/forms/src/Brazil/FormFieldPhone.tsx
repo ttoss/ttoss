@@ -1,39 +1,57 @@
-import { Input, SxProp, Theme, ThemeUIStyleObject } from '@ttoss/ui';
+import { Input } from '@ttoss/ui';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
-import { FormField } from '../FormField';
+import { FormField, type FormFieldProps } from '../FormField';
 
-export type FormFieldPhoneProps = {
-  label: string;
-  name: string;
-  warning?: string | React.ReactNode;
-  inputTooltip?: {
-    render: string | React.ReactNode;
-    place: 'bottom' | 'top' | 'left' | 'right';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'info' | 'warning' | 'success' | 'error';
-    sx?: ThemeUIStyleObject<Theme>;
-  } & SxProp;
-} & Partial<PatternFormatProps>;
+export type FormFieldPhoneProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<PatternFormatProps, 'name' | 'format'>;
 
-export const FormFieldPhone = ({
-  label,
-  name,
-  ...patternFormatProps
-}: FormFieldPhoneProps) => {
+export const FormFieldPhone = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  disabled,
+  ...props
+}: FormFieldPhoneProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    placeholder = '(11) 91234-1234',
+    ...patternFormatProps
+  } = props;
+
   return (
     <FormField
-      name={name}
+      id={id}
       label={label}
-      warning={patternFormatProps.warning}
-      inputTooltip={patternFormatProps.inputTooltip}
+      name={name}
+      tooltip={tooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';
 
         return (
           <PatternFormat
+            {...patternFormatProps}
             name={field.name}
             value={field.value}
             onBlur={field.onBlur}
@@ -42,8 +60,8 @@ export const FormFieldPhone = ({
             }}
             format={format}
             customInput={Input}
-            placeholder="(11) 91234-1234"
-            {...patternFormatProps}
+            placeholder={placeholder}
+            disabled={disabled}
           />
         );
       }}

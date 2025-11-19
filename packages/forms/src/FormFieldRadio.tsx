@@ -8,26 +8,49 @@ type FormRadioOption = {
   label: string;
 };
 
+export type FormFieldRadioProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<RadioProps, 'name'> & {
+    options: FormRadioOption[];
+  };
+
 export const FormFieldRadio = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  label,
-  name,
-  sx,
+  disabled,
   options,
-  tooltip,
-  ...radioProps
-}: {
-  options: FormRadioOption[];
-} & FormFieldProps<TFieldValues, TName> &
-  RadioProps) => {
+  ...props
+}: FormFieldRadioProps<TFieldValues, TName>) => {
+  const {
+    label,
+    name,
+    tooltip,
+    inputTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    defaultValue,
+    ...radioProps
+  } = props;
+
   return (
     <FormField
+      id={id}
       label={label}
       name={name}
-      sx={sx}
       tooltip={tooltip}
+      inputTooltip={inputTooltip}
+      warning={warning}
+      sx={sx}
+      css={css}
+      defaultValue={defaultValue}
+      rules={rules}
+      disabled={disabled}
       render={({ field }) => {
         return (
           <Flex
@@ -53,6 +76,7 @@ export const FormFieldRadio = <
                     value={option.value}
                     checked={field.value === option.value}
                     name={name}
+                    disabled={disabled}
                     {...radioProps}
                   />
                   {option.label}

@@ -130,7 +130,7 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
     }
   }, [props.signUpTerms, signUpTermsLabel]);
 
-  const formMethods = useForm<OnSignUpInput>({
+  const formMethods = useForm({
     mode: 'onChange',
     resolver: yupResolver(schema),
   });

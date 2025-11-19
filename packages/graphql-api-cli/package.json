@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.1"
   },
   "keywords": [
     "api",
