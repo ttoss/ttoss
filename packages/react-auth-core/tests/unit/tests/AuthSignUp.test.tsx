@@ -1,9 +1,14 @@
-import { render, screen, userEvent } from '@ttoss/test-utils/react';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { AuthSignUp } from 'src/AuthSignUp';
 
 const onSignUp = jest.fn();
 
 const onGoToSignIn = jest.fn();
+
+beforeEach(() => {
+  onSignUp.mockClear();
+  onGoToSignIn.mockClear();
+});
 
 const userForm = {
   email: 'user@example.com',
@@ -38,7 +43,7 @@ test('Should not call the onSubmit function if click on the Signup button withou
 });
 
 test('Should call the onSubmit function if click on the Signup button with the fields filled', async () => {
-  const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+  const user = userEvent.setup({ delay: null });
 
   render(<AuthSignUp {...{ onSignUp, onGoToSignIn }} />);
 
@@ -53,6 +58,10 @@ test('Should call the onSubmit function if click on the Signup button with the f
   await user.type(confirmPassword, userForm.password);
 
   await user.tab();
+
+  await waitFor(() => {
+    expect(buttonSubmit).not.toBeDisabled();
+  });
 
   await user.click(buttonSubmit);
 
@@ -101,7 +110,7 @@ describe('sign up terms', () => {
   );
 
   test('cannot submit form if terms and conditions are required and not checked', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AuthSignUp
@@ -138,7 +147,7 @@ describe('sign up terms', () => {
   });
 
   test('can submit form if terms and conditions are required and checked', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AuthSignUp
@@ -171,13 +180,17 @@ describe('sign up terms', () => {
 
     await user.tab();
 
+    await waitFor(() => {
+      expect(buttonSubmit).not.toBeDisabled();
+    });
+
     await user.click(buttonSubmit);
 
     expect(onSignUp).toHaveBeenCalledTimes(1);
   });
 
   test('can submit form if terms and conditions are not required', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AuthSignUp
@@ -208,13 +221,17 @@ describe('sign up terms', () => {
 
     await user.tab();
 
+    await waitFor(() => {
+      expect(buttonSubmit).not.toBeDisabled();
+    });
+
     await user.click(buttonSubmit);
 
     expect(onSignUp).toHaveBeenCalledTimes(1);
   });
 
   test('Should call the onSubmit function if click on the Signup button with the fields filled', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AuthSignUp
@@ -246,6 +263,10 @@ describe('sign up terms', () => {
     await user.click(checkbox);
 
     await user.tab();
+
+    await waitFor(() => {
+      expect(buttonSubmit).not.toBeDisabled();
+    });
 
     await user.click(buttonSubmit);
 
