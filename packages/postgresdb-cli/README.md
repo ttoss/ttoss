@@ -1,6 +1,6 @@
 # @ttoss/postgresdb-cli
 
-This package provides a CLI to interact with a PostgreSQL database using the [sequelize](https://sequelize.org/) library.
+CLI for managing PostgreSQL databases with [Sequelize](https://sequelize.org/).
 
 ## Installation
 
@@ -8,50 +8,78 @@ This package provides a CLI to interact with a PostgreSQL database using the [se
 pnpm add -D @ttoss/postgresdb-cli
 ```
 
-## Usage
+## Prerequisites
 
-First, you need to create define the `db` object in your project using the `@ttoss/postgresdb` package. Check [@ttoss/postgresdb documentation](https://ttoss.dev/docs/modules/packages/postgresdb/) for more information. The CLI will use this object to load the models and interact with the database.
+Define your `db` object using [@ttoss/postgresdb](https://ttoss.dev/docs/modules/packages/postgresdb/). The CLI imports this object to load models and interact with the database.
 
-Second, you need to define the following environment variables to connect to the database:
+Set connection environment variables in `.env` files:
 
-- `DB_NAME`: database name
-- `DB_USERNAME`: database username
-- `DB_PASSWORD`: database password
-- `DB_HOST`: database host
-- `DB_PORT`: database port. Default: 5432
-
-### Sync
-
-To [sync](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) the database schema with the models, you can use the `sync` command:
-
-```bash
-pnpm dlx @ttoss/postgresdb-cli sync
+```env
+DB_NAME=postgres
+DB_USERNAME=postgres
+DB_PASSWORD=mysecretpassword
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
-Or you can add the command to your `package.json` scripts for easier access:
+**Environment-specific configuration:** Use `--environment` or `-e` flag to load `.env.<environment>` files (e.g., `.env.Production`, `.env.Staging`) instead of the default `.env`. This prevents accidental use of production credentials.
+
+## Commands
+
+### `sync`
+
+[Synchronize](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) database schema with models:
+
+```bash
+pnpm dlx @ttoss/postgresdb-cli sync -e Development
+```
+
+**⚠️ Required:** The `--environment` or `-e` flag is **mandatory** to explicitly specify which environment credentials to use. This prevents accidental operations on the wrong database.
+
+**Using environment-specific credentials:**
+
+```bash
+pnpm dlx @ttoss/postgresdb-cli sync --alter -e Production
+```
+
+This loads variables from `.env.Production`.
+
+**Behavior:**
+
+- **Without `--alter`**: Creates new tables only (preserves existing schema)
+- **With `--alter`**: Creates new tables, adds/removes columns to match models, creates new indexes (preserves tables and indexes not in models). **Requires confirmation** before executing.
+
+⚠️ **Caution:** The `--alter` flag modifies your database schema. Removing columns will **delete data permanently**. The CLI will prompt for confirmation before proceeding. Always backup your database before using `--alter` in production. For production environments, use proper migration tools instead of `sync`.
+
+**Add to `package.json` for convenience:**
 
 ```json
 {
   "scripts": {
-    "sync": "ttoss-postgresdb sync"
+    "sync:dev": "ttoss-postgresdb sync -e Development",
+    "sync:staging": "ttoss-postgresdb sync --alter -e Staging",
+    "sync:prod": "ttoss-postgresdb sync --alter -e Production"
   }
 }
 ```
 
-#### Options
+**Options:**
 
-- `--db-path` or `-d`: Path to the file where the `db` object is defined. Default: `./src/db.js`.
-- `--alter`: Alter the database schema to match the models. Default: `false`.
+- `--db-path, -d`: Path to `db` object file (default: `./src/db.js`)
+- `--alter`: Alter schema to match models (default: `false`)
+- `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
 
-### ERD (Entity-Relationship Diagram)
+### `erd`
 
-To generate an [ERD](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) of the database, you can use the `erd` command:
+Generate an [Entity-Relationship Diagram](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) from your models:
 
 ```bash
 pnpm dlx @ttoss/postgresdb-cli erd
 ```
 
-Or you can add the command to your `package.json` scripts for easier access:
+**Note:** This command generates diagrams from model definitions only - database credentials are **not required** unless you need to validate against an actual database.
+
+**Add to `package.json` for convenience:**
 
 ```json
 {
@@ -61,7 +89,7 @@ Or you can add the command to your `package.json` scripts for easier access:
 }
 ```
 
-#### Options
+**Options:**
 
-- `--db-path` or `-d`: Path to the file where the `db` object is defined. Default: `./src/db.js`.
-- `--engine`: Layout engine to use, options are "circo", "dot", "fdp", "neato", "osage", "twopi". Default to "circo"
+- `--db-path, -d`: Path to `db` object file (default: `./src/db.js`)
+- `--engine`: Layout engine - `circo`, `dot`, `fdp`, `neato`, `osage`, `twopi` (default: `circo`)

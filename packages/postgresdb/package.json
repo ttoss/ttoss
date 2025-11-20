@@ -43,8 +43,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
       }
     },
     "provenance": true
