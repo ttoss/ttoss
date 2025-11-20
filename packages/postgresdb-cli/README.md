@@ -31,8 +31,10 @@ DB_PORT=5432
 [Synchronize](https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization) database schema with models:
 
 ```bash
-pnpm dlx @ttoss/postgresdb-cli sync
+pnpm dlx @ttoss/postgresdb-cli sync -e Development
 ```
+
+**⚠️ Required:** The `--environment` or `-e` flag is **mandatory** to explicitly specify which environment credentials to use. This prevents accidental operations on the wrong database.
 
 **Using environment-specific credentials:**
 
@@ -40,7 +42,7 @@ pnpm dlx @ttoss/postgresdb-cli sync
 pnpm dlx @ttoss/postgresdb-cli sync --alter -e Production
 ```
 
-This loads variables from `.env.Production` instead of `.env`.
+This loads variables from `.env.Production`.
 
 **Behavior:**
 
@@ -54,7 +56,9 @@ This loads variables from `.env.Production` instead of `.env`.
 ```json
 {
   "scripts": {
-    "sync": "ttoss-postgresdb sync"
+    "sync:dev": "ttoss-postgresdb sync -e Development",
+    "sync:staging": "ttoss-postgresdb sync --alter -e Staging",
+    "sync:prod": "ttoss-postgresdb sync --alter -e Production"
   }
 }
 ```
@@ -63,7 +67,7 @@ This loads variables from `.env.Production` instead of `.env`.
 
 - `--db-path, -d`: Path to `db` object file (default: `./src/db.js`)
 - `--alter`: Alter schema to match models (default: `false`)
-- `--environment, -e`: Load `.env.<environment>` file for database credentials
+- `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
 
 ### `erd`
 
