@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.21](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.20...@ttoss/postgresdb-cli@0.1.21) (2025-11-20)
+
+### Bug Fixes
+
+- postgresdb cli more segure ([#754](https://github.com/ttoss/ttoss/issues/754)) ([ca6a811](https://github.com/ttoss/ttoss/commit/ca6a8114059360db62f4ff59bc6d8c72f21719b7))
+
 ## [0.1.20](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.19...@ttoss/postgresdb-cli@0.1.20) (2025-11-19)
 
 **Note:** Version bump only for package @ttoss/postgresdb-cli
