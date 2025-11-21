@@ -191,6 +191,8 @@ export const db = initialize({ models });
 
 Testing models with decorators requires special configuration because Jest's Babel transformer doesn't properly transpile TypeScript decorators. The solution is to build your models before running tests.
 
+**Why test your models?** Beyond validating functionality, tests serve as a critical safety check for schema changes. They ensure that running `sync --alter` won't accidentally remove columns or relationships from your database. If a model property is missing or incorrectly defined, tests will fail before you can damage production data.
+
 ### Setup
 
 **1. Install dependencies:**
@@ -284,6 +286,7 @@ describe('User model', () => {
 - **Testcontainers**: Use [`@testcontainers/postgresql`](https://www.npmjs.com/package/@testcontainers/postgresql) to spin up isolated PostgreSQL instances for each test run.
 - **Timeout**: Set a longer timeout with `jest.setTimeout(60000)` as container startup can take time.
 - **Sync schema**: Call `sequelize.sync()` after initialization to create tables based on your models.
+- **Schema validation**: Tests verify that all model properties are correctly defined. This prevents `sync --alter` from accidentally removing database columns due to missing or misconfigured model properties.
 
 For a complete working example with full test configuration, see the [terezinha-farm/postgresdb](https://github.com/ttoss/ttoss/tree/main/terezinha-farm/postgresdb) example in this repository.
 
