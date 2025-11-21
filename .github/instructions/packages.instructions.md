@@ -245,7 +245,7 @@ const separator = intl.formatMessage(messages.decimalSeparator);
 1. **Define messages in English**: Always use English as the default message
 2. **Add clear descriptions**: Help translators understand the context
 3. **Run i18n-cli locally**: Execute `pnpm run i18n` in your package directory to extract messages
-4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n -- --no-cache` from the monorepo root to update i18n in all other packages
+4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n --cache local:` from the monorepo root to update i18n in all other packages
 5. **Translate in apps**: Each application can define locale-specific values in their i18n files
 
 ### 8.3 When to Use i18n
