@@ -48,7 +48,7 @@ export const FormFieldSelect = <
           <Select
             {...selectProps}
             {...field}
-            isDisabled={disabled}
+            isDisabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

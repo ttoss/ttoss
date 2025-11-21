@@ -76,7 +76,7 @@ export const FormFieldRadio = <
                     value={option.value}
                     checked={field.value === option.value}
                     name={name}
-                    disabled={disabled}
+                    disabled={disabled ?? field.disabled}
                     {...radioProps}
                   />
                   {option.label}

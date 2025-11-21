@@ -54,7 +54,7 @@ export const FormFieldPatternFormat = <
               field.onChange(values.value);
             }}
             customInput={Input}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

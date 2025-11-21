@@ -47,7 +47,7 @@ export const FormFieldPassword = <
           <InputPassword
             {...inputProps}
             {...field}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

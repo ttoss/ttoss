@@ -114,7 +114,7 @@ export const FormFieldCNPJ = <
             format={'##.###.###/####-##'}
             customInput={Input}
             placeholder={placeholder}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
           />
         );
       }}

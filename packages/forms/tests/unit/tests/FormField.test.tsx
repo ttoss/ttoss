@@ -1,5 +1,6 @@
 import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { Button, Input } from '@ttoss/ui';
+import * as React from 'react';
 import { Form, FormField, useForm, yup, yupResolver } from 'src/index';
 
 const onSubmit = jest.fn();
@@ -216,5 +217,220 @@ describe('Combined validation (schema + rules)', () => {
         })
       );
     });
+  });
+});
+
+describe('Form disabled state', () => {
+  test('should disable all fields when useForm has disabled set to true', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const RenderDisabledForm = () => {
+      const formMethods = useForm({
+        disabled: true,
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="firstName"
+            label="First Name"
+            defaultValue=""
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <FormField
+            name="lastName"
+            label="Last Name"
+            defaultValue=""
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderDisabledForm />);
+
+    const firstNameInput = screen.getByLabelText('First Name');
+    const lastNameInput = screen.getByLabelText('Last Name');
+
+    expect(firstNameInput).toBeDisabled();
+    expect(lastNameInput).toBeDisabled();
+
+    // Try to type in disabled fields
+    await user.type(firstNameInput, 'John');
+    await user.type(lastNameInput, 'Doe');
+
+    // Fields should remain empty
+    expect(firstNameInput).toHaveValue('');
+    expect(lastNameInput).toHaveValue('');
+  });
+
+  test('should allow field-level disabled prop to override form disabled state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const RenderMixedDisabledForm = () => {
+      const formMethods = useForm({
+        disabled: false,
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="enabled"
+            label="Enabled Field"
+            defaultValue=""
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <FormField
+            name="disabled"
+            label="Disabled Field"
+            defaultValue=""
+            disabled
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderMixedDisabledForm />);
+
+    const enabledInput = screen.getByLabelText('Enabled Field');
+    const disabledInput = screen.getByLabelText('Disabled Field');
+
+    expect(enabledInput).not.toBeDisabled();
+    expect(disabledInput).toBeDisabled();
+
+    await user.type(enabledInput, 'test');
+    await user.type(disabledInput, 'should not work');
+
+    expect(enabledInput).toHaveValue('test');
+    expect(disabledInput).toHaveValue('');
+  });
+
+  test('should dynamically enable/disable form based on state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const RenderDynamicDisabledForm = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const formMethods = useForm({
+        disabled,
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="firstName"
+            label="First Name"
+            defaultValue=""
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button
+            type="button"
+            onClick={() => {
+              return setDisabled(!disabled);
+            }}
+          >
+            Toggle Disabled
+          </Button>
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderDynamicDisabledForm />);
+
+    const input = screen.getByLabelText('First Name');
+    const toggleButton = screen.getByText('Toggle Disabled');
+
+    // Initially enabled
+    expect(input).not.toBeDisabled();
+    await user.type(input, 'John');
+    expect(input).toHaveValue('John');
+
+    // Toggle to disabled
+    await user.click(toggleButton);
+    expect(input).toBeDisabled();
+
+    // Toggle back to enabled
+    await user.click(toggleButton);
+    expect(input).not.toBeDisabled();
+  });
+
+  test('should disable form during submit when using async handler', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const asyncOnSubmit = jest.fn(async (data: any) => {
+      await new Promise((resolve) => {
+        return setTimeout(() => {
+          return resolve(data);
+        }, 100);
+      });
+    });
+
+    const RenderAsyncForm = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const formMethods = useForm({
+        disabled,
+      });
+
+      return (
+        <Form
+          {...formMethods}
+          onSubmit={async (data) => {
+            setDisabled(true);
+            await asyncOnSubmit(data);
+            setDisabled(false);
+          }}
+        >
+          <FormField
+            name="firstName"
+            label="First Name"
+            defaultValue=""
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderAsyncForm />);
+
+    const input = screen.getByLabelText('First Name');
+    const submitButton = screen.getByText('Submit');
+
+    await user.type(input, 'John');
+    expect(input).not.toBeDisabled();
+
+    // Submit form
+    await user.click(submitButton);
+
+    // Form should be disabled during submit
+    await waitFor(() => {
+      expect(input).toBeDisabled();
+    });
+
+    // Form should be enabled after submit completes
+    await waitFor(
+      () => {
+        expect(input).not.toBeDisabled();
+      },
+      { timeout: 200 }
+    );
+
+    expect(asyncOnSubmit).toHaveBeenCalledWith({ firstName: 'John' });
   });
 });

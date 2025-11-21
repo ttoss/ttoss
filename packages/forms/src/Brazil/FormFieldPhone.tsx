@@ -61,7 +61,7 @@ export const FormFieldPhone = <
             format={format}
             customInput={Input}
             placeholder={placeholder}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
           />
         );
       }}

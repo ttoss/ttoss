@@ -93,7 +93,7 @@ export const FormFieldRadioCard = <
                       value={option.value}
                       checked={field.value === option.value}
                       name={name}
-                      disabled={disabled}
+                      disabled={disabled ?? field.disabled}
                     />
                     <Flex sx={{ flexDirection: 'column', gap: '1' }}>
                       {option.label && <Text>{option.label}</Text>}
