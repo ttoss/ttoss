@@ -1,4 +1,5 @@
-import * as models from './models';
 import { initialize } from '@ttoss/postgresdb';
+
+import * as models from './models';
 
 export const db = await initialize({ models });

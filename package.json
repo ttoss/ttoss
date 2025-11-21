@@ -54,7 +54,7 @@
     "node": "^22.0.0",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@10.23.0",
   "pnpm": {
     "overrides": {
       "@types/parse-path": "7.0.3",

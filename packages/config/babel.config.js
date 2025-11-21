@@ -1,6 +1,7 @@
 /**
  * Jest needs Babel to transpile files.
  */
+// eslint-disable-next-line no-undef
 module.exports = {
   presets: [
     ['@babel/preset-env', { targets: { node: 'current' }, loose: true }],
@@ -31,6 +32,6 @@ module.exports = {
      * Decorators are not supported in ES6, so we need to use this plugin to
      * transpile decorators to ES5.
      */
-    ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
+    ['@babel/plugin-proposal-decorators', { version: '2023-11' }],
   ],
 };
