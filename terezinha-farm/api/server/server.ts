@@ -1,4 +1,5 @@
 import { createServer } from '@ttoss/graphql-api-server';
+
 import { schemaComposer } from '../src/schemaComposer';
 
 const server = createServer({

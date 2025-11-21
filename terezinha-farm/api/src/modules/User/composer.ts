@@ -1,13 +1,13 @@
-import { findUserById } from './user';
-import { schemaComposer } from '@ttoss/graphql-api';
+import { ResolverResolveParams, schemaComposer } from '@ttoss/graphql-api';
 
-const UserTC = schemaComposer.createObjectTC({
-  name: 'User',
-  fields: {
-    id: 'ID!',
-    name: 'String!',
-  },
-});
+import { QueryuserArgs } from '../../../schema/types';
+import { UserTC } from './UserTC';
+
+const findUserById = ({
+  args,
+}: ResolverResolveParams<null, null, QueryuserArgs>) => {
+  return { id: args.id, name: 'John Doe' };
+};
 
 UserTC.addResolver({
   name: 'findUserById',

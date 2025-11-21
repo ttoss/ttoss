@@ -1,10 +1,12 @@
-import { FarmTC, UserTC } from './FarmTC';
-import { QueryfarmsArgs } from '../../../schema/types';
 import {
-  ResolverResolveParams,
   composeWithConnection,
+  ResolverResolveParams,
   schemaComposer,
 } from '@ttoss/graphql-api';
+
+import { QueryfarmsArgs } from '../../../schema/types';
+import { UserTC } from '../User/UserTC';
+import { FarmTC } from './FarmTC';
 
 FarmTC.addResolver({
   name: 'findMany',
@@ -60,14 +62,14 @@ composeWithConnection(FarmTC, {
     ID_ASC: {
       value: {},
       cursorFields: ['id'],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, max-params
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};
         }
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, max-params
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};

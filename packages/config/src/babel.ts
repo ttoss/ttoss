@@ -1,5 +1,6 @@
 import { configCreator } from './configCreator';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const defaultConfig = require('../babel.config.js');
 
 export { defaultConfig };

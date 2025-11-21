@@ -51,6 +51,8 @@ This loads variables from `.env.Production`.
 
 ⚠️ **Caution:** The `--alter` flag modifies your database schema. Removing columns will **delete data permanently**. The CLI will prompt for confirmation before proceeding. Always backup your database before using `--alter` in production. For production environments, use proper migration tools instead of `sync`.
 
+**Testing before using `--alter`:** Always ensure your models have comprehensive tests before running `sync --alter`. Tests validate that all model properties are correctly defined and prevent accidental column removal. If a column is missing from your model definition, `--alter` will drop it from the database. See the [@ttoss/postgresdb testing guide](https://ttoss.dev/docs/modules/packages/postgresdb/#testing) for details on setting up model tests.
+
 **Add to `package.json` for convenience:**
 
 ```json
