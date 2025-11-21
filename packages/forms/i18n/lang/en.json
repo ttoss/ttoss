@@ -1,7 +1,15 @@
 {
+  "0+4wTp": {
+    "defaultMessage": ",",
+    "description": "Thousand separator for currency formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
+  },
   "D1C6fR": {
     "defaultMessage": "Field must be at least {min} characters",
     "description": "Min length field"
+  },
+  "JnCaDG": {
+    "defaultMessage": ".",
+    "description": "Decimal separator for currency formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
   },
   "MfWGyg": {
     "defaultMessage": "Field is required",
