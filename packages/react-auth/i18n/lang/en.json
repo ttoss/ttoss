@@ -218,5 +218,15 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "0+4wTp": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ",",
+    "description": "Thousand separator for currency formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
+  },
+  "JnCaDG": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ".",
+    "description": "Decimal separator for currency formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
   }
 }
