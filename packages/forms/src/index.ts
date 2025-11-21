@@ -16,6 +16,7 @@ export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
+export { getNumberFormatSeparators } from './getNumberFormatSeparators';
 export { yup } from './yup/yup';
 export { yupResolver } from '@hookform/resolvers/yup';
 

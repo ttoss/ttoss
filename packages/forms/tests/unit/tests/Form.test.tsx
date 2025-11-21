@@ -1,3 +1,4 @@
+import { I18nProvider } from '@ttoss/react-i18n';
 import { render, screen } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 import { FormFieldCEP, FormFieldCNPJ, FormFieldPhone } from 'src/Brazil';
@@ -87,7 +88,11 @@ describe('Form disabled state - All FormField components', () => {
       );
     };
 
-    render(<RenderFormWithAllFields />);
+    render(
+      <I18nProvider>
+        <RenderFormWithAllFields />
+      </I18nProvider>
+    );
 
     // Verify all fields are disabled
     expect(screen.getByLabelText('Input')).toBeDisabled();
@@ -182,7 +187,11 @@ describe('Form disabled state - All FormField components', () => {
       );
     };
 
-    render(<RenderFormWithAllFieldsEnabled />);
+    render(
+      <I18nProvider>
+        <RenderFormWithAllFieldsEnabled />
+      </I18nProvider>
+    );
 
     // Verify all fields are enabled
     expect(screen.getByLabelText('Input')).not.toBeDisabled();
