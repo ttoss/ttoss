@@ -47,7 +47,7 @@ export const FormFieldSwitch = <
           <Switch
             {...switchProps}
             {...field}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
           />
         );

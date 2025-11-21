@@ -47,7 +47,7 @@ export const FormFieldTextarea = <
           <Textarea
             {...textareaProps}
             {...field}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );

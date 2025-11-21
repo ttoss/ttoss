@@ -73,7 +73,7 @@ export const FormField = <
   id: idProp,
   name,
   defaultValue,
-  disabled,
+  disabled: propsDisabled,
   tooltip,
   inputTooltip,
   sx,
@@ -91,6 +91,8 @@ export const FormField = <
   const {
     formState: { errors },
   } = useFormContext();
+
+  const disabled = propsDisabled ?? controllerReturn.field.disabled;
 
   const hasError = !!errors[name];
   const uniqueId = React.useId();
@@ -175,8 +177,19 @@ export const FormField = <
     });
   };
 
+  // Create a new controllerReturn with the calculated disabled value
+  const controllerReturnWithDisabled = React.useMemo(() => {
+    return {
+      ...controllerReturn,
+      field: {
+        ...controllerReturn.field,
+        disabled,
+      },
+    };
+  }, [controllerReturn, disabled]);
+
   const memoizedRender = React.useMemo(() => {
-    return React.Children.map(render(controllerReturn), (child) => {
+    return React.Children.map(render(controllerReturnWithDisabled), (child) => {
       if (!React.isValidElement(child)) {
         return null;
       }
@@ -248,7 +261,7 @@ export const FormField = <
     });
   }, [
     render,
-    controllerReturn,
+    controllerReturnWithDisabled,
     label,
     disabled,
     id,

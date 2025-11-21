@@ -1,5 +1,4 @@
-import { Box, Flex, Text, ThemeUIStyleObject } from '@ttoss/ui';
-import { Tag } from '@ttoss/ui';
+import { Box, Flex, Tag, Text, ThemeUIStyleObject } from '@ttoss/ui';
 import * as React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 
@@ -71,8 +70,9 @@ export const FormFieldRadioCardIcony = <
       rules={rules}
       disabled={disabled}
       render={({ field }) => {
+        const isDisabled = disabled ?? field.disabled;
         const handleOptionClick = (optionValue: string | number) => {
-          if (!disabled) {
+          if (!isDisabled) {
             field.onChange(optionValue);
             field.onBlur();
           }
@@ -113,8 +113,8 @@ export const FormFieldRadioCardIcony = <
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    opacity: disabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isDisabled ? 0.5 : 1,
                     transition: 'all 0.2s ease-in-out',
                   }}
                 >

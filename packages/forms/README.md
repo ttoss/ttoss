@@ -226,6 +226,55 @@ All form field components share common props:
 - `warning`: Warning message displayed below the field
 - `sx`: Theme-UI styling object
 
+### Disabling Form Fields
+
+You can disable form fields in two ways:
+
+**1. Disable the entire form:**
+
+Set `disabled: true` in `useForm` to disable all fields at once:
+
+```tsx
+const formMethods = useForm({
+  disabled: true, // Disables all fields
+});
+```
+
+This is particularly useful for preventing user interaction during asynchronous operations:
+
+```tsx
+const [isSubmitting, setIsSubmitting] = useState(false);
+
+const formMethods = useForm({
+  disabled: isSubmitting, // Disable form during submission
+});
+
+const onSubmit = async (data) => {
+  setIsSubmitting(true);
+  await saveData(data);
+  setIsSubmitting(false);
+};
+```
+
+**2. Disable individual fields:**
+
+Use the `disabled` prop on specific form field components:
+
+```tsx
+<FormFieldInput name="email" label="Email" disabled />
+```
+
+Field-level `disabled` props override the form-level setting:
+
+```tsx
+const formMethods = useForm({
+  disabled: false,
+});
+
+// This field will be disabled even though the form is enabled
+<FormFieldInput name="id" label="ID" disabled />;
+```
+
 ### FormFieldInput
 
 Text input field supporting all HTML input types.

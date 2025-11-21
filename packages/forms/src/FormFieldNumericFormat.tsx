@@ -54,7 +54,7 @@ export const FormFieldNumericFormat = <
               field.onChange(values.floatValue);
             }}
             customInput={Input}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
           />
         );
       }}

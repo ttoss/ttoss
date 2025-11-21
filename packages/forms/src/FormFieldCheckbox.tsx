@@ -48,7 +48,7 @@ export const FormFieldCheckbox = <
           <Checkbox
             {...checkboxProps}
             {...field}
-            disabled={disabled}
+            disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
           />
         );
