@@ -212,6 +212,74 @@ pnpm run test
 - **Consistency**: Follow test patterns from other package files
 - **Documentation**: If the change is complex, consider adding code comments
 
+## 8. Internationalization (i18n) Pattern
+
+When adding user-facing text or locale-specific values (like number formats, date formats, separators):
+
+### 8.1 Using defineMessages
+
+**MANDATORY**: Use `defineMessages` from `@ttoss/react-i18n` for all translatable content:
+
+```typescript
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
+
+const messages = defineMessages({
+  myMessage: {
+    defaultMessage: 'Default text in English',
+    description: 'Clear description for translators explaining the context',
+  },
+  decimalSeparator: {
+    defaultMessage: '.',
+    description: 'Decimal separator for number formatting',
+  },
+});
+
+// In your component
+const { intl } = useI18n();
+const text = intl.formatMessage(messages.myMessage);
+const separator = intl.formatMessage(messages.decimalSeparator);
+```
+
+### 8.2 i18n Workflow
+
+1. **Define messages in English**: Always use English as the default message
+2. **Add clear descriptions**: Help translators understand the context
+3. **Run i18n-cli**: Execute `pnpm run i18n` to extract messages
+4. **Translate in apps**: Each application can define locale-specific values in their i18n files
+
+### 8.3 When to Use i18n
+
+Use `defineMessages` for:
+
+- User-facing text and labels
+- Error messages and validations
+- Locale-specific formatting values (decimal separators, date formats, etc.)
+- Any string that might need translation or localization
+
+Do NOT use for:
+
+- Internal code constants
+- API keys or technical identifiers
+- Code comments (use English directly)
+
+### 8.4 Example: Locale-Specific Formatting
+
+```typescript
+// ✅ CORRECT: Using defineMessages for locale-specific values
+const messages = defineMessages({
+  decimalSeparator: {
+    defaultMessage: '.',
+    description: 'Decimal separator (e.g., "." for 1.23 or "," for 1,23)',
+  },
+});
+
+const { intl } = useI18n();
+const separator = intl.formatMessage(messages.decimalSeparator);
+
+// ❌ INCORRECT: Hardcoding locale-specific values
+const separator = ','; // Don't hardcode locale-specific values
+```
+
 ---
 
 **Remember**: Quality is more important than speed. Well-written tests and clear documentation save time in the future.

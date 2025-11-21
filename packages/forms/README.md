@@ -85,11 +85,21 @@ const MyForm = () => {
 
 ### Validation Messages
 
-Invalid fields display default error messages like "Field is required". Customize these messages via i18n configuration—see [React-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) and [i18n-CLI](https://ttoss.dev/docs/modules/packages/i18n-cli/).
+Invalid fields display default error messages like "Field is required". These messages are defined using i18n and can be customized for each locale.
 
-### Custom Error Messages
+#### Default Yup Messages
 
-Provide custom error messages using i18n patterns:
+The package provides internationalized default messages for common Yup validation errors. These are automatically extracted when you run `pnpm run i18n`:
+
+- **Required field**: "Field is required"
+- **Type mismatch**: "Invalid Value for Field of type {type}"
+- **Minimum length**: "Field must be at least {min} characters"
+
+To customize these messages for your locale, extract the i18n messages and translate them in your application's i18n files (e.g., `i18n/compiled/pt-BR.json`). See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for more details.
+
+#### Custom Schema Messages
+
+You can also provide custom error messages directly in your Yup schemas using i18n patterns:
 
 ```tsx
 import { useI18n } from '@ttoss/react-i18n';
@@ -431,16 +441,29 @@ Numeric input with formatting support (decimals, thousands separators).
 
 ### FormFieldCurrencyInput
 
-Currency input with locale-based formatting.
+Currency input with locale-based formatting. The decimal and thousand separators are automatically determined by the locale set in the `I18nProvider`.
 
 ```tsx
-<FormFieldCurrencyInput
-  name="amount"
-  label="Amount"
-  prefix="$"
-  decimalsLimit={2}
-/>
+<FormFieldCurrencyInput name="amount" label="Amount" prefix="$" />
 ```
+
+#### Customizing Separators per Locale
+
+The component uses i18n messages to determine the decimal and thousand separators based on the current locale. You can customize these for each locale in your application:
+
+1. First, extract the i18n messages by running `pnpm run i18n` in your package
+2. In your application's i18n files (e.g., `i18n/compiled/pt-BR.json`), add the custom separators:
+
+```json
+{
+  "JnCaDG": ",", // Decimal separator (default: ".")
+  "0+4wTp": "." // Thousand separator (default: ",")
+}
+```
+
+This approach allows each locale to define its own number formatting rules, which will be automatically applied to all currency inputs.
+
+For more information about the i18n workflow, see the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/).
 
 ### FormFieldPatternFormat
 
