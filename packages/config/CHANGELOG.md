@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.35.11](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.35.10...@ttoss/config@1.35.11) (2025-11-21)
+
+### Bug Fixes
+
+- add tests postgresdb ([#755](https://github.com/ttoss/ttoss/issues/755)) ([8a81549](https://github.com/ttoss/ttoss/commit/8a81549190dc186a6c3fa19a30766ac2d2239a64))
+
 ## [1.35.10](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.35.9...@ttoss/config@1.35.10) (2025-11-19)
 
 **Note:** Version bump only for package @ttoss/config

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-server",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "description": "GraphQL API Server",
   "license": "MIT",
   "author": "ttoss",
