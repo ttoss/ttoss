@@ -24,9 +24,9 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "esbuild": "^0.25.8",
-    "import-sync": "^2.2.2",
-    "js-yaml": "^4.1.0"
+    "esbuild": "^0.27.0",
+    "import-sync": "^2.2.3",
+    "js-yaml": "^4.1.1"
   },
   "devDependencies": {
     "@fixtures/config-file-ts": "workspace:^",

@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import log from 'npmlog';
 import { CommandModule, InferredOptionTypes } from 'yargs';
+
 import { addGroupToOptions, getAwsAccountId } from '../utils';
 import { deployBaseStackCommand } from './baseStack/command';
 import { deployCicdCommand } from './cicd/command';
 import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
+import { printStackOutputsAfterDeploy } from './cloudformation.core';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
+import { readDockerfile } from './readDockerfile';
+import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVercelCommand } from './vercel/command';
-import { getStackName, setPreDefinedStackName } from './stackName';
-import { printStackOutputsAfterDeploy } from './cloudformation.core';
-import { readDockerfile } from './readDockerfile';
-import log from 'npmlog';
 
 const logPrefix = 'deploy';
 
@@ -285,9 +286,10 @@ export const deployCommand: CommandModule<
       type: 'string',
     });
 
-    commands.forEach((command) => {
-      return yargsBuilder.command(command as CommandModule);
-    });
+    for (const command of commands) {
+      yargsBuilder.command(command as CommandModule);
+      continue;
+    }
 
     return yargsBuilder;
   },

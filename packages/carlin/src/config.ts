@@ -13,6 +13,6 @@ export const CLOUDFRONT_REGION = 'us-east-1';
  * https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html#linux-runtimes
  * On Carlin, it's used to configure the runtime for the Lambda Layer Builder.
  */
-export const NODE_VERSION = '22';
+export const NODE_VERSION = '24';
 
 export const NODE_RUNTIME = `nodejs${NODE_VERSION}.x`;

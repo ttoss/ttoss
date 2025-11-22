@@ -1,6 +1,7 @@
+import path from 'node:path';
+
 import * as esbuild from 'esbuild';
 import importSync from 'import-sync';
-import path from 'node:path';
 
 export const loadConfig = <T>(entryPoint: string): T | undefined => {
   const lastEntryPointName = entryPoint.split('/').pop();
