@@ -1,0 +1,352 @@
+---
+title: Docker Images for Lambda
+---
+
+Build and deploy containerized Lambda functions using Docker images stored in Amazon ECR, enabling custom runtimes, OS-level dependencies, and large deployment packages.
+
+## Overview
+
+Lambda supports two deployment methods:
+
+1. **ZIP archives** (default, up to 50MB compressed)
+2. **Container images** (up to 10GB, deployed via ECR)
+
+carlin automates the Docker build, push, and CloudFormation integration for Lambda container images.
+
+## When to Use Docker Images
+
+| Use Case                                             | ZIP Archive          | Container Image              |
+| ---------------------------------------------------- | -------------------- | ---------------------------- |
+| Simple Node.js/Python functions                      | ✅ Recommended       | ❌ Overkill                  |
+| Functions > 50MB                                     | ❌ Too large         | ✅ Required                  |
+| Custom OS packages (e.g., ffmpeg, ImageMagick)       | ❌ Limited           | ✅ Ideal                     |
+| Non-standard runtimes (e.g., Rust, Go custom builds) | ⚠️ Layers workaround | ✅ Native support            |
+| Reproducible builds with pinned dependencies         | ⚠️ Manual            | ✅ Dockerfile locks versions |
+
+## Project Structure
+
+```plaintext
+project/
+├── src/
+│   └── lambdas/
+│       └── image-processor/
+│           ├── Dockerfile          # Lambda container image
+│           ├── handler.ts          # Lambda handler code
+│           └── package.json
+├── carlin.yml
+└── package.json
+```
+
+## Dockerfile Requirements
+
+Lambda container images must:
+
+- Implement the [Lambda Runtime API](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html)
+- Use an AWS-provided base image or compatible base
+
+### Using AWS Base Images
+
+```dockerfile title="src/lambdas/image-processor/Dockerfile"
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Copy function code
+COPY handler.ts package.json ./
+
+# Install dependencies
+RUN npm install
+
+# Set handler (file.function)
+CMD ["handler.handler"]
+```
+
+### Custom Base with Runtime Interface Client
+
+```dockerfile
+FROM node:20-alpine
+
+# Install AWS Lambda Runtime Interface Client
+RUN npm install -g aws-lambda-ric
+
+# Install system dependencies
+RUN apk add --no-cache \
+    ffmpeg \
+    imagemagick
+
+WORKDIR /var/task
+
+COPY package.json ./
+RUN npm install --production
+
+COPY handler.ts ./
+
+# Use Runtime Interface Client as entrypoint
+ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
+CMD ["handler.handler"]
+```
+
+## carlin Configuration
+
+Specify Docker image deployment in `carlin.yml`:
+
+```yaml title="carlin.yml"
+stackName: ImageProcessor
+region: us-east-1
+
+lambdas:
+  imageProcessor:
+    handler: src/lambdas/image-processor # Directory with Dockerfile
+    runtime: docker # Use Docker instead of ZIP
+    memory: 2048
+    timeout: 300
+    environment:
+      FFMPEG_PATH: /usr/bin/ffmpeg
+```
+
+## Build and Deploy
+
+carlin handles the full workflow:
+
+```bash
+carlin deploy
+```
+
+**Automated Steps:**
+
+1. Build Docker image from Dockerfile
+2. Tag image with stack name and version
+3. Create ECR repository (if not exists)
+4. Authenticate Docker to ECR
+5. Push image to ECR
+6. Update CloudFormation with image URI
+7. Deploy Lambda function
+
+## ECR Repository Management
+
+carlin creates ECR repositories automatically:
+
+```plaintext
+Repository: <aws-account-id>.dkr.ecr.<region>.amazonaws.com/<stack-name>-<lambda-name>
+Tag: latest (or version/commit hash)
+```
+
+**Manual ECR Operations:**
+
+```bash
+# List images
+aws ecr describe-images --repository-name my-app-staging-image-processor
+
+# Delete old images
+aws ecr batch-delete-image \
+  --repository-name my-app-staging-image-processor \
+  --image-ids imageTag=old-tag
+```
+
+## Multi-Stage Builds for Optimization
+
+Reduce image size with multi-stage builds:
+
+```dockerfile title="Dockerfile"
+# Build stage
+FROM node:20 AS builder
+WORKDIR /build
+COPY package.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Runtime stage
+FROM public.ecr.aws/lambda/nodejs:20
+COPY --from=builder /build/dist ./
+CMD ["index.handler"]
+```
+
+**Benefits:**
+
+- Smaller final image (no dev dependencies)
+- Faster cold starts
+- Lower storage costs
+
+## Image Size Optimization
+
+| Technique              | Savings | Example                                              |
+| ---------------------- | ------- | ---------------------------------------------------- |
+| Use alpine base        | 50-70%  | `node:20-alpine` vs `node:20`                        |
+| Multi-stage builds     | 30-50%  | Separate build/runtime stages                        |
+| Remove cache layers    | 10-20%  | `RUN npm ci --production && npm cache clean --force` |
+| Minimize COPY commands | 5-10%   | Combine related COPY statements                      |
+
+## Runtime Environment Variables
+
+Inject environment variables via CloudFormation:
+
+```yaml title="carlin.yml"
+lambdas:
+  processor:
+    runtime: docker
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+      BUCKET_NAME: !Ref AssetsBucket # CloudFormation reference
+```
+
+## Testing Docker Images Locally
+
+Use AWS Lambda Runtime Interface Emulator (RIE):
+
+```bash
+# Build image
+docker build -t my-lambda .
+
+# Run locally with RIE
+docker run -p 9000:8080 my-lambda
+
+# Invoke function
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+  -d '{"key":"value"}'
+```
+
+## Advanced Dockerfile Patterns
+
+### With Native Dependencies
+
+```dockerfile
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Install build tools
+RUN yum install -y gcc-c++ make
+
+# Install sharp (native image processing)
+WORKDIR /var/task
+COPY package.json ./
+RUN npm install --production
+
+COPY handler.js ./
+CMD ["handler.handler"]
+```
+
+### With Multiple Handlers
+
+```dockerfile
+FROM public.ecr.aws/lambda/python:3.11
+
+COPY handlers/ /var/task/handlers/
+COPY shared/ /var/task/shared/
+
+# Default handler (can be overridden in CloudFormation)
+CMD ["handlers.processor.handler"]
+```
+
+Specify different handlers in `carlin.yml`:
+
+```yaml
+lambdas:
+  processor:
+    runtime: docker
+    handler: handlers.processor.handler
+
+  transformer:
+    runtime: docker
+    handler: handlers.transformer.handler
+    # Uses same image with different CMD
+```
+
+## CI/CD Integration
+
+Build and cache images in CI for faster deployments:
+
+```yaml
+# GitHub Actions example
+- name: Build Lambda Image
+  run: docker build -t $ECR_REPO:$GITHUB_SHA .
+
+- name: Push to ECR
+  run: |
+    aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY
+    docker push $ECR_REPO:$GITHUB_SHA
+
+- name: Deploy with carlin
+  run: carlin deploy --lambda-image-tag $GITHUB_SHA
+```
+
+## Versioning Strategies
+
+| Strategy                | Tag Pattern            | Use Case                    |
+| ----------------------- | ---------------------- | --------------------------- |
+| Git commit SHA          | `abc1234`              | Immutable, traceable builds |
+| Semantic version        | `v1.2.3`               | Release-based deployments   |
+| Environment + timestamp | `prod-20250101-120000` | Time-based tracking         |
+| Latest                  | `latest`               | Development/staging only    |
+
+## Troubleshooting
+
+| Issue                           | Cause                         | Solution                                                                          |
+| ------------------------------- | ----------------------------- | --------------------------------------------------------------------------------- |
+| Build fails: missing dependency | OS package not installed      | Add `RUN yum install -y <package>` (Amazon Linux) or `apk add <package>` (Alpine) |
+| Image too large (>10GB)         | Unnecessary files included    | Use `.dockerignore`; optimize layers                                              |
+| Cold start slow                 | Large image                   | Reduce image size; use provisioned concurrency                                    |
+| Handler not found               | Incorrect CMD or handler path | Verify handler path matches code location                                         |
+| ECR push fails                  | Authentication expired        | Re-authenticate: `aws ecr get-login-password \| docker login`                     |
+| Lambda times out                | Insufficient resources        | Increase memory/timeout in `carlin.yml`                                           |
+
+## Best Practices
+
+- **Use official AWS base images** for Lambda compatibility
+- **Pin dependency versions** in Dockerfile for reproducibility
+- **Minimize layers**: Combine RUN commands with `&&`
+- **Use .dockerignore**: Exclude tests, docs, `.git`
+- **Tag images with commit SHAs** for traceability
+- **Set resource limits**: Configure memory/timeout based on workload
+- **Enable ECR lifecycle policies**: Auto-delete old images to save costs
+- **Test locally with RIE** before deploying
+
+## Example: Image Processing Lambda
+
+```dockerfile title="src/lambdas/image-processor/Dockerfile"
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Install ImageMagick and ffmpeg
+RUN yum install -y ImageMagick ffmpeg
+
+WORKDIR /var/task
+
+# Install Node dependencies
+COPY package.json ./
+RUN npm ci --production
+
+# Copy handler code
+COPY handler.js ./
+
+CMD ["handler.handler"]
+```
+
+```typescript title="src/lambdas/image-processor/handler.ts"
+import { Handler } from 'aws-lambda';
+import { execSync } from 'child_process';
+
+export const handler: Handler = async (event) => {
+  const { inputPath, outputPath } = event;
+
+  // Use ffmpeg (available because installed in Dockerfile)
+  execSync(`ffmpeg -i ${inputPath} -vf scale=640:480 ${outputPath}`);
+
+  return { success: true, outputPath };
+};
+```
+
+```yaml title="carlin.yml"
+lambdas:
+  imageProcessor:
+    runtime: docker
+    handler: src/lambdas/image-processor
+    memory: 3008
+    timeout: 900
+    environment:
+      FFMPEG_PATH: /usr/bin/ffmpeg
+```
+
+## Related
+
+- [Lambda Functions Guide](/docs/carlin/guides/lambda-functions)
+- [deploy Command](/docs/carlin/commands/deploy)
+- [Custom CloudFormation Templates](/docs/carlin/advanced/custom-templates)
+- [AWS Lambda Container Images Docs](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html)

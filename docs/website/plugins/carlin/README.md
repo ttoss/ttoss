@@ -1,24 +1,56 @@
-# Carlin Plugin
+# Carlin Documentation Plugin
 
-_Note: don't forget to build Carlin before running the scripts._
+Extracts JSDoc comments from carlin's compiled TypeScript code and makes them available as imports in documentation files.
 
-Use the `printComments.js` script to print the comments of a built Carlin file. Examples:
+## Prerequisites
+
+⚠️ **Build carlin before running scripts or building docs:**
+
+```bash
+pnpm build --filter @ttoss/carlin
+```
+
+## Usage
+
+### Print All Comments
 
 ```bash
 node plugins/carlin/printComments.mjs --path cli.ts
-node plugins/carlin/printComments.mjs --path deploy/cloudformation.ts
+node plugins/carlin/printComments.mjs --path deploy/command.ts
 ```
 
-You can use the option `--find` to search for a specific comment. Example:
+### Search Comments
 
 ```bash
-node plugins/carlin/printComments.mjs --path cli.ts --find "The algorithm also make a find"
+node plugins/carlin/printComments.mjs --path cli.ts --find "configuration"
 ```
 
-On the example above, the script will print the comment that contains the string "The algorithm also make a find".
-
-Once you find the `longname` of the comment you found, you can add the `--longname` option to print only the comment you want to confirm the algorithm. Example:
+### Get Specific Comment
 
 ```bash
 node plugins/carlin/printComments.mjs --path cli.ts --longname "cli~getConfig"
 ```
+
+## Currently Used In
+
+- `02-configuration.mdx` - CLI options, config structure
+- `04-core-concepts/01-stack-naming.mdx` - Stack naming algorithm
+- `05-commands/deploy.mdx` - Deploy command details
+
+## Development Workflow
+
+When carlin source changes:
+
+```bash
+# 1. Rebuild carlin
+pnpm build --filter @ttoss/carlin
+
+# 2. Rebuild docs
+cd docs/website && pnpm build
+```
+
+## Files
+
+- `index.mjs` - Plugin implementation
+- `getComments.mjs` - Comment extraction logic
+- `printComments.mjs` - CLI exploration tool

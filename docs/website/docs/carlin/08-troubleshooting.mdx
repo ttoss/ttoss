@@ -1,0 +1,320 @@
+---
+title: Troubleshooting
+---
+
+Common issues, error messages, and solutions when working with carlin deployments.
+
+## Deployment Failures
+
+### Stack Creation Failed
+
+**Symptom:** Stack rollback with `CREATE_FAILED` status.
+
+**Common Causes:**
+
+| Error Message               | Cause                                | Solution                                                                                      |
+| --------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `Resource limit exceeded`   | Too many stacks/resources in account | Delete unused stacks; request limit increase                                                  |
+| `Invalid template format`   | Syntax error in CloudFormation       | Validate template: `aws cloudformation validate-template --template-body file://template.yml` |
+| `Insufficient permissions`  | IAM user/role lacks permissions      | Add required policies (CloudFormation, S3, Lambda, etc.)                                      |
+| `Stack name already exists` | Name collision                       | Choose unique stack name or delete existing stack                                             |
+
+**Diagnosis:**
+
+```bash
+# Check stack events
+aws cloudformation describe-stack-events --stack-name my-stack
+
+# Get failure reason
+aws cloudformation describe-stack-resources --stack-name my-stack \
+  --query 'StackResources[?ResourceStatus==`CREATE_FAILED`]'
+```
+
+### Lambda Deployment Issues
+
+**Symptom:** Lambda function not updated or errors on invocation.
+
+| Issue                | Cause                               | Solution                                                      |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------- |
+| Code not updated     | Build artifacts not regenerated     | Run `carlin deploy --force-build` or delete `.carlin/` cache  |
+| Handler not found    | Incorrect handler path in config    | Verify handler matches file structure (e.g., `index.handler`) |
+| Dependencies missing | `node_modules` not included         | Ensure `npm install` runs before deploy; check `package.json` |
+| Timeout errors       | Function exceeds configured timeout | Increase timeout in `carlin.yml` or optimize code             |
+| Memory errors        | Out of memory                       | Increase memory allocation (also increases CPU)               |
+
+**Diagnosis:**
+
+```bash
+# Check Lambda logs
+aws logs tail /aws/lambda/my-function --follow
+
+# Test locally
+node -e "require('./dist/index').handler({}, {})"
+```
+
+### Static Site Deployment Failures
+
+**Symptom:** CloudFront not serving updated content or 403 errors.
+
+| Issue                          | Cause                                | Solution                                                                                  |
+| ------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Old content cached             | CloudFront caching                   | Invalidate cache: `aws cloudfront create-invalidation --distribution-id XYZ --paths "/*"` |
+| 403 Forbidden                  | Missing index.html or S3 permissions | Verify S3 bucket policy allows CloudFront OAI access                                      |
+| Build artifacts missing        | Build command failed                 | Check build logs; ensure `dist/` folder created                                           |
+| Certificate validation pending | ACM certificate not validated        | Complete DNS validation in Route 53                                                       |
+
+### CI/CD Pipeline Failures
+
+**Symptom:** ECS tasks fail or pipeline stuck.
+
+| Issue                       | Cause                                    | Solution                                     |
+| --------------------------- | ---------------------------------------- | -------------------------------------------- |
+| Task fails to start         | ECR image not found                      | Verify image pushed to correct repository    |
+| Container exits immediately | Entrypoint error or missing dependencies | Check CloudWatch logs for container errors   |
+| Task hangs                  | Network configuration issues             | Verify VPC, subnets, security groups         |
+| Permission denied           | Task role lacks IAM permissions          | Add required policies to task execution role |
+
+## Configuration Issues
+
+### Environment Detection Problems
+
+**Symptom:** Wrong environment deployed or stack name mismatch.
+
+```bash
+# Check detected environment
+echo $ENVIRONMENT
+
+# Explicitly set
+export ENVIRONMENT=Production
+carlin deploy
+```
+
+### Config File Not Loaded
+
+**Symptom:** carlin ignores `carlin.yml` settings.
+
+**Solutions:**
+
+```bash
+# Verify file location (must be in project root or parent directories)
+ls carlin.yml
+
+# Use explicit path
+carlin deploy --config ./configs/production.yml
+
+# Check file syntax (YAML)
+yamllint carlin.yml
+```
+
+### Monorepo Config Conflicts
+
+**Symptom:** Wrong config applied in monorepo packages.
+
+**Diagnosis:**
+
+```bash
+# Check config merge order
+cd packages/app
+carlin deploy --dry-run  # See resolved config
+```
+
+**Solution:** Place most specific config nearest to package; verify precedence.
+
+## Authentication Issues
+
+### AWS Credentials Not Found
+
+**Symptom:** `Unable to locate credentials` error.
+
+**Solutions:**
+
+```bash
+# Check credentials
+aws sts get-caller-identity
+
+# Set profile
+export AWS_PROFILE=production
+
+# Configure credentials
+aws configure
+```
+
+### Insufficient IAM Permissions
+
+**Symptom:** `Access Denied` or `User: arn:aws:iam::... is not authorized` errors.
+
+**Required Minimum Permissions:**
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:*",
+        "s3:*",
+        "lambda:*",
+        "iam:PassRole",
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "logs:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+See [Installation](/docs/carlin/installation) for full policy.
+
+## Build Issues
+
+### esbuild Failures
+
+**Symptom:** `Build failed` or `Cannot find module` errors.
+
+```bash
+# Clear cache
+rm -rf .carlin/
+
+# Reinstall dependencies
+npm ci
+
+# Rebuild
+carlin deploy --force-build
+```
+
+### TypeScript Compilation Errors
+
+**Symptom:** Type errors during build.
+
+```bash
+# Check types locally
+npx tsc --noEmit
+
+# Ignore errors (not recommended for production)
+carlin deploy --skip-type-check
+```
+
+## Performance Issues
+
+### Slow Deployments
+
+| Cause                   | Solution                                             |
+| ----------------------- | ---------------------------------------------------- |
+| Large Lambda bundles    | Enable tree-shaking; externalize AWS SDK; use layers |
+| Many resources in stack | Split into multiple stacks; use nested stacks        |
+| Cold starts             | Use provisioned concurrency; optimize bundle size    |
+| S3 upload slow          | Use nearest region; check network bandwidth          |
+
+### High Costs
+
+| Resource           | Optimization                                            |
+| ------------------ | ------------------------------------------------------- |
+| Lambda invocations | Reduce memory; optimize code; use reserved concurrency  |
+| CloudFront         | Enable caching; reduce invalidations                    |
+| ECS tasks          | Use smaller task sizes; schedule vs. continuous running |
+| NAT Gateway        | Use VPC endpoints; move to public subnets if possible   |
+
+## Common Error Messages
+
+### `Rate exceeded`
+
+**Cause:** AWS API throttling.
+
+**Solution:** Retry with backoff; reduce concurrent operations.
+
+### `Stack X is in UPDATE_ROLLBACK_FAILED state`
+
+**Cause:** Update failed and automatic rollback also failed.
+
+**Solution:**
+
+```bash
+# Continue rollback
+aws cloudformation continue-update-rollback --stack-name X
+
+# Or delete stack and redeploy
+aws cloudformation delete-stack --stack-name X
+carlin deploy
+```
+
+### `No updates are to be performed`
+
+**Cause:** CloudFormation detected no changes.
+
+**Solution:** This is informational; stack is already in desired state.
+
+### `Export X cannot be deleted as it is in use by Y`
+
+**Cause:** Another stack depends on this stack's exports.
+
+**Solution:** Delete dependent stack Y first, then delete stack X.
+
+## Debugging Strategies
+
+### Enable Verbose Logging
+
+```bash
+# carlin debug mode
+DEBUG=* carlin deploy
+
+# AWS CLI debug
+aws cloudformation describe-stacks --debug
+```
+
+### Check CloudFormation Events
+
+```bash
+# Real-time events
+aws cloudformation describe-stack-events \
+  --stack-name my-stack \
+  --query 'StackEvents[?Timestamp>=`2025-01-01`]'
+```
+
+### Inspect Generated Templates
+
+```bash
+# Export deployed template
+aws cloudformation get-template --stack-name my-stack \
+  --query 'TemplateBody' > deployed-template.yml
+```
+
+### Review CloudWatch Logs
+
+```bash
+# Lambda logs
+aws logs tail /aws/lambda/my-function --follow
+
+# CodeBuild logs (for layer builds)
+aws logs tail /aws/codebuild/lambda-layer-builder --follow
+```
+
+## Getting Help
+
+If issues persist:
+
+1. **Check documentation**: Review relevant [guides](/docs/carlin/guides/lambda-functions) and [command docs](/docs/carlin/commands/deploy)
+2. **Search issues**: Look for similar problems in [GitHub Issues](https://github.com/ttoss/ttoss/issues)
+3. **Enable debug mode**: Capture verbose output with `DEBUG=* carlin deploy`
+4. **Share context**: Include carlin version, AWS region, error messages, and stack events
+5. **Create minimal reproduction**: Isolate issue in simplest possible setup
+
+## Preventive Measures
+
+- ✅ Use termination protection for production stacks
+- ✅ Test deployments in staging before production
+- ✅ Version control all configuration files
+- ✅ Set up CloudWatch alarms for critical resources
+- ✅ Enable AWS CloudTrail for audit logging
+- ✅ Use infrastructure-as-code review processes
+- ✅ Automate deployments through CI/CD
+
+## Related
+
+- [Configuration](/docs/carlin/configuration)
+- [Installation](/docs/carlin/installation)
+- [Lambda Functions Guide](/docs/carlin/guides/lambda-functions)
+- [Multi-Environment Setup](/docs/carlin/guides/multi-environment-setup)
+- [Termination Protection](/docs/carlin/advanced/termination-protection)

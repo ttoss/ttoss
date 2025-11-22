@@ -1,0 +1,424 @@
+---
+title: CloudFormation Driven Development
+---
+
+CloudFormation Driven Development (CFNDD) is a methodology for building and maintaining cloud applications by thinking infrastructure-first, using [AWS CloudFormation](https://aws.amazon.com/cloudformation/) templates as the foundation for all features and deployments.
+
+## Philosophy
+
+Instead of manually creating AWS resources through the console or CLI, CFNDD advocates:
+
+1. **Template-First Design**: Every feature begins as a CloudFormation template
+2. **Infrastructure as Code**: All resources are version-controlled and reproducible
+3. **Declarative Architecture**: Define the desired state; AWS handles the how
+4. **Automated Deployment**: Use tools like carlin to deploy templates consistently
+
+## Core Principles
+
+### 1. Think in Templates
+
+When building a new feature, ask:
+
+- "What AWS resources does this need?"
+- "How would I define this in CloudFormation?"
+- "Can I reuse existing resource patterns?"
+
+**Traditional Approach:**
+
+```plaintext
+1. Create Lambda via console
+2. Set up API Gateway manually
+3. Configure IAM roles by clicking
+4. Hope you remember for next environment
+```
+
+**CFNDD Approach:**
+
+```yaml
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: GET
+```
+
+### 2. Version Control Everything
+
+All CloudFormation templates live in your repository:
+
+```plaintext
+project/
+├── src/
+│   └── lambdas/
+│       └── api/
+│           └── handler.ts
+├── cloudformation/
+│   └── template.yml       # Infrastructure definition
+├── carlin.yml              # Deployment config
+└── package.json
+```
+
+**Benefits:**
+
+- Track infrastructure changes over time
+- Review infrastructure in pull requests
+- Roll back to previous versions
+- Share knowledge across team
+
+### 3. Repeatability and Consistency
+
+Deploy the same template to multiple environments:
+
+```bash
+# Staging
+ENVIRONMENT=staging carlin deploy
+
+# Production
+ENVIRONMENT=production carlin deploy
+```
+
+**Same template, different contexts:**
+
+- Stack names: `my-app-staging`, `my-app-production`
+- Resource names: `my-app-staging-function`, `my-app-production-function`
+- Parameters: Different values per environment
+
+### 4. Automation Over Manual Steps
+
+Eliminate click-ops:
+
+| Manual Process                | CFNDD Automation             |
+| ----------------------------- | ---------------------------- |
+| Console → Lambda → Create     | `carlin deploy`              |
+| Console → S3 → Create Bucket  | CloudFormation resource      |
+| Console → IAM → Attach Policy | Template `Policies` property |
+| Remember what you did         | Git history                  |
+
+## AWS Well-Architected Alignment
+
+CFNDD directly supports the [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html) pillars:
+
+| Pillar                     | CFNDD Benefit                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Operational Excellence** | Infrastructure as code enables change tracking, automated deployments, and rollback capability |
+| **Security**               | Consistent IAM policies, encryption settings, and network configurations across environments   |
+| **Reliability**            | Reproducible deployments reduce human error; disaster recovery via template redeployment       |
+| **Performance Efficiency** | Parameterized templates allow right-sizing resources per environment                           |
+| **Cost Optimization**      | Version-controlled resources prevent orphaned infrastructure; easy teardown of unused stacks   |
+
+## CFNDD with carlin
+
+carlin embodies CFNDD by:
+
+- Auto-generating templates for common patterns (Lambda, static sites, CI/CD)
+- Supporting custom CloudFormation templates
+- Managing stack lifecycle (create, update, delete)
+- Enforcing naming conventions and best practices
+
+**Example Workflow:**
+
+```bash
+# 1. Define Lambda function
+# src/lambdas/processor/handler.ts
+
+# 2. Configure deployment
+# carlin.yml
+lambdas:
+  processor:
+    handler: src/lambdas/processor
+    memory: 1024
+    timeout: 60
+
+# 3. Deploy (carlin generates and applies template)
+carlin deploy
+```
+
+**Generated CloudFormation (simplified):**
+
+```yaml
+Resources:
+  ProcessorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-processor'
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: processor.zip
+      Handler: index.handler
+      Runtime: nodejs20.x
+      MemorySize: 1024
+      Timeout: 60
+```
+
+## Common Patterns
+
+### Lambda Function
+
+```yaml
+Resources:
+  ApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-api'
+      Code:
+        S3Bucket: !Ref LambdaS3Bucket
+        S3Key: !Ref LambdaS3Key
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Role: !GetAtt FunctionRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DataTable
+
+  FunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                Resource: !GetAtt DataTable.Arn
+```
+
+### Serverless API (SAM Transform)
+
+```yaml
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Auth:
+        ApiKeyRequired: false
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaS3Bucket
+        Key: !Ref LambdaS3Key
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users
+            Method: GET
+
+Outputs:
+  ApiEndpoint:
+    Value: !Sub 'https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/v1'
+```
+
+### Static Website with CloudFront
+
+```yaml
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-website'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultRootObject: index.html
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+        Enabled: true
+
+  CloudFrontOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'OAI for ${AWS::StackName}'
+```
+
+## Design Process
+
+### Step 1: Identify Resources
+
+List all AWS services needed:
+
+- Lambda functions
+- DynamoDB tables
+- S3 buckets
+- API Gateway endpoints
+- IAM roles and policies
+- CloudWatch alarms
+
+### Step 2: Map to CloudFormation Types
+
+Convert each service to its CloudFormation resource type:
+
+| Service          | Resource Type                                        |
+| ---------------- | ---------------------------------------------------- |
+| Lambda           | `AWS::Lambda::Function`                              |
+| DynamoDB         | `AWS::DynamoDB::Table`                               |
+| S3               | `AWS::S3::Bucket`                                    |
+| API Gateway      | `AWS::ApiGateway::RestApi` or `AWS::Serverless::Api` |
+| IAM Role         | `AWS::IAM::Role`                                     |
+| CloudWatch Alarm | `AWS::CloudWatch::Alarm`                             |
+
+### Step 3: Define Relationships
+
+Use intrinsic functions to connect resources:
+
+```yaml
+Resources:
+  # Lambda needs table ARN
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table # Reference by logical ID
+
+  # IAM role needs table ARN for permissions
+  FunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Resource: !GetAtt Table.Arn # Get ARN attribute
+```
+
+### Step 4: Parameterize
+
+Make templates reusable:
+
+```yaml
+Parameters:
+  Environment:
+    Type: String
+    Default: staging
+
+  DatabaseInstanceType:
+    Type: String
+    Default: db.t3.micro
+
+Conditions:
+  IsProduction: !Equals [!Ref Environment, 'production']
+
+Resources:
+  Database:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: !Ref DatabaseInstanceType
+      BackupRetentionPeriod: !If [IsProduction, 30, 7]
+```
+
+### Step 5: Deploy and Iterate
+
+```bash
+# Deploy
+carlin deploy
+
+# Verify
+aws cloudformation describe-stacks --stack-name my-app-staging
+
+# Update template
+# Edit cloudformation/template.yml
+
+# Redeploy (CloudFormation computes change set)
+carlin deploy
+```
+
+## Benefits
+
+### For Developers
+
+- **Faster onboarding**: New team members read templates to understand infrastructure
+- **Fearless changes**: Roll back to any previous version
+- **Local development**: Use SAM CLI to test Lambda functions locally
+- **Documentation as code**: Templates serve as architectural diagrams
+
+### For Operations
+
+- **Consistent environments**: Same template = same infrastructure
+- **Disaster recovery**: Redeploy from template to new region/account
+- **Compliance**: Audit all changes via Git history
+- **Cost tracking**: Stack-level tagging enables cost allocation
+
+### For Organizations
+
+- **Standardization**: Shared template library across teams
+- **Security**: Enforce policies via template validation
+- **Scalability**: Deploy to new regions/accounts easily
+- **Knowledge retention**: Templates outlive individual contributors
+
+## Best Practices
+
+1. **Small, focused templates**: One stack per application component
+2. **Descriptive resource names**: Use `!Sub '${AWS::StackName}-resource'`
+3. **Tag everything**: Include `Environment`, `Application`, `ManagedBy`
+4. **Export outputs**: Make ARNs/URLs available to other stacks
+5. **Use conditions**: Optimize for different environments
+6. **Validate locally**: `aws cloudformation validate-template`
+7. **Review change sets**: Preview updates before applying
+8. **Enable termination protection**: Protect production stacks
+
+## Challenges and Solutions
+
+| Challenge                           | Solution                                              |
+| ----------------------------------- | ----------------------------------------------------- |
+| Steep learning curve                | Start with carlin-generated templates; study AWS docs |
+| Template size limits (51,200 bytes) | Use nested stacks or split into multiple stacks       |
+| Complex intrinsic functions         | Use helper scripts or tools like `cfn-lint`           |
+| Slow stack updates                  | Parallelize independent stacks; use `AWS::NoValue`    |
+| Drift detection                     | Regularly run `aws cloudformation detect-stack-drift` |
+
+## CFNDD vs Other IaC Tools
+
+| Tool               | Pros                                     | Cons                                 |
+| ------------------ | ---------------------------------------- | ------------------------------------ |
+| **CloudFormation** | Native AWS; free; broad resource support | Verbose YAML; slower updates         |
+| **Terraform**      | Multi-cloud; HCL syntax; faster          | State management complexity; cost    |
+| **CDK**            | Type-safe; familiar languages            | Synthesizes to CloudFormation anyway |
+| **Pulumi**         | Real programming languages               | Smaller community; state management  |
+
+**carlin's stance:** Use CloudFormation as the deployment engine, but abstract complexity where possible (auto-generation, conventions).
+
+## Related
+
+- [CloudFormation Templates](/docs/carlin/core-concepts/cloudformation-templates)
+- [Custom Templates](/docs/carlin/advanced/custom-templates)
+- [Stack Naming](/docs/carlin/core-concepts/stack-naming)
+- [Base Stack](/docs/carlin/core-concepts/base-stack)
+- [Lambda Functions Guide](/docs/carlin/guides/lambda-functions)
+- [AWS CloudFormation Best Practices](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)

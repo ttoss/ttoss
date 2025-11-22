@@ -92,8 +92,8 @@ Invalid fields display default error messages like "Field is required". These me
 The package provides internationalized default messages for common Yup validation errors. These are automatically extracted when you run `pnpm run i18n`:
 
 - **Required field**: "Field is required"
-- **Type mismatch**: "Invalid Value for Field of type {type}"
-- **Minimum length**: "Field must be at least {min} characters"
+- **Type mismatch**: "Invalid Value for Field of type (type)"
+- **Minimum length**: "Field must be at least (min) characters"
 
 To customize these messages for your locale, extract the i18n messages and translate them in your application's i18n files (e.g., `i18n/compiled/pt-BR.json`). See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for more details.
 

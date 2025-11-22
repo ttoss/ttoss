@@ -1,0 +1,146 @@
+---
+title: Installation
+---
+
+## Prerequisites
+
+- **Node.js**: Version 18 or higher
+- **AWS Account**: Active AWS account with configured credentials
+- **AWS CLI** (optional): For credential management
+
+## Installing carlin
+
+### As Project Dependency (Recommended)
+
+Install carlin locally in your project:
+
+```bash
+pnpm add -D carlin
+```
+
+Add deployment scripts to `package.json`:
+
+```json
+{
+  "scripts": {
+    "deploy": "carlin deploy",
+    "deploy:production": "carlin deploy --environment production",
+    "destroy": "carlin deploy --destroy"
+  }
+}
+```
+
+Run deployments:
+
+```bash
+pnpm deploy
+```
+
+### Global Installation
+
+Install carlin globally for use across multiple projects:
+
+```bash
+pnpm add -g carlin
+```
+
+Verify installation:
+
+```bash
+carlin --version
+```
+
+## AWS Credentials Configuration
+
+carlin uses AWS SDK credentials. Configure using any of these methods:
+
+### AWS CLI Configuration
+
+```bash
+aws configure
+```
+
+Provide:
+
+- AWS Access Key ID
+- AWS Secret Access Key
+- Default region (e.g., `us-east-1`)
+- Output format (e.g., `json`)
+
+### Environment Variables
+
+```bash
+export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
+export AWS_DEFAULT_REGION="us-east-1"
+```
+
+### AWS Credentials File
+
+Create `~/.aws/credentials`:
+
+```ini
+[default]
+aws_access_key_id = your-access-key
+aws_secret_access_key = your-secret-key
+
+[production]
+aws_access_key_id = your-production-key
+aws_secret_access_key = your-production-secret
+```
+
+Use specific profile:
+
+```bash
+AWS_PROFILE=production carlin deploy
+```
+
+## Required AWS Permissions
+
+Ensure your AWS credentials have these permissions:
+
+- **CloudFormation**: `cloudformation:*` (Create/Update/Delete stacks)
+- **S3**: `s3:*` (Lambda code uploads, static apps)
+- **IAM**: `iam:PassRole`, `iam:CreateRole`, `iam:AttachRolePolicy`
+- **Lambda**: `lambda:*` (Function deployment)
+- **CloudFront** (for static apps): `cloudfront:*`
+- **ECR** (for Docker-based Lambdas): `ecr:*`
+
+Minimal IAM policy example:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:*",
+        "s3:*",
+        "lambda:*",
+        "iam:PassRole",
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "logs:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+## Verify Setup
+
+Test your installation and credentials:
+
+```bash
+carlin deploy --help
+```
+
+You should see carlin's help output with available commands and options.
+
+## Next Steps
+
+- [Quick Start](/docs/carlin/quick-start) - Deploy your first stack
+- [Configuration](/docs/carlin/configuration) - Learn configuration options
+- [Commands](/docs/carlin/commands/deploy) - Explore available commands

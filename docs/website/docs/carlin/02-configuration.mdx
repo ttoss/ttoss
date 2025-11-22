@@ -14,6 +14,24 @@ import { cliOptions } from '../../.docusaurus/carlin/default/cliOptions';
 
 # Configuration
 
+<Carlin /> provides flexible configuration through multiple sources, enabling
+both simple single-environment setups and complex monorepo scenarios with shared
+and project-specific settings.
+
+## Configuration Precedence
+
+Options are resolved in the following order (highest to lowest priority):
+
+1. **Command-line flags** (e.g., `--environment Production`)
+2. **Environment variables** (e.g., `CARLIN_ENVIRONMENT=Production`)
+3. **Configuration files** (`carlin.yml`, `carlin.ts`, etc.)
+4. **package.json** (`carlin` property)
+5. **Default values**
+
+:::tip
+Command-line options always override configuration files and environment variables, making them ideal for CI/CD overrides.
+:::
+
 ## Setting Options
 
 You can set the [<Carlin /> commands](/docs/carlin/commands) options in different ways, such as using the command line, environment variables, or a configuration file.
@@ -31,6 +49,19 @@ carlin deploy --environment Production
 carlin deploy -e Production
 ```
 
+**Common CLI Patterns:**
+
+```bash
+# Override region for specific deployment
+carlin deploy --region us-west-2
+
+# Multiple options
+carlin deploy --environment Staging --stack-name my-custom-stack
+
+# Boolean flags
+carlin deploy --skip-build --termination-protection
+```
+
 ### package.json
 
 You can also provide the options creating a property name `carlin` in your `package.json`.
@@ -40,10 +71,22 @@ You can also provide the options creating a property name `carlin` in your `pack
   "name": "my-app",
   "version": "0.1.0",
   "carlin": {
-    "environment": "Production"
+    "environment": "Production",
+    "region": "us-east-1",
+    "awsAccountId": "123456789012"
   }
 }
 ```
+
+**When to use:**
+
+- Simple projects with a single package.json
+- Options that rarely change
+- Committing configuration to version control
+
+:::caution
+Avoid storing sensitive values like `awsAccountId` in package.json if the repository is public.
+:::
 
 ### Environment Variables
 
@@ -53,9 +96,190 @@ You can also provide the options creating a property name `carlin` in your `pack
 
 <InnerHTML html={cliConfigFileComment} />
 
+**Supported File Formats:**
+
+carlin automatically searches for configuration files in this order:
+
+- `carlin.ts` (TypeScript, evaluated at runtime)
+- `carlin.js` (JavaScript)
+- `carlin.yml` / `carlin.yaml` (YAML)
+- `carlin.json` (JSON)
+
+**Example YAML Configuration:**
+
+```yaml title="carlin.yml"
+# Shared configuration
+region: us-east-1
+awsAccountId: '123456789012'
+
+# Stack naming
+stackName: MyApp
+
+# Deployment settings
+terminationProtection: true
+skipBuild: false
+```
+
+**Example TypeScript Configuration:**
+
+```typescript title="carlin.ts"
+import { config } from 'dotenv';
+
+// Load .env file
+config();
+
+export default {
+  environment: process.env.ENVIRONMENT,
+  region: process.env.AWS_REGION || 'us-east-1',
+  awsAccountId: process.env.AWS_ACCOUNT_ID,
+  stackName: 'MyApp',
+};
+```
+
+**Monorepo Configuration (Find-Up Merging):**
+
+carlin searches upward from `process.cwd()` and merges all found config files, with **nearest files taking precedence**.
+
+```plaintext
+monorepo/
+├── carlin.yml              # Root config (shared)
+│   awsAccountId: 123456789012
+│   region: us-east-1
+└── packages/
+    └── app/
+        └── carlin.yml      # Package config (specific)
+            stackName: MyMonorepoApp
+            region: us-east-2
+```
+
+**Resulting configuration in `packages/app/`:**
+
+```yaml
+awsAccountId: '123456789012' # from root
+stackName: MyMonorepoApp # from package
+region: us-east-2 # package overrides root
+```
+
+**Custom Config File Path:**
+
+```bash
+carlin deploy --config ./configs/production.yml
+```
+
 ## Multiple Environments
 
 <InnerHTML html={cliMultipleEnvironmentsComment} />
+
+**Common Environment Patterns:**
+
+| Pattern                           | Configuration Approach                  |
+| --------------------------------- | --------------------------------------- |
+| Single environment per branch     | Use `ENVIRONMENT` env var in CI/CD      |
+| Shared config, different accounts | Override `awsAccountId` per environment |
+| Environment-specific stacks       | Use `stackName` with environment suffix |
+| Multi-region deployments          | Override `region` per pipeline stage    |
+
+**Example Multi-Environment Setup:**
+
+```yaml title="carlin.yml"
+# Base configuration
+stackName: MyApp
+
+# Development defaults
+region: us-east-1
+terminationProtection: false
+```
+
+```yaml title="carlin.production.yml"
+# Production overrides
+awsAccountId: '999888777666'
+region: us-west-2
+terminationProtection: true
+```
+
+```bash
+# Use different config per environment
+carlin deploy --config carlin.production.yml --environment Production
+```
+
+See [Multi-Environment Setup Guide](/docs/carlin/guides/multi-environment-setup) for detailed strategies.
+
+## Common Configuration Scenarios
+
+### Single-Account Multi-Environment
+
+```yaml title="carlin.yml"
+awsAccountId: '123456789012'
+region: us-east-1
+# stackName derived from package.json + environment
+```
+
+```bash
+# Deploys stack: my-app-staging
+ENVIRONMENT=staging carlin deploy
+
+# Deploys stack: my-app-production
+ENVIRONMENT=production carlin deploy
+```
+
+### Multi-Account with Separate AWS Credentials
+
+```yaml title="carlin.staging.yml"
+awsAccountId: '111111111111'
+region: us-east-1
+```
+
+```yaml title="carlin.production.yml"
+awsAccountId: '999999999999'
+region: us-east-2
+terminationProtection: true
+```
+
+```bash
+# Staging deployment (uses staging AWS profile)
+AWS_PROFILE=staging carlin deploy --config carlin.staging.yml
+
+# Production deployment (uses production AWS profile)
+AWS_PROFILE=production carlin deploy --config carlin.production.yml
+```
+
+### Monorepo with Shared Base Configuration
+
+```yaml title="carlin.yml (root)"
+awsAccountId: '123456789012'
+region: us-east-1
+terminationProtection: true
+```
+
+```yaml title="packages/api/carlin.yml"
+stackName: MyAPI
+# Inherits awsAccountId and region from root
+```
+
+```yaml title="packages/web/carlin.yml"
+stackName: MyWeb
+region: us-west-2 # Override region for this package
+```
+
+## Environment Variable Mapping
+
+All global options can be set via environment variables with the `CARLIN_` prefix:
+
+| Option         | Environment Variable    | Example                              |
+| -------------- | ----------------------- | ------------------------------------ |
+| `environment`  | `CARLIN_ENVIRONMENT`    | `CARLIN_ENVIRONMENT=Production`      |
+| `region`       | `CARLIN_REGION`         | `CARLIN_REGION=us-west-2`            |
+| `stackName`    | `CARLIN_STACK_NAME`     | `CARLIN_STACK_NAME=CustomStack`      |
+| `awsAccountId` | `CARLIN_AWS_ACCOUNT_ID` | `CARLIN_AWS_ACCOUNT_ID=123456789012` |
+
+## Troubleshooting Configuration
+
+| Issue                        | Cause                       | Solution                                                 |
+| ---------------------------- | --------------------------- | -------------------------------------------------------- |
+| Wrong config loaded          | Multiple config files found | Use `--config` to specify exact file                     |
+| Options not applied          | Typo in option name         | Check spelling against [Global Options](#global-options) |
+| Monorepo config conflicts    | Unclear merge order         | Place most specific config nearest to package            |
+| Environment variable ignored | Wrong prefix                | Ensure `CARLIN_` prefix for options                      |
 
 ## Global Options
 

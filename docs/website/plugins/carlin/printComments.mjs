@@ -1,12 +1,14 @@
-import { explain, getComment } from './getComments.mjs';
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 import minimist from 'minimist';
+
+import { explain, getComment } from './getComments.mjs';
 
 const args = minimist(process.argv.slice(2));
 
 const pathFromBuild = args.path.replace('.ts', '.js');
 
 if (!pathFromBuild) {
-  // eslint-disable-next-line no-console
   console.log(
     'Please provide a path from carlin build folder to the file you want to print comments for'
   );
@@ -39,7 +41,6 @@ if (!pathFromBuild) {
     }
   }
 
-  // eslint-disable-next-line no-console
   console.log(res);
   process.exit(0);
 })();

@@ -1,0 +1,353 @@
+---
+title: Custom CloudFormation Templates
+---
+
+Extend carlin's built-in deployments by providing custom CloudFormation templates that integrate with standard stack naming, parameters, and resource management.
+
+## Overview
+
+While carlin generates templates automatically for most use cases (Lambda functions, static sites, CI/CD pipelines), you can supply custom templates for:
+
+- Resources not natively supported by carlin
+- Complex infrastructure requiring fine-grained control
+- Integration with existing CloudFormation stacks
+- Custom IAM policies, VPCs, databases, etc.
+
+## Template Location
+
+carlin searches for templates in the following locations:
+
+```plaintext
+project/
+├── cloudformation/
+│   └── template.yml          # Default location
+├── template.yml              # Alternative root location
+└── carlin.yml
+```
+
+Specify a custom path:
+
+```bash
+carlin deploy --template ./infra/my-template.yml
+```
+
+## Template Structure
+
+Custom templates must be valid CloudFormation YAML or JSON:
+
+```yaml title="cloudformation/template.yml"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Custom infrastructure for MyApp
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Deployment environment
+    Default: staging
+
+Resources:
+  MyDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-data'
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-assets-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+Outputs:
+  TableName:
+    Description: DynamoDB table name
+    Value: !Ref MyDynamoDBTable
+    Export:
+      Name: !Sub '${AWS::StackName}-TableName'
+
+  BucketName:
+    Description: S3 bucket name
+    Value: !Ref MyS3Bucket
+```
+
+## Integrating with carlin Stack Naming
+
+Use CloudFormation pseudo-parameters and intrinsic functions to align with carlin conventions:
+
+| Pattern                  | CloudFormation Expression                   | Result                          |
+| ------------------------ | ------------------------------------------- | ------------------------------- |
+| Stack-prefixed resources | `!Sub '${AWS::StackName}-resource'`         | `my-app-staging-resource`       |
+| Account-specific names   | `!Sub 'bucket-${AWS::AccountId}'`           | `bucket-123456789012`           |
+| Region-aware endpoints   | `!Sub 'https://${AWS::Region}.example.com'` | `https://us-east-1.example.com` |
+
+## Parameters Integration
+
+carlin automatically passes certain parameters to your template:
+
+```yaml
+Parameters:
+  Environment:
+    Type: String
+    Description: Deployment environment (staging, production, etc.)
+
+  StackName:
+    Type: String
+    Description: Stack name (derived from package + environment)
+
+  Region:
+    Type: String
+    Description: AWS region
+    Default: us-east-1
+```
+
+Access parameters in your template:
+
+```yaml
+Resources:
+  MyFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${StackName}-processor'
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+          REGION: !Ref Region
+```
+
+## Passing Custom Parameters
+
+Define parameters in `carlin.yml`:
+
+```yaml title="carlin.yml"
+stackName: MyApp
+parameters:
+  DatabaseInstanceType: db.t3.micro
+  EnableBackups: 'true'
+  RetentionDays: '7'
+```
+
+Use in template:
+
+```yaml
+Parameters:
+  DatabaseInstanceType:
+    Type: String
+  EnableBackups:
+    Type: String
+  RetentionDays:
+    Type: Number
+
+Resources:
+  MyDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: !Ref DatabaseInstanceType
+      BackupRetentionPeriod: !Ref RetentionDays
+```
+
+## Combining Built-in and Custom Resources
+
+Deploy Lambda functions alongside custom infrastructure:
+
+```yaml title="cloudformation/template.yml"
+Resources:
+  # Custom DynamoDB table
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-data'
+      # ... table config
+
+  # Lambda function will be added by carlin
+  # (defined in src/lambdas/)
+```
+
+carlin merges generated Lambda resources into your custom template during deployment.
+
+## Referencing Outputs in Code
+
+Export stack outputs for runtime access:
+
+```yaml
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint
+    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiEndpoint'
+
+  TableName:
+    Value: !Ref DataTable
+    Export:
+      Name: !Sub '${AWS::StackName}-TableName'
+```
+
+Access from Lambda environment:
+
+```typescript
+const tableName = process.env.TABLE_NAME; // Injected by carlin
+const apiEndpoint = process.env.API_ENDPOINT;
+```
+
+## Conditional Resources
+
+Use CloudFormation conditions for environment-specific resources:
+
+```yaml
+Conditions:
+  IsProduction: !Equals [!Ref Environment, 'Production']
+
+Resources:
+  ProductionOnlyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: IsProduction
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-critical-errors'
+      # ... alarm config
+```
+
+## Nested Stacks
+
+Organize complex infrastructure with nested stacks:
+
+```yaml
+Resources:
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/my-bucket/network.yml
+      Parameters:
+        Environment: !Ref Environment
+
+  DatabaseStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/my-bucket/database.yml
+      Parameters:
+        VpcId: !GetAtt NetworkStack.Outputs.VpcId
+```
+
+## Custom Resource Naming
+
+Ensure globally unique names for resources like S3 buckets:
+
+```yaml
+Resources:
+  GlobalBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # Include account ID for uniqueness
+      BucketName: !Sub 'my-app-${Environment}-${AWS::AccountId}'
+```
+
+## Troubleshooting Custom Templates
+
+| Issue                     | Cause                            | Solution                                                                                 |
+| ------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------- |
+| Template validation fails | Syntax error or invalid resource | Validate with `aws cloudformation validate-template --template-body file://template.yml` |
+| Parameters not passed     | Missing in `carlin.yml`          | Define parameters in config file                                                         |
+| Resource name conflicts   | Hardcoded names                  | Use `!Sub` with `${AWS::StackName}`                                                      |
+| Stack update fails        | Incompatible changes             | Check CloudFormation change sets before deploying                                        |
+| Outputs not accessible    | Missing export                   | Add `Export` property to outputs                                                         |
+
+## Best Practices
+
+- **Use pseudo-parameters**: Leverage `${AWS::StackName}`, `${AWS::Region}`, `${AWS::AccountId}` for portability
+- **Tag all resources**: Include `Environment`, `StackName`, `ManagedBy: carlin` tags
+- **Export key outputs**: Make ARNs, URLs, and IDs available to other stacks
+- **Validate before deploy**: Run `aws cloudformation validate-template` locally
+- **Enable termination protection**: Set `terminationProtection: true` for production stacks
+- **Use conditions**: Optimize costs by deploying resources only where needed
+- **Document parameters**: Add clear descriptions for all template parameters
+
+## Example: Full-Stack Custom Template
+
+```yaml title="cloudformation/template.yml"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Full-stack application infrastructure
+
+Parameters:
+  Environment:
+    Type: String
+  StackName:
+    Type: String
+
+Conditions:
+  IsProduction: !Equals [!Ref Environment, 'Production']
+
+Resources:
+  # VPC
+  AppVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackName}-vpc'
+
+  # DynamoDB
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${StackName}-data'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: !If [IsProduction, true, false]
+
+  # S3 for static assets
+  AssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${StackName}-assets-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+
+  # CloudWatch Log Group
+  AppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/app/${StackName}'
+      RetentionInDays: !If [IsProduction, 30, 7]
+
+Outputs:
+  VpcId:
+    Value: !Ref AppVpc
+    Export:
+      Name: !Sub '${StackName}-VpcId'
+
+  TableName:
+    Value: !Ref DataTable
+    Export:
+      Name: !Sub '${StackName}-TableName'
+
+  BucketName:
+    Value: !Ref AssetsBucket
+```
+
+## Related
+
+- [CloudFormation Templates Core Concept](/docs/carlin/core-concepts/cloudformation-templates)
+- [Stack Naming](/docs/carlin/core-concepts/stack-naming)
+- [Base Stack](/docs/carlin/core-concepts/base-stack)
+- [Termination Protection](/docs/carlin/advanced/termination-protection)

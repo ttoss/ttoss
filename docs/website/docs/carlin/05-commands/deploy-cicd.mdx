@@ -1,0 +1,139 @@
+---
+title: deploy cicd
+---
+
+## Overview
+
+Deploy the CI/CD infrastructure that enables executing repository tasks (build, test, deploy, reporting) using on‑demand serverless resources instead of long‑lived runners.
+
+```bash
+carlin deploy cicd
+```
+
+## What It Creates
+
+Resources provisioned by the CI/CD deployment:
+
+- Fargate Task Definitions (on‑demand command execution)
+- EventBridge Rules (trigger tasks on GitHub events / schedules)
+- ECR Repository (stores build images if needed)
+- VPC Subnets + Security Groups (network isolation for tasks)
+- IAM Roles (least‑privilege execution + artifact access)
+- S3 Bucket (optional artifacts / logs storage if not using base stack bucket)
+- CloudWatch Log Groups (logs for each task execution)
+
+Requires the [Base Stack](/docs/carlin/commands/deploy-base-stack) for shared components (VPC, builders).
+
+## Use Cases
+
+- Run integration tests only when relevant paths change.
+- Execute database migration commands on release.
+- Publish build artifacts without maintaining EC2 / runners.
+- Generate reports (coverage, performance) asynchronously.
+- Nightly security / dependency scans.
+
+## Quick Examples
+
+### Basic Deploy
+
+```bash
+carlin deploy cicd --environment staging
+```
+
+### Deploy With Custom Image
+
+```bash
+carlin deploy cicd --cicd-image-path ./ci/Dockerfile
+```
+
+### Trigger Only On Main Branch Pushes
+
+```bash
+carlin deploy cicd --cicd-branch main
+```
+
+## Common Options
+
+| Option              | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `--cicd-branch`     | Branch name filter for execution triggers.            |
+| `--cicd-image-path` | Path to Dockerfile used to build execution image.     |
+| `--environment`     | Enables termination protection + separates resources. |
+| `--region`          | AWS region (defaults to same as base stack).          |
+| `--destroy`         | Destroys CI/CD resources (if protection disabled).    |
+
+Actual option names may evolve; run `carlin deploy cicd --help` for current list.
+
+## Execution Flow
+
+```mermaid
+flowchart TD
+		A[GitHub/Event Trigger] --> B[EventBridge Rule]
+		B --> C[Start Fargate Task]
+		C --> D[Pull CICD Image (ECR)]
+		D --> E[Run Command (build/test)]
+		E --> F[Upload Artifacts (S3)]
+		F --> G[Emit Status (GitHub/Slack)]
+```
+
+## Integrating With GitHub Actions
+
+Use GitHub only for orchestration; heavy work runs in AWS:
+
+```yaml
+name: Offloaded CI
+on: [push]
+jobs:
+	trigger-ci:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Invoke CICD Task
+				run: |
+					aws ecs run-task \
+						--cluster carlin-cicd-cluster \
+						--task carlin-cicd-task \
+						--launch-type FARGATE \
+						--network-configuration 'awsvpcConfiguration={subnets=[subnet-123],securityGroups=[sg-123]}'
+```
+
+## Artifacts & Outputs
+
+Typical artifacts placed in S3 (or emitted to logs):
+
+- Test reports / coverage summaries
+- Build bundles / packaged Lambda layers
+- Security scan results
+- Generated environment files (`carlin generate-env` outputs)
+
+## Cost Model
+
+You only pay for:
+
+- Fargate task CPU + memory time
+- Minimal data transfer + storage for artifacts
+- Logs ingestion (CloudWatch)
+
+Compared to persistent runners, costs scale with actual usage.
+
+## Troubleshooting
+
+| Issue                        | Cause                            | Fix                                                      |
+| ---------------------------- | -------------------------------- | -------------------------------------------------------- |
+| Task stuck in `PROVISIONING` | Missing subnet or security group | Redeploy base stack or verify VPC IDs                    |
+| Image pull failed            | ECR auth/region mismatch         | Ensure region matches deployment; verify IAM permissions |
+| No logs                      | Log group not created            | Check CloudWatch; redeploy with correct permissions      |
+| Trigger not firing           | Event rule misconfigured         | Re-run deploy with correct branch / pattern              |
+
+## Best Practices
+
+- Keep Docker image minimal (alpine + required tools only).
+- Cache dependencies inside image for faster cold starts.
+- Use separate environments for staging vs production workflows.
+- Store long‑term artifacts in a dedicated bucket with lifecycle rules.
+- Add alarms for repeated task failures (CloudWatch metrics).
+
+## Related
+
+- [Base Stack](/docs/carlin/commands/deploy-base-stack)
+- [generate-env](/docs/carlin/commands/generate-env)
+- [Lambda Functions Guide](/docs/carlin/guides/lambda-functions)

@@ -112,7 +112,7 @@ const config: Config = {
               tsconfig: `../../packages/${pkg}/tsconfig.json`,
               out: `./docs/modules/packages/${pkg}`,
               sidebar: {
-                categoryLabel: `@ttoss/${pkg}`,
+                autoConfiguration: true,
               },
               excludeExternals: true,
               excludeNotDocumented: true,

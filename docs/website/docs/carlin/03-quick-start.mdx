@@ -1,0 +1,247 @@
+---
+title: Quick Start
+---
+
+Get started with carlin in minutes by deploying your first CloudFormation stack.
+
+## Step 1: Create a CloudFormation Template
+
+Create a simple CloudFormation template in your project root. carlin supports TypeScript (`.ts`), YAML (`.yml`), or JSON (`.json`) formats.
+
+### TypeScript Template (Recommended)
+
+Create `cloudformation.ts`:
+
+```typescript
+export const template = {
+  Resources: {
+    MyBucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: 'my-first-carlin-bucket',
+      },
+    },
+  },
+  Outputs: {
+    BucketName: {
+      Description: 'Name of the S3 bucket',
+      Value: { Ref: 'MyBucket' },
+    },
+    BucketArn: {
+      Description: 'ARN of the S3 bucket',
+      Value: { 'Fn::GetAtt': ['MyBucket', 'Arn'] },
+    },
+  },
+};
+```
+
+### YAML Template
+
+Create `cloudformation.yml`:
+
+```yaml
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-first-carlin-bucket
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref MyBucket
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt MyBucket.Arn
+```
+
+## Step 2: Deploy Your Stack
+
+Deploy with a single command:
+
+```bash
+carlin deploy
+```
+
+carlin automatically:
+
+1. ✅ Finds your CloudFormation template
+2. ✅ Generates a stack name (based on `package.json` name and branch)
+3. ✅ Creates the CloudFormation stack in AWS
+4. ✅ Displays stack outputs
+
+Example output:
+
+```bash
+$ carlin deploy
+info deploy Creating stack: my-app-main
+info deploy Stack created successfully
+info deploy Stack Outputs:
+info deploy   BucketName: my-first-carlin-bucket
+info deploy   BucketArn: arn:aws:s3:::my-first-carlin-bucket
+```
+
+## Step 3: Verify Deployment
+
+Check your deployment in AWS Console:
+
+1. Go to [CloudFormation Console](https://console.aws.amazon.com/cloudformation)
+2. Find your stack (e.g., `my-app-main`)
+3. View **Resources** tab to see created S3 bucket
+4. View **Outputs** tab to see exported values
+
+Or use carlin to describe the stack:
+
+```bash
+carlin deploy describe
+```
+
+## Step 4: Update Your Stack
+
+Modify `cloudformation.ts`:
+
+```typescript
+export const template = {
+  Resources: {
+    MyBucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: 'my-first-carlin-bucket',
+        // Add versioning
+        VersioningConfiguration: {
+          Status: 'Enabled',
+        },
+      },
+    },
+    // Add a new resource
+    MyTable: {
+      Type: 'AWS::DynamoDB::Table',
+      Properties: {
+        TableName: 'my-first-table',
+        BillingMode: 'PAY_PER_REQUEST',
+        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+      },
+    },
+  },
+  Outputs: {
+    BucketName: {
+      Value: { Ref: 'MyBucket' },
+    },
+    TableName: {
+      Value: { Ref: 'MyTable' },
+    },
+  },
+};
+```
+
+Deploy the update:
+
+```bash
+carlin deploy
+```
+
+carlin updates the existing stack with new resources.
+
+## Step 5: Deploy to Production
+
+Deploy to production environment with termination protection:
+
+```bash
+carlin deploy --environment production
+```
+
+This creates a separate stack (e.g., `my-app-production`) with:
+
+- Termination protection enabled
+- Environment-specific naming
+- Production-grade configurations
+
+## Step 6: Clean Up
+
+Delete the development stack:
+
+```bash
+carlin deploy --destroy
+```
+
+:::caution
+Deletion is permanent. Production stacks with `--environment` flag are protected from deletion.
+:::
+
+## Next Steps
+
+### Deploy Lambda Functions
+
+Add a Lambda function to your template:
+
+```typescript
+export const template = {
+  Resources: {
+    MyFunction: {
+      Type: 'AWS::Lambda::Function',
+      Properties: {
+        Runtime: 'nodejs20.x',
+        Handler: 'handler.handler',
+        Code: {
+          S3Bucket: { Ref: 'LambdaS3Bucket' },
+          S3Key: { Ref: 'LambdaS3Key' },
+        },
+      },
+    },
+  },
+};
+```
+
+Create `src/handler.ts`:
+
+```typescript
+export const handler = async (event: any) => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: 'Hello from carlin!' }),
+  };
+};
+```
+
+Deploy:
+
+```bash
+carlin deploy
+```
+
+carlin automatically builds and uploads your Lambda code.
+
+### Deploy Static Websites
+
+Deploy a React/Vue/Vite app:
+
+```bash
+carlin deploy static-app
+```
+
+carlin creates S3 bucket + CloudFront distribution and deploys your built static files.
+
+### Configure Multiple Environments
+
+Create `carlin.yml`:
+
+```yaml
+environment: staging
+region: us-east-1
+parameters:
+  DomainName: staging.example.com
+```
+
+Override for production:
+
+```bash
+carlin deploy --environment production --parameters '{"DomainName":"example.com"}'
+```
+
+## Learn More
+
+- [Core Concepts](/docs/carlin/core-concepts/stack-naming) - Understand stack naming, environments, and base stacks
+- [Commands](/docs/carlin/commands/deploy) - Explore all available commands
+- [Guides](/docs/carlin/guides/lambda-functions) - In-depth tutorials for common use cases
+- [Configuration](/docs/carlin/configuration) - Advanced configuration options
