@@ -124,3 +124,68 @@ test('multiples checkboxes cannot interfere with each other', async () => {
     '1': { isActivated: true },
   });
 });
+
+test('should respect defaultValue prop on component', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldCheckbox
+          name="checkbox1"
+          label="Checkbox 1"
+          defaultValue={true as any}
+        />
+        <FormFieldCheckbox
+          name="checkbox2"
+          label="Checkbox 2"
+          defaultValue={false as any}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const checkbox1 = screen.getByLabelText('Checkbox 1') as HTMLInputElement;
+  const checkbox2 = screen.getByLabelText('Checkbox 2') as HTMLInputElement;
+
+  expect(checkbox1.checked).toBe(true);
+  expect(checkbox2.checked).toBe(false);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true, checkbox2: false });
+});
+
+test('should default to false when no defaultValue provided', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldCheckbox name="checkbox1" label="Checkbox 1" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const checkbox = screen.getByLabelText('Checkbox 1') as HTMLInputElement;
+
+  expect(checkbox.checked).toBe(false);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ checkbox1: false });
+});
