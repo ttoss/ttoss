@@ -29,8 +29,8 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@fixtures/config-file-ts": "workspace:^",
     "@ttoss/config": "workspace:^",
-    "@ttoss/read-config-file-test": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.2.6",

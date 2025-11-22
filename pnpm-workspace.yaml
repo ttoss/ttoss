@@ -1,5 +1,6 @@
 packages:
   - 'challenge/packages/*'
   - 'docs/*'
+  - 'fixtures/*'
   - 'packages/*'
   - 'terezinha-farm/*'
