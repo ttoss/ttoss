@@ -1,5 +1,6 @@
-import { readConfigFile, readConfigFileSync } from 'src/index';
 import path from 'node:path';
+
+import { readConfigFile, readConfigFileSync } from 'src/index';
 
 const getConfigFilePath = (configName: string) => {
   return path.resolve(__dirname, `../../fixtures/${configName}`);

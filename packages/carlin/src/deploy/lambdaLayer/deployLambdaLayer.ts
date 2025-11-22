@@ -2,7 +2,7 @@ import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
 
-import { NODE_RUNTIME } from '../../config';
+import { DEFAULT_NODE_RUNTIME } from '../../config';
 import { waitCodeBuildFinish } from '../../utils';
 import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 import { deploy, doesStackExist } from '../cloudformation.core';
@@ -68,10 +68,12 @@ export const getLambdaLayerTemplate = ({
   bucket,
   key,
   packageName,
+  runtime,
 }: {
   bucket: string;
   key: string;
   packageName: string;
+  runtime?: string;
 }): CloudFormationTemplate => {
   const description = packageName
     /**
@@ -80,13 +82,15 @@ export const getLambdaLayerTemplate = ({
      */
     .substring(0, 256);
 
+  const nodeRuntime = runtime || DEFAULT_NODE_RUNTIME;
+
   return {
     AWSTemplateFormatVersion: '2010-09-09',
     Resources: {
       LambdaLayer: {
         Type: 'AWS::Lambda::LayerVersion',
         Properties: {
-          CompatibleRuntimes: [NODE_RUNTIME],
+          CompatibleRuntimes: [nodeRuntime],
           Content: {
             S3Bucket: bucket,
             S3Key: key,
@@ -128,9 +132,11 @@ const getPackagesThatAreNotDeployed = async ({
 export const deployLambdaLayer = async ({
   packages,
   deployIfExists = true,
+  runtime,
 }: {
   deployIfExists: boolean;
   packages: string[];
+  runtime?: string;
 }) => {
   try {
     const packagesToBeDeployed = deployIfExists
@@ -162,6 +168,7 @@ export const deployLambdaLayer = async ({
           packageName,
           bucket,
           key,
+          runtime,
         });
 
         await deploy({

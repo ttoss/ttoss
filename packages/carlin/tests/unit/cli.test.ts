@@ -10,6 +10,13 @@ jest.mock('src/deploy/baseStack/deployBaseStack', () => {
   };
 });
 
+jest.mock('src/deploy/cloudformation', () => {
+  return {
+    deployCloudFormation: jest.fn(),
+    destroyCloudFormation: jest.fn(),
+  };
+});
+
 jest.mock('deepmerge', () => {
   return {
     all: jest.fn(),
@@ -249,4 +256,28 @@ describe('handle merge config correctly', () => {
     expect(argv.environment).toBe('Production');
     expect(argv.optionEnv).toEqual(newOptionEnv);
   });
+});
+
+describe('lambda-runtime option', () => {
+  test('should have default lambda-runtime', async () => {
+    const argv = await parseCli('deploy', {});
+    expect(argv.lambdaRuntime).toEqual('nodejs24.x');
+  });
+
+  test('should accept lambda-runtime option', async () => {
+    const argv = await parseCli('deploy', {
+      lambdaRuntime: 'nodejs20.x',
+    });
+    expect(argv.lambdaRuntime).toEqual('nodejs20.x');
+  });
+
+  test.each(['nodejs20.x', 'nodejs22.x', 'nodejs24.x'])(
+    'should accept valid lambda-runtime: %s',
+    async (runtime) => {
+      const argv = await parseCli('deploy', {
+        lambdaRuntime: runtime,
+      });
+      expect(argv.lambdaRuntime).toEqual(runtime);
+    }
+  );
 });

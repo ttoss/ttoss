@@ -1,5 +1,5 @@
 import { Checkbox, type CheckboxProps } from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import type { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
@@ -12,6 +12,7 @@ export const FormFieldCheckbox = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
+  defaultValue = false as FieldPathValue<TFieldValues, TName>,
   disabled,
   ...props
 }: FormFieldCheckboxProps<TFieldValues, TName>) => {
@@ -26,7 +27,6 @@ export const FormFieldCheckbox = <
     css,
     rules,
     id,
-    defaultValue,
     ...checkboxProps
   } = props;
 
@@ -44,10 +44,12 @@ export const FormFieldCheckbox = <
       rules={rules}
       disabled={disabled}
       render={({ field, fieldState }) => {
+        const { value, ...fieldWithoutValue } = field;
         return (
           <Checkbox
             {...checkboxProps}
-            {...field}
+            {...fieldWithoutValue}
+            checked={value}
             disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
           />

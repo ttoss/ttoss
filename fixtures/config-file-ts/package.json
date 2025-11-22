@@ -1,11 +1,11 @@
 {
   "private": true,
-  "name": "@ttoss/read-config-file-test",
+  "name": "@fixtures/config-file-ts",
   "version": "1.0.1",
   "description": "",
   "author": "ttoss",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.ts"
   }
 }

@@ -4,6 +4,7 @@ const projectName = 'my-project';
 
 jest.mock('../../utils', () => {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(jest.requireActual('../../utils') as any),
     getProjectName: jest.fn(() => {
       return projectName;
@@ -14,14 +15,14 @@ jest.mock('../../utils', () => {
 import * as configModule from '../../config';
 import {
   API_LOGICAL_ID,
+  getCicdTemplate,
+  getRepositoryImageBuilder,
   IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID,
   PIPELINES_ARTIFACT_STORE_S3_BUCKET_LOGICAL_ID,
   PIPELINES_HANDLER_LAMBDA_FUNCTION_LOGICAL_ID,
   PIPELINES_MAIN_LOGICAL_ID,
   PIPELINES_ROLE_LOGICAL_ID,
   PIPELINES_TAG_LOGICAL_ID,
-  getCicdTemplate,
-  getRepositoryImageBuilder,
 } from './cicd.template';
 
 const s3 = {
@@ -130,8 +131,9 @@ test.each<[Pipeline[]]>([
 test('should install compatible node version on image builder', () => {
   const versions = [12, 14, 16, 18];
 
-  versions.forEach((version) => {
-    (configModule as any).NODE_RUNTIME = `nodejs${version}.x`;
+  for (const version of versions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (configModule as any).DEFAULT_NODE_RUNTIME = `nodejs${version}.x`;
 
     const dockerfile =
       getRepositoryImageBuilder().Properties.Environment?.EnvironmentVariables?.find(
@@ -143,5 +145,5 @@ test('should install compatible node version on image builder', () => {
     expect(dockerfile).toContain(
       `RUN curl -fsSL https://deb.nodesource.com/setup_${version}.x | bash -`
     );
-  });
+  }
 });
