@@ -204,4 +204,22 @@ describe('handlers', () => {
     await parse('deploy', { destroy: true });
     expect(destroyCloudFormation).toHaveBeenCalled();
   });
+
+  test('should pass lambda-runtime to deployCloudFormation', async () => {
+    await parse('deploy', { lambdaRuntime: 'nodejs20.x' });
+    expect(deployCloudFormation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lambdaRuntime: 'nodejs20.x',
+      })
+    );
+  });
+
+  test('should pass default lambda-runtime to deployCloudFormation', async () => {
+    await parse('deploy', {});
+    expect(deployCloudFormation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lambdaRuntime: 'nodejs24.x',
+      })
+    );
+  });
 });

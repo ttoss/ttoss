@@ -1,5 +1,6 @@
-import { NODE_VERSION } from '../../config';
+import { DEFAULT_NODE_VERSION } from '../../config';
 import { getIamPath } from '../../utils';
+import { getNodeVersion } from '../runtime';
 import {
   BASE_STACK_BUCKET_LOGICAL_NAME,
   BASE_STACK_LAMBDA_LAYER_BUILDER_LOGICAL_NAME,
@@ -12,13 +13,16 @@ const CODE_BUILD_PROJECT_IAM_ROLE_LOGICAL_ID = `${BASE_STACK_LAMBDA_LAYER_BUILDE
 /**
  * https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
  */
-export const getBuildSpec = () => {
+export const getBuildSpec = ({ runtime }: { runtime?: string } = {}) => {
+  const nodeVersion = runtime
+    ? getNodeVersion({ runtime })
+    : DEFAULT_NODE_VERSION;
   return `
 version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: ${NODE_VERSION}
+      nodejs: ${nodeVersion}
     commands:
       - npm i --no-bin-links --no-optional --no-package-lock --no-save --no-shrinkwrap $PACKAGE_NAME
       - mkdir nodejs
@@ -33,7 +37,11 @@ artifacts:
 /**
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
  */
-export const getLambdaLayerBuilderTemplate = () => {
+export const getLambdaLayerBuilderTemplate = ({
+  runtime,
+}: {
+  runtime?: string;
+} = {}) => {
   return {
     Resources: {
       [CODE_BUILD_PROJECT_IAM_ROLE_LOGICAL_ID]: {
@@ -132,7 +140,7 @@ export const getLambdaLayerBuilderTemplate = () => {
             'Fn::GetAtt': `${CODE_BUILD_PROJECT_IAM_ROLE_LOGICAL_ID}.Arn`,
           },
           Source: {
-            BuildSpec: getBuildSpec(),
+            BuildSpec: getBuildSpec({ runtime }),
             Type: 'NO_SOURCE',
           },
         },

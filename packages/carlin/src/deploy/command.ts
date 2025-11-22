@@ -100,6 +100,12 @@ export const options = {
     describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
+  'lambda-runtime': {
+    choices: ['nodejs20.x', 'nodejs22.x', 'nodejs24.x'] as const,
+    default: 'nodejs24.x',
+    describe: 'Node.js runtime for Lambda functions.',
+    type: 'string',
+  },
   /**
    * This option has the format to match [CloudFormation parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_Parameter.html).
    *
@@ -184,6 +190,10 @@ export const examples: ReadonlyArray<[string, string?]> = [
   [
     'carlin deploy --lambda-externals momentjs',
     "Lambda exists. Don't bundle momentjs.",
+  ],
+  [
+    'carlin deploy --lambda-runtime nodejs20.x',
+    'Use Node.js 20.x runtime for Lambda functions.',
   ],
   [
     'carlin deploy --destroy --stack-name StackToBeDeleted',

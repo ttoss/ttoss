@@ -2,7 +2,7 @@ import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import { pascalCase } from 'change-case';
 import yaml from 'js-yaml';
 
-import { NODE_RUNTIME } from '../../config';
+import { DEFAULT_NODE_RUNTIME } from '../../config';
 import { getEnvironment, getIamPath, getProjectName } from '../../utils';
 import {
   BASE_STACK_BUCKET_NAME_EXPORTED_NAME,
@@ -11,6 +11,7 @@ import {
   BASE_STACK_VPC_PUBLIC_SUBNET_1_EXPORTED_NAME,
   BASE_STACK_VPC_PUBLIC_SUBNET_2_EXPORTED_NAME,
 } from '../baseStack/config';
+import { getNodeVersion } from '../runtime';
 import { CicdCommandOptions, getCicdConfig } from './command.options';
 import {
   ECS_TASK_DEFAULT_CPU,
@@ -83,13 +84,10 @@ export const IMAGE_UPDATER_SCHEDULE_SERVERLESS_FUNCTION_LOGICAL_ID =
  */
 export const getRepositoryImageBuilder = () => {
   /**
-   * Get only the number of NODE_RUNTIME. For example, if NODE_RUNTIME is
+   * Get only the number of DEFAULT_NODE_RUNTIME. For example, if DEFAULT_NODE_RUNTIME is
    * `nodejs14.x`, then `nodeRuntimeNumber` will be `14`.
    */
-  const nodeRuntimeNumber = NODE_RUNTIME.replace('nodejs', '').replace(
-    '.x',
-    ''
-  );
+  const nodeRuntimeNumber = getNodeVersion({ runtime: DEFAULT_NODE_RUNTIME });
 
   return {
     Type: 'AWS::CodeBuild::Project',
@@ -361,7 +359,7 @@ export const getCicdTemplate = ({
     Role: {
       'Fn::GetAtt': [FUNCTION_IAM_ROLE_LOGICAL_ID, 'Arn'],
     },
-    Runtime: NODE_RUNTIME,
+    Runtime: DEFAULT_NODE_RUNTIME,
     Timeout: 60,
   };
 
@@ -840,7 +838,7 @@ export const getCicdTemplate = ({
         Role: {
           'Fn::GetAtt': [FUNCTION_IAM_ROLE_LOGICAL_ID, 'Arn'],
         },
-        Runtime: NODE_RUNTIME,
+        Runtime: DEFAULT_NODE_RUNTIME,
         Timeout: 60,
       },
     };

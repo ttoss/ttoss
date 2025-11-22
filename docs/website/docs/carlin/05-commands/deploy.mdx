@@ -203,6 +203,28 @@ flowchart TD
 
 Configure output format with <OptionAliasesInline options={deployCommandOptions} option="lambda-format" to="/docs/carlin/commands/deploy#options" />. Default is `esm` for modern JavaScript modules.
 
+### Runtime Configuration
+
+You can specify the Node.js runtime version for Lambda functions using <OptionAliasesInline options={deployCommandOptions} option="lambda-runtime" to="/docs/carlin/commands/deploy#options" />. Default is `nodejs24.x`.
+
+Supported runtimes:
+
+- `nodejs20.x` - Node.js 20 LTS
+- `nodejs22.x` - Node.js 22
+- `nodejs24.x` - Node.js 24 (default)
+
+Example:
+
+```bash
+carlin deploy --lambda-runtime nodejs20.x
+```
+
+This option affects:
+
+- Lambda function runtime version
+- Lambda Layer compatible runtimes
+- CodeBuild runtime for Lambda Layer builder
+
 ## Destroy
 
 To destroy the stack, just pass the option <OptionAliasesInline options={deployCommandOptions} option="destroy" to="/docs/carlin/commands/deploy#options" /> to the deploy command:
