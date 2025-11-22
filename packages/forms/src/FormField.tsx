@@ -135,6 +135,12 @@ export const FormField = <
     );
   }, [inputTooltip, inputTooltipId]);
 
+  const inputContainerSx = {
+    position: 'relative' as const,
+    alignItems: 'center' as const,
+    gap: '2' as const,
+  };
+
   const isCheckboxOrSwitch = (element: React.ReactElement) => {
     return [Checkbox, Switch].some((component) => {
       return element.type === component;
@@ -171,13 +177,7 @@ export const FormField = <
         return (
           <>
             <Label aria-disabled={disabled} tooltip={tooltip}>
-              <Flex
-                sx={{
-                  position: 'relative',
-                  alignItems: 'center',
-                  gap: '2',
-                }}
-              >
+              <Flex sx={inputContainerSx}>
                 {React.createElement(child.type, elementProps)}
                 {inputTooltipElement}
               </Flex>
@@ -200,13 +200,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-          <Flex
-            sx={{
-              position: 'relative',
-              alignItems: 'center',
-              gap: '2',
-            }}
-          >
+          <Flex sx={inputContainerSx}>
             {React.createElement(child.type, elementProps)}
             {inputTooltipElement}
           </Flex>
