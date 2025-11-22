@@ -285,6 +285,53 @@ const formMethods = useForm({
 <FormFieldInput name="id" label="ID" disabled />;
 ```
 
+### Tooltips
+
+Form fields support two types of tooltips to provide helpful information to users:
+
+**1. Label Tooltip (`tooltip`):**
+
+Displays an icon next to the field label that users can hover over or click to see additional information:
+
+```tsx
+<FormFieldInput
+  name="email"
+  label="Email"
+  tooltip={{
+    render: 'We will never share your email with anyone.',
+    place: 'top',
+  }}
+/>
+```
+
+**2. Input Tooltip (`inputTooltip`):**
+
+Displays an icon next to the input field itself, useful for field-specific guidance:
+
+```tsx
+<FormFieldInput
+  name="password"
+  label="Password"
+  inputTooltip={{
+    render:
+      'Password must be at least 8 characters with uppercase, lowercase, and numbers.',
+    place: 'right',
+    variant: 'info',
+    icon: 'fluent:shield-checkmark-24-regular', // Optional custom icon
+  }}
+/>
+```
+
+**Tooltip Configuration Options:**
+
+- `render`: Content to display in the tooltip (string or React node)
+- `place`: Position of the tooltip (`'top'`, `'right'`, `'bottom'`, `'left'`)
+- `openOnClick`: Whether tooltip opens on click instead of hover (default: false)
+- `clickable`: Whether tooltip content is clickable (default: false)
+- `variant`: Visual style (`'info'`, `'warning'`, `'success'`, `'error'`) - only for `inputTooltip`
+- `icon`: Custom icon to display (defaults to `fluent:info-24-regular`) - only for `inputTooltip`
+- `sx`: Theme-UI styling object for custom styling - only for `inputTooltip`
+
 ### FormFieldInput
 
 Text input field supporting all HTML input types.
