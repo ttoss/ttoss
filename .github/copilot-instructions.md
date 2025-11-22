@@ -6,10 +6,10 @@ This file provides repository-wide guidance for GitHub Copilot coding agent when
 
 ttoss (Terezinha Tech Operations) is a TypeScript/JavaScript monorepo containing modular solutions for product development teams. The repository uses:
 
-- **Package Manager**: pnpm (v10.x)
+- **Package Manager**: pnpm (see package.json for exact version)
 - **Build System**: Turbo for monorepo orchestration
-- **Language**: TypeScript 5.7.x
-- **Node Version**: 22.x
+- **Language**: TypeScript (see package.json for exact version)
+- **Node Version**: See engines.node in package.json
 - **Primary Framework**: React (for UI packages)
 - **Testing**: Jest for unit tests
 - **Documentation**: Docusaurus
@@ -18,7 +18,7 @@ ttoss (Terezinha Tech Operations) is a TypeScript/JavaScript monorepo containing
 ## Repository Structure
 
 ```
-/home/runner/work/ttoss/ttoss/
+ttoss/
 ├── .github/
 │   └── instructions/        # Path-specific instruction files
 │       ├── docs.instructions.md      # For documentation work
@@ -263,7 +263,7 @@ This repository may have custom agents (specialized AI agents) for specific task
 
 ## Additional Resources
 
-- **Main README**: `/home/runner/work/ttoss/ttoss/README.md`
+- **Main README**: `README.md` in the repository root
 - **Package Documentation**: Individual README.md files in each package
 - **Storybook**: Run `pnpm storybook` to see component examples
 - **Website Docs**: `docs/website/` for Docusaurus documentation
