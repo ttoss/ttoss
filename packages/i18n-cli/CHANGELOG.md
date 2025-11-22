@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.38](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.37...@ttoss/i18n-cli@0.7.38) (2025-11-22)
+
+**Note:** Version bump only for package @ttoss/i18n-cli
+
 ## [0.7.37](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.36...@ttoss/i18n-cli@0.7.37) (2025-11-21)
 
 **Note:** Version bump only for package @ttoss/i18n-cli
