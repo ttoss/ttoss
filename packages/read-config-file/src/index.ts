@@ -1,6 +1,8 @@
-import { loadConfig } from './loadConfig';
-import fs from 'fs';
+import fs from 'node:fs';
+
 import yaml from 'js-yaml';
+
+import { loadConfig } from './loadConfig';
 
 type ConfigInput = {
   configFilePath: string;
@@ -25,6 +27,7 @@ export const readConfigFileSync = <ConfigFile = unknown>({
   }
 
   if (extension === 'js') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(configFilePath);
   }
 

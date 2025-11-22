@@ -1,3 +1,3 @@
-import { jestUnitConfig } from '../../src/jest';
+import { jestUnitConfig } from '../../dist/index.js';
 
 export default jestUnitConfig();

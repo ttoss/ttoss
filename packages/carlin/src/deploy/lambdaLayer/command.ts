@@ -1,9 +1,10 @@
 /* eslint-disable no-param-reassign */
+import log from 'npmlog';
 import { CommandModule, InferredOptionTypes } from 'yargs';
+
 import { NAME } from '../../config';
 import { addGroupToOptions } from '../../utils';
 import { deployLambdaLayer } from './deployLambdaLayer';
-import log from 'npmlog';
 
 const logPrefix = 'deploy-lambda-layer';
 
@@ -51,12 +52,12 @@ export const deployLambdaLayerCommand: CommandModule<
         }
       });
   },
-  handler: ({ destroy, ...rest }) => {
+  handler: ({ destroy, lambdaRuntime, ...rest }) => {
     if (destroy) {
       log.info(logPrefix, `${NAME} doesn't destroy lambda layers.`);
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deployLambdaLayer(rest as any);
+      deployLambdaLayer({ ...rest, runtime: lambdaRuntime } as any);
     }
   },
 };

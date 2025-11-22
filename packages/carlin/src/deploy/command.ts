@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import log from 'npmlog';
 import { CommandModule, InferredOptionTypes } from 'yargs';
+
 import { addGroupToOptions, getAwsAccountId } from '../utils';
 import { deployBaseStackCommand } from './baseStack/command';
 import { deployCicdCommand } from './cicd/command';
 import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
+import { printStackOutputsAfterDeploy } from './cloudformation.core';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
+import { readDockerfile } from './readDockerfile';
+import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVercelCommand } from './vercel/command';
-import { getStackName, setPreDefinedStackName } from './stackName';
-import { printStackOutputsAfterDeploy } from './cloudformation.core';
-import { readDockerfile } from './readDockerfile';
-import log from 'npmlog';
 
 const logPrefix = 'deploy';
 
@@ -99,6 +100,12 @@ export const options = {
     describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
+  'lambda-runtime': {
+    choices: ['nodejs20.x', 'nodejs22.x', 'nodejs24.x'] as const,
+    default: 'nodejs24.x',
+    describe: 'Node.js runtime for Lambda functions.',
+    type: 'string',
+  },
   /**
    * This option has the format to match [CloudFormation parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_Parameter.html).
    *
@@ -183,6 +190,10 @@ export const examples: ReadonlyArray<[string, string?]> = [
   [
     'carlin deploy --lambda-externals momentjs',
     "Lambda exists. Don't bundle momentjs.",
+  ],
+  [
+    'carlin deploy --lambda-runtime nodejs20.x',
+    'Use Node.js 20.x runtime for Lambda functions.',
   ],
   [
     'carlin deploy --destroy --stack-name StackToBeDeleted',
@@ -285,9 +296,10 @@ export const deployCommand: CommandModule<
       type: 'string',
     });
 
-    commands.forEach((command) => {
-      return yargsBuilder.command(command as CommandModule);
-    });
+    for (const command of commands) {
+      yargsBuilder.command(command as CommandModule);
+      continue;
+    }
 
     return yargsBuilder;
   },
