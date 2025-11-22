@@ -5,18 +5,255 @@ slug: ./
 
 import { Carlin } from '../../src/components/Carlin';
 
-# Introduction
+**carlin** is a CLI tool for deploying AWS infrastructure using CloudFormation templates. It automates Lambda code building, S3 uploads, stack naming, multi-environment deployments, and CI/CD pipelines.
 
-The project has been built since 2018 as helper scripts that we use in our engineering processes, from making AWS deployments to handling environment variables. We created the first scripts to deploy CloudFormation templates as we started performing numerous deployments along with Staging, Production, and Development (temporary) environments.
+## What is carlin?
 
-After a while, we realized that we could pack all these scripts into a single CLI tool, which we named <Carlin />.
+carlin started in 2018 as deployment scripts for managing CloudFormation stacks across multiple environments (development, staging, production). After streamlining numerous deployments, we packaged these scripts into a unified CLI tool.
 
-Since then, we have been improving and adding more scripts to help us with our daily tasks, from handling environment variables (`carlin env`) to deploying Next.js applications on Vercel (`carlin deploy vercel`).
+Today, carlin handles:
 
-# Installation
+- **CloudFormation deployments** with automatic stack naming
+- **Lambda functions** with code building and S3 uploads
+- **Static websites** via S3 and CloudFront
+- **CI/CD pipelines** with GitHub and Slack integration
+- **Environment variables** generation from stack outputs
+- **Multi-environment** configurations with termination protection
 
-To install <Carlin />, you can use the following command:
+## Why Use carlin?
+
+### Simplified AWS Deployments
+
+Deploy CloudFormation stacks with a single command:
 
 ```bash
-pnpm add carlin
+carlin deploy
 ```
+
+carlin automatically:
+
+- Finds your CloudFormation template
+- Builds Lambda function code
+- Uploads to S3 with versioning
+- Creates or updates stacks
+- Displays outputs
+
+### Automatic Lambda Handling
+
+No manual Lambda packaging—carlin detects Lambda functions in templates, builds code with esbuild, uploads to S3, and injects parameters automatically.
+
+### Multi-Environment Support
+
+Deploy to multiple environments with built-in protection:
+
+```bash
+carlin deploy --environment staging
+carlin deploy --environment production # includes termination protection
+```
+
+### Branch-Based Deployments
+
+Test feature branches with automatic stack naming:
+
+```bash
+# On feature/auth branch
+carlin deploy
+# Creates: my-app-feature-auth
+```
+
+### Infrastructure as TypeScript
+
+Write CloudFormation templates in TypeScript with type safety and dynamic generation:
+
+```typescript
+export const template = {
+  Resources: {
+    Bucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: `my-app-${process.env.NODE_ENV}`,
+      },
+    },
+  },
+};
+```
+
+## Use Cases
+
+### Serverless APIs
+
+Deploy Lambda functions with API Gateway:
+
+```typescript
+// cloudformation.ts
+export const template = {
+  Resources: {
+    Api: {
+      Type: 'AWS::ApiGateway::RestApi',
+      Properties: { Name: 'MyApi' },
+    },
+    Function: {
+      Type: 'AWS::Lambda::Function',
+      Properties: {
+        Runtime: 'nodejs20.x',
+        Handler: 'api/handler.handler',
+        Code: {
+          S3Bucket: { Ref: 'LambdaS3Bucket' },
+          S3Key: { Ref: 'LambdaS3Key' },
+        },
+      },
+    },
+  },
+};
+```
+
+```bash
+carlin deploy --environment production
+```
+
+### Static Websites
+
+Deploy React/Vue/Vite apps to S3 + CloudFront:
+
+```bash
+pnpm build
+carlin deploy static-app --cloudfront --aliases app.example.com
+```
+
+### Full-Stack Applications
+
+Combine infrastructure, APIs, and frontends:
+
+```bash
+# Deploy infrastructure (DB, S3, API)
+carlin deploy --environment production
+
+# Generate environment variables
+carlin generate-env --default-environment Production
+
+# Deploy frontend
+carlin deploy static-app --environment production
+```
+
+### CI/CD Pipelines
+
+Automate deployments with GitHub Actions:
+
+```yaml
+- name: Deploy Infrastructure
+  run: carlin deploy --environment production
+
+- name: Deploy Application
+  run: carlin deploy static-app --environment production
+```
+
+## Quick Start
+
+Get started in 5 minutes:
+
+1. **Install carlin**:
+
+```bash
+pnpm add -D carlin
+```
+
+2. **Create CloudFormation template** (`cloudformation.ts`):
+
+```typescript
+export const template = {
+  Resources: {
+    MyBucket: {
+      Type: 'AWS::S3::Bucket',
+    },
+  },
+  Outputs: {
+    BucketName: {
+      Value: { Ref: 'MyBucket' },
+    },
+  },
+};
+```
+
+3. **Deploy**:
+
+```bash
+carlin deploy
+```
+
+See [Quick Start Guide](/docs/carlin/quick-start) for complete walkthrough.
+
+## Documentation Structure
+
+- **[Installation](/docs/carlin/installation)** - Setup AWS credentials and carlin CLI
+- **[Quick Start](/docs/carlin/quick-start)** - Deploy your first stack in minutes
+- **[Core Concepts](/docs/carlin/core-concepts/stack-naming)** - Stack naming, environments, base stack, templates
+- **[Commands](/docs/carlin/commands/deploy)** - Complete command reference
+- **[Guides](/docs/carlin/guides/lambda-functions)** - Task-oriented tutorials
+- **[Configuration](/docs/carlin/configuration)** - Advanced configuration options
+
+## Key Features
+
+### Automatic Stack Naming
+
+carlin generates stack names from package.json and branch/environment:
+
+```bash
+# Package: my-app, Branch: main
+carlin deploy
+# Stack: my-app-main
+
+# Package: my-app, Environment: production
+carlin deploy --environment production
+# Stack: my-app-production
+```
+
+### Lambda Code Building
+
+Automatic Lambda code bundling with esbuild:
+
+```typescript
+// Template references handler
+Handler: 'users/create.handler';
+
+// carlin builds src/users/create.ts automatically
+```
+
+### Static App Deployment
+
+One command deploys static sites to S3 + CloudFront:
+
+```bash
+carlin deploy static-app --cloudfront --spa
+```
+
+### Environment Variables
+
+Generate `.env` files from stack outputs:
+
+```bash
+carlin deploy
+carlin generate-env
+# Creates .env.Staging with stack outputs
+```
+
+### Termination Protection
+
+Production environments are automatically protected:
+
+```bash
+carlin deploy --environment production
+# Stack has termination protection enabled
+```
+
+## Community and Support
+
+- **GitHub**: [ttoss/ttoss](https://github.com/ttoss/ttoss)
+- **Issues**: [Report bugs or request features](https://github.com/ttoss/ttoss/issues)
+- **Examples**: [Terezinha Farm API](https://github.com/ttoss/ttoss/tree/main/terezinha-farm/api)
+
+## Next Steps
+
+- [Install carlin](/docs/carlin/installation) and configure AWS credentials
+- [Deploy your first stack](/docs/carlin/quick-start) with step-by-step guide
+- [Understand core concepts](/docs/carlin/core-concepts/stack-naming) for advanced usage
+- [Explore commands](/docs/carlin/commands/deploy) for complete reference

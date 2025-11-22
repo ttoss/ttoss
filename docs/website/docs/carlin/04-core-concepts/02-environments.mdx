@@ -1,0 +1,393 @@
+---
+title: Environments
+---
+
+Environments in carlin enable multi-stage deployment workflows (development, staging, production) with automatic termination protection and environment-specific configurations.
+
+## Defining Environments
+
+Specify environment using CLI option, environment variable, or config file:
+
+### CLI Option
+
+```bash
+carlin deploy --environment production
+```
+
+### Environment Variable
+
+```bash
+CARLIN_ENVIRONMENT=staging carlin deploy
+```
+
+### Config File
+
+Create `carlin.yml`:
+
+```yaml
+environment: staging
+```
+
+Deploy:
+
+```bash
+carlin deploy
+```
+
+## Environment Benefits
+
+### 1. Termination Protection
+
+Stacks deployed with `--environment` automatically enable CloudFormation termination protection, preventing accidental deletion:
+
+```bash
+carlin deploy --environment production
+# Stack created with termination protection enabled
+
+carlin deploy --destroy --environment production
+# Error: Cannot delete stack with termination protection
+```
+
+To delete protected stacks:
+
+```bash
+# Option 1: Remove environment flag and use stack name
+carlin deploy --destroy --stack-name my-app-production
+
+# Option 2: Disable protection in AWS Console first
+```
+
+### 2. Environment-Specific Naming
+
+Environment name becomes part of the stack name:
+
+```bash
+carlin deploy --environment staging
+# Stack: my-app-staging
+
+carlin deploy --environment production
+# Stack: my-app-production
+```
+
+This creates clear separation between environments without manual stack name management.
+
+### 3. Environment-Specific Parameters
+
+Use different CloudFormation parameters per environment:
+
+```bash
+# Staging with smaller instance
+carlin deploy --environment staging --parameters '{"InstanceType":"t3.micro"}'
+
+# Production with larger instance
+carlin deploy --environment production --parameters '{"InstanceType":"t3.large"}'
+```
+
+### 4. Configuration Inheritance
+
+Create environment-specific config files:
+
+```yaml
+# carlin.yml (base configuration)
+region: us-east-1
+parameters:
+  DomainName: app.example.com
+```
+
+```yaml
+# carlin.staging.yml
+environment: staging
+parameters:
+  DomainName: staging.app.example.com
+  InstanceType: t3.micro
+```
+
+```yaml
+# carlin.production.yml
+environment: production
+parameters:
+  DomainName: app.example.com
+  InstanceType: t3.large
+```
+
+Deploy to specific environment:
+
+```bash
+carlin deploy --config carlin.staging.yml
+carlin deploy --config carlin.production.yml
+```
+
+## Common Environment Patterns
+
+### Three-Stage Pipeline
+
+```bash
+# 1. Development (feature branches, no environment)
+git checkout feature/new-feature
+carlin deploy
+# Stack: my-app-feature-new-feature
+# No termination protection
+
+# 2. Staging (shared pre-production)
+carlin deploy --environment staging
+# Stack: my-app-staging
+# Termination protection enabled
+
+# 3. Production (live environment)
+carlin deploy --environment production
+# Stack: my-app-production
+# Termination protection enabled
+```
+
+### Environment-Based AWS Accounts
+
+Use different AWS credentials per environment:
+
+```bash
+# Staging (AWS account 111111111111)
+AWS_PROFILE=staging carlin deploy --environment staging
+
+# Production (AWS account 222222222222)
+AWS_PROFILE=production carlin deploy --environment production
+```
+
+### CI/CD Integration
+
+Configure GitHub Actions for automatic environment deployments:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Staging
+        if: github.ref == 'refs/heads/staging'
+        run: carlin deploy --environment staging
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        run: carlin deploy --environment production
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+```
+
+## Environment vs Branch Naming
+
+Understanding the difference between environment-based and branch-based stack naming:
+
+| Configuration                           | Stack Name            | Termination Protection |
+| --------------------------------------- | --------------------- | ---------------------- |
+| No environment, branch `main`           | `my-app-main`         | ❌ No                  |
+| No environment, branch `feature/auth`   | `my-app-feature-auth` | ❌ No                  |
+| `--environment staging`                 | `my-app-staging`      | ✅ Yes                 |
+| `--environment production`              | `my-app-production`   | ✅ Yes                 |
+| `--environment dev`, branch `feature/x` | `my-app-dev`          | ✅ Yes                 |
+
+:::tip
+Environment always takes precedence over branch name in stack naming.
+:::
+
+## Environment Variables
+
+carlin supports environment-specific variables through template parameters:
+
+```typescript
+// cloudformation.ts
+export const template = {
+  Parameters: {
+    Environment: {
+      Type: 'String',
+      Default: 'development',
+      AllowedValues: ['development', 'staging', 'production'],
+    },
+    DatabaseInstanceType: {
+      Type: 'String',
+      Default: 'db.t3.micro',
+    },
+  },
+  Resources: {
+    Database: {
+      Type: 'AWS::RDS::DBInstance',
+      Properties: {
+        DBInstanceClass: { Ref: 'DatabaseInstanceType' },
+        // Different settings based on environment
+        BackupRetentionPeriod: {
+          'Fn::If': [
+            { 'Fn::Equals': [{ Ref: 'Environment' }, 'production'] },
+            7, // 7 days for production
+            1, // 1 day for non-production
+          ],
+        },
+      },
+    },
+  },
+};
+```
+
+Pass environment-specific values:
+
+```bash
+carlin deploy --environment staging --parameters '{"Environment":"staging","DatabaseInstanceType":"db.t3.small"}'
+
+carlin deploy --environment production --parameters '{"Environment":"production","DatabaseInstanceType":"db.r5.large"}'
+```
+
+## Verifying Environment Configuration
+
+Check which environment is active:
+
+```bash
+# Set environment
+export CARLIN_ENVIRONMENT=staging
+
+# Deploy (uses staging environment)
+carlin deploy
+
+# Verify stack name includes environment
+carlin deploy describe
+# Stack: my-app-staging
+```
+
+## Best Practices
+
+### 1. Always Use Environments for Shared Stages
+
+```bash
+# ✅ Good: Protected staging/production
+carlin deploy --environment staging
+carlin deploy --environment production
+
+# ❌ Avoid: No protection for important environments
+carlin deploy # relies on branch name
+```
+
+### 2. Separate AWS Accounts for Production
+
+Use different AWS accounts for production:
+
+```bash
+# Development account (111111111111)
+AWS_PROFILE=dev carlin deploy --environment staging
+
+# Production account (222222222222)
+AWS_PROFILE=prod carlin deploy --environment production
+```
+
+### 3. Document Environment Configurations
+
+Create `README.md` documenting environment setup:
+
+````markdown
+## Environments
+
+- **Development**: Feature branches, no environment flag
+- **Staging**: `--environment staging`, AWS account 111111111111
+- **Production**: `--environment production`, AWS account 222222222222
+
+## Deploy Commands
+
+```bash
+# Development
+carlin deploy
+
+# Staging
+AWS_PROFILE=staging carlin deploy --environment staging
+
+# Production
+AWS_PROFILE=production carlin deploy --environment production
+```
+````
+
+````
+
+### 4. Use Environment-Specific Parameters
+
+Never hardcode environment-specific values:
+
+```typescript
+// ❌ Bad: Hardcoded production values
+export const template = {
+  Resources: {
+    Bucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: 'my-production-bucket', // hardcoded
+      },
+    },
+  },
+};
+
+// ✅ Good: Parameterized values
+export const template = {
+  Parameters: {
+    BucketName: { Type: 'String' },
+  },
+  Resources: {
+    Bucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: { Ref: 'BucketName' },
+      },
+    },
+  },
+};
+````
+
+## Troubleshooting
+
+### Cannot Delete Environment Stack
+
+**Problem**: Deletion fails with "Stack has termination protection enabled"
+
+**Solution**: Use stack name without environment:
+
+```bash
+carlin deploy --destroy --stack-name my-app-production
+```
+
+### Wrong Environment Deployed
+
+**Problem**: Deployed to production instead of staging
+
+**Solution**: Always explicitly set environment:
+
+```bash
+# Instead of relying on defaults
+carlin deploy
+
+# Always specify explicitly
+carlin deploy --environment staging
+```
+
+### Environment Variable Not Working
+
+**Problem**: `CARLIN_ENVIRONMENT` not being recognized
+
+**Solution**: Verify environment variable is exported:
+
+```bash
+export CARLIN_ENVIRONMENT=staging
+echo $CARLIN_ENVIRONMENT # Should print: staging
+carlin deploy
+```
+
+## Related Topics
+
+- [Stack Naming](/docs/carlin/core-concepts/stack-naming) - How environments affect stack names
+- [Configuration](/docs/carlin/configuration) - Environment configuration options
+- [Multi-Environment Guide](/docs/carlin/guides/multi-environment-setup) - Complete multi-environment setup

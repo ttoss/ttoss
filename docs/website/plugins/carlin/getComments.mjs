@@ -1,7 +1,9 @@
-import * as path from 'path';
+import * as path from 'node:path';
+import { URL } from 'node:url';
+
+import jsdoc from 'jsdoc-api';
 import { compiler } from 'markdown-to-jsx';
 import { renderToString } from 'react-dom/server';
-import jsdoc from 'jsdoc-api';
 
 export const toHTML = (comment) => {
   return renderToString(compiler(comment));

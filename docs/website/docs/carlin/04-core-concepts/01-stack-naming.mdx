@@ -1,0 +1,226 @@
+---
+title: Stack Naming
+---
+
+import { InnerHTML } from '../../../src/components/InnerHTML';
+import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
+import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
+
+carlin automatically generates CloudFormation stack names based on your project configuration, branch name, or environment. Understanding stack naming is critical because it determines how deployments are tracked and updated.
+
+## Automatic Stack Naming
+
+When you don't specify `--stack-name`, carlin generates the name using this algorithm:
+
+1. **First part**: Package name from `package.json` (or `Stack-<random>` if not defined)
+2. **Second part**: First defined value from:
+   - `--environment` option
+   - Git branch name (converted to param-case)
+   - `undefined` (if neither is available)
+
+### Examples
+
+| Package Name      | Environment  | Branch         | Stack Name               |
+| ----------------- | ------------ | -------------- | ------------------------ |
+| `my-app`          | `production` | `main`         | `my-app-production`      |
+| `my-app`          | -            | `feature/auth` | `my-app-feature-auth`    |
+| `@company/api`    | `staging`    | -              | `api-staging`            |
+| `my-app`          | -            | `main`         | `my-app-main`            |
+| (no package.json) | `production` | -              | `Stack-96830-production` |
+
+:::tip
+Scoped package names (e.g., `@company/api`) use only the package name without the scope (`api`).
+:::
+
+## Custom Stack Names
+
+Override automatic naming with `--stack-name`:
+
+```bash
+carlin deploy --stack-name CustomStack
+```
+
+This creates or updates a stack named exactly `CustomStack`, regardless of package name, branch, or environment.
+
+### When to Use Custom Names
+
+- **Shared infrastructure**: Base stacks used across multiple projects
+- **Legacy stacks**: Migrating from existing CloudFormation stacks
+- **Fixed naming requirements**: Compliance or organizational policies
+- **Cross-project resources**: VPCs, DNS zones, shared databases
+
+## Branch-Based Deployments
+
+carlin uses Git branch names to enable feature branch deployments:
+
+```bash
+# On branch: feature/user-authentication
+carlin deploy
+# Creates: my-app-feature-user-authentication
+
+# On branch: fix/bug-123
+carlin deploy
+# Creates: my-app-fix-bug-123
+
+# On branch: main
+carlin deploy
+# Creates: my-app-main
+```
+
+Branch names are automatically converted to param-case (lowercase with hyphens).
+
+### Override Branch Detection
+
+Specify a different branch for stack naming:
+
+```bash
+carlin deploy --branch custom-branch
+```
+
+Or use environment variable:
+
+```bash
+CARLIN_BRANCH=custom-branch carlin deploy
+```
+
+**Use case**: Delete a deployment for a deleted branch:
+
+```bash
+# Branch feature/auth was already deleted but stack still exists
+carlin deploy --destroy --branch feature/auth
+```
+
+## Environment-Based Naming
+
+Using `--environment` takes precedence over branch names:
+
+```bash
+carlin deploy --environment staging
+# Creates: my-app-staging (regardless of branch)
+
+carlin deploy --environment production
+# Creates: my-app-production (regardless of branch)
+```
+
+Environment-based stacks also enable:
+
+- **Termination protection** (automatic for production)
+- **Environment-specific configurations**
+- **Clearer deployment separation**
+
+## Stack Name Constraints
+
+CloudFormation stack names must:
+
+- Be unique per AWS account and region
+- Contain only alphanumeric characters and hyphens
+- Be 128 characters or less
+- Start with an alphabetic character
+
+carlin enforces a **100-character limit** for AppSync API compatibility (AWS AppSync uses stack names for API names).
+
+:::caution
+
+<InnerHTML html={stackNameWarningComment} />
+
+:::
+
+## Configuration Priority
+
+Stack name resolution priority (highest to lowest):
+
+1. `--stack-name` CLI option
+2. `stackName` in `carlin.yml`
+3. `CARLIN_STACK_NAME` environment variable
+4. Automatic generation (package + environment/branch)
+
+## Common Patterns
+
+### Multi-Environment Strategy
+
+```bash
+# Development (feature branches)
+carlin deploy
+# Stack: my-app-feature-name
+
+# Staging (shared environment)
+carlin deploy --environment staging
+# Stack: my-app-staging
+
+# Production (protected environment)
+carlin deploy --environment production
+# Stack: my-app-production
+```
+
+### Monorepo with Multiple Stacks
+
+```json
+// package.json
+{
+  "name": "@company/api"
+}
+```
+
+```bash
+# API stack
+carlin deploy --environment production
+# Stack: api-production
+
+# Different service in same repo
+cd ../workers
+carlin deploy --environment production
+# Stack: workers-production
+```
+
+### Fixed Infrastructure Stack
+
+```bash
+# VPC shared across all environments
+carlin deploy --stack-name company-vpc --template-path infrastructure/vpc.ts
+
+# All projects reference this VPC
+```
+
+## Stack Name Algorithm
+
+<InnerHTML html={stackNameComment} />
+
+## Troubleshooting
+
+### Stack Name Conflicts
+
+**Problem**: Different branches create the same stack name.
+
+**Solution**: Use explicit stack names or environments:
+
+```bash
+carlin deploy --stack-name unique-name
+# or
+carlin deploy --environment feature-1
+```
+
+### Stack Already Exists
+
+**Problem**: Deploying to a branch that already has a stack.
+
+**Solution**: This is expected behavior. carlin updates the existing stack instead of creating a new one.
+
+### Cannot Delete Stack
+
+**Problem**: Stack has termination protection enabled.
+
+**Solution**: Disable termination protection in AWS Console or deploy without `--environment`:
+
+```bash
+# This won't work if environment is set
+carlin deploy --destroy --environment production
+
+# This works (removes environment constraint)
+carlin deploy --destroy --stack-name my-app-production
+```
+
+## Related Topics
+
+- [Environments](/docs/carlin/core-concepts/environments) - Environment configuration and protection
+- [Configuration](/docs/carlin/configuration) - Global and stack-specific settings
+- [Multi-Environment Guide](/docs/carlin/guides/multi-environment-setup) - Setting up staging and production

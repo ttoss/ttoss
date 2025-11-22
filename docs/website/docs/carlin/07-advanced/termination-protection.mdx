@@ -1,0 +1,310 @@
+---
+title: Termination Protection
+---
+
+Prevent accidental deletion of critical CloudFormation stacks by enabling termination protection, requiring explicit disablement before stack destruction.
+
+## Overview
+
+Termination protection is a CloudFormation safeguard that:
+
+- Prevents stack deletion via console, CLI, or API
+- Requires two-step process: disable protection, then delete
+- Applies to both manual and automated deletions
+- Does not prevent stack updates (only deletion)
+
+## Enabling Termination Protection
+
+### Via carlin Configuration
+
+```yaml title="carlin.yml"
+stackName: MyProductionApp
+terminationProtection: true
+region: us-east-1
+```
+
+```bash
+carlin deploy
+```
+
+### Via Command-Line Flag
+
+```bash
+carlin deploy --termination-protection
+```
+
+### For Specific Environments
+
+```yaml title="carlin.production.yml"
+terminationProtection: true
+```
+
+```yaml title="carlin.staging.yml"
+terminationProtection: false # Allow easy teardown
+```
+
+```bash
+# Production (protected)
+carlin deploy --config carlin.production.yml
+
+# Staging (not protected)
+carlin deploy --config carlin.staging.yml
+```
+
+## When to Enable
+
+| Environment | Recommendation | Rationale                            |
+| ----------- | -------------- | ------------------------------------ |
+| Production  | ✅ Always      | Protect critical infrastructure      |
+| Staging     | ⚠️ Optional    | Balance safety vs. flexibility       |
+| Development | ❌ Usually no  | Enable rapid iteration               |
+| Preview/PR  | ❌ No          | Temporary stacks should be ephemeral |
+
+## Disabling Protection
+
+### To Delete a Protected Stack
+
+```bash
+# Step 1: Disable protection
+aws cloudformation update-termination-protection \
+  --stack-name my-app-production \
+  --no-enable-termination-protection
+
+# Step 2: Delete stack
+carlin deploy --destroy
+# or
+aws cloudformation delete-stack --stack-name my-app-production
+```
+
+### Via carlin (Update Then Destroy)
+
+```bash
+# Update stack to disable protection
+carlin deploy --no-termination-protection
+
+# Then destroy
+carlin deploy --destroy
+```
+
+## Verifying Protection Status
+
+```bash
+# Check if protection is enabled
+aws cloudformation describe-stacks \
+  --stack-name my-app-production \
+  --query 'Stacks[0].EnableTerminationProtection'
+```
+
+**Output:**
+
+```json
+true
+```
+
+## Common Scenarios
+
+### Protecting Base Stacks
+
+```yaml title="carlin.yml"
+# Base stack should always be protected
+stackName: base-infrastructure
+terminationProtection: true
+```
+
+```bash
+carlin deploy base-stack
+```
+
+### Environment-Specific Protection
+
+```typescript title="carlin.ts"
+export default {
+  stackName: 'MyApp',
+  terminationProtection: process.env.ENVIRONMENT === 'Production',
+  region: 'us-east-1',
+};
+```
+
+```bash
+# Production deploys with protection
+ENVIRONMENT=Production carlin deploy
+
+# Development deploys without protection
+ENVIRONMENT=Development carlin deploy
+```
+
+### CI/CD with Protected Stacks
+
+```yaml
+# GitHub Actions
+- name: Deploy to Production
+  run: carlin deploy --environment Production --termination-protection
+
+- name: Deploy to Staging
+  run: carlin deploy --environment Staging # No protection flag
+```
+
+## Limitations
+
+| What Protection Prevents        | What It Allows                              |
+| ------------------------------- | ------------------------------------------- |
+| Stack deletion                  | Stack updates (add/modify/remove resources) |
+| Accidental `destroy` commands   | Resource replacement during updates         |
+| API/CLI delete operations       | Updating protection status itself           |
+| CloudFormation console deletion | Drift detection and correction              |
+
+## Stack Update Behavior
+
+Termination protection **does not prevent**:
+
+- Updating stack resources
+- Replacing resources (e.g., changing Lambda runtime)
+- Removing resources from template (deleted during update)
+- Stack rollback on failed updates
+
+**Example:**
+
+```yaml
+# Initial deployment (protected)
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+
+# Update (removes bucket) - SUCCEEDS even with protection
+Resources:
+  MyFunction:
+    Type: AWS::Lambda::Function
+```
+
+The bucket will be deleted during the update, despite termination protection.
+
+## Best Practices
+
+1. **Enable for production stacks**: Always protect stacks containing critical data or infrastructure
+2. **Document protection status**: Include in README or deployment docs
+3. **Combine with resource retention**: Use `DeletionPolicy: Retain` for critical resources
+4. **Automate protection**: Set via config files, not manual CLI flags
+5. **Review before disabling**: Require approval workflow for removing protection
+6. **Monitor changes**: Alert on termination protection status changes
+
+## Resource-Level Protection
+
+For additional safety, use `DeletionPolicy` on individual resources:
+
+```yaml title="cloudformation/template.yml"
+Resources:
+  CriticalDatabase:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Retain # Keep even if stack is deleted
+    Properties:
+      # ... database config
+
+  CriticalBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Snapshot # Create snapshot before deletion
+    Properties:
+      # ... bucket config
+```
+
+**Combined Protection:**
+
+- **Termination protection**: Prevents stack deletion
+- **DeletionPolicy: Retain**: Prevents resource deletion even if stack is deleted
+
+## Troubleshooting
+
+| Issue                            | Cause                               | Solution                                           |
+| -------------------------------- | ----------------------------------- | -------------------------------------------------- |
+| Cannot delete stack              | Protection enabled                  | Disable protection first                           |
+| Protection not applied           | Missing flag or config              | Verify `terminationProtection: true` in config     |
+| Stack deleted despite protection | Protection disabled in prior update | Audit CloudFormation events for protection changes |
+| Resource deleted during update   | No `DeletionPolicy` on resource     | Add `DeletionPolicy: Retain` to critical resources |
+
+## Monitoring Protection Changes
+
+Create a CloudWatch alarm for protection status changes:
+
+```json
+{
+  "source": ["aws.cloudformation"],
+  "detail-type": ["CloudFormation Stack Status Change"],
+  "detail": {
+    "stack-name": ["my-app-production"],
+    "status-details": {
+      "termination-protection": ["DISABLED"]
+    }
+  }
+}
+```
+
+Forward to SNS for immediate alerts.
+
+## Policy Enforcement
+
+Use AWS Organizations SCPs to require termination protection:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "cloudformation:CreateStack",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudformation:StackPolicyUrl": "",
+          "aws:RequestedRegion": "us-east-1"
+        },
+        "StringNotEquals": {
+          "cloudformation:EnableTerminationProtection": "true"
+        }
+      }
+    }
+  ]
+}
+```
+
+## Example: Multi-Environment Strategy
+
+```yaml title="carlin.base.yml"
+# Shared config
+stackName: MyApp
+region: us-east-1
+```
+
+```yaml title="carlin.production.yml"
+terminationProtection: true
+awsAccountId: '999999999999'
+```
+
+```yaml title="carlin.staging.yml"
+terminationProtection: false
+awsAccountId: '111111111111'
+```
+
+```yaml title="carlin.development.yml"
+terminationProtection: false
+awsAccountId: '111111111111'
+```
+
+**Deployment Commands:**
+
+```bash
+# Production (protected)
+carlin deploy --config carlin.production.yml
+
+# Staging (not protected, easy teardown)
+carlin deploy --config carlin.staging.yml
+
+# Development (not protected)
+carlin deploy --config carlin.development.yml
+```
+
+## Related
+
+- [Configuration](/docs/carlin/configuration)
+- [Base Stack](/docs/carlin/core-concepts/base-stack)
+- [Multi-Environment Setup](/docs/carlin/guides/multi-environment-setup)
+- [Custom CloudFormation Templates](/docs/carlin/advanced/custom-templates)
+- [AWS Termination Protection Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html)
