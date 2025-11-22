@@ -183,7 +183,7 @@ export const MultipleBoxesWithIds: StoryFn = () => {
       <Stack sx={{ gap: '4' }}>
         <Box>
           <Heading as="h3" sx={{ fontSize: 'lg', marginBottom: '2' }}>
-            Box 1 (id=&quot;box-1&quot;)
+            {'Box 1 (id="box-1")'}
           </Heading>
           <Box
             sx={{
@@ -199,7 +199,7 @@ export const MultipleBoxesWithIds: StoryFn = () => {
 
         <Box>
           <Heading as="h3" sx={{ fontSize: 'lg', marginBottom: '2' }}>
-            Box 2 (id=&quot;box-2&quot;)
+            {'Box 2 (id="box-2")'}
           </Heading>
           <Box
             sx={{
@@ -283,10 +283,7 @@ export const MixedViewTypes: StoryFn = () => {
     <Stack sx={{ gap: '4' }}>
       <Heading>Mixed View Types</Heading>
       <Text>
-        NotificationsBox only shows notifications with viewType=&apos;box&apos;
-        (or when defaultViewType is &apos;box&apos; and no viewType is
-        specified). Other view types like &apos;modal&apos;, &apos;toast&apos;,
-        and &apos;header&apos; are handled by their respective components.
+        {`NotificationsBox only shows notifications with viewType='box' (or when defaultViewType is 'box' and no viewType is specified). Other view types like 'modal', 'toast', and 'header' are handled by their respective components.`}
       </Text>
 
       <Stack sx={{ gap: '2', flexDirection: 'row' }}>
