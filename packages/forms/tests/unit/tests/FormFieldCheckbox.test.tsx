@@ -138,12 +138,12 @@ test('should respect defaultValue prop on component', async () => {
         <FormFieldCheckbox
           name="checkbox1"
           label="Checkbox 1"
-          defaultValue={true as any}
+          defaultValue={true}
         />
         <FormFieldCheckbox
           name="checkbox2"
           label="Checkbox 2"
-          defaultValue={false as any}
+          defaultValue={false}
         />
         <Button type="submit">Submit</Button>
       </Form>
