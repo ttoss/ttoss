@@ -231,3 +231,36 @@ describe('FormFieldInput disabled state', () => {
     expect(passwordInput).toHaveValue('');
   });
 });
+
+describe('FormFieldInput defaultValue', () => {
+  test('should respect defaultValue prop on component', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldInput
+            name="input1"
+            label="Input 1"
+            defaultValue="test value"
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('Input 1') as HTMLInputElement;
+
+    expect(input.value).toBe('test value');
+
+    await user.click(screen.getByText('Submit'));
+
+    expect(onSubmit).toHaveBeenCalledWith({ input1: 'test value' });
+  });
+});
