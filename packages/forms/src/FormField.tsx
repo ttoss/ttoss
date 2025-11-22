@@ -1,9 +1,11 @@
+import { Icon } from '@ttoss/react-icons';
 import {
   Checkbox,
   Flex,
   Label,
   Switch,
   type SxProp,
+  Text,
   Theme,
   ThemeUIStyleObject,
   Tooltip,
@@ -51,6 +53,7 @@ export type FormFieldProps<
     clickable?: boolean;
     variant?: 'info' | 'warning' | 'success' | 'error';
     sx?: ThemeUIStyleObject<Theme>;
+    icon?: string;
   };
   warning?: string | React.ReactNode;
   rules?: Rules<TFieldValues, TName>;
@@ -97,79 +100,46 @@ export const FormField = <
   const hasError = !!errors[name];
   const uniqueId = React.useId();
   const id = idProp || `form-field-${name}-${uniqueId}`;
-  const tooltipId = `${id}-tooltip`;
+  const inputTooltipId = `${id}-input-tooltip`;
 
-  // Estado para controlar a visibilidade da tooltip
-  const [showInputTooltip, setShowInputTooltip] = React.useState(false);
-  const inputRef = React.useRef<HTMLElement>(null);
-
-  // Handlers estáveis para evitar re-renders
-  const handleClickOutside = React.useCallback((event: MouseEvent) => {
-    if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-      setShowInputTooltip(false);
-    }
-  }, []);
-
-  const handleEscapeKey = React.useCallback((event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      setShowInputTooltip(false);
-    }
-  }, []);
-
-  // Effect para adicionar/remover event listeners
-  React.useEffect(() => {
-    if (!inputTooltip || !showInputTooltip) {
-      return;
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscapeKey);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
-    };
-  }, [showInputTooltip, inputTooltip, handleClickOutside, handleEscapeKey]);
-
-  // Handlers do input
-  const handleInputClick = React.useCallback(() => {
-    if (inputTooltip) {
-      setShowInputTooltip(true);
-    }
-  }, [inputTooltip]);
-
-  const handleInputFocus = React.useCallback(() => {
-    if (inputTooltip && !inputTooltip.openOnClick) {
-      setShowInputTooltip(true);
-    }
-  }, [inputTooltip]);
-
-  const handleInputBlur = React.useCallback(() => {
-    if (inputTooltip && !inputTooltip.openOnClick) {
-      setShowInputTooltip(false);
-    }
-  }, [inputTooltip]);
-
-  const tooltipElement = React.useMemo(() => {
-    if (!inputTooltip || !showInputTooltip) {
+  const inputTooltipElement = React.useMemo(() => {
+    if (!inputTooltip) {
       return null;
     }
 
     return (
-      <Flex sx={{ width: 'full', fontSize: 'sm' }}>
+      <Text
+        sx={{
+          color: 'currentcolor',
+          cursor: 'pointer',
+        }}
+        aria-label="input-tooltip"
+        data-tooltip-id={inputTooltipId}
+      >
+        {inputTooltip.icon ? (
+          <Icon inline icon={inputTooltip.icon} />
+        ) : (
+          <Icon inline icon="fluent:info-24-regular" />
+        )}
         <Tooltip
-          id={tooltipId}
-          place={inputTooltip.place}
+          id={inputTooltipId}
+          openOnClick={inputTooltip.openOnClick}
           clickable={inputTooltip.clickable}
-          isOpen={showInputTooltip}
+          place={inputTooltip.place}
           variant={inputTooltip.variant}
           sx={inputTooltip.sx}
         >
           {inputTooltip.render}
         </Tooltip>
-      </Flex>
+      </Text>
     );
-  }, [inputTooltip, showInputTooltip, tooltipId]);
+  }, [inputTooltip, inputTooltipId]);
+
+  const inputContainerSx = {
+    position: 'relative' as const,
+    alignItems: 'center' as const,
+    gap: '2' as const,
+  };
 
   const isCheckboxOrSwitch = (element: React.ReactElement) => {
     return [Checkbox, Switch].some((component) => {
@@ -197,29 +167,9 @@ export const FormField = <
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const childProps = child.props as any;
 
-      const inputProps = {
-        ...childProps,
-        ref: inputRef,
-        onClick: (e: React.MouseEvent) => {
-          childProps.onClick?.(e);
-          handleInputClick();
-        },
-        onFocus: (e: React.FocusEvent) => {
-          childProps.onFocus?.(e);
-          handleInputFocus();
-        },
-        onBlur: (e: React.FocusEvent) => {
-          childProps.onBlur?.(e);
-          handleInputBlur();
-        },
-        ...(inputTooltip && showInputTooltip
-          ? { 'data-tooltip-id': tooltipId }
-          : {}),
-      };
-
       const elementProps = {
+        ...childProps,
         id,
-        ...inputProps,
         ...(warning && { trailingIcon: 'warning-alt' }),
       };
 
@@ -227,16 +177,12 @@ export const FormField = <
         return (
           <>
             <Label aria-disabled={disabled} tooltip={tooltip}>
-              <Flex
-                sx={{
-                  position: 'relative',
-                }}
-              >
+              <Flex sx={inputContainerSx}>
                 {React.createElement(child.type, elementProps)}
+                {inputTooltipElement}
               </Flex>
               {label}
             </Label>
-            {tooltipElement}
           </>
         );
       }
@@ -254,8 +200,10 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, elementProps)}
-          {tooltipElement}
+          <Flex sx={inputContainerSx}>
+            {React.createElement(child.type, elementProps)}
+            {inputTooltipElement}
+          </Flex>
         </Flex>
       );
     });
@@ -267,13 +215,7 @@ export const FormField = <
     id,
     tooltip,
     warning,
-    inputTooltip,
-    showInputTooltip,
-    tooltipId,
-    handleInputClick,
-    handleInputFocus,
-    handleInputBlur,
-    tooltipElement,
+    inputTooltipElement,
   ]);
 
   return (

@@ -434,3 +434,77 @@ describe('Form disabled state', () => {
     expect(asyncOnSubmit).toHaveBeenCalledWith({ firstName: 'John' });
   });
 });
+
+describe('InputTooltip', () => {
+  test('should render inputTooltip icon next to input field', () => {
+    const RenderFormWithInputTooltip = () => {
+      const formMethods = useForm({});
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="email"
+            label="Email"
+            defaultValue=""
+            inputTooltip={{
+              render: 'This is a helpful tooltip',
+              place: 'right',
+              variant: 'info',
+            }}
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+        </Form>
+      );
+    };
+
+    render(<RenderFormWithInputTooltip />);
+
+    // Check that the tooltip icon is rendered
+    const tooltipIcon = screen.getByLabelText('input-tooltip');
+    expect(tooltipIcon).toBeInTheDocument();
+
+    // Check that the icon is the default info icon
+    const icon = screen.getByTestId('iconify-icon');
+    expect(icon).toHaveAttribute('icon', 'fluent:info-24-regular');
+  });
+
+  test('should render custom inputTooltip icon when specified', () => {
+    const RenderFormWithCustomIcon = () => {
+      const formMethods = useForm({});
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="email"
+            label="Email"
+            defaultValue=""
+            inputTooltip={{
+              render: 'This is a helpful tooltip',
+              place: 'right',
+              variant: 'warning',
+              icon: 'fluent:warning-24-filled',
+            }}
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+        </Form>
+      );
+    };
+
+    render(<RenderFormWithCustomIcon />);
+
+    // Check that the custom icon is rendered
+    const icon = screen.getByTestId('iconify-icon');
+    expect(icon).toHaveAttribute('icon', 'fluent:warning-24-filled');
+  });
+
+  test('should not render inputTooltip when not provided', () => {
+    render(<RenderForm />);
+
+    // Check that no input-tooltip is rendered
+    expect(screen.queryByLabelText('input-tooltip')).not.toBeInTheDocument();
+  });
+});
