@@ -18,8 +18,8 @@ test('should render Input component with trailingIcon and leadingIcon as string'
   render(
     <Input
       placeholder="My Input"
-      trailingIcon={trailingIconAsString}
-      leadingIcon={leadingIconAsString}
+      trailingIcon={{ icon: trailingIconAsString }}
+      leadingIcon={{ icon: leadingIconAsString }}
     />
   );
 
@@ -41,8 +41,8 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
   render(
     <Input
       placeholder="My Input"
-      trailingIcon={alertIcon}
-      leadingIcon={alertIcon}
+      trailingIcon={{ icon: alertIcon }}
+      leadingIcon={{ icon: alertIcon }}
     />
   );
 
@@ -52,7 +52,7 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
   expect(leadingIconEl).toBeInTheDocument();
 });
 
-test('should call functions onLeadingIconClick and onTrailingIconClick when the icons are clicked', async () => {
+test('should call functions onClick when the icons are clicked', async () => {
   const user = userEvent.setup({ delay: null });
   const icon = 'ant-design:down-square-filled';
   const onTrailingIconClick = jest.fn();
@@ -60,10 +60,8 @@ test('should call functions onLeadingIconClick and onTrailingIconClick when the 
 
   render(
     <Input
-      trailingIcon={icon}
-      leadingIcon={icon}
-      onTrailingIconClick={onTrailingIconClick}
-      onLeadingIconClick={onLeadingIconClick}
+      trailingIcon={{ icon, onClick: onTrailingIconClick }}
+      leadingIcon={{ icon, onClick: onLeadingIconClick }}
     />
   );
 
@@ -74,4 +72,45 @@ test('should call functions onLeadingIconClick and onTrailingIconClick when the 
 
   await user.click(trailingIconEl);
   expect(onTrailingIconClick).toHaveBeenCalled();
+});
+
+test('should render tooltips when tooltip prop is provided', () => {
+  render(
+    <Input
+      placeholder="My Input"
+      leadingIcon={{
+        icon: 'ant-design:search-outlined',
+        tooltip: 'Search',
+      }}
+      trailingIcon={{
+        icon: 'ant-design:info-circle-outlined',
+        tooltip: 'More information',
+      }}
+    />
+  );
+
+  // Check if tooltip IDs are set on the icon elements
+  const icons = screen.getAllByTestId('iconify-icon');
+  expect(icons[0].parentElement).toHaveAttribute(
+    'data-tooltip-id',
+    'input-leading-icon-tooltip'
+  );
+  expect(icons[1].parentElement).toHaveAttribute(
+    'data-tooltip-id',
+    'input-trailing-icon-tooltip'
+  );
+});
+
+test('should not set tooltip-id when tooltip prop is not provided', () => {
+  render(
+    <Input
+      placeholder="My Input"
+      leadingIcon={{ icon: 'ant-design:search-outlined' }}
+      trailingIcon={{ icon: 'ant-design:info-circle-outlined' }}
+    />
+  );
+
+  const icons = screen.getAllByTestId('iconify-icon');
+  expect(icons[0].parentElement).not.toHaveAttribute('data-tooltip-id');
+  expect(icons[1].parentElement).not.toHaveAttribute('data-tooltip-id');
 });

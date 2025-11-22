@@ -1,89 +1,140 @@
 import { Icon, type IconType } from '@ttoss/react-icons';
-import * as React from 'react';
 import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
 
-import { Flex, Text } from '..';
+import { Flex, Text, Tooltip } from '..';
+import { type TooltipProps } from './Tooltip';
 
-export interface InputProps extends InputPropsUI {
-  leadingIcon?: IconType;
-  onLeadingIconClick?: () => void;
-  trailingIcon?: IconType;
-  onTrailingIconClick?: () => void;
+export interface InputIconConfig {
+  icon: IconType;
+  onClick?: () => void;
+  tooltip?: string;
+  tooltipProps?: Omit<TooltipProps, 'children' | 'anchorSelect'>;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      leadingIcon,
-      trailingIcon: trailingIconProp,
-      onLeadingIconClick,
-      onTrailingIconClick,
-      className,
-      sx,
-      ...inputProps
-    },
-    ref
-  ) => {
-    const trailingIcon = inputProps['aria-invalid']
-      ? 'warning-alt'
-      : trailingIconProp;
+export interface InputProps extends InputPropsUI {
+  leadingIcon?: InputIconConfig | IconType;
+  trailingIcon?: InputIconConfig | IconType;
+}
 
-    const isWarning =
-      !inputProps['aria-invalid'] && trailingIcon === 'warning-alt';
+const isInputIconConfig = (
+  icon: InputIconConfig | IconType | undefined
+): icon is InputIconConfig => {
+  return (
+    icon !== undefined &&
+    typeof icon === 'object' &&
+    'icon' in icon &&
+    (typeof icon.icon === 'string' ||
+      (typeof icon.icon === 'object' && 'body' in icon.icon))
+  );
+};
 
-    return (
-      <Flex
-        className={`${className} ${isWarning ? 'is-warning' : ''}`}
-        sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
-      >
-        {leadingIcon && (
+const normalizeIcon = (
+  icon: InputIconConfig | IconType | undefined
+): InputIconConfig | undefined => {
+  if (!icon) {
+    return undefined;
+  }
+  if (isInputIconConfig(icon)) {
+    return icon;
+  }
+  return { icon };
+};
+
+export const Input = ({
+  leadingIcon,
+  trailingIcon: trailingIconProp,
+  className,
+  sx,
+  ...inputProps
+}: InputProps) => {
+  const normalizedLeadingIcon = normalizeIcon(leadingIcon);
+
+  const normalizedTrailingIconProp = normalizeIcon(trailingIconProp);
+
+  const trailingIcon = inputProps['aria-invalid']
+    ? { icon: 'warning-alt' as IconType }
+    : normalizedTrailingIconProp;
+
+  const isWarning =
+    !inputProps['aria-invalid'] && trailingIcon?.icon === 'warning-alt';
+
+  return (
+    <Flex
+      className={`${className} ${isWarning ? 'is-warning' : ''}`}
+      sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
+    >
+      {normalizedLeadingIcon && (
+        <>
           <Text
+            data-tooltip-id={
+              normalizedLeadingIcon.tooltip
+                ? 'input-leading-icon-tooltip'
+                : undefined
+            }
             sx={{
               position: 'absolute',
               alignSelf: 'center',
               left: '1rem',
-              cursor: onLeadingIconClick ? 'pointer' : 'default',
+              cursor: normalizedLeadingIcon.onClick ? 'pointer' : 'default',
             }}
-            onClick={onLeadingIconClick}
+            onClick={normalizedLeadingIcon.onClick}
             variant="leading-icon"
           >
-            <Icon inline icon={leadingIcon} />
+            <Icon inline icon={normalizedLeadingIcon.icon} />
           </Text>
-        )}
-        <InputUI
-          ref={ref}
-          sx={{
-            fontFamily: 'body',
-            paddingY: '3',
-            paddingX: '4',
-            ...sx,
-            paddingLeft: leadingIcon ? '10' : undefined,
-            paddingRight: trailingIcon ? '10' : undefined,
-            margin: 0,
-          }}
-          className={className}
-          {...inputProps}
-        />
+          {normalizedLeadingIcon.tooltip && (
+            <Tooltip
+              id="input-leading-icon-tooltip"
+              {...normalizedLeadingIcon.tooltipProps}
+            >
+              {normalizedLeadingIcon.tooltip}
+            </Tooltip>
+          )}
+        </>
+      )}
+      <InputUI
+        sx={{
+          fontFamily: 'body',
+          paddingY: '3',
+          paddingX: '4',
+          ...sx,
+          paddingLeft: leadingIcon ? '10' : undefined,
+          paddingRight: trailingIcon ? '10' : undefined,
+          margin: 0,
+        }}
+        className={className}
+        {...inputProps}
+      />
 
-        {trailingIcon && (
+      {trailingIcon && (
+        <>
           <Text
+            data-tooltip-id={
+              trailingIcon.tooltip ? 'input-trailing-icon-tooltip' : undefined
+            }
             sx={{
               position: 'absolute',
               right: '1rem',
               alignSelf: 'center',
               color: isWarning ? 'feedback.text.caution.default' : undefined,
-              cursor: onTrailingIconClick ? 'pointer' : 'default',
+              cursor: trailingIcon.onClick ? 'pointer' : 'default',
               fontSize: 'xl',
             }}
             variant="trailing-icon"
-            onClick={onTrailingIconClick}
+            onClick={trailingIcon.onClick}
           >
-            <Icon inline icon={trailingIcon} />
+            <Icon inline icon={trailingIcon.icon} />
           </Text>
-        )}
-      </Flex>
-    );
-  }
-);
-
-Input.displayName = 'Input';
+          {trailingIcon.tooltip && (
+            <Tooltip
+              id="input-trailing-icon-tooltip"
+              {...trailingIcon.tooltipProps}
+            >
+              {trailingIcon.tooltip}
+            </Tooltip>
+          )}
+        </>
+      )}
+    </Flex>
+  );
+};

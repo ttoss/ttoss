@@ -89,7 +89,7 @@ export const customTheme: Theme = {
 - `ActionButton` - Action-specific buttons
 - `IconButton` - Icon-only buttons
 - `CloseButton` - Close/dismiss buttons
-- `Input` - Text input fields
+- `Input` - Text input fields with icon support
 - `InputNumber` - Numeric input fields
 - `InputPassword` - Password input with reveal
 - `Textarea` - Multi-line text input
@@ -99,6 +99,35 @@ export const customTheme: Theme = {
 - `Switch` - Toggle switches
 - `Slider` - Range slider controls
 - `SegmentedControl` - Multi-option selector
+
+#### Input Component Features
+
+The `Input` component supports leading and trailing icons with tooltips:
+
+```tsx
+import { Input } from '@ttoss/ui';
+
+// Basic input with icons
+<Input
+  placeholder="Search..."
+  leadingIcon={{
+    icon: 'search',
+    onClick: () => console.log('Search clicked'),
+    tooltip: 'Click to search'
+  }}
+  trailingIcon={{
+    icon: 'info-circle',
+    tooltip: 'Additional information',
+    tooltipProps: { variant: 'info' }
+  }}
+/>
+
+// Icons without tooltips
+<Input
+  placeholder="Email"
+  leadingIcon={{ icon: 'mail' }}
+/>
+```
 
 ### Feedback & Status
 

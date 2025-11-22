@@ -4,11 +4,9 @@ import { Tooltip as TooltipReact } from 'react-tooltip';
 
 import { Box, SxProp } from '..';
 
-export const Tooltip = ({
-  variant = 'info',
-  sx,
-  ...props
-}: ITooltip & SxProp) => {
+export type TooltipProps = ITooltip & SxProp;
+
+export const Tooltip = ({ variant = 'info', sx, ...props }: TooltipProps) => {
   const className = `tooltip-component tooltip-${variant}`;
 
   const getVariantStyles = (variantType: string) => {

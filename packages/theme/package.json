@@ -40,7 +40,7 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.2.0",
-    "theme-ui": "^0.17.1",
+    "theme-ui": "^0.17.2",
     "tsup": "^8.5.1"
   },
   "keywords": [],
