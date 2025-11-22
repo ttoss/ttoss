@@ -26,12 +26,12 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@theme-ui/match-media": "^0.17.1",
+    "@theme-ui/match-media": "^0.17.2",
     "@ttoss/theme": "workspace:^",
     "rc-segmented": "^2.7.0",
-    "react-select": "^5.9.0",
-    "react-tooltip": "^5.28.0",
-    "theme-ui": "^0.17.1"
+    "react-select": "^5.10.2",
+    "react-tooltip": "^5.30.0",
+    "theme-ui": "^0.17.2"
   },
   "peerDependencies": {
     "@emotion/react": "^11",

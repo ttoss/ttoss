@@ -22,7 +22,7 @@ export { InputNumber, type InputNumberProps } from './components/InputNumber';
 export {
   InputPassword,
   type InputPasswordProps,
-} from './components/InputPassword/InputPassword';
+} from './components/InputPassword';
 export { Label, type LabelProps } from './components/Label';
 export {
   LinearProgress,

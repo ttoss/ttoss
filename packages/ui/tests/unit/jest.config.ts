@@ -1,19 +1,22 @@
 import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
-/**
- * https://github.com/facebook/jest/issues/12984#issuecomment-1228392944
- */
 const esmModules = ['@iconify-icons'];
 
-const transformIgnorePatterns = [
-  `node_modules/(?!(?:.pnpm/)?(${esmModules.join('|')}))`,
-];
-
 const config = jestUnitConfig({
+  coverageThreshold: {
+    global: {
+      statements: 77.83,
+      branches: 75.72,
+      lines: 77.83,
+      functions: 71.21,
+    },
+  },
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
-  transformIgnorePatterns,
+  transformIgnorePatterns: getTransformIgnorePatterns({
+    esmModules,
+  }),
 });
 
-// eslint-disable-next-line import/no-default-export
 export default config;
