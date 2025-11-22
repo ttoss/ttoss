@@ -116,7 +116,9 @@ const Component = () => {
 
 ### NotificationsBox
 
-You can use `NotificationsBox` to show the notifications in a specific place. You can render as many `NotificationsBox` as you want in your application.
+`NotificationsBox` displays notifications in a specific area of your application. It filters and shows only notifications intended for box display.
+
+#### Basic Usage
 
 ```tsx
 import { NotificationsBox } from '@ttoss/react-notifications';
@@ -129,7 +131,13 @@ const Component = () => {
     </Box>
   );
 };
+```
 
+#### Multiple Boxes
+
+You can render multiple `NotificationsBox` components. By default, all boxes show the same notifications:
+
+```tsx
 const App = () => {
   return (
     <Box>
@@ -140,9 +148,11 @@ const App = () => {
 };
 ```
 
-In the example above, both `NotificationsBox` will show the notifications.
+Both `NotificationsBox` instances will display the same notifications.
 
-To render the notifications in a specific `NotificationsBox`, you can set the `boxId` in the notification, which is the `id` of the `NotificationsBox` you want to show the notification.
+#### Box IDs
+
+To show notifications in a specific box, use the `id` prop and set the `boxId` in the notification:
 
 ```tsx
 import { useNotifications, NotificationsBox } from '@ttoss/react-notifications';
@@ -157,7 +167,7 @@ const Component = () => {
       <Button
         onClick={() =>
           addNotification({
-            message: "I'm a notification",
+            message: "I'm a notification for my-box",
             type: 'info',
             boxId: 'my-box',
           })
@@ -169,6 +179,40 @@ const Component = () => {
   );
 };
 ```
+
+#### Filtering Behavior
+
+`NotificationsBox` filters notifications based on these rules:
+
+1. **View Type**: Only shows notifications with `viewType: 'box'` or when `defaultViewType` is `'box'` and no `viewType` is specified
+2. **Box ID**:
+   - If the box has no `id`, it shows notifications without a `boxId`
+   - If the box has an `id`, it only shows notifications with a matching `boxId`
+3. **Direct Notifications**: You can pass notifications directly via the `notifications` prop to bypass the global state
+
+#### Direct Notifications
+
+You can pass notifications directly to a specific box, bypassing the global notification state:
+
+```tsx
+import { NotificationsBox } from '@ttoss/react-notifications';
+
+const Component = () => {
+  const localNotifications = [
+    { id: 1, message: 'Local notification', type: 'info' },
+    { id: 2, message: 'Another local one', type: 'success' },
+  ];
+
+  return <NotificationsBox notifications={localNotifications} />;
+};
+```
+
+#### Props
+
+| Prop            | Type               | Description                                                                  |
+| --------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `id`            | `string \| number` | Optional identifier for the box. Used to match with `boxId` in notifications |
+| `notifications` | `Notification[]`   | Optional array of notifications to display directly, bypassing global state  |
 
 ### NotificationsHeader
 
