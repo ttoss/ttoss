@@ -16,18 +16,8 @@ export const FormFieldInput = <
   disabled,
   ...props
 }: FormFieldInputProps<TFieldValues, TName>) => {
-  const {
-    label,
-    name,
-    tooltip,
-    inputTooltip,
-    warning,
-    sx,
-    css,
-    rules,
-    id,
-    ...inputProps
-  } = props;
+  const { label, name, tooltip, warning, sx, css, rules, id, ...inputProps } =
+    props;
 
   return (
     <FormField
@@ -35,7 +25,6 @@ export const FormFieldInput = <
       label={label}
       name={name}
       tooltip={tooltip}
-      inputTooltip={inputTooltip}
       warning={warning}
       sx={sx}
       css={css}

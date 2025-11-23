@@ -232,7 +232,6 @@ All form field components share common props:
 - `disabled`: Disables the field
 - `defaultValue`: Initial field value
 - `tooltip`: Label tooltip configuration
-- `inputTooltip`: Input field tooltip configuration
 - `warning`: Warning message displayed below the field
 - `sx`: Theme-UI styling object
 

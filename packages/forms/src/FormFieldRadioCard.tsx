@@ -30,7 +30,6 @@ export const FormFieldRadioCard = <
     label,
     name,
     tooltip,
-    inputTooltip,
     warning,
     sx,
     css,
@@ -49,7 +48,6 @@ export const FormFieldRadioCard = <
       label={label}
       name={name}
       tooltip={tooltip}
-      inputTooltip={inputTooltip}
       warning={warning}
       sx={sx}
       css={css}

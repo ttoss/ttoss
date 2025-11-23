@@ -21,7 +21,7 @@ const TooltipComponent = () => {
 
 const tooltipClickable: LabelProps = {
   tooltip: {
-    render: <TooltipComponent />,
+    children: <TooltipComponent />,
     place: 'top',
     openOnClick: false,
     clickable: true,
@@ -30,7 +30,7 @@ const tooltipClickable: LabelProps = {
 
 const tooltipNotClickable: LabelProps = {
   tooltip: {
-    render: <TooltipComponent />,
+    children: <TooltipComponent />,
     place: 'top',
     openOnClick: false,
     clickable: false,
@@ -39,7 +39,7 @@ const tooltipNotClickable: LabelProps = {
 
 const tooltipOpenOnClick: LabelProps = {
   tooltip: {
-    render: <TooltipComponent />,
+    children: <TooltipComponent />,
     place: 'top',
     openOnClick: true,
     clickable: false,
@@ -68,18 +68,7 @@ export const Disabled: Story = {
 export const WithTooltip: Story = {
   args: {
     ...Default.args,
-    tooltip: { render: 'tooltip message', place: 'top' },
-  },
-};
-
-export const WithTooltipDifferentIcon: Story = {
-  args: {
-    ...Default.args,
-    tooltip: {
-      render: 'info tooltip message',
-      place: 'right',
-      icon: 'fluent:ios-arrow-rtl-24-filled',
-    },
+    tooltip: { children: 'tooltip message', place: 'top' },
   },
 };
 
@@ -87,7 +76,7 @@ export const WithTooltipVariantInfo: Story = {
   args: {
     ...Default.args,
     tooltip: {
-      render: 'Info tooltip message',
+      children: 'Info tooltip message',
       place: 'bottom',
       variant: 'info',
     },
@@ -98,7 +87,7 @@ export const WithTooltipVariantSuccess: Story = {
   args: {
     ...Default.args,
     tooltip: {
-      render: 'Success tooltip message',
+      children: 'Success tooltip message',
       place: 'top',
       variant: 'success',
     },
@@ -109,7 +98,7 @@ export const WithTooltipVariantWarning: Story = {
   args: {
     ...Default.args,
     tooltip: {
-      render: 'Warning tooltip message',
+      children: 'Warning tooltip message',
       place: 'top',
       variant: 'warning',
     },
@@ -120,7 +109,7 @@ export const WithTooltipVariantError: Story = {
   args: {
     ...Default.args,
     tooltip: {
-      render: 'Error tooltip message',
+      children: 'Error tooltip message',
       place: 'top',
       variant: 'error',
     },

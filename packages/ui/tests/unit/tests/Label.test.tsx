@@ -8,7 +8,7 @@ const tooltip = 'Tooltip content';
 
 const labelProps: LabelProps = {
   tooltip: {
-    render: tooltip,
+    children: tooltip,
     place: 'top',
     openOnClick: false,
     clickable: true,
@@ -27,7 +27,7 @@ test('should render Label with tooltip icon', () => {
   const icon = screen.getByTestId('iconify-icon');
 
   expect(icon).toBeInTheDocument();
-  expect(icon).toHaveAttribute('icon', 'fluent:info-24-regular');
+  expect(icon).toHaveAttribute('icon', 'info');
 });
 
 test('should render tooltip when hover on it', async () => {

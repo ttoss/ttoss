@@ -20,7 +20,6 @@ export const FormFieldTextarea = <
     label,
     name,
     tooltip,
-    inputTooltip,
     warning,
     sx,
     css,
@@ -35,7 +34,6 @@ export const FormFieldTextarea = <
       label={label}
       name={name}
       tooltip={tooltip}
-      inputTooltip={inputTooltip}
       warning={warning}
       sx={sx}
       css={css}

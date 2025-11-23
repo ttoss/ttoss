@@ -98,7 +98,7 @@ const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
 
   const tooltip = properties.showTooltip
     ? {
-        render: 'tooltip message',
+        children: 'tooltip message',
         place: 'top' as const,
         openOnClick: false,
         clickable: true,
@@ -282,7 +282,7 @@ const TemplateWithInternationalization: StoryFn = () => {
   });
 
   const tooltip = {
-    render: 'tooltip message',
+    children: 'tooltip message',
     place: 'top' as const,
     openOnClick: false,
     clickable: true,
