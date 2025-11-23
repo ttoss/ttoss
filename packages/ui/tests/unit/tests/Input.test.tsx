@@ -18,12 +18,13 @@ test('should render Input component with trailingIcon and leadingIcon as string'
   render(
     <Input
       placeholder="My Input"
-      trailingIcon={trailingIconAsString}
-      leadingIcon={leadingIconAsString}
+      trailingIcon={{ icon: trailingIconAsString }}
+      leadingIcon={{ icon: leadingIconAsString }}
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
@@ -32,27 +33,32 @@ test('should render Input component with trailingIcon and leadingIcon as string'
 test("should render Input component with trailingIcon 'warning-alt' when it's with aria-invalid as true", () => {
   render(<Input placeholder="My Input" aria-invalid="true" />);
 
-  const [trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const trailingIcon = screen.getByTestId('input-trailing-icon');
+  const iconElement = trailingIcon.querySelector(
+    '[data-testid="iconify-icon"]'
+  );
 
-  expect(trailingIconEl).toHaveAttribute('icon', 'warning-alt');
+  expect(trailingIcon).toBeInTheDocument();
+  expect(iconElement).toHaveAttribute('icon', 'warning-alt');
 });
 
 test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
   render(
     <Input
       placeholder="My Input"
-      trailingIcon={alertIcon}
-      leadingIcon={alertIcon}
+      trailingIcon={{ icon: alertIcon }}
+      leadingIcon={{ icon: alertIcon }}
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
 });
 
-test('should call functions onLeadingIconClick and onTrailingIconClick when the icons are clicked', async () => {
+test('should call functions onClick when the icons are clicked', async () => {
   const user = userEvent.setup({ delay: null });
   const icon = 'ant-design:down-square-filled';
   const onTrailingIconClick = jest.fn();
@@ -60,18 +66,61 @@ test('should call functions onLeadingIconClick and onTrailingIconClick when the 
 
   render(
     <Input
-      trailingIcon={icon}
-      leadingIcon={icon}
-      onTrailingIconClick={onTrailingIconClick}
-      onLeadingIconClick={onLeadingIconClick}
+      trailingIcon={{ icon, onClick: onTrailingIconClick }}
+      leadingIcon={{ icon, onClick: onLeadingIconClick }}
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   await user.click(leadingIconEl);
   expect(onLeadingIconClick).toHaveBeenCalled();
 
   await user.click(trailingIconEl);
   expect(onTrailingIconClick).toHaveBeenCalled();
+});
+
+test('should render tooltips when tooltip prop is provided', () => {
+  render(
+    <Input
+      placeholder="My Input"
+      leadingIcon={{
+        icon: 'ant-design:search-outlined',
+        tooltip: 'Search',
+      }}
+      trailingIcon={{
+        icon: 'ant-design:info-circle-outlined',
+        tooltip: 'More information',
+      }}
+    />
+  );
+
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
+
+  expect(leadingIconEl).toHaveAttribute(
+    'data-tooltip-id',
+    'input-leading-icon-tooltip'
+  );
+  expect(trailingIconEl).toHaveAttribute(
+    'data-tooltip-id',
+    'input-trailing-icon-tooltip'
+  );
+});
+
+test('should not set tooltip-id when tooltip prop is not provided', () => {
+  render(
+    <Input
+      placeholder="My Input"
+      leadingIcon={{ icon: 'ant-design:search-outlined' }}
+      trailingIcon={{ icon: 'ant-design:info-circle-outlined' }}
+    />
+  );
+
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
+
+  expect(leadingIconEl).not.toHaveAttribute('data-tooltip-id');
+  expect(trailingIconEl).not.toHaveAttribute('data-tooltip-id');
 });

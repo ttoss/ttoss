@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { LinearProgress } from './LinearProgress';
 
 const MAX_PROGRESS = 100;

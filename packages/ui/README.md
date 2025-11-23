@@ -89,7 +89,7 @@ export const customTheme: Theme = {
 - `ActionButton` - Action-specific buttons
 - `IconButton` - Icon-only buttons
 - `CloseButton` - Close/dismiss buttons
-- `Input` - Text input fields
+- `Input` - Text input fields with icon support
 - `InputNumber` - Numeric input fields
 - `InputPassword` - Password input with reveal
 - `Textarea` - Multi-line text input
@@ -99,6 +99,115 @@ export const customTheme: Theme = {
 - `Switch` - Toggle switches
 - `Slider` - Range slider controls
 - `SegmentedControl` - Multi-option selector
+
+#### Input Component Features
+
+The `Input` component supports leading and trailing icons with tooltips:
+
+```tsx
+import { Input } from '@ttoss/ui';
+
+// Simplified syntax - icon as string
+<Input
+  placeholder="Search..."
+  leadingIcon="ant-design:search-outlined"
+  trailingIcon="ant-design:info-circle-outlined"
+/>
+
+// Full syntax with tooltip and click handler
+<Input
+  placeholder="Search..."
+  leadingIcon={{
+    icon: 'ant-design:search-outlined',
+    onClick: () => console.log('Search clicked'),
+    tooltip: 'Click to search'
+  }}
+  trailingIcon={{
+    icon: 'ant-design:info-circle-outlined',
+    tooltip: 'Additional information',
+    tooltipProps: { place: 'right' }
+  }}
+/>
+
+// SVG icons from @iconify
+import searchIcon from '@iconify/icons-mdi/search';
+
+<Input
+  placeholder="Email"
+  leadingIcon={searchIcon}
+/>
+```
+
+**Testing Input Icons:**
+
+Use `data-testid` to identify icons in tests. The Input component provides test IDs for icon containers, and each icon has its own `data-testid="iconify-icon"`:
+
+```tsx
+import { render, screen } from '@testing-library/react';
+
+test('should render input with icons', () => {
+  render(
+    <Input placeholder="Search" leadingIcon="search" trailingIcon="info" />
+  );
+
+  // Get icon containers (for clicking and tooltip checks)
+  const leadingIconContainer = screen.getByTestId('input-leading-icon');
+  const trailingIconContainer = screen.getByTestId('input-trailing-icon');
+
+  expect(leadingIconContainer).toBeInTheDocument();
+  expect(trailingIconContainer).toBeInTheDocument();
+
+  // Get the actual icon elements (for checking icon properties)
+  const iconElement = leadingIconContainer.querySelector(
+    '[data-testid="iconify-icon"]'
+  );
+  expect(iconElement).toHaveAttribute('icon', 'search');
+});
+
+// Test icon clicks (click on container, where onClick is attached)
+test('should call onClick when icon is clicked', async () => {
+  const handleClick = jest.fn();
+
+  render(
+    <Input
+      placeholder="Search"
+      leadingIcon={{ icon: 'search', onClick: handleClick }}
+    />
+  );
+
+  const leadingIcon = screen.getByTestId('input-leading-icon');
+  await userEvent.click(leadingIcon);
+  expect(handleClick).toHaveBeenCalled();
+});
+
+// Test tooltips (check container for tooltip attributes)
+test('should render tooltip', () => {
+  render(
+    <Input
+      placeholder="Search"
+      leadingIcon={{ icon: 'search', tooltip: 'Search here' }}
+    />
+  );
+
+  const iconContainer = screen.getByTestId('input-leading-icon');
+  expect(iconContainer).toHaveAttribute(
+    'data-tooltip-id',
+    'input-leading-icon-tooltip'
+  );
+});
+
+// Alternative: Query all icons and differentiate by position
+test('should render both icons using iconify-icon testid', () => {
+  render(<Input leadingIcon="search" trailingIcon="info" />);
+
+  const icons = screen.getAllByTestId('iconify-icon');
+  expect(icons).toHaveLength(2);
+  expect(icons[0]).toHaveAttribute('icon', 'search'); // leading
+  expect(icons[1]).toHaveAttribute('icon', 'info'); // trailing
+});
+```
+
+````
 
 ### Feedback & Status
 
@@ -134,7 +243,7 @@ export const AppStyles = () => (
     }}
   />
 );
-```
+````
 
 #### Animations
 
