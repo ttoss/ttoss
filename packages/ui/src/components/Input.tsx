@@ -51,21 +51,28 @@ export const Input = ({
 
   const normalizedTrailingIconProp = normalizeIcon(trailingIconProp);
 
-  const trailingIcon = inputProps['aria-invalid']
-    ? { icon: 'warning-alt' as IconType }
+  const ariaInvalid = inputProps['aria-invalid'];
+  const isInvalid = ariaInvalid === true || ariaInvalid === 'true';
+
+  const trailingIcon = isInvalid
+    ? { ...normalizedTrailingIconProp, icon: 'warning-alt' as IconType }
     : normalizedTrailingIconProp;
 
-  const isWarning =
-    !inputProps['aria-invalid'] && trailingIcon?.icon === 'warning-alt';
+  const isWarning = !isInvalid && trailingIcon?.icon === 'warning-alt';
+
+  const wrapperClassName = [className, isWarning && 'is-warning']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <Flex
-      className={`${className} ${isWarning ? 'is-warning' : ''}`}
+      className={wrapperClassName}
       sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
     >
       {normalizedLeadingIcon && (
         <>
           <Text
+            data-testid="input-leading-icon"
             data-tooltip-id={
               normalizedLeadingIcon.tooltip
                 ? 'input-leading-icon-tooltip'
@@ -109,6 +116,7 @@ export const Input = ({
       {trailingIcon && (
         <>
           <Text
+            data-testid="input-trailing-icon"
             data-tooltip-id={
               trailingIcon.tooltip ? 'input-trailing-icon-tooltip' : undefined
             }

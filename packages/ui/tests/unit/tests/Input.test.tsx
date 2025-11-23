@@ -23,7 +23,8 @@ test('should render Input component with trailingIcon and leadingIcon as string'
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
@@ -32,9 +33,13 @@ test('should render Input component with trailingIcon and leadingIcon as string'
 test("should render Input component with trailingIcon 'warning-alt' when it's with aria-invalid as true", () => {
   render(<Input placeholder="My Input" aria-invalid="true" />);
 
-  const [trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const trailingIcon = screen.getByTestId('input-trailing-icon');
+  const iconElement = trailingIcon.querySelector(
+    '[data-testid="iconify-icon"]'
+  );
 
-  expect(trailingIconEl).toHaveAttribute('icon', 'warning-alt');
+  expect(trailingIcon).toBeInTheDocument();
+  expect(iconElement).toHaveAttribute('icon', 'warning-alt');
 });
 
 test('should render Input component with trailingIcon and leadingIcon as svg icon', () => {
@@ -46,7 +51,8 @@ test('should render Input component with trailingIcon and leadingIcon as svg ico
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   expect(trailingIconEl).toBeInTheDocument();
   expect(leadingIconEl).toBeInTheDocument();
@@ -65,7 +71,8 @@ test('should call functions onClick when the icons are clicked', async () => {
     />
   );
 
-  const [leadingIconEl, trailingIconEl] = screen.getAllByTestId('iconify-icon');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
   await user.click(leadingIconEl);
   expect(onLeadingIconClick).toHaveBeenCalled();
@@ -89,13 +96,14 @@ test('should render tooltips when tooltip prop is provided', () => {
     />
   );
 
-  // Check if tooltip IDs are set on the icon elements
-  const icons = screen.getAllByTestId('iconify-icon');
-  expect(icons[0].parentElement).toHaveAttribute(
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
+
+  expect(leadingIconEl).toHaveAttribute(
     'data-tooltip-id',
     'input-leading-icon-tooltip'
   );
-  expect(icons[1].parentElement).toHaveAttribute(
+  expect(trailingIconEl).toHaveAttribute(
     'data-tooltip-id',
     'input-trailing-icon-tooltip'
   );
@@ -110,7 +118,9 @@ test('should not set tooltip-id when tooltip prop is not provided', () => {
     />
   );
 
-  const icons = screen.getAllByTestId('iconify-icon');
-  expect(icons[0].parentElement).not.toHaveAttribute('data-tooltip-id');
-  expect(icons[1].parentElement).not.toHaveAttribute('data-tooltip-id');
+  const leadingIconEl = screen.getByTestId('input-leading-icon');
+  const trailingIconEl = screen.getByTestId('input-trailing-icon');
+
+  expect(leadingIconEl).not.toHaveAttribute('data-tooltip-id');
+  expect(trailingIconEl).not.toHaveAttribute('data-tooltip-id');
 });
