@@ -43,6 +43,12 @@ The repository has detailed instruction files for different parts of the codebas
    - Covers testing, coverage, build validation, and i18n workflows
    - Contains mandatory validation steps for package changes
 
+3. **React Package Architecture**: See `.github/instructions/react-packages-architecture.instructions.md`
+   - Applies to all React-related packages
+   - Explains the context-based architecture pattern using foundation packages (Theme/UI, i18n, Notifications, Forms, Icons, etc.)
+   - Critical for understanding how to build components that integrate automatically with applications
+   - Shows how to avoid style/message props in favor of context hooks
+
 **IMPORTANT**: Always check if path-specific instructions exist before making changes. These files contain critical guidelines that must be followed.
 
 ## Getting Started Commands
