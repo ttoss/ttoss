@@ -99,13 +99,13 @@ test('should render tooltips when tooltip prop is provided', () => {
   const leadingIconEl = screen.getByTestId('input-leading-icon');
   const trailingIconEl = screen.getByTestId('input-trailing-icon');
 
-  expect(leadingIconEl).toHaveAttribute(
-    'data-tooltip-id',
-    'input-leading-icon-tooltip'
+  expect(leadingIconEl).toHaveAttribute('data-tooltip-id');
+  expect(leadingIconEl.getAttribute('data-tooltip-id')).toMatch(
+    /-leading-tooltip$/
   );
-  expect(trailingIconEl).toHaveAttribute(
-    'data-tooltip-id',
-    'input-trailing-icon-tooltip'
+  expect(trailingIconEl).toHaveAttribute('data-tooltip-id');
+  expect(trailingIconEl.getAttribute('data-tooltip-id')).toMatch(
+    /-trailing-tooltip$/
   );
 });
 
