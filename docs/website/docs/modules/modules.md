@@ -1,6 +1,6 @@
 ---
-sidebar_position: 1
-slug: ./
+sidebar_position: 2
+slug: ./packages
 ---
 
 # Modules
@@ -8,6 +8,12 @@ slug: ./
 **ttoss** (Terezinha Tech Operations) provides this library of modular solutions designed to enhance your product development process. These reusable [packages](/docs/modules/packages) simplify common challenges, allowing development teams to focus on delivering high-impact features efficiently.
 
 These libraries are built in accordance with the technologies defined by our engineering department. For more information on these standards, please refer to [the Engineering technologies](/docs/engineering/technologies).
+
+## Context-Based Integration
+
+A key engineering feature of ttoss packages is the **context-based architecture**. Instead of passing configuration through props at every level, you configure your application once at the root (theme, translations, notifications), and all ttoss packages automatically adapt.
+
+This eliminates prop drilling, reduces boilerplate, and ensures consistency across all packages. Learn more about [Integration Architecture](/docs/modules/integration-architecture).
 
 ## Additional Resources
 
