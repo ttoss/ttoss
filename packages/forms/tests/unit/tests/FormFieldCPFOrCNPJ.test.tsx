@@ -48,7 +48,7 @@ test('should submit with valid CNPJ value', async () => {
 
   render(<RenderForm />);
 
-  // Test with CNPJ-length input  
+  // Test with CNPJ-length input
   await user.type(screen.getByLabelText('Document'), '13878352000196');
   await user.click(screen.getByText('Submit'));
   expect(onSubmit).toHaveBeenCalledWith({
