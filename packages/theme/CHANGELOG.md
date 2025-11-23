@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.6.11...@ttoss/theme@2.7.0) (2025-11-23)
+
+### Features
+
+- add icon input tooltip ([#767](https://github.com/ttoss/ttoss/issues/767)) ([e86c9da](https://github.com/ttoss/ttoss/commit/e86c9da68d8b09ef57f55305693f923b2291d312))
+
 ## [2.6.11](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.6.10...@ttoss/theme@2.6.11) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/theme

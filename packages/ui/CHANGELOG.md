@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.10.8...@ttoss/ui@5.11.0) (2025-11-23)
+
+### Features
+
+- add icon input tooltip ([#767](https://github.com/ttoss/ttoss/issues/767)) ([e86c9da](https://github.com/ttoss/ttoss/commit/e86c9da68d8b09ef57f55305693f923b2291d312))
+
 ## [5.10.8](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.10.7...@ttoss/ui@5.10.8) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/ui
