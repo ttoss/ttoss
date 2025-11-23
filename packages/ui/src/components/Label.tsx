@@ -2,23 +2,13 @@ import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 import { Label as LabelUi, type LabelProps as LabelPropsUi } from 'theme-ui';
 
-import { Text } from '..';
-import { Tooltip } from '..';
+import { Text } from './Text';
+import { Tooltip, type TooltipProps } from './Tooltip';
 
 const TOOLTIP_LABEL = 'tooltip';
 
 export type LabelProps = LabelPropsUi & {
-  tooltip?: {
-    render: string | React.ReactNode;
-    place: 'top' | 'right' | 'bottom' | 'left';
-    openOnClick?: boolean;
-    clickable?: boolean;
-    variant?: 'dark' | 'light' | 'success' | 'warning' | 'error' | 'info';
-    hidden?: boolean;
-    setIsOpen?: (value: boolean) => void;
-    isOpen?: boolean;
-    icon?: string;
-  };
+  tooltip?: TooltipProps;
 };
 
 export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
@@ -28,7 +18,6 @@ export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
 
   return (
     <LabelUi
-      data-tooltip-id={tooltipId}
       sx={{
         alignItems: 'center',
         fontSize: 'sm',
@@ -42,29 +31,16 @@ export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
       {children}
       {tooltip && (
         <Text
+          data-tooltip-id={tooltipId}
           sx={{
             color: 'currentcolor',
             cursor: 'pointer',
+            marginLeft: '1',
           }}
           aria-label={TOOLTIP_LABEL}
         >
-          {tooltip.icon ? (
-            <Icon inline icon={tooltip.icon} />
-          ) : (
-            <Icon inline icon="fluent:info-24-regular" />
-          )}
-          <Tooltip
-            id={tooltipId}
-            openOnClick={tooltip.openOnClick}
-            clickable={tooltip.clickable}
-            place={tooltip.place}
-            hidden={tooltip.hidden}
-            variant={tooltip.variant}
-            setIsOpen={tooltip.setIsOpen}
-            isOpen={tooltip.isOpen}
-          >
-            {tooltip.render}
-          </Tooltip>
+          <Icon icon="info" />
+          <Tooltip {...tooltip} id={tooltipId} />
         </Text>
       )}
     </LabelUi>

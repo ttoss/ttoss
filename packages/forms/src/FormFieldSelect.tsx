@@ -20,7 +20,6 @@ export const FormFieldSelect = <
     label,
     name,
     tooltip,
-    inputTooltip,
     warning,
     sx,
     css,
@@ -36,7 +35,6 @@ export const FormFieldSelect = <
       label={label}
       name={name}
       tooltip={tooltip}
-      inputTooltip={inputTooltip}
       warning={warning}
       sx={sx}
       css={css}

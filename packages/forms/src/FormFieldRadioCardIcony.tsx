@@ -44,7 +44,6 @@ export const FormFieldRadioCardIcony = <
     label,
     name,
     tooltip,
-    inputTooltip,
     warning,
     sx,
     css,
@@ -62,7 +61,6 @@ export const FormFieldRadioCardIcony = <
       label={label}
       name={name}
       tooltip={tooltip}
-      inputTooltip={inputTooltip}
       warning={warning}
       sx={sx}
       css={css}

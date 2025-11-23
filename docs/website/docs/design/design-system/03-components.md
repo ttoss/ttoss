@@ -338,6 +338,40 @@ export const UserProfile = () => (
 - **`Modal`**: Overlay dialogs
 - **`Tooltip`**: Contextual help information
 
+## Semantic Icons and Centralized Icon Tokens
+
+To ensure visual consistency and maintainability, ttoss components use a centralized set of semantic icon tokens defined in the design system. These tokens include icons for common UI states and feedback, such as `info`, `warning`, `error`, and `success`.
+
+### Tooltip Icon in Labels
+
+For example, the `Label` component always uses the `info` icon from the design system as the tooltip trigger. This principle applies across all ttoss components: whenever a component needs a semantic icon (for tooltips, warnings, errors, etc.), it references the central icon token defined in the design system.
+
+This approach guarantees:
+
+- Consistent iconography across all components
+- Easy updates and theme customization
+- Clear mapping between UI states and their visual representation
+
+#### Example
+
+```tsx
+import { Label } from '@ttoss/ui';
+
+<Label tooltip={{ children: 'More info', place: 'top' }}>Field Label</Label>;
+```
+
+In this example, the tooltip icon is always the `info` icon, as defined in the design system's icon tokens. Other components (e.g., `Input`, `Button`, `Badge`) use the appropriate semantic icon for their state, such as `warning` for caution or `error` for validation errors.
+
+> **See all defined icons:** [Design System Icons Storybook](https://storybook.ttoss.dev/?path=/docs/design-system-icons--docs)
+
+#### Icon Token Reference
+
+All semantic icons are defined centrally and can be themed or replaced as needed. See [semantic tokens documentation](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors.md) for details on customizing icon tokens.
+
+> **Tip:** By using centralized icon tokens, you ensure that your UI remains visually coherent and easy to maintain as your design system evolves.
+
+---
+
 ## Best Practices
 
 ### Component Usage

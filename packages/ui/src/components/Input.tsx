@@ -1,4 +1,5 @@
 import { Icon, type IconType } from '@ttoss/react-icons';
+import * as React from 'react';
 import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
 
 import { Flex, Text, Tooltip } from '..';
@@ -64,6 +65,10 @@ export const Input = ({
     .filter(Boolean)
     .join(' ');
 
+  const id = React.useId();
+  const leadingTooltipId = `${id}-leading-tooltip`;
+  const trailingTooltipId = `${id}-trailing-tooltip`;
+
   return (
     <Flex
       className={wrapperClassName}
@@ -74,9 +79,7 @@ export const Input = ({
           <Text
             data-testid="input-leading-icon"
             data-tooltip-id={
-              normalizedLeadingIcon.tooltip
-                ? 'input-leading-icon-tooltip'
-                : undefined
+              normalizedLeadingIcon.tooltip ? leadingTooltipId : undefined
             }
             sx={{
               position: 'absolute',
@@ -91,7 +94,7 @@ export const Input = ({
           </Text>
           {normalizedLeadingIcon.tooltip && (
             <Tooltip
-              id="input-leading-icon-tooltip"
+              id={leadingTooltipId}
               {...normalizedLeadingIcon.tooltipProps}
             >
               {normalizedLeadingIcon.tooltip}
@@ -118,7 +121,7 @@ export const Input = ({
           <Text
             data-testid="input-trailing-icon"
             data-tooltip-id={
-              trailingIcon.tooltip ? 'input-trailing-icon-tooltip' : undefined
+              trailingIcon.tooltip ? trailingTooltipId : undefined
             }
             sx={{
               position: 'absolute',
@@ -134,10 +137,7 @@ export const Input = ({
             <Icon inline icon={trailingIcon.icon} />
           </Text>
           {trailingIcon.tooltip && (
-            <Tooltip
-              id="input-trailing-icon-tooltip"
-              {...trailingIcon.tooltipProps}
-            >
+            <Tooltip id={trailingTooltipId} {...trailingIcon.tooltipProps}>
               {trailingIcon.tooltip}
             </Tooltip>
           )}
