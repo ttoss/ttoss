@@ -366,7 +366,7 @@ In this example, the tooltip icon is always the `info` icon, as defined in the d
 
 #### Icon Token Reference
 
-All semantic icons are defined centrally and can be themed or replaced as needed. See [semantic tokens documentation](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors.md) for details on customizing icon tokens.
+All semantic icons are defined centrally and can be themed or replaced as needed. See [semantic tokens documentation](/docs/design/design-system/design-tokens/semantic-tokens/semantic-colors) for details on customizing icon tokens.
 
 > **Tip:** By using centralized icon tokens, you ensure that your UI remains visually coherent and easy to maintain as your design system evolves.
 
