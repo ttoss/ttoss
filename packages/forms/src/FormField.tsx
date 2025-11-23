@@ -129,7 +129,7 @@ export const FormField = <
             >
               {React.createElement(child.type, elementProps)}
             </Flex>
-            <Label aria-disabled={disabled} tooltip={tooltip}>
+            <Label aria-disabled={disabled} htmlFor={id} tooltip={tooltip}>
               {label}
             </Label>
           </Flex>
