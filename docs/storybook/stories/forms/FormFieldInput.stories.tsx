@@ -44,6 +44,21 @@ const Template: Story = () => {
           defaultValue={22}
           warning="WARNING"
         />
+
+        <FormFieldInput
+          name="email"
+          label="Email with Icons"
+          placeholder="user@example.com"
+          leadingIcon="ant-design:mail-outlined"
+          trailingIcon="ant-design:check-circle-outlined"
+        />
+
+        <FormFieldInput
+          name="search"
+          label="Search"
+          placeholder="Search..."
+          leadingIcon="ant-design:search-outlined"
+        />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
