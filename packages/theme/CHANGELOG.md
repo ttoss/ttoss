@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.0...@ttoss/theme@2.7.1) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/theme
+
 # [2.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.6.11...@ttoss/theme@2.7.0) (2025-11-23)
 
 ### Features

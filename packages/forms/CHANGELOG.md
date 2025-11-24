@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.33.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.32.8...@ttoss/forms@0.33.0) (2025-11-24)
+
+- Refactor form components to support TooltipIcon and improve documentation (#773) ([248c32a](https://github.com/ttoss/ttoss/commit/248c32a6d1beabda44df3363df9183ec26914cad)), closes [#773](https://github.com/ttoss/ttoss/issues/773)
+
+### BREAKING CHANGES
+
+- FormField component now uses labelTooltip
+  instead of tooltip prop. This clarifies that the tooltip
+  describes the label/field, distinguishing it from potential
+  future tooltips for hints or icons.
+
+Updated components:
+
+- FormField (type definition)
+- FormFieldCheckbox, FormFieldRadio, FormFieldRadioCard
+- FormFieldRadioCardIcony, FormFieldSelect, FormFieldSwitch
+- FormFieldTextarea, Brazil/FormFieldPhone, Brazil/FormFieldCNPJ
+
+* feat(forms): add leadingIcon/trailingIcon support to input components
+
+Add icon support to FormField input components:
+
+- FormFieldInput: supports both leadingIcon and trailingIcon
+- FormFieldPassword: supports leadingIcon only
+  (trailingIcon reserved for show/hide password toggle)
+- FormFieldNumericFormat: supports both icons via customInput
+- FormFieldPatternFormat: supports both icons via customInput
+
+Coverage improved: 93.56% statements (+3.97%), 89.14% branches (+6.97%)
+
+- docs(storybook): add TooltipIcon stories and update FormField examples
+
+* Add comprehensive TooltipIcon component stories (12 variants)
+* Add leadingIcon/trailingIcon examples to FormFieldInput
+* Add leadingIcon example to FormFieldPassword
+* Update all Form stories to use labelTooltip prop
+
+- fix: tests
+
 ## [0.32.8](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.32.7...@ttoss/forms@0.32.8) (2025-11-23)
 
 **Note:** Version bump only for package @ttoss/forms
