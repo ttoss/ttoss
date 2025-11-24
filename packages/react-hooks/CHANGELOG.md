@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.1.9...@ttoss/react-hooks@2.1.10) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/react-hooks
+
 ## [2.1.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.1.8...@ttoss/react-hooks@2.1.9) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/react-hooks

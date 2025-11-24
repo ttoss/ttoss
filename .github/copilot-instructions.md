@@ -178,6 +178,11 @@ pnpm run i18n      # Extract i18n messages
 6. **Run code review** before finalizing
 7. **Run CodeQL checker** for security validation
 8. **Review committed files** to ensure only intended changes are included
+9. **Propose instruction improvements** - After completing work and interacting with the developer, suggest improvements to the instruction files if you identified:
+   - **New patterns** that should be standardized
+   - **Outdated instructions** that no longer apply or can be simplified
+   - **Missing guidance** that would have helped during development
+   - **Process improvements** that could increase efficiency
 
 ## Monorepo-Specific Guidelines
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.1...@ttoss/ui@6.0.2) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.0...@ttoss/ui@6.0.1) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/ui
+
 # [6.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@5.11.1...@ttoss/ui@6.0.0) (2025-11-24)
 
 - Refactor form components to support TooltipIcon and improve documentation (#773) ([248c32a](https://github.com/ttoss/ttoss/commit/248c32a6d1beabda44df3363df9183ec26914cad)), closes [#773](https://github.com/ttoss/ttoss/issues/773)
