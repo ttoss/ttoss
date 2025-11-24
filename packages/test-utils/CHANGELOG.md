@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@4.0.0...@ttoss/test-utils@4.0.1) (2025-11-24)
+
+### Bug Fixes
+
+- test utils ([#775](https://github.com/ttoss/ttoss/issues/775)) ([374f357](https://github.com/ttoss/ttoss/commit/374f3578ec98eff1900ad97de641825eb37645ee))
+
 # [4.0.0](https://github.com/ttoss/ttoss/compare/@ttoss/test-utils@3.0.4...@ttoss/test-utils@4.0.0) (2025-11-24)
 
 - Refactor form components to support TooltipIcon and improve documentation (#773) ([248c32a](https://github.com/ttoss/ttoss/commit/248c32a6d1beabda44df3363df9183ec26914cad)), closes [#773](https://github.com/ttoss/ttoss/issues/773)
