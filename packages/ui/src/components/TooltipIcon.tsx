@@ -17,14 +17,11 @@ export interface TooltipIconProps {
    */
   onClick?: () => void;
   /**
-   * Optional tooltip text to display when hovering over the icon.
+   * Optional tooltip configuration.
+   * Pass tooltip props to display a tooltip when hovering over the icon.
+   * The 'variant' prop is excluded as it's controlled by the component's variant prop.
    */
-  tooltip?: string;
-  /**
-   * Additional props to pass to the Tooltip component.
-   * Excludes 'children', 'anchorSelect', and 'variant' which are managed internally.
-   */
-  tooltipProps?: Omit<TooltipProps, 'children' | 'anchorSelect' | 'variant'>;
+  tooltip?: Omit<TooltipProps, 'variant'>;
   /**
    * Test ID for testing purposes.
    */
@@ -51,7 +48,7 @@ export interface TooltipIconProps {
  * ```tsx
  * <TooltipIcon
  *   icon="info-circle"
- *   tooltip="Additional information"
+ *   tooltip={{ children: 'Additional information' }}
  *   variant="info"
  * />
  * ```
@@ -60,7 +57,7 @@ export interface TooltipIconProps {
  * ```tsx
  * <TooltipIcon
  *   icon="warning-alt"
- *   tooltip="Warning message"
+ *   tooltip={{ children: 'Warning message', place: 'top' }}
  *   variant="warning"
  *   onClick={() => console.log('Clicked')}
  * />
@@ -71,7 +68,6 @@ export const TooltipIcon = ({
   icon,
   onClick,
   tooltip,
-  tooltipProps,
   'data-testid': dataTestId,
   variant,
   sx,
@@ -93,11 +89,7 @@ export const TooltipIcon = ({
       >
         <Icon inline icon={icon} />
       </Text>
-      {tooltip && (
-        <Tooltip id={tooltipId} {...tooltipProps} variant={variant}>
-          {tooltip}
-        </Tooltip>
-      )}
+      {tooltip && <Tooltip id={tooltipId} {...tooltip} variant={variant} />}
     </>
   );
 };

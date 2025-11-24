@@ -21,14 +21,14 @@ export default {
 export const Default: Story = {
   args: {
     icon: 'info-circle',
-    tooltip: 'This is an informational tooltip',
+    tooltip: { children: 'This is an informational tooltip' },
   },
 };
 
 export const VariantInfo: Story = {
   args: {
     icon: 'info-circle',
-    tooltip: 'Information tooltip with info variant',
+    tooltip: { children: 'Information tooltip with info variant' },
     variant: 'info',
   },
 };
@@ -36,7 +36,7 @@ export const VariantInfo: Story = {
 export const VariantSuccess: Story = {
   args: {
     icon: 'ant-design:check-circle-filled',
-    tooltip: 'Success tooltip with success variant',
+    tooltip: { children: 'Success tooltip with success variant' },
     variant: 'success',
   },
 };
@@ -44,7 +44,7 @@ export const VariantSuccess: Story = {
 export const VariantWarning: Story = {
   args: {
     icon: 'warning-alt',
-    tooltip: 'Warning tooltip with warning variant',
+    tooltip: { children: 'Warning tooltip with warning variant' },
     variant: 'warning',
   },
 };
@@ -52,7 +52,7 @@ export const VariantWarning: Story = {
 export const VariantError: Story = {
   args: {
     icon: 'ant-design:close-circle-filled',
-    tooltip: 'Error tooltip with error variant',
+    tooltip: { children: 'Error tooltip with error variant' },
     variant: 'error',
   },
 };
@@ -60,7 +60,7 @@ export const VariantError: Story = {
 export const WithClick: Story = {
   args: {
     icon: 'ant-design:info-circle-outlined',
-    tooltip: 'Click me!',
+    tooltip: { children: 'Click me!' },
     onClick: action('icon-clicked'),
   },
 };
@@ -74,7 +74,7 @@ export const WithoutTooltip: Story = {
 export const WithCustomSx: Story = {
   args: {
     icon: 'ant-design:heart-filled',
-    tooltip: 'Custom styled icon',
+    tooltip: { children: 'Custom styled icon' },
     sx: {
       color: 'red',
       fontSize: '2xl',
@@ -82,11 +82,11 @@ export const WithCustomSx: Story = {
   },
 };
 
-export const WithTooltipProps: Story = {
+export const WithTooltipOptions: Story = {
   args: {
     icon: 'ant-design:question-circle-outlined',
-    tooltip: 'This tooltip opens on click',
-    tooltipProps: {
+    tooltip: {
+      children: 'This tooltip opens on click',
       openOnClick: true,
       place: 'bottom',
     },
@@ -127,7 +127,7 @@ export const MultipleIcons: Story = {
             <TooltipIcon
               key={index}
               icon={iconConfig.icon}
-              tooltip={iconConfig.tooltip}
+              tooltip={{ children: iconConfig.tooltip }}
               variant={iconConfig.variant}
             />
           );
@@ -149,17 +149,17 @@ export const ClickableIcons: Story = {
       >
         <TooltipIcon
           icon="ant-design:edit-filled"
-          tooltip="Edit"
+          tooltip={{ children: 'Edit' }}
           onClick={action('edit-clicked')}
         />
         <TooltipIcon
           icon="delete"
-          tooltip="Delete"
+          tooltip={{ children: 'Delete' }}
           onClick={action('delete-clicked')}
         />
         <TooltipIcon
           icon="ant-design:download-outlined"
-          tooltip="Download"
+          tooltip={{ children: 'Download' }}
           onClick={action('download-clicked')}
         />
       </Flex>
@@ -191,7 +191,7 @@ export const DifferentSizes: Story = {
             >
               <TooltipIcon
                 icon="ant-design:star-filled"
-                tooltip={`${size.label} icon`}
+                tooltip={{ children: `${size.label} icon` }}
                 sx={{ fontSize: size.fontSize }}
               />
               <span style={{ fontSize: '12px' }}>{size.label}</span>
