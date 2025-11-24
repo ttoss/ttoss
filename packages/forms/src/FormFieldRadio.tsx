@@ -27,7 +27,7 @@ export const FormFieldRadio = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
@@ -42,7 +42,7 @@ export const FormFieldRadio = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
