@@ -16,15 +16,26 @@ export const FormFieldInput = <
   disabled,
   ...props
 }: FormFieldInputProps<TFieldValues, TName>) => {
-  const { label, name, tooltip, warning, sx, css, rules, id, ...inputProps } =
-    props;
+  const {
+    label,
+    name,
+    labelTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    leadingIcon,
+    trailingIcon,
+    ...inputProps
+  } = props;
 
   return (
     <FormField
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
@@ -36,6 +47,8 @@ export const FormFieldInput = <
           <Input
             {...inputProps}
             {...field}
+            leadingIcon={leadingIcon}
+            trailingIcon={trailingIcon}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
