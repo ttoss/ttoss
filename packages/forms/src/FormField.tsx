@@ -36,7 +36,7 @@ export type FormFieldProps<
   name: TName;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
-  tooltip?: TooltipProps;
+  labelTooltip?: TooltipProps;
   warning?: string | React.ReactNode;
   rules?: Rules<TFieldValues, TName>;
 } & SxProp;
@@ -59,7 +59,7 @@ export const FormField = <
   name,
   defaultValue,
   disabled: propsDisabled,
-  tooltip,
+  labelTooltip,
   sx,
   css,
   render,
@@ -129,7 +129,7 @@ export const FormField = <
             >
               {React.createElement(child.type, elementProps)}
             </Flex>
-            <Label aria-disabled={disabled} htmlFor={id} tooltip={tooltip}>
+            <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
               {label}
             </Label>
           </Flex>
@@ -145,7 +145,7 @@ export const FormField = <
           }}
         >
           {label && (
-            <Label aria-disabled={disabled} htmlFor={id} tooltip={tooltip}>
+            <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
               {label}
             </Label>
           )}
@@ -159,7 +159,7 @@ export const FormField = <
     label,
     disabled,
     id,
-    tooltip,
+    labelTooltip,
     warning,
   ]);
 

@@ -12,6 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/test-utils"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",

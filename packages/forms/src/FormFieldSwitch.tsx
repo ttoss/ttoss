@@ -18,7 +18,7 @@ export const FormFieldSwitch = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
@@ -33,7 +33,7 @@ export const FormFieldSwitch = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
