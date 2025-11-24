@@ -72,9 +72,11 @@ Our system excels at supporting multiple brands through:
 
 ## Key Benefits
 
-- **Single Source of Truth**: Centralized design decisions
+Our design system delivers value aligned with [product development principles](/docs/product/product-development/principles):
+
+- **Single Source of Truth**: Centralized design decisions following [E1: Quantified Overall Economics](https://ttoss.dev/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact)
 - **Cross-Team Collaboration**: Shared vocabulary between design and engineering
-- **Rapid Prototyping**: Quick testing and iteration
+- **Rapid Prototyping**: Quick testing and iteration enabled by [FF8: Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)
 - **Visual Consistency**: Unified experience across products
 - **Scalability**: Support for multiple products and brands
 
@@ -83,3 +85,4 @@ Our system excels at supporting multiple brands through:
 1. **[Install the packages](/docs/design/getting-started)** - Quick setup guide
 2. **[Explore tokens](/docs/design/design-system/design-tokens)** - Understand the foundation
 3. **[Browse components](https://storybook.ttoss.dev)** - See what's available
+4. **[Learn integration architecture](/docs/modules/integration-architecture)** - Context-based theming

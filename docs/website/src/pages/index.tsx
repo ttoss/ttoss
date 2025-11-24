@@ -98,13 +98,13 @@ const Home = () => {
                   to="/docs/modules"
                   className="button button--primary button--lg"
                 >
-                  Explore Modules
+                  Get Started
                 </Link>
                 <Link
-                  to="/docs/product"
+                  to="/docs/carlin"
                   className="button button--secondary button--outline button--lg"
                 >
-                  View Documentation
+                  Try Carlin CLI
                 </Link>
               </div>
             </div>
@@ -360,22 +360,19 @@ const Home = () => {
         <div className={styles.containerCustom}>
           <div className={styles.ctaContent}>
             <Heading as="h2" className={styles.ctaTitle}>
-              Ready to Transform Your Development Process?
+              Ready to Accelerate Your Development?
             </Heading>
             <p className={styles.ctaDescription}>
-              Join teams already using ttoss to build better products faster.
-              Start with our modules, explore our design system, or dive into
-              our comprehensive documentation.
+              Start building with ttoss modules, automate your AWS deployments
+              with Carlin, or explore our comprehensive design system and
+              operational workflows.
             </p>
             <div className={styles.ctaButtons}>
               <Link to="/docs/modules" className={styles.ctaButtonPrimary}>
-                Get Started with Modules
+                Browse Modules
               </Link>
-              <Link
-                to="/docs/engineering"
-                className={styles.ctaButtonSecondary}
-              >
-                View Engineering Docs
+              <Link to="/docs/design" className={styles.ctaButtonSecondary}>
+                View Design System
               </Link>
             </div>
           </div>

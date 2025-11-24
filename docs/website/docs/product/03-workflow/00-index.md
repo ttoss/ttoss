@@ -25,10 +25,6 @@ Visual system to manage workflow and task status.
 
 Meeting structure for team alignment and communication.
 
-### 4. [FAQ](./faq)
-
-Frequently asked questions about the product workflow.
-
 ## Product Workflow Focus
 
 ### Strategy and Discovery

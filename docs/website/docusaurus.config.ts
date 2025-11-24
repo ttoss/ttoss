@@ -174,8 +174,14 @@ const config: Config = {
         {
           type: 'docSidebar',
           position: 'left',
-          sidebarId: 'product',
-          label: 'Product',
+          sidebarId: 'modules',
+          label: 'Modules',
+        },
+        {
+          type: 'docSidebar',
+          position: 'left',
+          sidebarId: 'carlin',
+          label: 'Carlin',
         },
         {
           type: 'docSidebar',
@@ -185,7 +191,13 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
-          position: 'left',
+          position: 'right',
+          sidebarId: 'product',
+          label: 'Product',
+        },
+        {
+          type: 'docSidebar',
+          position: 'right',
           sidebarId: 'engineering',
           label: 'Engineering',
         },
@@ -193,24 +205,6 @@ const config: Config = {
           to: '/blog',
           label: 'Blog',
           position: 'right',
-        },
-        {
-          type: 'docSidebar',
-          position: 'right',
-          sidebarId: 'challenge',
-          label: 'Challenge',
-        },
-        {
-          type: 'docSidebar',
-          position: 'right',
-          sidebarId: 'carlin',
-          label: 'Carlin',
-        },
-        {
-          type: 'docSidebar',
-          position: 'right',
-          sidebarId: 'modules',
-          label: 'Modules',
         },
         {
           href: 'https://storybook.ttoss.dev/',
@@ -228,57 +222,45 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Areas',
+          title: 'Documentation',
           items: [
             {
-              label: 'Product',
-              to: '/docs/product',
-            },
-            {
-              label: 'Design',
-              to: '/docs/design',
-            },
-            {
-              label: 'Engineering',
-              to: '/docs/engineering',
-            },
-          ],
-        },
-        // {
-        //   title: 'Community',
-        //   items: [
-        //     {
-        //       label: 'Stack Overflow',
-        //       href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-        //     },
-        //     {
-        //       label: 'Discord',
-        //       href: 'https://discordapp.com/invite/docusaurus',
-        //     },
-        //     {
-        //       label: 'Twitter',
-        //       href: 'https://twitter.com/docusaurus',
-        //     },
-        //   ],
-        // },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'Challenge',
-              to: '/docs/challenge/the-project',
+              label: 'Modules',
+              to: '/docs/modules',
             },
             {
               label: 'Carlin',
               to: '/docs/carlin',
             },
             {
-              label: 'Modules',
-              to: '/docs/modules',
+              label: 'Design System',
+              to: '/docs/design',
+            },
+          ],
+        },
+        {
+          title: 'Processes',
+          items: [
+            {
+              label: 'Product',
+              to: '/docs/product',
+            },
+            {
+              label: 'Engineering',
+              to: '/docs/engineering',
+            },
+            {
+              label: 'Challenge',
+              to: '/docs/challenge/the-project',
+            },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            {
+              label: 'Blog',
+              to: '/blog',
             },
             {
               label: 'Storybook',

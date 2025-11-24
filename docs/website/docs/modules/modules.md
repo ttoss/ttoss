@@ -1,4 +1,5 @@
 ---
+title: Packages
 sidebar_position: 3
 slug: ./packages
 ---
