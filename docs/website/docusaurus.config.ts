@@ -174,14 +174,8 @@ const config: Config = {
         {
           type: 'docSidebar',
           position: 'left',
-          sidebarId: 'modules',
-          label: 'Modules',
-        },
-        {
-          type: 'docSidebar',
-          position: 'left',
-          sidebarId: 'carlin',
-          label: 'Carlin',
+          sidebarId: 'product',
+          label: 'Product',
         },
         {
           type: 'docSidebar',
@@ -191,15 +185,21 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
-          position: 'right',
-          sidebarId: 'product',
-          label: 'Product',
+          position: 'left',
+          sidebarId: 'engineering',
+          label: 'Engineering',
         },
         {
           type: 'docSidebar',
           position: 'right',
-          sidebarId: 'engineering',
-          label: 'Engineering',
+          sidebarId: 'carlin',
+          label: 'Carlin',
+        },
+        {
+          type: 'docSidebar',
+          position: 'right',
+          sidebarId: 'modules',
+          label: 'Modules',
         },
         {
           to: '/blog',

@@ -69,33 +69,37 @@ When adding or modifying functionality:
 
 ### 3.1 Golden Rule
 
-**Coverage must NEVER decrease**. When adding new code:
+**MANDATORY**: Coverage must NEVER decrease. For **EVERY** code change, you MUST:
 
-1. Create adequate tests for the new code
+1. Create adequate tests for the new/modified code
 2. Run tests with coverage: `pnpm run test`
 3. Check current coverage percentages in the output
+4. **ALWAYS update `jest.config.ts` with new coverage values** (see section 3.2)
 
 ### 3.2 Updating Coverage Threshold
 
-After creating tests and checking current coverage:
+**MANDATORY FOR ALL CODE CHANGES**: After creating tests and checking current coverage:
 
 1. Open the file `packages/PACKAGE_NAME/tests/unit/jest.config.ts`
 2. Locate the `coverageThreshold.global` property
-3. **Increase** the values according to the new coverage (never decrease)
-4. Values should be slightly below current coverage to allow for small variations
+3. **Update the values** according to the new coverage shown in test output
+4. **NEVER decrease** coverage values - only increase or maintain
+5. Set values slightly below (0.01-0.1% lower) current coverage to allow for small variations
 
 Configuration example:
 
 ```typescript
 coverageThreshold: {
   global: {
-    statements: 87.35,  // Increase this value if current coverage is higher
-    branches: 73.83,    // Increase this value if current coverage is higher
-    lines: 87.25,       // Increase this value if current coverage is higher
-    functions: 87.77,   // Increase this value if current coverage is higher
+    statements: 87.35,  // MUST update if current coverage is different
+    branches: 73.83,    // MUST update if current coverage is different
+    lines: 87.25,       // MUST update if current coverage is different
+    functions: 87.77,   // MUST update if current coverage is different
   },
 }
 ```
+
+**Important**: This is not optional. Every code modification that changes coverage requires updating these thresholds. This ensures coverage never degrades over time.
 
 ### 3.3 How to Interpret Values
 
@@ -163,7 +167,7 @@ Before considering work complete, verify:
 - [ ] All dependent packages build successfully (`pnpm turbo run build --filter=...PACKAGE_NAME` from monorepo root)
 - [ ] New tests were created for the changes
 - [ ] Coverage did not decrease (ideally increased)
-- [ ] `coverageThreshold` was updated in `jest.config.ts`
+- [ ] **`coverageThreshold` was updated in `jest.config.ts`** (MANDATORY for every code change)
 - [ ] README was updated with the changes
 - [ ] README was completely reviewed
 - [ ] Storybook stories created/updated if changes are user-facing
@@ -183,10 +187,13 @@ pnpm run test
 # 3. Create tests for new code
 # ... create test files in tests/unit/ ...
 
-# 4. Run tests again
+# 4. Run tests again and check coverage
 pnpm run test
 
-# 5. Check coverage in output and update jest.config.ts
+# 5. MANDATORY: Update coverage threshold in jest.config.ts
+# Look at the test output for current coverage percentages
+# Then edit tests/unit/jest.config.ts and update coverageThreshold values
+# Example: if output shows "statements: 87.45%", update to 87.35 (slightly lower)
 # ... edit tests/unit/jest.config.ts ...
 
 # 6. Validate dependent packages (from monorepo root)
