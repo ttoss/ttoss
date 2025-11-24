@@ -40,7 +40,7 @@ export const Label = ({ children, tooltip, sx, ...props }: LabelProps) => {
           aria-label={TOOLTIP_LABEL}
         >
           <Icon icon="info" />
-          <Tooltip {...tooltip} id={tooltipId} />
+          <Tooltip id={tooltipId} {...tooltip} />
         </Text>
       )}
     </LabelUi>

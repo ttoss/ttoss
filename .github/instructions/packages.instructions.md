@@ -158,6 +158,81 @@ If the change is significant enough to benefit users (new features, UI changes, 
    - See visual examples of components
    - Test interactions in an isolated environment
 
+### 4.4 Document Components with JSDoc
+
+**MANDATORY for React components**: All React components must be documented using JSDoc comments. This documentation will be displayed in Storybook, helping users understand how to use the components.
+
+````typescript
+// ✅ CORRECT: Comprehensive JSDoc documentation
+/**
+ * Props for the TooltipIcon component.
+ */
+export interface TooltipIconProps {
+  /**
+   * The icon to display. Can be a string identifier or an icon object from @ttoss/react-icons.
+   */
+  icon: IconType;
+  /**
+   * Optional click handler for the icon.
+   */
+  onClick?: () => void;
+  /**
+   * Optional tooltip text to display when hovering over the icon.
+   */
+  tooltip?: string;
+  /**
+   * Visual variant for both the text wrapper and tooltip.
+   * @default 'info'
+   */
+  variant?: 'info' | 'success' | 'warning' | 'error';
+}
+
+/**
+ * TooltipIcon component renders an icon with an optional tooltip.
+ *
+ * This component is useful for displaying icons with explanatory tooltips,
+ * especially in contexts where space is limited or additional information
+ * should be revealed on hover.
+ *
+ * @example
+ * ```tsx
+ * <TooltipIcon
+ *   icon="info-circle"
+ *   tooltip="Additional information"
+ *   variant="info"
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <TooltipIcon
+ *   icon="warning-alt"
+ *   tooltip="Warning message"
+ *   variant="warning"
+ *   onClick={() => console.log('Clicked')}
+ * />
+ * ```
+ */
+export const TooltipIcon = ({
+  icon,
+  onClick,
+  tooltip,
+  variant,
+}: TooltipIconProps) => {
+  // Component implementation
+};
+````
+
+**JSDoc Requirements**:
+
+- **Component description**: Clear explanation of what the component does and when to use it
+- **Props documentation**: Each prop must have a description
+- **Default values**: Use `@default` tag to document default prop values
+- **Examples**: Include practical usage examples with `@example` tags
+- **Type information**: Document complex types inline with props
+
+**Storybook Integration**: JSDoc comments are automatically extracted and displayed in Storybook's documentation panel, making it easier for users to understand component APIs without leaving the visual interface.
+
 ## 5. Checklist Before Finalizing
 
 Before considering work complete, verify:
@@ -171,8 +246,10 @@ Before considering work complete, verify:
 - [ ] README was updated with the changes
 - [ ] README was completely reviewed
 - [ ] Storybook stories created/updated if changes are user-facing
+- [ ] React components documented with JSDoc (MANDATORY for user-facing components)
 - [ ] No commented code or pending TODOs
 - [ ] Code follows project standards
+- [ ] Linting applied: `pnpm run -w lint` (MANDATORY before finalizing)
 
 ## 6. Workflow Example
 
@@ -211,19 +288,11 @@ cd packages/PACKAGE_NAME
 pnpm run test
 ```
 
-## 7. Important Tips
-
-- **Incremental testing**: Run tests after small changes, not after large blocks of code
-- **Focused tests**: Use `jest --watch` during development for quick feedback
-- **Local coverage**: Check detailed report at `coverage/lcov-report/index.html`
-- **Consistency**: Follow test patterns from other package files
-- **Documentation**: If the change is complex, consider adding code comments
-
-## 8. Internationalization (i18n) Pattern
+## 7. Internationalization (i18n) Pattern
 
 When adding user-facing text or locale-specific values (like number formats, date formats, separators):
 
-### 8.1 Using defineMessages
+### 7.1 Using defineMessages
 
 **MANDATORY**: Use `defineMessages` from `@ttoss/react-i18n` for all translatable content:
 
@@ -247,7 +316,7 @@ const text = intl.formatMessage(messages.myMessage);
 const separator = intl.formatMessage(messages.decimalSeparator);
 ```
 
-### 8.2 i18n Workflow
+### 7.2 i18n Workflow
 
 1. **Define messages in English**: Always use English as the default message
 2. **Add clear descriptions**: Help translators understand the context
@@ -255,7 +324,7 @@ const separator = intl.formatMessage(messages.decimalSeparator);
 4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n --cache local:` from the monorepo root to update i18n in all other packages
 5. **Translate in apps**: Each application can define locale-specific values in their i18n files
 
-### 8.3 When to Use i18n
+### 7.3 When to Use i18n
 
 Use `defineMessages` for:
 
@@ -270,7 +339,7 @@ Do NOT use for:
 - API keys or technical identifiers
 - Code comments (use English directly)
 
-### 8.4 Example: Locale-Specific Formatting
+### 7.4 Example: Locale-Specific Formatting
 
 ```typescript
 // ✅ CORRECT: Using defineMessages for locale-specific values
