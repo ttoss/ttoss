@@ -1,25 +1,17 @@
-import { Icon, type IconType } from '@ttoss/react-icons';
-import * as React from 'react';
+import { type IconType } from '@ttoss/react-icons';
 import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
 
-import { Flex, Text, Tooltip } from '..';
-import { type TooltipProps } from './Tooltip';
-
-export interface InputIconConfig {
-  icon: IconType;
-  onClick?: () => void;
-  tooltip?: string;
-  tooltipProps?: Omit<TooltipProps, 'children' | 'anchorSelect'>;
-}
+import { Flex, TooltipIcon } from '..';
+import { type TooltipIconProps } from './TooltipIcon';
 
 export interface InputProps extends InputPropsUI {
-  leadingIcon?: InputIconConfig | IconType;
-  trailingIcon?: InputIconConfig | IconType;
+  leadingIcon?: TooltipIconProps | IconType;
+  trailingIcon?: TooltipIconProps | IconType;
 }
 
 const isInputIconConfig = (
-  icon: InputIconConfig | IconType | undefined
-): icon is InputIconConfig => {
+  icon: TooltipIconProps | IconType | undefined
+): icon is TooltipIconProps => {
   return (
     icon !== undefined &&
     typeof icon === 'object' &&
@@ -30,8 +22,8 @@ const isInputIconConfig = (
 };
 
 const normalizeIcon = (
-  icon: InputIconConfig | IconType | undefined
-): InputIconConfig | undefined => {
+  icon: TooltipIconProps | IconType | undefined
+): TooltipIconProps | undefined => {
   if (!icon) {
     return undefined;
   }
@@ -65,42 +57,23 @@ export const Input = ({
     .filter(Boolean)
     .join(' ');
 
-  const id = React.useId();
-  const leadingTooltipId = `${id}-leading-tooltip`;
-  const trailingTooltipId = `${id}-trailing-tooltip`;
-
   return (
     <Flex
       className={wrapperClassName}
       sx={{ ...sx, position: 'relative', padding: 0, border: 'none' }}
     >
       {normalizedLeadingIcon && (
-        <>
-          <Text
-            data-testid="input-leading-icon"
-            data-tooltip-id={
-              normalizedLeadingIcon.tooltip ? leadingTooltipId : undefined
-            }
-            sx={{
-              position: 'absolute',
-              alignSelf: 'center',
-              left: '1rem',
-              cursor: normalizedLeadingIcon.onClick ? 'pointer' : 'default',
-            }}
-            onClick={normalizedLeadingIcon.onClick}
-            variant="leading-icon"
-          >
-            <Icon inline icon={normalizedLeadingIcon.icon} />
-          </Text>
-          {normalizedLeadingIcon.tooltip && (
-            <Tooltip
-              id={leadingTooltipId}
-              {...normalizedLeadingIcon.tooltipProps}
-            >
-              {normalizedLeadingIcon.tooltip}
-            </Tooltip>
-          )}
-        </>
+        <TooltipIcon
+          {...normalizedLeadingIcon}
+          data-testid="input-leading-icon"
+          variant={normalizedLeadingIcon.variant ?? 'info'}
+          sx={{
+            position: 'absolute',
+            alignSelf: 'center',
+            left: '1rem',
+            ...normalizedLeadingIcon.sx,
+          }}
+        />
       )}
       <InputUI
         sx={{
@@ -117,31 +90,19 @@ export const Input = ({
       />
 
       {trailingIcon && (
-        <>
-          <Text
-            data-testid="input-trailing-icon"
-            data-tooltip-id={
-              trailingIcon.tooltip ? trailingTooltipId : undefined
-            }
-            sx={{
-              position: 'absolute',
-              right: '1rem',
-              alignSelf: 'center',
-              color: isWarning ? 'feedback.text.caution.default' : undefined,
-              cursor: trailingIcon.onClick ? 'pointer' : 'default',
-              fontSize: 'xl',
-            }}
-            variant="trailing-icon"
-            onClick={trailingIcon.onClick}
-          >
-            <Icon inline icon={trailingIcon.icon} />
-          </Text>
-          {trailingIcon.tooltip && (
-            <Tooltip id={trailingTooltipId} {...trailingIcon.tooltipProps}>
-              {trailingIcon.tooltip}
-            </Tooltip>
-          )}
-        </>
+        <TooltipIcon
+          {...trailingIcon}
+          data-testid="input-trailing-icon"
+          variant={trailingIcon.variant ?? 'info'}
+          sx={{
+            position: 'absolute',
+            right: '1rem',
+            alignSelf: 'center',
+            color: isWarning ? 'feedback.text.caution.default' : undefined,
+            fontSize: 'xl',
+            ...trailingIcon.sx,
+          }}
+        />
       )}
     </Flex>
   );
