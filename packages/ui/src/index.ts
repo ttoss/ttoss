@@ -43,6 +43,10 @@ export {
 } from './components/Select';
 export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';
+export {
+  SpotlightCard,
+  type SpotlightCardProps,
+} from './components/SpotlightCard';
 export { Stack, type StackProps } from './components/Stack';
 export { Switch, type SwitchProps } from './components/Switch';
 export { Tag, type TagProps } from './components/Tag';
