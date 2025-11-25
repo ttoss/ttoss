@@ -116,10 +116,15 @@ export const FormField = <
 
       if (label && isCheckboxOrSwitch(child)) {
         return (
-          <Flex
+          <Label
+            aria-disabled={disabled}
+            htmlFor={id}
+            tooltip={labelTooltip}
             sx={{
+              display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
+              cursor: disabled ? 'not-allowed' : 'pointer',
             }}
           >
             <Flex
@@ -129,10 +134,8 @@ export const FormField = <
             >
               {React.createElement(child.type, elementProps)}
             </Flex>
-            <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
-              {label}
-            </Label>
-          </Flex>
+            {label}
+          </Label>
         );
       }
 
