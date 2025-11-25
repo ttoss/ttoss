@@ -115,33 +115,17 @@ export const FormField = <
       };
 
       if (label && isCheckboxOrSwitch(child)) {
-        const handleContainerClick = (
-          event: React.MouseEvent<HTMLDivElement>
-        ) => {
-          // Only trigger if not clicking directly on the input or label
-          const target = event.target as HTMLElement;
-          const isInputOrLabel =
-            target.tagName?.toLowerCase() === 'input' ||
-            target.tagName?.toLowerCase() === 'label' ||
-            target.closest('label');
-
-          if (!isInputOrLabel && !disabled) {
-            const inputElement = document.getElementById(
-              id
-            ) as HTMLInputElement;
-            if (inputElement) {
-              inputElement.click();
-            }
-          }
-        };
-
         return (
-          <Flex
-            onClick={handleContainerClick}
+          <Label
+            aria-disabled={disabled}
+            htmlFor={id}
+            tooltip={labelTooltip}
             sx={{
+              display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               cursor: disabled ? 'not-allowed' : 'pointer',
+              width: 'auto',
             }}
           >
             <Flex
@@ -151,10 +135,8 @@ export const FormField = <
             >
               {React.createElement(child.type, elementProps)}
             </Flex>
-            <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
-              {label}
-            </Label>
-          </Flex>
+            {label}
+          </Label>
         );
       }
 
