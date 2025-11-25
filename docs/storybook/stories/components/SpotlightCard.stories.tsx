@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Box } from '@ttoss/ui';
 import { SpotlightCard } from '@ttoss/components/SpotlightCard';
+import { Box } from '@ttoss/ui';
 
 const meta: Meta<typeof SpotlightCard> = {
   title: 'Components/SpotlightCard',
@@ -30,7 +30,8 @@ export const Default: Story = {
   args: {
     title: 'OneClick',
     subtitle: 'Tracking',
-    description: 'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões em múltiplas plataformas.',
+    description:
+      'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões em múltiplas plataformas.',
     tutorialLabel: 'Assistir Tutorial',
     articleLabel: 'Ler Artigo',
     iconName: 'AdsClick',
@@ -46,7 +47,8 @@ export const FinanceDashboardContext: Story = {
   args: {
     title: 'Painel',
     subtitle: 'Financeiro',
-    description: 'Acompanhe seus rendimentos e dividendos em tempo real com gráficos avançados.',
+    description:
+      'Acompanhe seus rendimentos e dividendos em tempo real com gráficos avançados.',
     tutorialLabel: 'Ver Demo',
     articleLabel: 'Documentação',
     iconName: 'AttachMoney',
@@ -58,18 +60,20 @@ export const FinanceDashboardContext: Story = {
  * Teste de comportamento responsivo (Scroll)
  */
 export const ScrollTest: Story = {
-  render: (args) => (
-    <Box
-      sx={{
-        width: '800px',
-        border: '2px dashed #ccc',
-        overflowX: 'auto',
-        p: 4,
-      }}
-    >
-      <SpotlightCard {...args} />
-    </Box>
-  ),
+  render: (args) => {
+    return (
+      <Box
+        sx={{
+          width: '800px',
+          border: '2px dashed #ccc',
+          overflowX: 'auto',
+          p: 4,
+        }}
+      >
+        <SpotlightCard {...args} />
+      </Box>
+    );
+  },
   args: {
     ...Default.args, // Herda os args da Default
   },

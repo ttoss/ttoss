@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Box, Flex, Text, Button, Card } from '@ttoss/ui';
 import { Icon } from '@ttoss/react-icons';
+import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
+import * as React from 'react';
 
 export type SpotlightCardProps = {
   /** Título principal (Obrigatório) */
@@ -58,24 +58,24 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        
+
         background: 'linear-gradient(270deg, #006241, #008558, #006241)',
         backgroundSize: '400% 400%',
         animation: 'ocaGradientFlow 8s ease infinite',
-        
+
         width: '100%',
         minWidth: '1100px',
         // AUMENTO 1: Altura mínima maior para dar imponência
-        minHeight: '104px', 
-        
+        minHeight: '104px',
+
         borderRadius: '16px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-        
+
         // AUMENTO 2: Mais padding vertical (eixo Y)
         py: '7', // Aumentado (era implícito no p:6)
         px: '8', // Aumentado nas laterais também
         gap: '5',
-        
+
         color: '#fff',
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.05)',
@@ -88,7 +88,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         <Box
           sx={{
             // AUMENTO 3: Container do ícone levemente maior
-            width: 58, 
+            width: 58,
             height: 58,
             borderRadius: '16px',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -102,7 +102,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             name={iconName}
             icon={iconSymbol}
             size={32} // Ícone maior (era 28)
-            color="action.background.accent.default" 
+            color="action.background.accent.default"
           />
         </Box>
 
@@ -111,7 +111,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           <Text
             as="div"
             sx={{
-              fontFamily: 'heading', 
+              fontFamily: 'heading',
               fontWeight: 700,
               fontSize: 22, // Título maior (era 20)
               lineHeight: 1.2,
@@ -121,9 +121,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           >
             {title}{' '}
             {subtitle && (
-              <span style={{ fontWeight: 400, opacity: 0.9 }}>
-                {subtitle}
-              </span>
+              <span style={{ fontWeight: 400, opacity: 0.9 }}>{subtitle}</span>
             )}
           </Text>
           <Text
@@ -165,13 +163,13 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             whiteSpace: 'nowrap',
             transition: 'transform 0.2s',
             ':hover': {
-               transform: 'translateY(-1px)',
-            }
+              transform: 'translateY(-1px)',
+            },
           }}
         >
-          <Icon 
-            name="PlayCircle" 
-            icon="material-symbols:play-circle-outline" 
+          <Icon
+            name="PlayCircle"
+            icon="material-symbols:play-circle-outline"
             size={22} // Ícone interno maior (era 18)
           />
           {tutorialLabel}
@@ -188,7 +186,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             // AUMENTO 5: Mesmas dimensões do botão primário
             px: '6',
             py: '3',
-            borderRadius: 'full', 
+            borderRadius: 'full',
             fontWeight: 600,
             fontSize: 15,
             backgroundColor: 'transparent',
@@ -203,10 +201,10 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             },
           }}
         >
-          <Icon 
-            name="BookOpen" 
-            icon="material-symbols:menu-book-outline" 
-            size={22} 
+          <Icon
+            name="BookOpen"
+            icon="material-symbols:menu-book-outline"
+            size={22}
           />
           {articleLabel}
         </Button>
