@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Box } from '@ttoss/ui';
 import { SpotlightCard } from '@ttoss/components/SpotlightCard';
