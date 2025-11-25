@@ -156,6 +156,10 @@
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",
         "default": "./dist/esm/Toast/index.js"
+      },
+      "./SpotlightCard": {
+        "types": "./dist/SpotlightCard/index.d.ts",
+        "default": "./dist/esm/SpotlightCard/index.js"
       }
     },
     "provenance": true
