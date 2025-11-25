@@ -81,6 +81,10 @@ exports[`package.json exports should export all components 2`] = `
     "default": "./dist/esm/Search/index.js",
     "types": "./dist/Search/index.d.ts",
   },
+  "./SpotlightCard": {
+    "default": "./dist/esm/SpotlightCard/index.js",
+    "types": "./dist/SpotlightCard/index.d.ts",
+  },
   "./Table": {
     "default": "./dist/esm/Table/index.js",
     "types": "./dist/Table/index.d.ts",
