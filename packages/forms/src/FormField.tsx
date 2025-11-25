@@ -121,8 +121,8 @@ export const FormField = <
           // Only trigger if not clicking directly on the input or label
           const target = event.target as HTMLElement;
           const isInputOrLabel =
-            target.tagName === 'INPUT' ||
-            target.tagName === 'LABEL' ||
+            target.tagName?.toLowerCase() === 'input' ||
+            target.tagName?.toLowerCase() === 'label' ||
             target.closest('label');
 
           if (!isInputOrLabel && !disabled) {
