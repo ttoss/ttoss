@@ -9,14 +9,14 @@ export type SpotlightCardProps = {
   subtitle?: string;
   /** Detailed description (Required) */
   description: string;
-  /** Main button label (Required) */
-  tutorialLabel: string;
-  /** Secondary button label (Required) */
-  articleLabel: string;
-  /** Main button action */
-  onTutorialClick?: () => void;
+  /** Primary button label (Optional) - If omitted, button won't render */
+  primaryLabel?: string;
+  /** Secondary button label (Optional) - If omitted, button won't render */
+  secondaryLabel?: string;
+  /** Primary button action */
+  onPrimaryClick?: () => void;
   /** Secondary button action */
-  onArticleClick?: () => void;
+  onSecondaryClick?: () => void;
   /** Icon name for compatible libraries (Required) */
   iconName: string;
   /** Material/SVG icon string (Required) */
@@ -27,10 +27,10 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   title,
   subtitle,
   description,
-  tutorialLabel,
-  articleLabel,
-  onTutorialClick,
-  onArticleClick,
+  primaryLabel,
+  secondaryLabel,
+  onPrimaryClick,
+  onSecondaryClick,
   iconName,
   iconSymbol,
 }) => {
@@ -49,6 +49,8 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       document.head.appendChild(style);
     }
   }, []);
+
+  const hasButtons = !!primaryLabel || !!secondaryLabel;
 
   return (
     <Card
@@ -141,69 +143,77 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         </Box>
       </Flex>
 
-      {/* RIGHT GROUP (Buttons) */}
-      <Flex sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}>
-        {/* MAIN TUTORIAL BUTTON */}
-        <Button
-          variant="accent"
-          onClick={onTutorialClick}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2',
-            px: '6',
-            py: '3',
-            fontSize: 15,
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-            transition: 'transform 0.2s',
-            ':hover': {
-              transform: 'translateY(-1px)',
-            },
-          }}
+      {/* RIGHT GROUP (Buttons) - Only rendered if labels exist */}
+      {hasButtons && (
+        <Flex
+          sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
         >
-          <Icon
-            name="PlayCircle"
-            icon="material-symbols:play-circle-outline"
-            size={22}
-          />
-          {tutorialLabel}
-        </Button>
+          {/* PRIMARY BUTTON */}
+          {primaryLabel && (
+            <Button
+              variant="accent"
+              onClick={onPrimaryClick}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '2',
+                px: '6',
+                py: '3',
+                fontSize: 15,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+                transition: 'transform 0.2s',
+                ':hover': {
+                  transform: 'translateY(-1px)',
+                },
+              }}
+            >
+              <Icon
+                name="PlayCircle"
+                icon="material-symbols:play-circle-outline"
+                size={22}
+              />
+              {primaryLabel}
+            </Button>
+          )}
 
-        {/* SECONDARY ARTICLE BUTTON */}
-        <Button
-          onClick={onArticleClick}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2',
-            px: '6',
-            py: '3',
-            borderRadius: 'full',
-            fontWeight: 600,
-            fontSize: 15,
-            backgroundColor: 'transparent',
-            border: '1.5px solid rgba(255,255,255,0.3)',
-            color: 'display.background.primary.default',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            transition: 'all 0.2s',
-            ':hover': {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              borderColor: 'display.background.primary.default',
-            },
-          }}
-        >
-          <Icon
-            name="BookOpen"
-            icon="material-symbols:menu-book-outline"
-            size={22}
-          />
-          {articleLabel}
-        </Button>
-      </Flex>
+          {/* SECONDARY BUTTON */}
+          {secondaryLabel && (
+            <Button
+              onClick={onSecondaryClick}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '2',
+                px: '6',
+                py: '3',
+                borderRadius: 'full',
+                fontWeight: 600,
+                fontSize: 15,
+                backgroundColor: 'transparent',
+                border: '1.5px solid rgba(255,255,255,0.3)',
+                color: 'display.background.primary.default',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+                ':hover': {
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  borderColor: 'display.background.primary.default',
+                },
+              }}
+            >
+              <Icon
+                name="BookOpen"
+                icon="material-symbols:menu-book-outline"
+                size={22}
+              />
+              {secondaryLabel}
+            </Button>
+          )}
+        </Flex>
+      )}
     </Card>
   );
 };

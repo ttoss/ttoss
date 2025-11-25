@@ -9,10 +9,10 @@ const meta: Meta<typeof SpotlightCard> = {
     title: { control: 'text' },
     subtitle: { control: 'text' },
     description: { control: 'text' },
-    tutorialLabel: { control: 'text' },
-    articleLabel: { control: 'text' },
-    onTutorialClick: { action: 'tutorial clicked' },
-    onArticleClick: { action: 'article clicked' },
+    primaryLabel: { control: 'text' },
+    secondaryLabel: { control: 'text' },
+    onPrimaryClick: { action: 'primary clicked' },
+    onSecondaryClick: { action: 'secondary clicked' },
   },
   parameters: {
     layout: 'padded',
@@ -23,8 +23,7 @@ export default meta;
 type Story = StoryObj<typeof SpotlightCard>;
 
 /**
- * Default Story: Simulates real usage in the OneClick product.
- * All props are passed explicitly.
+ * Default Story: With both buttons active.
  */
 export const Default: Story = {
   args: {
@@ -32,16 +31,51 @@ export const Default: Story = {
     subtitle: 'Tracking',
     description:
       'Understand the purpose and how to use OneClick Tracking to maximize your conversion tracking across multiple platforms.',
-    tutorialLabel: 'Watch Tutorial',
-    articleLabel: 'Read Article',
+    primaryLabel: 'Watch Tutorial',
+    secondaryLabel: 'Read Article',
     iconName: 'AdsClick',
     iconSymbol: 'material-symbols:ads-click',
   },
 };
 
 /**
- * Example of another context (Finance Dashboard)
- * to demonstrate component reusability.
+ * Variation with NO buttons.
+ * Useful for informational banners.
+ */
+export const NoButtons: Story = {
+  args: {
+    ...Default.args,
+    description:
+      'This banner serves only as information or a highlight without direct actions available at the moment.',
+    primaryLabel: undefined,
+    secondaryLabel: undefined,
+  },
+};
+
+/**
+ * Variation with ONLY Primary button.
+ */
+export const OnlyPrimaryButton: Story = {
+  args: {
+    ...Default.args,
+    primaryLabel: 'Watch Tutorial',
+    secondaryLabel: undefined,
+  },
+};
+
+/**
+ * Variation with ONLY Secondary button.
+ */
+export const OnlySecondaryButton: Story = {
+  args: {
+    ...Default.args,
+    primaryLabel: undefined,
+    secondaryLabel: 'Read Documentation',
+  },
+};
+
+/**
+ * Example of another context (Finance Dashboard).
  */
 export const FinanceDashboardContext: Story = {
   args: {
@@ -49,15 +83,15 @@ export const FinanceDashboardContext: Story = {
     subtitle: 'Finance',
     description:
       'Track your earnings and dividends in real time with advanced charts.',
-    tutorialLabel: 'View Demo',
-    articleLabel: 'Documentation',
+    primaryLabel: 'View Demo',
+    secondaryLabel: 'Documentation',
     iconName: 'AttachMoney',
     iconSymbol: 'material-symbols:attach-money',
   },
 };
 
 /**
- * Responsive behavior test (Scroll)
+ * Responsive behavior test (Scroll).
  */
 export const ScrollTest: Story = {
   render: (args) => {
