@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { SpotlightCard } from '@ttoss/components/SpotlightCard';
+import { SpotlightCard } from '@ttoss/ui';
 import { Box } from '@ttoss/ui';
 
 const meta: Meta<typeof SpotlightCard> = {
-  title: 'Components/SpotlightCard',
+  title: 'UI/SpotlightCard',
   component: SpotlightCard,
   argTypes: {
     title: { control: 'text' },

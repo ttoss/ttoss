@@ -30,8 +30,7 @@
     "./Search": "./src/components/Search/index.ts",
     "./Table": "./src/components/Table/index.ts",
     "./Tabs": "./src/components/Tabs/index.ts",
-    "./Toast": "./src/components/Toast/index.ts",
-    "./SpotlightCard": "./src/components/SpotlightCard/index.ts"
+    "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
     "dist"
@@ -156,10 +155,6 @@
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",
         "default": "./dist/esm/Toast/index.js"
-      },
-      "./SpotlightCard": {
-        "types": "./dist/SpotlightCard/index.d.ts",
-        "default": "./dist/esm/SpotlightCard/index.js"
       }
     },
     "provenance": true
