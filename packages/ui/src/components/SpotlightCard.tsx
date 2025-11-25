@@ -3,23 +3,23 @@ import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 export type SpotlightCardProps = {
-  /** Título principal (Obrigatório) */
+  /** Main title (Required) */
   title: string;
-  /** Subtítulo (Opcional) */
+  /** Subtitle (Optional) */
   subtitle?: string;
-  /** Descrição detalhada (Obrigatório) */
+  /** Detailed description (Required) */
   description: string;
-  /** Texto do botão principal (Obrigatório) */
+  /** Main button label (Required) */
   tutorialLabel: string;
-  /** Texto do botão secundário (Obrigatório) */
+  /** Secondary button label (Required) */
   articleLabel: string;
-  /** Ação do botão principal */
+  /** Main button action */
   onTutorialClick?: () => void;
-  /** Ação do botão secundário */
+  /** Secondary button action */
   onArticleClick?: () => void;
-  /** Nome do ícone para libs compatíveis (Obrigatório) */
+  /** Icon name for compatible libraries (Required) */
   iconName: string;
-  /** String do ícone Material/SVG (Obrigatório) */
+  /** Material/SVG icon string (Required) */
   iconSymbol: string;
 };
 
@@ -65,15 +65,13 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
         width: '100%',
         minWidth: '1100px',
-        // AUMENTO 1: Altura mínima maior para dar imponência
         minHeight: '104px',
 
         borderRadius: '16px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
 
-        // AUMENTO 2: Mais padding vertical (eixo Y)
-        py: '7', // Aumentado (era implícito no p:6)
-        px: '8', // Aumentado nas laterais também
+        py: '7',
+        px: '8',
         gap: '5',
 
         color: '#fff',
@@ -82,12 +80,11 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       }}
       data-testid="spotlight-card"
     >
-      {/* --- GRUPO ESQUERDA --- */}
+      {/* LEFT GROUP */}
       <Flex sx={{ alignItems: 'center', gap: '5', flex: 1, minWidth: 0 }}>
-        {/* Ícone Container */}
+        {/* Icon Container */}
         <Box
           sx={{
-            // AUMENTO 3: Container do ícone levemente maior
             width: 58,
             height: 58,
             borderRadius: '16px',
@@ -101,19 +98,19 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           <Icon
             name={iconName}
             icon={iconSymbol}
-            size={32} // Ícone maior (era 28)
+            size={32}
             color="action.background.accent.default"
           />
         </Box>
 
-        {/* Textos */}
+        {/* Texts */}
         <Box sx={{ minWidth: 0 }}>
           <Text
             as="div"
             sx={{
               fontFamily: 'heading',
               fontWeight: 700,
-              fontSize: 22, // Título maior (era 20)
+              fontSize: 22,
               lineHeight: 1.2,
               color: 'display.background.primary.default',
               whiteSpace: 'nowrap',
@@ -129,7 +126,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             sx={{
               fontFamily: 'body',
               fontWeight: 400,
-              fontSize: 15, // Fonte de leitura levemente maior (era 14)
+              fontSize: 15,
               color: 'rgba(255,255,255,0.85)',
               mt: '1',
               overflow: 'hidden',
@@ -144,9 +141,9 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         </Box>
       </Flex>
 
-      {/* --- GRUPO DIREITA (Botões) --- */}
+      {/* RIGHT GROUP (Buttons) */}
       <Flex sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}>
-        {/* BOTÃO TUTORIAL MAIOR */}
+        {/* MAIN TUTORIAL BUTTON */}
         <Button
           variant="accent"
           onClick={onTutorialClick}
@@ -155,11 +152,10 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '2',
-            // AUMENTO 4: Botões mais robustos
-            px: '6', // Mais largo (era 4)
-            py: '3', // Mais alto (era padrão ou 2)
-            fontSize: 15, // Texto maior
-            fontWeight: 700, // Mais peso
+            px: '6',
+            py: '3',
+            fontSize: 15,
+            fontWeight: 700,
             whiteSpace: 'nowrap',
             transition: 'transform 0.2s',
             ':hover': {
@@ -170,12 +166,12 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           <Icon
             name="PlayCircle"
             icon="material-symbols:play-circle-outline"
-            size={22} // Ícone interno maior (era 18)
+            size={22}
           />
           {tutorialLabel}
         </Button>
 
-        {/* BOTÃO ARTIGO MAIOR */}
+        {/* SECONDARY ARTICLE BUTTON */}
         <Button
           onClick={onArticleClick}
           sx={{
@@ -183,14 +179,13 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '2',
-            // AUMENTO 5: Mesmas dimensões do botão primário
             px: '6',
             py: '3',
             borderRadius: 'full',
             fontWeight: 600,
             fontSize: 15,
             backgroundColor: 'transparent',
-            border: '1.5px solid rgba(255,255,255,0.3)', // Borda um pouco mais espessa
+            border: '1.5px solid rgba(255,255,255,0.3)',
             color: 'display.background.primary.default',
             cursor: 'pointer',
             whiteSpace: 'nowrap',

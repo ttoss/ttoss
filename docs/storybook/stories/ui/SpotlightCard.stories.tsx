@@ -23,41 +23,41 @@ export default meta;
 type Story = StoryObj<typeof SpotlightCard>;
 
 /**
- * Story Padrão: Simula o uso real no produto OneClick.
- * Agora passamos todas as props explicitamente.
+ * Default Story: Simulates real usage in the OneClick product.
+ * All props are passed explicitly.
  */
 export const Default: Story = {
   args: {
     title: 'OneClick',
     subtitle: 'Tracking',
     description:
-      'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões em múltiplas plataformas.',
-    tutorialLabel: 'Assistir Tutorial',
-    articleLabel: 'Ler Artigo',
+      'Understand the purpose and how to use OneClick Tracking to maximize your conversion tracking across multiple platforms.',
+    tutorialLabel: 'Watch Tutorial',
+    articleLabel: 'Read Article',
     iconName: 'AdsClick',
     iconSymbol: 'material-symbols:ads-click',
   },
 };
 
 /**
- * Exemplo de outro contexto (Dashboard Financeiro)
- * para provar a reutilização do componente.
+ * Example of another context (Finance Dashboard)
+ * to demonstrate component reusability.
  */
 export const FinanceDashboardContext: Story = {
   args: {
-    title: 'Painel',
-    subtitle: 'Financeiro',
+    title: 'Dashboard',
+    subtitle: 'Finance',
     description:
-      'Acompanhe seus rendimentos e dividendos em tempo real com gráficos avançados.',
-    tutorialLabel: 'Ver Demo',
-    articleLabel: 'Documentação',
+      'Track your earnings and dividends in real time with advanced charts.',
+    tutorialLabel: 'View Demo',
+    articleLabel: 'Documentation',
     iconName: 'AttachMoney',
     iconSymbol: 'material-symbols:attach-money',
   },
 };
 
 /**
- * Teste de comportamento responsivo (Scroll)
+ * Responsive behavior test (Scroll)
  */
 export const ScrollTest: Story = {
   render: (args) => {
@@ -75,6 +75,6 @@ export const ScrollTest: Story = {
     );
   },
   args: {
-    ...Default.args, // Herda os args da Default
+    ...Default.args,
   },
 };
