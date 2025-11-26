@@ -190,6 +190,64 @@ test('should default to false when no defaultValue provided', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ checkbox1: false });
 });
 
+test('should have proper ref in error object when validation fails', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  type FormData = {
+    acceptTerms: boolean;
+  };
+
+  let capturedErrors: unknown = null;
+
+  const RenderForm = () => {
+    const formMethods = useForm<FormData>({
+      mode: 'all',
+    });
+
+    const { formState } = formMethods;
+
+    // Capture errors for assertion
+    capturedErrors = formState.errors;
+
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldCheckbox
+          name="acceptTerms"
+          label="Accept Terms"
+          rules={{
+            validate: (value) => {
+              return value === true || 'You must accept the terms';
+            },
+          }}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  // Submit without checking the checkbox
+  await user.click(screen.getByText('Submit'));
+
+  // Wait for error to appear
+  await screen.findByText('You must accept the terms');
+
+  // The error ref should exist
+  expect(capturedErrors).toHaveProperty('acceptTerms');
+
+  const errorRef = (
+    capturedErrors as { acceptTerms?: { ref?: HTMLInputElement | object } }
+  ).acceptTerms?.ref;
+
+  // React-hook-form provides a ref object that may contain either:
+  // 1. The actual HTMLInputElement (if ref forwarding is working correctly), or
+  // 2. A partial object with methods like {focus, select, setCustomValidity, reportValidity}
+  // The ref should at minimum have the focus method for form focus functionality
+  expect(errorRef).toBeDefined();
+  expect(typeof (errorRef as { focus?: () => void }).focus).toBe('function');
+});
+
 test('should toggle when clicking on checkbox icon itself', async () => {
   const user = userEvent.setup({ delay: null });
 
