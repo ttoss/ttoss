@@ -5,9 +5,9 @@ const config = jestUnitConfig({
   coverageThreshold: {
     global: {
       statements: 93.53,
-      branches: 88.82,
-      lines: 93.47,
+      branches: 89.26,
       functions: 93.75,
+      lines: 93.47,
     },
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],
