@@ -2,32 +2,36 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-// Typing to accept Button props or a custom component
+interface SpotlightTheme {
+  colors: {
+    action: {
+      background: {
+        primary: { default: string };
+        secondary: { default: string };
+      };
+    };
+  };
+}
+
 type ButtonPropType = React.ComponentProps<typeof Button> | React.ReactNode;
 
 export type SpotlightCardProps = {
-  /** Main title (Required) */
-  title: string;
-  /** Subtitle (Optional) */
-  subtitle?: string;
-  /** Detailed description (Required) */
-  description: string;
-  /** Material/SVG icon string (Required) */
   iconSymbol: string;
-  /** First button: Can be an object (ButtonProps) or a ReactNode */
+  title: string;
+  subtitle?: string;
+  description: string;
   firstButton?: ButtonPropType;
-  /** Second button: Can be an object (ButtonProps) or a ReactNode */
   secondButton?: ButtonPropType;
 };
 
-export const SpotlightCard: React.FC<SpotlightCardProps> = ({
+export const SpotlightCard = ({
+  iconSymbol,
   title,
   subtitle,
   description,
-  iconSymbol,
   firstButton,
   secondButton,
-}) => {
+}: SpotlightCardProps) => {
   React.useEffect(() => {
     const styleId = 'oca-spotlight-animations-v2';
     if (!document.getElementById(styleId)) {
@@ -46,7 +50,6 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
   const hasButtons = !!firstButton || !!secondButton;
 
-  // Helper function to render a Button or ReactNode
   const renderButton = (
     prop: ButtonPropType,
     defaultVariant: string,
@@ -54,12 +57,10 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   ) => {
     if (!prop) return null;
 
-    // If it's a valid React element (e.g., <div />, <CustomButton />), render directly
     if (React.isValidElement(prop)) {
       return prop;
     }
 
-    // Otherwise, treat as props for the @ttoss/ui Button component
     const { sx, ...rest } = prop as React.ComponentProps<typeof Button>;
 
     return (
@@ -72,8 +73,8 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           gap: '2',
           px: '6',
           py: '3',
-          fontSize: 15,
-          fontWeight: 700,
+          fontSize: '15px',
+          fontWeight: 'bold',
           whiteSpace: 'nowrap',
           transition: 'all 0.2s',
           ...customStyles,
@@ -92,19 +93,27 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: 'linear-gradient(270deg, #006241, #008558, #006241)',
+        background: (t) => {
+          const theme = t as SpotlightTheme;
+          return `linear-gradient(270deg, 
+            ${theme.colors?.action?.background?.primary?.default || '#111827'}, 
+            ${theme.colors?.action?.background?.secondary?.default || '#465A69'}, 
+            ${theme.colors?.action?.background?.primary?.default || '#111827'})`;
+        },
         backgroundSize: '400% 400%',
         animation: 'ocaGradientFlow 8s ease infinite',
         width: '100%',
         minHeight: '104px',
-        borderRadius: '16px',
+        borderRadius: 'xl',
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
         py: '7',
         px: '8',
         gap: '5',
-        color: '#fff',
+        color: 'action.text.primary.default',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.05)',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: 'display.border.muted.default',
       }}
       data-testid="spotlight-card"
     >
@@ -114,14 +123,15 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             width: 58,
             height: 58,
             borderRadius: '2xl',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'action.background.secondary.default',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            color: '#fff',
+            color: 'display.text.accent.default',
           }}
         >
+          {/* O ícone principal continua usando o componente Icon diretamente, pois não é um botão */}
           <Icon icon={iconSymbol} width={28} />
         </Box>
 
@@ -131,9 +141,9 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             sx={{
               fontFamily: 'heading',
               fontWeight: 800,
-              fontSize: 24,
+              fontSize: '24px',
               lineHeight: 1.2,
-              color: 'display.background.primary.default',
+              color: 'inherit',
               whiteSpace: 'nowrap',
               display: 'flex',
               alignItems: 'baseline',
@@ -143,7 +153,6 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             <span
               style={{
                 fontWeight: 800,
-                fontSize: 24,
                 letterSpacing: '-0.5px',
                 verticalAlign: 'middle',
                 lineHeight: 1.1,
@@ -155,7 +164,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
               <span
                 style={{
                   fontWeight: 300,
-                  fontSize: 20,
+                  fontSize: '20px',
                   opacity: 0.8,
                   marginLeft: 6,
                   verticalAlign: 'baseline',
@@ -171,8 +180,8 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
             sx={{
               fontFamily: 'body',
               fontWeight: 400,
-              fontSize: 15,
-              color: 'rgba(255,255,255,0.85)',
+              fontSize: '15px',
+              color: 'action.text.secondary.default',
               mt: '1',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -190,19 +199,23 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         <Flex
           sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
         >
+          {/* BOTÃO PRIMÁRIO */}
           {renderButton(firstButton, 'accent', {
+            color: 'action.text.accent.default',
             ':hover': { transform: 'translateY(-1px)' },
           })}
-          {renderButton(secondButton, 'transparent', {
-            borderRadius: 'full',
-            fontWeight: 600,
+
+          {/* BOTÃO SECUNDÁRIO */}
+          {renderButton(secondButton, 'secondary', {
             backgroundColor: 'transparent',
-            border: '1.5px solid rgba(255,255,255,0.3)',
-            color: 'display.background.primary.default',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'display.border.muted.default',
+            color: 'action.text.primary.default',
             cursor: 'pointer',
             ':hover': {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              borderColor: 'display.background.primary.default',
+              backgroundColor: 'action.background.secondary.default',
+              borderColor: 'display.border.muted.default',
             },
           })}
         </Flex>

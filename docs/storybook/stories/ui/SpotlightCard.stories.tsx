@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Icon } from '@ttoss/react-icons';
 import { Button, SpotlightCard } from '@ttoss/ui';
 
 const meta: Meta<typeof SpotlightCard> = {
@@ -22,7 +21,7 @@ type Story = StoryObj<typeof SpotlightCard>;
 
 /**
  * Default Story: Using objects (ButtonProps) to configure the buttons.
- * This keeps the default style defined inside the component.
+ * UPDATE: We now use 'leftIcon' prop instead of embedding <Icon /> manually.
  */
 export const Default: Story = {
   args: {
@@ -32,23 +31,15 @@ export const Default: Story = {
       'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões.',
     iconSymbol: 'material-symbols:ads-click',
     firstButton: {
-      children: (
-        <>
-          <Icon icon="material-symbols:play-circle-outline" width={18} />
-          Watch Tutorial
-        </>
-      ),
+      children: 'Assistir Tutorial',
+      leftIcon: 'material-symbols:play-circle-outline',
       onClick: () => {
         return alert('Primary Clicked');
       },
     },
     secondButton: {
-      children: (
-        <>
-          <Icon icon="material-symbols:menu-book-outline" width={18} />
-          Read Article
-        </>
-      ),
+      children: 'Ler Artigo',
+      leftIcon: 'material-symbols:menu-book-outline',
       onClick: () => {
         return alert('Secondary Clicked');
       },
@@ -58,7 +49,7 @@ export const Default: Story = {
 
 /**
  * Custom React Node: Passing a fully custom component
- * instead of the default button.
+ * instead of the default button props.
  */
 export const CustomNodes: Story = {
   args: {
@@ -67,15 +58,18 @@ export const CustomNodes: Story = {
       <div
         style={{
           background: 'white',
-          color: 'black',
-          padding: '10px',
+          color: '#111827',
+          padding: '10px 20px',
           borderRadius: '4px',
+          fontWeight: 'bold',
+          fontSize: '14px',
+          cursor: 'pointer',
         }}
       >
         Custom Div
       </div>
     ),
-    secondButton: <Button variant="danger">Danger Button</Button>,
+    secondButton: <Button variant="destructive">Destructive Button</Button>,
   },
 };
 
@@ -100,6 +94,7 @@ export const OnlyFirstButton: Story = {
     ...Default.args,
     firstButton: {
       children: 'Watch Tutorial',
+      leftIcon: 'material-symbols:play-circle-outline',
       onClick: () => {
         return alert('Clicked');
       },
@@ -116,7 +111,7 @@ export const FinanceDashboardContext: Story = {
     title: 'Dashboard',
     subtitle: 'Finance',
     description:
-      'Track your earnings and dividends in real time with advanced charts.',
+      'Track your earnings and dividends in real time with advanced charts and insights.',
     iconSymbol: 'material-symbols:attach-money',
     firstButton: {
       children: 'View Demo',
