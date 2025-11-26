@@ -264,3 +264,55 @@ describe('FormFieldInput defaultValue', () => {
     expect(onSubmit).toHaveBeenCalledWith({ input1: 'test value' });
   });
 });
+
+describe('FormFieldInput error ref', () => {
+  test('should have proper ref in error object when validation fails', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    type FormData = {
+      firstName: string;
+    };
+
+    let capturedErrors: unknown = null;
+
+    const RenderForm = () => {
+      const formMethods = useForm<FormData>({
+        mode: 'all',
+      });
+
+      const { formState } = formMethods;
+      capturedErrors = formState.errors;
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldInput
+            name="firstName"
+            label="First Name"
+            rules={{
+              required: 'First name is required',
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+    await user.click(screen.getByText('Submit'));
+    await screen.findByText('First name is required');
+
+    // The error ref should exist
+    expect(capturedErrors).toHaveProperty('firstName');
+
+    const errorRef = (
+      capturedErrors as { firstName?: { ref?: HTMLInputElement | object } }
+    ).firstName?.ref;
+
+    // React-hook-form provides a ref object that may contain either:
+    // 1. The actual HTMLInputElement (if ref forwarding is working correctly), or
+    // 2. A partial object with methods like {focus, select, setCustomValidity, reportValidity}
+    // The ref should at minimum have the focus method for form focus functionality
+    expect(errorRef).toBeDefined();
+    expect(typeof (errorRef as { focus?: () => void }).focus).toBe('function');
+  });
+});
