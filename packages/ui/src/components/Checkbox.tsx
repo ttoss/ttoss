@@ -10,14 +10,25 @@ export interface CheckboxProps extends CheckboxPropsUi {
 
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ indeterminate = false, ...rest }, ref) => {
-    const innerRef = React.useRef<HTMLInputElement>(null);
+    const innerRef = React.useRef<HTMLInputElement | null>(null);
 
     /**
-     * https://stackoverflow.com/a/68163315/8786986
+     * Callback ref that properly forwards to both internal and external refs.
+     * This is needed because we need to track the indeterminate state internally
+     * while also forwarding the ref to the parent component (like react-hook-form).
      */
-    React.useImperativeHandle(ref, () => {
-      return innerRef.current as HTMLInputElement;
-    });
+    const setRefs = React.useCallback(
+      (element: HTMLInputElement | null) => {
+        innerRef.current = element;
+
+        if (typeof ref === 'function') {
+          ref(element);
+        } else if (ref) {
+          ref.current = element;
+        }
+      },
+      [ref]
+    );
 
     React.useEffect(() => {
       if (innerRef.current) {
@@ -26,10 +37,10 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
     }, [indeterminate]);
 
     if (indeterminate) {
-      return <input type="checkbox" ref={innerRef} {...rest} />;
+      return <input type="checkbox" ref={setRefs} {...rest} />;
     }
 
-    return <CheckBoxUi ref={innerRef} {...rest} />;
+    return <CheckBoxUi ref={setRefs} {...rest} />;
   }
 );
 

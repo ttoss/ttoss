@@ -105,12 +105,14 @@ export const FormField = <
         return null;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const childProps = child.props as any;
-
-      const elementProps = {
+      /**
+       * Use cloneElement to properly preserve the ref from the original element.
+       * In React 19, refs are passed as regular props.
+       * React.createElement(child.type, elementProps) loses the ref because
+       * it doesn't include the ref from child.props automatically.
+       */
+      const additionalProps = {
         id,
-        ...childProps,
         ...(warning && { trailingIcon: 'warning-alt' }),
       };
 
@@ -127,7 +129,7 @@ export const FormField = <
                 position: 'relative',
               }}
             >
-              {React.createElement(child.type, elementProps)}
+              {React.cloneElement(child, additionalProps)}
             </Flex>
             <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
               {label}
@@ -149,7 +151,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, elementProps)}
+          {React.cloneElement(child, additionalProps)}
         </Flex>
       );
     });
