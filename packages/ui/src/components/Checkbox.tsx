@@ -10,7 +10,7 @@ export interface CheckboxProps extends CheckboxPropsUi {
 
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ indeterminate = false, ...rest }, ref) => {
-    const innerRef = React.useRef<HTMLInputElement | null>(null);
+    const innerRef = React.useRef<HTMLInputElement>(null);
 
     /**
      * Callback ref that properly forwards to both internal and external refs.

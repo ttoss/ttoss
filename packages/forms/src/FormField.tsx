@@ -107,11 +107,10 @@ export const FormField = <
 
       /**
        * Use cloneElement to properly preserve the ref from the original element.
-       * In React 19, refs are passed as regular props.
-       * React.createElement(child.type, elementProps) loses the ref because
-       * it doesn't include the ref from child.props automatically.
+       * React.createElement loses the ref because refs are not part of element.props.
+       * cloneElement preserves all props including the ref.
        */
-      const additionalProps = {
+      const mergeProps = {
         id,
         ...(warning && { trailingIcon: 'warning-alt' }),
       };
@@ -129,7 +128,7 @@ export const FormField = <
                 position: 'relative',
               }}
             >
-              {React.cloneElement(child, additionalProps)}
+              {React.cloneElement(child, mergeProps)}
             </Flex>
             <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
               {label}
@@ -151,7 +150,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.cloneElement(child, additionalProps)}
+          {React.cloneElement(child, mergeProps)}
         </Flex>
       );
     });
