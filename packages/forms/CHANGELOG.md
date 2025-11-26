@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.33.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.2...@ttoss/forms@0.33.3) (2025-11-26)
+
+### Bug Fixes
+
+- **ui,forms:** Fix ref forwarding for Checkbox and FormField components ([#780](https://github.com/ttoss/ttoss/issues/780)) ([98a10c9](https://github.com/ttoss/ttoss/commit/98a10c9d5c41bafdd1e540409456f9c21dbd0401))
+
 ## [0.33.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.1...@ttoss/forms@0.33.2) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/forms
