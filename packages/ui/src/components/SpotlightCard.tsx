@@ -8,7 +8,16 @@ interface SpotlightTheme {
       background: {
         primary: { default: string };
         secondary: { default: string };
+        accent: { default: string; active?: string };
       };
+      text: {
+        primary: { default: string };
+        accent: { default: string };
+      };
+    };
+    display: {
+      border: { muted: { default: string } };
+      text: { accent: { default: string } };
     };
   };
 }
@@ -22,6 +31,13 @@ export type SpotlightCardProps = {
   description: string;
   firstButton?: ButtonPropType;
   secondButton?: ButtonPropType;
+  /**
+   * Visual variant of the card.
+   * - 'accent': (Default) Highlighted background (Action Accent) with shine animation.
+   * - 'dark': Dark background (Action Primary).
+   * @default 'accent'
+   */
+  variant?: 'accent' | 'dark';
 };
 
 export const SpotlightCard = ({
@@ -31,6 +47,7 @@ export const SpotlightCard = ({
   description,
   firstButton,
   secondButton,
+  variant = 'accent',
 }: SpotlightCardProps) => {
   React.useEffect(() => {
     const styleId = 'oca-spotlight-animations-v2';
@@ -49,19 +66,49 @@ export const SpotlightCard = ({
   }, []);
 
   const hasButtons = !!firstButton || !!secondButton;
+  const isAccent = variant === 'accent';
 
+  // --- COLOR DECISION LOGIC ---
+
+  // 1. Main text colors of the card
+  const textColorToken = isAccent
+    ? 'action.text.accent.default'
+    : 'action.text.primary.default';
+
+  // 2. Icon colors
+  const iconColorToken = isAccent
+    ? 'action.text.accent.default'
+    : 'display.text.accent.default';
+  const iconBgToken = isAccent
+    ? 'rgba(255,255,255,0.3)'
+    : 'action.background.secondary.default';
+
+  // 3. Primary button configuration
+  const btnPrimaryVariant = isAccent ? 'primary' : 'accent';
+  const btnPrimaryColorToken = isAccent
+    ? 'action.text.primary.default'
+    : 'action.text.accent.default';
+
+  // 4. Secondary button configuration
+  const btnSecondaryColorToken = textColorToken;
+  const btnSecondaryBorderColorToken = isAccent
+    ? 'currentColor'
+    : 'display.border.muted.default';
+
+  // --- HELPER TO RENDER BUTTONS ---
   const renderButton = (
     prop: ButtonPropType,
-    defaultVariant: string,
-    customStyles: object = {}
+    config: {
+      variant: string;
+      textColor: string;
+      styles?: object;
+    }
   ) => {
     if (!prop) return null;
-
-    if (React.isValidElement(prop)) {
-      return prop;
-    }
+    if (React.isValidElement(prop)) return prop;
 
     const { sx, ...rest } = prop as React.ComponentProps<typeof Button>;
+    const { variant: defaultVariant, textColor, styles = {} } = config;
 
     return (
       <Button
@@ -77,7 +124,8 @@ export const SpotlightCard = ({
           fontWeight: 'bold',
           whiteSpace: 'nowrap',
           transition: 'all 0.2s',
-          ...customStyles,
+          color: textColor,
+          ...styles,
           ...sx,
         }}
         {...rest}
@@ -95,13 +143,26 @@ export const SpotlightCard = ({
         justifyContent: 'space-between',
         background: (t) => {
           const theme = t as SpotlightTheme;
-          return `linear-gradient(270deg, 
-            ${theme.colors?.action?.background?.primary?.default || '#111827'}, 
-            ${theme.colors?.action?.background?.secondary?.default || '#465A69'}, 
-            ${theme.colors?.action?.background?.primary?.default || '#111827'})`;
+
+          const bgStart = isAccent
+            ? theme.colors?.action?.background?.accent?.default
+            : theme.colors?.action?.background?.primary?.default;
+
+          const bgMiddle = isAccent
+            ? theme.colors?.action?.background?.accent?.active
+            : theme.colors?.action?.background?.secondary?.default;
+
+          if (isAccent) {
+            // Shine animation for Accent variant
+            return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), 
+                    linear-gradient(0deg, ${bgStart}, ${bgStart})`;
+          }
+
+          // Default gradient for Dark mode
+          return `linear-gradient(270deg, ${bgStart}, ${bgMiddle}, ${bgStart})`;
         },
-        backgroundSize: '400% 400%',
-        animation: 'ocaGradientFlow 8s ease infinite',
+        backgroundSize: isAccent ? '200% 100%, auto' : '400% 400%',
+        animation: 'ocaGradientFlow 6s ease infinite',
         width: '100%',
         minHeight: '104px',
         borderRadius: 'xl',
@@ -109,11 +170,11 @@ export const SpotlightCard = ({
         py: '7',
         px: '8',
         gap: '5',
-        color: 'action.text.primary.default',
+        color: textColorToken,
         overflow: 'hidden',
         borderWidth: '1px',
         borderStyle: 'solid',
-        borderColor: 'display.border.muted.default',
+        borderColor: isAccent ? 'transparent' : 'display.border.muted.default',
       }}
       data-testid="spotlight-card"
     >
@@ -123,15 +184,14 @@ export const SpotlightCard = ({
             width: 58,
             height: 58,
             borderRadius: '2xl',
-            backgroundColor: 'action.background.secondary.default',
+            backgroundColor: iconBgToken,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            color: 'display.text.accent.default',
+            color: iconColorToken,
           }}
         >
-          {/* O ícone principal continua usando o componente Icon diretamente, pois não é um botão */}
           <Icon icon={iconSymbol} width={28} />
         </Box>
 
@@ -181,7 +241,8 @@ export const SpotlightCard = ({
               fontFamily: 'body',
               fontWeight: 400,
               fontSize: '15px',
-              color: 'action.text.secondary.default',
+              color: 'inherit',
+              opacity: 0.85,
               mt: '1',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -199,23 +260,31 @@ export const SpotlightCard = ({
         <Flex
           sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
         >
-          {/* BOTÃO PRIMÁRIO */}
-          {renderButton(firstButton, 'accent', {
-            color: 'action.text.accent.default',
-            ':hover': { transform: 'translateY(-1px)' },
+          {/* PRIMARY BUTTON */}
+          {renderButton(firstButton, {
+            variant: btnPrimaryVariant,
+            textColor: btnPrimaryColorToken,
+            styles: {
+              ':hover': { transform: 'translateY(-1px)' },
+            },
           })}
 
-          {/* BOTÃO SECUNDÁRIO */}
-          {renderButton(secondButton, 'secondary', {
-            backgroundColor: 'transparent',
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderColor: 'display.border.muted.default',
-            color: 'action.text.primary.default',
-            cursor: 'pointer',
-            ':hover': {
-              backgroundColor: 'action.background.secondary.default',
-              borderColor: 'display.border.muted.default',
+          {/* SECONDARY BUTTON */}
+          {renderButton(secondButton, {
+            variant: 'secondary',
+            textColor: btnSecondaryColorToken,
+            styles: {
+              backgroundColor: 'transparent',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: btnSecondaryBorderColorToken,
+              opacity: isAccent ? 0.6 : 1,
+              cursor: 'pointer',
+              ':hover': {
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                opacity: 1,
+                borderColor: btnSecondaryBorderColorToken,
+              },
             },
           })}
         </Flex>

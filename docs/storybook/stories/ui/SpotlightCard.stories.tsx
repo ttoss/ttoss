@@ -8,8 +8,17 @@ const meta: Meta<typeof SpotlightCard> = {
     title: { control: 'text' },
     subtitle: { control: 'text' },
     description: { control: 'text' },
+    iconSymbol: { control: 'text' },
     firstButton: { control: 'object' },
     secondButton: { control: 'object' },
+    variant: {
+      control: { type: 'radio' },
+      options: ['accent', 'dark'],
+      description: 'Estilo visual do card',
+      table: {
+        defaultValue: { summary: 'accent' },
+      },
+    },
   },
   parameters: {
     layout: 'padded',
@@ -20,7 +29,7 @@ export default meta;
 type Story = StoryObj<typeof SpotlightCard>;
 
 /**
- * Default Story: Using objects (ButtonProps) to configure the buttons.
+ * Default Story (Accent)
  */
 export const Default: Story = {
   args: {
@@ -29,6 +38,7 @@ export const Default: Story = {
     description:
       'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões.',
     iconSymbol: 'material-symbols:ads-click',
+    variant: 'accent',
     firstButton: {
       children: 'Assistir Tutorial',
       leftIcon: 'material-symbols:play-circle-outline',
@@ -47,8 +57,21 @@ export const Default: Story = {
 };
 
 /**
- * Custom React Node: Passing a fully custom component
- * instead of the default button props.
+ * Dark Variant
+ */
+export const DarkVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'dark',
+    title: 'Modo Escuro',
+    subtitle: 'Clássico',
+    description: 'A versão clássica do card com fundo escuro.',
+    iconSymbol: 'material-symbols:dark-mode',
+  },
+};
+
+/**
+ * Custom React Node
  */
 export const CustomNodes: Story = {
   args: {
@@ -73,7 +96,7 @@ export const CustomNodes: Story = {
 };
 
 /**
- * Variation with NO buttons.
+ * No Buttons
  */
 export const NoButtons: Story = {
   args: {
@@ -86,7 +109,7 @@ export const NoButtons: Story = {
 };
 
 /**
- * Variation with ONLY First button.
+ * Only First Button
  */
 export const OnlyFirstButton: Story = {
   args: {
@@ -103,7 +126,7 @@ export const OnlyFirstButton: Story = {
 };
 
 /**
- * Example of another context (Finance Dashboard).
+ * Finance Context
  */
 export const FinanceDashboardContext: Story = {
   args: {

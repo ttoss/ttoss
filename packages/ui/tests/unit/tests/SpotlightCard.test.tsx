@@ -88,4 +88,33 @@ describe('SpotlightCard', () => {
     expect(screen.getByTestId('custom-element')).toBeInTheDocument();
     expect(screen.getByText('Custom Element')).toBeInTheDocument();
   });
+
+  test('should render correctly with default variant (accent)', () => {
+    render(
+      <SpotlightCard
+        title="Accent Card"
+        description="This card uses the default accent variant"
+        iconSymbol="symbol"
+        // variant prop is optional, defaults to 'accent'
+      />
+    );
+
+    expect(screen.getByText('Accent Card')).toBeInTheDocument();
+    // Podemos verificar se o data-testid está presente, garantindo que não houve crash
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render correctly with dark variant', () => {
+    render(
+      <SpotlightCard
+        title="Dark Card"
+        description="This card uses the dark variant"
+        iconSymbol="symbol"
+        variant="dark"
+      />
+    );
+
+    expect(screen.getByText('Dark Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
 });
