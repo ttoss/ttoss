@@ -105,12 +105,13 @@ export const FormField = <
         return null;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const childProps = child.props as any;
-
-      const elementProps = {
+      /**
+       * Use cloneElement to properly preserve the ref from the original element.
+       * React.createElement loses the ref because refs are not part of element.props.
+       * cloneElement preserves all props including the ref.
+       */
+      const mergeProps = {
         id,
-        ...childProps,
         ...(warning && { trailingIcon: 'warning-alt' }),
       };
 
@@ -127,7 +128,7 @@ export const FormField = <
                 position: 'relative',
               }}
             >
-              {React.createElement(child.type, elementProps)}
+              {React.cloneElement(child, mergeProps)}
             </Flex>
             <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
               {label}
@@ -149,7 +150,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, elementProps)}
+          {React.cloneElement(child, mergeProps)}
         </Flex>
       );
     });
