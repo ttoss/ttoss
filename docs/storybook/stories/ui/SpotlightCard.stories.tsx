@@ -21,7 +21,6 @@ type Story = StoryObj<typeof SpotlightCard>;
 
 /**
  * Default Story: Using objects (ButtonProps) to configure the buttons.
- * UPDATE: We now use 'leftIcon' prop instead of embedding <Icon /> manually.
  */
 export const Default: Story = {
   args: {
