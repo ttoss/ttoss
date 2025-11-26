@@ -8,7 +8,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Main Title"
         description="Detailed description"
-        iconName="TestIcon"
+        // iconName foi removido do componente, mantendo apenas iconSymbol
         iconSymbol="test-symbol"
       />
     );
@@ -22,15 +22,15 @@ describe('SpotlightCard', () => {
     expect(buttons).toHaveLength(0);
   });
 
-  test('should render buttons when labels are provided', () => {
+  test('should render buttons when props are provided', () => {
     render(
       <SpotlightCard
         title="Main Title"
         description="Desc"
-        primaryLabel="Watch Tutorial"
-        secondaryLabel="Read Article"
-        iconName="TestIcon"
         iconSymbol="test-symbol"
+        // Agora passamos o children dentro do objeto da prop
+        firstButton={{ children: 'Watch Tutorial' }}
+        secondButton={{ children: 'Read Article' }}
       />
     );
 
@@ -44,7 +44,6 @@ describe('SpotlightCard', () => {
         title="Main Title"
         subtitle="Optional Subtitle"
         description="Desc"
-        iconName="Icon"
         iconSymbol="symbol"
       />
     );
@@ -52,26 +51,45 @@ describe('SpotlightCard', () => {
   });
 
   test('should call click handlers when buttons are clicked', () => {
-    const onPrimaryMock = jest.fn();
-    const onSecondaryMock = jest.fn();
+    const onFirstMock = jest.fn();
+    const onSecondMock = jest.fn();
 
     render(
       <SpotlightCard
         title="Title"
         description="Desc"
-        primaryLabel="Primary Button"
-        secondaryLabel="Secondary Button"
-        iconName="Icon"
         iconSymbol="symbol"
-        onPrimaryClick={onPrimaryMock}
-        onSecondaryClick={onSecondaryMock}
+        // O onClick agora é passado dentro do objeto de configuração do botão
+        firstButton={{
+          children: 'Primary Button',
+          onClick: onFirstMock,
+        }}
+        secondButton={{
+          children: 'Secondary Button',
+          onClick: onSecondMock,
+        }}
       />
     );
 
     fireEvent.click(screen.getByText('Primary Button'));
-    expect(onPrimaryMock).toHaveBeenCalledTimes(1);
+    expect(onFirstMock).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByText('Secondary Button'));
-    expect(onSecondaryMock).toHaveBeenCalledTimes(1);
+    expect(onSecondMock).toHaveBeenCalledTimes(1);
+  });
+
+  // Teste extra (Opcional): Verificar se aceita um nó React customizado, já que sua refatoração permite isso
+  test('should render custom ReactNode as a button', () => {
+    render(
+      <SpotlightCard
+        title="Title"
+        description="Desc"
+        iconSymbol="symbol"
+        firstButton={<div data-testid="custom-element">Custom Element</div>}
+      />
+    );
+
+    expect(screen.getByTestId('custom-element')).toBeInTheDocument();
+    expect(screen.getByText('Custom Element')).toBeInTheDocument();
   });
 });
