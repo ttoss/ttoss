@@ -121,14 +121,9 @@ export const FormField = <
             htmlFor={id}
             tooltip={labelTooltip}
             sx={{
-              display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               cursor: disabled ? 'not-allowed' : 'pointer',
-              width: 'auto',
-              fontSize: 'inherit',
-              lineHeight: 'inherit',
-              color: 'inherit',
             }}
           >
             <Flex
