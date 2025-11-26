@@ -8,7 +8,6 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Main Title"
         description="Detailed description"
-        // iconName foi removido do componente, mantendo apenas iconSymbol
         iconSymbol="test-symbol"
       />
     );
@@ -28,7 +27,6 @@ describe('SpotlightCard', () => {
         title="Main Title"
         description="Desc"
         iconSymbol="test-symbol"
-        // Agora passamos o children dentro do objeto da prop
         firstButton={{ children: 'Watch Tutorial' }}
         secondButton={{ children: 'Read Article' }}
       />
@@ -59,7 +57,6 @@ describe('SpotlightCard', () => {
         title="Title"
         description="Desc"
         iconSymbol="symbol"
-        // O onClick agora é passado dentro do objeto de configuração do botão
         firstButton={{
           children: 'Primary Button',
           onClick: onFirstMock,
@@ -78,7 +75,6 @@ describe('SpotlightCard', () => {
     expect(onSecondMock).toHaveBeenCalledTimes(1);
   });
 
-  // Teste extra (Opcional): Verificar se aceita um nó React customizado, já que sua refatoração permite isso
   test('should render custom ReactNode as a button', () => {
     render(
       <SpotlightCard
