@@ -40,7 +40,7 @@ export const FormFieldCheckbox = <
       warning={warning}
       sx={sx}
       css={css}
-      defaultValue={defaultValue}
+      defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       rules={rules}
       disabled={disabled}
       render={({ field, fieldState }) => {
