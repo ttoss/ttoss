@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { SpotlightCard } from '@ttoss/ui';
-import { Box } from '@ttoss/ui';
+import { Icon } from '@ttoss/react-icons';
+import { Button, SpotlightCard } from '@ttoss/ui';
 
 const meta: Meta<typeof SpotlightCard> = {
   title: 'UI/SpotlightCard',
@@ -9,10 +9,8 @@ const meta: Meta<typeof SpotlightCard> = {
     title: { control: 'text' },
     subtitle: { control: 'text' },
     description: { control: 'text' },
-    primaryLabel: { control: 'text' },
-    secondaryLabel: { control: 'text' },
-    onPrimaryClick: { action: 'primary clicked' },
-    onSecondaryClick: { action: 'secondary clicked' },
+    firstButton: { control: 'object' },
+    secondButton: { control: 'object' },
   },
   parameters: {
     layout: 'padded',
@@ -23,54 +21,90 @@ export default meta;
 type Story = StoryObj<typeof SpotlightCard>;
 
 /**
- * Default Story: With both buttons active.
+ * Default Story: Using objects (ButtonProps) to configure the buttons.
+ * This keeps the default style defined inside the component.
  */
 export const Default: Story = {
   args: {
     title: 'OneClick',
     subtitle: 'Tracking',
     description:
-      'Understand the purpose and how to use OneClick Tracking to maximize your conversion tracking across multiple platforms.',
-    primaryLabel: 'Watch Tutorial',
-    secondaryLabel: 'Read Article',
-    iconName: 'AdsClick',
+      'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões.',
     iconSymbol: 'material-symbols:ads-click',
+    firstButton: {
+      children: (
+        <>
+          <Icon icon="material-symbols:play-circle-outline" width={18} />
+          Watch Tutorial
+        </>
+      ),
+      onClick: () => {
+        return alert('Primary Clicked');
+      },
+    },
+    secondButton: {
+      children: (
+        <>
+          <Icon icon="material-symbols:menu-book-outline" width={18} />
+          Read Article
+        </>
+      ),
+      onClick: () => {
+        return alert('Secondary Clicked');
+      },
+    },
+  },
+};
+
+/**
+ * Custom React Node: Passing a fully custom component
+ * instead of the default button.
+ */
+export const CustomNodes: Story = {
+  args: {
+    ...Default.args,
+    firstButton: (
+      <div
+        style={{
+          background: 'white',
+          color: 'black',
+          padding: '10px',
+          borderRadius: '4px',
+        }}
+      >
+        Custom Div
+      </div>
+    ),
+    secondButton: <Button variant="danger">Danger Button</Button>,
   },
 };
 
 /**
  * Variation with NO buttons.
- * Useful for informational banners.
  */
 export const NoButtons: Story = {
   args: {
     ...Default.args,
     description:
       'This banner serves only as information or a highlight without direct actions available at the moment.',
-    primaryLabel: undefined,
-    secondaryLabel: undefined,
+    firstButton: undefined,
+    secondButton: undefined,
   },
 };
 
 /**
- * Variation with ONLY Primary button.
+ * Variation with ONLY First button.
  */
-export const OnlyPrimaryButton: Story = {
+export const OnlyFirstButton: Story = {
   args: {
     ...Default.args,
-    primaryLabel: 'Watch Tutorial',
-    secondaryLabel: undefined,
-  },
-};
-
-/**
- * Variation with ONLY Secondary button.
- */
-export const OnlySecondaryButton: Story = {
-  args: {
-    ...Default.args,
-    primaryLabel: undefined,
-    secondaryLabel: 'Read Documentation',
+    firstButton: {
+      children: 'Watch Tutorial',
+      onClick: () => {
+        return alert('Clicked');
+      },
+    },
+    secondButton: undefined,
   },
 };
 
@@ -83,32 +117,12 @@ export const FinanceDashboardContext: Story = {
     subtitle: 'Finance',
     description:
       'Track your earnings and dividends in real time with advanced charts.',
-    primaryLabel: 'View Demo',
-    secondaryLabel: 'Documentation',
-    iconName: 'AttachMoney',
     iconSymbol: 'material-symbols:attach-money',
-  },
-};
-
-/**
- * Responsive behavior test (Scroll).
- */
-export const ScrollTest: Story = {
-  render: (args) => {
-    return (
-      <Box
-        sx={{
-          width: '800px',
-          border: '2px dashed #ccc',
-          overflowX: 'auto',
-          p: 4,
-        }}
-      >
-        <SpotlightCard {...args} />
-      </Box>
-    );
-  },
-  args: {
-    ...Default.args,
+    firstButton: {
+      children: 'View Demo',
+    },
+    secondButton: {
+      children: 'Documentation',
+    },
   },
 };

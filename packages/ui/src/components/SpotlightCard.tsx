@@ -2,6 +2,9 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
+// Typing to accept Button props or a custom component
+type ButtonPropType = React.ComponentProps<typeof Button> | React.ReactNode;
+
 export type SpotlightCardProps = {
   /** Main title (Required) */
   title: string;
@@ -9,30 +12,21 @@ export type SpotlightCardProps = {
   subtitle?: string;
   /** Detailed description (Required) */
   description: string;
-  /** Primary button label (Optional) - If omitted, button won't render */
-  primaryLabel?: string;
-  /** Secondary button label (Optional) - If omitted, button won't render */
-  secondaryLabel?: string;
-  /** Primary button action */
-  onPrimaryClick?: () => void;
-  /** Secondary button action */
-  onSecondaryClick?: () => void;
-  /** Icon name for compatible libraries (Required) */
-  iconName: string;
   /** Material/SVG icon string (Required) */
   iconSymbol: string;
+  /** First button: Can be an object (ButtonProps) or a ReactNode */
+  firstButton?: ButtonPropType;
+  /** Second button: Can be an object (ButtonProps) or a ReactNode */
+  secondButton?: ButtonPropType;
 };
 
 export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   title,
   subtitle,
   description,
-  primaryLabel,
-  secondaryLabel,
-  onPrimaryClick,
-  onSecondaryClick,
-  iconName,
   iconSymbol,
+  firstButton,
+  secondButton,
 }) => {
   React.useEffect(() => {
     const styleId = 'oca-spotlight-animations-v2';
@@ -50,7 +44,45 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
     }
   }, []);
 
-  const hasButtons = !!primaryLabel || !!secondaryLabel;
+  const hasButtons = !!firstButton || !!secondButton;
+
+  // Helper function to render a Button or ReactNode
+  const renderButton = (
+    prop: ButtonPropType,
+    defaultVariant: string,
+    customStyles: object = {}
+  ) => {
+    if (!prop) return null;
+
+    // If it's a valid React element (e.g., <div />, <CustomButton />), render directly
+    if (React.isValidElement(prop)) {
+      return prop;
+    }
+
+    // Otherwise, treat as props for the @ttoss/ui Button component
+    const { sx, ...rest } = prop as React.ComponentProps<typeof Button>;
+
+    return (
+      <Button
+        variant={defaultVariant}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2',
+          px: '6',
+          py: '3',
+          fontSize: 15,
+          fontWeight: 700,
+          whiteSpace: 'nowrap',
+          transition: 'all 0.2s',
+          ...customStyles,
+          ...sx,
+        }}
+        {...rest}
+      />
+    );
+  };
 
   return (
     <Card
@@ -60,67 +92,78 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-
         background: 'linear-gradient(270deg, #006241, #008558, #006241)',
         backgroundSize: '400% 400%',
         animation: 'ocaGradientFlow 8s ease infinite',
-
         width: '100%',
-        minWidth: '1100px',
         minHeight: '104px',
-
         borderRadius: '16px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-
         py: '7',
         px: '8',
         gap: '5',
-
         color: '#fff',
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.05)',
       }}
       data-testid="spotlight-card"
     >
-      {/* LEFT GROUP */}
       <Flex sx={{ alignItems: 'center', gap: '5', flex: 1, minWidth: 0 }}>
-        {/* Icon Container */}
         <Box
           sx={{
             width: 58,
             height: 58,
-            borderRadius: '16px',
+            borderRadius: '2xl',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
+            color: '#fff',
           }}
         >
-          <Icon
-            name={iconName}
-            icon={iconSymbol}
-            size={32}
-            color="action.background.accent.default"
-          />
+          <Icon icon={iconSymbol} width={28} />
         </Box>
 
-        {/* Texts */}
         <Box sx={{ minWidth: 0 }}>
           <Text
             as="div"
             sx={{
               fontFamily: 'heading',
-              fontWeight: 700,
-              fontSize: 22,
+              fontWeight: 800,
+              fontSize: 24,
               lineHeight: 1.2,
               color: 'display.background.primary.default',
               whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: '2',
             }}
           >
-            {title}{' '}
+            <span
+              style={{
+                fontWeight: 800,
+                fontSize: 24,
+                letterSpacing: '-0.5px',
+                verticalAlign: 'middle',
+                lineHeight: 1.1,
+              }}
+            >
+              {title}
+            </span>
             {subtitle && (
-              <span style={{ fontWeight: 400, opacity: 0.9 }}>{subtitle}</span>
+              <span
+                style={{
+                  fontWeight: 300,
+                  fontSize: 20,
+                  opacity: 0.8,
+                  marginLeft: 6,
+                  verticalAlign: 'baseline',
+                  lineHeight: 1.1,
+                }}
+              >
+                {subtitle}
+              </span>
             )}
           </Text>
           <Text
@@ -143,75 +186,25 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         </Box>
       </Flex>
 
-      {/* RIGHT GROUP (Buttons) - Only rendered if labels exist */}
       {hasButtons && (
         <Flex
           sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
         >
-          {/* PRIMARY BUTTON */}
-          {primaryLabel && (
-            <Button
-              variant="accent"
-              onClick={onPrimaryClick}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '2',
-                px: '6',
-                py: '3',
-                fontSize: 15,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-                transition: 'transform 0.2s',
-                ':hover': {
-                  transform: 'translateY(-1px)',
-                },
-              }}
-            >
-              <Icon
-                name="PlayCircle"
-                icon="material-symbols:play-circle-outline"
-                size={22}
-              />
-              {primaryLabel}
-            </Button>
-          )}
-
-          {/* SECONDARY BUTTON */}
-          {secondaryLabel && (
-            <Button
-              onClick={onSecondaryClick}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '2',
-                px: '6',
-                py: '3',
-                borderRadius: 'full',
-                fontWeight: 600,
-                fontSize: 15,
-                backgroundColor: 'transparent',
-                border: '1.5px solid rgba(255,255,255,0.3)',
-                color: 'display.background.primary.default',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s',
-                ':hover': {
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  borderColor: 'display.background.primary.default',
-                },
-              }}
-            >
-              <Icon
-                name="BookOpen"
-                icon="material-symbols:menu-book-outline"
-                size={22}
-              />
-              {secondaryLabel}
-            </Button>
-          )}
+          {renderButton(firstButton, 'accent', {
+            ':hover': { transform: 'translateY(-1px)' },
+          })}
+          {renderButton(secondButton, 'transparent', {
+            borderRadius: 'full',
+            fontWeight: 600,
+            backgroundColor: 'transparent',
+            border: '1.5px solid rgba(255,255,255,0.3)',
+            color: 'display.background.primary.default',
+            cursor: 'pointer',
+            ':hover': {
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              borderColor: 'display.background.primary.default',
+            },
+          })}
         </Flex>
       )}
     </Card>
