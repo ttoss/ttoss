@@ -27,11 +27,11 @@
     "./NavList": "./src/components/NavList/index.ts",
     "./NotificationCard": "./src/components/NotificationCard/index.ts",
     "./NotificationsMenu": "./src/components/NotificationsMenu/index.ts",
+    "./SpotlightCard": "./src/components/SpotlightCard/index.ts",
     "./Search": "./src/components/Search/index.ts",
     "./Table": "./src/components/Table/index.ts",
     "./Tabs": "./src/components/Tabs/index.ts",
-    "./Toast": "./src/components/Toast/index.ts",
-    "./SpotlightCard": "./src/components/SpotlightCard/index.ts"
+    "./Toast": "./src/components/Toast/index.ts"
   },
   "files": [
     "dist"
@@ -141,6 +141,10 @@
         "types": "./dist/NotificationsMenu/index.d.ts",
         "default": "./dist/esm/NotificationsMenu/index.js"
       },
+      "./SpotlightCard": {
+        "types": "./dist/SpotlightCard/index.d.ts",
+        "default": "./dist/esm/SpotlightCard/index.js"
+      },
       "./Search": {
         "types": "./dist/Search/index.d.ts",
         "default": "./dist/esm/Search/index.js"
@@ -156,10 +160,6 @@
       "./Toast": {
         "types": "./dist/Toast/index.d.ts",
         "default": "./dist/esm/Toast/index.js"
-      },
-      "./SpotlightCard": {
-        "types": "./dist/SpotlightCard/index.d.ts",
-        "default": "./dist/esm/SpotlightCard/index.js"
       }
     },
     "provenance": true

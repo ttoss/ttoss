@@ -1,6 +1,5 @@
+import { SpotlightCard } from '@ttoss/components/SpotlightCard';
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
-
-import { SpotlightCard } from '../../../src/components/SpotlightCard/SpotlightCard';
 
 describe('SpotlightCard', () => {
   test('should render SpotlightCard with essential props (no buttons)', () => {
