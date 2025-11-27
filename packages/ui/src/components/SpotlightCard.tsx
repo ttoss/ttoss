@@ -107,6 +107,7 @@ export const SpotlightCard = ({
   ) => {
     if (!prop) return null;
     if (React.isValidElement(prop)) return prop;
+    if (typeof prop !== 'object') return prop;
 
     const { sx, ...rest } = prop as ButtonProps;
     const { variant: defaultVariant, textColor, styles = {} } = config;
