@@ -95,12 +95,10 @@ describe('SpotlightCard', () => {
         title="Accent Card"
         description="This card uses the default accent variant"
         iconSymbol="symbol"
-        // variant prop is optional, defaults to 'accent'
       />
     );
 
     expect(screen.getByText('Accent Card')).toBeInTheDocument();
-    // Podemos verificar se o data-testid está presente, garantindo que não houve crash
     expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
   });
 
