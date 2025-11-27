@@ -46,7 +46,7 @@ export const FormFieldCPFOrCNPJ = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
@@ -62,7 +62,7 @@ export const FormFieldCPFOrCNPJ = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}

@@ -70,7 +70,7 @@ export const FormFieldCPF = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
@@ -86,7 +86,7 @@ export const FormFieldCPF = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
