@@ -80,3 +80,69 @@ test('should display error messages', async () => {
   await user.click(screen.getByText('Submit'));
   expect(await screen.findByText('Value is required')).toBeInTheDocument();
 });
+
+describe('FormFieldPatternFormat custom onBlur and onValueChange', () => {
+  test('should call custom onValueChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnValueChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldPatternFormat
+            name="input1"
+            label="input 1"
+            format="#### #### #### ####"
+            placeholder="1234 1234 1234 1234"
+            onValueChange={customOnValueChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.type(screen.getByLabelText('input 1'), '1234123412341234');
+
+    expect(customOnValueChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ input1: '1234123412341234' });
+  });
+
+  test('should call custom onBlur handler', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldPatternFormat
+            name="input1"
+            label="input 1"
+            format="#### #### #### ####"
+            placeholder="1234 1234 1234 1234"
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('input 1');
+    await user.click(input);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+  });
+});

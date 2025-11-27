@@ -31,6 +31,8 @@ export const FormFieldPatternFormat = <
     leadingIcon,
     trailingIcon,
     auxiliaryCheckbox,
+    onBlur,
+    onValueChange,
     ...patternFormatProps
   } = props;
 
@@ -53,9 +55,13 @@ export const FormFieldPatternFormat = <
             {...patternFormatProps}
             name={field.name}
             value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onValueChange={(values, sourceInfo) => {
               field.onChange(values.value);
+              onValueChange?.(values, sourceInfo);
             }}
             customInput={Input}
             leadingIcon={leadingIcon}
