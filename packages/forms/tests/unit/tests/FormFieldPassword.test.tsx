@@ -71,3 +71,72 @@ test('should change type visibility when click on icon', async () => {
 
   expect(screen.getByLabelText('Password')).toHaveAttribute('type', 'text');
 });
+
+describe('FormFieldPassword custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldPassword
+            name="password"
+            label="Password"
+            onChange={customOnChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const passwordInput = screen.getByLabelText('Password');
+    await user.type(passwordInput, 'secret');
+
+    expect(customOnChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ password: 'secret' });
+  });
+
+  test('should call custom onBlur handler while still triggering validation', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        mode: 'onBlur',
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldPassword
+            name="password"
+            label="Password"
+            onBlur={customOnBlur}
+            rules={{
+              required: 'Password is required',
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const passwordInput = screen.getByLabelText('Password');
+    await user.click(passwordInput);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+    expect(await screen.findByText('Password is required')).toBeInTheDocument();
+  });
+});

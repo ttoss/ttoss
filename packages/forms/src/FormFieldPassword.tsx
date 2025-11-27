@@ -27,6 +27,8 @@ export const FormFieldPassword = <
     id,
     leadingIcon,
     auxiliaryCheckbox,
+    onBlur,
+    onChange,
     ...inputProps
   } = props;
 
@@ -48,6 +50,14 @@ export const FormFieldPassword = <
           <InputPassword
             {...inputProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             leadingIcon={leadingIcon}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
