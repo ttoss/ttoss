@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.10...@ttoss/components@2.7.11) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.9...@ttoss/components@2.7.10) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.7.9](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.8...@ttoss/components@2.7.9) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.7.8](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.7...@ttoss/components@2.7.8) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.7.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.6...@ttoss/components@2.7.7) (2025-11-24)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [2.7.6](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.5...@ttoss/components@2.7.6) (2025-11-23)
 
 **Note:** Version bump only for package @ttoss/components

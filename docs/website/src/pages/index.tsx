@@ -98,13 +98,13 @@ const Home = () => {
                   to="/docs/modules"
                   className="button button--primary button--lg"
                 >
-                  Explore Modules
+                  Get Started
                 </Link>
                 <Link
-                  to="/docs/product"
+                  to="/docs/carlin"
                   className="button button--secondary button--outline button--lg"
                 >
-                  View Documentation
+                  Try Carlin CLI
                 </Link>
               </div>
             </div>
@@ -179,8 +179,97 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Key Benefits Section */}
+      {/* Context Architecture Highlight */}
       <section className={styles.py20}>
+        <div className={styles.containerCustom}>
+          <div className={`${styles.textCenter} ${styles.mb8}`}>
+            <Heading as="h2" className={styles.sectionTitle}>
+              Configure Once, Integrate Everywhere
+            </Heading>
+            <p className={styles.sectionDescription}>
+              ttoss uses a unique context-based architecture that eliminates
+              repetitive configuration. Set up your theme, translations, and
+              notifications once at the root—all packages automatically adapt.
+            </p>
+          </div>
+
+          <div className={styles.benefitsGrid}>
+            <div className={styles.benefitSection}>
+              <h3>🎨 No More Prop Drilling</h3>
+              <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>
+                Traditional libraries require passing theme, locale, and
+                handlers through every component level. ttoss uses React Context
+                to make all packages context-aware.
+              </p>
+              <pre
+                style={{
+                  backgroundColor: 'var(--ifm-code-background)',
+                  padding: '1rem',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  overflow: 'auto',
+                }}
+              >
+                {`// Setup once at app root
+<ThemeProvider theme={bruttalTheme}>
+  <I18nProvider locale="pt-BR">
+    <NotificationsProvider>
+      {/* All ttoss packages work! */}
+      <Auth />
+      <Dashboard />
+    </NotificationsProvider>
+  </I18nProvider>
+</ThemeProvider>`}
+              </pre>
+            </div>
+
+            <div className={styles.benefitSection}>
+              <h3>🔌 Seamless Package Integration</h3>
+              <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>
+                Every ttoss package—from authentication to forms—automatically
+                uses your app&apos;s theme, translations, and notification
+                system. Zero configuration per component.
+              </p>
+              <ul className={styles.benefitList}>
+                <li>
+                  <span>✓</span>
+                  <strong>Theme & Styling:</strong> All components use your
+                  theme tokens automatically
+                </li>
+                <li>
+                  <span>✓</span>
+                  <strong>i18n:</strong> Switch languages app-wide, packages
+                  adapt instantly
+                </li>
+                <li>
+                  <span>✓</span>
+                  <strong>Notifications:</strong> Consistent user feedback
+                  across all packages
+                </li>
+              </ul>
+              <Link
+                to="/docs/modules/integration-architecture"
+                style={{
+                  color: 'var(--ifm-color-primary)',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  fontSize: '0.95rem',
+                }}
+              >
+                Learn about Integration Architecture →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Benefits Section */}
+      <section
+        className={styles.py20}
+        style={{
+          backgroundColor: 'var(--ifm-color-emphasis-100)',
+        }}
+      >
         <div className={styles.containerCustom}>
           <div className={`${styles.textCenter} ${styles.mb8}`}>
             <Heading as="h2" className={styles.sectionTitle}>
@@ -235,12 +324,7 @@ const Home = () => {
       </section>
 
       {/* Technology Stack Section */}
-      <section
-        className={styles.py20}
-        style={{
-          backgroundColor: 'var(--ifm-color-emphasis-100)',
-        }}
-      >
+      <section className={styles.py20}>
         <div className={styles.containerCustom}>
           <div className={`${styles.textCenter} ${styles.mb8}`}>
             <Heading as="h2" className={styles.sectionTitle}>
@@ -276,22 +360,19 @@ const Home = () => {
         <div className={styles.containerCustom}>
           <div className={styles.ctaContent}>
             <Heading as="h2" className={styles.ctaTitle}>
-              Ready to Transform Your Development Process?
+              Ready to Accelerate Your Development?
             </Heading>
             <p className={styles.ctaDescription}>
-              Join teams already using ttoss to build better products faster.
-              Start with our modules, explore our design system, or dive into
-              our comprehensive documentation.
+              Start building with ttoss modules, automate your AWS deployments
+              with Carlin, or explore our comprehensive design system and
+              operational workflows.
             </p>
             <div className={styles.ctaButtons}>
               <Link to="/docs/modules" className={styles.ctaButtonPrimary}>
-                Get Started with Modules
+                Browse Modules
               </Link>
-              <Link
-                to="/docs/engineering"
-                className={styles.ctaButtonSecondary}
-              >
-                View Engineering Docs
+              <Link to="/docs/design" className={styles.ctaButtonSecondary}>
+                View Design System
               </Link>
             </div>
           </div>

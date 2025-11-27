@@ -16,26 +16,39 @@ export const FormFieldPassword = <
   disabled,
   ...props
 }: FormFieldPasswordProps<TFieldValues, TName>) => {
-  const { label, name, tooltip, warning, sx, css, rules, id, ...inputProps } =
-    props;
+  const {
+    label,
+    name,
+    labelTooltip,
+    warning,
+    sx,
+    css,
+    rules,
+    id,
+    leadingIcon,
+    auxiliaryCheckbox,
+    ...inputProps
+  } = props;
 
   return (
     <FormField
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <InputPassword
             {...inputProps}
             {...field}
+            leadingIcon={leadingIcon}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />

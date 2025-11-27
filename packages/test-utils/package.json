@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "3.0.4",
+  "version": "4.0.1",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "license": "MIT",
   "author": "ttoss",
@@ -12,6 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/test-utils"
   },
+  "type": "commonjs",
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",

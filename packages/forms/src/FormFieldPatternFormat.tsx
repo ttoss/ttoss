@@ -1,4 +1,4 @@
-import { Input } from '@ttoss/ui';
+import { Input, type InputProps } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import { PatternFormat, PatternFormatProps } from 'react-number-format';
 
@@ -7,7 +7,9 @@ import { FormField, type FormFieldProps } from './FormField';
 export type FormFieldPatternFormatProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = FormFieldProps<TFieldValues, TName> & Omit<PatternFormatProps, 'name'>;
+> = FormFieldProps<TFieldValues, TName> &
+  Omit<PatternFormatProps, 'name'> &
+  Pick<InputProps, 'leadingIcon' | 'trailingIcon'>;
 
 export const FormFieldPatternFormat = <
   TFieldValues extends FieldValues = FieldValues,
@@ -19,13 +21,16 @@ export const FormFieldPatternFormat = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
     rules,
     id,
     defaultValue,
+    leadingIcon,
+    trailingIcon,
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -34,13 +39,14 @@ export const FormFieldPatternFormat = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat
@@ -52,6 +58,8 @@ export const FormFieldPatternFormat = <
               field.onChange(values.value);
             }}
             customInput={Input}
+            leadingIcon={leadingIcon}
+            trailingIcon={trailingIcon}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />

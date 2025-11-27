@@ -43,6 +43,12 @@ The repository has detailed instruction files for different parts of the codebas
    - Covers testing, coverage, build validation, and i18n workflows
    - Contains mandatory validation steps for package changes
 
+3. **React Package Architecture**: See `.github/instructions/react-packages-architecture.instructions.md`
+   - Applies to all React-related packages
+   - Explains the context-based architecture pattern using foundation packages (Theme/UI, i18n, Notifications, Forms, Icons, etc.)
+   - Critical for understanding how to build components that integrate automatically with applications
+   - Shows how to avoid style/message props in favor of context hooks
+
 **IMPORTANT**: Always check if path-specific instructions exist before making changes. These files contain critical guidelines that must be followed.
 
 ## Getting Started Commands
@@ -172,6 +178,11 @@ pnpm run i18n      # Extract i18n messages
 6. **Run code review** before finalizing
 7. **Run CodeQL checker** for security validation
 8. **Review committed files** to ensure only intended changes are included
+9. **Propose instruction improvements** - After completing work and interacting with the developer, suggest improvements to the instruction files if you identified:
+   - **New patterns** that should be standardized
+   - **Outdated instructions** that no longer apply or can be simplified
+   - **Missing guidance** that would have helped during development
+   - **Process improvements** that could increase efficiency
 
 ## Monorepo-Specific Guidelines
 

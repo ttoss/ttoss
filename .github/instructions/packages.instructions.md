@@ -69,30 +69,32 @@ When adding or modifying functionality:
 
 ### 3.1 Golden Rule
 
-**Coverage must NEVER decrease**. When adding new code:
+**MANDATORY**: Coverage must NEVER decrease. For **EVERY** code change, you MUST:
 
-1. Create adequate tests for the new code
+1. Create adequate tests for the new/modified code
 2. Run tests with coverage: `pnpm run test`
 3. Check current coverage percentages in the output
+4. **ALWAYS update `jest.config.ts` with new coverage values** (see section 3.2)
 
 ### 3.2 Updating Coverage Threshold
 
-After creating tests and checking current coverage:
+**MANDATORY FOR ALL CODE CHANGES**: After creating tests and checking current coverage:
 
 1. Open the file `packages/PACKAGE_NAME/tests/unit/jest.config.ts`
 2. Locate the `coverageThreshold.global` property
-3. **Increase** the values according to the new coverage (never decrease)
-4. Values should be slightly below current coverage to allow for small variations
+3. **Update the values** according to the new coverage shown in test output
+4. **NEVER decrease** coverage values - only increase or maintain
+5. Set values slightly below (0.01-0.1% lower) current coverage to allow for small variations
 
 Configuration example:
 
 ```typescript
 coverageThreshold: {
   global: {
-    statements: 87.35,  // Increase this value if current coverage is higher
-    branches: 73.83,    // Increase this value if current coverage is higher
-    lines: 87.25,       // Increase this value if current coverage is higher
-    functions: 87.77,   // Increase this value if current coverage is higher
+    statements: 87.35,  // MUST update if current coverage is different
+    branches: 73.83,    // MUST update if current coverage is different
+    lines: 87.25,       // MUST update if current coverage is different
+    functions: 87.77,   // MUST update if current coverage is different
   },
 }
 ```
@@ -185,6 +187,81 @@ export const Variant: Story = {
 - **Developer experience**: Help other developers understand how to use components
 - **Design review**: Enable designers to review component implementations
 
+### 4.4 Document Components with JSDoc
+
+**MANDATORY for React components**: All React components must be documented using JSDoc comments. This documentation will be displayed in Storybook, helping users understand how to use the components.
+
+````typescript
+// ✅ CORRECT: Comprehensive JSDoc documentation
+/**
+ * Props for the TooltipIcon component.
+ */
+export interface TooltipIconProps {
+  /**
+   * The icon to display. Can be a string identifier or an icon object from @ttoss/react-icons.
+   */
+  icon: IconType;
+  /**
+   * Optional click handler for the icon.
+   */
+  onClick?: () => void;
+  /**
+   * Optional tooltip text to display when hovering over the icon.
+   */
+  tooltip?: string;
+  /**
+   * Visual variant for both the text wrapper and tooltip.
+   * @default 'info'
+   */
+  variant?: 'info' | 'success' | 'warning' | 'error';
+}
+
+/**
+ * TooltipIcon component renders an icon with an optional tooltip.
+ *
+ * This component is useful for displaying icons with explanatory tooltips,
+ * especially in contexts where space is limited or additional information
+ * should be revealed on hover.
+ *
+ * @example
+ * ```tsx
+ * <TooltipIcon
+ *   icon="info-circle"
+ *   tooltip="Additional information"
+ *   variant="info"
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <TooltipIcon
+ *   icon="warning-alt"
+ *   tooltip="Warning message"
+ *   variant="warning"
+ *   onClick={() => console.log('Clicked')}
+ * />
+ * ```
+ */
+export const TooltipIcon = ({
+  icon,
+  onClick,
+  tooltip,
+  variant,
+}: TooltipIconProps) => {
+  // Component implementation
+};
+````
+
+**JSDoc Requirements**:
+
+- **Component description**: Clear explanation of what the component does and when to use it
+- **Props documentation**: Each prop must have a description
+- **Default values**: Use `@default` tag to document default prop values
+- **Examples**: Include practical usage examples with `@example` tags
+- **Type information**: Document complex types inline with props
+
+**Storybook Integration**: JSDoc comments are automatically extracted and displayed in Storybook's documentation panel, making it easier for users to understand component APIs without leaving the visual interface.
+
 ## 5. Checklist Before Finalizing
 
 Before considering work complete, verify:
@@ -194,18 +271,72 @@ Before considering work complete, verify:
 - [ ] All dependent packages build successfully (`pnpm turbo run build --filter=...PACKAGE_NAME` from monorepo root)
 - [ ] New tests were created for the changes
 - [ ] Coverage did not decrease (ideally increased)
-- [ ] `coverageThreshold` was updated in `jest.config.ts`
+- [ ] **`coverageThreshold` was updated in `jest.config.ts`** (MANDATORY for every code change)
 - [ ] README was updated with the changes
 - [ ] README was completely reviewed
-- [ ] **Storybook stories created/updated for ALL user-facing components** (run `pnpm storybook` to verify)
+      <<<<<<< HEAD
+- [ ] # **Storybook stories created/updated for ALL user-facing components** (run `pnpm storybook` to verify)
+- [ ] Storybook stories created/updated if changes are user-facing
+- [ ] React components documented with JSDoc (MANDATORY for user-facing components)
+  > > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 - [ ] No commented code or pending TODOs
 - [ ] Code follows project standards
+- [ ] Linting applied: `pnpm run -w lint` (MANDATORY before finalizing)
+
+<<<<<<< HEAD
 
 ## 6. Internationalization (i18n) Pattern
 
 When adding user-facing text or locale-specific values (like number formats, date formats, separators):
 
 ### 6.1 Using defineMessages
+
+=======
+
+## 6. Workflow Example
+
+```bash
+# 1. Make code changes
+# ... edit files ...
+
+# 2. Run tests
+cd packages/PACKAGE_NAME
+pnpm run test
+
+# 3. Create tests for new code
+# ... create test files in tests/unit/ ...
+
+# 4. Run tests again and check coverage
+pnpm run test
+
+# 5. MANDATORY: Update coverage threshold in jest.config.ts
+# Look at the test output for current coverage percentages
+# Then edit tests/unit/jest.config.ts and update coverageThreshold values
+# Example: if output shows "statements: 87.45%", update to 87.35 (slightly lower)
+# ... edit tests/unit/jest.config.ts ...
+
+# 6. Validate dependent packages (from monorepo root)
+cd /path/to/monorepo/root
+pnpm turbo run test --filter=...PACKAGE_NAME
+
+# 7. Validate build (from monorepo root)
+pnpm turbo run build --filter=...PACKAGE_NAME
+
+# 8. Update README
+# ... edit README.md ...
+
+# 9. Final validation
+cd packages/PACKAGE_NAME
+pnpm run test
+```
+
+## 7. Internationalization (i18n) Pattern
+
+When adding user-facing text or locale-specific values (like number formats, date formats, separators):
+
+### 7.1 Using defineMessages
+
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 **MANDATORY**: Use `defineMessages` from `@ttoss/react-i18n` for all translatable content:
 
@@ -229,7 +360,15 @@ const text = intl.formatMessage(messages.myMessage);
 const separator = intl.formatMessage(messages.decimalSeparator);
 ```
 
+<<<<<<< HEAD
+
 ### 6.2 i18n Workflow
+
+=======
+
+### 7.2 i18n Workflow
+
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 1. **Define messages in English**: Always use English as the default message
 2. **Add clear descriptions**: Help translators understand the context
@@ -237,9 +376,46 @@ const separator = intl.formatMessage(messages.decimalSeparator);
 4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n --cache local:` from the monorepo root to update i18n in all other packages
 5. **Translate in apps**: Each application can define locale-specific values in their i18n files
 
+<<<<<<< HEAD
+
 ### 6.3 When to Use i18n
 
-Use `defineMessages` for user-facing text, labels, error messages, validations, and locale-specific formatting values. Do NOT use for internal code constants or technical identifiers.
+# Use `defineMessages` for user-facing text, labels, error messages, validations, and locale-specific formatting values. Do NOT use for internal code constants or technical identifiers.
+
+### 7.3 When to Use i18n
+
+Use `defineMessages` for:
+
+- User-facing text and labels
+- Error messages and validations
+- Locale-specific formatting values (decimal separators, date formats, etc.)
+- Any string that might need translation or localization
+
+Do NOT use for:
+
+- Internal code constants
+- API keys or technical identifiers
+- Code comments (use English directly)
+
+### 7.4 Example: Locale-Specific Formatting
+
+```typescript
+// ✅ CORRECT: Using defineMessages for locale-specific values
+const messages = defineMessages({
+  decimalSeparator: {
+    defaultMessage: '.',
+    description: 'Decimal separator (e.g., "." for 1.23 or "," for 1,23)',
+  },
+});
+
+const { intl } = useI18n();
+const separator = intl.formatMessage(messages.decimalSeparator);
+
+// ❌ INCORRECT: Hardcoding locale-specific values
+const separator = ','; // Don't hardcode locale-specific values
+```
+
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 ---
 

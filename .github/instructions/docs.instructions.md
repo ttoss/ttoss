@@ -29,30 +29,14 @@ Modern readers have limited attention spans and want direct, actionable informat
 
 **CRITICAL**: Before creating or editing any documentation, you MUST:
 
-1. **Scan Related Documentation**: Always search and read related content across ALL documentation sections (blog, product, engineering, design) to understand existing coverage
-2. **Identify Cross-References**: Look for existing internal links, references, and connections that might be affected by your changes
-3. **Check for Redundancy**: Ensure you're not duplicating existing content - instead, reference or expand existing documentation
-4. **Understand Context**: Read at least 2-3 related documents to understand the broader context and messaging consistency
-5. **Map Dependencies**: Identify which other documents might need updates when you make changes
+1. **Scan Related Documentation**: Search and read related content across ALL sections (blog, product, engineering, design)
+2. **Identify Cross-References**: Find existing internal links and connections affected by your changes
+3. **Check for Redundancy**: Ensure you're not duplicating content - reference or expand existing documentation
+4. **Understand Context**: Read 2-3 related documents for broader context and messaging consistency
+5. **Plan Holistically**: Consider how changes affect or enhance other documentation
+6. **Suggest Cross-References**: Propose relevant internal links to strengthen the documentation ecosystem
 
-### Documentation Interconnectedness
-
-This project's documentation is **highly interconnected**:
-
-- **Blog posts** often reference and expand on concepts from product/engineering docs
-- **Engineering processes** are tied to product development workflows
-- **Design decisions** impact both engineering and product documentation
-- **Cross-pollination** of ideas between all sections is common and encouraged
-
-### Analysis Workflow
-
-When asked to modify documentation:
-
-1. **Search First**: Use semantic search to find related content across the entire docs folder
-2. **Read Connections**: Identify how the topic connects to other areas (product ↔ engineering ↔ design ↔ blog)
-3. **Plan Holistically**: Consider how your changes might affect or enhance other documentation
-4. **Suggest Cross-References**: Always propose relevant internal links to strengthen the documentation web
-5. **Flag Potential Updates**: Identify other documents that might benefit from updates or references to your new content
+This project's documentation is **highly interconnected** - blog posts reference product/engineering docs, engineering processes tie to product workflows, and design decisions impact all areas. Always work with this interconnected ecosystem in mind.
 
 ## Project Structure Overview
 
@@ -302,86 +286,10 @@ Think of ttoss documentation as an **interconnected ecosystem** where:
 
 **Key Principle**: Never work in isolation. Every documentation change should consider and enhance the broader documentation ecosystem.
 
-## Self-Improvement of Documentation Instructions
+This instructions file must evolve alongside the documentation it governs. After completing documentation work, evaluate whether these instructions need updates based on:
 
-### Continuous Evolution Requirement
+- **New systematic patterns** that should be standardized across documentation
+- **Process gaps** that would improve efficiency or prevent quality issues
+- **Project evolution** that affects documentation structure or methodology
 
-**CRITICAL**: This instructions file (`docs.instructions.md`) must evolve alongside the documentation it governs. After completing any documentation work, you MUST evaluate whether these instructions need updates.
-
-### When to Update These Instructions
-
-Update `docs.instructions.md` when you discover:
-
-1. **New Documentation Patterns**: Recurring structures or approaches that should be standardized
-2. **Process Gaps**: Missing guidance that would have prevented issues or improved efficiency
-3. **Project Evolution**: Changes in project structure, tools, or methodologies that affect documentation
-4. **Quality Issues**: Repeated problems that could be prevented with better instructions
-5. **Cross-Reference Discoveries**: New interconnection patterns between documentation sections
-
-### What NOT to Add
-
-Be selective and only add:
-
-- ✅ **Systematic patterns** that apply broadly across the documentation
-- ✅ **Critical quality standards** that prevent real problems
-- ✅ **Structural guidance** that improves consistency
-- ✅ **Cross-referencing rules** that strengthen the documentation ecosystem
-
-Avoid adding:
-
-- ❌ **One-off solutions** specific to single documents
-- ❌ **Overly detailed formatting** that should be obvious from examples
-- ❌ **Redundant guidance** already covered elsewhere
-- ❌ **Temporary project-specific** details that may change frequently
-
-### Intelligent Update Process
-
-When updating these instructions:
-
-1. **Identify the Pattern**: What systematic issue or opportunity did you discover?
-2. **Generalize the Solution**: How can this guidance apply to future documentation work?
-3. **Find the Right Section**: Where does this guidance best fit in the existing structure?
-4. **Keep it Concise**: Add only essential guidance that will genuinely improve future work
-5. **Test Against Real Examples**: Ensure the new guidance would have helped with actual documentation tasks
-
-### Update Documentation
-
-When you update `docs.instructions.md`, briefly note:
-
-- **What pattern/issue prompted the update**
-- **How the new guidance improves the documentation process**
-- **Which section of the instructions was enhanced**
-
-This creates a living document that becomes more valuable with each documentation task, without becoming bloated or unwieldy.
-
-### Recent Updates
-
-**July 29, 2025 - Added Visual Fragmentation Reduction Guidelines**:
-
-- **Pattern Identified**: Documentation was becoming fragmented with excessive subheadings and bullet points that interrupted reading flow and made content feel choppy
-- **Solution**: Added specific guidance on minimizing structural breaks, consolidating lists into flowing paragraphs when appropriate, and limiting excessive subsectioning
-- **Impact**: Documentation will now have better readability with improved flow, while maintaining scannability for essential information that truly requires enumeration
-
-**July 23, 2025 - Added ttoss Principles Integration Guidelines**:
-
-- **Pattern Identified**: All ttoss documentation should be grounded in the foundational Product Development Principles to create consistency and economic reasoning across all content
-- **Solution**: Added mandatory integration of ttoss principles in all documentation, with specific guidance on linking, cross-referencing, and principle-based reasoning
-- **Impact**: Documentation will now be interconnected through shared economic principles, providing readers with consistent frameworks for decision-making and enabling better understanding of "why" behind processes and guidelines
-
-**June 30, 2025 - Enhanced Mermaid Diagram Guidelines with XY Charts**:
-
-- **Pattern Identified**: Need for quantitative data visualization in product development documentation, especially for economic analysis, performance metrics, and trend visualization
-- **Solution**: Added xychart to the list of recommended Mermaid diagram types with specific guidance and examples for data relationships and trends
-- **Impact**: Documentation can now include data-driven visualizations for capacity utilization, cost analysis, performance trends, and other quantitative concepts that are central to product development principles
-
-**June 30, 2025 - Added Mermaid Diagram Guidelines**:
-
-- **Pattern Identified**: Complex processes and architectures were being explained with lengthy text that was hard to scan and understand
-- **Solution**: Mandated use of Mermaid diagrams for visualizing processes, workflows, architectures, and relationships, with specific guidance on diagram types and best practices
-- **Impact**: Documentation will now be more visual and scannable, with complex concepts represented as clear diagrams instead of dense text explanations
-
-**June 27, 2025 - Added Core Documentation Philosophy**:
-
-- **Pattern Identified**: Documentation was becoming too verbose and overwhelming for modern readers
-- **Solution**: Established "Less is More" as the most important rule, prioritizing essential information over comprehensive coverage
-- **Impact**: All future documentation must now pass the "essential information only" filter, with clear guidelines for content optimization and removal of non-critical information
+When updating these instructions, keep changes focused on broadly applicable guidance that genuinely improves future work. Avoid one-off solutions or overly detailed formatting rules.

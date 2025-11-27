@@ -20,7 +20,7 @@ export const FormFieldPhone = <
   const {
     label,
     name,
-    tooltip,
+    labelTooltip,
     warning,
     sx,
     css,
@@ -28,6 +28,7 @@ export const FormFieldPhone = <
     id,
     defaultValue,
     placeholder = '(11) 91234-1234',
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -36,13 +37,14 @@ export const FormFieldPhone = <
       id={id}
       label={label}
       name={name}
-      tooltip={tooltip}
+      labelTooltip={labelTooltip}
       warning={warning}
       sx={sx}
       css={css}
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

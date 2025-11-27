@@ -122,35 +122,36 @@ const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
           placeholder="First Name"
           trailingIcon={alertIcon}
           leadingIcon="ic:baseline-supervised-user-circle"
-          tooltip={tooltip}
+          labelTooltip={tooltip}
         />
         <FormFieldInput
           name="age"
           label="Age"
           placeholder="Age"
-          tooltip={tooltip}
+          labelTooltip={tooltip}
         />
         <FormFieldPassword
           name="password"
           label="Password"
           placeholder="Password"
           showPasswordByDefault
-          tooltip={tooltip}
+          leadingIcon="ant-design:lock-outlined"
+          labelTooltip={tooltip}
         />
         <FormFieldCheckbox
           name="receiveAlertEmails"
           label="Receive Alert Emails"
-          tooltip={tooltip}
+          labelTooltip={tooltip}
         />
         <FormFieldSwitch
           name="receiveMarketingEmails"
-          label="Receive Marketing Emails"
-          tooltip={tooltip}
+          label="Receive marketing emails"
+          labelTooltip={tooltip}
         />
         <FormFieldRadio
           name="emailFrequency"
           label="Email Frequency"
-          tooltip={tooltip}
+          labelTooltip={tooltip}
           options={[
             {
               label: 'Daily',
@@ -170,7 +171,7 @@ const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
           name="version"
           label="Version (disabled)"
           disabled
-          tooltip={tooltip}
+          labelTooltip={tooltip}
         />
       </Flex>
       <Button sx={{ marginTop: '4' }} type="submit">
@@ -293,19 +294,19 @@ const TemplateWithInternationalization: StoryFn = () => {
       <Form {...formMethods} onSubmit={action('onSubmit')}>
         <Flex sx={{ flexDirection: 'column', gap: '4' }}>
           <FormFieldInput
-            name="firstName"
-            label="First Name"
-            placeholder="First Name"
+            name="fullName"
+            label="Full Name"
+            placeholder="Full Name"
             trailingIcon={alertIcon}
             leadingIcon="ic:baseline-supervised-user-circle"
-            tooltip={tooltip}
+            labelTooltip={tooltip}
           />
           <FormFieldInput
             name="age"
             label="Age"
             placeholder="Age"
             type="number"
-            tooltip={tooltip}
+            labelTooltip={tooltip}
           />
 
           <FormFieldPassword
