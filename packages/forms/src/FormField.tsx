@@ -92,6 +92,9 @@ export const FormField = <
   const disabled = propsDisabled ?? controllerReturn.field.disabled;
 
   const hasError = !!errors[name];
+  const hasAuxiliaryError = auxiliaryCheckbox
+    ? !!errors[auxiliaryCheckbox.name]
+    : false;
   const uniqueId = React.useId();
   const id = idProp || `form-field-${name}-${uniqueId}`;
 
@@ -185,7 +188,9 @@ export const FormField = <
    */
   const errorNameToDisplay = hasError
     ? name
-    : (auxiliaryCheckbox?.name ?? name);
+    : hasAuxiliaryError && auxiliaryCheckbox
+      ? auxiliaryCheckbox.name
+      : name;
 
   return (
     <Flex
