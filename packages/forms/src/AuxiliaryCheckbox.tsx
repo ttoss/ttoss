@@ -2,6 +2,7 @@ import { Checkbox, Flex, Label } from '@ttoss/ui';
 import * as React from 'react';
 import {
   type FieldPath,
+  type FieldPathValue,
   type FieldValues,
   type RegisterOptions,
   useController,
@@ -84,8 +85,7 @@ export const AuxiliaryCheckbox = <
 
   const { field } = useController<TFieldValues, TName>({
     name,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    defaultValue: defaultValue as any,
+    defaultValue: defaultValue as FieldPathValue<TFieldValues, TName>,
     rules,
   });
 

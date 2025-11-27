@@ -186,10 +186,7 @@ export const FormField = <
     >
       {memoizedRender}
       {auxiliaryCheckbox && (
-        <AuxiliaryCheckbox<TFieldValues, FieldPath<TFieldValues>>
-          {...auxiliaryCheckbox}
-          disabled={disabled}
-        />
+        <AuxiliaryCheckbox {...auxiliaryCheckbox} disabled={disabled} />
       )}
       <FormErrorMessage name={name} />
       {warning && !hasError && (
