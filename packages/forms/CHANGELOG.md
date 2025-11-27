@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.4...@ttoss/forms@0.34.0) (2025-11-27)
+
+### Features
+
+- **forms:** add auxiliaryCheckbox prop to FormField and Input components ([#782](https://github.com/ttoss/ttoss/issues/782)) ([93f7eae](https://github.com/ttoss/ttoss/commit/93f7eae5fc0cc5b00d44273f7eacd85074307849))
+
 ## [0.33.4](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.3...@ttoss/forms@0.33.4) (2025-11-26)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.4...@docs/storybook@3.1.0) (2025-11-27)
+
+### Features
+
+- add SpotlightCard component with responsive design and animations ([#776](https://github.com/ttoss/ttoss/issues/776)) ([47d02fd](https://github.com/ttoss/ttoss/commit/47d02fd22f97ab51d6e70f3a24356da047fe45c0))
+- **forms:** add auxiliaryCheckbox prop to FormField and Input components ([#782](https://github.com/ttoss/ttoss/issues/782)) ([93f7eae](https://github.com/ttoss/ttoss/commit/93f7eae5fc0cc5b00d44273f7eacd85074307849))
+
 ## [3.0.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.3...@docs/storybook@3.0.4) (2025-11-26)
 
 **Note:** Version bump only for package @docs/storybook

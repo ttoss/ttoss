@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.11...@ttoss/components@2.8.0) (2025-11-27)
+
+### Features
+
+- add SpotlightCard component with responsive design and animations ([#776](https://github.com/ttoss/ttoss/issues/776)) ([47d02fd](https://github.com/ttoss/ttoss/commit/47d02fd22f97ab51d6e70f3a24356da047fe45c0))
+
 ## [2.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.10...@ttoss/components@2.7.11) (2025-11-26)
 
 **Note:** Version bump only for package @ttoss/components
