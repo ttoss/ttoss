@@ -14,17 +14,17 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
     environment: Production
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 20
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Configure AWS Credentials
         uses: ./.github/actions/aws-credentials
         with:
           aws-region: ${{ vars.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 20
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Setup git user
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
