@@ -1,5 +1,5 @@
 import { Icon, type IconType } from '@ttoss/react-icons';
-import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
+import { Box, Button, Card, Flex, keyframes, Text } from '@ttoss/ui';
 import { ButtonProps } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -35,10 +35,10 @@ export type SpotlightCardProps = {
   /**
    * Visual variant of the card.
    * - 'accent': (Default) Highlighted background (Action Accent) with shine animation.
-   * - 'dark': Dark background (Action Primary).
+   * - 'primary': Primary background (Action Primary).
    * @default 'accent'
    */
-  variant?: 'accent' | 'dark';
+  variant?: 'accent' | 'primary';
 };
 
 export const SpotlightCard = ({
@@ -50,21 +50,14 @@ export const SpotlightCard = ({
   secondButton,
   variant = 'accent',
 }: SpotlightCardProps) => {
-  React.useEffect(() => {
-    const styleId = 'oca-spotlight-animations-v2';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.innerHTML = `
-        @keyframes ocaGradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  }, []);
+  // Use emotion keyframes helper instead of injecting a global <style> tag
+
+  // Gradient animation used for background flow
+  const gradientFlow = keyframes({
+    '0%': { backgroundPosition: '0% 50%' },
+    '50%': { backgroundPosition: '100% 50%' },
+    '100%': { backgroundPosition: '0% 50%' },
+  });
 
   const hasButtons = !!firstButton || !!secondButton;
   const isAccent = variant === 'accent';
@@ -160,11 +153,11 @@ export const SpotlightCard = ({
                     linear-gradient(0deg, ${bgStart}, ${bgStart})`;
           }
 
-          // Default gradient for Dark mode
+          // Default gradient for Primary variant
           return `linear-gradient(270deg, ${bgStart}, ${bgMiddle}, ${bgStart})`;
         },
         backgroundSize: isAccent ? '200% 100%, auto' : '400% 400%',
-        animation: 'ocaGradientFlow 6s ease infinite',
+        animation: `${gradientFlow} 6s ease infinite`,
         width: '100%',
         minHeight: '104px',
         borderRadius: 'xl',
