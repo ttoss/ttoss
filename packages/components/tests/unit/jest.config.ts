@@ -8,8 +8,8 @@ export default jestUnitConfig({
     global: {
       statements: 91.83,
       branches: 85.1,
-      lines: 93.3,
-      functions: 92.3,
+      lines: 93.16,
+      functions: 92.18,
     },
   },
   coveragePathIgnorePatterns: ['/index.ts$'],
