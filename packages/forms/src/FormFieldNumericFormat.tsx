@@ -30,6 +30,7 @@ export const FormFieldNumericFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
     ...numericFormatProps
   } = props;
 
@@ -45,6 +46,7 @@ export const FormFieldNumericFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (
           <NumericFormat

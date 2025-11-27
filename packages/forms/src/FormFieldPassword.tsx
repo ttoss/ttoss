@@ -26,6 +26,7 @@ export const FormFieldPassword = <
     rules,
     id,
     leadingIcon,
+    auxiliaryCheckbox,
     ...inputProps
   } = props;
 
@@ -41,6 +42,7 @@ export const FormFieldPassword = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <InputPassword

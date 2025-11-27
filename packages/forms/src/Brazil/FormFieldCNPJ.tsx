@@ -84,6 +84,7 @@ export const FormFieldCNPJ = <
     id,
     defaultValue,
     placeholder = '12.345.678/0000-00',
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -99,6 +100,7 @@ export const FormFieldCNPJ = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (
           <PatternFormat
