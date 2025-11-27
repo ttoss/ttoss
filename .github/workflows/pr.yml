@@ -7,50 +7,29 @@ name: pr
       - opened
       - synchronize
       - reopened
-      - closed
 concurrency:
   group: pr-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
   pr:
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 50
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: ./.github/actions/aws-credentials
         with:
           aws-region: ${{ vars.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 50
       - name: Fetch and merge most recent main
         run: |-
           git fetch origin main:main
           git merge main --ff-only --no-edit
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        id: pnpm-install
-        with:
-          run_install: false
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-store-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup ttoss environment
+        uses: ./.github/actions/setup
       - name: Run pr command
         run: sh -e ./.cicd/commands/pr.sh
         env:

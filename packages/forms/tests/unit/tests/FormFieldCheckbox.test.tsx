@@ -247,3 +247,78 @@ test('should have proper ref in error object when validation fails', async () =>
   expect(errorRef).toBeDefined();
   expect(typeof (errorRef as { focus?: () => void }).focus).toBe('function');
 });
+
+test('should toggle when clicking on checkbox icon itself', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldCheckbox name="checkbox1" label="Checkbox 1" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const checkbox = screen.getByRole('checkbox', {
+    name: 'Checkbox 1',
+  }) as HTMLInputElement;
+
+  expect(checkbox.checked).toBe(false);
+
+  // Click directly on the checkbox input element
+  await user.click(checkbox);
+
+  expect(checkbox.checked).toBe(true);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true });
+});
+
+test('should toggle when clicking anywhere in the checkbox container', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldCheckbox name="checkbox1" label="Checkbox 1" />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  const { container } = render(<RenderForm />);
+
+  const checkbox = screen.getByRole('checkbox', {
+    name: 'Checkbox 1',
+  }) as HTMLInputElement;
+
+  expect(checkbox.checked).toBe(false);
+
+  // Find the label that wraps both the checkbox and text
+  const label = container.querySelector('label');
+
+  if (!label) {
+    throw new Error('Label not found');
+  }
+
+  // Click on the label container (not specifically the text or checkbox)
+  await user.click(label);
+
+  expect(checkbox.checked).toBe(true);
+
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true });
+});

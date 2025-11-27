@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.33.4](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.3...@ttoss/forms@0.33.4) (2025-11-26)
+
+### Bug Fixes
+
+- **forms:** make FormFieldCheckbox and FormFieldSwitch fully clickable ([#778](https://github.com/ttoss/ttoss/issues/778)) ([ffd04d5](https://github.com/ttoss/ttoss/commit/ffd04d53a08d04473dc17527d4dfad26f27692b2))
+
 ## [0.33.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.2...@ttoss/forms@0.33.3) (2025-11-26)
 
 ### Bug Fixes
