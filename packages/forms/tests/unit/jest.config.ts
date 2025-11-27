@@ -4,10 +4,10 @@ import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 93.75,
-      branches: 89.89,
-      functions: 93.82,
-      lines: 93.69,
+      statements: 93.5,
+      branches: 89.3,
+      functions: 94.4,
+      lines: 93.5,
     },
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],

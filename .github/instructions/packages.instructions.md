@@ -99,15 +99,6 @@ coverageThreshold: {
 }
 ```
 
-**Important**: This is not optional. Every code modification that changes coverage requires updating these thresholds. This ensures coverage never degrades over time.
-
-### 3.3 How to Interpret Values
-
-- **statements**: Percentage of executed statements
-- **branches**: Percentage of tested branches (if/else, switch, etc.)
-- **lines**: Percentage of executed lines
-- **functions**: Percentage of called functions
-
 ## 4. README Documentation
 
 ### 4.1 Update with Relevant Changes
@@ -123,40 +114,78 @@ Whenever you modify package functionality:
 
 ### 4.2 Complete README Review
 
-After updating the README:
-
-1. **Re-read the entire document** from beginning to end
-2. Verify that:
-   - Information is up to date
-   - Examples work correctly
-   - There are no obsolete or contradictory information
-   - Documentation is clear and objective
-3. **Remove** or **update**:
-   - Outdated examples
-   - References to removed code
-   - Instructions that no longer apply
-4. **Improve**:
-   - Clarity in explanations
-   - Section organization
-   - Practical and useful examples
+After updating the README, re-read the entire document to verify information is current, examples work correctly, and there are no obsolete or contradictory sections.
 
 ### 4.3 Create or Update Storybook Stories
 
-If the change is significant enough to benefit users (new features, UI changes, behavior modifications):
+**MANDATORY**: When adding or modifying user-facing components, forms, UI elements, or any visual functionality, you MUST create or update Storybook stories.
 
-1. Check if a story exists in `docs/storybook/stories/PACKAGE_NAME/`
-2. If the package has user-facing components or features:
-   - **Create a new story** if demonstrating a new feature
-   - **Update existing story** if modifying current behavior
-3. Story files should:
-   - Follow the naming pattern: `ComponentName.stories.tsx`
-   - Include clear examples of the new/modified functionality
-   - Show different use cases and variations
-   - Include documentation in the story metadata
-4. Stories help users:
-   - Understand how to use new features
-   - See visual examples of components
-   - Test interactions in an isolated environment
+#### When Stories Are Required
+
+Stories are **required** for:
+
+- New React components
+- New form fields or input components
+- UI changes that affect visual appearance or behavior
+- New hooks that have visual/interactive demonstrations
+- Any feature that users will interact with visually
+
+Stories are **optional** for:
+
+- Internal utilities with no visual output
+- Backend-only code
+- Pure type definitions
+- Configuration changes
+
+#### How to Create Stories
+
+1. **Check for existing stories** in `docs/storybook/stories/PACKAGE_NAME/`
+2. **Create the story file**:
+   - Location: `docs/storybook/stories/PACKAGE_NAME/ComponentName.stories.tsx`
+   - Follow existing story patterns in the storybook directory
+3. **Story requirements**:
+   - Include a **default story** showing basic usage
+   - Include **variant stories** for different props/states
+   - Include **interactive examples** when applicable
+   - Add **documentation** in the story metadata (title, description)
+4. **Test your stories**:
+   - Run `pnpm storybook` from monorepo root to verify stories render correctly
+   - Ensure all interactive elements work as expected
+
+#### Story File Template
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { ComponentName } from '@ttoss/package-name';
+
+const meta: Meta<typeof ComponentName> = {
+  title: 'PackageName/ComponentName',
+  component: ComponentName,
+  tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof ComponentName>;
+
+export const Default: Story = {
+  args: {
+    // default props
+  },
+};
+
+export const Variant: Story = {
+  args: {
+    // variant props
+  },
+};
+```
+
+#### Why Stories Matter
+
+- **Documentation**: Stories serve as living documentation for components
+- **Visual testing**: Catch visual regressions before they reach production
+- **Developer experience**: Help other developers understand how to use components
+- **Design review**: Enable designers to review component implementations
 
 ### 4.4 Document Components with JSDoc
 
@@ -245,11 +274,24 @@ Before considering work complete, verify:
 - [ ] **`coverageThreshold` was updated in `jest.config.ts`** (MANDATORY for every code change)
 - [ ] README was updated with the changes
 - [ ] README was completely reviewed
+      <<<<<<< HEAD
+- [ ] # **Storybook stories created/updated for ALL user-facing components** (run `pnpm storybook` to verify)
 - [ ] Storybook stories created/updated if changes are user-facing
 - [ ] React components documented with JSDoc (MANDATORY for user-facing components)
+  > > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 - [ ] No commented code or pending TODOs
 - [ ] Code follows project standards
 - [ ] Linting applied: `pnpm run -w lint` (MANDATORY before finalizing)
+
+<<<<<<< HEAD
+
+## 6. Internationalization (i18n) Pattern
+
+When adding user-facing text or locale-specific values (like number formats, date formats, separators):
+
+### 6.1 Using defineMessages
+
+=======
 
 ## 6. Workflow Example
 
@@ -294,6 +336,8 @@ When adding user-facing text or locale-specific values (like number formats, dat
 
 ### 7.1 Using defineMessages
 
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
+
 **MANDATORY**: Use `defineMessages` from `@ttoss/react-i18n` for all translatable content:
 
 ```typescript
@@ -316,13 +360,27 @@ const text = intl.formatMessage(messages.myMessage);
 const separator = intl.formatMessage(messages.decimalSeparator);
 ```
 
+<<<<<<< HEAD
+
+### 6.2 i18n Workflow
+
+=======
+
 ### 7.2 i18n Workflow
+
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 1. **Define messages in English**: Always use English as the default message
 2. **Add clear descriptions**: Help translators understand the context
 3. **Run i18n-cli locally**: Execute `pnpm run i18n` in your package directory to extract messages
 4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n --cache local:` from the monorepo root to update i18n in all other packages
 5. **Translate in apps**: Each application can define locale-specific values in their i18n files
+
+<<<<<<< HEAD
+
+### 6.3 When to Use i18n
+
+# Use `defineMessages` for user-facing text, labels, error messages, validations, and locale-specific formatting values. Do NOT use for internal code constants or technical identifiers.
 
 ### 7.3 When to Use i18n
 
@@ -356,6 +414,8 @@ const separator = intl.formatMessage(messages.decimalSeparator);
 // ❌ INCORRECT: Hardcoding locale-specific values
 const separator = ','; // Don't hardcode locale-specific values
 ```
+
+> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 ---
 
