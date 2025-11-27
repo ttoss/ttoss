@@ -8,7 +8,7 @@ const meta: Meta<typeof SpotlightCard> = {
     title: { control: 'text' },
     subtitle: { control: 'text' },
     description: { control: 'text' },
-    iconSymbol: { control: 'text' },
+    icon: { control: 'text' },
     firstButton: { control: 'object' },
     secondButton: { control: 'object' },
     variant: {
@@ -37,7 +37,7 @@ export const Default: Story = {
     subtitle: 'Tracking',
     description:
       'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões.',
-    iconSymbol: 'material-symbols:ads-click',
+    icon: 'material-symbols:ads-click',
     variant: 'accent',
     firstButton: {
       children: 'Assistir Tutorial',
@@ -66,7 +66,7 @@ export const DarkVariant: Story = {
     title: 'Modo Escuro',
     subtitle: 'Clássico',
     description: 'A versão clássica do card com fundo escuro.',
-    iconSymbol: 'material-symbols:dark-mode',
+    icon: 'material-symbols:dark-mode',
   },
 };
 
@@ -134,7 +134,7 @@ export const FinanceDashboardContext: Story = {
     subtitle: 'Finance',
     description:
       'Track your earnings and dividends in real time with advanced charts and insights.',
-    iconSymbol: 'material-symbols:attach-money',
+    icon: 'material-symbols:attach-money',
     firstButton: {
       children: 'View Demo',
     },

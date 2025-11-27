@@ -26,7 +26,7 @@ interface SpotlightTheme {
 type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
-  iconSymbol: IconType;
+  icon: IconType;
   title: string;
   subtitle?: string;
   description: string;
@@ -42,7 +42,7 @@ export type SpotlightCardProps = {
 };
 
 export const SpotlightCard = ({
-  iconSymbol,
+  icon,
   title,
   subtitle,
   description,
@@ -193,7 +193,7 @@ export const SpotlightCard = ({
             color: iconColorToken,
           }}
         >
-          <Icon icon={iconSymbol} width={28} />
+          <Icon icon={icon} width={28} />
         </Box>
 
         <Box sx={{ minWidth: 0 }}>

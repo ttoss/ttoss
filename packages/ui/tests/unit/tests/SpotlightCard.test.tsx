@@ -8,7 +8,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Main Title"
         description="Detailed description"
-        iconSymbol="test-symbol"
+        icon="test-symbol"
       />
     );
 
@@ -26,7 +26,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Main Title"
         description="Desc"
-        iconSymbol="test-symbol"
+        icon="test-symbol"
         firstButton={{ children: 'Watch Tutorial' }}
         secondButton={{ children: 'Read Article' }}
       />
@@ -42,7 +42,7 @@ describe('SpotlightCard', () => {
         title="Main Title"
         subtitle="Optional Subtitle"
         description="Desc"
-        iconSymbol="symbol"
+        icon="symbol"
       />
     );
     expect(screen.getByText('Optional Subtitle')).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Title"
         description="Desc"
-        iconSymbol="symbol"
+        icon="symbol"
         firstButton={{
           children: 'Primary Button',
           onClick: onFirstMock,
@@ -80,7 +80,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Title"
         description="Desc"
-        iconSymbol="symbol"
+        icon="symbol"
         firstButton={<div data-testid="custom-element">Custom Element</div>}
       />
     );
@@ -94,7 +94,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Accent Card"
         description="This card uses the default accent variant"
-        iconSymbol="symbol"
+        icon="symbol"
       />
     );
 
@@ -107,7 +107,7 @@ describe('SpotlightCard', () => {
       <SpotlightCard
         title="Dark Card"
         description="This card uses the dark variant"
-        iconSymbol="symbol"
+        icon="symbol"
         variant="dark"
       />
     );
