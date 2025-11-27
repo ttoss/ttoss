@@ -1,5 +1,6 @@
-import { Icon } from '@ttoss/react-icons';
+import { Icon, type IconType } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, Text } from '@ttoss/ui';
+import { ButtonProps } from '@ttoss/ui';
 import * as React from 'react';
 
 interface SpotlightTheme {
@@ -22,10 +23,10 @@ interface SpotlightTheme {
   };
 }
 
-type ButtonPropType = React.ComponentProps<typeof Button> | React.ReactNode;
+type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
-  iconSymbol: string;
+  iconSymbol: IconType;
   title: string;
   subtitle?: string;
   description: string;
@@ -107,7 +108,7 @@ export const SpotlightCard = ({
     if (!prop) return null;
     if (React.isValidElement(prop)) return prop;
 
-    const { sx, ...rest } = prop as React.ComponentProps<typeof Button>;
+    const { sx, ...rest } = prop as ButtonProps;
     const { variant: defaultVariant, textColor, styles = {} } = config;
 
     return (
