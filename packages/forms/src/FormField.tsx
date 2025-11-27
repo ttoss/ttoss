@@ -17,6 +17,10 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
+import {
+  AuxiliaryCheckbox,
+  type AuxiliaryCheckboxProps,
+} from './AuxiliaryCheckbox';
 import { FormErrorMessage } from './FormErrorMessage';
 
 type Rules<
@@ -39,6 +43,14 @@ export type FormFieldProps<
   labelTooltip?: TooltipProps;
   warning?: string | React.ReactNode;
   rules?: Rules<TFieldValues, TName>;
+  /**
+   * Optional auxiliary checkbox to render between the field and error message.
+   * Useful for input confirmation or conditional display of other fields.
+   */
+  auxiliaryCheckbox?: Omit<
+    AuxiliaryCheckboxProps<TFieldValues, FieldPath<TFieldValues>>,
+    'disabled'
+  >;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -65,6 +77,7 @@ export const FormField = <
   render,
   warning,
   rules,
+  auxiliaryCheckbox,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -172,6 +185,12 @@ export const FormField = <
       css={css}
     >
       {memoizedRender}
+      {auxiliaryCheckbox && (
+        <AuxiliaryCheckbox<TFieldValues, FieldPath<TFieldValues>>
+          {...auxiliaryCheckbox}
+          disabled={disabled}
+        />
+      )}
       <FormErrorMessage name={name} />
       {warning && !hasError && (
         <Flex
