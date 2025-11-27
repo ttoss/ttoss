@@ -25,6 +25,7 @@ export const FormFieldTextarea = <
     css,
     rules,
     id,
+    auxiliaryCheckbox,
     ...textareaProps
   } = props;
 
@@ -40,6 +41,7 @@ export const FormFieldTextarea = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <Textarea
