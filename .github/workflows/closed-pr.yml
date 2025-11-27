@@ -19,8 +19,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Setup ttoss environment
         uses: ./.github/actions/setup
-        with:
-          skip-i18n: 'true'
       - name: Run closed-pr command
         run: sh -e ./.cicd/commands/closed-pr.sh
         env:
