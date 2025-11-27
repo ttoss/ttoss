@@ -179,6 +179,16 @@ export const FormField = <
     warning,
   ]);
 
+  /**
+   * Determine which error to display: FormField error takes precedence,
+   * then show auxiliaryCheckbox error if present.
+   */
+  const errorNameToDisplay = hasError
+    ? name
+    : auxiliaryCheckbox
+      ? auxiliaryCheckbox.name
+      : name;
+
   return (
     <Flex
       sx={{ flexDirection: 'column', width: '100%', gap: '1', ...sx }}
@@ -188,7 +198,7 @@ export const FormField = <
       {auxiliaryCheckbox && (
         <AuxiliaryCheckbox {...auxiliaryCheckbox} disabled={disabled} />
       )}
-      <FormErrorMessage name={name} />
+      <FormErrorMessage name={errorNameToDisplay} />
       {warning && !hasError && (
         <Flex
           className="warning"

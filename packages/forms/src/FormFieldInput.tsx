@@ -27,6 +27,7 @@ export const FormFieldInput = <
     id,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
     ...inputProps
   } = props;
 
@@ -42,6 +43,7 @@ export const FormFieldInput = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <Input

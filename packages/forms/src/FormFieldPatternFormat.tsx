@@ -30,6 +30,7 @@ export const FormFieldPatternFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -45,6 +46,7 @@ export const FormFieldPatternFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat

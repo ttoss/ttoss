@@ -1,139 +1,13 @@
 import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { Button, Input } from '@ttoss/ui';
 import {
-  AuxiliaryCheckbox,
   Form,
   FormField,
+  FormFieldInput,
   useForm,
   yup,
   yupResolver,
 } from 'src/index';
-
-describe('AuxiliaryCheckbox', () => {
-  test('should render standalone AuxiliaryCheckbox with label', async () => {
-    const user = userEvent.setup({ delay: null });
-    const onSubmit = jest.fn();
-
-    const RenderForm = () => {
-      const formMethods = useForm();
-
-      return (
-        <Form {...formMethods} onSubmit={onSubmit}>
-          <AuxiliaryCheckbox
-            name="confirm"
-            label="I confirm this information"
-          />
-          <Button type="submit">Submit</Button>
-        </Form>
-      );
-    };
-
-    render(<RenderForm />);
-
-    const checkbox = screen.getByRole('checkbox', {
-      name: 'I confirm this information',
-    }) as HTMLInputElement;
-
-    expect(checkbox.checked).toBe(false);
-
-    await user.click(checkbox);
-    expect(checkbox.checked).toBe(true);
-
-    await user.click(screen.getByText('Submit'));
-
-    expect(onSubmit).toHaveBeenCalledWith({ confirm: true });
-  });
-
-  test('should use defaultValue when provided', async () => {
-    const user = userEvent.setup({ delay: null });
-    const onSubmit = jest.fn();
-
-    const RenderForm = () => {
-      const formMethods = useForm();
-
-      return (
-        <Form {...formMethods} onSubmit={onSubmit}>
-          <AuxiliaryCheckbox
-            name="confirm"
-            label="I confirm this information"
-            defaultValue={true}
-          />
-          <Button type="submit">Submit</Button>
-        </Form>
-      );
-    };
-
-    render(<RenderForm />);
-
-    const checkbox = screen.getByRole('checkbox', {
-      name: 'I confirm this information',
-    }) as HTMLInputElement;
-
-    expect(checkbox.checked).toBe(true);
-
-    await user.click(screen.getByText('Submit'));
-
-    expect(onSubmit).toHaveBeenCalledWith({ confirm: true });
-  });
-
-  test('should respect disabled prop', async () => {
-    const RenderForm = () => {
-      const formMethods = useForm();
-
-      return (
-        <Form {...formMethods} onSubmit={jest.fn()}>
-          <AuxiliaryCheckbox
-            name="confirm"
-            label="I confirm this information"
-            disabled={true}
-          />
-          <Button type="submit">Submit</Button>
-        </Form>
-      );
-    };
-
-    render(<RenderForm />);
-
-    const checkbox = screen.getByRole('checkbox', {
-      name: 'I confirm this information',
-    });
-
-    expect(checkbox).toBeDisabled();
-  });
-
-  test('should validate with rules', async () => {
-    const user = userEvent.setup({ delay: null });
-    const onSubmit = jest.fn();
-
-    const RenderForm = () => {
-      const formMethods = useForm({
-        mode: 'all',
-      });
-
-      return (
-        <Form {...formMethods} onSubmit={onSubmit}>
-          <AuxiliaryCheckbox
-            name="confirm"
-            label="I confirm this information"
-            rules={{
-              validate: (value) => {
-                return value === true || 'You must confirm';
-              },
-            }}
-          />
-          <Button type="submit">Submit</Button>
-        </Form>
-      );
-    };
-
-    render(<RenderForm />);
-
-    await user.click(screen.getByText('Submit'));
-
-    // Submit without checking - validation should fail
-    expect(onSubmit).not.toHaveBeenCalled();
-  });
-});
 
 describe('FormField with auxiliaryCheckbox', () => {
   test('should render auxiliaryCheckbox between field and error message', async () => {
@@ -228,7 +102,7 @@ describe('FormField with auxiliaryCheckbox', () => {
     });
   });
 
-  test('should support auxiliaryCheckbox with validation rules', async () => {
+  test('should support auxiliaryCheckbox with validation rules and display errors', async () => {
     const user = userEvent.setup({ delay: null });
     const onSubmit = jest.fn();
 
@@ -271,6 +145,13 @@ describe('FormField with auxiliaryCheckbox', () => {
     // Form should not submit because validation fails
     expect(onSubmit).not.toHaveBeenCalled();
 
+    // The auxiliaryCheckbox error should be displayed
+    await waitFor(() => {
+      expect(
+        screen.getByText('You must confirm your email')
+      ).toBeInTheDocument();
+    });
+
     // Check the confirmation checkbox
     await user.click(
       screen.getByRole('checkbox', { name: 'I confirm this is my email' })
@@ -282,6 +163,66 @@ describe('FormField with auxiliaryCheckbox', () => {
         email: 'test@example.com',
         confirmEmail: true,
       });
+    });
+  });
+
+  test('should show FormField error first before auxiliaryCheckbox error', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const schema = yup.object({
+      email: yup.string().required('Email is required'),
+      confirmEmail: yup.boolean().oneOf([true], 'You must confirm your email'),
+    });
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        resolver: yupResolver(schema),
+        mode: 'all',
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormField
+            name="email"
+            label="Email"
+            defaultValue=""
+            auxiliaryCheckbox={{
+              name: 'confirmEmail',
+              label: 'I confirm this is my email',
+            }}
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    // Submit without filling anything - both have errors
+    await user.click(screen.getByText('Submit'));
+
+    // The FormField error should be displayed (takes precedence)
+    await waitFor(() => {
+      expect(screen.getByText('Email is required')).toBeInTheDocument();
+    });
+
+    // auxiliaryCheckbox error should NOT be visible while FormField has error
+    expect(
+      screen.queryByText('You must confirm your email')
+    ).not.toBeInTheDocument();
+
+    // Fill in email to clear the FormField error
+    await user.type(screen.getByLabelText('Email'), 'test@example.com');
+    await user.click(screen.getByText('Submit'));
+
+    // Now the auxiliaryCheckbox error should be visible
+    await waitFor(() => {
+      expect(
+        screen.getByText('You must confirm your email')
+      ).toBeInTheDocument();
     });
   });
 
@@ -394,5 +335,51 @@ describe('FormField with auxiliaryCheckbox', () => {
     await user.click(screen.getByText('I confirm this is my email'));
 
     expect(checkbox.checked).toBe(true);
+  });
+});
+
+describe('FormFieldInput with auxiliaryCheckbox', () => {
+  test('should render auxiliaryCheckbox on FormFieldInput', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onSubmit = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldInput
+            name="email"
+            label="Email"
+            auxiliaryCheckbox={{
+              name: 'confirmEmail',
+              label: 'I confirm this is my email',
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    // Check that both the input and checkbox are rendered
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: 'I confirm this is my email' })
+    ).toBeInTheDocument();
+
+    // Fill in email and check the confirmation checkbox
+    await user.type(screen.getByLabelText('Email'), 'test@example.com');
+    await user.click(
+      screen.getByRole('checkbox', { name: 'I confirm this is my email' })
+    );
+
+    await user.click(screen.getByText('Submit'));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      confirmEmail: true,
+    });
   });
 });

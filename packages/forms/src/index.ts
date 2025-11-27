@@ -1,5 +1,3 @@
-export type { AuxiliaryCheckboxProps } from './AuxiliaryCheckbox';
-export { AuxiliaryCheckbox } from './AuxiliaryCheckbox';
 export { Form } from './Form';
 export { FormErrorMessage } from './FormErrorMessage';
 export type { FormFieldProps } from './FormField';
