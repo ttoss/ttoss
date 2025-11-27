@@ -185,9 +185,7 @@ export const FormField = <
    */
   const errorNameToDisplay = hasError
     ? name
-    : auxiliaryCheckbox
-      ? auxiliaryCheckbox.name
-      : name;
+    : (auxiliaryCheckbox?.name ?? name);
 
   return (
     <Flex
