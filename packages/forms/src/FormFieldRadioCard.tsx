@@ -39,6 +39,8 @@ export const FormFieldRadioCard = <
     options,
     direction = 'column',
     width = 'full',
+    onBlur,
+    onChange,
     ...radioProps
   } = props;
 
@@ -86,8 +88,14 @@ export const FormFieldRadioCard = <
                     <Radio
                       {...radioProps}
                       ref={field.ref}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        onChange?.(e);
+                      }}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        onBlur?.(e);
+                      }}
                       value={option.value}
                       checked={field.value === option.value}
                       name={name}

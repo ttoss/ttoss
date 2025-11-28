@@ -28,6 +28,8 @@ export const FormFieldInput = <
     leadingIcon,
     trailingIcon,
     auxiliaryCheckbox,
+    onBlur,
+    onChange,
     ...inputProps
   } = props;
 
@@ -49,6 +51,14 @@ export const FormFieldInput = <
           <Input
             {...inputProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             leadingIcon={leadingIcon}
             trailingIcon={trailingIcon}
             disabled={disabled ?? field.disabled}

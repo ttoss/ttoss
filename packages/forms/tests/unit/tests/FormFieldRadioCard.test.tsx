@@ -3,13 +3,19 @@ import { Button } from '@ttoss/ui';
 
 import {
   Form,
-  FormFieldPatternFormat,
+  FormFieldRadioCard,
   useForm,
   yup,
   yupResolver,
 } from '../../../src';
 
-test('call onSubmit with correct data', async () => {
+const RADIO_CARD_OPTIONS = [
+  { value: 'Ferrari', label: 'Ferrari', description: 'Italian luxury car' },
+  { value: 'Mercedes', label: 'Mercedes', description: 'German luxury car' },
+  { value: 'BMW', label: 'BMW', description: 'German sports car' },
+];
+
+test('should submit correct value when clicking on radio card', async () => {
   const user = userEvent.setup({ delay: null });
 
   const onSubmit = jest.fn();
@@ -19,17 +25,10 @@ test('call onSubmit with correct data', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldPatternFormat
-          name="input1"
-          label="input 1"
-          format="#### #### #### ####"
-          placeholder="1234 1234 1234 1234"
-        />
-        <FormFieldPatternFormat
-          name="input2"
-          label="input 2"
-          format="###.###.###-##"
-          placeholder="123.456.789-00"
+        <FormFieldRadioCard
+          name="car"
+          label="Cars"
+          options={RADIO_CARD_OPTIONS}
         />
         <Button type="submit">Submit</Button>
       </Form>
@@ -38,14 +37,11 @@ test('call onSubmit with correct data', async () => {
 
   render(<RenderForm />);
 
-  await user.type(screen.getByLabelText('input 1'), '1234 1234 1234 1234');
-  await user.type(screen.getByLabelText('input 2'), '123.123.123-00');
+  // Click on BMW text which is inside the label
+  await user.click(screen.getByText('BMW'));
   await user.click(screen.getByText('Submit'));
 
-  expect(onSubmit).toHaveBeenCalledWith({
-    input1: '1234123412341234',
-    input2: '12312312300',
-  });
+  expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
 });
 
 test('should display error messages', async () => {
@@ -54,7 +50,7 @@ test('should display error messages', async () => {
   const onSubmit = jest.fn();
 
   const schema = yup.object({
-    input1: yup.string().required('Value is required'),
+    car: yup.string().required('Car is required'),
   });
 
   const RenderForm = () => {
@@ -65,11 +61,10 @@ test('should display error messages', async () => {
 
     return (
       <Form {...formMethods} onSubmit={onSubmit}>
-        <FormFieldPatternFormat
-          name="input1"
-          label="input 1"
-          format="#### #### #### ####"
-          placeholder="1234 1234 1234 1234"
+        <FormFieldRadioCard
+          name="car"
+          label="Cars"
+          options={RADIO_CARD_OPTIONS}
         />
         <Button type="submit">Submit</Button>
       </Form>
@@ -77,28 +72,29 @@ test('should display error messages', async () => {
   };
 
   render(<RenderForm />);
+
   await user.click(screen.getByText('Submit'));
-  expect(await screen.findByText('Value is required')).toBeInTheDocument();
+
+  expect(await screen.findByText('Car is required')).toBeInTheDocument();
 });
 
-describe('FormFieldPatternFormat custom onBlur and onValueChange', () => {
-  test('should call custom onValueChange handler while still updating form state', async () => {
+describe('FormFieldRadioCard custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
     const user = userEvent.setup({ delay: null });
 
     const onSubmit = jest.fn();
-    const customOnValueChange = jest.fn();
+    const customOnChange = jest.fn();
 
     const RenderForm = () => {
       const formMethods = useForm();
 
       return (
         <Form {...formMethods} onSubmit={onSubmit}>
-          <FormFieldPatternFormat
-            name="input1"
-            label="input 1"
-            format="#### #### #### ####"
-            placeholder="1234 1234 1234 1234"
-            onValueChange={customOnValueChange}
+          <FormFieldRadioCard
+            name="car"
+            label="Cars"
+            options={RADIO_CARD_OPTIONS}
+            onChange={customOnChange}
           />
           <Button type="submit">Submit</Button>
         </Form>
@@ -107,12 +103,13 @@ describe('FormFieldPatternFormat custom onBlur and onValueChange', () => {
 
     render(<RenderForm />);
 
-    await user.type(screen.getByLabelText('input 1'), '1234123412341234');
+    // Click on BMW text which triggers the onChange
+    await user.click(screen.getByText('BMW'));
 
-    expect(customOnValueChange).toHaveBeenCalled();
+    expect(customOnChange).toHaveBeenCalled();
 
     await user.click(screen.getByText('Submit'));
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '1234123412341234' });
+    expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
   });
 
   test('should call custom onBlur handler', async () => {
@@ -125,11 +122,10 @@ describe('FormFieldPatternFormat custom onBlur and onValueChange', () => {
 
       return (
         <Form {...formMethods} onSubmit={jest.fn()}>
-          <FormFieldPatternFormat
-            name="input1"
-            label="input 1"
-            format="#### #### #### ####"
-            placeholder="1234 1234 1234 1234"
+          <FormFieldRadioCard
+            name="car"
+            label="Cars"
+            options={RADIO_CARD_OPTIONS}
             onBlur={customOnBlur}
           />
           <Button type="submit">Submit</Button>
@@ -139,8 +135,9 @@ describe('FormFieldPatternFormat custom onBlur and onValueChange', () => {
 
     render(<RenderForm />);
 
-    const input = screen.getByLabelText('input 1');
-    await user.click(input);
+    // Find the radio inputs and click on one
+    const radioInputs = screen.getAllByRole('radio');
+    await user.click(radioInputs[2]); // BMW
     await user.tab();
 
     expect(customOnBlur).toHaveBeenCalled();
