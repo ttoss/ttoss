@@ -34,6 +34,8 @@ export const FormFieldRadio = <
     rules,
     id,
     defaultValue,
+    onBlur,
+    onChange,
     ...radioProps
   } = props;
 
@@ -69,8 +71,14 @@ export const FormFieldRadio = <
                 >
                   <Radio
                     ref={field.ref}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onChange?.(e);
+                    }}
+                    onBlur={(e) => {
+                      field.onBlur();
+                      onBlur?.(e);
+                    }}
                     value={option.value}
                     checked={field.value === option.value}
                     name={name}

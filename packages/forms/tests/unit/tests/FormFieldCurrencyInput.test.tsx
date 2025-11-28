@@ -86,3 +86,67 @@ test('should display error messages', async () => {
   await user.click(screen.getByText('Submit'));
   expect(await screen.findByText('Value is required')).toBeInTheDocument();
 });
+
+describe('FormFieldCurrencyInput custom onBlur and onValueChange', () => {
+  test('should call custom onValueChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnValueChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldCurrencyInput
+            name="amount"
+            label="Amount"
+            prefix="$ "
+            onValueChange={customOnValueChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.type(screen.getByLabelText('Amount'), '100');
+
+    expect(customOnValueChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ amount: 100 });
+  });
+
+  test('should call custom onBlur handler', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldCurrencyInput
+            name="amount"
+            label="Amount"
+            prefix="$ "
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('Amount');
+    await user.click(input);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+  });
+});

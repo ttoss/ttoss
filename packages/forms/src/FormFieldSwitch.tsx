@@ -25,6 +25,8 @@ export const FormFieldSwitch = <
     rules,
     id,
     defaultValue,
+    onBlur,
+    onChange,
     ...switchProps
   } = props;
 
@@ -45,6 +47,14 @@ export const FormFieldSwitch = <
           <Switch
             {...switchProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
           />

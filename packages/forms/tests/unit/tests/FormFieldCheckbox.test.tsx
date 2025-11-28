@@ -322,3 +322,78 @@ test('should toggle when clicking anywhere in the checkbox container', async () 
 
   expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true });
 });
+
+describe('FormFieldCheckbox custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        defaultValues: {
+          checkbox1: false,
+        },
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldCheckbox
+            name="checkbox1"
+            label="Checkbox 1"
+            onChange={customOnChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.click(screen.getByLabelText('Checkbox 1'));
+
+    expect(customOnChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ checkbox1: true });
+  });
+
+  test('should call custom onBlur handler while still triggering validation', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        mode: 'onBlur',
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldCheckbox
+            name="checkbox1"
+            label="Checkbox 1"
+            onBlur={customOnBlur}
+            rules={{
+              validate: (value) => {
+                return value === true || 'Checkbox is required';
+              },
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const checkbox = screen.getByLabelText('Checkbox 1');
+    await user.click(checkbox);
+    await user.click(checkbox); // Uncheck
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+    expect(await screen.findByText('Checkbox is required')).toBeInTheDocument();
+  });
+});

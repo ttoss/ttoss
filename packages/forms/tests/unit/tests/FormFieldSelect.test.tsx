@@ -266,3 +266,68 @@ test('When fetching, should display values correctly', async () => {
 
   expect(onSubmit).toHaveBeenCalledWith({ car: 'ferrari' });
 });
+
+describe('FormFieldSelect custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldSelect
+            name="car"
+            label="Cars"
+            options={OPTIONS}
+            onChange={customOnChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.click(screen.getByRole('combobox'));
+    await user.click(screen.getByText('BMW'));
+
+    expect(customOnChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ car: 'bmw' });
+  });
+
+  test('should call custom onBlur handler', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldSelect
+            name="car"
+            label="Cars"
+            options={OPTIONS}
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const select = screen.getByRole('combobox');
+    await user.click(select);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+  });
+});
