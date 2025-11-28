@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.35.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.34.0...@ttoss/forms@0.35.0) (2025-11-28)
+
+### Features
+
+- **forms:** support custom onBlur and onChange handlers for FormField components ([#786](https://github.com/ttoss/ttoss/issues/786)) ([c145a2c](https://github.com/ttoss/ttoss/commit/c145a2c8eb240c88b418f4d8013449c267663f46))
+
 # [0.34.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.33.4...@ttoss/forms@0.34.0) (2025-11-27)
 
 ### Features
