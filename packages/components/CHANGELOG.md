@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.8.0...@ttoss/components@2.9.0) (2025-11-28)
+
+### Features
+
+- **SpotlightCard:** update variant options and enhance tests for primary variant ([#784](https://github.com/ttoss/ttoss/issues/784)) ([3632fb2](https://github.com/ttoss/ttoss/commit/3632fb21fa2176ba3e4d02c63606ffab2e52a762))
+
 # [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.7.11...@ttoss/components@2.8.0) (2025-11-27)
 
 ### Features

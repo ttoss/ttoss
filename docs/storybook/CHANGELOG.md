@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.1.1...@docs/storybook@3.2.0) (2025-11-28)
+
+### Features
+
+- **SpotlightCard:** update variant options and enhance tests for primary variant ([#784](https://github.com/ttoss/ttoss/issues/784)) ([3632fb2](https://github.com/ttoss/ttoss/commit/3632fb21fa2176ba3e4d02c63606ffab2e52a762))
+
 ## [3.1.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.1.0...@docs/storybook@3.1.1) (2025-11-28)
 
 **Note:** Version bump only for package @docs/storybook
