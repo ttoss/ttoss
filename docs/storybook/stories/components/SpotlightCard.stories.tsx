@@ -7,7 +7,7 @@ const meta: Meta<typeof SpotlightCard> = {
   component: SpotlightCard,
   argTypes: {
     title: { control: 'text' },
-    subtitle: { control: 'text' },
+    badge: { control: 'text' },
     description: { control: 'text' },
     icon: { control: 'text' },
     firstButton: { control: 'object' },
@@ -29,13 +29,16 @@ const meta: Meta<typeof SpotlightCard> = {
 export default meta;
 type Story = StoryObj<typeof SpotlightCard>;
 
-/**
- * Default Story (Accent)
- */
 export const Default: Story = {
   args: {
-    title: 'OneClick',
-    subtitle: 'Tracking',
+    // Branding OneClick: 'One' (Light 300) + 'Click' (Bold 700)
+    title: (
+      <span>
+        <span style={{ fontWeight: 300 }}>One</span>
+        <span style={{ fontWeight: 700 }}>Click</span>
+      </span>
+    ),
+    badge: 'Tracking',
     description:
       'Entenda para que serve e como utilizar o OneClick Tracking para maximizar o rastreamento das suas conversões.',
     icon: 'material-symbols:ads-click',
@@ -65,8 +68,8 @@ export const PrimaryVariant: Story = {
     ...Default.args,
     variant: 'primary',
     title: 'Modo Escuro',
-    subtitle: 'Clássico',
-    description: 'A versão clássica do card com fundo escuro.',
+    badge: 'Clássico',
+    description: 'A versão clássica do card com fundo escuro e badge verde.',
     icon: 'material-symbols:dark-mode',
   },
 };
@@ -77,6 +80,7 @@ export const PrimaryVariant: Story = {
 export const CustomNodes: Story = {
   args: {
     ...Default.args,
+    title: 'Custom Title',
     firstButton: (
       <div
         style={{
@@ -102,6 +106,8 @@ export const CustomNodes: Story = {
 export const NoButtons: Story = {
   args: {
     ...Default.args,
+    title: 'Information',
+    badge: undefined,
     description:
       'This banner serves only as information or a highlight without direct actions available at the moment.',
     firstButton: undefined,
@@ -115,6 +121,7 @@ export const NoButtons: Story = {
 export const OnlyFirstButton: Story = {
   args: {
     ...Default.args,
+    title: 'Tutorial',
     firstButton: {
       children: 'Watch Tutorial',
       leftIcon: 'material-symbols:play-circle-outline',
@@ -132,7 +139,7 @@ export const OnlyFirstButton: Story = {
 export const FinanceDashboardContext: Story = {
   args: {
     title: 'Dashboard',
-    subtitle: 'Finance',
+    badge: 'Finance',
     description:
       'Track your earnings and dividends in real time with advanced charts and insights.',
     icon: 'material-symbols:attach-money',

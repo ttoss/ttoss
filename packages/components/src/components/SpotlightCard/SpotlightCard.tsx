@@ -27,32 +27,29 @@ type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
   icon: IconType;
-  title: string;
-  subtitle?: string;
+  /**
+   * Title of the card. Pass a ReactNode for styling.
+   */
+  title: string | React.ReactNode;
+  /**
+   * Badge text. Renders as a badge/tag next to the title.
+   */
+  badge?: string | React.ReactNode;
   description: string;
   firstButton?: ButtonPropType;
   secondButton?: ButtonPropType;
-  /**
-   * Visual variant of the card.
-   * - 'accent': (Default) Highlighted background (Action Accent) with shine animation.
-   * - 'primary': Primary background (Action Primary).
-   * @default 'accent'
-   */
   variant?: 'accent' | 'primary';
 };
 
 export const SpotlightCard = ({
   icon,
   title,
-  subtitle,
+  badge,
   description,
   firstButton,
   secondButton,
   variant = 'accent',
 }: SpotlightCardProps) => {
-  // Use emotion keyframes helper instead of injecting a global <style> tag
-
-  // Gradient animation used for background flow
   const gradientFlow = keyframes({
     '0%': { backgroundPosition: '0% 50%' },
     '50%': { backgroundPosition: '100% 50%' },
@@ -62,41 +59,42 @@ export const SpotlightCard = ({
   const hasButtons = !!firstButton || !!secondButton;
   const isAccent = variant === 'accent';
 
-  // --- COLOR DECISION LOGIC ---
-
-  // 1. Main text colors of the card
+  // --- COLORS ---
   const textColorToken = isAccent
     ? 'action.text.accent.default'
     : 'action.text.primary.default';
 
-  // 2. Icon colors
   const iconColorToken = isAccent
     ? 'action.text.accent.default'
     : 'display.text.accent.default';
+
   const iconBgToken = isAccent
     ? 'rgba(255,255,255,0.3)'
     : 'action.background.secondary.default';
 
-  // 3. Primary button configuration
+  // Badge Colors
+  const badgeBgToken = isAccent
+    ? 'action.background.primary.default'
+    : 'action.background.accent.default';
+
+  const badgeTextToken = isAccent
+    ? 'action.text.primary.default'
+    : 'action.text.accent.default';
+
+  // Buttons Colors
   const btnPrimaryVariant = isAccent ? 'primary' : 'accent';
   const btnPrimaryColorToken = isAccent
     ? 'action.text.primary.default'
     : 'action.text.accent.default';
 
-  // 4. Secondary button configuration
   const btnSecondaryColorToken = textColorToken;
   const btnSecondaryBorderColorToken = isAccent
     ? 'currentColor'
     : 'display.border.muted.default';
 
-  // --- HELPER TO RENDER BUTTONS ---
   const renderButton = (
     prop: ButtonPropType,
-    config: {
-      variant: string;
-      textColor: string;
-      styles?: object;
-    }
+    config: { variant: string; textColor: string; styles?: object }
   ) => {
     if (!prop) return null;
     if (React.isValidElement(prop)) return prop;
@@ -138,22 +136,17 @@ export const SpotlightCard = ({
         justifyContent: 'space-between',
         background: (t) => {
           const theme = t as SpotlightTheme;
-
           const bgStart = isAccent
             ? theme.colors?.action?.background?.accent?.default
             : theme.colors?.action?.background?.primary?.default;
-
           const bgMiddle = isAccent
             ? theme.colors?.action?.background?.accent?.active
             : theme.colors?.action?.background?.secondary?.default;
 
           if (isAccent) {
-            // Shine animation for Accent variant
             return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), 
                     linear-gradient(0deg, ${bgStart}, ${bgStart})`;
           }
-
-          // Default gradient for Primary variant
           return `linear-gradient(270deg, ${bgStart}, ${bgMiddle}, ${bgStart})`;
         },
         backgroundSize: isAccent ? '200% 100%, auto' : '400% 400%',
@@ -176,8 +169,8 @@ export const SpotlightCard = ({
       <Flex sx={{ alignItems: 'center', gap: '5', flex: 1, minWidth: 0 }}>
         <Box
           sx={{
-            width: 58,
-            height: 58,
+            width: 64, // Aumentei levemente o box do ícone
+            height: 64,
             borderRadius: '2xl',
             backgroundColor: iconBgToken,
             display: 'flex',
@@ -187,47 +180,50 @@ export const SpotlightCard = ({
             color: iconColorToken,
           }}
         >
-          <Icon icon={icon} width={28} />
+          <Icon icon={icon} width={32} />
         </Box>
 
         <Box sx={{ minWidth: 0 }}>
           <Text
             as="div"
             sx={{
-              fontFamily: 'heading',
-              fontWeight: 800,
-              fontSize: '24px',
-              lineHeight: 1.2,
+              fontFamily: 'mono',
+              // Tamanho da fonte aumentado para dar mais presença ao OneClick
+              fontSize: '32px',
+              lineHeight: 1.1,
               color: 'inherit',
               whiteSpace: 'nowrap',
               display: 'flex',
-              alignItems: 'baseline',
-              gap: '2',
+              alignItems: 'center',
+              gap: '3',
             }}
           >
-            <span
-              style={{
-                fontWeight: 800,
-                letterSpacing: '-0.5px',
-                verticalAlign: 'middle',
-                lineHeight: 1.1,
-              }}
-            >
-              {title}
-            </span>
-            {subtitle && (
-              <span
-                style={{
-                  fontWeight: 300,
-                  fontSize: '20px',
-                  opacity: 0.8,
-                  marginLeft: 6,
-                  verticalAlign: 'baseline',
-                  lineHeight: 1.1,
+            {/* Renderiza o título diretamente */}
+            {title}
+
+            {badge && (
+              <Box
+                as="span"
+                sx={{
+                  backgroundColor: badgeBgToken,
+                  color: badgeTextToken,
+                  fontFamily: 'mono',
+                  fontWeight: 'bold',
+                  fontSize: '11px', // Fonte menor para o badge
+                  lineHeight: 1,
+                  paddingX: '6px', // Padding horizontal reduzido
+                  paddingY: '3px', // Padding vertical reduzido
+                  borderRadius: 'md',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  transform: 'translateY(3px)', // Pequeno ajuste ótico vertical
                 }}
               >
-                {subtitle}
-              </span>
+                {badge}
+              </Box>
             )}
           </Text>
           <Text
@@ -235,9 +231,9 @@ export const SpotlightCard = ({
             sx={{
               fontFamily: 'body',
               fontWeight: 400,
-              fontSize: '15px',
+              fontSize: '16px', // Leve aumento na descrição
               color: 'inherit',
-              opacity: 0.85,
+              opacity: 0.9,
               mt: '1',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -255,16 +251,12 @@ export const SpotlightCard = ({
         <Flex
           sx={{ gap: '4', alignItems: 'center', flexShrink: 0, ml: 'auto' }}
         >
-          {/* PRIMARY BUTTON */}
           {renderButton(firstButton, {
             variant: btnPrimaryVariant,
             textColor: btnPrimaryColorToken,
-            styles: {
-              ':hover': { transform: 'translateY(-1px)' },
-            },
+            styles: { ':hover': { transform: 'translateY(-1px)' } },
           })}
 
-          {/* SECONDARY BUTTON */}
           {renderButton(secondButton, {
             variant: 'secondary',
             textColor: btnSecondaryColorToken,

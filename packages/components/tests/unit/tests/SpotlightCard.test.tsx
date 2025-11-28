@@ -35,11 +35,11 @@ describe('SpotlightCard', () => {
     expect(screen.getByText('Read Article')).toBeInTheDocument();
   });
 
-  test('should render subtitle when provided', () => {
+  test('should render badge when provided', () => {
     render(
       <SpotlightCard
         title="Main Title"
-        subtitle="Optional Subtitle"
+        badge="Optional Subtitle"
         description="Desc"
         icon="symbol"
       />
