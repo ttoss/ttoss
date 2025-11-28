@@ -101,17 +101,58 @@ describe('SpotlightCard', () => {
     expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
   });
 
-  test('should render correctly with dark variant', () => {
+  test('should render correctly with primary variant', () => {
     render(
       <SpotlightCard
-        title="Dark Card"
-        description="This card uses the dark variant"
+        title="Primary Card"
+        description="This card uses the primary variant"
         icon="symbol"
-        variant="dark"
+        variant="primary"
       />
     );
 
-    expect(screen.getByText('Dark Card')).toBeInTheDocument();
+    expect(screen.getByText('Primary Card')).toBeInTheDocument();
     expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render primitive button prop (string) as button content', () => {
+    render(
+      <SpotlightCard
+        title="Primitive Button"
+        description="Button as string"
+        icon="symbol"
+        firstButton={'Click me'}
+      />
+    );
+
+    // When a primitive is provided it should be rendered as-is
+    expect(screen.getByText('Click me')).toBeInTheDocument();
+  });
+
+  test('should merge sx from button props and render styled button', () => {
+    render(
+      <SpotlightCard
+        title="Styled Button"
+        description="Button with sx"
+        icon="symbol"
+        firstButton={{ children: 'Styled', sx: { color: 'red' } }}
+      />
+    );
+
+    const btn = screen.getByText('Styled');
+    expect(btn).toBeInTheDocument();
+  });
+
+  test('should render accent variant explicitly', () => {
+    render(
+      <SpotlightCard
+        title="Accent Explicit"
+        description="Accent variant"
+        icon="symbol"
+        variant="accent"
+      />
+    );
+
+    expect(screen.getByText('Accent Explicit')).toBeInTheDocument();
   });
 });

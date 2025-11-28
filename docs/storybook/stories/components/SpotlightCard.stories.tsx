@@ -14,7 +14,7 @@ const meta: Meta<typeof SpotlightCard> = {
     secondButton: { control: 'object' },
     variant: {
       control: { type: 'radio' },
-      options: ['accent', 'dark'],
+      options: ['accent', 'primary'],
       description: 'Estilo visual do card',
       table: {
         defaultValue: { summary: 'accent' },
@@ -58,12 +58,12 @@ export const Default: Story = {
 };
 
 /**
- * Dark Variant
+ * Primary Variant
  */
-export const DarkVariant: Story = {
+export const PrimaryVariant: Story = {
   args: {
     ...Default.args,
-    variant: 'dark',
+    variant: 'primary',
     title: 'Modo Escuro',
     subtitle: 'Clássico',
     description: 'A versão clássica do card com fundo escuro.',
