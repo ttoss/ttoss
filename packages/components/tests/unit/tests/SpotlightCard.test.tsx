@@ -35,11 +35,11 @@ describe('SpotlightCard', () => {
     expect(screen.getByText('Read Article')).toBeInTheDocument();
   });
 
-  test('should render subtitle when provided', () => {
+  test('should render badge when provided', () => {
     render(
       <SpotlightCard
         title="Main Title"
-        subtitle="Optional Subtitle"
+        badge="Optional Subtitle"
         description="Desc"
         icon="symbol"
       />
@@ -154,5 +154,32 @@ describe('SpotlightCard', () => {
     );
 
     expect(screen.getByText('Accent Explicit')).toBeInTheDocument();
+  });
+
+  test('should render custom ReactNode as a button', () => {
+    render(
+      <SpotlightCard
+        title="Title"
+        description="Desc"
+        icon="symbol"
+        firstButton={<div data-testid="custom-element">Custom Element</div>}
+      />
+    );
+
+    expect(screen.getByTestId('custom-element')).toBeInTheDocument();
+    expect(screen.getByText('Custom Element')).toBeInTheDocument();
+  });
+
+  test('should render correctly with default variant (accent)', () => {
+    render(
+      <SpotlightCard
+        title="Accent Card"
+        description="This card uses the default accent variant"
+        icon="symbol"
+      />
+    );
+
+    expect(screen.getByText('Accent Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
   });
 });
