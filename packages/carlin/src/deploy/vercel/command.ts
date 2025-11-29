@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { CommandModule, InferredOptionTypes } from 'yargs';
-import { addGroupToOptions } from '../../utils';
+import { Command } from 'commander';
 import { deployVercel } from './deployVercel';
 import log from 'npmlog';
 
@@ -13,22 +12,18 @@ export const options = {
   },
 } as const;
 
-export const deployVercelCommand: CommandModule<
-  any,
-  InferredOptionTypes<typeof options>
-> = {
-  command: 'vercel',
-  describe: 'Deploy on Vercel.',
-  builder: (yargs) => {
-    return yargs.options(
-      addGroupToOptions(options, 'Deploy on Vercel Options')
-    );
-  },
-  handler: ({ destroy, ...rest }) => {
-    if (destroy) {
+export const deployVercelCommand = new Command('vercel')
+  .description('Deploy on Vercel.')
+  .allowUnknownOption(true)
+  .option('--token <token>', options.token.describe)
+  .action(async function (this: Command) {
+    const opts = this.opts();
+    const parentOpts = this.parent?.parent?.opts() || {};
+    const allOpts = { ...parentOpts, ...opts };
+
+    if (allOpts.destroy) {
       log.info(logPrefix, 'Destroy Vercel deployment not implemented yet.');
     } else {
-      deployVercel(rest);
+      await deployVercel(allOpts);
     }
-  },
-};
+  });

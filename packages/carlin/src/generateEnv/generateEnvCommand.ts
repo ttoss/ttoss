@@ -1,4 +1,4 @@
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import { Command } from 'commander';
 import { generateEnv } from './generateEnv';
 
 export const DEFAULT_ENVIRONMENT = 'Staging';
@@ -18,17 +18,19 @@ export const options = {
   },
 } as const;
 
-export const generateEnvCommand: CommandModule<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
-  InferredOptionTypes<typeof options>
-> = {
-  command: ['generate-env', 'ge', 'env'],
-  describe: 'Generate environment files.',
-  builder: (yargs) => {
-    return yargs.options(options);
-  },
-  handler: (args) => {
-    return generateEnv(args);
-  },
-};
+export const generateEnvCommand = new Command('generate-env')
+  .description('Generate environment files.')
+  .aliases(['ge', 'env'])
+  .option(
+    '-d, --default-environment <environment>',
+    options['default-environment'].describe,
+    options['default-environment'].default
+  )
+  .option('-p, --path <path>', options.path.describe, options.path.default)
+  .action(async function (this: Command) {
+    const opts = this.opts();
+    await generateEnv({
+      defaultEnvironment: opts.defaultEnvironment,
+      path: opts.path,
+    });
+  });
