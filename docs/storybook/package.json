@@ -20,6 +20,7 @@
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-dashboard": "workspace:^",
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",

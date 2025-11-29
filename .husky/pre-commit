@@ -1,5 +1,5 @@
 # Ensure pnpm is in PATH
-export PNPM_HOME="/home/runner/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
 # Ensure correct Node version

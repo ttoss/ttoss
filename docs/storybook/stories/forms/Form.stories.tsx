@@ -22,10 +22,10 @@ import { action } from 'storybook/actions';
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
     case 'pt-BR': {
-      return (await import('../../i18n/compiled/pt-BR.json')).default;
+      return (await import('../../i18n/lang/pt-BR.json')).default;
     }
     default: {
-      return (await import('../../i18n/compiled/en.json')).default;
+      return (await import('../../i18n/lang/en.json')).default;
     }
   }
 };

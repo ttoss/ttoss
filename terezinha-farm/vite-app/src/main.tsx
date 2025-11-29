@@ -5,6 +5,7 @@ import { AuthProvider } from '@ttoss/react-auth';
 import { FeatureFlagsProvider } from '@ttoss/react-feature-flags';
 import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
+import { OcaTheme } from '@ttoss/theme/Oca';
 import { ThemeProvider } from '@ttoss/ui';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -16,10 +17,10 @@ import { environment } from './RelayEnvironment.ts';
 const loadLocaleData: LoadLocaleData = async (locale) => {
   switch (locale) {
     case 'pt-BR': {
-      return (await import('../i18n/compiled/pt-BR.json')).default;
+      return (await import('../i18n/lang/pt-BR.json')).default;
     }
     default:
-      return (await import('../i18n/compiled/en.json')).default;
+      return (await import('../i18n/lang/en.json')).default;
   }
 };
 
@@ -31,7 +32,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <FeatureFlagsProvider>
       <RelayEnvironmentProvider environment={environment}>
-        <ThemeProvider>
+        <ThemeProvider theme={OcaTheme}>
           <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
             <NotificationsProvider>
               <AuthProvider>
