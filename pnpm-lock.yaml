@@ -438,6 +438,9 @@ importers:
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.0
       deep-equal:
         specifier: ^2.2.3
         version: 2.2.3
@@ -486,9 +489,6 @@ importers:
       vercel:
         specifier: ^39.1.1
         version: 39.4.2(@swc/core@1.13.5)(encoding@0.1.13)(rollup@4.46.2)
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
     devDependencies:
       '@ttoss/test-utils':
         specifier: workspace:^
@@ -529,9 +529,6 @@ importers:
       '@types/uglify-js':
         specifier: ^3.17.5
         version: 3.17.5
-      '@types/yargs':
-        specifier: ^17.0.33
-        version: 17.0.33
       jest:
         specifier: ^30.2.0
         version: 30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.7.3))
