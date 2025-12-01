@@ -1,10 +1,1 @@
-# Ensure pnpm is in PATH
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-
-# Ensure correct Node version
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use 24 2>/dev/null || true
-
 pnpm commitlint --edit

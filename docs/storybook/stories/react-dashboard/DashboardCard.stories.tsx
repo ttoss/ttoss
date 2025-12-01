@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { DashboardCard, DashboardProvider } from '@ttoss/react-dashboard';
+import { DashboardCard } from '@ttoss/react-dashboard';
 import { Box, Stack } from '@ttoss/ui';
 
 const meta: Meta = {
@@ -12,15 +12,6 @@ const meta: Meta = {
       },
     },
   },
-  decorators: [
-    (Story) => {
-      return (
-        <DashboardProvider>
-          <Story />
-        </DashboardProvider>
-      );
-    },
-  ],
   tags: ['autodocs'],
 };
 

@@ -1,4 +1,5 @@
 import { Flex } from '@ttoss/ui';
+import * as React from 'react';
 
 import { useDashboard } from './DashboardProvider';
 import { DateRange, DateRangeFilter } from './Filters/DateRangeFilter';
@@ -31,16 +32,34 @@ export type DashboardFilter = {
 };
 
 export const DashboardFilters = () => {
-  const { filters } = useDashboard();
+  const { filters, updateFilter } = useDashboard();
+
+  const onChangeHandlers = React.useMemo(() => {
+    const handlers = new Map<string, (value: DashboardFilterValue) => void>();
+    for (const filter of filters) {
+      handlers.set(filter.key, (value: DashboardFilterValue) => {
+        updateFilter(filter.key, value);
+      });
+    }
+    return handlers;
+  }, [filters, updateFilter]);
+
   return (
     <Flex
       sx={{
         gap: '2',
         flexDirection: 'row',
-        flexWrap: 'wrap',
+        '@media (max-width: 768px)': {
+          flexWrap: 'wrap',
+        },
       }}
     >
       {filters.map((filter) => {
+        const onChange = onChangeHandlers.get(filter.key);
+        if (!onChange) {
+          return null;
+        }
+
         switch (filter.type) {
           case DashboardFilterType.TEXT:
             return (
@@ -50,7 +69,7 @@ export const DashboardFilters = () => {
                 label={filter.label}
                 value={filter.value}
                 placeholder={filter.placeholder}
-                onChange={filter.onChange ?? (() => {})}
+                onChange={onChange}
               />
             );
           case DashboardFilterType.SELECT:
@@ -62,7 +81,7 @@ export const DashboardFilters = () => {
                 value={filter.value}
                 options={filter.options ?? []}
                 onChange={(value) => {
-                  filter.onChange?.(value as string | number | boolean);
+                  onChange(value as string | number | boolean);
                 }}
               />
             );
@@ -74,7 +93,7 @@ export const DashboardFilters = () => {
                 value={filter.value as DateRange | undefined}
                 presets={filter.presets}
                 onChange={(range) => {
-                  filter.onChange?.(range as DashboardFilterValue);
+                  onChange(range as DashboardFilterValue);
                 }}
               />
             );

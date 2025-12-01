@@ -1,59 +1,73 @@
 import * as React from 'react';
 
 import { DashboardTemplate } from './Dashboard';
-import { DashboardFilter } from './DashboardFilters';
+import { DashboardFilter, DashboardFilterValue } from './DashboardFilters';
 
 export const DashboardContext = React.createContext<{
   filters: DashboardFilter[];
-  setFilters: React.Dispatch<React.SetStateAction<DashboardFilter[]>>;
+  updateFilter: (key: string, value: DashboardFilterValue) => void;
   templates: DashboardTemplate[];
-  setTemplates: React.Dispatch<React.SetStateAction<DashboardTemplate[]>>;
   selectedTemplate: DashboardTemplate | undefined;
 }>({
   filters: [],
-  setFilters: () => {},
+  updateFilter: () => {},
   templates: [],
-  setTemplates: () => {},
   selectedTemplate: undefined,
 });
 
 export const DashboardProvider = (props: {
   children: React.ReactNode;
-  initialFilters?: DashboardFilter[];
-  initialTemplates?: DashboardTemplate[];
+  filters: DashboardFilter[];
+  templates: DashboardTemplate[];
+  onFiltersChange?: (filters: DashboardFilter[]) => void;
 }) => {
-  const [filters, setFilters] = React.useState<DashboardFilter[]>(
-    props.initialFilters ?? []
-  );
-  const [templates, setTemplates] = React.useState<DashboardTemplate[]>(
-    props.initialTemplates ?? []
-  );
+  const {
+    filters: externalFilters,
+    templates: externalTemplates,
+    onFiltersChange,
+  } = props;
 
-  // Sync with initial props when they change
-  React.useEffect(() => {
-    if (props.initialFilters !== undefined) {
-      setFilters(props.initialFilters);
-    }
-  }, [props.initialFilters]);
+  // Store callbacks in refs to avoid recreating them
+  const onFiltersChangeRef = React.useRef(onFiltersChange);
+  const filtersRef = React.useRef(externalFilters);
 
   React.useEffect(() => {
-    if (props.initialTemplates !== undefined) {
-      setTemplates(props.initialTemplates);
-    }
-  }, [props.initialTemplates]);
+    onFiltersChangeRef.current = onFiltersChange;
+  }, [onFiltersChange]);
+
+  React.useEffect(() => {
+    filtersRef.current = externalFilters;
+  }, [externalFilters]);
+
+  // Update filter value and notify parent
+  // Use refs to avoid recreating this function on every filter change
+  const updateFilter = React.useCallback(
+    (key: string, value: DashboardFilterValue) => {
+      const updatedFilters = filtersRef.current.map((filter) => {
+        return filter.key === key ? { ...filter, value } : filter;
+      });
+      onFiltersChangeRef.current?.(updatedFilters);
+    },
+    [] // Empty deps - we use refs for current values
+  );
 
   const selectedTemplate = React.useMemo(() => {
-    const templateId = filters.find((filter) => {
+    const templateId = externalFilters.find((filter) => {
       return filter.key === 'template';
     })?.value;
-    return templates.find((template) => {
+    return externalTemplates.find((template) => {
       return template.id === templateId;
     });
-  }, [filters, templates]);
+  }, [externalFilters, externalTemplates]);
 
   return (
     <DashboardContext.Provider
-      value={{ filters, setFilters, templates, setTemplates, selectedTemplate }}
+      value={{
+        filters: externalFilters,
+        updateFilter,
+        templates: externalTemplates,
+        selectedTemplate,
+      }}
     >
       {props.children}
     </DashboardContext.Provider>

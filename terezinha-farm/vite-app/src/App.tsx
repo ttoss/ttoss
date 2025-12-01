@@ -209,6 +209,154 @@ const templates: DashboardTemplate[] = [
       },
     ],
   },
+  {
+    id: 'api-data',
+    name: 'OneClickAds',
+    grid: [
+      {
+        i: '1',
+        w: 4,
+        h: 3,
+        x: 0,
+        y: 0,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'oneclickads' }],
+          title: 'Faturamento Bruto',
+          variant: 'dark',
+          numberType: 'currency',
+          type: 'bigNumber',
+          data: {
+            api: {
+              total: 3820.68,
+            },
+          },
+          trend: {
+            value: 12.5,
+            status: 'positive',
+          },
+        },
+      },
+      {
+        i: '2',
+        w: 3,
+        h: 3,
+        x: 4,
+        y: 0,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'api' }],
+          title: 'Taxas',
+          numberType: 'currency',
+          type: 'bigNumber',
+          labels: [],
+          data: {
+            api: {
+              total: 1000,
+            },
+          },
+        },
+      },
+      {
+        i: '3',
+        w: 2,
+        h: 3,
+        x: 7,
+        y: 0,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'api' }],
+          title: 'ROAS',
+          variant: 'light-green',
+          numberType: 'number',
+          type: 'bigNumber',
+          labels: [],
+          data: {
+            api: {
+              total: 4.46,
+            },
+          },
+          status: {
+            text: 'Performance excelente',
+            icon: 'mdi:trending-up',
+          },
+        },
+      },
+      {
+        i: '4',
+        w: 6,
+        h: 3,
+        x: 0,
+        y: 3,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'api' }],
+          title: 'Faturamento líquido total',
+          description: 'Total de faturamento líquido',
+          numberType: 'currency',
+          type: 'bigNumber',
+          labels: [],
+          data: {
+            api: {
+              total: 2789.1,
+            },
+          },
+        },
+      },
+      {
+        i: '5',
+        w: 6,
+        h: 3,
+        x: 6,
+        y: 3,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'api' }],
+          title: 'Lucro Líquido',
+          variant: 'default',
+          numberType: 'currency',
+          type: 'bigNumber',
+          labels: [],
+          data: {
+            api: {
+              total: 1932.76,
+            },
+          },
+          trend: {
+            value: 8.3,
+            status: 'negative',
+          },
+        },
+      },
+      {
+        i: '6',
+        w: 2,
+        h: 3,
+        x: 9,
+        y: 0,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          sourceType: [{ source: 'api' }],
+          title: 'ROI',
+          description: 'Total de ROI',
+          numberType: 'number',
+          type: 'bigNumber',
+          labels: [],
+          data: {
+            api: {
+              total: 3.26,
+            },
+          },
+        },
+      },
+    ],
+  },
 ];
 
 const startOfDay = (date: Date) => {

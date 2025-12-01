@@ -1,4 +1,6 @@
-import { Flex, Input, Label } from '@ttoss/ui';
+import { FormFieldInput } from '@ttoss/forms';
+import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { DashboardFilterValue } from '../DashboardFilters';
 
@@ -9,17 +11,38 @@ export const TextFilter = (props: {
   placeholder?: string;
   onChange: (value: DashboardFilterValue) => void;
 }) => {
+  const { value, onChange, label, placeholder } = props;
+
+  const formMethods = useForm<{ value: string }>({
+    defaultValues: {
+      value: value.toString(),
+    },
+    mode: 'onChange',
+  });
+
+  React.useEffect(() => {
+    const stringValue = value.toString();
+    formMethods.setValue('value', stringValue, { shouldDirty: false });
+  }, [value, formMethods]);
+
+  const currentValue = formMethods.watch('value');
+
+  React.useEffect(() => {
+    // Only call onChange if the form value differs from the prop value
+    // This means the user changed it, not that it was updated from props
+    if (currentValue !== undefined && currentValue !== value.toString()) {
+      onChange(currentValue);
+    }
+  }, [currentValue, value, onChange]);
+
   return (
-    <Flex sx={{ gap: '1', flexDirection: 'column', fontSize: 'sm' }}>
-      <Label>{props.label}</Label>
-      <Input
-        sx={{ height: '2.8em' }}
-        value={props.value.toString()}
-        onChange={(e) => {
-          props.onChange(e.target.value);
-        }}
-        placeholder={props.placeholder}
+    <FormProvider {...formMethods}>
+      <FormFieldInput
+        name="value"
+        label={label}
+        placeholder={placeholder}
+        sx={{ fontSize: 'sm' }}
       />
-    </Flex>
+    </FormProvider>
   );
 };

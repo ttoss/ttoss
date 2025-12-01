@@ -3,13 +3,18 @@ import 'react-grid-layout/css/styles.css';
 import { Box, Flex, Spinner } from '@ttoss/ui';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
+import { DashboardTemplate } from './Dashboard';
 import { DashboardCard } from './DashboardCard';
-import { useDashboard } from './DashboardProvider';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-export const DashboardGrid = ({ loading }: { loading: boolean }) => {
-  const { selectedTemplate } = useDashboard();
+export const DashboardGrid = ({
+  loading,
+  selectedTemplate,
+}: {
+  loading: boolean;
+  selectedTemplate?: DashboardTemplate;
+}) => {
   if (!selectedTemplate) {
     return null;
   }

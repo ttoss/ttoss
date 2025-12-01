@@ -14,16 +14,23 @@ pnpm add @ttoss/react-dashboard @ttoss/components @ttoss/react-icons @ttoss/ui @
 
 ### Provider Setup
 
-Wrap your application with the `DashboardProvider` to enable dashboard functionality:
+If you're using the `Dashboard` component directly, you don't need to set up the provider separately as it wraps the `DashboardProvider` internally. However, if you need to use the `useDashboard` hook in other components, you can wrap your application with the `DashboardProvider`:
 
 ```tsx
 import { DashboardProvider } from '@ttoss/react-dashboard';
 import { ThemeProvider } from '@ttoss/ui';
+import type {
+  DashboardTemplate,
+  DashboardFilter,
+} from '@ttoss/react-dashboard';
+
+const templates: DashboardTemplate[] = [];
+const filters: DashboardFilter[] = [];
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider>
-      <DashboardProvider>
+      <DashboardProvider filters={filters} templates={templates}>
         <App />
       </DashboardProvider>
     </ThemeProvider>
@@ -119,18 +126,23 @@ Context provider that manages dashboard state (filters and templates).
 ```tsx
 import { DashboardProvider } from '@ttoss/react-dashboard';
 
-<DashboardProvider initialFilters={filters} initialTemplates={templates}>
+<DashboardProvider
+  filters={filters}
+  templates={templates}
+  onFiltersChange={handleFiltersChange}
+>
   {children}
 </DashboardProvider>;
 ```
 
 **Props:**
 
-| Prop               | Type                  | Default | Description            |
-| ------------------ | --------------------- | ------- | ---------------------- |
-| `children`         | `React.ReactNode`     | -       | Child components       |
-| `initialFilters`   | `DashboardFilter[]`   | `[]`    | Initial filter state   |
-| `initialTemplates` | `DashboardTemplate[]` | `[]`    | Initial template state |
+| Prop              | Type                                   | Default | Description                  |
+| ----------------- | -------------------------------------- | ------- | ---------------------------- |
+| `children`        | `React.ReactNode`                      | -       | Child components             |
+| `filters`         | `DashboardFilter[]`                    | `[]`    | Filter state                 |
+| `templates`       | `DashboardTemplate[]`                  | `[]`    | Template state               |
+| `onFiltersChange` | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change |
 
 ### useDashboard Hook
 
@@ -140,22 +152,23 @@ Hook to access and modify dashboard state.
 import { useDashboard } from '@ttoss/react-dashboard';
 
 const MyComponent = () => {
-  const { filters, setFilters, templates, setTemplates, selectedTemplate } =
-    useDashboard();
+  const { filters, updateFilter, templates, selectedTemplate } = useDashboard();
 
   // Use dashboard state
+  const handleFilterChange = (key: string, value: DashboardFilterValue) => {
+    updateFilter(key, value);
+  };
 };
 ```
 
 **Returns:**
 
-| Property           | Type                                                        | Description                                  |
-| ------------------ | ----------------------------------------------------------- | -------------------------------------------- |
-| `filters`          | `DashboardFilter[]`                                         | Current filter state                         |
-| `setFilters`       | `React.Dispatch<React.SetStateAction<DashboardFilter[]>>`   | Function to update filters                   |
-| `templates`        | `DashboardTemplate[]`                                       | Current template state                       |
-| `setTemplates`     | `React.Dispatch<React.SetStateAction<DashboardTemplate[]>>` | Function to update templates                 |
-| `selectedTemplate` | `DashboardTemplate \| undefined`                            | Currently selected template based on filters |
+| Property           | Type                                                 | Description                                  |
+| ------------------ | ---------------------------------------------------- | -------------------------------------------- |
+| `filters`          | `DashboardFilter[]`                                  | Current filter state                         |
+| `updateFilter`     | `(key: string, value: DashboardFilterValue) => void` | Function to update a specific filter by key  |
+| `templates`        | `DashboardTemplate[]`                                | Current template state                       |
+| `selectedTemplate` | `DashboardTemplate \| undefined`                     | Currently selected template based on filters |
 
 ### DashboardCard
 
