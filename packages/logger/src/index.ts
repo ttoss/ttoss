@@ -115,9 +115,7 @@ const sendToCustomEndpoint = async ({
 
   await fetch(endpoint.url, {
     method: endpoint.method || 'POST',
-    headers: endpoint.headers || {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json', ...(endpoint.headers ?? {}) },
     body: JSON.stringify(body),
   });
 };
