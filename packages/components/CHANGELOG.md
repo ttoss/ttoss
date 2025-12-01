@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.9.0...@ttoss/components@2.10.0) (2025-12-01)
+
+### Features
+
+- adapt component to use badge instead of subtitle ([#788](https://github.com/ttoss/ttoss/issues/788)) ([0c3c7d8](https://github.com/ttoss/ttoss/commit/0c3c7d850f2b9fd817afa7b0e0ed4c5e7fa6a9c5))
+
 # [2.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.8.0...@ttoss/components@2.9.0) (2025-11-28)
 
 ### Features
