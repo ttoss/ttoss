@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.6.12...@ttoss/logger@0.7.0) (2025-12-01)
+
+### Features
+
+- **logger:** add custom endpoints support for notifications ([#792](https://github.com/ttoss/ttoss/issues/792)) ([5a03b20](https://github.com/ttoss/ttoss/commit/5a03b20fbfa428ef89484b4455b814f3868f8df7))
+
 ## [0.6.12](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.6.11...@ttoss/logger@0.6.12) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/logger
