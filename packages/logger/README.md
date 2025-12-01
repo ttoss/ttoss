@@ -1,119 +1,98 @@
 # @ttoss/logger
 
-A simple module to configure and send notifications to services like Discord from your applications.
+Send notifications to Discord, Slack, or any custom endpoint from your applications.
 
 ## Installation
-
-Install the package via pnpm:
 
 ```bash
 pnpm add @ttoss/logger
 ```
 
-## Usage
-
-The `@ttoss/logger` module allows you to configure a logger and send notifications to external services, such as Discord, with ease. It also provides basic methods for local console logging.
-
-### Configuration
-
-First, configure the logger with the necessary parameters, such as a Discord webhook URL:
-
-```ts
-import { configureLogger } from '@ttoss/logger';
-
-configureLogger({
-  discordWebhookUrl: 'https://discord.com/api/webhooks/your-webhook-here',
-  project: 'My project',
-});
-```
-
-### Sending Notifications
-
-Use the `notify` method to send messages to the configured services:
-
-```ts
-import { notify } from '@ttoss/logger';
-
-await notify({
-  type: 'error',
-  message: 'Hello! This is a notification for Discord.',
-});
-```
-
-### Local Logging
-
-For console logs, use the `log` object:
-
-```ts
-import { log } from '@ttoss/logger';
-
-log.info('Useful information');
-
-log.warn('Important warning');
-
-log.error('Critical error');
-```
-
-## API
-
-### `configureLogger(params)`
-
-Configures the logger with notification sending options.
-
-- **Parameters**:
-  - `params.discordWebhookUrl` (string): The Discord webhook URL.
-  - `params.project` (string): The project identifier to prefix notifications.
-
-### `notify(notification)`
-
-Sends a notification to the configured services.
-
-- **Parameters**:
-  - `notification` (object): The notification to send, with the following properties:
-    - `type` ('info' | 'warn' | 'error'): The type of the notification.
-    - `title` (string, optional): The title of the notification.
-    - `message` (string): The main message content.
-- **Returns**: A Promise that resolves when the sending is complete.
-
-### `log`
-
-Object with methods for local logging:
-
-- `log.warn(message)`: Displays a warning in the console.
-- `log.error(message)`: Displays an error in the console.
-- `log.info(message)`: Displays an info message in the console.
-
-## Complete Example
+## Quick Start
 
 ```ts
 import { configureLogger, notify, log } from '@ttoss/logger';
 
-// Configure the logger
-
+// Configure once at app startup
 configureLogger({
-  discordWebhookUrl: 'https://discord.com/api/webhooks/your-webhook-here',
+  project: 'My App',
+  discordWebhookUrl: 'https://discord.com/api/webhooks/xxx',
 });
 
-// Send a notification
+// Send notifications
+await notify({ type: 'error', message: 'Something went wrong!' });
+await notify({ type: 'info', title: 'Deploy', message: 'v1.2.0 released' });
 
-await notify({
-  type: 'info',
-  message: 'Application started successfully!',
-});
-
-// Local logs
-
-log.info('Starting the server...');
-
-log.warn('Low memory.');
-
-log.error('Failed to connect to the database.');
+// Local console logging
+log.info('Server started');
+log.warn('High memory usage');
+log.error('Database connection failed');
 ```
 
-## Notes
+## Custom Endpoints
 
-- Currently, support is limited to Discord via webhooks, but more services will be added in the future.
-- Ensure the `discordWebhookUrl` is valid to avoid silent failures.
+Send notifications to any platform by providing a custom formatter:
+
+```ts
+configureLogger({
+  project: 'My App',
+  discordWebhookUrl: 'https://discord.com/api/webhooks/xxx',
+  customEndpoints: [
+    {
+      url: 'https://hooks.slack.com/services/xxx',
+      formatBody: ({ notification, project }) => ({
+        text: `[${project}] ${notification.type}: ${notification.message}`,
+      }),
+    },
+    {
+      url: 'https://my-api.com/alerts',
+      headers: { Authorization: 'Bearer token' },
+      method: 'PUT',
+      formatBody: ({ notification }) => ({
+        severity: notification.type,
+        message: notification.message,
+      }),
+    },
+  ],
+});
+```
+
+### CustomEndpoint Options
+
+| Property     | Type                         | Description                                                        |
+| ------------ | ---------------------------- | ------------------------------------------------------------------ |
+| `url`        | `string`                     | Endpoint URL (required)                                            |
+| `formatBody` | `function`                   | Formats the request body (required)                                |
+| `headers`    | `Record<string, string>`     | Custom headers (default: `{ 'Content-Type': 'application/json' }`) |
+| `method`     | `'POST' \| 'PUT' \| 'PATCH'` | HTTP method (default: `'POST'`)                                    |
+| `name`       | `string`                     | Optional identifier for debugging                                  |
+
+## API
+
+### `configureLogger(config)`
+
+| Parameter           | Type                                 | Description                           |
+| ------------------- | ------------------------------------ | ------------------------------------- |
+| `project`           | `string`                             | Project name for notification context |
+| `discordWebhookUrl` | `string`                             | Discord webhook URL                   |
+| `customEndpoints`   | `CustomEndpoint \| CustomEndpoint[]` | Custom notification endpoints         |
+
+### `notify(notification)`
+
+| Parameter | Type                          | Description           |
+| --------- | ----------------------------- | --------------------- |
+| `type`    | `'info' \| 'warn' \| 'error'` | Notification severity |
+| `message` | `string`                      | Notification content  |
+| `title`   | `string`                      | Optional title        |
+| `log`     | `boolean`                     | Also log to console   |
+
+### `notifyError({ error, title?, log? })`
+
+Convenience method for error notifications that extracts the message from Error objects.
+
+### `log`
+
+Console logging methods: `log.info()`, `log.warn()`, `log.error()`
 
 ## License
 
