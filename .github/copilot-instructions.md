@@ -101,7 +101,7 @@ pnpm run i18n      # Extract i18n messages
 
 ### TypeScript
 
-- Use TypeScript 5.7.x features
+- Use TypeScript 5.x.x features
 - Strict type checking is enabled
 - Prefer type safety over `any`
 - Use ESLint configuration from `@ttoss/eslint-config`
@@ -206,35 +206,60 @@ pnpm run i18n      # Extract i18n messages
 
 ## Security Requirements
 
-### Before Committing
-
 - **Never commit secrets**, API keys, or credentials
 - **Scan dependencies** for vulnerabilities before adding them
 - **Run CodeQL checker** to detect security issues
 - **Fix security vulnerabilities** in code you modify
 
-### During Code Review
+## Code Review Guidelines
 
-- Review security implications of changes
-- Ensure input validation and sanitization
-- Check for proper error handling
-- Validate authentication and authorization logic
+When reviewing pull requests in this repository, follow the three main pillars of ttoss code review:
+
+### Main Pillars
+
+1. **Package Reuse**: Did the developer implement something that an existing ttoss package already solves?
+   - Check if the functionality exists in any `packages/` directory
+   - If yes, comment suggesting the use of the existing package
+   - Reference the specific package and its documentation
+
+2. **New Package Potential**: Did the developer create something that could become a new reusable package?
+   - Look for generic, reusable patterns in the code
+   - If the implementation is useful beyond the current context, suggest extracting it as a new package
+   - Mention the benefits of creating a shared package for the monorepo
+
+3. **Code Quality**: Does the code have bugs or could it be written better?
+   - Check for potential bugs, edge cases, or error handling issues
+   - Suggest improvements for readability, efficiency, or maintainability
+   - Look for anti-patterns or violations of best practices
+   - Review security implications (input validation, error handling, auth logic)
+
+### Additional Review Checks
+
+- **Missing Tests**: Did the developer skip relevant test cases?
+  - Ensure unit tests cover the new functionality
+  - Check for edge cases and error scenarios
+  - Verify coverage hasn't decreased
+
+- **Missing Storybook Stories**: For new components, did the developer create stories?
+  - UI components should have corresponding stories in `docs/storybook/stories/`
+  - Stories should demonstrate different states and use cases
+
+- **Missing Documentation**: Is the change properly documented?
+  - README updates for new features
+  - JSDoc comments for public APIs
+  - i18n messages with proper descriptions
+
+### Approval Criteria
+
+If the developer has addressed all the above points, approve the PR with a positive comment acknowledging the quality of the work.
+
+**Note**: When reviewing package changes, also follow guidelines in `.github/instructions/packages.instructions.md`.
 
 ## Git Workflow
 
-### Committing Changes
-
-- **DO NOT** use `git` commands to commit or push
-- **USE** the `report_progress` tool to commit and push changes
+- **DO NOT** use `git` commands to commit or push — **USE** the `report_progress` tool instead
 - Provide clear, descriptive commit messages
-- Use `.gitignore` to exclude build artifacts and dependencies
-
-### Branch and PR Management
-
-- Cannot update PR descriptions directly (use report_progress)
 - Cannot fix merge conflicts (ask user for help)
-- Cannot force push or rebase
-- Cannot open new PRs or issues
 
 ## Quality Standards
 
@@ -251,13 +276,6 @@ pnpm run i18n      # Extract i18n messages
 - Focus on important test cases (happy path, errors, edge cases)
 - Avoid duplicate or redundant tests
 - Ensure tests are deterministic and reliable
-
-### Documentation Quality
-
-- Follow the comprehensive guidelines in `docs.instructions.md`
-- Prioritize essential information over comprehensive coverage
-- Use clear, concise language
-- Include practical examples and cross-references
 
 ## Custom Agents
 
@@ -279,22 +297,11 @@ This repository may have custom agents (specialized AI agents) for specific task
 
 ## Environment Limitations
 
-### What You CAN Do
-
-- Make changes to files in the repository
-- Run git commands to inspect the repository
-- Use the report_progress tool to commit and push changes
-- Use provided tools to interact with external systems
-- Access limited internet (some domains blocked)
-
-### What You CANNOT Do
-
-- Update issues, PRs, labels, or assignees directly
-- Pull branches from GitHub (cannot fix merge conflicts)
-- Commit or push using git/gh commands (use report_progress instead)
-- Clone repos or access other repositories
-- Use git reset or git rebase (force push unavailable)
-- Access .github/agents/ directory files
+- Cannot update issues, PRs, labels, or assignees directly
+- Cannot pull branches from GitHub or fix merge conflicts
+- Cannot use git reset, rebase, or force push
+- Cannot access `.github/agents/` directory files
+- Use `report_progress` tool for commits (not git/gh commands)
 
 ## Additional Resources
 
