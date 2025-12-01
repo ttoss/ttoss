@@ -3,6 +3,7 @@
 exports[`package.json exports should export all components 1`] = `
 {
   "./Accordion": "./src/components/Accordion/index.ts",
+  "./DatePicker": "./src/components/DatePicker/index.ts",
   "./Drawer": "./src/components/Drawer/index.ts",
   "./FileUploader": "./src/components/FileUploader/index.ts",
   "./InstallPwa": "./src/components/InstallPwa/index.ts",
@@ -27,6 +28,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Accordion": {
     "default": "./dist/esm/Accordion/index.js",
     "types": "./dist/Accordion/index.d.ts",
+  },
+  "./DatePicker": {
+    "default": "./dist/esm/DatePicker/index.js",
+    "types": "./dist/DatePicker/index.d.ts",
   },
   "./Drawer": {
     "default": "./dist/esm/Drawer/index.js",
