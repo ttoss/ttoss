@@ -1,9 +1,7 @@
-import { render, screen, userEvent } from '@ttoss/test-utils/react';
+import { render, screen } from '@ttoss/test-utils/react';
 import { SelectFilter } from 'src/Filters/SelectFilter';
 
 describe('SelectFilter', () => {
-  userEvent.setup({ delay: null });
-
   const mockOptions = [
     { label: 'Option 1', value: 'option1' },
     { label: 'Option 2', value: 'option2' },

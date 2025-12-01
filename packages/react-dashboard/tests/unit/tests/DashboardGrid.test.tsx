@@ -5,6 +5,7 @@ import {
   DashboardGrid,
   DashboardProvider,
   type DashboardTemplate,
+  useDashboard,
 } from 'src/index';
 
 describe('DashboardGrid', () => {
@@ -58,10 +59,7 @@ describe('DashboardGrid', () => {
 
   test('should render loading spinner when loading is true', () => {
     render(
-      <DashboardProvider
-        initialFilters={mockFilters}
-        initialTemplates={[mockTemplate]}
-      >
+      <DashboardProvider filters={mockFilters} templates={[mockTemplate]}>
         <DashboardGrid loading={true} />
       </DashboardProvider>
     );
@@ -71,12 +69,16 @@ describe('DashboardGrid', () => {
   });
 
   test('should render cards when loading is false and template is selected', () => {
+    const TestWrapper = ({ loading }: { loading: boolean }) => {
+      const { selectedTemplate } = useDashboard();
+      return (
+        <DashboardGrid loading={loading} selectedTemplate={selectedTemplate} />
+      );
+    };
+
     render(
-      <DashboardProvider
-        initialFilters={mockFilters}
-        initialTemplates={[mockTemplate]}
-      >
-        <DashboardGrid loading={false} />
+      <DashboardProvider filters={mockFilters} templates={[mockTemplate]}>
+        <TestWrapper loading={false} />
       </DashboardProvider>
     );
 
@@ -86,7 +88,7 @@ describe('DashboardGrid', () => {
 
   test('should return null when no template is selected', () => {
     const { container } = render(
-      <DashboardProvider initialTemplates={[mockTemplate]}>
+      <DashboardProvider filters={[]} templates={[mockTemplate]}>
         <DashboardGrid loading={false} />
       </DashboardProvider>
     );
@@ -111,10 +113,7 @@ describe('DashboardGrid', () => {
     ];
 
     render(
-      <DashboardProvider
-        initialFilters={emptyFilters}
-        initialTemplates={[emptyTemplate]}
-      >
+      <DashboardProvider filters={emptyFilters} templates={[emptyTemplate]}>
         <DashboardGrid loading={false} />
       </DashboardProvider>
     );

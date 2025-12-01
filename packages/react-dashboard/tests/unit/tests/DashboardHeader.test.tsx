@@ -18,7 +18,7 @@ describe('DashboardHeader', () => {
 
   test('should render DashboardFilters', () => {
     render(
-      <DashboardProvider initialFilters={mockFilters}>
+      <DashboardProvider filters={mockFilters} templates={[]}>
         <DashboardHeader />
       </DashboardProvider>
     );
@@ -28,7 +28,7 @@ describe('DashboardHeader', () => {
 
   test('should render children', () => {
     render(
-      <DashboardProvider initialFilters={mockFilters}>
+      <DashboardProvider filters={mockFilters} templates={[]}>
         <DashboardHeader>
           <div data-testid="custom-content">Custom Content</div>
         </DashboardHeader>
@@ -41,7 +41,7 @@ describe('DashboardHeader', () => {
 
   test('should render both filters and children', () => {
     render(
-      <DashboardProvider initialFilters={mockFilters}>
+      <DashboardProvider filters={mockFilters} templates={[]}>
         <DashboardHeader>
           <button>Action Button</button>
         </DashboardHeader>

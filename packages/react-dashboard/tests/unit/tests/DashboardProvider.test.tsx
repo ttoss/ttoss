@@ -1,4 +1,5 @@
 import { act, render, renderHook, screen } from '@ttoss/test-utils/react';
+import * as React from 'react';
 import {
   type DashboardFilter,
   DashboardFilterType,
@@ -25,7 +26,7 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider initialFilters={initialFilters}>
+            <DashboardProvider filters={initialFilters} templates={[]}>
               {children}
             </DashboardProvider>
           );
@@ -53,7 +54,7 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider initialTemplates={initialTemplates}>
+            <DashboardProvider filters={[]} templates={initialTemplates}>
               {children}
             </DashboardProvider>
           );
@@ -64,59 +65,82 @@ describe('DashboardProvider', () => {
     expect(result.current.templates).toEqual(initialTemplates);
   });
 
-  test('should update filters when setFilters is called', () => {
-    const { result } = renderHook(
-      () => {
-        return useDashboard();
-      },
+  test('should update filters when updateFilter is called', () => {
+    const initialFilters: DashboardFilter[] = [
       {
-        wrapper: ({ children }) => {
-          return <DashboardProvider>{children}</DashboardProvider>;
-        },
-      }
-    );
-
-    const newFilters: DashboardFilter[] = [
-      {
-        key: 'new-filter',
+        key: 'test-filter',
         type: DashboardFilterType.TEXT,
-        label: 'New Filter',
-        value: 'new-value',
+        label: 'Test Filter',
+        value: 'initial-value',
       },
     ];
 
-    act(() => {
-      result.current.setFilters(newFilters);
+    let currentFilters = initialFilters;
+    const handleFiltersChange = jest.fn((filters: DashboardFilter[]) => {
+      currentFilters = filters;
     });
 
-    expect(result.current.filters).toEqual(newFilters);
-  });
-
-  test('should update templates when setTemplates is called', () => {
     const { result } = renderHook(
       () => {
         return useDashboard();
       },
       {
         wrapper: ({ children }) => {
-          return <DashboardProvider>{children}</DashboardProvider>;
+          return (
+            <DashboardProvider
+              filters={currentFilters}
+              templates={[]}
+              onFiltersChange={handleFiltersChange}
+            >
+              {children}
+            </DashboardProvider>
+          );
         },
       }
     );
 
-    const newTemplates: DashboardTemplate[] = [
+    act(() => {
+      result.current.updateFilter('test-filter', 'new-value');
+    });
+
+    expect(handleFiltersChange).toHaveBeenCalledWith([
       {
-        id: 'new-template',
-        name: 'New Template',
+        key: 'test-filter',
+        type: DashboardFilterType.TEXT,
+        label: 'Test Filter',
+        value: 'new-value',
+      },
+    ]);
+  });
+
+  test('should update templates when templates prop changes', () => {
+    const initialTemplates: DashboardTemplate[] = [
+      {
+        id: 'template-1',
+        name: 'Template 1',
         grid: [],
       },
     ];
 
-    act(() => {
-      result.current.setTemplates(newTemplates);
-    });
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }: { children: React.ReactNode }) => {
+          return (
+            <DashboardProvider filters={[]} templates={initialTemplates}>
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
 
-    expect(result.current.templates).toEqual(newTemplates);
+    expect(result.current.templates).toEqual(initialTemplates);
+
+    // Note: Template updates are tested in "should sync templates when templates prop changes"
+    // This test verifies that templates are provided correctly via the hook
   });
 
   test('should select template based on template filter', () => {
@@ -149,10 +173,7 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider
-              initialFilters={filters}
-              initialTemplates={templates}
-            >
+            <DashboardProvider filters={filters} templates={templates}>
               {children}
             </DashboardProvider>
           );
@@ -179,7 +200,7 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider initialTemplates={templates}>
+            <DashboardProvider filters={[]} templates={templates}>
               {children}
             </DashboardProvider>
           );
@@ -215,10 +236,7 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider
-              initialFilters={filters}
-              initialTemplates={templates}
-            >
+            <DashboardProvider filters={filters} templates={templates}>
               {children}
             </DashboardProvider>
           );
@@ -247,7 +265,7 @@ describe('DashboardProvider', () => {
     consoleSpy.mockRestore();
   });
 
-  test('should sync filters when initialFilters prop changes', () => {
+  test('should sync filters when filters prop changes', () => {
     const initialFilters: DashboardFilter[] = [
       {
         key: 'filter-1',
@@ -266,19 +284,14 @@ describe('DashboardProvider', () => {
       },
     ];
 
-    const TestComponent = ({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      initialFilters: filters,
-    }: {
-      initialFilters?: DashboardFilter[];
-    }) => {
+    const TestComponent = () => {
       const { filters: contextFilters } = useDashboard();
       return <div data-testid="filters">{JSON.stringify(contextFilters)}</div>;
     };
 
     const { rerender } = render(
-      <DashboardProvider initialFilters={initialFilters}>
-        <TestComponent initialFilters={initialFilters} />
+      <DashboardProvider filters={initialFilters} templates={[]}>
+        <TestComponent />
       </DashboardProvider>
     );
 
@@ -287,8 +300,8 @@ describe('DashboardProvider', () => {
     );
 
     rerender(
-      <DashboardProvider initialFilters={newFilters}>
-        <TestComponent initialFilters={newFilters} />
+      <DashboardProvider filters={newFilters} templates={[]}>
+        <TestComponent />
       </DashboardProvider>
     );
 
@@ -297,7 +310,7 @@ describe('DashboardProvider', () => {
     );
   });
 
-  test('should sync templates when initialTemplates prop changes', () => {
+  test('should sync templates when templates prop changes', () => {
     const initialTemplates: DashboardTemplate[] = [
       {
         id: 'template-1',
@@ -314,12 +327,7 @@ describe('DashboardProvider', () => {
       },
     ];
 
-    const TestComponent = ({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      initialTemplates: templates,
-    }: {
-      initialTemplates?: DashboardTemplate[];
-    }) => {
+    const TestComponent = () => {
       const { templates: contextTemplates } = useDashboard();
       return (
         <div data-testid="templates">{JSON.stringify(contextTemplates)}</div>
@@ -327,8 +335,8 @@ describe('DashboardProvider', () => {
     };
 
     const { rerender } = render(
-      <DashboardProvider initialTemplates={initialTemplates}>
-        <TestComponent initialTemplates={initialTemplates} />
+      <DashboardProvider filters={[]} templates={initialTemplates}>
+        <TestComponent />
       </DashboardProvider>
     );
 
@@ -337,8 +345,8 @@ describe('DashboardProvider', () => {
     );
 
     rerender(
-      <DashboardProvider initialTemplates={newTemplates}>
-        <TestComponent initialTemplates={newTemplates} />
+      <DashboardProvider filters={[]} templates={newTemplates}>
+        <TestComponent />
       </DashboardProvider>
     );
 

@@ -21,7 +21,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -47,7 +47,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -66,7 +66,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -76,7 +76,7 @@ describe('DashboardFilters', () => {
   });
 
   test('should call onChange when text filter value changes', async () => {
-    const handleChange = jest.fn();
+    const handleFiltersChange = jest.fn();
 
     const filters: DashboardFilter[] = [
       {
@@ -84,12 +84,15 @@ describe('DashboardFilters', () => {
         type: DashboardFilterType.TEXT,
         label: 'Search',
         value: '',
-        onChange: handleChange,
       },
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider
+        filters={filters}
+        templates={[]}
+        onFiltersChange={handleFiltersChange}
+      >
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -97,11 +100,11 @@ describe('DashboardFilters', () => {
     const input = screen.getByRole('textbox');
     await user.type(input, 'test');
 
-    expect(handleChange).toHaveBeenCalled();
+    expect(handleFiltersChange).toHaveBeenCalled();
   });
 
   test('should call onChange when select filter value changes', async () => {
-    const handleChange = jest.fn();
+    const handleFiltersChange = jest.fn();
 
     const filters: DashboardFilter[] = [
       {
@@ -113,12 +116,15 @@ describe('DashboardFilters', () => {
           { label: 'Active', value: 'active' },
           { label: 'Inactive', value: 'inactive' },
         ],
-        onChange: handleChange,
       },
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider
+        filters={filters}
+        templates={[]}
+        onFiltersChange={handleFiltersChange}
+      >
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -126,11 +132,11 @@ describe('DashboardFilters', () => {
     // The onChange handler is passed through, so it will be called when Select changes
     // The actual Select component interaction depends on @ttoss/ui implementation
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(handleChange).not.toHaveBeenCalled();
+    expect(handleFiltersChange).not.toHaveBeenCalled();
   });
 
   test('should call onChange for date range filter', async () => {
-    const handleChange = jest.fn();
+    const handleFiltersChange = jest.fn();
 
     const filters: DashboardFilter[] = [
       {
@@ -138,19 +144,22 @@ describe('DashboardFilters', () => {
         type: DashboardFilterType.DATE_RANGE,
         label: 'Date Range',
         value: { from: new Date(), to: new Date() },
-        onChange: handleChange,
       },
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider
+        filters={filters}
+        templates={[]}
+        onFiltersChange={handleFiltersChange}
+      >
         <DashboardFilters />
       </DashboardProvider>
     );
 
     expect(screen.getByText('Date Range')).toBeInTheDocument();
     // The onChange handler is passed through to DateRangeFilter
-    expect(handleChange).not.toHaveBeenCalled();
+    expect(handleFiltersChange).not.toHaveBeenCalled();
   });
 
   test('should render multiple filters', () => {
@@ -177,7 +186,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -199,7 +208,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
@@ -219,7 +228,7 @@ describe('DashboardFilters', () => {
     ];
 
     render(
-      <DashboardProvider initialFilters={filters}>
+      <DashboardProvider filters={filters} templates={[]}>
         <DashboardFilters />
       </DashboardProvider>
     );
