@@ -6,6 +6,7 @@ import { tsupConfig } from '@ttoss/config';
 
 export const components = [
   'Accordion',
+  'DatePicker',
   'Drawer',
   'InstallPwa',
   'FileUploader',
