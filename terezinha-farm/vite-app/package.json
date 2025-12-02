@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/vite-app",
-  "version": "0.12.69",
+  "version": "0.12.77",
   "type": "module",
   "scripts": {
     "prebuild": "pnpm relay",

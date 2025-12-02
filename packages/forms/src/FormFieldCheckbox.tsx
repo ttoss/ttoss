@@ -6,8 +6,10 @@ import { FormField, type FormFieldProps } from './FormField';
 export type FormFieldCheckboxProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = FormFieldProps<TFieldValues, TName> & Omit<CheckboxProps, 'name'>;
-
+> = Omit<FormFieldProps<TFieldValues, TName>, 'defaultValue'> &
+  Omit<CheckboxProps, 'name' | 'defaultValue'> & {
+    defaultValue?: boolean;
+  };
 export const FormFieldCheckbox = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -26,6 +28,8 @@ export const FormFieldCheckbox = <
     css,
     rules,
     id,
+    onBlur,
+    onChange,
     ...checkboxProps
   } = props;
 
@@ -38,7 +42,7 @@ export const FormFieldCheckbox = <
       warning={warning}
       sx={sx}
       css={css}
-      defaultValue={defaultValue}
+      defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       rules={rules}
       disabled={disabled}
       render={({ field, fieldState }) => {
@@ -47,6 +51,14 @@ export const FormFieldCheckbox = <
           <Checkbox
             {...checkboxProps}
             {...fieldWithoutValue}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             checked={value}
             disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}

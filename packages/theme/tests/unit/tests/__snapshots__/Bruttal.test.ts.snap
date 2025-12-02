@@ -469,10 +469,6 @@ exports[`Bruttal theme snapshot 1`] = `
       "&:has(div > input[type="radio"]:disabled)": {
         "color": "display.text.muted.active",
       },
-      "&:has(input[type="checkbox"])": {
-        "fontSize": "md",
-        "gap": "2",
-      },
       "&:has(input[type="checkbox"]:disabled)": {
         "color": "display.text.muted.default",
       },

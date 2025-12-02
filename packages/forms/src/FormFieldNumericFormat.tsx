@@ -30,6 +30,9 @@ export const FormFieldNumericFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
+    onBlur,
+    onValueChange,
     ...numericFormatProps
   } = props;
 
@@ -45,15 +48,20 @@ export const FormFieldNumericFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (
           <NumericFormat
             {...numericFormatProps}
             name={field.name}
             value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onValueChange={(values, sourceInfo) => {
               field.onChange(values.floatValue);
+              onValueChange?.(values, sourceInfo);
             }}
             customInput={Input}
             leadingIcon={leadingIcon}

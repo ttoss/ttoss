@@ -27,6 +27,9 @@ export const FormFieldInput = <
     id,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
+    onBlur,
+    onChange,
     ...inputProps
   } = props;
 
@@ -42,11 +45,20 @@ export const FormFieldInput = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <Input
             {...inputProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             leadingIcon={leadingIcon}
             trailingIcon={trailingIcon}
             disabled={disabled ?? field.disabled}

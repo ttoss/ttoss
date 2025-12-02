@@ -25,6 +25,9 @@ export const FormFieldTextarea = <
     css,
     rules,
     id,
+    auxiliaryCheckbox,
+    onBlur,
+    onChange,
     ...textareaProps
   } = props;
 
@@ -40,11 +43,20 @@ export const FormFieldTextarea = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <Textarea
             {...textareaProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.3...@ttoss/ui@6.0.4) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.2...@ttoss/ui@6.0.3) (2025-11-26)
+
+### Bug Fixes
+
+- **ui,forms:** Fix ref forwarding for Checkbox and FormField components ([#780](https://github.com/ttoss/ttoss/issues/780)) ([98a10c9](https://github.com/ttoss/ttoss/commit/98a10c9d5c41bafdd1e540409456f9c21dbd0401))
+
 ## [6.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.1...@ttoss/ui@6.0.2) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/ui

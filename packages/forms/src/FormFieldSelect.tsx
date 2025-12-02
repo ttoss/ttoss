@@ -26,6 +26,8 @@ export const FormFieldSelect = <
     rules,
     id,
     defaultValue,
+    onBlur,
+    onChange,
     ...selectProps
   } = props;
 
@@ -46,6 +48,14 @@ export const FormFieldSelect = <
           <Select
             {...selectProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(newValue) => {
+              field.onChange(newValue);
+              onChange?.(newValue);
+            }}
             isDisabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />

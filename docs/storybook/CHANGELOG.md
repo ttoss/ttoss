@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.3.1...@docs/storybook@3.3.2) (2025-12-02)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.3.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.3.0...@docs/storybook@3.3.1) (2025-12-01)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.2.0...@docs/storybook@3.3.0) (2025-12-01)
+
+### Features
+
+- adapt component to use badge instead of subtitle ([#788](https://github.com/ttoss/ttoss/issues/788)) ([0c3c7d8](https://github.com/ttoss/ttoss/commit/0c3c7d850f2b9fd817afa7b0e0ed4c5e7fa6a9c5))
+
+# [3.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.1.1...@docs/storybook@3.2.0) (2025-11-28)
+
+### Features
+
+- **SpotlightCard:** update variant options and enhance tests for primary variant ([#784](https://github.com/ttoss/ttoss/issues/784)) ([3632fb2](https://github.com/ttoss/ttoss/commit/3632fb21fa2176ba3e4d02c63606ffab2e52a762))
+
+## [3.1.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.1.0...@docs/storybook@3.1.1) (2025-11-28)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.4...@docs/storybook@3.1.0) (2025-11-27)
+
+### Features
+
+- add SpotlightCard component with responsive design and animations ([#776](https://github.com/ttoss/ttoss/issues/776)) ([47d02fd](https://github.com/ttoss/ttoss/commit/47d02fd22f97ab51d6e70f3a24356da047fe45c0))
+- **forms:** add auxiliaryCheckbox prop to FormField and Input components ([#782](https://github.com/ttoss/ttoss/issues/782)) ([93f7eae](https://github.com/ttoss/ttoss/commit/93f7eae5fc0cc5b00d44273f7eacd85074307849))
+
+## [3.0.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.3...@docs/storybook@3.0.4) (2025-11-26)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.0.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.2...@docs/storybook@3.0.3) (2025-11-26)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [3.0.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.0.1...@docs/storybook@3.0.2) (2025-11-24)
 
 **Note:** Version bump only for package @docs/storybook
