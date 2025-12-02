@@ -5,6 +5,8 @@ export { FormField } from './FormField';
 export { FormFieldCheckbox } from './FormFieldCheckbox';
 export { FormFieldCreditCardNumber } from './FormFieldCreditCardNumber';
 export { FormFieldCurrencyInput } from './FormFieldCurrencyInput';
+export type { DateRangePreset } from './FormFieldDatePicker';
+export { FormFieldDatePicker } from './FormFieldDatePicker';
 export { FormFieldInput } from './FormFieldInput';
 export { FormFieldNumericFormat } from './FormFieldNumericFormat';
 export { FormFieldPassword } from './FormFieldPassword';

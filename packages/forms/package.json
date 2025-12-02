@@ -34,11 +34,13 @@
     "yup": "^1.7.1"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
