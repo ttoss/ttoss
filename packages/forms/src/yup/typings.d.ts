@@ -8,6 +8,7 @@ declare module 'yup' {
     TFlags extends Flags = '',
   > extends Schema<TType, TContext, TDefault, TFlags> {
     cnpj(): this;
+    cpf(): this;
   }
 }
 
