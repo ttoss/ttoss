@@ -316,3 +316,114 @@ describe('FormFieldInput error ref', () => {
     expect(typeof (errorRef as { focus?: () => void }).focus).toBe('function');
   });
 });
+
+describe('FormFieldInput custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldInput
+            name="input1"
+            label="Input 1"
+            onChange={customOnChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('Input 1');
+    await user.type(input, 'test');
+
+    // Custom onChange should be called for each keystroke
+    expect(customOnChange).toHaveBeenCalled();
+    expect(customOnChange.mock.calls.length).toBe(4); // 't', 'e', 's', 't'
+
+    // Form state should still be updated
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ input1: 'test' });
+  });
+
+  test('should call custom onBlur handler while still triggering form validation', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        mode: 'onBlur',
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldInput
+            name="input1"
+            label="Input 1"
+            onBlur={customOnBlur}
+            rules={{
+              required: 'Input is required',
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('Input 1');
+    await user.click(input);
+    await user.tab(); // Trigger blur
+
+    // Custom onBlur should be called
+    expect(customOnBlur).toHaveBeenCalled();
+
+    // Validation should still work (error message should appear)
+    expect(await screen.findByText('Input is required')).toBeInTheDocument();
+  });
+
+  test('should work with both custom onChange and onBlur together', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldInput
+            name="input1"
+            label="Input 1"
+            onChange={customOnChange}
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('Input 1');
+    await user.type(input, 'hello');
+    await user.tab();
+
+    expect(customOnChange).toHaveBeenCalled();
+    expect(customOnBlur).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ input1: 'hello' });
+  });
+});

@@ -18,6 +18,7 @@ export const components = [
   'NavList',
   'NotificationCard',
   'NotificationsMenu',
+  'SpotlightCard',
   'Search',
   'Table',
   'Tabs',

@@ -6,10 +6,6 @@ inputs:
     description: 'Node.js version to use'
     required: false
     default: '24'
-  skip-i18n:
-    description: 'Skip i18n build step'
-    required: false
-    default: 'false'
 
 runs:
   using: 'composite'
@@ -40,8 +36,3 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
-
-    - name: Build i18n
-      if: ${{ inputs.skip-i18n != 'true' }}
-      shell: bash
-      run: pnpm i18n

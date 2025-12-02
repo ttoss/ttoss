@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.42](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.41...@ttoss/react-auth-strapi@0.2.42) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.2.41](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.40...@ttoss/react-auth-strapi@0.2.41) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.2.40](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.39...@ttoss/react-auth-strapi@0.2.40) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.2.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.38...@ttoss/react-auth-strapi@0.2.39) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.2.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.37...@ttoss/react-auth-strapi@0.2.38) (2025-11-27)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
 ## [0.2.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.36...@ttoss/react-auth-strapi@0.2.37) (2025-11-26)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi

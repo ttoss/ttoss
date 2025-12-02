@@ -86,3 +86,75 @@ test('should display error messages', async () => {
   await user.click(screen.getByText('Submit'));
   expect(await screen.findByText('Value is required')).toBeInTheDocument();
 });
+
+describe('FormFieldNumericFormat custom onBlur and onValueChange', () => {
+  test('should call custom onValueChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnValueChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldNumericFormat
+            name="input1"
+            label="input 1"
+            thousandSeparator="."
+            decimalSeparator=","
+            decimalScale={2}
+            prefix="R$ "
+            allowNegative={false}
+            onValueChange={customOnValueChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.type(screen.getByLabelText('input 1'), '100');
+
+    expect(customOnValueChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ input1: 100 });
+  });
+
+  test('should call custom onBlur handler', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldNumericFormat
+            name="input1"
+            label="input 1"
+            thousandSeparator="."
+            decimalSeparator=","
+            decimalScale={2}
+            prefix="R$ "
+            allowNegative={false}
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const input = screen.getByLabelText('input 1');
+    await user.click(input);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+  });
+});

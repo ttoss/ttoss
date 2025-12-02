@@ -28,6 +28,8 @@ export const FormFieldCheckbox = <
     css,
     rules,
     id,
+    onBlur,
+    onChange,
     ...checkboxProps
   } = props;
 
@@ -49,6 +51,14 @@ export const FormFieldCheckbox = <
           <Checkbox
             {...checkboxProps}
             {...fieldWithoutValue}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             checked={value}
             disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
