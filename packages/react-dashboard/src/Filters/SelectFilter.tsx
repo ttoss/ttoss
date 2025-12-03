@@ -1,7 +1,7 @@
 import { FormFieldSelect, FormProvider, useForm } from '@ttoss/forms';
 import * as React from 'react';
 
-import { DashboardFilterValue } from '../DashboardFilters';
+import type { DashboardFilterValue } from '../DashboardFilters';
 
 type SelectValue = string | number | boolean;
 
