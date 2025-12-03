@@ -29,7 +29,7 @@ export type CustomEndpoint = {
   /**
    * Function to format the notification message for this specific endpoint.
    * Receives the notification and project name, returns a plain object to be JSON serialized as the request body.
-   * Must return a value of type Record<string, unknown>.
+   * Must return a value of type `Record<string, unknown>`.
    */
   formatBody: (params: {
     notification: NotificationMessage;
@@ -37,7 +37,7 @@ export type CustomEndpoint = {
   }) => Record<string, unknown>;
   /**
    * Optional custom headers for the request.
-   * Defaults to { 'Content-Type': 'application/json' }
+   * Defaults to `{ 'Content-Type': 'application/json' }`
    */
   headers?: Record<string, string>;
   /**

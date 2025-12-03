@@ -41,7 +41,7 @@
     "prettier": "^3.6.2",
     "syncpack": "13.0.4",
     "turbo": "^2.5.5",
-    "typescript": "~5.7.2"
+    "typescript": "~5.9.3"
   },
   "keywords": [
     "cli",
