@@ -26,8 +26,8 @@
   "sideEffects": false,
   "dependencies": {
     "@ttoss/components": "workspace:^",
-    "@ttoss/config": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react-day-picker": "^9.11.3",
@@ -37,8 +37,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/forms": "workspace:^",
+    "@ttoss/config": "workspace:^",
     "@types/react": "^19.2.7",
     "@types/react-grid-layout": "^1.3.6",
     "jest": "^30.2.0",
