@@ -1,6 +1,5 @@
-import { FormFieldSelect } from '@ttoss/forms';
+import { FormFieldSelect, FormProvider, useForm } from '@ttoss/forms';
 import * as React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
 
 import { DashboardFilterValue } from '../DashboardFilters';
 
