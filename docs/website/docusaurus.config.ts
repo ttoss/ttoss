@@ -26,7 +26,6 @@ const config: Config = {
   // Quality assurance - fail fast on broken links
   onBrokenAnchors: 'throw',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
 
   // Internationalization
   i18n: {
@@ -35,6 +34,7 @@ const config: Config = {
   },
 
   plugins: [
+    'docusaurus-plugin-llms',
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
@@ -302,6 +302,9 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
 
   themes: ['@docusaurus/theme-mermaid'],

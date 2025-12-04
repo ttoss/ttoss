@@ -33,7 +33,7 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.7",
     "jest": "^30.2.0",
     "tsup": "^8.5.1"
   },

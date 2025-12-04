@@ -1,8 +1,7 @@
-import { FormFieldInput } from '@ttoss/forms';
+import { FormFieldInput, FormProvider, useForm } from '@ttoss/forms';
 import * as React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
 
-import { DashboardFilterValue } from '../DashboardFilters';
+import type { DashboardFilterValue } from '../DashboardFilters';
 
 export const TextFilter = (props: {
   name: string;
