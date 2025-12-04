@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.13.11 (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
 ## [0.13.10](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.9...@ttoss/cloud-auth@0.13.10) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.4...@ttoss/ui@6.1.0) (2025-12-04)
+
+### Features
+
+- add SpotlightCard component with responsive design and animations ([#776](https://github.com/ttoss/ttoss/issues/776)) ([47d02fd](https://github.com/ttoss/ttoss/commit/47d02fd22f97ab51d6e70f3a24356da047fe45c0))
+
 ## [6.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.3...@ttoss/ui@6.0.4) (2025-11-26)
 
 **Note:** Version bump only for package @ttoss/ui
