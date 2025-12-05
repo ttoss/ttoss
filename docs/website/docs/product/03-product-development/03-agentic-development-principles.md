@@ -18,6 +18,30 @@ _Agentic development means intentionally designing workflows, feedback loops, an
 
 ## Principles
 
+### The Principle of Probabilistic AI Output
+
+LLMs and most AI agents generate outputs based on probability distributions, not deterministic rules. This means identical prompts may yield different results, especially when randomness is enabled. Product teams must design workflows and guardrails that account for this inherent variability, ensuring reproducibility where needed and embracing diversity of output for creative tasks. This principle supports [B3: The Batch Size Feedback Principle](https://ttoss.dev/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) by highlighting the need for rapid feedback and validation cycles.
+
+**Failure Scenario:** A team expects an AI agent to always produce the same code for a given prompt. When outputs vary, confusion and rework occur, undermining trust and slowing delivery.
+
+### The Principle of Confidence-Qualified AI Output
+
+LLMs operate probabilistically and can be prompted to estimate the confidence of their predictions. By instructing AI agents to explicitly indicate when their confidence in an output exceeds a high threshold (e.g., >80%), teams can reduce noise and improve reliability in decision-making. This approach builds on [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output), enabling developers to prioritize high-confidence outputs and treat lower-confidence responses with appropriate caution, supporting more effective human-AI collaboration and risk management.
+
+**Failure Scenario:** An AI agent provides recommendations without indicating confidence. Developers act on low-confidence suggestions, leading to errors and wasted effort.
+
+### The Corollary of Confident Hallucination
+
+High confidence scores are internal probability assessments, not external verifications of truth. An AI agent can be highly confident in a hallucinated fact or incorrect logic. Therefore, high confidence should prioritize an output for review, but never bypass validation or the [Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
+
+**Failure Scenario:** A developer accepts a "99% confident" API reference from an agent without checking, only to find the method does not exist, causing a build failure.
+
+### The Principle of Cognitive Bandwidth Conservation
+
+Human attention is a finite resource, and every AI output demands a "cognitive tax" for evaluation. Because verifying AI suggestions requires mental effort, low-quality or excessive outputs can quickly drain developer energy and reduce overall velocity. Workflows must prioritize high-signal outputs to conserve human bandwidth for high-value decision making, supporting [E1: The Principle of Quantified Overall Economics](/docs/product/03-product-development/02-principles.md#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+
+**Failure Scenario:** An AI tool generates verbose, slightly incorrect code for every keystroke. The developer spends more energy correcting the AI than writing code, resulting in net-negative productivity.
+
 ### The Principle of Immediate AI Feedback Loop
 
 Integrate AI tools directly into the coding environment to deliver instant suggestions and error checking, minimizing context switching and delays. This maximizes value-added time and aligns with [B3: The Batch Size Feedback Principle](/docs/product/03-product-development/02-principles.md#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
@@ -77,8 +101,6 @@ If an AI interaction does not resolve the problem quickly, the likelihood of suc
 Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks. This maximizes throughput and minimizes bottlenecks, following [D10. The Main Effort Principle](/docs/product/03-product-development/02-principles.md#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
 
 **Failure Scenario:** Agents are assigned tasks without regard to the critical path, resulting in duplicated effort, idle time, and delayed delivery.
-
----
 
 ### The Corollary of Critical Path Conflict
 

@@ -277,6 +277,19 @@ If the developer has addressed all the above points, approve the PR with a posit
 - Avoid duplicate or redundant tests
 - Ensure tests are deterministic and reliable
 
+### Confidence Threshold (The 80% Rule)
+
+- **Only act or speak if you are >80% confident.**
+- If you are unsure about a solution, bug fix, or explanation, **verify it first** or admit ignorance.
+- Do not provide code or feedback based on guesses or hallucinations.
+- **Exception**: When explicitly asked to brainstorm or explore low-confidence ideas.
+
+### Communication Standards (Cognitive Bandwidth Conservation)
+
+- **Be Concise**: Minimize noise to conserve the user's cognitive bandwidth.
+- **High Signal**: Do not explain standard code unless asked. Focus on the _why_ and the _tricky parts_.
+- **Structure**: Use bullet points and clear headers. Avoid walls of text.
+
 ## Custom Agents
 
 This repository may have custom agents (specialized AI agents) for specific tasks. You can identify them as tools whose description starts with "Custom agent:".
@@ -306,6 +319,7 @@ This repository may have custom agents (specialized AI agents) for specific task
 ## Additional Resources
 
 - **Main README**: `README.md` in the repository root
+- **Agentic Principles**: `docs/website/docs/product/03-product-development/03-agentic-development-principles.md` (The "Soul" of how to behave)
 - **Package Documentation**: Individual README.md files in each package
 - **Storybook**: Run `pnpm storybook` to see component examples
 - **Website Docs**: `docs/website/` for Docusaurus documentation
