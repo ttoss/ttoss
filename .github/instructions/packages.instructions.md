@@ -1,6 +1,6 @@
 ---
 description: This file contains essential guidelines for developing and modifying packages in the ttoss monorepo.
-applyTo: **/packages/**/*
+applyTo: '**/packages/**/*'
 ---
 
 # Package Development Instructions

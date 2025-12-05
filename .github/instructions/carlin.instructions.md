@@ -1,6 +1,6 @@
 ---
 description: Instructions for testing, validating, and updating the Carlin package
-applyTo: **/packages/carlin/**/*
+applyTo: '**/packages/carlin/**/*'
 ---
 
 # Carlin Package Development Instructions
