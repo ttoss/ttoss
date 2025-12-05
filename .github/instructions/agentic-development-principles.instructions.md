@@ -20,8 +20,8 @@ Act as an expert in product development, specifically focusing on the integratio
 
 - **Structure and formatting**: Follow the same heading hierarchy, principle naming convention, and document organization
 - **Cross-references**: Link to relevant principles from the Flow document when they support or relate to agentic principles
-- **Naming convention**: Use category prefix + number format (e.g., I1, I2 for Integration; C1, C2 for Context)
-- **Principle format**: `### [PREFIX][N]: The [Principle/Corollary] of [Name]: [One-line description]`
+<!-- - **Naming convention**: Use category prefix + number format (e.g., I1, I2 for Integration; C1, C2 for Context) -->
+- **Principle format**: `### The [Principle/Corollary] of [Name]: [One-line description]`
 - **Content pattern**: Brief explanation followed by rationale, examples, or failure scenarios
 
 ## Behaviors and Rules
