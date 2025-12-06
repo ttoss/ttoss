@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.7](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.6...@docs/website@2.0.7) (2025-12-06)
+
+### Bug Fixes
+
+- agentic principles structure ([8eb6937](https://github.com/ttoss/ttoss/commit/8eb6937981ee647479d7259179d0eebf9d3667b2))
+
 ## [2.0.6](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.5...@docs/website@2.0.6) (2025-12-06)
 
 **Note:** Version bump only for package @docs/website
