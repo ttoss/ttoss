@@ -12,7 +12,7 @@ tags:
 
 AI agents are transforming how we write code, but they are not magic. They operate within a strict constraint that many developers overlook until it bites them: the **context window**.
 
-If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating context as a scarce, economic resource.
+If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating **[context as a scarce, economic resource](/docs/product/product-development/agentic-development-principles#the-principle-of-context-scarcity)**.
 
 <!-- truncate -->
 
@@ -69,7 +69,7 @@ It scales infinitely. You could have a 100GB codebase, and the model only sees t
 Sometimes, the best solution is brute force. If you have a complex problem that requires understanding the entire system at once, you can switch to a model with a massive context window.
 
 **How it works:**
-Models like **Gemini 1.5 Pro** currently offer a **2 Million token window**. This allows you to paste an entire repository (up to ~1.5 million words of code) directly into the prompt without complex retrieval architectures.
+This allows you to paste an entire repository directly into the prompt without complex retrieval architectures.
 
 **Why it works:**
 It simplifies the workflow. You don't need to worry about which files to include; you just include everything. This is powerful for large-scale refactoring or understanding deep dependencies, though it comes with higher latency and cost.

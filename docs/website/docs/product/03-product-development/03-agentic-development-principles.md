@@ -102,6 +102,12 @@ AI models have a fixed context window, limiting the amount of information they c
 
 **Failure Scenario:** A developer provides detailed architectural guidelines at the start of a long refactoring session. By the end, the agent has "forgotten" these rules due to context overflow and generates code that violates the initial guidelines.
 
+### The Principle of Context Scarcity
+
+Context is a finite, perishable resource that must be allocated based on economic value. Because adding low-value information displaces high-value information (or increases costs/latency), every piece of context provided to an agent must justify its consumption of the window. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/03-product-development/02-principles.md#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+
+**Failure Scenario:** A developer pastes an entire 5000-line log file into the chat to debug a simple error, filling the context window and causing the agent to forget the project's coding standards.
+
 ### The Principle of Orchestrated Agent Parallelism
 
 Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks. This maximizes throughput and minimizes bottlenecks, following [D10. The Main Effort Principle](/docs/product/03-product-development/02-principles.md#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
