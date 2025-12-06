@@ -10,6 +10,12 @@ This document is under development. Principles will be refined and expanded as v
 
 This section defines principles for integrating AI agents into product development workflows, building on [The Principles of Product Development Flow](/docs/product/product-development/principles) and focusing on effective human-AI collaboration.
 
+This document has two parts:
+
+1. **Principles**: Foundational guidelines for designing AI-augmented development workflows. They're are irreducible truths derived from the nature of AI agents and software development.
+
+2. **Corollaries**: Practical extensions of the principles that address specific scenarios and challenges encountered when applying them in real-world development contexts.
+
 _Agentic development means intentionally designing workflows, feedback loops, and decision boundaries to maximize the value of AI agents as development partners._
 
 ## Table of Contents
@@ -29,12 +35,6 @@ LLMs and most AI agents generate outputs based on probability distributions, not
 LLMs operate probabilistically and can be prompted to estimate the confidence of their predictions. By instructing AI agents to explicitly indicate when their confidence in an output exceeds a high threshold (e.g., >80%), teams can reduce noise and improve reliability in decision-making. This approach builds on [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output), enabling developers to prioritize high-confidence outputs and treat lower-confidence responses with appropriate caution, supporting more effective human-AI collaboration and risk management.
 
 **Failure Scenario:** An AI agent provides recommendations without indicating confidence. Developers act on low-confidence suggestions, leading to errors and wasted effort.
-
-### The Corollary of Confident Hallucination
-
-High confidence scores are internal probability assessments, not external verifications of truth. An AI agent can be highly confident in a hallucinated fact or incorrect logic. Therefore, high confidence should prioritize an output for review, but never bypass validation or the [Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
-
-**Failure Scenario:** A developer accepts a "99% confident" API reference from an agent without checking, only to find the method does not exist, causing a build failure.
 
 ### The Principle of Cognitive Bandwidth Conservation
 
@@ -114,17 +114,31 @@ Agent parallelism is most effective when the critical path is clearly defined an
 
 **Failure Scenario:** Agents are assigned tasks without regard to the critical path, resulting in duplicated effort, idle time, and delayed delivery.
 
-### The Corollary of Critical Path Conflict
-
-Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
-
-**Failure Scenario:** Two agents independently refactor the same core module, leading to merge conflicts, inconsistent logic, and wasted effort.
-
 ### The Principle of Prompt Economics
 
 While AI agents allow for seemingly infinite retries, every prompt carries a marginal cost in latency, financial expense, and system load. Development workflows should optimize for high-value interactions rather than brute-force iteration, treating agent capacity as a metered utility. This supports [E16: The Principle of Marginal Economics](/docs/product/03-product-development/02-principles.md#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value).
 
 **Failure Scenario:** A developer uses a "retry loop" strategy, blindly regenerating code dozens of times hoping for a correct result, incurring high API costs and wasting time that could have been spent on a single, well-crafted prompt.
+
+## Corollaries
+
+### The Corollary of Model Convergence
+
+To mitigate the probabilistic nature of AI models, teams can submit the same prompt and context to multiple models and compare their outputs. If responses converge, confidence in the result increases; if they diverge, further review is warranted. This corollary operationalizes [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output) by leveraging model diversity to validate outputs and reduce the risk of relying on a single model's randomness.
+
+**Failure Scenario:** A team only checks one model's answer and assumes correctness. If that model hallucinates, the error goes undetected. By contrast, if multiple models disagree, the team is alerted to investigate further.
+
+### The Corollary of Confident Hallucination
+
+High confidence scores are internal probability assessments, not external verifications of truth. An AI agent can be highly confident in a hallucinated fact or incorrect logic. Therefore, high confidence should prioritize an output for review, but never bypass validation or the [Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
+
+**Failure Scenario:** A developer accepts a "99% confident" API reference from an agent without checking, only to find the method does not exist, causing a build failure.
+
+### The Corollary of Critical Path Conflict
+
+Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
+
+**Failure Scenario:** Two agents independently refactor the same core module, leading to merge conflicts, inconsistent logic, and wasted effort.
 
 ---
 
