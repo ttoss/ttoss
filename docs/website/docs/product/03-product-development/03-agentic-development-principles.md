@@ -62,7 +62,7 @@ Use AI agents to break down large tasks into small, verifiable experiments (e.g.
 
 ### The Principle of Contextual Input Quality
 
-Developers must provide high-quality context and select the agent/model with the best cost-benefit profile for each task. Effective prompt engineering and tool selection minimize waste and the Cost of Delay, echoing [E16: The Principle of Marginal Economics](/docs/product/03-product-development/02-principles.md#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value).
+Developers must provide high-quality context and select the agent/model with the best cost-benefit profile for each task. Effective prompt engineering and tool selection minimize waste and the Cost of Delay, echoing [E16: The Principle of Marginal Economics](/docs/product/03-product-development/02-principles.md#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value). This is particularly critical given [The Principle of Finite Context Window](#the-principle-of-finite-context-window), as irrelevant information consumes scarce memory resources.
 
 **Failure Scenario:** Using a slow, expensive model for a trivial task with a vague prompt leads to wasted time and resources.
 
@@ -74,7 +74,7 @@ Teams must practice frequent, low-stakes interactions with AI tools to build exp
 
 ### The Principle of Delegated Agency Scaling
 
-Scale AI agent autonomy by task complexity: fully delegate repetitive, low-risk tasks; use AI as a consultant for complex or high-risk decisions. This balances velocity and risk, applying [B4: The Batch Size Risk Principle](/docs/product/03-product-development/02-principles.md#b4-the-batch-size-risk-principle-reducing-batch-size-reduces-risk).
+Scale AI agent autonomy by task complexity: fully delegate repetitive, low-risk tasks; use AI as a consultant for complex or high-risk decisions. This balances velocity and risk, applying [B4: The Batch Size Risk Principle](/docs/product/03-product-development/02-principles.md#b4-the-batch-size-risk-principle-reducing-batch-size-reduces-risk). High-risk tasks must always adhere to [The Principle of Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
 
 **Failure Scenario:** Delegating complex build optimization to AI leads to short-term gains but introduces critical errors, increasing rework and risk.
 
@@ -92,9 +92,21 @@ Establish tiered governance: Company sets strategic safety and cost policies, Te
 
 ### The Principle of Compounding Contextual Error
 
-If an AI interaction does not resolve the problem quickly, the likelihood of successful resolution drops with each additional interaction, as accumulated context and unresolved errors compound. Fast, decisive resolution is critical to prevent error propagation and cognitive overload, aligning with [B3: The Batch Size Feedback Principle](https://ttoss.dev/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
+If an AI interaction does not resolve the problem quickly, the likelihood of successful resolution drops with each additional interaction, as accumulated context and unresolved errors compound. Fast, decisive resolution is critical to prevent error propagation and cognitive overload, aligning with [B3: The Batch Size Feedback Principle](https://ttoss.dev/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback). This compounding effect is exacerbated by [The Principle of Finite Context Window](#the-principle-of-finite-context-window), as earlier correct context may be pushed out by recent erroneous attempts.
 
 **Failure Scenario:** A developer repeatedly prompts an AI agent to fix a bug, but each iteration introduces new minor errors and increases context complexity. After several cycles, the original issue is buried under layers of confusion, making resolution harder and increasing rework.
+
+### The Principle of Finite Context Window
+
+AI models have a fixed context window, limiting the amount of information they can process in a single interaction. As conversations lengthen or input sizes grow, earlier context is truncated, leading to a loss of critical instructions. Teams must manage context as a scarce resource, prioritizing relevant information and resetting sessions when necessary. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/03-product-development/02-principles.md#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by optimizing the resource usage of the model.
+
+**Failure Scenario:** A developer provides detailed architectural guidelines at the start of a long refactoring session. By the end, the agent has "forgotten" these rules due to context overflow and generates code that violates the initial guidelines.
+
+### The Principle of Context Scarcity
+
+Context is a finite, perishable resource that must be allocated based on economic value. Because adding low-value information displaces high-value information (or increases costs/latency), every piece of context provided to an agent must justify its consumption of the window. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/03-product-development/02-principles.md#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+
+**Failure Scenario:** A developer pastes an entire 5000-line log file into the chat to debug a simple error, filling the context window and causing the agent to forget the project's coding standards.
 
 ### The Principle of Orchestrated Agent Parallelism
 
@@ -107,6 +119,12 @@ Agent parallelism is most effective when the critical path is clearly defined an
 Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
 
 **Failure Scenario:** Two agents independently refactor the same core module, leading to merge conflicts, inconsistent logic, and wasted effort.
+
+### The Principle of Prompt Economics
+
+While AI agents allow for seemingly infinite retries, every prompt carries a marginal cost in latency, financial expense, and system load. Development workflows should optimize for high-value interactions rather than brute-force iteration, treating agent capacity as a metered utility. This supports [E16: The Principle of Marginal Economics](/docs/product/03-product-development/02-principles.md#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value).
+
+**Failure Scenario:** A developer uses a "retry loop" strategy, blindly regenerating code dozens of times hoping for a correct result, incurring high API costs and wasting time that could have been spent on a single, well-crafted prompt.
 
 ---
 

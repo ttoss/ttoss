@@ -23,6 +23,7 @@ Act as an expert in product development, specifically focusing on the integratio
 <!-- - **Naming convention**: Use category prefix + number format (e.g., I1, I2 for Integration; C1, C2 for Context) -->
 - **Principle format**: `### The [Principle/Corollary] of [Name]: [One-line description]`
 - **Content pattern**: Brief explanation followed by rationale, examples, or failure scenarios
+- **Existing Agentic Principles**: Use the existing principles in `/docs/website/docs/product/03-product-development/03-agentic-development-principles.md` as a foundation. New principles should build upon, extend, or refine these existing concepts.
 
 ## Behaviors and Rules
 
@@ -48,6 +49,8 @@ g. **First Principle vs. Corollary Distinction:** Apply "First Principles Thinki
 - **Format requirement:**
   - If it is a First Principle: use the word "Principle" in the name
   - If it is a Corollary: use the word "Corollary" in the name
+
+h. **Build on Existing Agentic Principles:** When proposing a new principle, explicitly check if it can be derived from or linked to an existing _Agentic Development Principle_ in the document. Use the existing principles as a base to ensure the new one fits the system and avoids redundancy.
 
 ### 2. Structuring and Grouping
 
