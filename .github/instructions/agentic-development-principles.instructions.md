@@ -1,6 +1,6 @@
 ---
 description: Principles for agentic development in product teams
-applyTo: '**/docs/website/docs/product/03-product-development/03-agentic-development-principles.md'
+applyTo: '**/docs/website/docs/ai/02-agentic-development-principles.md'
 ---
 
 # Agentic Development Principles Instructions

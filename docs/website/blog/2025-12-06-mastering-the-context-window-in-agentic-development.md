@@ -12,7 +12,7 @@ tags:
 
 AI agents are transforming how we write code, but they are not magic. They operate within a strict constraint that many developers overlook until it bites them: the **context window**.
 
-If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating **[context as a scarce, economic resource](/docs/product/product-development/agentic-development-principles#the-principle-of-context-scarcity)**.
+If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating **[context as a scarce, economic resource](/docs/ai/agentic-development-principles#the-principle-of-context-scarcity)**.
 
 <!-- truncate -->
 
@@ -22,7 +22,7 @@ Every Large Language Model (LLM) has a fixed context window—a maximum limit on
 
 When you exceed this limit, the model doesn't warn you; it simply truncates the input. Usually, the oldest parts of the conversation—often your critical architectural guidelines or the initial problem statement—are silently discarded.
 
-This reality is codified in **[The Principle of Finite Context Window](/docs/product/product-development/agentic-development-principles#the-principle-of-finite-context-window)**:
+This reality is codified in **[The Principle of Finite Context Window](/docs/ai/agentic-development-principles#the-principle-of-finite-context-window)**:
 
 > AI models have a fixed context window... Teams must manage context as a scarce resource, prioritizing relevant information and resetting sessions when necessary.
 
@@ -32,7 +32,7 @@ If you are not aware of this limit, you might find yourself in a situation where
 
 When an agent produces buggy code, the natural human instinct is to correct it immediately within the same chat. "No, that's wrong, try again." "You missed this edge case." "Fix the import."
 
-However, every interaction consumes tokens. As you pile on error messages, stack traces, and correction prompts, you are filling the context window with "garbage" data. This leads to **[The Principle of Compounding Contextual Error](/docs/product/product-development/agentic-development-principles#the-principle-of-compounding-contextual-error)**:
+However, every interaction consumes tokens. As you pile on error messages, stack traces, and correction prompts, you are filling the context window with "garbage" data. This leads to **[The Principle of Compounding Contextual Error](/docs/ai/agentic-development-principles#the-principle-of-compounding-contextual-error)**:
 
 > If an AI interaction does not resolve the problem quickly, the likelihood of successful resolution drops with each additional interaction... Fast, decisive resolution is critical.
 

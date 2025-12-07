@@ -9,7 +9,7 @@ We've all been there: You ask your AI coding assistant for a solution to a trick
 
 The AI wasn't lying to you. It was hallucinating. It was "confidently wrong."
 
-In our [Agentic Development Principles](/docs/product/product-development/agentic-development-principles), we call this **[The Principle of Confidence-Qualified AI Output](/docs/product/product-development/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**. But in practice, we just call it **The 80% Rule**.
+In our [Agentic Development Principles](/docs/ai/agentic-development-principles), we call this **[The Principle of Confidence-Qualified AI Output](/docs/ai/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**. But in practice, we just call it **The 80% Rule**.
 
 <!--truncate-->
 
@@ -19,7 +19,7 @@ Large Language Models (LLMs) are designed to predict the next most likely token.
 
 This makes them excellent creative partners but dangerous engineering consultants. When an engineer is unsure, they say, "I need to check the docs." When an LLM is unsure, it often invents a plausible-sounding API method that doesn't exist.
 
-This creates **noise**. Every time you have to verify a low-quality suggestion, you pay a cognitive tax—a direct violation of the **[Principle of Cognitive Bandwidth Conservation](/docs/product/product-development/agentic-development-principles#the-principle-of-cognitive-bandwidth-conservation)**. You stop trusting the tool.
+This creates **noise**. Every time you have to verify a low-quality suggestion, you pay a cognitive tax—a direct violation of the **[Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles#the-principle-of-cognitive-bandwidth-conservation)**. You stop trusting the tool.
 
 ## The Solution: Force Self-Reflection
 
@@ -63,6 +63,6 @@ Implementing the 80% Rule changes the dynamic of your development workflow.
 
 ## Conclusion
 
-AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **[The Principle of Confidence-Qualified AI Output](/docs/product/product-development/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**, we impose that discipline artificially.
+AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **[The Principle of Confidence-Qualified AI Output](/docs/ai/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**, we impose that discipline artificially.
 
 Make your agents earn the right to interrupt you. If they aren't 80% sure, they should stay 100% silent.

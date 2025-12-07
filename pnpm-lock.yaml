@@ -273,6 +273,9 @@ importers:
       '@docusaurus/module-type-aliases':
         specifier: ^3.9.2
         version: 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@docusaurus/plugin-client-redirects':
+        specifier: ^3.9.2
+        version: 3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       '@docusaurus/plugin-sitemap':
         specifier: ^3.9.2
         version: 3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
@@ -3577,6 +3580,13 @@ packages:
       react: '*'
       react-dom: '*'
 
+  '@docusaurus/plugin-client-redirects@3.9.2':
+    resolution: {integrity: sha512-lUgMArI9vyOYMzLRBUILcg9vcPTCyyI2aiuXq/4npcMVqOr6GfmwtmBYWSbNMlIUM0147smm4WhpXD0KFboffw==}
+    engines: {node: '>=20.0'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
   '@docusaurus/plugin-content-blog@3.9.2':
     resolution: {integrity: sha512-3I2HXy3L1QcjLJLGAoTvoBnpOwa6DPUa3Q0dMK19UTY9mhPkKQg/DYhAGTiBUKcTR0f08iw7kLPqOhIgdV3eVQ==}
     engines: {node: '>=20.0'}
@@ -4852,6 +4862,7 @@ packages:
   '@koa/router@13.1.1':
     resolution: {integrity: sha512-JQEuMANYRVHs7lm7KY9PCIjkgJk73h4m4J+g2mkw2Vo1ugPZ17UJVqEH8F+HeAdjKz5do1OaLe7ArDz+z308gw==}
     engines: {node: '>= 18'}
+    deprecated: Please upgrade to v15 or higher. All reported bugs in this version are fixed in newer releases, dependencies have been updated, and security has been improved.
 
   '@kwsites/file-exists@1.1.1':
     resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
@@ -18161,6 +18172,38 @@ snapshots:
       - uglify-js
       - webpack-cli
 
+  '@docusaurus/plugin-client-redirects@3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)':
+    dependencies:
+      '@docusaurus/core': 3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
+      '@docusaurus/logger': 3.9.2
+      '@docusaurus/utils': 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@docusaurus/utils-common': 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@docusaurus/utils-validation': 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      eta: 2.2.0
+      fs-extra: 11.3.2
+      lodash: 4.17.21
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - '@docusaurus/faster'
+      - '@mdx-js/react'
+      - '@parcel/css'
+      - '@rspack/core'
+      - '@swc/core'
+      - '@swc/css'
+      - acorn
+      - bufferutil
+      - csso
+      - debug
+      - esbuild
+      - lightningcss
+      - supports-color
+      - typescript
+      - uglify-js
+      - utf-8-validate
+      - webpack-cli
+
   '@docusaurus/plugin-content-blog@3.9.2(@docusaurus/plugin-content-docs@3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3))(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)':
     dependencies:
       '@docusaurus/core': 3.9.2(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.1))(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
@@ -18671,7 +18714,7 @@ snapshots:
 
   '@docusaurus/theme-translations@3.9.2':
     dependencies:
-      fs-extra: 11.3.1
+      fs-extra: 11.3.2
       tslib: 2.8.1
 
   '@docusaurus/tsconfig@3.9.2': {}
@@ -18717,7 +18760,7 @@ snapshots:
       '@docusaurus/logger': 3.9.2
       '@docusaurus/utils': 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@docusaurus/utils-common': 3.9.2(acorn@8.15.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      fs-extra: 11.3.1
+      fs-extra: 11.3.2
       joi: 17.13.3
       js-yaml: 4.1.1
       lodash: 4.17.21
@@ -18740,7 +18783,7 @@ snapshots:
       escape-string-regexp: 4.0.0
       execa: 5.1.1
       file-loader: 6.2.0(webpack@5.101.0)
-      fs-extra: 11.3.1
+      fs-extra: 11.3.2
       github-slugger: 1.5.0
       globby: 11.1.0
       gray-matter: 4.0.3

@@ -121,6 +121,17 @@ const config: Config = {
             },
           ];
         })),
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            to: '/docs/ai/agentic-development-principles',
+            from: '/docs/product/product-development/agentic-development-principles',
+          },
+        ],
+      },
+    ],
   ],
 
   presets: [
@@ -191,6 +202,12 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
+          position: 'left',
+          sidebarId: 'ai',
+          label: 'AI',
+        },
+        {
+          type: 'docSidebar',
           position: 'right',
           sidebarId: 'carlin',
           label: 'Carlin',
@@ -248,6 +265,10 @@ const config: Config = {
             {
               label: 'Engineering',
               to: '/docs/engineering',
+            },
+            {
+              label: 'AI',
+              to: '/docs/ai',
             },
             {
               label: 'Challenge',

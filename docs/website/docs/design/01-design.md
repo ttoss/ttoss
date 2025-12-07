@@ -1,5 +1,5 @@
 ---
-title: Design at ttoss
+title: Design
 slug: /design
 ---
 
