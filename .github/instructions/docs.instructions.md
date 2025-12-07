@@ -116,6 +116,14 @@ This approach transforms documentation from isolated instructions into an interc
 - **Include Truncate Comment**: Add `<!-- truncate -->` after the introduction to create proper excerpt on blog index
 - **Use Engaging Introductions**: Start with compelling hooks that explain the value proposition
 - **Include Internal Links**: Reference relevant internal documentation using `/docs/` paths
+- **Internal link paths**: When creating internal links under `docs/`, remove numeric prefixes from folder names (those leading numbers are for ordering only and should not appear in URLs). Use the readable folder name instead. Example (incorrect vs correct):
+
+```markdown
+no: [The Corollary of Artifact Persistence](/docs/product/03-product-development/03-agentic-development-principles#the-corollary-of-artifact-persistence)
+
+yes: [The Corollary of Artifact Persistence](/docs/product/product-development/agentic-development-principles#the-corollary-of-artifact-persistence)
+```
+
 - **Tag Appropriately**: Use relevant tags for discoverability (e.g., agile, product-development, engineering, startup)
 
 ### File Naming Conventions

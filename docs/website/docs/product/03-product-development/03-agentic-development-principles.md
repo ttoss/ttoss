@@ -120,7 +120,19 @@ While AI agents allow for seemingly infinite retries, every prompt carries a mar
 
 **Failure Scenario:** A developer uses a "retry loop" strategy, blindly regenerating code dozens of times hoping for a correct result, incurring high API costs and wasting time that could have been spent on a single, well-crafted prompt.
 
+### The Principle of Compounding Context
+
+AI workflows must be designed as interconnected layers where the output of one agent automatically persists into a shared memory layer to become the context for downstream agents. This ensures that intelligence accumulates over time rather than resetting after every task, reducing the transaction cost of information transfer and minimizing rework. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/03-product-development/02-principles.md#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by preserving value generated in earlier stages.
+
+**Failure Scenario:** A team uses AI to architect a new feature and agrees on specific constraints. However, because this decision isn't stored in a shared memory layer, the AI agent responsible for writing the code is unaware of the constraints. It generates code that works but violates the architecture, forcing the human to manually refactor it.
+
 ## Corollaries
+
+### The Corollary of Artifact Persistence
+
+AI outputs should be persisted as durable artifacts (docs, code, tickets) rather than ephemeral chat logs. When we treat AI interactions as transient, we lose value. When we treat them as artifact generation steps, we build a compounding asset. This corollary operationalizes [The Principle of Compounding Context](#the-principle-of-compounding-context) by ensuring the memory layer is populated with tangible records.
+
+**Failure Scenario:** A developer has a long conversation with an AI to debug a complex issue. The AI explains the root cause and the fix. The developer applies the fix but closes the chat without saving the explanation. Six months later, the bug reappears, and the team has to rediscover the root cause from scratch because the "why" was lost in the ephemeral chat.
 
 ### The Corollary of Model Convergence
 
