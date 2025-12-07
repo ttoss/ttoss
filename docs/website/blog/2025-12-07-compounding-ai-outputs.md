@@ -1,5 +1,5 @@
 ---
-title: 'Compounding AI Outputs: Building a Shared Memory for Your Development System'
+title: 'Compounding AI Outputs: Building a Memory for Your System'
 description: Transform your AI workflow from isolated tasks to a compounding system by persisting outputs as shared memory.
 authors:
   - arantespp
