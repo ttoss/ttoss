@@ -20,7 +20,7 @@ To truly leverage AI in product development, we must shift to a system where out
 
 Imagine a scenario where you spend an hour working with an AI to define the architecture of a new feature. You agree on specific constraints, naming conventions, and error handling strategies. The next day, you ask another agent (or even the same one in a new session) to write the code. Without access to the previous decisions, the agent generates code that works but violates all the architectural rules you just established.
 
-This is the "Amnesic Agent" problem. You are forced to manually refactor the code or re-prompt the AI with the same context, wasting time and cognitive bandwidth. This violation of [The Principle of Compounding Context](/docs/product/product-development/agentic-development-principles#the-principle-of-compounding-context) leads to rework and frustration.
+This is the "Amnesic Agent" problem. You are forced to manually refactor the code or re-prompt the AI with the same context, wasting time and cognitive bandwidth. This violation of [The Principle of Compounding Context](/docs/ai/agentic-development-principles#the-principle-of-compounding-context) leads to rework and frustration.
 
 ## Building a Shared Memory Layer
 
@@ -58,7 +58,7 @@ For broader organizational knowledge, use tools like Google Drive, Notion, or in
 
 ## The Corollary of Artifact Persistence
 
-This approach leads us to a new realization, formalized as [The Corollary of Artifact Persistence](/docs/product/product-development/agentic-development-principles#the-corollary-of-artifact-persistence): **AI outputs should be persisted as durable artifacts rather than ephemeral chat logs.**
+This approach leads us to a new realization, formalized as [The Corollary of Artifact Persistence](/docs/ai/agentic-development-principles#the-corollary-of-artifact-persistence): **AI outputs should be persisted as durable artifacts rather than ephemeral chat logs.**
 
 When we treat AI interactions as transient, we lose value. When we treat them as artifact generation steps, we build a compounding asset. Whether it's a comment in code, a line in a markdown file, or a card on a board, every output should find a home in the system's permanent record.
 
