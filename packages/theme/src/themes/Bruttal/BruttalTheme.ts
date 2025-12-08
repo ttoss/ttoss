@@ -1,4 +1,4 @@
-import { Theme } from 'theme-ui';
+import type { Theme } from 'theme-ui';
 
 import { defaultTheme } from '../default/defaultTheme';
 

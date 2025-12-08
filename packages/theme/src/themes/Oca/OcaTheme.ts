@@ -1,4 +1,4 @@
-import { Theme } from 'theme-ui';
+import type { Theme } from 'theme-ui';
 
 import { createTheme } from '../../createTheme';
 import { BruttalTheme } from '../Bruttal/Bruttal';
