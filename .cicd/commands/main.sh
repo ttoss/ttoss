@@ -45,10 +45,20 @@ if pnpm lerna changed; then
   # Test and build all packages since $LATEST_TAG
   # and all the workspaces that depends on them.
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-  pnpm turbo run build test --filter=[$LATEST_TAG]
+  pnpm turbo run i18n build test --filter=[$LATEST_TAG]
 
-  # See description on the lint.sh file.
-  sh "$(dirname "$0")/lint.sh" || exit 1
+  # Undo all files that were changed by the build command—this happens because
+  # the build can change files with different linting rules and `pnpm run lint`
+  # fix them.
+  #
+  # We don't want these changes becaues it will cause
+  # turbo cache missing. https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+  #
+  # This command uses the git status --porcelain command to check if there are
+  # any modified, untracked, or staged files in the repository. If the output
+  # of the command is not empty (-z checks for empty output), it means there are changed files.
+  pnpm run lint -- --allow-empty
+  [ -z "$(git status --porcelain)" ] || { echo "Error: There are changes after build. Please, commit them locally and push again"; git status; exit 1; }
 
   # Use Git to check for changes in the origin repository. If there are any
   # changes, "git push --follow-tags" will fail. The error message will be:
