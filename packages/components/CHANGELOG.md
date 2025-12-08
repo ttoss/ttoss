@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.11.0 (2025-12-08)
+
+### Features
+
+- enhance selected option styling ([#796](https://github.com/ttoss/ttoss/issues/796)) ([9a740bd](https://github.com/ttoss/ttoss/commit/9a740bd78376852ecd85a020dd7307ea3f7d121e))
+
 ## [2.10.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.10.1...@ttoss/components@2.10.2) (2025-12-04)
 
 **Note:** Version bump only for package @ttoss/components
