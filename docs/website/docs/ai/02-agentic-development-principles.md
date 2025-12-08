@@ -126,32 +126,6 @@ AI workflows must be designed as interconnected layers where the output of one a
 
 **Failure Scenario:** A team uses AI to architect a new feature and agrees on specific constraints. However, because this decision isn't stored in a shared memory layer, the AI agent responsible for writing the code is unaware of the constraints. It generates code that works but violates the architecture, forcing the human to manually refactor it.
 
-## Corollaries
-
-### The Corollary of Artifact Persistence
-
-AI outputs should be persisted as durable artifacts (docs, code, tickets) rather than ephemeral chat logs. When we treat AI interactions as transient, we lose value. When we treat them as artifact generation steps, we build a compounding asset. This corollary operationalizes [The Principle of Compounding Context](#the-principle-of-compounding-context) by ensuring the memory layer is populated with tangible records.
-
-**Failure Scenario:** A developer has a long conversation with an AI to debug a complex issue. The AI explains the root cause and the fix. The developer applies the fix but closes the chat without saving the explanation. Six months later, the bug reappears, and the team has to rediscover the root cause from scratch because the "why" was lost in the ephemeral chat.
-
-### The Corollary of Model Convergence
-
-To mitigate the probabilistic nature of AI models, teams can submit the same prompt and context to multiple models and compare their outputs. If responses converge, confidence in the result increases; if they diverge, further review is warranted. This corollary operationalizes [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output) by leveraging model diversity to validate outputs and reduce the risk of relying on a single model's randomness.
-
-**Failure Scenario:** A team only checks one model's answer and assumes correctness. If that model hallucinates, the error goes undetected. By contrast, if multiple models disagree, the team is alerted to investigate further.
-
-### The Corollary of Confident Hallucination
-
-High confidence scores are internal probability assessments, not external verifications of truth. An AI agent can be highly confident in a hallucinated fact or incorrect logic. Therefore, high confidence should prioritize an output for review, but never bypass validation or the [Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
-
-**Failure Scenario:** A developer accepts a "99% confident" API reference from an agent without checking, only to find the method does not exist, causing a build failure.
-
-### The Corollary of Critical Path Conflict
-
-Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
-
-**Failure Scenario:** Two agents independently refactor the same core module, leading to merge conflicts, inconsistent logic, and wasted effort.
-
 ### The Principle of Explicit Intent
 
 Prompts must declare the goal, audience, role, and success criteria explicitly. A well-scoped instruction reduces ambiguity and preserves human cognitive bandwidth by removing guesswork. When possible, include the exact output format and a short definition of success (e.g., "3 bullets suitable for a 150-word LinkedIn post"). This principle complements [The Principle of Contextual Input Quality](#the-principle-of-contextual-input-quality) and [The Principle of Cognitive Bandwidth Conservation](#the-principle-of-cognitive-bandwidth-conservation).
@@ -181,6 +155,50 @@ Force strict output formats (JSON schema, markdown sections, tables) and include
 Treat each token in the model context as valuable. Remove fluff, greetings, and irrelevant context. Place critical instructions prominently (start or end of prompt) and repeat only when necessary. This minimizes wasted tokens, reduces chance of context overflow, and improves throughput per interaction, aligning with [The Principle of Finite Context Window](#the-principle-of-finite-context-window) and [The Principle of Cognitive Bandwidth Conservation](#the-principle-of-cognitive-bandwidth-conservation).
 
 **Failure Scenario:** Long preambles and polite chatter push essential constraints out of the model's active window, producing outputs that ignore the project's rules.
+
+### The Principle of Theory of Mind in Human-AI Collaboration
+
+Developers who actively practice perspective-taking—inferring the AI's capabilities, limitations, and processing patterns—achieve superior collaborative performance with AI agents. This social-cognitive skill is distinct from individual technical ability and must be deliberately developed through practice. Effective AI collaboration requires understanding what the AI "knows," anticipating its potential misunderstandings, and framing requests that align with how the AI processes information. This principle supports [FF8: The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient) by accelerating the developer's ability to work synergistically with AI tools.
+
+**Failure Scenario:** A skilled developer treats AI like a deterministic search engine, providing minimal context and expecting precise results. When the AI produces irrelevant outputs, the developer blames the tool rather than recognizing they failed to model the AI's need for disambiguation, leading to frustration and abandonment of the tool.
+
+### The Principle of Collaborative Ability Distinction
+
+Working effectively with AI requires fundamentally different skills than working alone. Individual problem-solving ability and collaborative AI ability are separate, measurable competencies that do not automatically correlate. Developers must recognize that technical expertise alone does not guarantee effective AI-augmented productivity and must invest in developing AI collaboration as a distinct skillset. This principle challenges teams to assess and develop collaboration competency separately from domain expertise, following [FF11: The Batch Size Principle of Feedback](/docs/product/product-development/principles#ff11-the-batch-size-principle-of-feedback-small-batches-yield-fast-feedback) through frequent, low-stakes AI interactions.
+
+**Failure Scenario:** A senior engineer with deep domain knowledge dismisses AI tools as "not understanding the problem" after unsuccessful initial attempts. Meanwhile, a junior developer with strong collaboration skills leverages the same AI to accelerate their work, exposing the senior engineer's unrecognized gap in collaborative ability rather than AI limitations.
+
+### The Principle of Dynamic Adaptation
+
+Effective AI collaboration requires real-time adjustment of communication strategies, context provision, and verification approaches based on ongoing interaction patterns—not reliance on static prompt templates. Moment-to-moment fluctuations in how developers frame problems and provide context directly influence AI response quality. Developers must develop adaptive, context-sensitive collaboration skills that respond dynamically to the specific problem and AI state, treating each interaction as a feedback loop. This principle operationalizes [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) by emphasizing continuous micro-adjustments over rigid workflows.
+
+**Failure Scenario:** A developer creates a library of "perfect prompts" and mechanically reuses them across contexts. When the prompts fail, they conclude the AI is unreliable rather than recognizing that effective collaboration requires adapting their communication to the specific task, accumulated context, and current interaction quality.
+
+## Corollaries
+
+### The Corollary of Artifact Persistence
+
+AI outputs should be persisted as durable artifacts (docs, code, tickets) rather than ephemeral chat logs. When we treat AI interactions as transient, we lose value. When we treat them as artifact generation steps, we build a compounding asset. This corollary operationalizes [The Principle of Compounding Context](#the-principle-of-compounding-context) by ensuring the memory layer is populated with tangible records.
+
+**Failure Scenario:** A developer has a long conversation with an AI to debug a complex issue. The AI explains the root cause and the fix. The developer applies the fix but closes the chat without saving the explanation. Six months later, the bug reappears, and the team has to rediscover the root cause from scratch because the "why" was lost in the ephemeral chat.
+
+### The Corollary of Model Convergence
+
+To mitigate the probabilistic nature of AI models, teams can submit the same prompt and context to multiple models and compare their outputs. If responses converge, confidence in the result increases; if they diverge, further review is warranted. This corollary operationalizes [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output) by leveraging model diversity to validate outputs and reduce the risk of relying on a single model's randomness.
+
+**Failure Scenario:** A team only checks one model's answer and assumes correctness. If that model hallucinates, the error goes undetected. By contrast, if multiple models disagree, the team is alerted to investigate further.
+
+### The Corollary of Confident Hallucination
+
+High confidence scores are internal probability assessments, not external verifications of truth. An AI agent can be highly confident in a hallucinated fact or incorrect logic. Therefore, high confidence should prioritize an output for review, but never bypass validation or the [Human-in-the-Loop Veto](#the-principle-of-human-in-the-loop-veto).
+
+**Failure Scenario:** A developer accepts a "99% confident" API reference from an agent without checking, only to find the method does not exist, causing a build failure.
+
+### The Corollary of Critical Path Conflict
+
+Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
+
+**Failure Scenario:** Two agents independently refactor the same core module, leading to merge conflicts, inconsistent logic, and wasted effort.
 
 ---
 
