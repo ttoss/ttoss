@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.7.5 (2025-12-08)
+
+### Bug Fixes
+
+- deploy theme ([f3a2746](https://github.com/ttoss/ttoss/commit/f3a2746a6e68d1a52af89ed9baf8c3e9b796778c))
+
 ## [2.7.4](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.3...@ttoss/theme@2.7.4) (2025-12-04)
 
 **Note:** Version bump only for package @ttoss/theme
