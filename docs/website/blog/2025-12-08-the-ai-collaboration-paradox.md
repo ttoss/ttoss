@@ -49,7 +49,7 @@ This isn't stupidity—it's a **different skill**.
 
 AI collaboration exposes the same dynamic. Being a great solo developer doesn't automatically make you a great AI-augmented developer. These are **separate abilities**:
 
-| **Individual Ability (θ)**      | **Collaborative Ability (κ)**             |
+| **Individual Ability**          | **Collaborative Ability**                 |
 | ------------------------------- | ----------------------------------------- |
 | Solve problems independently    | Solve problems with AI assistance         |
 | Debug by reasoning through code | Debug by framing questions for AI         |
