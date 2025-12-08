@@ -18,7 +18,8 @@
     },
     "build": {
       "dependsOn": ["^build", "i18n"],
-      "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
+      "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"],
+      "cache": false
     },
     "test": {
       "dependsOn": ["i18n", "build-config"],
