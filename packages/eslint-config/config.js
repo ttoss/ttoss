@@ -84,6 +84,8 @@ export default tseslint.config([
       'formatjs/no-offset': 'error',
       'formatjs/no-id': 'error',
       'formatjs/no-complex-selectors': 'error',
+      'import/no-default-export': 'off',
+      'import/no-unresolved': 'off',
       'max-params': ['error', 3],
       'no-console': 'error',
       'no-use-before-define': 'off',
