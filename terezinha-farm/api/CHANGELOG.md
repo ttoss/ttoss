@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.27 (2025-12-09)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## 0.19.26 (2025-12-04)
 
 **Note:** Version bump only for package @terezinha-farm/api
