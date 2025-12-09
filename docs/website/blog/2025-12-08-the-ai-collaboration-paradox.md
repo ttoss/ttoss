@@ -30,7 +30,7 @@ What's happening?
 
 Recent research on human-AI synergy reveals a paradigm-breaking insight: **individual problem-solving ability and collaborative AI ability are not the same thing**. They're distinct, measurable competencies. You can be exceptional at one and mediocre at the other.
 
-This is **[The Principle of Collaborative Ability Distinction](/docs/ai/agentic-development-principles#the-principle-of-collaborative-ability-distinction)** from our [Agentic Development Principles](/docs/ai/agentic-development-principles), and it's fundamentally reshaping how we think about developer performance.
+This is **[The Corollary of Collaborative Ability Distinction](/docs/ai/agentic-development-principles#the-corollary-of-collaborative-ability-distinction)** from our [Agentic Development Principles](/docs/ai/agentic-development-principles), and it's fundamentally reshaping how we think about developer performance.
 
 ## The Two Types of Intelligence
 

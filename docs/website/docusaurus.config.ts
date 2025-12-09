@@ -34,7 +34,7 @@ const config: Config = {
   },
 
   plugins: [
-    'docusaurus-plugin-llms',
+    isDevelopment ? null : 'docusaurus-plugin-llms',
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development

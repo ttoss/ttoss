@@ -12,7 +12,7 @@ tags:
 
 AI agents are transforming how we write code, but they are not magic. They operate within a strict constraint that many developers overlook until it bites them: the **context window**.
 
-If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating **[context as a scarce, economic resource](/docs/ai/agentic-development-principles#the-principle-of-context-scarcity)**.
+If you treat an AI session like an infinite conversation, you will eventually hit a wall where the model starts "forgetting" your initial instructions, hallucinating APIs, or reverting to bad patterns. This isn't a bug; it's a fundamental limitation of the technology. Success in agentic development requires treating **[context as a scarce, economic resource](/docs/ai/agentic-development-principles#the-corollary-of-context-scarcity)**.
 
 <!-- truncate -->
 

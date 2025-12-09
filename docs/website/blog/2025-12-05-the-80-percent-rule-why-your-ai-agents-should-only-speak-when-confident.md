@@ -9,7 +9,7 @@ We've all been there: You ask your AI coding assistant for a solution to a trick
 
 The AI wasn't lying to you. It was hallucinating. It was "confidently wrong."
 
-In our [Agentic Development Principles](/docs/ai/agentic-development-principles), we call this **[The Principle of Confidence-Qualified AI Output](/docs/ai/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**. But in practice, we just call it **The 80% Rule**.
+In our [Agentic Development Principles](/docs/ai/agentic-development-principles), we call this **[The Corollary of Confidence-Qualified Output](/docs/ai/agentic-development-principles#the-corollary-of-confidence-qualified-output)**. But in practice, we just call it **The 80% Rule**.
 
 <!--truncate-->
 
@@ -63,6 +63,6 @@ Implementing the 80% Rule changes the dynamic of your development workflow.
 
 ## Conclusion
 
-AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **[The Principle of Confidence-Qualified AI Output](/docs/ai/agentic-development-principles#the-principle-of-confidence-qualified-ai-output)**, we impose that discipline artificially.
+AI agents are powerful, but they lack the human instinct for self-preservation that keeps us from making wild guesses in production. By enforcing **[The Corollary of Confidence-Qualified Output](/docs/ai/agentic-development-principles#the-corollary-of-confidence-qualified-output)**, we impose that discipline artificially.
 
 Make your agents earn the right to interrupt you. If they aren't 80% sure, they should stay 100% silent.

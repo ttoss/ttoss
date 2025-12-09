@@ -45,7 +45,7 @@ Related principles: [The Principle of Explicit Intent](/docs/ai/agentic-developm
 > 1. "First, explain quantum physics."
 > 2. "Now, translate that explanation to Spanish."
 
-Related principles: [The Principle of Task Atomicity](/docs/ai/agentic-development-principles#the-principle-of-task-atomicity) — keep a single intent per prompt and chain steps.
+Related principles: [The Corollary of Task Atomicity](/docs/ai/agentic-development-principles#the-corollary-of-task-atomicity) — keep a single intent per prompt and chain steps.
 
 ### 3. The "Mind Reader" (Missing Context)
 
@@ -77,7 +77,7 @@ Related principles: [The Principle of Explicit Intent](/docs/ai/agentic-developm
 > **State what you DO want.**
 > "Write in a witty, conversational tone. Use short, punchy sentences. Use active voice."
 
-Related principles: [The Principle of Instruction Polarity](/docs/ai/agentic-development-principles#the-principle-of-instruction-polarity) — prefer positive, prescriptive instructions over negative constraints.
+Related principles: [The Corollary of Instruction Polarity](/docs/ai/agentic-development-principles#the-corollary-of-instruction-polarity) — prefer positive, prescriptive instructions over negative constraints.
 
 ### 5. The "Chaos Agent" (Structure & Format)
 
@@ -93,7 +93,7 @@ Related principles: [The Principle of Instruction Polarity](/docs/ai/agentic-dev
 > **Force the format and use examples.**
 > "Write a story in exactly 3 sentences. Output the result as a JSON object with keys 'title' and 'story'. Here is an example..."
 
-Related principles: [The Principle of Format Enforcement and Examples](/docs/ai/agentic-development-principles#the-principle-of-format-enforcement-and-examples) — require strict, machine-readable formats and include examples.
+Related principles: [The Corollary of Format Enforcement](/docs/ai/agentic-development-principles#the-corollary-of-format-enforcement) — require strict, machine-readable formats and include examples.
 
 ### 6. The "Chatty Cathy" (Fluff)
 
@@ -109,7 +109,7 @@ Related principles: [The Principle of Format Enforcement and Examples](/docs/ai/
 > **Be direct and authoritative.**
 > "You are an expert Python developer. Write a script to..."
 
-Related principles: [The Principle of Concise, High-Signal Prompts](/docs/ai/agentic-development-principles#the-principle-of-concise-high-signal-prompts) — keep prompts short, remove fluff, and place critical instructions prominently.
+Related principles: [The Corollary of Concise, High-Signal Prompts](/docs/ai/agentic-development-principles#the-corollary-of-concise-high-signal-prompts) — keep prompts short, remove fluff, and place critical instructions prominently.
 
 ## The "Anti-Prompt" Checklist
 
