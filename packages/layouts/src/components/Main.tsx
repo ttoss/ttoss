@@ -14,7 +14,15 @@ export const Main = (props: BoxProps) => {
         flex: 1,
       }}
     >
-      <Container variant="layout.main.container">{props.children}</Container>
+      <Container
+        variant="layout.main.container"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {props.children}
+      </Container>
     </Box>
   );
 };
