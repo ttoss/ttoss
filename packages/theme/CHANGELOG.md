@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.5...@ttoss/theme@2.8.0) (2025-12-10)
+
+### Features
+
+- fixed width layout ([#800](https://github.com/ttoss/ttoss/issues/800)) ([84ed3c6](https://github.com/ttoss/ttoss/commit/84ed3c63399cb2d163748cc29276acd9ee0617ec))
+
 ## 2.7.5 (2025-12-08)
 
 ### Bug Fixes
