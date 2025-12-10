@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 import log from 'npmlog';
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import { Command } from 'commander';
 
 import { NAME } from '../../config';
-import { addGroupToOptions } from '../../utils';
 import { deployLambdaLayer } from './deployLambdaLayer';
 
 const logPrefix = 'deploy-lambda-layer';
@@ -22,42 +21,43 @@ export const options = {
   },
 } as const;
 
-export const deployLambdaLayerCommand: CommandModule<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
-  InferredOptionTypes<typeof options>
-> = {
-  command: 'lambda-layer',
-  describe: 'Deploy Lambda Layer.',
-  builder: (yargs) => {
-    return yargs
-      .options(addGroupToOptions(options, 'Deploy Lambda Layer Options'))
-      .check(({ packages }) => {
-        const invalidPackages = packages
-          .map((packageName) => {
-            return packageNameRegex.test(packageName) ? undefined : packageName;
-          })
-          .filter((packageName) => {
-            return !!packageName;
-          });
+export const deployLambdaLayerCommand = new Command('lambda-layer')
+  .description('Deploy Lambda Layer.')
+  .requiredOption(
+    '--packages <packages...>',
+    options.packages.describe
+  )
+  .hook('preAction', (thisCommand) => {
+    const opts = thisCommand.opts();
+    const packages = opts.packages as string[];
 
-        if (invalidPackages.length > 0) {
-          throw new Error(
-            `Some package names are invalid: ${invalidPackages.join(
-              ', '
-            )}. The package must follow the pattern: ${packageNameRegex.toString()}.`
-          );
-        } else {
-          return true;
-        }
+    const invalidPackages = packages
+      .map((packageName) => {
+        return packageNameRegex.test(packageName) ? undefined : packageName;
+      })
+      .filter((packageName) => {
+        return !!packageName;
       });
-  },
-  handler: ({ destroy, lambdaRuntime, ...rest }) => {
-    if (destroy) {
+
+    if (invalidPackages.length > 0) {
+      throw new Error(
+        `Some package names are invalid: ${invalidPackages.join(
+          ', '
+        )}. The package must follow the pattern: ${packageNameRegex.toString()}.`
+      );
+    }
+  })
+  .action(async function (this: Command) {
+    const opts = this.opts();
+    const parentOpts = this.parent?.parent?.opts() || {};
+    const allOpts = { ...parentOpts, ...opts };
+
+    if (allOpts.destroy) {
       log.info(logPrefix, `${NAME} doesn't destroy lambda layers.`);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deployLambdaLayer({ ...rest, runtime: lambdaRuntime } as any);
+      await deployLambdaLayer({
+        ...allOpts,
+        runtime: allOpts.lambdaRuntime,
+      } as any);
     }
-  },
-};
+  });

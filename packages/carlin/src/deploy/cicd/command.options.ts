@@ -1,7 +1,5 @@
 import { camelCase } from 'change-case';
-import { hideBin } from 'yargs/helpers';
 import { pipelines } from './pipelines';
-import yargs from 'yargs';
 
 export const options = {
   cpu: {
@@ -62,25 +60,13 @@ export type CicdCommandOptions = Partial<{
   [key in keyof typeof options]: any;
 }>;
 
-export const getCicdConfig = () => {
-  const { parsed } = yargs(hideBin(process.argv)).config();
-
-  if (!parsed) {
-    return false;
-  }
-
-  const { argv } = parsed;
-
-  const config: CicdCommandOptions = Object.keys(options).reduce((acc, key) => {
-    const value = argv[key];
-
-    if (value) {
-      acc[key] = value;
-    }
-
-    return acc;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  }, {} as any);
-
-  return config;
+/**
+ * Get CICD config from command line arguments.
+ * This function is kept for backward compatibility but now returns
+ * an empty object since config parsing is handled by commander.
+ */
+export const getCicdConfig = (): CicdCommandOptions | false => {
+  // Config parsing is now handled by commander in cli.ts
+  // This function is kept for backward compatibility
+  return {};
 };
