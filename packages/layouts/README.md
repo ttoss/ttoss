@@ -146,6 +146,42 @@ The layout **automatically composes** itself by finding components with matching
 
 ### Styling Integration
 
+## Layout Variants
+
+### Container Variant in Main
+
+The `Main` component automatically sets `variant="layout.container"` on its internal Container. This ensures your application's main layout follows the global standard defined in your theme, with no need to manually set the variant.
+
+**How to customize globally:**
+
+1. Define the `layout.container` variant in your theme to control max width, padding, etc. Example:
+
+```js
+// theme.js
+export const theme = {
+  layout: {
+    container: {
+      maxWidth: ['100%', '1100px'],
+      minWidth: ['100%', '1100px'],
+      marginX: 'auto',
+      paddingX: '4',
+    },
+  },
+};
+```
+
+2. `Main` will automatically apply this variant:
+
+```tsx
+<Layout.Main>{/* ... */}</Layout.Main>
+```
+
+3. To override in specific cases, just pass a different variant or `sx` directly to the Container if needed.
+
+**Other components** (Header, Sidebar, Footer, etc.) also accept the `variant` prop for theme-driven customization.
+
+---
+
 All components integrate seamlessly with `@ttoss/ui` theme system via `sx` prop:
 
 ```tsx

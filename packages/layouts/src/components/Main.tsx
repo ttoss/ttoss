@@ -15,7 +15,7 @@ export const Main = (props: BoxProps) => {
       }}
     >
       <Container
-        variant="layout.main.container"
+        variant="layout.container"
         sx={{
           display: 'flex',
           flexDirection: 'column',
