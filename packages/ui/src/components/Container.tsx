@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { type ContainerProps, Container as ContainerUi } from 'theme-ui';
+import { Container as ContainerUi, type ContainerProps } from 'theme-ui';
 
 export type { ContainerProps };
 

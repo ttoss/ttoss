@@ -1,4 +1,5 @@
-import { BoxProps, Stack } from '@ttoss/ui';
+import type { BoxProps } from '@ttoss/ui';
+import { Box, Container } from '@ttoss/ui';
 
 import { MainBody } from './MainBody';
 import { MainFooter } from './MainFooter';
@@ -6,16 +7,23 @@ import { MainHeader } from './MainHeader';
 
 export const Main = (props: BoxProps) => {
   return (
-    <Stack
+    <Box
       variant="layout.main"
       sx={{
+        overflowX: 'auto',
         flex: 1,
-        height: 'full',
-        overflow: 'hidden',
       }}
     >
-      {props.children}
-    </Stack>
+      <Container
+        variant="layout.container"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {props.children}
+      </Container>
+    </Box>
   );
 };
 
