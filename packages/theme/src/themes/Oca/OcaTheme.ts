@@ -189,6 +189,7 @@ export const OcaTheme: Theme = createTheme(
       main: {
         container: {
           maxWidth: ['100%', '1100px'],
+          minWidth: ['100%', '1100px'],
         },
       },
     },
