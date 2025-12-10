@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.26.6 (2025-12-09)
+
+### Bug Fixes
+
+- turn off import rules in ESLint config ([2c81301](https://github.com/ttoss/ttoss/commit/2c8130133654e171d16379cf9d16e8aad47af9db))
+
 ## 1.26.5 (2025-12-04)
 
 **Note:** Version bump only for package @ttoss/eslint-config
