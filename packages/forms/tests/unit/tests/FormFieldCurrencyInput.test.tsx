@@ -51,6 +51,76 @@ test('call onSubmit with correct data', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ input1: 1000.5, input2: 3222.2 });
 });
 
+test('falls back to i18n defaults when separators are not provided', async () => {
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={() => {}}>
+        <FormFieldCurrencyInput name="def" label="Default" prefix="€ " />
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const input = screen.getByRole('textbox') as HTMLInputElement;
+  // placeholder uses finalDecimalSeparator from i18n default (.)
+  expect(input.placeholder).toContain('.00');
+  expect(input.placeholder).toContain('€');
+});
+
+test('accepts tooltip as string and as object', async () => {
+  const RenderForm = ({ tooltipProp }: { tooltipProp?: unknown }) => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={() => {}}>
+        <FormFieldCurrencyInput
+          name="tp"
+          label="Tooltip"
+          prefix="R$ "
+          tooltip={tooltipProp as string | { content: string } | undefined}
+        />
+      </Form>
+    );
+  };
+
+  const { rerender } = render(<RenderForm tooltipProp={'Currency input'} />);
+  expect(screen.getByText('Tooltip')).toBeInTheDocument();
+
+  rerender(<RenderForm tooltipProp={{ content: 'Currency input object' }} />);
+  expect(screen.getByText('Tooltip')).toBeInTheDocument();
+});
+
+test('respects decimalScale prop override when provided', async () => {
+  const user = userEvent.setup({ delay: null });
+  const onSubmit = jest.fn();
+
+  const RenderForm = () => {
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={onSubmit}>
+        <FormFieldCurrencyInput
+          name="amt"
+          label="Amt"
+          prefix="$ "
+          decimalScale={3}
+        />
+        <Button type="submit">Submit</Button>
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  await user.type(screen.getByLabelText('Amt'), '1.234');
+  await user.click(screen.getByText('Submit'));
+
+  expect(onSubmit).toHaveBeenCalledWith({ amt: 1.234 });
+});
+
 test('should display error messages', async () => {
   const user = userEvent.setup({ delay: null });
 
