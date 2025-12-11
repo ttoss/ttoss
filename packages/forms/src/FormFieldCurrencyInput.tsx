@@ -1,4 +1,5 @@
 import { defineMessages, useI18n } from '@ttoss/react-i18n';
+import type { TooltipProps } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import {
@@ -24,6 +25,8 @@ export type FormFieldCurrencyInputProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = FormFieldNumericFormatProps<TFieldValues, TName> & {
   prefix: string;
+  /** Optional tooltip content or props for the field label */
+  tooltip?: string | TooltipProps;
 };
 
 export const FormFieldCurrencyInput = <
@@ -33,6 +36,7 @@ export const FormFieldCurrencyInput = <
   prefix,
   decimalSeparator,
   thousandSeparator,
+  tooltip,
   ...formFieldNumericFormatProps
 }: FormFieldCurrencyInputProps<TFieldValues, TName>) => {
   const { intl } = useI18n();
@@ -42,6 +46,11 @@ export const FormFieldCurrencyInput = <
   const finalThousandSeparator =
     thousandSeparator ?? intl.formatMessage(messages.thousandSeparator);
 
+  const labelTooltip =
+    typeof tooltip === 'string' && tooltip
+      ? ({ content: tooltip } as TooltipProps)
+      : (tooltip as TooltipProps | undefined);
+
   return (
     <FormFieldNumericFormat
       fixedDecimalScale
@@ -49,6 +58,7 @@ export const FormFieldCurrencyInput = <
       prefix={prefix}
       decimalSeparator={finalDecimalSeparator}
       thousandSeparator={finalThousandSeparator}
+      labelTooltip={labelTooltip}
       placeholder={`${prefix} 0${finalDecimalSeparator}00`}
       allowNegative={false}
       {...formFieldNumericFormatProps}
