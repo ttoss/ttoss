@@ -132,6 +132,18 @@ Context sources are heterogeneous (databases, user uploads, API responses, tool 
 
 **Failure Scenario**: A developer writes custom integration code for every new data source (SQL, vector DB, API). The agent struggles to correlate information across these silos, leading to "context rot" where valid information becomes inaccessible or stale due to fragmented architecture.
 
+### The Principle of Agentic Single Responsibility
+
+Just as in software engineering, AI agents maximize reliability when scoped to a single, atomic objective.
+
+Increasing the breadth of an agent's mandate exponentially increases the probability of "attention drift," where the model prioritizes one instruction at the expense of another. Complex workflows should be composed of chained, specialized agents—each with a distinct definition of done—rather than a single generalist entity attempting to juggle multiple distinct context streams. This minimizes [The Principle of Compounding Contextual Error](#the-principle-of-compounding-contextual-error).
+
+**Failure Scenario**: A team creates a "Release Manager" agent instructed to "check git status, run tests, update version numbers, and write the changelog." The agent successfully writes the changelog but hallucinates test results because the test output context was pushed out of its active attention span by the verbose git logs.
+
+#### The Corollary of Modular Composability
+
+Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
+
 ## The Protocol of Communication
 
 Define the skills and methods required for the human operator to extract value from the machine.
@@ -207,6 +219,30 @@ Every interaction and context artifact must be logged as a verifiable transactio
 Establish tiered governance: Company sets strategic safety and cost policies, Team defines tactical goals and quality metrics, Developer retains autonomy over tool selection and workflows. This decentralizes optimization while maintaining compliance and security.
 
 **Failure Scenario:** Mandating a single AI tool for all teams blocks specialized workflows, increasing risk and cycle time for critical tasks.
+
+## The Dynamics of Orchestration
+
+### The Principle of Trust-Gated Orchestration
+
+The velocity and scale of agent orchestration are strictly limited by the "Trust Latency" of the human operator. If a human must verify every intermediate "real task" within a workflow, the system degrades from an autonomous fleet into a synchronous, manual approval queue. True orchestration is only possible when the cost of verification is significantly lower than the cost of execution. Therefore, trust—built on robust provenance and observability—is not a sentiment, but a functional requirement for scaling; you cannot orchestrate what you must micromanage. This aligns with the need for systems that support "traceability" and "accountability" to allow for post-hoc audit rather than real-time blocking.
+
+**Failure Scenario**: A manager deploys a team of five agents to optimize marketing campaigns but requires manual approval for every keyword selection and ad copy variant. The "orchestration" becomes a bottleneck where the manager spends more time reviewing low-stakes decisions than if they had done the work themselves, stalling the entire workflow.
+
+### The Principle of Idempotent Handoffs
+
+In a distributed agentic system, every instruction must be replayable without compounding side effects.
+
+Orchestration layers must assume that agents will fail, time out, or hallucinate. To ensure resilience, the handoff between the orchestrator and the worker agent must be idempotent. If an orchestrator retries a task because it didn't receive a confirmation, the system must not execute the underlying action twice. This requires state management where tasks are tracked by unique IDs, and agents check for "completed" states before execution. Without this, error recovery becomes impossible because every retry risks corrupting the system state.
+
+**Failure Scenario**: An orchestrator sends a "Deploy to Production" command to a DevOps Agent. The agent successfully triggers the deployment but crashes before returning the success signal. The orchestrator, assuming a timeout, resends the command. The DevOps Agent spins up a second, conflicting deployment pipeline, causing a race condition that takes down the live service.
+
+### The Principle of Semantic Routing
+
+System efficiency is bounded by the precision of the router, not the intelligence of the worker.
+
+It is computationally and economically inefficient to send every request to a "Genius" model. A high-performance architecture relies on a specialized "Router" (often a smaller, faster model or a vector-based classifier) to dispatch tasks to the narrowest possible scope. If the router is accurate, the worker agents can be smaller, faster, and cheaper (specialists). If the router is weak, every worker must be a generalist to handle the ambiguity, inflating costs and latency.
+
+**Failure Scenario**: A user asks a coding assistant to "fix the padding on the button." A weak router classifies this broadly as a "System Architecture" task and sends it to a senior backend agent. That agent wastes tokens analyzing database schemas and API latency before realizing it is a CSS issue. The task is solved, but at 10x the cost and 5x the time required had it been routed to a "UI Specialist" agent.
 
 ---
 
