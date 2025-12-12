@@ -77,6 +77,6 @@ For example, instead of asking "How do I make this better?", you realize that "b
 
 Ready to master the art of the Anti-Prompt? Check out our detailed documentation:
 
-👉 **[How to Prompt: The Anti-Prompt Guide](/docs/ai/how-to-prompt)**
+👉 **[How to Prompt: The Anti-Prompt Guide](/docs/ai/prompt-engineering)**
 
 It includes a full breakdown of the 6 major anti-patterns, examples of failure, and the specific corrections you need to apply.

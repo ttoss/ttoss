@@ -30,7 +30,7 @@ What's happening?
 
 Recent research on human-AI synergy reveals a paradigm-breaking insight: **individual problem-solving ability and collaborative AI ability are not the same thing**. They're distinct, measurable competencies. You can be exceptional at one and mediocre at the other.
 
-This is **[The Corollary of Collaborative Ability Distinction](/docs/ai/agentic-development-principles#the-corollary-of-collaborative-ability-distinction)** from our [Agentic Development Principles](/docs/ai/agentic-development-principles), and it's fundamentally reshaping how we think about developer performance.
+This is **[The Corollary of Collaborative Ability Distinction](/docs/ai/agentic-design-patterns#collaborative-ability-distinction)** from our [Agentic Development Principles](/docs/ai/agentic-development-principles), and it's fundamentally reshaping how we think about developer performance.
 
 ## The Two Types of Intelligence
 
@@ -84,7 +84,7 @@ Elite developers often excel at technical execution but struggle with **explanat
 - **Clarifying ambiguity**: "What terms in my request could have multiple meanings?"
 - **Structuring information**: "What's the most effective order to present this information?"
 
-These are **Theory of Mind skills**—the ability to infer what someone else knows and adapt your communication accordingly. Developers who excel at this (see **[The Principle of Theory of Mind in Human-AI Collaboration](/docs/ai/agentic-development-principles#the-principle-of-theory-of-mind-in-human-ai-collaboration)**) achieve superior AI collaboration outcomes.
+These are **Theory of Mind skills**—the ability to infer what someone else knows and adapt your communication accordingly. Developers who excel at this (see **[The Principle of Theory of Mind in Human-AI Collaboration](/docs/ai/agentic-design-patterns#theory-of-mind-prompting)**) achieve superior AI collaboration outcomes.
 
 Developers who don't practice these skills treat AI like a better Google—and get frustrated when it doesn't read their mind.
 

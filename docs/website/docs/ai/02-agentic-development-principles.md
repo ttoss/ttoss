@@ -78,9 +78,11 @@ While AI agents allow for seemingly infinite retries, every prompt carries a mar
 
 **Failure Scenario:** A developer uses a "retry loop" strategy, blindly regenerating code dozens of times hoping for a correct result, incurring high API costs and wasting time that could have been spent on a single, well-crafted prompt.
 
-#### The Corollary of Model Selection Strategy
+### The Principle of Allocative Efficiency
 
-Use the "lowest viable intelligence" for the task. Do not use a reasoning-heavy, expensive model (e.g., O1, Opus) for text formatting or simple distinct tasks. Match the model's cost and latency profile to the complexity of the prompt to optimize the marginal economics of the workflow.
+Compute resources must be allocated where they yield the highest marginal return per unit of cost and latency. It is economically inefficient to utilize high-intelligence, high-latency models for low-entropy tasks (formatting, classification). To maximize the economic throughput of the system, the "intelligence cost" of the model must match the "complexity value" of the task.
+
+**Failure Scenario**: A system routes every user interaction—including simple "hello" messages—to a reasoning-heavy model (e.g., o1 or Opus). The system incurs massive latency and financial costs for interactions that required zero reasoning, depleting the budget for tasks that actually need high intelligence.
 
 ## The Architecture of Flow
 
@@ -148,41 +150,11 @@ Agents should be designed as composable modules with strict input/output interfa
 
 Define the skills and methods required for the human operator to extract value from the machine.
 
-### The Principle of Explicit Intent
+### The Principle of Signal Entropy
 
-Ambiguity is the primary source of failure in probabilistic systems. To ensure reliability, instructions must explicitly define not just the goal, but the constraints, scope, and structure of the desired output. By constraining the solution space through precise intent—defining exactly what is wanted and how it should be presented—we minimize the need for the model to guess, transforming open-ended generation into deterministic execution.
+In a probabilistic system, ambiguity is not neutral; it is noise. unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel.
 
-**Failure Scenario:** A developer asks "Improve this copy" without defining audience or length. The agent returns a generic rewrite that misses the desired tone and distribution channel, causing wasted review cycles.
-
-#### The Corollary of Task Atomicity
-
-Design prompts to express a single intent per interaction. Break complex workflows into explicit, chained steps (analyze → propose → implement → verify). Atomic prompts reduce compounding errors and simplify validation.
-
-#### The Corollary of Instruction Polarity
-
-Prefer positive, prescriptive instructions ("Do X") over negative constraints ("Don't do Y"). Positive instructions reduce misinterpretation by the model and lower verification costs for the reviewer.
-
-#### The Corollary of Format Enforcement
-
-Force strict output formats (JSON schema, markdown sections, tables) and include 1–3 few-shot examples when the structure matters. Examples and strict schemas make downstream automation and parsing deterministic and reduce rework caused by ambiguous structure.
-
-#### The Corollary of Specification Hazard
-
-In the principal-agent relationship with AI, the prompt functions as an incomplete contract. Because the agent's objective function is opaque ("black box"), any ambiguity in the prompt creates a "specification hazard"—the risk that the agent will fulfill the letter of the request while violating the unstated spirit or constraints. We mitigate this by treating prompts not as casual conversation, but as rigorous specifications that explicitly define boundaries to close the contract loopholes.
-
-### The Principle of Theory of Mind in Human-AI Collaboration
-
-Developers who actively practice perspective-taking—inferring the AI's capabilities, limitations, and processing patterns—achieve superior collaborative performance with AI agents. This social-cognitive skill is distinct from individual technical ability and must be deliberately developed through practice. Effective AI collaboration requires understanding what the AI "knows," anticipating its potential misunderstandings, and framing requests that align with how the AI processes information. This principle supports [FF8: The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient) by accelerating the developer's ability to work synergistically with AI tools.
-
-**Failure Scenario:** A skilled developer treats AI like a deterministic search engine, providing minimal context and expecting precise results. When the AI produces irrelevant outputs, the developer blames the tool rather than recognizing they failed to model the AI's need for disambiguation, leading to frustration and abandonment of the tool.
-
-#### The Corollary of Collaborative Ability Distinction
-
-Individual problem-solving ability and collaborative AI ability are separate competencies. Technical expertise alone does not guarantee effective AI-augmented productivity; developers must invest in developing AI collaboration as a distinct skill set.
-
-#### The Corollary of Proficiency Through Frequency
-
-AI collaboration is a tacit skill developed through repetition, not just theory. Teams must practice frequent, low-stakes interactions (micro-tasks) to calibrate their understanding of the model's behavior. High-frequency usage creates the feedback loops necessary to internalize the "Theory of Mind" required for high-stakes, complex orchestration.
+**Failure Scenario**: A developer tells an agent to "refactor this function to be cleaner." Because "cleaner" is semantically ambiguous and the agent lacks the team's shared definition of "clean code," it removes essential error handling logic, treating it as "clutter."
 
 ### The Principle of Dynamic Adaptation
 
@@ -204,21 +176,11 @@ Autonomy is not a binary setting but a variable slider dependent on verification
 
 Before granting full autonomy to AI agents for a task, ensure robust automated safety nets (CI/CD, test suites) are in place. Automation must be checked by automation to prevent catastrophic failures.
 
-### The Principle of Human-in-the-Loop Veto
+### The Principle of Asymmetric Risk
 
-Every AI-generated output must pass final review by a domain expert who retains full accountability. AI accelerates delivery but introduces risk; human oversight ensures quality and prevents costly errors, supporting [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+The economics of automation are governed by convexity: the cost of verification is often linear (time spent reviewing), but the cost of failure can be non-linear (catastrophic data loss, security breaches). Agency must be capped not by the capability of the model, but by the bounds of the downside risk. When the "blast radius" of an error is infinite (e.g., production database access), autonomy must be zero, regardless of the model's intelligence.
 
-**Failure Scenario:** An AI-generated database query is deployed without review, causing performance issues and technical debt.
-
-#### The Corollary of Contextual Provenance
-
-Every interaction and context artifact must be logged as a verifiable transaction with lineage metadata (who created it, when, and from what source). Ideally, the system should allow for the reconstruction of the exact context state that led to a specific decision, ensuring accountability and easing debugging
-
-### The Principle of Layered Autonomy
-
-Establish tiered governance: Company sets strategic safety and cost policies, Team defines tactical goals and quality metrics, Developer retains autonomy over tool selection and workflows. This decentralizes optimization while maintaining compliance and security.
-
-**Failure Scenario:** Mandating a single AI tool for all teams blocks specialized workflows, increasing risk and cycle time for critical tasks.
+**Failure Scenario**: An autonomous agent is given write access to the production environment to "fix a small bug." It hallucinates a command that drops a critical table. The $5 saved in developer time results in a \$500,000 outage.
 
 ## The Dynamics of Orchestration
 
@@ -228,21 +190,11 @@ The velocity and scale of agent orchestration are strictly limited by the "Trust
 
 **Failure Scenario**: A manager deploys a team of five agents to optimize marketing campaigns but requires manual approval for every keyword selection and ad copy variant. The "orchestration" becomes a bottleneck where the manager spends more time reviewing low-stakes decisions than if they had done the work themselves, stalling the entire workflow.
 
-### The Principle of Idempotent Handoffs
+### The Principle of Atomic State Isolation
 
-In a distributed agentic system, every instruction must be replayable without compounding side effects.
+A reliable agentic system is often built from unreliable components (models that hallucinate, timeout, or crash). To prevent total system corruption from a partial failure, agent actions must be treated as atomic units that are isolated from the global state until confirmed. This ensures that a failed or retried action does not leave the system in an inconsistent "zombie" state.
 
-Orchestration layers must assume that agents will fail, time out, or hallucinate. To ensure resilience, the handoff between the orchestrator and the worker agent must be idempotent. If an orchestrator retries a task because it didn't receive a confirmation, the system must not execute the underlying action twice. This requires state management where tasks are tracked by unique IDs, and agents check for "completed" states before execution. Without this, error recovery becomes impossible because every retry risks corrupting the system state.
-
-**Failure Scenario**: An orchestrator sends a "Deploy to Production" command to a DevOps Agent. The agent successfully triggers the deployment but crashes before returning the success signal. The orchestrator, assuming a timeout, resends the command. The DevOps Agent spins up a second, conflicting deployment pipeline, causing a race condition that takes down the live service.
-
-### The Principle of Semantic Routing
-
-System efficiency is bounded by the precision of the router, not the intelligence of the worker.
-
-It is computationally and economically inefficient to send every request to a "Genius" model. A high-performance architecture relies on a specialized "Router" (often a smaller, faster model or a vector-based classifier) to dispatch tasks to the narrowest possible scope. If the router is accurate, the worker agents can be smaller, faster, and cheaper (specialists). If the router is weak, every worker must be a generalist to handle the ambiguity, inflating costs and latency.
-
-**Failure Scenario**: A user asks a coding assistant to "fix the padding on the button." A weak router classifies this broadly as a "System Architecture" task and sends it to a senior backend agent. That agent wastes tokens analyzing database schemas and API latency before realizing it is a CSS issue. The task is solved, but at 10x the cost and 5x the time required had it been routed to a "UI Specialist" agent.
+**Failure Scenario**: An orchestration layer retries a "Process Payment" task because the agent timed out. Because the action wasn't atomic and isolated, the first (timed-out) attempt actually succeeded in the background. The retry processes it again, charging the customer twice and corrupting the ledger.
 
 ---
 
