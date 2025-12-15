@@ -1,7 +1,7 @@
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Text } from '@ttoss/ui';
 
-import { CardVariant, DashboardCard } from '../DashboardCard';
+import type { CardVariant, DashboardCard } from '../DashboardCard';
 import { CardWrapper } from './Wrapper';
 
 const formatNumber = (

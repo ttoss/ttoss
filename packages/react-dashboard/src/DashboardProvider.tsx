@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { DashboardTemplate } from './Dashboard';
-import { DashboardFilter, DashboardFilterValue } from './DashboardFilters';
+import type { DashboardTemplate } from './Dashboard';
+import type { DashboardFilter, DashboardFilterValue } from './DashboardFilters';
 
 export const DashboardContext = React.createContext<{
   filters: DashboardFilter[];

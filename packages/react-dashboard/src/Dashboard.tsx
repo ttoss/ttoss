@@ -1,9 +1,9 @@
 import { Divider, Flex } from '@ttoss/ui';
-import * as React from 'react';
-import ReactGridLayout from 'react-grid-layout';
+import type * as React from 'react';
+import type ReactGridLayout from 'react-grid-layout';
 
-import { DashboardCard } from './DashboardCard';
-import { DashboardFilter } from './DashboardFilters';
+import type { DashboardCard } from './DashboardCard';
+import type { DashboardFilter } from './DashboardFilters';
 import { DashboardGrid } from './DashboardGrid';
 import { DashboardHeader } from './DashboardHeader';
 import { DashboardProvider } from './DashboardProvider';

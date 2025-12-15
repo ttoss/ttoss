@@ -1,5 +1,5 @@
 import { act, render, renderHook, screen } from '@ttoss/test-utils/react';
-import * as React from 'react';
+import type * as React from 'react';
 import {
   type DashboardFilter,
   DashboardFilterType,

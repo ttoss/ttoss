@@ -1,15 +1,12 @@
 import { Markdown } from '@ttoss/components/Markdown';
 import { Auth, useAuth } from '@ttoss/react-auth';
-import {
-  Dashboard,
-  DashboardFilter,
-  DashboardFilterType,
-} from '@ttoss/react-dashboard';
+import type { DashboardFilter } from '@ttoss/react-dashboard';
+import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
 import * as React from 'react';
 
-import { DashboardTemplate } from '../../../packages/react-dashboard/src/Dashboard';
+import type { DashboardTemplate } from '../../../packages/react-dashboard/src/Dashboard';
 
 // import { FarmCorrectPagination } from './modules/Farm/FarmCorrectPagination';
 // import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
