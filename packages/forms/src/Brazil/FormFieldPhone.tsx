@@ -1,6 +1,7 @@
 import { Input } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { PatternFormat, PatternFormatProps } from 'react-number-format';
+import type { PatternFormatProps } from 'react-number-format';
+import { PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from '../FormField';
 
@@ -28,6 +29,7 @@ export const FormFieldPhone = <
     id,
     defaultValue,
     placeholder = '(11) 91234-1234',
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -43,6 +45,7 @@ export const FormFieldPhone = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         const format =
           field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';

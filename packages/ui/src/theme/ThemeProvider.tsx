@@ -1,7 +1,8 @@
 import { css, Global } from '@emotion/react';
 import { BruttalFonts, BruttalTheme } from '@ttoss/theme/Bruttal';
-import * as React from 'react';
-import { Theme, ThemeUIProvider } from 'theme-ui';
+import type * as React from 'react';
+import type { Theme } from 'theme-ui';
+import { ThemeUIProvider } from 'theme-ui';
 
 export type ThemeProviderProps = {
   children?: React.ReactNode;

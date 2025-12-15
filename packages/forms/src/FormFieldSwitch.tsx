@@ -1,5 +1,5 @@
 import { Switch, type SwitchProps } from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
@@ -25,6 +25,8 @@ export const FormFieldSwitch = <
     rules,
     id,
     defaultValue,
+    onBlur,
+    onChange,
     ...switchProps
   } = props;
 
@@ -45,6 +47,14 @@ export const FormFieldSwitch = <
           <Switch
             {...switchProps}
             {...field}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onChange={(e) => {
+              field.onChange(e);
+              onChange?.(e);
+            }}
             disabled={disabled ?? field.disabled}
             aria-invalid={!!fieldState.error}
           />

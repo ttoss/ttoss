@@ -265,17 +265,39 @@ const defaultFilters: DashboardFilter[] = [
   },
 ];
 
+const DefaultStory = () => {
+  const [filters, setFilters] =
+    React.useState<DashboardFilter[]>(defaultFilters);
+
+  const selectedTemplateId =
+    (filters.find((f) => {
+      return f.key === 'template';
+    })?.value as string) || 'default';
+  const selectedTemplate =
+    defaultTemplates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || defaultTemplates[0];
+
+  const handleFiltersChange = (updatedFilters: DashboardFilter[]) => {
+    setFilters(updatedFilters);
+  };
+
+  return (
+    <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
+      <Dashboard
+        templates={defaultTemplates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        onFiltersChange={handleFiltersChange}
+      />
+    </Box>
+  );
+};
+
 export const Default: StoryObj = {
   render: () => {
-    return (
-      <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
-        <Dashboard
-          templates={defaultTemplates}
-          filters={defaultFilters}
-          loading={false}
-        />
-      </Box>
-    );
+    return <DefaultStory />;
   },
   parameters: {
     docs: {
@@ -289,11 +311,21 @@ export const Default: StoryObj = {
 
 export const WithLoadingState: StoryObj = {
   render: () => {
+    const selectedTemplateId =
+      (defaultFilters.find((f) => {
+        return f.key === 'template';
+      })?.value as string) || 'default';
+    const selectedTemplate =
+      defaultTemplates.find((t) => {
+        return t.id === selectedTemplateId;
+      }) || defaultTemplates[0];
+
     return (
       <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
         <Dashboard
           templates={defaultTemplates}
           filters={defaultFilters}
+          selectedTemplate={selectedTemplate}
           loading={true}
         />
       </Box>
@@ -311,11 +343,21 @@ export const WithLoadingState: StoryObj = {
 
 export const WithCustomHeader: StoryObj = {
   render: () => {
+    const selectedTemplateId =
+      (defaultFilters.find((f) => {
+        return f.key === 'template';
+      })?.value as string) || 'default';
+    const selectedTemplate =
+      defaultTemplates.find((t) => {
+        return t.id === selectedTemplateId;
+      }) || defaultTemplates[0];
+
     return (
       <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
         <Dashboard
           templates={defaultTemplates}
           filters={defaultFilters}
+          selectedTemplate={selectedTemplate}
           loading={false}
           headerChildren={
             <Stack
@@ -326,6 +368,7 @@ export const WithCustomHeader: StoryObj = {
                 marginLeft: 'auto',
               }}
             >
+              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
               <Text sx={{ fontSize: 'sm', color: 'text.secondary' }}>
                 Last updated: {new Date().toLocaleString()}
               </Text>
@@ -345,36 +388,52 @@ export const WithCustomHeader: StoryObj = {
   },
 };
 
+const WithFiltersChangeStory = () => {
+  const [filters, setFilters] =
+    React.useState<DashboardFilter[]>(defaultFilters);
+
+  const selectedTemplateId =
+    (filters.find((f) => {
+      return f.key === 'template';
+    })?.value as string) || 'default';
+  const selectedTemplate =
+    defaultTemplates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || defaultTemplates[0];
+
+  const handleFiltersChange = (updatedFilters: DashboardFilter[]) => {
+    setFilters(updatedFilters);
+    // eslint-disable-next-line no-console
+    console.log('Filters changed:', updatedFilters);
+  };
+
+  return (
+    <Stack sx={{ gap: '4', width: '100%', height: '100vh', padding: '4' }}>
+      <Box>
+        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+        <Heading>Dashboard with Filter Change Handling</Heading>
+        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+        <Text sx={{ marginTop: '2' }}>
+          Open the browser console to see filter changes logged when you modify
+          any filter.
+        </Text>
+      </Box>
+      <Box sx={{ flex: 1 }}>
+        <Dashboard
+          templates={defaultTemplates}
+          filters={filters}
+          selectedTemplate={selectedTemplate}
+          loading={false}
+          onFiltersChange={handleFiltersChange}
+        />
+      </Box>
+    </Stack>
+  );
+};
+
 export const WithFiltersChange: StoryObj = {
   render: () => {
-    const [filters, setFilters] =
-      React.useState<DashboardFilter[]>(defaultFilters);
-
-    const handleFiltersChange = (updatedFilters: DashboardFilter[]) => {
-      setFilters(updatedFilters);
-      // eslint-disable-next-line no-console
-      console.log('Filters changed:', updatedFilters);
-    };
-
-    return (
-      <Stack sx={{ gap: '4', width: '100%', height: '100vh', padding: '4' }}>
-        <Box>
-          <Heading>Dashboard with Filter Change Handling</Heading>
-          <Text sx={{ marginTop: '2' }}>
-            Open the browser console to see filter changes logged when you
-            modify any filter.
-          </Text>
-        </Box>
-        <Box sx={{ flex: 1 }}>
-          <Dashboard
-            templates={defaultTemplates}
-            filters={filters}
-            loading={false}
-            onFiltersChange={handleFiltersChange}
-          />
-        </Box>
-      </Stack>
-    );
+    return <WithFiltersChangeStory />;
   },
   parameters: {
     docs: {
@@ -429,11 +488,14 @@ export const SingleCardDashboard: StoryObj = {
       },
     ];
 
+    const selectedTemplate = singleCardTemplate[0];
+
     return (
       <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
         <Dashboard
           templates={singleCardTemplate}
           filters={simpleFilters}
+          selectedTemplate={selectedTemplate}
           loading={false}
         />
       </Box>
@@ -480,11 +542,21 @@ export const WithTextFilter: StoryObj = {
       },
     ];
 
+    const selectedTemplateId =
+      (filtersWithText.find((f) => {
+        return f.key === 'template';
+      })?.value as string) || 'default';
+    const selectedTemplate =
+      defaultTemplates.find((t) => {
+        return t.id === selectedTemplateId;
+      }) || defaultTemplates[0];
+
     return (
       <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
         <Dashboard
           templates={defaultTemplates}
           filters={filtersWithText}
+          selectedTemplate={selectedTemplate}
           loading={false}
         />
       </Box>

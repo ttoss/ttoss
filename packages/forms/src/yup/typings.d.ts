@@ -1,4 +1,4 @@
-import { AnyObject, Flags, Maybe, Schema } from 'yup';
+import type { AnyObject, Flags, Maybe, Schema } from 'yup';
 
 declare module 'yup' {
   interface StringSchema<
@@ -8,6 +8,7 @@ declare module 'yup' {
     TFlags extends Flags = '',
   > extends Schema<TType, TContext, TDefault, TFlags> {
     cnpj(): this;
+    cpf(): this;
   }
 }
 

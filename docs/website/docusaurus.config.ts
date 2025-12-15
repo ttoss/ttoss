@@ -26,7 +26,6 @@ const config: Config = {
   // Quality assurance - fail fast on broken links
   onBrokenAnchors: 'throw',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
 
   // Internationalization
   i18n: {
@@ -35,6 +34,7 @@ const config: Config = {
   },
 
   plugins: [
+    isDevelopment ? null : 'docusaurus-plugin-llms',
     './plugins/carlin/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
@@ -121,6 +121,17 @@ const config: Config = {
             },
           ];
         })),
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            to: '/docs/ai/agentic-development-principles',
+            from: '/docs/product/product-development/agentic-development-principles',
+          },
+        ],
+      },
+    ],
   ],
 
   presets: [
@@ -191,6 +202,12 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
+          position: 'left',
+          sidebarId: 'ai',
+          label: 'AI',
+        },
+        {
+          type: 'docSidebar',
           position: 'right',
           sidebarId: 'carlin',
           label: 'Carlin',
@@ -250,6 +267,10 @@ const config: Config = {
               to: '/docs/engineering',
             },
             {
+              label: 'AI',
+              to: '/docs/ai',
+            },
+            {
               label: 'Challenge',
               to: '/docs/challenge/the-project',
             },
@@ -302,6 +323,9 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
 
   themes: ['@docusaurus/theme-mermaid'],

@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.79](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.78...@ttoss/react-auth@2.6.79) (2025-12-10)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.78](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.77...@ttoss/react-auth@2.6.78) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.77](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.76...@ttoss/react-auth@2.6.77) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.76](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.75...@ttoss/react-auth@2.6.76) (2025-12-05)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.75](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.74...@ttoss/react-auth@2.6.75) (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.74](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.73...@ttoss/react-auth@2.6.74) (2025-12-02)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.73](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.72...@ttoss/react-auth@2.6.73) (2025-12-02)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.72](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.71...@ttoss/react-auth@2.6.72) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.71](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.70...@ttoss/react-auth@2.6.71) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.70](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.69...@ttoss/react-auth@2.6.70) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.69](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.68...@ttoss/react-auth@2.6.69) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.68](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.67...@ttoss/react-auth@2.6.68) (2025-11-27)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.67](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.66...@ttoss/react-auth@2.6.67) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.66](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.65...@ttoss/react-auth@2.6.66) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
 ## [2.6.65](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.64...@ttoss/react-auth@2.6.65) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/react-auth

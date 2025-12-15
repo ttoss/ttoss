@@ -12,7 +12,7 @@ ttoss's Product pillar provides structured workflows and methodologies that enab
 ## What You'll Find Here
 
 - **[Workflow Processes](/docs/product/workflow)**: Structured methodologies for product discovery, development, and delivery
-- **Development Principles**: Agile frameworks optimized for modern product teams
+- **[Development Principles](/docs/product/product-development/principles)**: Agile frameworks optimized for modern product teams
 - **Customer-Centric Practices**: Techniques for rapid validation and user feedback integration
 - **Cross-Functional Collaboration**: Guidelines for seamless Product-Engineering-Design alignment
 

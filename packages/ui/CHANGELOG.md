@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.2.1...@ttoss/ui@6.3.0) (2025-12-10)
+
+### Features
+
+- fixed width layout ([#800](https://github.com/ttoss/ttoss/issues/800)) ([84ed3c6](https://github.com/ttoss/ttoss/commit/84ed3c63399cb2d163748cc29276acd9ee0617ec))
+
+## [6.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.2.0...@ttoss/ui@6.2.1) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# 6.2.0 (2025-12-08)
+
+### Features
+
+- enhance selected option styling ([#796](https://github.com/ttoss/ttoss/issues/796)) ([9a740bd](https://github.com/ttoss/ttoss/commit/9a740bd78376852ecd85a020dd7307ea3f7d121e))
+
+# [6.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.4...@ttoss/ui@6.1.0) (2025-12-04)
+
+### Features
+
+- add SpotlightCard component with responsive design and animations ([#776](https://github.com/ttoss/ttoss/issues/776)) ([47d02fd](https://github.com/ttoss/ttoss/commit/47d02fd22f97ab51d6e70f3a24356da047fe45c0))
+
+## [6.0.4](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.3...@ttoss/ui@6.0.4) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.0.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.2...@ttoss/ui@6.0.3) (2025-11-26)
+
+### Bug Fixes
+
+- **ui,forms:** Fix ref forwarding for Checkbox and FormField components ([#780](https://github.com/ttoss/ttoss/issues/780)) ([98a10c9](https://github.com/ttoss/ttoss/commit/98a10c9d5c41bafdd1e540409456f9c21dbd0401))
+
 ## [6.0.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.0.1...@ttoss/ui@6.0.2) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/ui

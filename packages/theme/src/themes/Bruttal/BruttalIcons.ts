@@ -42,7 +42,8 @@ import warningFilledIcon from '@iconify/icons-carbon/warning-filled';
 import loadingIcon from '@iconify/icons-eos-icons/loading';
 import threeDotsLoadingIcon from '@iconify/icons-eos-icons/three-dots-loading';
 import successCircleIcon from '@iconify/icons-mdi/success-circle';
-import { addIcon, IconifyIcon } from '@ttoss/react-icons';
+import type { IconifyIcon } from '@ttoss/react-icons';
+import { addIcon } from '@ttoss/react-icons';
 
 const replicateIcon: IconifyIcon = {
   body: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">

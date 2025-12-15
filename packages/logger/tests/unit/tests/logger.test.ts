@@ -1,11 +1,6 @@
 import { faker } from '@ttoss/test-utils/faker';
-import {
-  configureLogger,
-  log,
-  notify,
-  notifyError,
-  sendNotificationToDiscord,
-} from 'src/index';
+import type { CustomEndpoint } from 'src/index';
+import { configureLogger, log, notify, notifyError } from 'src/index';
 
 global.fetch = jest.fn(() => {
   return Promise.resolve({
@@ -62,29 +57,6 @@ test('should handle fetch errors gracefully', async () => {
   ).rejects.toThrow('Network error');
 
   expect(fetch).toHaveBeenCalledTimes(1);
-});
-
-test('sendNotificationToDiscord should send POST request correctly', async () => {
-  const url = 'https://discord.com/api/webhooks/test-webhook';
-  const message = 'Direct test';
-
-  await sendNotificationToDiscord({
-    notification: {
-      message,
-      type: 'error',
-    },
-    url,
-    project,
-  });
-
-  expect(fetch).toHaveBeenCalledWith(
-    url,
-    expect.objectContaining({
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: '{"embeds":[{"title":"ERROR from project-name","description":"Direct test","color":16711680,"footer":{"text":"Project: project-name"}}]}',
-    })
-  );
 });
 
 test('should send a formatted notification with prefix', async () => {
@@ -145,4 +117,162 @@ test('sendNotificationToDiscord should send POST request correctly when using no
       body: '{"embeds":[{"title":"ERROR from project-name","description":"This is an error","color":16711680,"footer":{"text":"Project: project-name"}}]}',
     })
   );
+});
+
+describe('Custom Endpoints', () => {
+  const customEndpointUrl = 'https://custom-api.example.com/notifications';
+
+  test('should send notification to a single custom endpoint', async () => {
+    const formatBody = jest.fn().mockReturnValue({ text: 'Custom message' });
+    const customEndpoint: CustomEndpoint = {
+      url: customEndpointUrl,
+      name: 'Custom API',
+      formatBody,
+    };
+
+    configureLogger({ project, customEndpoints: customEndpoint });
+
+    await notify({ type: 'info', message: 'Test message' });
+
+    expect(formatBody).toHaveBeenCalledWith({
+      notification: { type: 'info', message: 'Test message' },
+      project,
+    });
+    expect(fetch).toHaveBeenCalledWith(
+      customEndpointUrl,
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{"text":"Custom message"}',
+      })
+    );
+  });
+
+  test('should send notification to multiple custom endpoints', async () => {
+    const endpoint1: CustomEndpoint = {
+      url: 'https://api1.example.com/notify',
+      formatBody: () => {
+        return { channel: '#alerts', text: 'Alert!' };
+      },
+    };
+    const endpoint2: CustomEndpoint = {
+      url: 'https://api2.example.com/webhook',
+      formatBody: () => {
+        return { message: 'Notification received' };
+      },
+    };
+
+    configureLogger({ project, customEndpoints: [endpoint1, endpoint2] });
+
+    await notify({ type: 'warn', message: 'Warning message' });
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenCalledWith(
+      'https://api1.example.com/notify',
+      expect.objectContaining({
+        body: '{"channel":"#alerts","text":"Alert!"}',
+      })
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      'https://api2.example.com/webhook',
+      expect.objectContaining({
+        body: '{"message":"Notification received"}',
+      })
+    );
+  });
+
+  test('should send to both Discord and custom endpoints when both are configured', async () => {
+    const discordWebhookUrl = 'https://discord.com/api/webhooks/test-webhook';
+    const customEndpoint: CustomEndpoint = {
+      url: customEndpointUrl,
+      formatBody: ({ notification }) => {
+        return { msg: notification.message };
+      },
+    };
+
+    configureLogger({
+      project,
+      discordWebhookUrl,
+      customEndpoints: customEndpoint,
+    });
+
+    await notify({ type: 'error', message: 'Critical error' });
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenCalledWith(discordWebhookUrl, expect.anything());
+    expect(fetch).toHaveBeenCalledWith(customEndpointUrl, expect.anything());
+  });
+
+  test('should use custom headers when provided', async () => {
+    const customEndpoint: CustomEndpoint = {
+      url: customEndpointUrl,
+      formatBody: () => {
+        return { data: 'test' };
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token123',
+        'X-Custom-Header': 'custom-value',
+      },
+    };
+
+    configureLogger({ project, customEndpoints: customEndpoint });
+
+    await notify({ type: 'info', message: 'Test' });
+
+    expect(fetch).toHaveBeenCalledWith(
+      customEndpointUrl,
+      expect.objectContaining({
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer token123',
+          'X-Custom-Header': 'custom-value',
+        },
+      })
+    );
+  });
+
+  test('should use custom HTTP method when provided', async () => {
+    const customEndpoint: CustomEndpoint = {
+      url: customEndpointUrl,
+      formatBody: () => {
+        return { status: 'ok' };
+      },
+      method: 'PUT',
+    };
+
+    configureLogger({ project, customEndpoints: customEndpoint });
+
+    await notify({ type: 'info', message: 'Test' });
+
+    expect(fetch).toHaveBeenCalledWith(
+      customEndpointUrl,
+      expect.objectContaining({
+        method: 'PUT',
+      })
+    );
+  });
+
+  test('should not call custom endpoints if project is not configured', async () => {
+    const customEndpoint: CustomEndpoint = {
+      url: customEndpointUrl,
+      formatBody: () => {
+        return { test: true };
+      },
+    };
+
+    configureLogger({ customEndpoints: customEndpoint });
+
+    await notify({ type: 'info', message: 'Test' });
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  test('should handle empty customEndpoints array', async () => {
+    configureLogger({ project, customEndpoints: [] });
+
+    await notify({ type: 'info', message: 'Test' });
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
 });

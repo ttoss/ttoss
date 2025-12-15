@@ -130,3 +130,74 @@ test('should display error messages', async () => {
 
   expect(await screen.findByText('Car is required')).toBeInTheDocument();
 });
+
+describe('FormFieldRadio custom onBlur and onChange', () => {
+  test('should call custom onChange handler while still updating form state', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const onSubmit = jest.fn();
+    const customOnChange = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldRadio
+            name="car"
+            label="Cars"
+            options={RADIO_OPTIONS}
+            onChange={customOnChange}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    await user.click(screen.getByLabelText('BMW'));
+
+    expect(customOnChange).toHaveBeenCalled();
+
+    await user.click(screen.getByText('Submit'));
+    expect(onSubmit).toHaveBeenCalledWith({ car: 'BMW' });
+  });
+
+  test('should call custom onBlur handler while still triggering validation', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const customOnBlur = jest.fn();
+
+    const schema = yup.object({
+      car: yup.string().required('Car is required'),
+    });
+
+    const RenderForm = () => {
+      const formMethods = useForm({
+        mode: 'onBlur',
+        resolver: yupResolver(schema),
+      });
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormFieldRadio
+            name="car"
+            label="Cars"
+            options={RADIO_OPTIONS}
+            onBlur={customOnBlur}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    const radio = screen.getByLabelText('BMW');
+    await user.click(radio);
+    await user.tab();
+
+    expect(customOnBlur).toHaveBeenCalled();
+  });
+});

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.5...@ttoss/theme@2.8.0) (2025-12-10)
+
+### Features
+
+- fixed width layout ([#800](https://github.com/ttoss/ttoss/issues/800)) ([84ed3c6](https://github.com/ttoss/ttoss/commit/84ed3c63399cb2d163748cc29276acd9ee0617ec))
+
+## 2.7.5 (2025-12-08)
+
+### Bug Fixes
+
+- deploy theme ([f3a2746](https://github.com/ttoss/ttoss/commit/f3a2746a6e68d1a52af89ed9baf8c3e9b796778c))
+
+## [2.7.4](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.3...@ttoss/theme@2.7.4) (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [2.7.3](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.2...@ttoss/theme@2.7.3) (2025-11-26)
+
+### Bug Fixes
+
+- **forms:** make FormFieldCheckbox and FormFieldSwitch fully clickable ([#778](https://github.com/ttoss/ttoss/issues/778)) ([ffd04d5](https://github.com/ttoss/ttoss/commit/ffd04d53a08d04473dc17527d4dfad26f27692b2))
+
 ## [2.7.2](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.1...@ttoss/theme@2.7.2) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/theme

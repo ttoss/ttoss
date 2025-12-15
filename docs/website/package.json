@@ -1,9 +1,10 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "2.0.1",
+  "version": "2.0.17",
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
+    "build-dev": "NODE_ENV=development docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm start",
@@ -15,30 +16,32 @@
     "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.8.1",
-    "@docusaurus/module-type-aliases": "^3.8.1",
-    "@docusaurus/plugin-sitemap": "^3.8.1",
-    "@docusaurus/preset-classic": "^3.8.1",
-    "@docusaurus/theme-mermaid": "^3.8.1",
-    "@mdx-js/react": "3.1.0",
+    "@docusaurus/core": "^3.9.2",
+    "@docusaurus/module-type-aliases": "^3.9.2",
+    "@docusaurus/plugin-client-redirects": "^3.9.2",
+    "@docusaurus/plugin-sitemap": "^3.9.2",
+    "@docusaurus/preset-classic": "^3.9.2",
+    "@docusaurus/theme-mermaid": "^3.9.2",
+    "@mdx-js/react": "3.1.1",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "rehype-katex": "7",
     "remark-math": "6"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.8.1",
-    "@docusaurus/tsconfig": "^3.8.1",
-    "@docusaurus/types": "^3.8.1",
+    "@docusaurus/module-type-aliases": "^3.9.2",
+    "@docusaurus/tsconfig": "^3.9.2",
+    "@docusaurus/types": "^3.9.2",
     "carlin": "workspace:^",
-    "docusaurus-plugin-typedoc": "^1.4.0",
-    "jsdoc-api": "^9.3.4",
-    "markdown-to-jsx": "^7.7.10",
+    "docusaurus-plugin-llms": "^0.2.2",
+    "docusaurus-plugin-typedoc": "^1.4.2",
+    "jsdoc-api": "^9.3.5",
+    "markdown-to-jsx": "^9.3.0",
     "minimist": "^1.2.8",
-    "typedoc": "^0.28.7",
-    "typedoc-plugin-markdown": "^4.7.0",
-    "typescript": "~5.7.2"
+    "typedoc": "^0.28.15",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "~5.9.3"
   },
   "browserslist": {
     "production": [

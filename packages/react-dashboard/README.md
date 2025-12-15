@@ -7,7 +7,7 @@ A comprehensive React dashboard module that provides fully customizable dashboar
 ## Installation
 
 ```shell
-pnpm add @ttoss/react-dashboard @ttoss/components @ttoss/react-icons @ttoss/ui @emotion/react react-day-picker react-grid-layout
+pnpm add @ttoss/react-dashboard
 ```
 
 ## Getting Started

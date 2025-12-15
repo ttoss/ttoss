@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.17](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.16...@docs/website@2.0.17) (2025-12-15)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.16](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.15...@docs/website@2.0.16) (2025-12-15)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.15](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.14...@docs/website@2.0.15) (2025-12-12)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.14](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.13...@docs/website@2.0.14) (2025-12-12)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.13](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.12...@docs/website@2.0.13) (2025-12-09)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.12](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.11...@docs/website@2.0.12) (2025-12-08)
+
+### Bug Fixes
+
+- blog ([9e3d34e](https://github.com/ttoss/ttoss/commit/9e3d34e821d5c63ff34fe1c576ca2410e85703a6))
+
+## [2.0.11](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.10...@docs/website@2.0.11) (2025-12-08)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.10](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.9...@docs/website@2.0.10) (2025-12-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.9](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.8...@docs/website@2.0.9) (2025-12-07)
+
+### Bug Fixes
+
+- blog title ([6455aba](https://github.com/ttoss/ttoss/commit/6455abaa38d44f701b4ca19f431aa4aead509615))
+
+## [2.0.8](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.7...@docs/website@2.0.8) (2025-12-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.7](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.6...@docs/website@2.0.7) (2025-12-06)
+
+### Bug Fixes
+
+- agentic principles structure ([8eb6937](https://github.com/ttoss/ttoss/commit/8eb6937981ee647479d7259179d0eebf9d3667b2))
+
+## [2.0.6](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.5...@docs/website@2.0.6) (2025-12-06)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.5](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.4...@docs/website@2.0.5) (2025-12-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.4](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.3...@docs/website@2.0.4) (2025-12-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.0.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.2...@docs/website@2.0.3) (2025-12-04)
+
+**Note:** Version bump only for package @docs/website
+
+## 2.0.2 (2025-12-04)
+
+**Note:** Version bump only for package @docs/website
+
 ## [2.0.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.0...@docs/website@2.0.1) (2025-11-24)
 
 **Note:** Version bump only for package @docs/website

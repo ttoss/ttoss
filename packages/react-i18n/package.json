@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "2.0.24",
+  "version": "2.0.25",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
@@ -38,9 +38,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.7",
     "jest": "^30.2.0",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "tsup": "^8.5.1"
   },
   "keywords": [

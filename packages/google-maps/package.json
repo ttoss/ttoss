@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/google-maps",
-  "version": "2.1.22",
+  "version": "2.1.23",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
@@ -35,9 +35,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/google.maps": "^3.58.1",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.2.7",
     "jest": "^30.2.0",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "tsup": "^8.5.1"
   },
   "keywords": [

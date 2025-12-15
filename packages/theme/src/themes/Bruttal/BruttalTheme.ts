@@ -1,4 +1,4 @@
-import { Theme } from 'theme-ui';
+import type { Theme } from 'theme-ui';
 
 import { defaultTheme } from '../default/defaultTheme';
 
@@ -364,10 +364,6 @@ export const BruttalTheme: Theme = {
       '& > span[aria-label="tooltip"]': {
         fontSize: 'sm',
         marginLeft: '2',
-      },
-      '&:has(input[type="checkbox"])': {
-        fontSize: 'md',
-        gap: '2',
       },
       '& > div:has(input[type="checkbox"]) > svg': {
         marginRight: 0,

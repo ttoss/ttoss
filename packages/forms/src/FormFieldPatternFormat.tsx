@@ -1,6 +1,7 @@
 import { Input, type InputProps } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { PatternFormat, PatternFormatProps } from 'react-number-format';
+import type { PatternFormatProps } from 'react-number-format';
+import { PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from './FormField';
 
@@ -30,6 +31,9 @@ export const FormFieldPatternFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
+    onBlur,
+    onValueChange,
     ...patternFormatProps
   } = props;
 
@@ -45,15 +49,20 @@ export const FormFieldPatternFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
           <PatternFormat
             {...patternFormatProps}
             name={field.name}
             value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onValueChange={(values, sourceInfo) => {
               field.onChange(values.value);
+              onValueChange?.(values, sourceInfo);
             }}
             customInput={Input}
             leadingIcon={leadingIcon}

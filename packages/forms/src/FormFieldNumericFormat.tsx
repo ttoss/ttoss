@@ -1,8 +1,10 @@
 import { Input, type InputProps } from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { NumericFormat, NumericFormatProps } from 'react-number-format';
+import type { FieldPath, FieldValues } from 'react-hook-form';
+import type { NumericFormatProps } from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 
-import { FormField, FormFieldProps } from './FormField';
+import type { FormFieldProps } from './FormField';
+import { FormField } from './FormField';
 
 export type FormFieldNumericFormatProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -30,6 +32,9 @@ export const FormFieldNumericFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    auxiliaryCheckbox,
+    onBlur,
+    onValueChange,
     ...numericFormatProps
   } = props;
 
@@ -45,15 +50,20 @@ export const FormFieldNumericFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (
           <NumericFormat
             {...numericFormatProps}
             name={field.name}
             value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onValueChange={(values, sourceInfo) => {
               field.onChange(values.floatValue);
+              onValueChange?.(values, sourceInfo);
             }}
             customInput={Input}
             leadingIcon={leadingIcon}

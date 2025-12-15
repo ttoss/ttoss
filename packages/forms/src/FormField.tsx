@@ -17,6 +17,10 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
+import {
+  AuxiliaryCheckbox,
+  type AuxiliaryCheckboxProps,
+} from './AuxiliaryCheckbox';
 import { FormErrorMessage } from './FormErrorMessage';
 
 type Rules<
@@ -39,6 +43,14 @@ export type FormFieldProps<
   labelTooltip?: TooltipProps;
   warning?: string | React.ReactNode;
   rules?: Rules<TFieldValues, TName>;
+  /**
+   * Optional auxiliary checkbox to render between the field and error message.
+   * Useful for input confirmation or conditional display of other fields.
+   */
+  auxiliaryCheckbox?: Omit<
+    AuxiliaryCheckboxProps<TFieldValues, FieldPath<TFieldValues>>,
+    'disabled'
+  >;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -65,6 +77,7 @@ export const FormField = <
   render,
   warning,
   rules,
+  auxiliaryCheckbox,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
   const controllerReturn = useController<TFieldValues, TName>({
     name,
@@ -79,6 +92,9 @@ export const FormField = <
   const disabled = propsDisabled ?? controllerReturn.field.disabled;
 
   const hasError = !!errors[name];
+  const hasAuxiliaryError = auxiliaryCheckbox
+    ? !!errors[auxiliaryCheckbox.name]
+    : false;
   const uniqueId = React.useId();
   const id = idProp || `form-field-${name}-${uniqueId}`;
 
@@ -105,21 +121,26 @@ export const FormField = <
         return null;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const childProps = child.props as any;
-
-      const elementProps = {
+      /**
+       * Use cloneElement to properly preserve the ref from the original element.
+       * React.createElement loses the ref because refs are not part of element.props.
+       * cloneElement preserves all props including the ref.
+       */
+      const mergeProps = {
         id,
-        ...childProps,
         ...(warning && { trailingIcon: 'warning-alt' }),
       };
 
       if (label && isCheckboxOrSwitch(child)) {
         return (
-          <Flex
+          <Label
+            aria-disabled={disabled}
+            htmlFor={id}
+            tooltip={labelTooltip}
             sx={{
               flexDirection: 'row',
               alignItems: 'center',
+              cursor: disabled ? 'not-allowed' : 'pointer',
             }}
           >
             <Flex
@@ -127,12 +148,10 @@ export const FormField = <
                 position: 'relative',
               }}
             >
-              {React.createElement(child.type, elementProps)}
+              {React.cloneElement(child, mergeProps)}
             </Flex>
-            <Label aria-disabled={disabled} htmlFor={id} tooltip={labelTooltip}>
-              {label}
-            </Label>
-          </Flex>
+            {label}
+          </Label>
         );
       }
 
@@ -149,7 +168,7 @@ export const FormField = <
               {label}
             </Label>
           )}
-          {React.createElement(child.type, elementProps)}
+          {React.cloneElement(child, mergeProps)}
         </Flex>
       );
     });
@@ -163,13 +182,26 @@ export const FormField = <
     warning,
   ]);
 
+  /**
+   * Determine which error to display: FormField error takes precedence,
+   * then show auxiliaryCheckbox error if present.
+   */
+  const errorNameToDisplay = hasError
+    ? name
+    : hasAuxiliaryError && auxiliaryCheckbox
+      ? auxiliaryCheckbox.name
+      : name;
+
   return (
     <Flex
       sx={{ flexDirection: 'column', width: '100%', gap: '1', ...sx }}
       css={css}
     >
       {memoizedRender}
-      <FormErrorMessage name={name} />
+      {auxiliaryCheckbox && (
+        <AuxiliaryCheckbox {...auxiliaryCheckbox} disabled={disabled} />
+      )}
+      <FormErrorMessage name={errorNameToDisplay} />
       {warning && !hasError && (
         <Flex
           className="warning"

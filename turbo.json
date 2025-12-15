@@ -14,7 +14,7 @@
     },
     "i18n": {
       "dependsOn": ["@ttoss/i18n-cli#build-config"],
-      "outputs": ["i18n/lang/**", "i18n/compiled/**"]
+      "outputs": ["i18n/**"]
     },
     "build": {
       "dependsOn": ["^build", "i18n"],
@@ -22,13 +22,7 @@
     },
     "test": {
       "dependsOn": ["i18n", "build-config"],
-      "outputs": [],
-      "inputs": [
-        "src/**/*.tsx",
-        "src/**/*.ts",
-        "tests/**/*.ts",
-        "tests/**/*.tsx"
-      ]
+      "outputs": []
     },
     "deploy": {
       "dependsOn": ["i18n", "build", "carlin#build", "^deploy"],

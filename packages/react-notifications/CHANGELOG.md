@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.1...@ttoss/react-notifications@2.5.2) (2025-12-10)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.0...@ttoss/react-notifications@2.5.1) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+# 2.5.0 (2025-12-08)
+
+### Features
+
+- enhance selected option styling ([#796](https://github.com/ttoss/ttoss/issues/796)) ([9a740bd](https://github.com/ttoss/ttoss/commit/9a740bd78376852ecd85a020dd7307ea3f7d121e))
+
+## [2.4.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.38...@ttoss/react-notifications@2.4.39) (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.37...@ttoss/react-notifications@2.4.38) (2025-12-02)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.36...@ttoss/react-notifications@2.4.37) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.35...@ttoss/react-notifications@2.4.36) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.34...@ttoss/react-notifications@2.4.35) (2025-11-27)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.34](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.33...@ttoss/react-notifications@2.4.34) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.4.33](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.32...@ttoss/react-notifications@2.4.33) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 ## [2.4.32](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.4.31...@ttoss/react-notifications@2.4.32) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/react-notifications

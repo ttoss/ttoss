@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.84](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.83...@terezinha-farm/vite-app@0.12.84) (2025-12-10)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.83](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.82...@terezinha-farm/vite-app@0.12.83) (2025-12-09)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.82](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.81...@terezinha-farm/vite-app@0.12.82) (2025-12-08)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.81](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.80...@terezinha-farm/vite-app@0.12.81) (2025-12-08)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.80](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.79...@terezinha-farm/vite-app@0.12.80) (2025-12-05)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.79](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.78...@terezinha-farm/vite-app@0.12.79) (2025-12-04)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.78](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.77...@terezinha-farm/vite-app@0.12.78) (2025-12-02)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.77](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.76...@terezinha-farm/vite-app@0.12.77) (2025-12-02)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.76](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.75...@terezinha-farm/vite-app@0.12.76) (2025-12-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.75](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.74...@terezinha-farm/vite-app@0.12.75) (2025-12-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.74](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.73...@terezinha-farm/vite-app@0.12.74) (2025-11-28)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.73](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.72...@terezinha-farm/vite-app@0.12.73) (2025-11-28)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.72](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.71...@terezinha-farm/vite-app@0.12.72) (2025-11-27)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.71](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.70...@terezinha-farm/vite-app@0.12.71) (2025-11-26)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.70](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.69...@terezinha-farm/vite-app@0.12.70) (2025-11-26)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.12.69](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.68...@terezinha-farm/vite-app@0.12.69) (2025-11-24)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

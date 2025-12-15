@@ -1,5 +1,5 @@
 import { Box, Flex, Label, Radio, type RadioProps, Text } from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
@@ -39,6 +39,8 @@ export const FormFieldRadioCard = <
     options,
     direction = 'column',
     width = 'full',
+    onBlur,
+    onChange,
     ...radioProps
   } = props;
 
@@ -64,6 +66,7 @@ export const FormFieldRadioCard = <
           >
             {options.map((option: FormRadioOption) => {
               const key = `form-field-radio-${name}-${option.value}`;
+              const isSelected = field.value === option.value;
 
               return (
                 <Box
@@ -72,8 +75,13 @@ export const FormFieldRadioCard = <
                     gap: '2',
                     width,
                     border: 'md',
-                    borderColor: 'display.border.muted.default',
+                    borderColor: isSelected
+                      ? 'input.background.accent.default'
+                      : 'input.border.muted.default',
                     borderRadius: 'md',
+                    backgroundColor: isSelected
+                      ? 'feedback.background.positive.default'
+                      : 'transparent',
                   }}
                 >
                   <Label
@@ -86,8 +94,14 @@ export const FormFieldRadioCard = <
                     <Radio
                       {...radioProps}
                       ref={field.ref}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        onChange?.(e);
+                      }}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        onBlur?.(e);
+                      }}
                       value={option.value}
                       checked={field.value === option.value}
                       name={name}

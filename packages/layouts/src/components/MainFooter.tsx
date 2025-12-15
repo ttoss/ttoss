@@ -1,4 +1,5 @@
-import { Box, BoxProps } from '@ttoss/ui';
+import type { BoxProps } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
 
 export const MainFooter = (props: BoxProps) => {
   return (

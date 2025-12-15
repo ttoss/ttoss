@@ -2,7 +2,7 @@
   "private": true,
   "name": "ttoss-monorepo",
   "version": "2.0.0",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
     "Rayza Oliveira <rayza.ocr@gmail.com> (https://github.com/RayzaOliveira)"
@@ -26,22 +26,22 @@
     "syncpack:list": "syncpack list-mismatches"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@lerna-lite/changed": "^4.6.2",
-    "@lerna-lite/cli": "^4.6.2",
-    "@lerna-lite/list": "^4.6.2",
-    "@lerna-lite/version": "^4.6.2",
+    "@commitlint/cli": "^20.1.0",
+    "@lerna-lite/changed": "^4.9.4",
+    "@lerna-lite/cli": "^4.9.4",
+    "@lerna-lite/list": "^4.9.4",
+    "@lerna-lite/version": "^4.9.4",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.32.0",
+    "eslint": "^9.39.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.4",
-    "prettier": "^3.6.2",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
     "syncpack": "13.0.4",
-    "turbo": "^2.5.5",
-    "typescript": "~5.7.2"
+    "turbo": "^2.6.2",
+    "typescript": "~5.9.3"
   },
   "keywords": [
     "cli",
@@ -54,7 +54,7 @@
     "node": "^24.0.0",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.23.0",
+  "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "overrides": {
       "@types/parse-path": "7.0.3",

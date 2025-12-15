@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.6.1...@ttoss/layouts@0.7.0) (2025-12-10)
+
+### Features
+
+- fixed width layout ([#800](https://github.com/ttoss/ttoss/issues/800)) ([84ed3c6](https://github.com/ttoss/ttoss/commit/84ed3c63399cb2d163748cc29276acd9ee0617ec))
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.6.0...@ttoss/layouts@0.6.1) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+# 0.6.0 (2025-12-08)
+
+### Features
+
+- enhance selected option styling ([#796](https://github.com/ttoss/ttoss/issues/796)) ([9a740bd](https://github.com/ttoss/ttoss/commit/9a740bd78376852ecd85a020dd7307ea3f7d121e))
+
+## [0.5.36](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.35...@ttoss/layouts@0.5.36) (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.35](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.34...@ttoss/layouts@0.5.35) (2025-12-02)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.34](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.33...@ttoss/layouts@0.5.34) (2025-12-01)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.33](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.32...@ttoss/layouts@0.5.33) (2025-11-28)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.32](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.31...@ttoss/layouts@0.5.32) (2025-11-27)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.31](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.30...@ttoss/layouts@0.5.31) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.5.30](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.29...@ttoss/layouts@0.5.30) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/layouts
+
 ## [0.5.29](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.5.28...@ttoss/layouts@0.5.29) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/layouts

@@ -162,6 +162,26 @@ All components integrate seamlessly with `@ttoss/ui` theme system via `sx` prop:
 </Layout.Main>
 ```
 
+### Layout Variant Usage
+
+The `Main` component applies `variant="layout.container"` to its internal Container, ensuring consistent layout width and padding based on your theme. Define `layout.container` in your theme for global control:
+
+```js
+// theme.js
+export const theme = {
+  layout: {
+    container: {
+      maxWidth: ['100%', '1100px'],
+      minWidth: ['100%', '1100px'],
+      marginX: 'auto',
+      paddingX: '4',
+    },
+  },
+};
+```
+
+Other layout components (Header, Sidebar, Footer) also accept the `variant` prop for theme-driven customization.
+
 ## Advanced Usage
 
 ### Custom Components with displayName

@@ -1,5 +1,6 @@
 ---
 title: Principles
+author: Pedro Arantes
 ---
 
 import TOCInline from '@theme/TOCInline';

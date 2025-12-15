@@ -1,4 +1,4 @@
-import { Theme } from 'theme-ui';
+import type { Theme } from 'theme-ui';
 
 import { createTheme } from '../../createTheme';
 import { BruttalTheme } from '../Bruttal/Bruttal';
@@ -184,6 +184,13 @@ export const OcaTheme: Theme = createTheme(
     /**
      * Components
      */
+
+    layout: {
+      container: {
+        maxWidth: ['100%', '1100px'],
+        minWidth: ['100%', '1100px'],
+      },
+    },
 
     buttons: {
       accent: {

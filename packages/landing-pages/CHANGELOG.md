@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.2](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.13.1...@ttoss/landing-pages@0.13.2) (2025-12-10)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.13.0...@ttoss/landing-pages@0.13.1) (2025-12-08)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+# 0.13.0 (2025-12-08)
+
+### Features
+
+- enhance selected option styling ([#796](https://github.com/ttoss/ttoss/issues/796)) ([9a740bd](https://github.com/ttoss/ttoss/commit/9a740bd78376852ecd85a020dd7307ea3f7d121e))
+
+## [0.12.65](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.64...@ttoss/landing-pages@0.12.65) (2025-12-04)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.64](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.63...@ttoss/landing-pages@0.12.64) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.12.63](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.62...@ttoss/landing-pages@0.12.63) (2025-11-26)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 ## [0.12.62](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.12.61...@ttoss/landing-pages@0.12.62) (2025-11-24)
 
 **Note:** Version bump only for package @ttoss/landing-pages

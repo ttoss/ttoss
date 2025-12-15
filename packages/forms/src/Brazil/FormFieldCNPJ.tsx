@@ -1,6 +1,7 @@
 import { Input } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { PatternFormat, PatternFormatProps } from 'react-number-format';
+import type { PatternFormatProps } from 'react-number-format';
+import { PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from '../FormField';
 
@@ -84,6 +85,7 @@ export const FormFieldCNPJ = <
     id,
     defaultValue,
     placeholder = '12.345.678/0000-00',
+    auxiliaryCheckbox,
     ...patternFormatProps
   } = props;
 
@@ -99,6 +101,7 @@ export const FormFieldCNPJ = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (
           <PatternFormat
