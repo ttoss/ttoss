@@ -2,7 +2,8 @@ import { Flex } from '@ttoss/ui';
 import * as React from 'react';
 
 import { useDashboard } from './DashboardProvider';
-import { DateRange, DateRangeFilter } from './Filters/DateRangeFilter';
+import type { DateRange } from './Filters/DateRangeFilter';
+import { DateRangeFilter } from './Filters/DateRangeFilter';
 import { SelectFilter } from './Filters/SelectFilter';
 import { TextFilter } from './Filters/TextFilter';
 
