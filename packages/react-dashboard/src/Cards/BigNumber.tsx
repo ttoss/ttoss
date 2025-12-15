@@ -58,10 +58,10 @@ const getTrendColor = (
   status?: 'positive' | 'negative' | 'neutral'
 ): string => {
   if (status === 'positive') {
-    return 'display.text.accent.default';
+    return 'feedback.text.positive.default';
   }
   if (status === 'negative') {
-    return 'display.text.negative.default';
+    return 'feedback.text.negative.default';
   }
   return 'display.text.primary.default';
 };
@@ -121,23 +121,20 @@ export const BigNumber = (props: DashboardCard) => {
               ) : props.trend.status === 'negative' ? (
                 <Icon icon="mdi:arrow-down" width={16} />
               ) : null}
-              {props.trend.status === 'neutral' ? (
-                <Icon icon="mdi:arrow-right" width={16} />
-              ) : null}
             </Box>
-            <Text
-              sx={{
-                color: getTrendColor(props.trend.status),
-                fontSize: 'sm',
-                fontWeight: 'medium',
-              }}
-            >
-              {props.trend.status === 'positive' ? '+' : ''}
-              {props.trend.status === 'negative' ? '-' : ''}
-              {props.trend.status === 'neutral' ? '' : ''}
-              {props.trend.value.toFixed(1)}%{' '}
-              {props.trend ? 'vs. período anterior' : ''}
-            </Text>
+            {['positive', 'negative'].includes(props.trend?.status || '') && (
+              <Text
+                sx={{
+                  color: getTrendColor(props.trend.status),
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                }}
+              >
+                {props.trend.status === 'positive' ? '+' : ''}
+                {props.trend.value.toFixed(1)}%{' '}
+                {props.trend ? 'vs. período anterior' : ''}
+              </Text>
+            )}
           </Flex>
         )}
 

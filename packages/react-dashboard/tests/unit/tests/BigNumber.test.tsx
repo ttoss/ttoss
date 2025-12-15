@@ -118,13 +118,16 @@ describe('BigNumber', () => {
       <BigNumber {...baseCard} trend={{ value: 5.2, status: 'negative' }} />
     );
 
-    expect(screen.getByText(/-5\.2%/)).toBeInTheDocument();
+    expect(screen.getByText(/5\.2%/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. período anterior/)).toBeInTheDocument();
   });
 
-  test('should render trend indicator with neutral status', () => {
+  test('should not render trend indicator with neutral status', () => {
     render(<BigNumber {...baseCard} trend={{ value: 0, status: 'neutral' }} />);
 
-    expect(screen.getByText(/0\.0%/)).toBeInTheDocument();
+    // Neutral trends should not display the trend text
+    expect(screen.queryByText(/0\.0%/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/vs\. período anterior/)).not.toBeInTheDocument();
   });
 
   test('should render additional info', () => {

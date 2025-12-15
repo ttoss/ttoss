@@ -20,11 +20,13 @@ export const DashboardProvider = (props: {
   filters: DashboardFilter[];
   templates: DashboardTemplate[];
   onFiltersChange?: (filters: DashboardFilter[]) => void;
+  selectedTemplate?: DashboardTemplate;
 }) => {
   const {
     filters: externalFilters,
     templates: externalTemplates,
     onFiltersChange,
+    selectedTemplate,
   } = props;
 
   // Store callbacks in refs to avoid recreating them
@@ -50,15 +52,6 @@ export const DashboardProvider = (props: {
     },
     [] // Empty deps - we use refs for current values
   );
-
-  const selectedTemplate = React.useMemo(() => {
-    const templateId = externalFilters.find((filter) => {
-      return filter.key === 'template';
-    })?.value;
-    return externalTemplates.find((template) => {
-      return template.id === templateId;
-    });
-  }, [externalFilters, externalTemplates]);
 
   return (
     <DashboardContext.Provider
