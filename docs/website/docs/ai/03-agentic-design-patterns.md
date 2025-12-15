@@ -1,5 +1,5 @@
 ---
-title: Agentic Development Patterns
+title: Agentic Design Patterns
 ---
 
 import TOCInline from '@theme/TOCInline';
