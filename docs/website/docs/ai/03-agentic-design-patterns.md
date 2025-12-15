@@ -47,6 +47,19 @@ These are not theoretical concepts; they are reusable design patterns. They prov
 
 **Failure Scenario:** A developer asks an agent to "Read this 50-page PDF, extract the financial risks, compare them to our internal policy, and write a memo in Spanish." The agent misses 3 critical risks because it was "distracted" by the translation requirement. Correct approach: (1) Extract risks. (2) Compare to policy. (3) Translate the final result.
 
+### The Context Sanitizer
+
+**The Problem:** Agents amplify the existing patterns in their context window. If a developer asks an agent to add a feature to a file containing "spaghetti code," the agent will mimic that messy style to ensure local consistency, effectively hardening the technical debt.
+
+**The Underlying Principle:** Derived from [The Principle of Pattern Inertia](/docs/ai/agentic-development-principles#the-principle-of-pattern-inertia).
+
+**The Strategy:** Before an agent is allowed to generate code for a legacy module, the context must be "sanitized." This can be achieved by:
+
+- **Gold Standard Injection:** Explicitly injecting a "Reference Implementation" of clean code into the prompt to serve as a stronger style guide than the existing file.
+- **Pre-Flight Refactor:** Using a separate, cheaper agent to strictly reformat or comment the target file before the main agent attempts the task.
+
+**Failure Scenario:** A developer asks an agent to fix a bug in a 2000-line legacy controller. The agent notices that the file relies on global variables and lacks type safety. To "fit in," the agent's fix also uses a global variable. The code works, but the debt is compounded.
+
 ## Governance Patterns
 
 ### Human-in-the-Loop Veto
@@ -74,6 +87,30 @@ Level 2 (Intern): Can write to non-production environments with test verificatio
 Level 3 (Employee): Can deploy to production, but only for specific, whitelisted scopes (e.g., updating docs).
 
 **Failure Scenario:** A "Documentation Agent" is given the same permission set as a "DevOps Agent." A prompt injection in the documentation pipeline allows an attacker to gain write access to the production deployment keys.
+
+### The Complexity Brake
+
+**The Problem:** AI makes adding complexity (patching) nearly free, while refactoring remains expensive (requires deep thought). This economic imbalance leads to "Zero-Cost Erosion," where systems degrade rapidly because "just one more if-statement" is always the path of least resistance.
+
+**The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion).
+
+**The Strategy:** Re-introduce artificial friction for "lazy" coding. Configure CI/CD or Agent Orchestrators to calculate the Cyclomatic Complexity of the agent's output. If the agent's PR increases the complexity score of a function beyond a threshold (e.g., >10), the system automatically rejects the change or demands a "Refactor Plan" before acceptance.
+
+**Failure Scenario:** An agent is tasked with handling a new edge case. It adds a 5th nested if/else block to a function because that was the easiest valid solution. The function becomes unreadable. A human would have felt the pain and refactored; the agent felt nothing.
+
+### The Semantic Validator
+
+**The Problem:** AI models excel at syntax (style, formatting) but struggle with semantics (logic, truth). They can generate code that looks "perfect" (correct indentation, professional comments) but contains subtle logical flaws or security vulnerabilities. The visual of the code deceives the human reviewer.
+
+**The Underlying Principle:** Derived from [The Principle of Syntactic-Semantic Decoupling](/docs/ai/agentic-development-principles#the-principle-of-syntactic-semantic-decoupling).
+
+**The Strategy:** Invert the verification workflow. Do not rely on visual code review ("Does this look right?"). Instead, enforce Test-Driven Generation:
+
+1. The agent must generate a failing test case before writing the implementation.
+2. The implementation is only shown to the human after it passes the test.
+3. The human reviews the test for logic, not just the implementation for visual.
+
+**Failure Scenario:** An agent generates a Regex for validating emails. It looks complex and professional. The developer merges it. In reality, the Regex allows catastrophic backtracking (ReDoS), crashing the production server when a malicious user sends a long string. A simple functional test would have caught this, but the visual masked it.
 
 ## Orchestration Patterns
 
