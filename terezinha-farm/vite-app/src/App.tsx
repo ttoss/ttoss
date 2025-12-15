@@ -1,15 +1,12 @@
 import { Markdown } from '@ttoss/components/Markdown';
 import { Auth, useAuth } from '@ttoss/react-auth';
-import {
-  Dashboard,
-  DashboardFilter,
-  DashboardFilterType,
-} from '@ttoss/react-dashboard';
+import type { DashboardFilter } from '@ttoss/react-dashboard';
+import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
 import * as React from 'react';
 
-import { DashboardTemplate } from '../../../packages/react-dashboard/src/Dashboard';
+import type { DashboardTemplate } from '../../../packages/react-dashboard/src/Dashboard';
 
 // import { FarmCorrectPagination } from './modules/Farm/FarmCorrectPagination';
 // import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
@@ -18,171 +15,288 @@ const markdown = '# ~Hi~, *Pluto*!';
 
 const templates: DashboardTemplate[] = [
   {
-    id: 'default',
-    name: 'Padrão',
+    id: 'meta-ad-account',
+    name: 'Dashboard de conta de anúncio',
+    description: undefined,
     grid: [
       {
         i: '1',
-        w: 4,
+        w: 3,
         h: 3,
         x: 0,
         y: 0,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'oneclickads' }],
-          title: 'Faturamento Bruto',
+          title: 'Cliques',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
           variant: 'dark',
-          numberType: 'currency',
+          numberType: 'number',
           type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
+            meta: {
+              total: 100,
+            },
             api: {
-              total: 3820.68,
+              total: 0,
             },
           },
           trend: {
-            value: 12.5,
-            status: 'positive',
+            value: -0.95,
+            status: 'negative',
+            type: 'higher',
           },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
         i: '2',
         w: 3,
         h: 3,
-        x: 4,
+        x: 3,
         y: 0,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'meta', level: 'adAccount' }],
           title: 'Investimento',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
           variant: 'dark',
           numberType: 'currency',
           type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
             meta: {
-              total: 856.34,
+              total: 551.2,
+            },
+            api: {
+              total: 0,
             },
           },
-          additionalInfo: 'Custo diário médio: R$ 28,54',
+          trend: {
+            value: -0.12,
+            status: 'negative',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
         i: '3',
         w: 3,
         h: 3,
-        x: 7,
-        y: 3,
-        isResizable: false,
-        isDraggable: false,
-        card: {
-          sourceType: [{ source: 'api' }],
-          title: 'Taxas',
-          numberType: 'currency',
-          type: 'bigNumber',
-          labels: [],
-          data: {
-            api: {
-              total: 1000,
-            },
-          },
-        },
-      },
-      {
-        i: '4',
-        w: 2,
-        h: 3,
-        x: 10,
+        x: 6,
         y: 0,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'api' }],
-          title: 'ROAS',
+          title: 'Impresões',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: undefined,
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 2475,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: -0.97,
+            status: 'negative',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '4',
+        w: 3,
+        h: 3,
+        x: 9,
+        y: 0,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'CPM',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
           variant: 'light-green',
           numberType: 'number',
           type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
           labels: [],
           data: {
+            meta: {
+              total: 222.707071,
+            },
             api: {
-              total: 4.46,
+              total: 0,
             },
           },
-          status: {
-            text: 'Performance excelente',
-            icon: 'mdi:trending-up',
+          trend: {
+            value: 26.54,
+            status: 'positive',
+            type: 'higher',
           },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
         i: '5',
-        w: 4,
+        w: 3,
         h: 3,
         x: 0,
         y: 3,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'api' }],
-          title: 'Faturamento líquido total',
-          description: 'Total de faturamento líquido',
+          title: 'CPA',
+          description: 'Total de CPA',
+          icon: undefined,
+          color: undefined,
+          variant: undefined,
           numberType: 'currency',
           type: 'bigNumber',
-          labels: [],
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
+            meta: {
+              total: 6.263636,
+            },
             api: {
-              total: 2789.1,
+              total: 0,
             },
           },
+          trend: {
+            value: 16.98,
+            status: 'negative',
+            type: 'lower',
+          },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
         i: '6',
         w: 3,
         h: 3,
-        x: 4,
+        x: 3,
         y: 3,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'api' }],
-          title: 'Lucro Líquido',
+          title: 'CPC',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
           variant: 'default',
           numberType: 'currency',
           type: 'bigNumber',
-          labels: [],
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
+            meta: {
+              total: 5.512,
+            },
             api: {
-              total: 1932.76,
+              total: 0,
             },
           },
           trend: {
-            value: 8.3,
-            status: 'negative',
+            value: 16.59,
+            status: 'positive',
+            type: 'higher',
           },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
         i: '7',
-        w: 2,
+        w: 3,
         h: 3,
-        x: 7,
+        x: 6,
         y: 3,
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'api' }],
-          title: 'ROI',
-          description: 'Total de ROI',
-          numberType: 'number',
+          title: 'CTR',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'percentage',
           type: 'bigNumber',
-          labels: [],
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
+            meta: {
+              total: 4.040404,
+            },
             api: {
-              total: 3.26,
+              total: 0,
             },
           },
+          trend: {
+            value: 0.57,
+            status: 'positive',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
       {
@@ -194,17 +308,235 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          sourceType: [{ source: 'meta', level: 'adAccount' }],
-          title: 'CPA',
-          description: 'Total de CPA',
-          numberType: 'currency',
+          title: 'Total de Compras',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'number',
           type: 'bigNumber',
-          labels: [],
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
           data: {
             meta: {
-              total: 65.87,
+              total: 0,
+            },
+            api: {
+              total: 0,
             },
           },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '9',
+        w: 3,
+        h: 3,
+        x: 0,
+        y: 6,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por Compra',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 0,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '10',
+        w: 3,
+        h: 3,
+        x: 3,
+        y: 6,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por Inicialização de Checkout',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 0,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '11',
+        w: 3,
+        h: 3,
+        x: 6,
+        y: 6,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Total de Inicializações de Checkout',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 0,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '12',
+        w: 3,
+        h: 3,
+        x: 9,
+        y: 6,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por Lead',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 0,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
+        },
+      },
+      {
+        i: '13',
+        w: 3,
+        h: 3,
+        x: 0,
+        y: 9,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Total de Leads',
+          description: undefined,
+          icon: undefined,
+          color: undefined,
+          variant: 'default',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: undefined,
+          data: {
+            meta: {
+              total: 0,
+            },
+            api: {
+              total: 0,
+            },
+          },
+          trend: {
+            value: 0,
+            status: 'neutral',
+            type: 'higher',
+          },
+          additionalInfo: undefined,
+          metrics: [],
         },
       },
     ],
@@ -479,6 +811,35 @@ export const App = () => {
   const [dashboardFilters, setDashboardFilters] =
     React.useState<DashboardFilter[]>(filters);
 
+  // Find initial selected template based on template filter value
+  const getSelectedTemplate = React.useCallback(
+    (filters: DashboardFilter[]) => {
+      const templateFilter = filters.find((f) => {
+        return f.key === 'template';
+      });
+      if (!templateFilter?.value) {
+        return undefined;
+      }
+      return templates.find((t) => {
+        return t.id === templateFilter.value;
+      });
+    },
+    []
+  );
+
+  // Manage selectedTemplate state based on template filter
+  const [selectedTemplate, setSelectedTemplate] = React.useState<
+    DashboardTemplate | undefined
+  >(() => {
+    return getSelectedTemplate(dashboardFilters);
+  });
+
+  // Update selectedTemplate when template filter changes
+  React.useEffect(() => {
+    const newSelectedTemplate = getSelectedTemplate(dashboardFilters);
+    setSelectedTemplate(newSelectedTemplate);
+  }, [dashboardFilters, getSelectedTemplate]);
+
   const [loading, setLoading] = React.useState(true);
 
   const hi = isNiceHiEnabled ? 'Hi' : 'Hello';
@@ -502,6 +863,7 @@ export const App = () => {
       </Button>
       <Markdown>{markdown}</Markdown>
       <Dashboard
+        selectedTemplate={selectedTemplate}
         filters={dashboardFilters}
         templates={templates}
         onFiltersChange={setDashboardFilters}

@@ -1,12 +1,12 @@
 import { Divider, Flex } from '@ttoss/ui';
-import * as React from 'react';
-import ReactGridLayout from 'react-grid-layout';
+import type * as React from 'react';
+import type ReactGridLayout from 'react-grid-layout';
 
-import { DashboardCard } from './DashboardCard';
-import { DashboardFilter } from './DashboardFilters';
+import type { DashboardCard } from './DashboardCard';
+import type { DashboardFilter } from './DashboardFilters';
 import { DashboardGrid } from './DashboardGrid';
 import { DashboardHeader } from './DashboardHeader';
-import { DashboardProvider, useDashboard } from './DashboardProvider';
+import { DashboardProvider } from './DashboardProvider';
 
 export type DashboardGridItem = ReactGridLayout.Layout & {
   card: DashboardCard;
@@ -22,12 +22,12 @@ export interface DashboardTemplate {
 const DashboardContent = ({
   loading = false,
   headerChildren,
+  selectedTemplate,
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
+  selectedTemplate?: DashboardTemplate;
 }) => {
-  const { selectedTemplate } = useDashboard();
-
   return (
     <Flex
       sx={{ flexDirection: 'column', gap: '5', padding: '2', width: '100%' }}
@@ -42,12 +42,14 @@ const DashboardContent = ({
 };
 
 export const Dashboard = ({
+  selectedTemplate,
   loading = false,
   templates = [],
   filters = [],
   headerChildren,
   onFiltersChange,
 }: {
+  selectedTemplate?: DashboardTemplate;
   loading?: boolean;
   headerChildren?: React.ReactNode;
   templates?: DashboardTemplate[];
@@ -59,8 +61,13 @@ export const Dashboard = ({
       filters={filters}
       templates={templates}
       onFiltersChange={onFiltersChange}
+      selectedTemplate={selectedTemplate}
     >
-      <DashboardContent loading={loading} headerChildren={headerChildren} />
+      <DashboardContent
+        loading={loading}
+        headerChildren={headerChildren}
+        selectedTemplate={selectedTemplate}
+      />
     </DashboardProvider>
   );
 };

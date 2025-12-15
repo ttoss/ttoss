@@ -1,8 +1,6 @@
 import * as React from 'react';
-import {
-  Checkbox as CheckBoxUi,
-  CheckboxProps as CheckboxPropsUi,
-} from 'theme-ui';
+import type { CheckboxProps as CheckboxPropsUi } from 'theme-ui';
+import { Checkbox as CheckBoxUi } from 'theme-ui';
 
 export interface CheckboxProps extends CheckboxPropsUi {
   indeterminate?: boolean;

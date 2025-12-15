@@ -1,5 +1,5 @@
 import { act, render, renderHook, screen } from '@ttoss/test-utils/react';
-import * as React from 'react';
+import type * as React from 'react';
 import {
   type DashboardFilter,
   DashboardFilterType,
@@ -143,7 +143,7 @@ describe('DashboardProvider', () => {
     // This test verifies that templates are provided correctly via the hook
   });
 
-  test('should select template based on template filter', () => {
+  test('should select template based on selectedTemplate prop', () => {
     const templates: DashboardTemplate[] = [
       {
         id: 'template-1',
@@ -173,7 +173,11 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider filters={filters} templates={templates}>
+            <DashboardProvider
+              filters={filters}
+              templates={templates}
+              selectedTemplate={templates[1]}
+            >
               {children}
             </DashboardProvider>
           );
@@ -184,7 +188,7 @@ describe('DashboardProvider', () => {
     expect(result.current.selectedTemplate).toEqual(templates[1]);
   });
 
-  test('should return undefined for selectedTemplate when no template filter exists', () => {
+  test('should return undefined for selectedTemplate when selectedTemplate prop is not provided', () => {
     const templates: DashboardTemplate[] = [
       {
         id: 'template-1',
@@ -200,7 +204,11 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider filters={[]} templates={templates}>
+            <DashboardProvider
+              filters={[]}
+              templates={templates}
+              selectedTemplate={undefined}
+            >
               {children}
             </DashboardProvider>
           );
@@ -211,7 +219,7 @@ describe('DashboardProvider', () => {
     expect(result.current.selectedTemplate).toBeUndefined();
   });
 
-  test('should return undefined for selectedTemplate when template ID does not match', () => {
+  test('should return undefined for selectedTemplate when selectedTemplate prop is undefined', () => {
     const templates: DashboardTemplate[] = [
       {
         id: 'template-1',
@@ -236,7 +244,11 @@ describe('DashboardProvider', () => {
       {
         wrapper: ({ children }) => {
           return (
-            <DashboardProvider filters={filters} templates={templates}>
+            <DashboardProvider
+              filters={filters}
+              templates={templates}
+              selectedTemplate={undefined}
+            >
               {children}
             </DashboardProvider>
           );

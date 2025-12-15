@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { SpotlightCard } from '@ttoss/components/SpotlightCard';
 import { Button } from '@ttoss/ui';
 

@@ -5,7 +5,6 @@ import {
   DashboardGrid,
   DashboardProvider,
   type DashboardTemplate,
-  useDashboard,
 } from 'src/index';
 
 describe('DashboardGrid', () => {
@@ -59,8 +58,12 @@ describe('DashboardGrid', () => {
 
   test('should render loading spinner when loading is true', () => {
     render(
-      <DashboardProvider filters={mockFilters} templates={[mockTemplate]}>
-        <DashboardGrid loading={true} />
+      <DashboardProvider
+        filters={mockFilters}
+        templates={[mockTemplate]}
+        selectedTemplate={mockTemplate}
+      >
+        <DashboardGrid loading={true} selectedTemplate={mockTemplate} />
       </DashboardProvider>
     );
 
@@ -69,16 +72,13 @@ describe('DashboardGrid', () => {
   });
 
   test('should render cards when loading is false and template is selected', () => {
-    const TestWrapper = ({ loading }: { loading: boolean }) => {
-      const { selectedTemplate } = useDashboard();
-      return (
-        <DashboardGrid loading={loading} selectedTemplate={selectedTemplate} />
-      );
-    };
-
     render(
-      <DashboardProvider filters={mockFilters} templates={[mockTemplate]}>
-        <TestWrapper loading={false} />
+      <DashboardProvider
+        filters={mockFilters}
+        templates={[mockTemplate]}
+        selectedTemplate={mockTemplate}
+      >
+        <DashboardGrid loading={false} selectedTemplate={mockTemplate} />
       </DashboardProvider>
     );
 
@@ -88,8 +88,12 @@ describe('DashboardGrid', () => {
 
   test('should return null when no template is selected', () => {
     const { container } = render(
-      <DashboardProvider filters={[]} templates={[mockTemplate]}>
-        <DashboardGrid loading={false} />
+      <DashboardProvider
+        filters={[]}
+        templates={[mockTemplate]}
+        selectedTemplate={undefined}
+      >
+        <DashboardGrid loading={false} selectedTemplate={undefined} />
       </DashboardProvider>
     );
 
@@ -113,8 +117,12 @@ describe('DashboardGrid', () => {
     ];
 
     render(
-      <DashboardProvider filters={emptyFilters} templates={[emptyTemplate]}>
-        <DashboardGrid loading={false} />
+      <DashboardProvider
+        filters={emptyFilters}
+        templates={[emptyTemplate]}
+        selectedTemplate={emptyTemplate}
+      >
+        <DashboardGrid loading={false} selectedTemplate={emptyTemplate} />
       </DashboardProvider>
     );
 

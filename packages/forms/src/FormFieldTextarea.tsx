@@ -1,5 +1,5 @@
 import { Textarea, type TextareaProps } from '@ttoss/ui';
-import { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
+import type { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 

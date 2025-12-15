@@ -1,6 +1,6 @@
 import { Icon, type IconType } from '@ttoss/react-icons';
+import type { ButtonProps } from '@ttoss/ui';
 import { Box, Button, Card, Flex, keyframes, Text } from '@ttoss/ui';
-import { ButtonProps } from '@ttoss/ui';
 import * as React from 'react';
 
 interface SpotlightTheme {

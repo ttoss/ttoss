@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
+import * as React from 'react';
 import { Form, FormFieldCheckbox, useForm, yupResolver } from 'src/index';
 import { yup } from 'src/yup/yup';
 
@@ -207,7 +208,9 @@ test('should have proper ref in error object when validation fails', async () =>
     const { formState } = formMethods;
 
     // Capture errors for assertion
-    capturedErrors = formState.errors;
+    React.useEffect(() => {
+      capturedErrors = formState.errors;
+    }, [formState.errors]);
 
     return (
       <Form {...formMethods} onSubmit={jest.fn()}>

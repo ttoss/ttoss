@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
+import * as React from 'react';
 
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '../../../src';
 
@@ -281,7 +282,11 @@ describe('FormFieldInput error ref', () => {
       });
 
       const { formState } = formMethods;
-      capturedErrors = formState.errors;
+
+      // Capture errors for assertion
+      React.useEffect(() => {
+        capturedErrors = formState.errors;
+      }, [formState.errors]);
 
       return (
         <Form {...formMethods} onSubmit={jest.fn()}>

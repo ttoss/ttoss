@@ -1,4 +1,3 @@
-/* eslint-disable storybook/no-redundant-story-name */
 /* eslint-disable formatjs/no-literal-string-in-jsx */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import type { Notification } from '@ttoss/components/NotificationsMenu';

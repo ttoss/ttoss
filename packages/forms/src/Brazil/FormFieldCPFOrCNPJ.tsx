@@ -1,6 +1,7 @@
 import { Input } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { NumberFormatBase, NumberFormatBaseProps } from 'react-number-format';
+import type { NumberFormatBaseProps } from 'react-number-format';
+import { NumberFormatBase } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from '../FormField';
 

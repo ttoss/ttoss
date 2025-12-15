@@ -1,11 +1,6 @@
 import { faker } from '@ttoss/test-utils/faker';
-import {
-  configureLogger,
-  CustomEndpoint,
-  log,
-  notify,
-  notifyError,
-} from 'src/index';
+import type { CustomEndpoint } from 'src/index';
+import { configureLogger, log, notify, notifyError } from 'src/index';
 
 global.fetch = jest.fn(() => {
   return Promise.resolve({

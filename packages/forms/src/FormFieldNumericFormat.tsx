@@ -1,8 +1,10 @@
 import { Input, type InputProps } from '@ttoss/ui';
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { NumericFormat, NumericFormatProps } from 'react-number-format';
+import type { FieldPath, FieldValues } from 'react-hook-form';
+import type { NumericFormatProps } from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 
-import { FormField, FormFieldProps } from './FormField';
+import type { FormFieldProps } from './FormField';
+import { FormField } from './FormField';
 
 export type FormFieldNumericFormatProps<
   TFieldValues extends FieldValues = FieldValues,
