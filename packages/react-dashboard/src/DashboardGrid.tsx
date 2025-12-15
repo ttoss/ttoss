@@ -3,7 +3,7 @@ import 'react-grid-layout/css/styles.css';
 import { Box, Flex, Spinner } from '@ttoss/ui';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
-import { DashboardTemplate } from './Dashboard';
+import type { DashboardTemplate } from './Dashboard';
 import { DashboardCard } from './DashboardCard';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
