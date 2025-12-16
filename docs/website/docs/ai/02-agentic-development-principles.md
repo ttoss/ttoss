@@ -238,6 +238,12 @@ An AI agent's effective capability is capped by the operator's ownership and men
 
 **Failure Scenario:** A contractor uses an AI agent to close a ticket in a legacy codebase they do not understand. The AI suggests a solution that works perfectly in isolation but relies on an internal API scheduled for deprecation. Because the operator lacks the Contextual Authority to know the API history, they accept the solution, solving the ticket today but creating a guaranteed failure for the next release.
 
+### The Principle of Artificial Friction
+
+In manual workflows, the physical effort required to perform bad actions (like writing 500 lines of repetitive boilerplate) serves as a natural deterrent. AI removes this effort, making the cost of generating chaos near-zero. Therefore, governance systems must re-introduce **Artificial Friction**—deliberate barriers, checks, and vetoes—that force the agent to "pay" a cost (in time or compute) before committing low-quality work.
+
+**Failure Scenario:** A team removes all barriers to "move fast," allowing agents to commit code directly. Within a month, the codebase bloats by 300% with redundant logic because there was no friction to stop the agent from taking the easiest path.
+
 ## The Dynamics of Orchestration
 
 ### The Principle of Trust-Gated Orchestration
