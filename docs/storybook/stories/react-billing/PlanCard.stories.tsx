@@ -138,3 +138,51 @@ export const CustomCTA: Story = {
     );
   },
 };
+
+export const EnterpriseVariant: Story = {
+  render: () => {
+    return (
+      <Box sx={{ padding: '4' }}>
+        <PlanCard
+          variant="enterprise"
+          title={'Enterprise'}
+          subtitle={'For large businesses'}
+          metadata={[
+            {
+              id: 'OPTIMIZATION',
+              label: 'Otimização de Campanhas',
+              icon: 'fluent:arrow-trending-24-filled',
+              parameters: [
+                {
+                  name: 'Limite de Investimento Mensal',
+                  value: 'Fale conosco',
+                },
+              ],
+            },
+            {
+              id: 'TRACKING',
+              label: 'OneClick Tracking',
+              icon: 'fluent:arrow-trending-24-filled',
+              parameters: [
+                {
+                  name: 'Limite de Conversões Rastreáveis',
+                  value: 'Fale conosco',
+                },
+              ],
+            },
+          ]}
+          price={{
+            value: 'Sob medida',
+            interval: '',
+            description: 'Solicite um orçamento',
+          }}
+          features={features}
+          buttonProps={{
+            label: ctaUpgradeNow,
+            leftIcon: 'fluent:card-ui-20-filled',
+          }}
+        />
+      </Box>
+    );
+  },
+};
