@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-billing",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Billing UI components for React apps.",
   "author": "Giovane Guimarães",
   "repository": {
