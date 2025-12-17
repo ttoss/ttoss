@@ -1,6 +1,5 @@
 import type { IconType } from '@ttoss/react-icons';
 import { Box, type ButtonProps, Card, type CardProps } from '@ttoss/ui';
-import type * as React from 'react';
 
 import { PlanCardCtaSlot } from './PlanCardCtaSlot';
 import { PlanCardFeaturesSlot } from './PlanCardFeaturesSlot';
