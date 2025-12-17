@@ -2,69 +2,96 @@ import { render, screen } from '@ttoss/test-utils/react';
 
 import { PlanCard } from '../../../src';
 
-test('renders all required sections and keeps order', () => {
+test('renders required content and keeps section order', () => {
   render(
-    <PlanCard>
-      <PlanCard.TopTag>{'TRIAL'}</PlanCard.TopTag>
-      <PlanCard.Header>{'HEADER'}</PlanCard.Header>
-      <PlanCard.Metadata>{'METADATA'}</PlanCard.Metadata>
-      <PlanCard.Price>{'PRICE'}</PlanCard.Price>
-      <PlanCard.Features>{'FEATURES'}</PlanCard.Features>
-      <PlanCard.CTA label="Assine agora" />
-    </PlanCard>
+    <PlanCard
+      title="Starter"
+      subtitle="For individuals getting started"
+      metadata={[
+        {
+          label: 'Service Metadata',
+          parameters: [
+            { name: 'monthlySpendMax: ', value: '$1,000' },
+            { name: 'maxAdAccounts: ', value: '2' },
+          ],
+          icon: '',
+        },
+      ]}
+      price={{ value: 29, interval: '/month', description: 'Billed monthly' }}
+      features={['✓ Basic reporting']}
+      buttonProps={{ label: 'Assine agora' }}
+    />
   );
 
-  const topTag = screen.getByText('TRIAL');
-  const header = screen.getByText('HEADER');
-  const metadata = screen.getByText('METADATA');
-  const price = screen.getByText('PRICE');
-  const features = screen.getByText('FEATURES');
+  const title = screen.getByText('Starter');
+  const subtitle = screen.getByText('For individuals getting started');
+  const label1 = screen.getByText('monthlySpendMax:');
+  const value1 = screen.getByText('$1,000');
+  const label2 = screen.getByText('maxAdAccounts:');
+  const value2 = screen.getByText('2');
+  const priceValue = screen.getByText('29');
+  const priceInterval = screen.getByText('/month');
+  const priceDescription = screen.getByText('Billed monthly');
+  const feature = screen.getByText('✓ Basic reporting');
   const cta = screen.getByRole('button', { name: 'Assine agora' });
 
+  expect(title).toBeInTheDocument();
+  expect(subtitle).toBeInTheDocument();
+  expect(label1).toBeInTheDocument();
+  expect(value1).toBeInTheDocument();
+  expect(label2).toBeInTheDocument();
+  expect(value2).toBeInTheDocument();
+  expect(priceValue).toBeInTheDocument();
+  expect(priceInterval).toBeInTheDocument();
+  expect(priceDescription).toBeInTheDocument();
+  expect(feature).toBeInTheDocument();
+  expect(cta).toBeInTheDocument();
+
   expect(
-    topTag.compareDocumentPosition(header) & Node.DOCUMENT_POSITION_FOLLOWING
+    title.compareDocumentPosition(subtitle) & Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy();
   expect(
-    header.compareDocumentPosition(metadata) & Node.DOCUMENT_POSITION_FOLLOWING
+    subtitle.compareDocumentPosition(label1) & Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy();
   expect(
-    metadata.compareDocumentPosition(price) & Node.DOCUMENT_POSITION_FOLLOWING
+    label1.compareDocumentPosition(priceValue) &
+      Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy();
   expect(
-    price.compareDocumentPosition(features) & Node.DOCUMENT_POSITION_FOLLOWING
+    priceValue.compareDocumentPosition(feature) &
+      Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy();
   expect(
-    features.compareDocumentPosition(cta) & Node.DOCUMENT_POSITION_FOLLOWING
+    feature.compareDocumentPosition(cta) & Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy();
 });
 
-test('TopTag is optional', () => {
+test('optional sections are omitted when not provided', () => {
   render(
-    <PlanCard>
-      <PlanCard.Header>{'HEADER'}</PlanCard.Header>
-      <PlanCard.Metadata>{'METADATA'}</PlanCard.Metadata>
-      <PlanCard.Price>{'PRICE'}</PlanCard.Price>
-      <PlanCard.Features>{'FEATURES'}</PlanCard.Features>
-      <PlanCard.CTA label="Buy" />
-    </PlanCard>
+    <PlanCard title="Starter" price={{ value: 29, interval: '/month' }} />
   );
 
-  expect(screen.queryByText('TRIAL')).toBeNull();
-  expect(screen.getByText('HEADER')).toBeInTheDocument();
+  expect(screen.getByText('Starter')).toBeInTheDocument();
+  expect(screen.queryByText('/month')).toBeInTheDocument();
+  expect(screen.queryByText('For individuals getting started')).toBeNull();
+  expect(screen.queryByText('monthlySpendMax: ')).toBeNull();
+  expect(screen.queryByText('✓ Basic reporting')).toBeNull();
 });
 
-test('CTA label can be customized', () => {
+test('CTA label defaults to Assine agora', () => {
   render(
-    <PlanCard>
-      <PlanCard.Header>{'HEADER'}</PlanCard.Header>
-      <PlanCard.Metadata>{'METADATA'}</PlanCard.Metadata>
-      <PlanCard.Price>{'PRICE'}</PlanCard.Price>
-      <PlanCard.Features>{'FEATURES'}</PlanCard.Features>
-      <PlanCard.CTA label="Upgrade now" />
-    </PlanCard>
+    <PlanCard
+      title="Starter"
+      price={{ value: 29, interval: '/month' }}
+      buttonProps={{
+        onClick: () => {
+          return undefined;
+        },
+      }}
+    />
   );
 
   expect(
-    screen.getByRole('button', { name: 'Upgrade now' })
+    screen.getByRole('button', { name: 'Assine agora' })
   ).toBeInTheDocument();
 });

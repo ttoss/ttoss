@@ -12,6 +12,13 @@ export default meta;
 
 type Story = StoryObj<typeof PlanCard>;
 
+const topTagLabel = '7 days trial';
+const starterTitle = 'Starter';
+const starterSubtitle = 'For individuals getting started';
+const billedMonthly = 'Billed monthly';
+const ctaSubscribeNow = 'Assine agora';
+const ctaUpgradeNow = 'Upgrade now';
+
 const TopTag = () => {
   return (
     <Flex
@@ -22,114 +29,47 @@ const TopTag = () => {
         borderRadius: 'lg',
       }}
     >
-      <Text sx={{ textAlign: 'center', width: 'full' }}>{'7 days trial'}</Text>
+      <Text sx={{ textAlign: 'center', width: 'full' }}>{topTagLabel}</Text>
     </Flex>
   );
 };
 
-const Header = () => {
-  return (
-    <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-      <Text sx={{ fontSize: 'lg', color: 'display.text.primary.default' }}>
-        {'Starter'}
-      </Text>
-      <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-        {'For individuals getting started'}
-      </Text>
-    </Flex>
-  );
-};
-
-const Metadata = () => {
-  return (
-    <Stack sx={{ gap: '2', width: 'full' }}>
-      <Flex
-        sx={{
-          width: 'full',
-          fontSize: 'sm',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text sx={{ color: 'display.text.secondary.default' }}>
-          {'monthlySpendMax: '}
-        </Text>
-        <Text sx={{ fontWeight: 'bold' }}>{'$1,000'}</Text>
-      </Flex>
-      <Flex
-        sx={{
-          width: 'full',
-          fontSize: 'sm',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text sx={{ color: 'display.text.secondary.default' }}>
-          {'maxAdAccounts: '}
-        </Text>
-        <Text sx={{ fontWeight: 'bold' }}>{'2'}</Text>
-      </Flex>
-    </Stack>
-  );
-};
-
-const Price = () => {
-  return (
-    <Flex sx={{ alignItems: 'baseline', gap: '2' }}>
-      <Text
-        sx={{
-          fontSize: '4xl',
-          fontWeight: 'bold',
-          color: 'display.text.primary.default',
-        }}
-      >
-        {'$29'}
-      </Text>
-      <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-        {'/month'}
-      </Text>
-    </Flex>
-  );
-};
-
-const Features = () => {
-  return (
-    <Stack sx={{ gap: '3' }}>
-      <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-        {'✓ Basic reporting'}
-      </Text>
-      <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-        {'✓ 1 workspace'}
-      </Text>
-      <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-        {'✓ Community support'}
-      </Text>
-    </Stack>
-  );
-};
+const features = ['Basic reporting', 'workspace', 'Community support'];
 
 export const Default: Story = {
   render: () => {
     return (
       <Box sx={{ padding: '4' }}>
-        <PlanCard>
-          <PlanCard.Header>
-            <Header />
-          </PlanCard.Header>
-          <PlanCard.Metadata>
-            <Metadata />
-          </PlanCard.Metadata>
-          <PlanCard.Price>
-            <Price />
-          </PlanCard.Price>
-          <PlanCard.Features>
-            <Features />
-          </PlanCard.Features>
-          <PlanCard.CTA
-            label={'Assine agora'}
-            onClick={() => {
+        <PlanCard
+          title={starterTitle}
+          subtitle={starterSubtitle}
+          metadata={[
+            {
+              id: 'OPTIMIZATION',
+              label: 'Otimização de Campanhas',
+              icon: 'fluent:arrow-trending-24-filled',
+              parameters: [
+                { name: 'Limite de Investimento Mensal', value: 'R$ 1.000' },
+                { name: 'Número Máximo de Contas de Anúncios', value: '2' },
+              ],
+            },
+          ]}
+          price={{
+            value: (249.75).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }),
+            interval: `/conta de anúncios/mês`,
+            description: 'Total de R$ 2.997,00/ano',
+          }}
+          features={features}
+          buttonProps={{
+            label: ctaSubscribeNow,
+            onClick: () => {
               // story action placeholder
-            }}
-          />
-        </PlanCard>
+            },
+          }}
+        />
       </Box>
     );
   },
@@ -139,24 +79,30 @@ export const WithTopTag: Story = {
   render: () => {
     return (
       <Box sx={{ padding: '4' }}>
-        <PlanCard>
-          <PlanCard.TopTag>
-            <TopTag />
-          </PlanCard.TopTag>
-          <PlanCard.Header>
-            <Header />
-          </PlanCard.Header>
-          <PlanCard.Metadata>
-            <Metadata />
-          </PlanCard.Metadata>
-          <PlanCard.Price>
-            <Price />
-          </PlanCard.Price>
-          <PlanCard.Features>
-            <Features />
-          </PlanCard.Features>
-          <PlanCard.CTA label={'Assine agora'} />
-        </PlanCard>
+        <Stack sx={{ gap: '4' }}>
+          <PlanCard
+            topTag={<TopTag />}
+            title={starterTitle}
+            subtitle={starterSubtitle}
+            metadata={[
+              {
+                id: 'OPTIMIZATION',
+                label: 'Otimização de Campanhas',
+                icon: 'fluent:arrow-trending-24-filled',
+                parameters: [
+                  { name: 'Limite de Investimento Mensal', value: 'R$ 1.000' },
+                ],
+              },
+            ]}
+            price={{
+              value: 'R$29',
+              interval: '/month',
+              description: billedMonthly,
+            }}
+            features={features}
+            buttonProps={{ label: ctaSubscribeNow }}
+          />
+        </Stack>
       </Box>
     );
   },
@@ -166,26 +112,28 @@ export const CustomCTA: Story = {
   render: () => {
     return (
       <Box sx={{ padding: '4' }}>
-        <PlanCard>
-          <PlanCard.Header>
-            <Header />
-          </PlanCard.Header>
-          <PlanCard.Metadata>
-            <Metadata />
-          </PlanCard.Metadata>
-          <PlanCard.Price>
-            <Price />
-          </PlanCard.Price>
-          <PlanCard.Features>
-            <Features />
-          </PlanCard.Features>
-          <PlanCard.CTA
-            label={'Upgrade now'}
-            leftIcon={'fluent:card-ui-20-filled'}
-            containerProps={{ sx: { paddingTop: '10' } }}
-            variant="primary"
-          />
-        </PlanCard>
+        <PlanCard
+          title={starterTitle}
+          subtitle={starterSubtitle}
+          metadata={[
+            {
+              id: 'OPTIMIZATION',
+              label: 'Otimização de Campanhas',
+              icon: 'fluent:arrow-trending-24-filled',
+              parameters: [
+                { name: 'Limite de Investimento Mensal', value: 'R$ 1.000' },
+              ],
+            },
+          ]}
+          price={{ value: 'R$ 29', interval: '/month' }}
+          features={features}
+          buttonProps={{
+            label: ctaUpgradeNow,
+            leftIcon: 'fluent:card-ui-20-filled',
+            variant: 'primary',
+            sx: { marginTop: '10' },
+          }}
+        />
       </Box>
     );
   },
