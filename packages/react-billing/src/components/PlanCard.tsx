@@ -1,3 +1,4 @@
+import { Icon } from '@ttoss/react-icons';
 import {
   Box,
   type BoxProps,
@@ -5,8 +6,8 @@ import {
   type ButtonProps,
   Card,
   type CardProps,
+  Flex,
 } from '@ttoss/ui';
-import * as React from 'react';
 
 export type PlanCardSlotName =
   | 'topTag'
@@ -42,6 +43,7 @@ const PlanCardTopTag = ({
         paddingX: '8',
         paddingTop: '4',
         width: 'full',
+        alignItems: 'center',
         ...props.sx,
       }}
     >
@@ -63,6 +65,8 @@ const PlanCardHeader = ({
         width: 'full',
         borderBottom: 'md',
         borderBottomColor: 'display.border.muted.default',
+        alignItems: 'center',
+        justifyContent: 'center',
         ...props.sx,
       }}
     >
@@ -118,8 +122,11 @@ const PlanCardFeatures = ({
       {...props}
       sx={{
         paddingY: '4',
-        paddingX: '8',
+        paddingX: '6',
         width: 'full',
+        borderTop: 'md',
+        borderBottom: 'md',
+        borderColor: 'display.border.muted.default',
         ...props.sx,
       }}
     >
@@ -130,45 +137,44 @@ const PlanCardFeatures = ({
 
 const PlanCardCTA = ({
   label,
+  leftIcon,
   containerProps,
   ...buttonProps
 }: PlanCardCTAProps) => {
   return (
-    <Box
+    <Flex
       {...containerProps}
       sx={{
         paddingY: '2',
-        paddingX: '8',
+        paddingX: '6',
         width: 'full',
+        justifyContent: 'center',
         ...containerProps?.sx,
       }}
     >
-      <Button variant="accent" {...buttonProps}>
-        {label}
+      <Button
+        variant="accent"
+        sx={{
+          width: 'full',
+          ...buttonProps.sx,
+        }}
+        {...buttonProps}
+      >
+        <Flex
+          sx={{
+            width: 'full',
+            gap: '2',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'semibold',
+          }}
+        >
+          {leftIcon && <Icon icon={leftIcon} />}
+          {label}
+        </Flex>
       </Button>
-    </Box>
+    </Flex>
   );
-};
-
-type SlotElements = Partial<Record<PlanCardSlotName, React.ReactElement>>;
-
-const pickSlotsFromChildren = (children: React.ReactNode) => {
-  const slots: SlotElements = {};
-  const unknownChildren: React.ReactNode[] = [];
-
-  React.Children.forEach(children, (child) => {
-    if (!React.isValidElement(child)) return;
-
-    if (child.type === PlanCardTopTag) slots.topTag = child;
-    else if (child.type === PlanCardHeader) slots.header = child;
-    else if (child.type === PlanCardMetadata) slots.metadata = child;
-    else if (child.type === PlanCardPrice) slots.price = child;
-    else if (child.type === PlanCardFeatures) slots.features = child;
-    else if (child.type === PlanCardCTA) slots.cta = child;
-    else unknownChildren.push(child);
-  });
-
-  return { slots, unknownChildren };
 };
 
 export type PlanCardComponent = React.FC<PlanCardProps> & {
@@ -180,50 +186,17 @@ export type PlanCardComponent = React.FC<PlanCardProps> & {
   CTA: typeof PlanCardCTA;
 };
 
-export const PlanCard = (({ children, ...props }: PlanCardProps) => {
-  const { slots, unknownChildren } = pickSlotsFromChildren(children);
-
-  if (process.env.NODE_ENV !== 'production') {
-    if (unknownChildren.length > 0) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[PlanCard] Ignoring unknown children. Use PlanCard.* compound components.'
-      );
-    }
-
-    const missingRequiredSlots: PlanCardSlotName[] = [];
-
-    if (!slots.header) missingRequiredSlots.push('header');
-    if (!slots.metadata) missingRequiredSlots.push('metadata');
-    if (!slots.price) missingRequiredSlots.push('price');
-    if (!slots.features) missingRequiredSlots.push('features');
-    if (!slots.cta) missingRequiredSlots.push('cta');
-
-    if (missingRequiredSlots.length > 0) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[PlanCard] Missing required sections: ${missingRequiredSlots.join(', ')}`
-      );
-    }
-  }
-
+export const PlanCard = (({ ...props }: PlanCardProps) => {
   return (
     <Card
       {...props}
       sx={{
-        width: '100%',
+        width: 'full',
         maxWidth: '410px',
         alignItems: 'stretch',
         ...props.sx,
       }}
-    >
-      {slots.topTag}
-      {slots.header}
-      {slots.metadata}
-      {slots.price}
-      {slots.features}
-      {slots.cta}
-    </Card>
+    />
   );
 }) as PlanCardComponent;
 

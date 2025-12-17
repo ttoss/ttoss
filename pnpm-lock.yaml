@@ -203,6 +203,9 @@ importers:
       '@ttoss/react-auth-core':
         specifier: workspace:^
         version: link:../../packages/react-auth-core
+      '@ttoss/react-billing':
+        specifier: workspace:^
+        version: link:../../packages/react-billing
       '@ttoss/react-dashboard':
         specifier: workspace:^
         version: link:../../packages/react-dashboard
@@ -1491,6 +1494,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
