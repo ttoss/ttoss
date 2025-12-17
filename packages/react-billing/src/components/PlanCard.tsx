@@ -61,9 +61,8 @@ export const PlanCard = (props: PlanCardProps) => {
         maxWidth: '410px',
         backgroundColor:
           variant === 'enterprise'
-            ? 'action.background.primary.default'
+            ? 'display.background.primary.active'
             : 'display.background.primary.default',
-
         ...cardProps.sx,
       }}
     >
