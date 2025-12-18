@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.1.1...@ttoss/react-billing@0.1.2) (2025-12-18)
+
+### Bug Fixes
+
+- (react-billing) add right dependencies ([#805](https://github.com/ttoss/ttoss/issues/805)) ([4127234](https://github.com/ttoss/ttoss/commit/4127234df9b8d9d746e5be1ecdfcd4f5adadea8d))
+
 ## [0.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.1.0...@ttoss/react-billing@0.1.1) (2025-12-18)
 
 ### Bug Fixes
