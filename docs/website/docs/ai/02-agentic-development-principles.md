@@ -154,6 +154,20 @@ In manual development, the cognitive effort (friction) required to write complex
 
 **Failure Scenario:** A developer needs to handle a new edge case. Manually, writing the necessary boilerplate would take 30 minutes, prompting them to refactor the architecture. With AI, generating a "good enough" patch takes 10 seconds. The developer applies the patch. Repeated 50 times, this leads to a system that is functional but unmaintainable, created without the developer ever feeling the "pain" of the debt they accrued.
 
+### The Principle of Verification Asymmetry
+
+The cost of generating AI output is orders of magnitude lower than the cost of verifying it. This asymmetry inverts traditional productivity assumptions—teams can generate unlimited artifacts but remain bottlenecked by human verification capacity. Because validation requires domain expertise, attention, and time that cannot be parallelized, the throughput of an agentic system is bounded not by generation speed but by verification bandwidth. This supports [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by forcing teams to account for total cost-of-ownership.
+
+**Failure Scenario:** A team deploys AI agents to generate 50 pull requests per day, believing they've 10x'd productivity. However, each PR requires 30 minutes of careful review to catch subtle semantic errors (per [The Principle of Syntactic-Semantic Decoupling](#the-principle-of-syntactic-semantic-decoupling)). The review queue grows exponentially, engineers spend 100% of their time reviewing AI output rather than building, and net velocity decreases.
+
+#### The Corollary of Verification Investment
+
+Every dollar saved on AI-assisted generation must be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines). The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
+
+#### The Corollary of Review Debt
+
+Unreviewed AI output accumulates as hidden liability—it looks like progress but carries unknown risk. Unlike technical debt (which is visible in code complexity), review debt is invisible until failure. A backlog of "AI-generated but not verified" artifacts represents not value, but deferred risk with compounding interest.
+
 ## The Architecture of Flow
 
 Define how to integrate AI into the development cycle to accelerate delivery and maintain flow.

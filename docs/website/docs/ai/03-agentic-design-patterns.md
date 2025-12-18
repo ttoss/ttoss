@@ -205,3 +205,35 @@ _Route the task based on the level of definition, not just difficulty._
 **The Strategy:** Ensure every agent action is Idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
 
 **Failure Scenario:** An agent is tasked with "Add \$50 credit to User A." The agent adds the credit but the connection times out before it reports success. The orchestrator thinks it failed and retries the task. The agent adds another \$50. The ledger is now corrupt.
+
+### Automated Verification Pipeline
+
+**The Problem:** AI generation scales infinitely; human review does not. When teams adopt AI agents for code generation, they often discover that the bottleneck shifts from "writing code" to "reviewing code." Engineers become full-time reviewers, velocity stalls, and the promised productivity gains evaporate.
+
+**The Underlying Principle:** Derived from [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles#the-principle-of-verification-asymmetry) and [The Corollary of Verification Investment](/docs/ai/agentic-development-principles#the-corollary-of-verification-investment).
+
+**The Strategy:** Shift verification burden from humans to machines by building a multi-layered automated verification pipeline:
+
+1. **Static Analysis Layer:** Linters (ESLint, Prettier), type checkers (TypeScript), and style enforcers run first. These catch syntactic errors instantly with zero human cost.
+
+2. **Semantic Validation Layer:** Unit tests, integration tests, and contract tests verify that the code does what it claims. AI-generated code must pass existing tests before human review.
+
+3. **Complexity Gates:** Automated checks reject PRs that exceed complexity thresholds (cyclomatic complexity, file size, dependency count).
+
+4. **Security Scanners:** SAST/DAST tools identify vulnerabilities before code reaches human eyes.
+
+5. **AI-Assisted Review:** Use a separate AI agent to pre-review the output, flagging potential issues and reducing the cognitive load on human reviewers.
+
+The human reviewer only sees code that has already passed all automated gates—transforming their role from "find all bugs" to "verify business logic and architectural alignment."
+
+**Failure Scenario:** A team adopts AI coding agents without investing in CI/CD infrastructure. Every PR requires 45 minutes of manual review to catch formatting issues, type errors, and broken tests. The review queue grows to 50+ PRs. Engineers spend 80% of their time reviewing, 20% building. Net velocity decreases despite "10x code generation."
+
+#### The Verification Funnel
+
+Structure verification as a funnel where cheap, fast checks run first:
+
+```
+AI Output → Linter (1s) → Type Check (5s) → Unit Tests (30s) → Integration Tests (2m) → Human Review (30m)
+```
+
+Each layer filters out a category of errors, ensuring humans only review semantically valid, syntactically correct, tested code. The earlier a defect is caught, the cheaper it is to fix.
