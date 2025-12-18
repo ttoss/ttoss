@@ -32,7 +32,7 @@ If you are not aware of this limit, you might find yourself in a situation where
 
 When an agent produces buggy code, the natural human instinct is to correct it immediately within the same chat. "No, that's wrong, try again." "You missed this edge case." "Fix the import."
 
-However, every interaction consumes tokens. As you pile on error messages, stack traces, and correction prompts, you are filling the context window with "garbage" data. This leads to **[The Principle of Compounding Contextual Error](/docs/ai/agentic-development-principles#the-principle-of-compounding-contextual-error)**:
+However, every interaction consumes tokens. As you pile on error messages, stack traces, and correction prompts, you are filling the context window with "garbage" data. This leads to **[The Corollary of Compounding Contextual Error](/docs/ai/agentic-development-principles#the-corollary-of-compounding-contextual-error)**:
 
 > If an AI interaction does not resolve the problem quickly, the likelihood of successful resolution drops with each additional interaction... Fast, decisive resolution is critical.
 

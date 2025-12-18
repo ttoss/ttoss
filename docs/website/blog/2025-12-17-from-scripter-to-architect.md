@@ -17,7 +17,7 @@ With the rise of Applied AI, that role is fundamentally changing. When an LLM ge
 
 ## The Principle of Constraint-Driven Architecture
 
-This shift is captured in **[The Principle of Constraint-Driven Architecture](/docs/ai/agentic-development-principles#the-principle-of-constraint-driven-architecture)**.
+This shift is captured in **[The Principle of Structural Determinism](/docs/ai/agentic-development-principles#the-principle-of-structural-determinism)**.
 
 Because AI models are probabilistic (see [The Principle of Probabilistic AI Output](/docs/ai/agentic-development-principles#the-principle-of-probabilistic-ai-output)), they don't follow instructions with 100% reliability. They follow probability distributions. If you rely on them to "just do the right thing," you are gambling with your system's stability.
 

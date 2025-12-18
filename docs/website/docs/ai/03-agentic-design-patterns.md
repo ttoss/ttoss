@@ -12,6 +12,52 @@ These are not theoretical concepts; they are reusable design patterns. They prov
 
 <TOCInline toc={toc} />
 
+## Architecture Patterns
+
+### Immediate AI Feedback Loop
+
+**The Problem:** Context switching and delays kill developer flow. When AI tools have latency, developers either wait (breaking concentration) or ignore the tool entirely.
+
+**The Underlying Principle:** Derived from [The Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles#the-principle-of-cognitive-bandwidth-conservation) and [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
+
+**The Strategy:** Integrate AI tools directly into the coding environment to deliver instant suggestions and error checking, minimizing context switching and delays.
+
+**Failure Scenario:** A team uses an AI code completion tool with a 5-second delay. Developers either wait (breaking flow) or ignore the tool, resulting in inconsistent adoption and wasted potential.
+
+### Small-Experiment Automation
+
+**The Problem:** Large, monolithic changes carry high risk and slow feedback. Manual test creation is tedious and often skipped.
+
+**The Underlying Principle:** Derived from [V7: The Principle of Small Experiments](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
+
+**The Strategy:** Use AI agents to break down large tasks into small, verifiable experiments (e.g., auto-generated unit tests, code variations), reducing risk and enabling fast feedback.
+
+**Failure Scenario:** An AI generates a massive, brittle test suite. Maintenance overhead grows, slowing development and negating the benefits of automation.
+
+### Orchestrated Agent Parallelism
+
+**The Problem:** Sequential agent execution creates bottlenecks. Without clear task boundaries, parallel agents conflict or duplicate work.
+
+**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles#the-principle-of-compounding-context) and [D10. The Main Effort Principle](/docs/product/product-development/principles#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
+
+**The Strategy:** Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks.
+
+**Failure Scenario:** Agents are assigned tasks without regard to the critical path, resulting in duplicated effort, idle time, and delayed delivery.
+
+#### Critical Path Conflict Mitigation
+
+Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
+
+### Artificial Friction
+
+**The Problem:** AI removes the natural "pain signal" of complexity. When the cost of adding a patch drops below the cost of refactoring, systems inevitably trend toward entropy.
+
+**The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion).
+
+**The Strategy:** Re-introduce deliberate barriers, checks, and vetoes that force the agent to "pay" a cost (in time or compute) before committing low-quality work. Configure CI/CD to reject changes that increase complexity beyond thresholds.
+
+**Failure Scenario:** A team removes all barriers to "move fast," allowing agents to commit code directly. Within a month, the codebase bloats by 300% with redundant logic because there was no friction to stop the agent from taking the easiest path.
+
 ## Communication Patterns
 
 ### Explicit Intent Protocol
@@ -154,8 +200,40 @@ _Route the task based on the level of definition, not just difficulty._
 
 **The Problem:** Agents fail, timeout, and hallucinate. If an orchestrator simply "retries" a failed task without safety checks, it may execute a side-effect (like a payment or database write) twice, corrupting the system state.
 
-**The Underlying Principle:** Derived from [The Principle of Atomic State Isolation](/docs/ai/agentic-development-principles#the-principle-of-atomic-state-isolation).
+**The Underlying Principle:** Derived from [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles#the-principle-of-distributed-unreliability) and [The Corollary of Atomic State Isolation](/docs/ai/agentic-development-principles#the-corollary-of-atomic-state-isolation).
 
-**The Strategy:** Ensure every agent action is Idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
+**The Strategy:** Ensure every agent action is idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
 
 **Failure Scenario:** An agent is tasked with "Add \$50 credit to User A." The agent adds the credit but the connection times out before it reports success. The orchestrator thinks it failed and retries the task. The agent adds another \$50. The ledger is now corrupt.
+
+### Automated Verification Pipeline
+
+**The Problem:** AI generation scales infinitely; human review does not. When teams adopt AI agents for code generation, they often discover that the bottleneck shifts from "writing code" to "reviewing code." Engineers become full-time reviewers, velocity stalls, and the promised productivity gains evaporate.
+
+**The Underlying Principle:** Derived from [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles#the-principle-of-verification-asymmetry) and [The Corollary of Verification Investment](/docs/ai/agentic-development-principles#the-corollary-of-verification-investment).
+
+**The Strategy:** Shift verification burden from humans to machines by building a multi-layered automated verification pipeline:
+
+1. **Static Analysis Layer:** Linters (ESLint, Prettier), type checkers (TypeScript), and style enforcers run first. These catch syntactic errors instantly with zero human cost.
+
+2. **Semantic Validation Layer:** Unit tests, integration tests, and contract tests verify that the code does what it claims. AI-generated code must pass existing tests before human review.
+
+3. **Complexity Gates:** Automated checks reject PRs that exceed complexity thresholds (cyclomatic complexity, file size, dependency count).
+
+4. **Security Scanners:** SAST/DAST tools identify vulnerabilities before code reaches human eyes.
+
+5. **AI-Assisted Review:** Use a separate AI agent to pre-review the output, flagging potential issues and reducing the cognitive load on human reviewers.
+
+The human reviewer only sees code that has already passed all automated gates—transforming their role from "find all bugs" to "verify business logic and architectural alignment."
+
+**Failure Scenario:** A team adopts AI coding agents without investing in CI/CD infrastructure. Every PR requires 45 minutes of manual review to catch formatting issues, type errors, and broken tests. The review queue grows to 50+ PRs. Engineers spend 80% of their time reviewing, 20% building. Net velocity decreases despite "10x code generation."
+
+#### The Verification Funnel
+
+Structure verification as a funnel where cheap, fast checks run first:
+
+```
+AI Output → Linter (1s) → Type Check (5s) → Unit Tests (30s) → Integration Tests (2m) → Human Review (30m)
+```
+
+Each layer filters out a category of errors, ensuring humans only review semantically valid, syntactically correct, tested code. The earlier a defect is caught, the cheaper it is to fix.
