@@ -91,7 +91,7 @@ export const OcaTheme: Theme = createTheme(
       },
       display: {
         background: {
-          primary: { default: '#FFFFFF' },
+          primary: { default: '#FFFFFF', active: '#111827' },
           secondary: { default: '#FFFFFF' },
           muted: { default: '#F3F4F6' },
         },

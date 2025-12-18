@@ -161,7 +161,7 @@ export const BruttalTheme: Theme = {
     },
     display: {
       background: {
-        primary: { default: coreColors.main },
+        primary: { default: coreColors.white, active: coreColors.main },
         secondary: { default: coreColors.white },
         muted: { default: coreColors.gray200 },
       },

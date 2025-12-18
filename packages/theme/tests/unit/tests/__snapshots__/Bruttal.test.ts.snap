@@ -180,7 +180,8 @@ exports[`Bruttal theme snapshot 1`] = `
           "default": "#dedede",
         },
         "primary": {
-          "default": "#292C2a",
+          "active": "#292C2a",
+          "default": "#ffffff",
         },
         "secondary": {
           "default": "#ffffff",
