@@ -1491,9 +1491,6 @@ importers:
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons
-      '@ttoss/test-utils':
-        specifier: workspace:^
-        version: link:../test-utils
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../ui
@@ -1504,6 +1501,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/react':
         specifier: ^19.2.7
         version: 19.2.7
