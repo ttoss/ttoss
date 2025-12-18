@@ -60,6 +60,22 @@ By instructing AI agents to explicitly indicate when their confidence exceeds a 
 
 High confidence scores are internal probability assessments, not external verifications of truth. Therefore, high confidence should prioritize an output for review, but never bypass validation. Relying blindly on a "99% confident" score often leads to accepting non-existent APIs or logic flaws.
 
+### The Principle of Structural Determinism
+
+Probabilistic systems can only be made deterministic through structural enforcement, not semantic persuasion. In traditional software engineering, the developer's primary role is to write deterministic logic that explicitly defines the system's behavior. In Applied AI, the model generates behavior probabilistically (see [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output)). Therefore, the developer's role shifts from writing the flow to architecting the boundaries—constructing rigid constraints (schemas, validators, type-checks) that force a non-deterministic model to collapse into a reliable, deterministic outcome.
+
+**Failure Scenario:** A developer writes a prompt asking an agent to "extract the user's age and ensure it is a valid number between 18 and 100." When the model occasionally returns "eighteen" or "N/A," the developer adds more capital letters to the prompt ("MUST BE AN INTEGER"). The flakiness persists because the developer is attempting to solve a structural constraint problem with semantic persuasion.
+
+#### The Corollary of Schema Supremacy
+
+If a constraint can be defined mathematically or programmatically (e.g., Regex, JSON Schema, TypeScript interfaces), it must be removed from the prompt and enforced by the code. You do not ask the model to "be careful" with data types; you force it to fail if it creates the wrong one.
+
+#### The Corollary of The Probabilistic Funnel
+
+System design must act as a funnel where the "wide" creative potential of the LLM is progressively narrowed by hard constraints. The closer the data gets to a database or user interface, the stricter the non-AI constraints must become to filter out probabilistic noise.
+
+_Read more about this principle in [From Scripter to Architect in the Age of AI](/blog/2025/12/17/from-scripter-to-architect)._
+
 ### The Principle of Finite Context Window
 
 AI models operate within a fixed cognitive boundary where new information displaces old context. Because attention is zero-sum, every token introduced into the prompt competes for the model's processing capacity. Teams must manage context not just as a technical constraint, but as a scarce economic resource, ensuring that the information density within the window is optimized to support the current objective without dilution.
@@ -74,7 +90,7 @@ Context is a finite, perishable resource. Because adding low-value information d
 
 Treat each token in the model context as valuable. Remove fluff, greetings, and irrelevant context. Place critical instructions prominently to minimize wasted tokens and reduce the chance of context overflow.
 
-### The Principle of Compounding Contextual Error
+#### The Corollary of Compounding Contextual Error
 
 If an AI interaction does not resolve the problem quickly, the likelihood of successful resolution drops with each additional interaction, as accumulated context and unresolved errors compound. Fast, decisive resolution is critical to prevent error propagation and cognitive overload, aligning with [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback). This compounding effect is exacerbated by [The Principle of Finite Context Window](#the-principle-of-finite-context-window), as earlier correct context may be pushed out by recent erroneous attempts.
 
@@ -90,7 +106,17 @@ AI models function as statistical pattern matchers that prioritize local consist
 
 Because AI amplifies existing patterns, the cleanliness of the input context (the code currently in the buffer) determines the quality of the output. Before asking an agent to extend a module, the operator must first ensure the immediate context represents the desired standard, or the agent will scale the dysfunction.
 
-### The Epistemology of Emergent Insight
+### The Principle of Distributed Unreliability
+
+Any system composed of AI agents is inherently composed of unreliable components. Models hallucinate, timeout, crash, and produce inconsistent outputs. Unlike traditional distributed systems where failures are exceptional, in agentic systems, partial failure is the baseline expectation. This fundamental unreliability means that system design must treat every agent action as potentially failed until proven otherwise, and global state must be protected from corruption by incomplete or erroneous agent operations.
+
+**Failure Scenario:** An orchestration layer retries a "Process Payment" task because the agent timed out. Because the action wasn't treated as inherently unreliable and isolated from global state, the first (timed-out) attempt actually succeeded in the background. The retry processes it again, charging the customer twice and corrupting the ledger.
+
+#### The Corollary of Atomic State Isolation
+
+To prevent total system corruption from partial failure, agent actions must be treated as atomic units that are isolated from the global state until confirmed. This ensures that a failed or retried action does not leave the system in an inconsistent "zombie" state.
+
+### The Principle of Emergent Insight Constraint
 
 AI systems, trained on historical data distributions, excel at interpolation and optimization within known bounds but are epistemically constrained from generating truly novel, discontinuous insights without human-mediated disruption. This principle enforces the immutable reality that machine intelligence is derivative, not originative—product development must hybridize AI's efficiency with human serendipity to avoid convergent stagnation.
 
@@ -128,21 +154,23 @@ In manual development, the cognitive effort (friction) required to write complex
 
 **Failure Scenario:** A developer needs to handle a new edge case. Manually, writing the necessary boilerplate would take 30 minutes, prompting them to refactor the architecture. With AI, generating a "good enough" patch takes 10 seconds. The developer applies the patch. Repeated 50 times, this leads to a system that is functional but unmaintainable, created without the developer ever feeling the "pain" of the debt they accrued.
 
+### The Principle of Verification Asymmetry
+
+The cost of generating AI output is orders of magnitude lower than the cost of verifying it. This asymmetry inverts traditional productivity assumptions—teams can generate unlimited artifacts but remain bottlenecked by human verification capacity. Because validation requires domain expertise, attention, and time that cannot be parallelized, the throughput of an agentic system is bounded not by generation speed but by verification bandwidth. This supports [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by forcing teams to account for total cost-of-ownership.
+
+**Failure Scenario:** A team deploys AI agents to generate 50 pull requests per day, believing they've 10x'd productivity. However, each PR requires 30 minutes of careful review to catch subtle semantic errors (per [The Principle of Syntactic-Semantic Decoupling](#the-principle-of-syntactic-semantic-decoupling)). The review queue grows exponentially, engineers spend 100% of their time reviewing AI output rather than building, and net velocity decreases.
+
+#### The Corollary of Verification Investment
+
+Every dollar saved on AI-assisted generation must be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines). The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
+
+#### The Corollary of Review Debt
+
+Unreviewed AI output accumulates as hidden liability—it looks like progress but carries unknown risk. Unlike technical debt (which is visible in code complexity), review debt is invisible until failure. A backlog of "AI-generated but not verified" artifacts represents not value, but deferred risk with compounding interest.
+
 ## The Architecture of Flow
 
 Define how to integrate AI into the development cycle to accelerate delivery and maintain flow.
-
-### The Principle of Immediate AI Feedback Loop
-
-Integrate AI tools directly into the coding environment to deliver instant suggestions and error checking, minimizing context switching and delays. This maximizes value-added time and aligns with [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
-
-**Failure Scenario:** A team uses an AI code completion tool with a 5-second delay. Developers either wait (breaking flow) or ignore the tool, resulting in inconsistent adoption and wasted potential.
-
-### The Principle of Small-Experiment Automation
-
-Use AI agents to break down large tasks into small, verifiable experiments (e.g., auto-generated unit tests, code variations), reducing risk and enabling fast feedback. This applies [V7: The Principle of Small Experiments](/docs/product/product-development/principles#v7-the-principle-of-small-experiments-many-small-experiments-produce-less-variation-than-one-big-one).
-
-**Failure Scenario:** An AI generates a massive, brittle test suite. Maintenance overhead grows, slowing development and negating the benefits of automation.
 
 ### The Principle of Compounding Context
 
@@ -162,33 +190,15 @@ AI agents cannot leverage knowledge that exists solely in human minds or ephemer
 
 Context must be managed across distinct tiers based on persistence and utility: History (immutable source of truth), Memory (structured/indexed for retrieval), and Scratchpad (ephemeral reasoning workspace). Data should flow dynamically between these tiers—scratchpads are pruned after tasks, while high-value insights are promoted to persistent memory.
 
-### The Principle of Orchestrated Agent Parallelism
+### The Principle of Context Heterogeneity
 
-Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks. This maximizes throughput and minimizes bottlenecks, following [D10. The Main Effort Principle](/docs/product/product-development/principles#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
-
-**Failure Scenario:** Agents are assigned tasks without regard to the critical path, resulting in duplicated effort, idle time, and delayed delivery.
-
-#### The Corollary of Critical Path Conflict
-
-Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
-
-### The Principle of Universal Context Abstraction
-
-Context sources are heterogeneous (databases, user uploads, API responses, tool outputs), but agents require a unified interface to reason effectively. By abstracting all context artifacts into a standardized, hierarchical namespace (similar to a file system), we decouple the reasoning logic from the storage mechanism. This enables agents to treat memory, tools, and human inputs uniformly, ensuring composability and reducing integration complexity.
+Context sources are inherently heterogeneous—databases, user uploads, API responses, tool outputs, and human messages all represent information in fundamentally different formats and structures. This heterogeneity is not a design flaw to be fixed but a physical property of information systems. Because agents require unified interfaces to reason effectively, the friction between heterogeneous sources and uniform consumption is an immutable cost that must be managed through abstraction.
 
 **Failure Scenario:** A developer writes custom integration code for every new data source (SQL, vector DB, API). The agent struggles to correlate information across these silos, leading to "context rot" where valid information becomes inaccessible or stale due to fragmented architecture.
 
-### The Principle of Agentic Single Responsibility
+#### The Corollary of Universal Abstraction
 
-Just as in software engineering, AI agents maximize reliability when scoped to a single, atomic objective.
-
-Increasing the breadth of an agent's mandate exponentially increases the probability of "attention drift," where the model prioritizes one instruction at the expense of another. Complex workflows should be composed of chained, specialized agents—each with a distinct definition of done—rather than a single generalist entity attempting to juggle multiple distinct context streams. This minimizes [The Principle of Compounding Contextual Error](#the-principle-of-compounding-contextual-error).
-
-**Failure Scenario:** A team creates a "Release Manager" agent instructed to "check git status, run tests, update version numbers, and write the changelog." The agent successfully writes the changelog but hallucinates test results because the test output context was pushed out of its active attention span by the verbose git logs.
-
-#### The Corollary of Modular Composability
-
-Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
+By abstracting all context artifacts into a standardized, hierarchical namespace (similar to a file system), we decouple the reasoning logic from the storage mechanism. This enables agents to treat memory, tools, and human inputs uniformly, ensuring composability and reducing integration complexity.
 
 ### The Principle of Syntactic-Semantic Decoupling
 
@@ -196,41 +206,33 @@ In traditional human coding, "messy" code (bad formatting, typos) often serves a
 
 **Failure Scenario:** A senior engineer reviews a Pull Request generated by an agent. The code looks professional, passes the linter, and has excellent comments. Trusting the visual, the engineer merges it. They fail to notice that the agent implemented a clean-looking function that subtly bypasses a critical security check defined in a different layer of the application.
 
-### The Principle of Constraint-Driven Architecture
+#### The Corollary of Agentic Single Responsibility
 
-In traditional software engineering, the developer's primary role is to write deterministic logic (loops, conditionals, state management) that explicitly defines the system's behavior. In Applied AI, the model generates the behavior probabilistically (see [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output)). Therefore, the developer's role shifts from writing the flow to architecting the boundaries. The goal is no longer to script the "happy path" but to construct a system of rigid constraints (schemas, validators, type-checks, and guardrails) that force a non-deterministic model to collapse into a reliable, deterministic outcome.
+Just as in software engineering, AI agents maximize reliability when scoped to a single, atomic objective. Increasing the breadth of an agent's mandate exponentially increases the probability of "attention drift," where the model prioritizes one instruction at the expense of another. Complex workflows should be composed of chained, specialized agents—each with a distinct definition of done—rather than a single generalist entity attempting to juggle multiple distinct context streams. This minimizes [The Corollary of Compounding Contextual Error](#the-corollary-of-compounding-contextual-error).
 
-**Failure Scenario:** A developer writes a prompt asking an agent to "extract the user's age and ensure it is a valid number between 18 and 100." When the model occasionally returns "eighteen" or "N/A," the developer adds more capital letters to the prompt ("MUST BE AN INTEGER"). The flakiness persists because the developer is attempting to solve a structural constraint problem with semantic persuasion.
+**Failure Scenario:** A team creates a "Release Manager" agent instructed to "check git status, run tests, update version numbers, and write the changelog." The agent successfully writes the changelog but hallucinates test results because the test output context was pushed out of its active attention span by the verbose git logs.
 
-#### The Corollary of Schema Supremacy
+##### The Corollary of Modular Composability
 
-If a constraint can be defined mathematically or programmatically (e.g., Regex, JSON Schema, TypeScript interfaces), it must be removed from the prompt and enforced by the code. You do not ask the model to "be careful" with data types; you force it to fail if it creates the wrong one.
-
-#### The Corollary of The Probabilistic Funnel
-
-System design must act as a funnel where the "wide" creative potential of the LLM is progressively narrowed by hard constraints. The closer the data gets to a database or user interface, the stricter the non-AI constraints must become to filter out probabilistic noise.
-
-_Read more about this principle in [From Scripter to Architect in the Age of AI](/blog/2025/12/17/from-scripter-to-architect)._
+Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
 
 ## The Protocol of Communication
 
-Define the skills and methods required for the human operator to extract value from the machine.
+This section defines how humans and AI agents should exchange information—through prompts, feedback, and constraints—to reduce ambiguity, control hallucinations, and keep work aligned with our product development principles.
 
 ### The Principle of Signal Entropy
 
-In a probabilistic system, ambiguity is not neutral; it is noise. unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel.
+In a probabilistic system, ambiguity is not neutral; it is noise. Unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel.
 
 **Failure Scenario:** A developer tells an agent to "refactor this function to be cleaner." Because "cleaner" is semantically ambiguous and the agent lacks the team's shared definition of "clean code," it removes essential error handling logic, treating it as "clutter."
 
-### The Principle of Dynamic Adaptation
+#### The Corollary of Dynamic Adaptation
 
-Effective AI collaboration requires real-time adjustment of communication strategies, context provision, and verification approaches based on ongoing interaction patterns—not reliance on static prompt templates. Moment-to-moment fluctuations in how developers frame problems and provide context directly influence AI response quality. Developers must develop adaptive, context-sensitive collaboration skills that respond dynamically to the specific problem and AI state, treating each interaction as a feedback loop. This principle operationalizes [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) by emphasizing continuous micro-adjustments over rigid workflows.
+Effective AI collaboration requires real-time adjustment of communication strategies, context provision, and verification approaches based on ongoing interaction patterns—not reliance on static prompt templates. Moment-to-moment fluctuations in how developers frame problems and provide context directly influence AI response quality. Developers must develop adaptive, context-sensitive collaboration skills that respond dynamically to the specific problem and AI state, treating each interaction as a feedback loop. This corollary operationalizes [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback) by emphasizing continuous micro-adjustments over rigid workflows.
 
 **Failure Scenario:** A developer creates a library of "perfect prompts" and mechanically reuses them across contexts. When the prompts fail, they conclude the AI is unreliable rather than recognizing that effective collaboration requires adapting their communication to the specific task, accumulated context, and current interaction quality.
 
 ## The Governance of Agency
-
-Define safety and authority boundaries to prevent catastrophic failures.
 
 ### The Principle of Delegated Agency Scaling
 
@@ -241,6 +243,12 @@ Autonomy is not a binary setting but a variable slider dependent on verification
 #### The Corollary of Automated Guardrail Prerequisite
 
 Before granting full autonomy to AI agents for a task, ensure robust automated safety nets (CI/CD, test suites) are in place. Automation must be checked by automation to prevent catastrophic failures.
+
+#### The Corollary of Trust-Gated Orchestration
+
+The velocity and scale of agent orchestration are strictly limited by the "Trust Latency" of the human operator. If a human must verify every intermediate "real task" within a workflow, the system degrades from an autonomous fleet into a synchronous, manual approval queue. True orchestration is only possible when the cost of verification is significantly lower than the cost of execution. Therefore, trust—built on robust provenance and observability—is not a sentiment, but a functional requirement for scaling.
+
+**Failure Scenario:** A manager deploys a team of five agents to optimize marketing campaigns but requires manual approval for every keyword selection and ad copy variant. The "orchestration" becomes a bottleneck where the manager spends more time reviewing low-stakes decisions than if they had done the work themselves, stalling the entire workflow.
 
 ### The Principle of Asymmetric Risk
 
@@ -254,26 +262,6 @@ An AI agent's effective capability is capped by the operator's ownership and men
 
 **Failure Scenario:** A contractor uses an AI agent to close a ticket in a legacy codebase they do not understand. The AI suggests a solution that works perfectly in isolation but relies on an internal API scheduled for deprecation. Because the operator lacks the Contextual Authority to know the API history, they accept the solution, solving the ticket today but creating a guaranteed failure for the next release.
 
-### The Principle of Artificial Friction
-
-In manual workflows, the physical effort required to perform bad actions (like writing 500 lines of repetitive boilerplate) serves as a natural deterrent. AI removes this effort, making the cost of generating chaos near-zero. Therefore, governance systems must re-introduce **Artificial Friction**—deliberate barriers, checks, and vetoes—that force the agent to "pay" a cost (in time or compute) before committing low-quality work.
-
-**Failure Scenario:** A team removes all barriers to "move fast," allowing agents to commit code directly. Within a month, the codebase bloats by 300% with redundant logic because there was no friction to stop the agent from taking the easiest path.
-
-## The Dynamics of Orchestration
-
-### The Principle of Trust-Gated Orchestration
-
-The velocity and scale of agent orchestration are strictly limited by the "Trust Latency" of the human operator. If a human must verify every intermediate "real task" within a workflow, the system degrades from an autonomous fleet into a synchronous, manual approval queue. True orchestration is only possible when the cost of verification is significantly lower than the cost of execution. Therefore, trust—built on robust provenance and observability—is not a sentiment, but a functional requirement for scaling; you cannot orchestrate what you must micromanage. This aligns with the need for systems that support "traceability" and "accountability" to allow for post-hoc audit rather than real-time blocking.
-
-**Failure Scenario:** A manager deploys a team of five agents to optimize marketing campaigns but requires manual approval for every keyword selection and ad copy variant. The "orchestration" becomes a bottleneck where the manager spends more time reviewing low-stakes decisions than if they had done the work themselves, stalling the entire workflow.
-
-### The Principle of Atomic State Isolation
-
-A reliable agentic system is often built from unreliable components (models that hallucinate, timeout, or crash). To prevent total system corruption from a partial failure, agent actions must be treated as atomic units that are isolated from the global state until confirmed. This ensures that a failed or retried action does not leave the system in an inconsistent "zombie" state.
-
-**Failure Scenario:** An orchestration layer retries a "Process Payment" task because the agent timed out. Because the action wasn't atomic and isolated, the first (timed-out) attempt actually succeeded in the background. The retry processes it again, charging the customer twice and corrupting the ledger.
-
 ---
 
-_These principles are evolving. For foundational reasoning, see [Product Development Principles](/docs/product/product-development/principles)._
+_These principles are evolving. For implementation strategies, see [Agentic Design Patterns](/docs/ai/agentic-design-patterns). For foundational reasoning, see [Product Development Principles](/docs/product/product-development/principles)._

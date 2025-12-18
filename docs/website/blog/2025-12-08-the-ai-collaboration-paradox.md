@@ -99,7 +99,7 @@ Smart developers love **systems**. When they discover AI, they follow a natural 
 
 This works brilliantly for deterministic tools. It **fails catastrophically for AI**.
 
-Why? Because effective AI collaboration requires **dynamic adaptation** (see **[The Principle of Dynamic Adaptation](/docs/ai/agentic-development-principles#the-principle-of-dynamic-adaptation)**). The same prompt produces different results depending on:
+Why? Because effective AI collaboration requires **dynamic adaptation** (see **[The Corollary of Dynamic Adaptation](/docs/ai/agentic-development-principles#the-corollary-of-dynamic-adaptation)**). The same prompt produces different results depending on:
 
 - The accumulated context in the conversation
 - The specific nuances of the current task
