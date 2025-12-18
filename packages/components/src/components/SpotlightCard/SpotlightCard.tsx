@@ -1,4 +1,3 @@
-import { Icon, type IconType } from '@ttoss/react-icons';
 import type { ButtonProps } from '@ttoss/ui';
 import { Box, Button, Card, Flex, keyframes, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -51,7 +50,10 @@ interface SpotlightTheme {
 type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
-  icon: IconType;
+  /**
+   * Icon to display. Can be an icon string from @ttoss/react-icons or a custom ReactNode (SVG, component, etc.)
+   */
+  icon: React.ReactNode;
   /**
    * Title of the card. Pass a ReactNode for styling.
    */
@@ -63,14 +65,7 @@ export type SpotlightCardProps = {
   description: string;
   firstButton?: ButtonPropType;
   secondButton?: ButtonPropType;
-  variant?:
-    | 'accent'
-    | 'primary'
-    | 'positive'
-    | 'caution'
-    | 'muted'
-    | 'negative'
-    | 'secondary';
+  variant?: 'accent' | 'primary' | 'positive' | 'caution' | 'negative';
 };
 
 export const SpotlightCard = ({
@@ -121,74 +116,46 @@ export const SpotlightCard = ({
       useOverlay: false,
     },
     positive: {
-      textColor: 'feedback.text.positive.default',
-      iconColor: 'feedback.text.positive.default',
-      iconBg: 'rgba(255,255,255,0.3)',
-      badgeBg: 'action.background.primary.default',
-      badgeText: 'action.text.primary.default',
+      textColor: '#0a5f0a',
+      iconColor: '#0a5f0a',
+      iconBg: 'rgba(200,255,200,0.5)',
+      badgeBg: '#0a5f0a',
+      badgeText: '#ffffff',
       btnPrimaryVariant: 'primary',
       btnPrimaryColor: 'action.text.primary.default',
       btnSecondaryBorder: 'currentColor',
-      borderColor: 'feedback.border.positive.default',
-      bgStart: 'feedback.background.positive.default',
-      bgMiddle: 'feedback.background.positive.default',
+      borderColor: '#22c55e',
+      bgStart: '#22c55e',
+      bgMiddle: '#16a34a',
       useOverlay: true,
     },
     caution: {
-      textColor: 'feedback.text.caution.default',
-      iconColor: 'feedback.text.caution.default',
-      iconBg: 'rgba(255,255,255,0.3)',
-      badgeBg: 'action.background.primary.default',
-      badgeText: 'action.text.primary.default',
+      textColor: '#92400e',
+      iconColor: '#92400e',
+      iconBg: 'rgba(255,240,200,0.5)',
+      badgeBg: '#92400e',
+      badgeText: '#ffffff',
       btnPrimaryVariant: 'primary',
       btnPrimaryColor: 'action.text.primary.default',
       btnSecondaryBorder: 'currentColor',
-      borderColor: 'feedback.border.caution.default',
-      bgStart: 'feedback.background.caution.default',
-      bgMiddle: 'feedback.background.caution.default',
+      borderColor: '#fbbf24',
+      bgStart: '#fbbf24',
+      bgMiddle: '#f59e0b',
       useOverlay: true,
-    },
-    muted: {
-      textColor: 'display.text.muted.default',
-      iconColor: 'display.text.muted.default',
-      iconBg: 'action.background.secondary.default',
-      badgeBg: 'action.background.accent.default',
-      badgeText: 'action.text.accent.default',
-      btnPrimaryVariant: 'accent',
-      btnPrimaryColor: 'action.text.accent.default',
-      btnSecondaryBorder: 'display.border.muted.default',
-      borderColor: 'display.border.muted.default',
-      bgStart: 'display.background.muted.default',
-      bgMiddle: 'display.background.primary.default',
-      useOverlay: false,
     },
     negative: {
-      textColor: 'feedback.text.negative.default',
-      iconColor: 'feedback.text.negative.default',
-      iconBg: 'rgba(255,255,255,0.3)',
-      badgeBg: 'action.background.primary.default',
-      badgeText: 'action.text.primary.default',
+      textColor: '#7f1d1d',
+      iconColor: '#7f1d1d',
+      iconBg: 'rgba(255,200,200,0.5)',
+      badgeBg: '#7f1d1d',
+      badgeText: '#ffffff',
       btnPrimaryVariant: 'primary',
       btnPrimaryColor: 'action.text.primary.default',
       btnSecondaryBorder: 'currentColor',
-      borderColor: 'feedback.border.negative.default',
-      bgStart: 'feedback.background.negative.default',
-      bgMiddle: 'feedback.background.negative.default',
+      borderColor: '#ef4444',
+      bgStart: '#ef4444',
+      bgMiddle: '#dc2626',
       useOverlay: true,
-    },
-    secondary: {
-      textColor: 'action.text.secondary.default',
-      iconColor: 'action.text.secondary.default',
-      iconBg: 'action.background.primary.default',
-      badgeBg: 'action.background.accent.default',
-      badgeText: 'action.text.accent.default',
-      btnPrimaryVariant: 'accent',
-      btnPrimaryColor: 'action.text.accent.default',
-      btnSecondaryBorder: 'display.border.muted.default',
-      borderColor: 'display.border.muted.default',
-      bgStart: 'action.background.secondary.default',
-      bgMiddle: 'action.background.primary.default',
-      useOverlay: false,
     },
   };
 
@@ -264,13 +231,13 @@ export const SpotlightCard = ({
           const bgMiddle = getColor(config.bgMiddle);
 
           if (config.useOverlay) {
-            return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), 
+            return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%), 
                     linear-gradient(0deg, ${bgStart}, ${bgStart})`;
           }
           return `linear-gradient(270deg, ${bgStart}, ${bgMiddle}, ${bgStart})`;
         },
-        backgroundSize: config.useOverlay ? '200% 100%, auto' : '400% 400%',
-        animation: `${gradientFlow} 6s ease infinite`,
+        backgroundSize: config.useOverlay ? '300% 100%, auto' : '600% 600%',
+        animation: `${gradientFlow} 3s ease infinite`,
         width: '100%',
         minHeight: '104px',
         borderRadius: 'xl',
@@ -300,7 +267,17 @@ export const SpotlightCard = ({
             color: iconColorToken,
           }}
         >
-          <Icon icon={icon} width={32} />
+          {typeof icon === 'string' ? (
+            <Box
+              // @ts-expect-error - iconify-icon is a custom element
+              as="iconify-icon"
+              {...{ icon }}
+              width={32}
+              height={32}
+            />
+          ) : (
+            icon
+          )}
         </Box>
 
         <Box sx={{ minWidth: 0 }}>

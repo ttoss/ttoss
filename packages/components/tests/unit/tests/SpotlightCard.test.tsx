@@ -184,20 +184,6 @@ describe('SpotlightCard', () => {
     expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
   });
 
-  test('should render muted variant', () => {
-    render(
-      <SpotlightCard
-        title="Muted Card"
-        description="This card uses the muted variant"
-        icon="symbol"
-        variant="muted"
-      />
-    );
-
-    expect(screen.getByText('Muted Card')).toBeInTheDocument();
-    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
-  });
-
   test('should render negative variant', () => {
     render(
       <SpotlightCard
@@ -209,20 +195,6 @@ describe('SpotlightCard', () => {
     );
 
     expect(screen.getByText('Negative Card')).toBeInTheDocument();
-    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
-  });
-
-  test('should render secondary variant', () => {
-    render(
-      <SpotlightCard
-        title="Secondary Card"
-        description="This card uses the secondary variant"
-        icon="symbol"
-        variant="secondary"
-      />
-    );
-
-    expect(screen.getByText('Secondary Card')).toBeInTheDocument();
     expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
   });
 
@@ -274,35 +246,23 @@ describe('SpotlightCard', () => {
     expect(screen.getByText('Second')).toBeInTheDocument();
   });
 
-  test('should render muted variant with buttons', () => {
+  test('should render with custom ReactNode icon', () => {
+    const CustomIcon = () => {
+      return (
+        <svg data-testid="custom-icon" width="32" height="32">
+          <circle cx="16" cy="16" r="8" />
+        </svg>
+      );
+    };
+
     render(
       <SpotlightCard
-        title="Muted with buttons"
-        description="Muted variant with buttons"
-        icon="symbol"
-        variant="muted"
-        firstButton={{ children: 'First' }}
-        secondButton={{ children: 'Second' }}
+        title="Custom Icon"
+        description="Card with custom SVG icon"
+        icon={<CustomIcon />}
       />
     );
 
-    expect(screen.getByText('First')).toBeInTheDocument();
-    expect(screen.getByText('Second')).toBeInTheDocument();
-  });
-
-  test('should render secondary variant with buttons', () => {
-    render(
-      <SpotlightCard
-        title="Secondary with buttons"
-        description="Secondary variant with buttons"
-        icon="symbol"
-        variant="secondary"
-        firstButton={{ children: 'First' }}
-        secondButton={{ children: 'Second' }}
-      />
-    );
-
-    expect(screen.getByText('First')).toBeInTheDocument();
-    expect(screen.getByText('Second')).toBeInTheDocument();
+    expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
   });
 });

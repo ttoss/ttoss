@@ -14,15 +14,7 @@ const meta: Meta<typeof SpotlightCard> = {
     secondButton: { control: 'object' },
     variant: {
       control: { type: 'radio' },
-      options: [
-        'accent',
-        'primary',
-        'positive',
-        'caution',
-        'muted',
-        'negative',
-        'secondary',
-      ],
+      options: ['accent', 'primary', 'positive', 'caution', 'negative'],
       description: 'Estilo visual do card',
       table: {
         defaultValue: { summary: 'accent' },
@@ -191,20 +183,6 @@ export const CautionVariant: Story = {
 };
 
 /**
- * Muted Variant
- */
-export const MutedVariant: Story = {
-  args: {
-    ...Default.args,
-    variant: 'muted',
-    title: 'Information',
-    badge: 'Notice',
-    description: 'This is a subtle notification for background information.',
-    icon: 'material-symbols:info-outline',
-  },
-};
-
-/**
  * Negative Variant
  */
 export const NegativeVariant: Story = {
@@ -220,15 +198,19 @@ export const NegativeVariant: Story = {
 };
 
 /**
- * Secondary Variant
+ * Custom SVG Icon
  */
-export const SecondaryVariant: Story = {
+export const CustomIconVariant: Story = {
   args: {
     ...Default.args,
-    variant: 'secondary',
-    title: 'Alternative',
-    badge: 'Optional',
-    description: 'This is an alternative style with secondary colors.',
-    icon: 'material-symbols:category-outline',
+    variant: 'accent',
+    title: 'Custom Icon',
+    badge: 'SVG',
+    description: 'SpotlightCard with a custom SVG icon instead of icon string.',
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+      </svg>
+    ),
   },
 };
