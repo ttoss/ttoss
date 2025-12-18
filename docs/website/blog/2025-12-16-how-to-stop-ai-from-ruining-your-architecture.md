@@ -36,7 +36,7 @@ If left unchecked, this leads to:
 
 ## The Solution: The Complexity Brake
 
-We need to engineer a solution that forces refactoring. This is the practical application of **[The Principle of Artificial Friction](/docs/ai/agentic-development-principles#the-principle-of-artificial-friction)**: when technology removes natural friction, we must engineer artificial barriers to prevent collapse.
+We need to engineer a solution that forces refactoring. This is the practical application of **[Artificial Friction](/docs/ai/agentic-design-patterns#artificial-friction)**: when technology removes natural friction, we must engineer artificial barriers to prevent collapse.
 
 We call this specific implementation **[The Complexity Brake](/docs/ai/agentic-design-patterns#the-complexity-brake)**.
 
