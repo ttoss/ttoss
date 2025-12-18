@@ -218,6 +218,7 @@ Agents should be designed as composable modules with strict input/output interfa
 
 ## The Protocol of Communication
 
+This section defines how humans and AI agents should exchange information—through prompts, feedback, and constraints—to reduce ambiguity, control hallucinations, and keep work aligned with our product development principles.
 ### The Principle of Signal Entropy
 
 In a probabilistic system, ambiguity is not neutral; it is noise. unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel.
