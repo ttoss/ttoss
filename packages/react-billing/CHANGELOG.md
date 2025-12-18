@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.1.0...@ttoss/react-billing@0.1.1) (2025-12-18)
+
+### Bug Fixes
+
+- react duplicate using PlanCard component ([#804](https://github.com/ttoss/ttoss/issues/804)) ([4b9202d](https://github.com/ttoss/ttoss/commit/4b9202de74304b2b21fe06925dd30be24910f026))
+
 # 0.1.0 (2025-12-17)
 
 ### Features
