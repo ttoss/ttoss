@@ -202,7 +202,7 @@ _Route the task based on the level of definition, not just difficulty._
 
 **The Underlying Principle:** Derived from [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles#the-principle-of-distributed-unreliability) and [The Corollary of Atomic State Isolation](/docs/ai/agentic-development-principles#the-corollary-of-atomic-state-isolation).
 
-**The Strategy:** Ensure every agent action is Idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
+**The Strategy:** Ensure every agent action is idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
 
 **Failure Scenario:** An agent is tasked with "Add \$50 credit to User A." The agent adds the credit but the connection times out before it reports success. The orchestrator thinks it failed and retries the task. The agent adds another \$50. The ledger is now corrupt.
 
