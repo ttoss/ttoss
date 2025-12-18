@@ -13,6 +13,7 @@ import {
 import { PlanCardPriceSlot } from './PlanCardPriceSlot';
 import { PlanCardTopTagSlot } from './PlanCardTopTagSlot';
 import type { PlanCardVariant } from './PlanCardVariant';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export type PlanCardMetadata = PlanCardMetadataSlotService[];
 
@@ -41,7 +42,7 @@ export interface PlanCardProps extends Omit<CardProps, 'children'> {
 
 export const PlanCard = (props: PlanCardProps) => {
   const {
-    variant = 'default',
+    variant = 'primary',
     title,
     subtitle,
     metadata = [],
@@ -53,17 +54,18 @@ export const PlanCard = (props: PlanCardProps) => {
   } = props;
 
   const effectiveMetadataVariant = metadataVariant ?? variant;
+  const variantStyles = getPlanCardVariantStyles(variant);
 
   return (
     <Card
       {...cardProps}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         width: 'full',
         maxWidth: '410px',
-        backgroundColor:
-          variant === 'enterprise'
-            ? 'display.background.primary.active'
-            : 'display.background.primary.default',
+        backgroundColor: variantStyles.backgroundColor,
+        borderColor: variantStyles.borderColor,
         ...cardProps.sx,
       }}
     >

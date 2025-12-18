@@ -1,6 +1,7 @@
 import { Box, Flex, Heading, Text } from '@ttoss/ui';
 
 import type { PlanCardVariant } from './PlanCardVariant';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardHeaderSlotProps {
   title: string;
@@ -13,9 +14,9 @@ export const PlanCardHeaderSlot = ({
   title,
   subtitle,
   hasTopTag,
-  variant = 'default',
+  variant = 'primary',
 }: PlanCardHeaderSlotProps) => {
-  const isEnterprise = variant === 'enterprise';
+  const variantStyles = getPlanCardVariantStyles(variant);
 
   return (
     <Box
@@ -33,16 +34,14 @@ export const PlanCardHeaderSlot = ({
           alignItems: 'center',
         }}
       >
-        <Heading
-          sx={{ fontSize: '3xl', color: isEnterprise ? 'white' : 'text' }}
-        >
+        <Heading sx={{ fontSize: '3xl', color: variantStyles.color }}>
           {title}
         </Heading>
         {subtitle && (
           <Text
             sx={{
               fontSize: 'sm',
-              color: isEnterprise ? 'white' : 'display.text.secondary.default',
+              color: variantStyles.secondaryColor,
             }}
           >
             {subtitle}

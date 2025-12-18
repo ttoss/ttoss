@@ -2,6 +2,9 @@ import { Icon, type IconType } from '@ttoss/react-icons';
 import { Flex, Stack, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
+import type { PlanCardVariantType } from './PlanCardVariants';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
+
 export type PlanCardMetadataSlotParameter = {
   name: string;
   value: React.ReactNode;
@@ -15,7 +18,7 @@ export type PlanCardMetadataSlotService = {
   key?: string;
 };
 
-export type PlanCardMetadataSlotVariant = 'default' | 'enterprise';
+export type PlanCardMetadataSlotVariant = PlanCardVariantType;
 
 export interface PlanCardMetadataSlotProps {
   metadata: PlanCardMetadataSlotService[];
@@ -24,9 +27,9 @@ export interface PlanCardMetadataSlotProps {
 
 export const PlanCardMetadataSlot = ({
   metadata,
-  variant = 'default',
+  variant = 'primary',
 }: PlanCardMetadataSlotProps) => {
-  const isEnterprise = variant === 'enterprise';
+  const variantStyles = getPlanCardVariantStyles(variant);
 
   return (
     <Stack sx={{ width: 'full', gap: '6' }}>
@@ -46,18 +49,14 @@ export const PlanCardMetadataSlot = ({
               sx={{
                 gap: '4',
                 alignItems: 'center',
-                color: isEnterprise
-                  ? 'white'
-                  : 'display.text.secondary.default',
+                color: variantStyles.secondaryColor,
                 width: 'full',
               }}
             >
               {service.icon && <Icon icon={service.icon} />}
               <Text
                 sx={{
-                  color: isEnterprise
-                    ? 'white'
-                    : 'display.text.secondary.default',
+                  color: variantStyles.secondaryColor,
                 }}
               >
                 {service.label + String.fromCharCode(58)}

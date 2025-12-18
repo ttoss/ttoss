@@ -139,12 +139,12 @@ export const CustomCTA: Story = {
   },
 };
 
-export const EnterpriseVariant: Story = {
+export const EnterpriseExample: Story = {
   render: () => {
     return (
       <Box sx={{ padding: '4' }}>
         <PlanCard
-          variant="enterprise"
+          variant="secondary"
           title={'Enterprise'}
           subtitle={'For large businesses'}
           metadata={[
