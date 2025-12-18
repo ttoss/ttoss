@@ -1487,13 +1487,7 @@ importers:
         version: 8.5.1(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.1)
 
   packages/react-billing:
-    devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
+    dependencies:
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons
@@ -1503,6 +1497,13 @@ importers:
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../ui
+    devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
       '@types/react':
         specifier: ^19.2.7
         version: 19.2.7

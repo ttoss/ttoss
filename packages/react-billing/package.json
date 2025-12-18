@@ -20,17 +20,17 @@
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
-  "peerDependencies": {
+  "dependencies": {
     "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@ttoss/ui": "workspace:^"
+  },
+  "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@ttoss/config": "workspace:^",
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/test-utils": "workspace:^",
-    "@ttoss/ui": "workspace:^",
     "@types/react": "^19.2.7",
     "jest": "^30.2.0",
     "react": "^19.2.1",
