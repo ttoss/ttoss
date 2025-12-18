@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.8.1 (2025-12-18)
+
+### Bug Fixes
+
+- react duplicate using PlanCard component ([#804](https://github.com/ttoss/ttoss/issues/804)) ([4b9202d](https://github.com/ttoss/ttoss/commit/4b9202de74304b2b21fe06925dd30be24910f026))
+
 # [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.7.5...@ttoss/theme@2.8.0) (2025-12-10)
 
 ### Features
