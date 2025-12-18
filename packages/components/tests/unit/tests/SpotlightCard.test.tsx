@@ -155,4 +155,154 @@ describe('SpotlightCard', () => {
 
     expect(screen.getByText('Accent Explicit')).toBeInTheDocument();
   });
+
+  test('should render positive variant', () => {
+    render(
+      <SpotlightCard
+        title="Positive Card"
+        description="This card uses the positive variant"
+        icon="symbol"
+        variant="positive"
+      />
+    );
+
+    expect(screen.getByText('Positive Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render caution variant', () => {
+    render(
+      <SpotlightCard
+        title="Caution Card"
+        description="This card uses the caution variant"
+        icon="symbol"
+        variant="caution"
+      />
+    );
+
+    expect(screen.getByText('Caution Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render muted variant', () => {
+    render(
+      <SpotlightCard
+        title="Muted Card"
+        description="This card uses the muted variant"
+        icon="symbol"
+        variant="muted"
+      />
+    );
+
+    expect(screen.getByText('Muted Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render negative variant', () => {
+    render(
+      <SpotlightCard
+        title="Negative Card"
+        description="This card uses the negative variant"
+        icon="symbol"
+        variant="negative"
+      />
+    );
+
+    expect(screen.getByText('Negative Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render secondary variant', () => {
+    render(
+      <SpotlightCard
+        title="Secondary Card"
+        description="This card uses the secondary variant"
+        icon="symbol"
+        variant="secondary"
+      />
+    );
+
+    expect(screen.getByText('Secondary Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render positive variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Positive with buttons"
+        description="Positive variant with buttons"
+        icon="symbol"
+        variant="positive"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render caution variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Caution with buttons"
+        description="Caution variant with buttons"
+        icon="symbol"
+        variant="caution"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render negative variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Negative with buttons"
+        description="Negative variant with buttons"
+        icon="symbol"
+        variant="negative"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render muted variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Muted with buttons"
+        description="Muted variant with buttons"
+        icon="symbol"
+        variant="muted"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render secondary variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Secondary with buttons"
+        description="Secondary variant with buttons"
+        icon="symbol"
+        variant="secondary"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
 });

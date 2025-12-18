@@ -14,7 +14,15 @@ const meta: Meta<typeof SpotlightCard> = {
     secondButton: { control: 'object' },
     variant: {
       control: { type: 'radio' },
-      options: ['accent', 'primary'],
+      options: [
+        'accent',
+        'primary',
+        'positive',
+        'caution',
+        'muted',
+        'negative',
+        'secondary',
+      ],
       description: 'Estilo visual do card',
       table: {
         defaultValue: { summary: 'accent' },
@@ -149,5 +157,78 @@ export const FinanceDashboardContext: Story = {
     secondButton: {
       children: 'Documentation',
     },
+  },
+};
+
+/**
+ * Positive Variant
+ */
+export const PositiveVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'positive',
+    title: 'Success',
+    badge: 'Completed',
+    description:
+      'Your task has been completed successfully. All systems are operational.',
+    icon: 'material-symbols:check-circle-outline',
+  },
+};
+
+/**
+ * Caution Variant
+ */
+export const CautionVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'caution',
+    title: 'Warning',
+    badge: 'Attention',
+    description:
+      'Please review the following items before proceeding with the action.',
+    icon: 'material-symbols:warning-outline',
+  },
+};
+
+/**
+ * Muted Variant
+ */
+export const MutedVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'muted',
+    title: 'Information',
+    badge: 'Notice',
+    description: 'This is a subtle notification for background information.',
+    icon: 'material-symbols:info-outline',
+  },
+};
+
+/**
+ * Negative Variant
+ */
+export const NegativeVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'negative',
+    title: 'Error',
+    badge: 'Critical',
+    description:
+      'An error occurred while processing your request. Please try again.',
+    icon: 'material-symbols:error-outline',
+  },
+};
+
+/**
+ * Secondary Variant
+ */
+export const SecondaryVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'secondary',
+    title: 'Alternative',
+    badge: 'Optional',
+    description: 'This is an alternative style with secondary colors.',
+    icon: 'material-symbols:category-outline',
   },
 };
