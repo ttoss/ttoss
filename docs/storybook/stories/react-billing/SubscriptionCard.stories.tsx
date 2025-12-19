@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { SubscriptionCard } from '@ttoss/react-billing';
-import { Icon } from '@ttoss/react-icons';
 
 const meta: Meta<typeof SubscriptionCard> = {
   title: 'React Billing/SubscriptionCard',
@@ -56,11 +55,6 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('pt-BR').format(value);
 };
 
-// Default icon for subscription cards
-const PlanIcon = () => {
-  return <Icon icon="fluent:shield-24-regular" width={24} height={24} />;
-};
-
 /**
  * Default subscription card showing an active subscription with all metric types.
  * Use the controls to change the variant and see different visual styles.
@@ -68,7 +62,7 @@ const PlanIcon = () => {
 export const Default: Story = {
   args: {
     variant: 'spotlight-accent',
-    icon: <PlanIcon />,
+    icon: 'fluent:shield-24-regular',
     planName: 'Starter Plan',
     price: { value: 'R$ 49,90', interval: 'mês' },
     status: {

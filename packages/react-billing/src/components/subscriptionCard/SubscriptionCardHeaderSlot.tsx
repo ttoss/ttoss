@@ -1,3 +1,4 @@
+import { Icon } from '@ttoss/react-icons';
 import { Badge, Flex, Heading, Stack, Text } from '@ttoss/ui';
 
 import {
@@ -71,7 +72,7 @@ export interface SubscriptionCardHeaderSlotProps {
   /**
    * Plan icon to display.
    */
-  icon?: React.ReactNode;
+  icon?: string;
   /**
    * Name of the subscription plan.
    */
@@ -121,7 +122,11 @@ export const SubscriptionCardHeaderSlot = ({
         }}
       >
         {/* Icon */}
-        <Flex sx={getSubscriptionCardHeaderIconSx(variant)}>{icon}</Flex>
+        {icon && (
+          <Flex sx={getSubscriptionCardHeaderIconSx(variant)}>
+            <Icon icon={icon as string} />
+          </Flex>
+        )}
 
         {/* Plan Details */}
         <Flex

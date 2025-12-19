@@ -1,6 +1,5 @@
 import type { IconType } from '@ttoss/react-icons';
 import type { ButtonProps } from '@ttoss/ui';
-import type * as React from 'react';
 
 import type { SubscriptionCardVariant } from './SubscriptionCard.styles';
 
@@ -191,7 +190,7 @@ export interface SubscriptionCardProps {
   /**
    * Plan icon to display. Can be a ReactNode or an IconType string.
    */
-  icon?: React.ReactNode;
+  icon?: string;
   /**
    * Name of the subscription plan.
    */

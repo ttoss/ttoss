@@ -1,4 +1,3 @@
-import { Icon } from '@ttoss/react-icons';
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
 import { SubscriptionCard } from '../../../src';
@@ -8,14 +7,10 @@ import {
 } from '../../../src/components/subscriptionCard/SubscriptionCard.styles';
 import { MetricCard } from '../../../src/components/subscriptionCard/SubscriptionCardMetricCards';
 
-const PlanIcon = () => {
-  return <Icon icon="fluent:shield-24-regular" width={24} height={24} />;
-};
-
 test('renders basic subscription card with required props', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90', interval: 'mês' }}
       status={{
@@ -34,7 +29,7 @@ test('renders basic subscription card with required props', () => {
 test('renders features when provided', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Premium Plan"
       price={{ value: 'R$ 99,00' }}
       status={{ status: 'active' }}
@@ -54,7 +49,7 @@ test('renders action buttons when provided', () => {
 
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Enterprise Plan"
       price={{ value: 'R$ 299,00' }}
       status={{ status: 'active' }}
@@ -85,7 +80,7 @@ test('renders action buttons when provided', () => {
 test('renders date metric correctly', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -113,7 +108,7 @@ test('renders percentage metric correctly', () => {
 
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -139,7 +134,7 @@ test('renders percentage metric correctly', () => {
 test('renders number metric correctly', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -165,7 +160,7 @@ test('renders number metric correctly', () => {
 test('renders different subscription statuses correctly', () => {
   const { rerender } = render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -176,7 +171,7 @@ test('renders different subscription statuses correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'inactive' }}
@@ -187,7 +182,7 @@ test('renders different subscription statuses correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'cancelled' }}
@@ -200,7 +195,7 @@ test('renders different subscription statuses correctly', () => {
 test('renders different variants correctly', () => {
   const { rerender } = render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -212,7 +207,7 @@ test('renders different variants correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -224,7 +219,7 @@ test('renders different variants correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -236,7 +231,7 @@ test('renders different variants correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -248,7 +243,7 @@ test('renders different variants correctly', () => {
 
   rerender(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
       status={{ status: 'active' }}
@@ -262,7 +257,7 @@ test('renders different variants correctly', () => {
 test('omits optional sections when not provided', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Minimal Plan"
       price={{ value: 'Grátis' }}
       status={{ status: 'active' }}
@@ -277,7 +272,7 @@ test('omits optional sections when not provided', () => {
 test('renders scheduled update and cancellation badges when enabled', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Premium Plan"
       price={{ value: 'R$ 99,00', interval: 'mês' }}
       status={{
@@ -296,7 +291,7 @@ test('renders scheduled update and cancellation badges when enabled', () => {
 test('renders loading state (skeleton) when isLoading is true', () => {
   render(
     <SubscriptionCard
-      icon={<PlanIcon />}
+      icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90', interval: 'mês' }}
       status={{ status: 'active' }}
