@@ -43,6 +43,7 @@ export interface PlanCardProps extends Omit<CardProps, 'children'> {
 export const PlanCard = (props: PlanCardProps) => {
   const {
     variant = 'primary',
+    topTag,
     title,
     subtitle,
     metadata = [],
@@ -69,16 +70,14 @@ export const PlanCard = (props: PlanCardProps) => {
         ...cardProps.sx,
       }}
     >
-      {props.topTag && (
-        <PlanCardTopTagSlot variant={variant}>
-          {props.topTag}
-        </PlanCardTopTagSlot>
+      {topTag && (
+        <PlanCardTopTagSlot variant={variant}>{topTag}</PlanCardTopTagSlot>
       )}
 
       <PlanCardHeaderSlot
         title={title}
         subtitle={subtitle}
-        hasTopTag={Boolean(props.topTag)}
+        hasTopTag={Boolean(topTag)}
         variant={variant}
       />
 

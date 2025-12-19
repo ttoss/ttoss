@@ -325,6 +325,7 @@ const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
             fontSize: 'xs',
             color: 'display.text.secondary.default',
             lineHeight: 'relaxed',
+            maxWidth: '300px',
           }}
         >
           {metric.footerText}
