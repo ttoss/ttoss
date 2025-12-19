@@ -112,8 +112,7 @@ export const Default: Story = {
         tooltip: 'Quantidade de contas de anúncios conectadas à sua assinatura',
         current: 2,
         max: 5,
-        footerText:
-          'Adicione mais contas para expandir seu alcance AAAAAAAAAAAAAAAAAAAAAAAAAAA',
+        footerText: 'Adicione mais contas para expandir seu alcance',
         icon: 'fluent:people-24-regular',
       },
       {
