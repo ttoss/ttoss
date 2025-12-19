@@ -6,8 +6,49 @@ import log from 'npmlog';
 import { generateSSHCommand, generateSSHCommandWithPwd } from './VMconnection';
 
 /**
- * Deploys to a VM via SSH by executing a deployment script.
- * Supports both SSH key authentication and password authentication.
+ * Deploys to a remote virtual machine over SSH by executing a local
+ * deployment script on the target host.
+ *
+ * This function supports both SSH key-based authentication (preferred) and
+ * password-based authentication. It validates the provided
+ * {@link DeployVMParams}, optionally fixes local script permissions, and then
+ * spawns an SSH process to run the script remotely.
+ *
+ * Security considerations:
+ * - Prefer `keyPath` over `password` whenever possible.
+ * - Do not hard-code passwords in source code; use environment variables or a
+ *   secure secret store instead.
+ * - Ensure that private keys referenced by `keyPath` are stored securely and
+ *   have appropriate filesystem permissions.
+ *
+ * @param params - Configuration object describing how to connect and which
+ *   script to execute. See {@link DeployVMParams}.
+ * @returns A promise that resolves when the deployment script finishes
+ *   successfully, or rejects if the SSH command fails or parameters are
+ *   invalid.
+ * @throws {Error} If required parameters (`userName`, `host`, `scriptPath`)
+ *   are missing, or if neither `keyPath` nor `password` is provided.
+ *
+ * @example
+ * // Key-based authentication
+ * await deployVM({
+ *   userName: 'ubuntu',
+ *   host: '203.0.113.10',
+ *   scriptPath: './scripts/deploy.sh',
+ *   keyPath: '~/.ssh/id_rsa',
+ *   port: 22,
+ *   fixPermissions: true,
+ * });
+ *
+ * @example
+ * // Password-based authentication (use environment variables or a secret
+ * // manager to supply the password in real deployments)
+ * await deployVM({
+ *   userName: 'root',
+ *   host: 'example.com',
+ *   scriptPath: './scripts/deploy.sh',
+ *   password: process.env.DEPLOY_VM_PASSWORD as string,
+ * });
  */
 
 export interface DeployVMParams {
@@ -39,7 +80,7 @@ export const deployVM = async ({
   return new Promise((resolve, reject) => {
     if (!keyPath && !password) {
       throw new Error(
-        `It should have at least key path (keyPath) or password (password).`
+        `Authentication method required. Provide either --vm-key-path for SSH key authentication or --vm-password for password authentication.`
       );
     }
 
@@ -105,13 +146,17 @@ export const deployVM = async ({
     let sshPassword: string | undefined;
 
     if (keyPath) {
-      sshCommand = generateSSHCommand(userName, host, keyPath, port);
-    } else if (password) {
-      const result = generateSSHCommandWithPwd(userName, host, password, port);
+      sshCommand = generateSSHCommand({ userName, host, keyPath, port });
+    } else {
+      // password must be defined here due to earlier validation
+      const result = generateSSHCommandWithPwd({
+        userName,
+        host,
+        password: password!,
+        port,
+      });
       sshCommand = result.command;
       sshPassword = result.password;
-    } else {
-      throw new Error('keyPath and password not found, try to use one of them');
     }
 
     const sshProcess = spawn(sshCommand[0], sshCommand.slice(1), {
@@ -119,12 +164,41 @@ export const deployVM = async ({
       shell: true,
     });
 
-    // Send password via stdin when using password authentication
-    if (sshPassword) {
-      sshProcess.stdin?.write(sshPassword + '\n');
+    const validateStdin = (
+      stdin: typeof sshProcess.stdin
+    ): stdin is NonNullable<typeof stdin> => {
+      if (!stdin) {
+        log.error(logPrefix, 'SSH process stdin is null or undefined');
+        return false;
+      }
+
+      if (stdin.destroyed) {
+        log.error(logPrefix, 'SSH process stdin has been destroyed');
+        return false;
+      }
+
+      if (!stdin.writable) {
+        log.error(logPrefix, 'SSH process stdin is not writable');
+        return false;
+      }
+
+      return true;
+    };
+
+    // Validate stdin is available and writable
+    if (!validateStdin(sshProcess.stdin)) {
+      reject(new Error('SSH process stdin is not available or not writable'));
+      return;
     }
 
     const deployScript = createReadStream(scriptPath);
+
+    // Send password via stdin when using password authentication
+    if (sshPassword) {
+      sshProcess.stdin.write(sshPassword + '\n');
+    }
+
+    // Pipe deployment script to stdin
     deployScript.pipe(sshProcess.stdin);
 
     sshProcess.on('close', (code) => {
