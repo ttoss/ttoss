@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Text } from '@ttoss/ui';
 
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardHeaderSlotProps {

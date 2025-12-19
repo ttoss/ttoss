@@ -57,3 +57,5 @@ export const getPlanCardVariantStyles = (
 
   return variants[variant] ?? variants.primary;
 };
+
+export type PlanCardVariant = PlanCardVariantType;

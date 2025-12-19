@@ -1,7 +1,7 @@
 import { Button, Flex } from '@ttoss/ui';
 
 import type { PlanCardButtonProps } from './PlanCard';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 
 export interface PlanCardCtaSlotProps {
   buttonProps?: PlanCardButtonProps;

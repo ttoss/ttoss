@@ -12,7 +12,7 @@ import {
 } from './PlanCardMetadataSlot';
 import { PlanCardPriceSlot } from './PlanCardPriceSlot';
 import { PlanCardTopTagSlot } from './PlanCardTopTagSlot';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export type PlanCardMetadata = PlanCardMetadataSlotService[];

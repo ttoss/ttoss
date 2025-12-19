@@ -11,4 +11,5 @@ export {
   type PlanCardMetadataSlotService,
   type PlanCardMetadataSlotVariant,
 } from './components/planCard/PlanCardMetadataSlot';
-export type { PlanCardVariant } from './components/planCard/PlanCardVariant';
+export type { PlanCardVariant } from './components/planCard/PlanCardVariants';
+export { SubscriptionCard } from './components/subscriptionCard/SubscriptionCard';

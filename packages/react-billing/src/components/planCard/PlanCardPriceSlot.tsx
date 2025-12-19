@@ -1,7 +1,7 @@
 import { Flex, Text } from '@ttoss/ui';
 
 import type { PlanCardPrice } from './PlanCard';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardPriceSlotProps {

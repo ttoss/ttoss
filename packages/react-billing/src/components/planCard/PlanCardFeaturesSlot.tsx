@@ -2,7 +2,7 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardFeaturesSlotProps {
