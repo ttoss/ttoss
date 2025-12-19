@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import log from 'npmlog';
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { addGroupToOptions, getAwsAccountId } from '../utils';
 import { deployBaseStackCommand } from './baseStack/command';
@@ -12,6 +12,7 @@ import { readDockerfile } from './readDockerfile';
 import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVercelCommand } from './vercel/command';
+import { deployVMCommand } from './vm/command';
 
 const logPrefix = 'deploy';
 
@@ -286,6 +287,7 @@ export const deployCommand: CommandModule<
       deployStaticAppCommand,
       deployCicdCommand,
       deployVercelCommand,
+      deployVMCommand,
     ];
 
     yargsBuilder.positional('deploy', {
