@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Grid } from '@ttoss/ui';
+import { Card, Flex, Spinner } from '@ttoss/ui';
 
 import { getSubscriptionCardAccentBarSx } from './SubscriptionCard.styles';
 import type {
@@ -8,181 +8,6 @@ import type {
 import { SubscriptionCardActionsSlot } from './SubscriptionCardActionsSlot';
 import { SubscriptionCardHeaderSlot } from './SubscriptionCardHeaderSlot';
 import { MetricCard } from './SubscriptionCardMetricCards';
-
-/**
- * Skeleton component for the entire card in loading state.
- */
-const SubscriptionCardSkeleton = ({
-  compact = false,
-}: {
-  compact?: boolean;
-}) => {
-  return (
-    <Card
-      sx={{
-        width: 'full',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Top accent bar skeleton */}
-      <Box
-        sx={{
-          height: '4px',
-          width: 'full',
-          backgroundColor: 'display.background.secondary.default',
-        }}
-      />
-
-      {/* Header skeleton */}
-      <Box sx={{ padding: compact ? '4' : '6' }}>
-        <Flex sx={{ gap: compact ? '4' : '6', alignItems: 'flex-start' }}>
-          {/* Icon skeleton */}
-          <Box
-            sx={{
-              flexShrink: 0,
-              borderRadius: 'full',
-              backgroundColor: 'display.background.secondary.default',
-              width: compact ? '48px' : '56px',
-              height: compact ? '48px' : '56px',
-            }}
-          />
-
-          {/* Content skeleton */}
-          <Flex sx={{ flex: 1, flexDirection: 'column', gap: '3' }}>
-            {/* Badges skeleton */}
-            <Flex sx={{ gap: '2' }}>
-              <Box
-                sx={{
-                  height: '24px',
-                  width: '64px',
-                  backgroundColor: 'display.background.secondary.default',
-                  borderRadius: 'full',
-                }}
-              />
-              <Box
-                sx={{
-                  height: '24px',
-                  width: '64px',
-                  backgroundColor: 'display.background.secondary.default',
-                  borderRadius: 'full',
-                }}
-              />
-            </Flex>
-
-            {/* Title skeleton */}
-            <Box
-              sx={{
-                height: compact ? '28px' : '32px',
-                width: '256px',
-                backgroundColor: 'display.background.secondary.default',
-                borderRadius: 'md',
-              }}
-            />
-
-            {/* Features skeleton */}
-            <Flex sx={{ gap: '2' }}>
-              <Box
-                sx={{
-                  height: '20px',
-                  width: '96px',
-                  backgroundColor: 'display.background.secondary.default',
-                  borderRadius: 'full',
-                }}
-              />
-              <Box
-                sx={{
-                  height: '20px',
-                  width: '96px',
-                  backgroundColor: 'display.background.secondary.default',
-                  borderRadius: 'full',
-                }}
-              />
-            </Flex>
-          </Flex>
-
-          {/* Actions skeleton */}
-          <Flex sx={{ gap: '3' }}>
-            <Box
-              sx={{
-                height: '40px',
-                width: '128px',
-                backgroundColor: 'display.background.secondary.default',
-                borderRadius: 'md',
-              }}
-            />
-            <Box
-              sx={{
-                height: '40px',
-                width: '128px',
-                backgroundColor: 'display.background.secondary.default',
-                borderRadius: 'md',
-              }}
-            />
-          </Flex>
-        </Flex>
-      </Box>
-
-      {/* Metrics skeleton */}
-      <Box
-        sx={{
-          paddingX: compact ? '4' : '6',
-          paddingBottom: compact ? '4' : '6',
-        }}
-      >
-        <Grid
-          sx={{
-            gap: '4',
-            gridTemplateColumns: compact
-              ? ['1fr', '1fr 1fr', '1fr 1fr 1fr']
-              : ['1fr', '1fr 1fr', '1fr 1fr 1fr 1fr'],
-          }}
-        >
-          {[1, 2, 3, 4].map((i) => {
-            return (
-              <Card
-                key={i}
-                sx={{
-                  backgroundColor: 'display.background.muted.default',
-                  padding: compact ? '4' : '6',
-                }}
-              >
-                <Flex sx={{ gap: '4' }}>
-                  <Box
-                    sx={{
-                      flexShrink: 0,
-                      borderRadius: 'full',
-                      backgroundColor: 'display.background.secondary.default',
-                      width: compact ? '40px' : '48px',
-                      height: compact ? '40px' : '48px',
-                    }}
-                  />
-                  <Flex sx={{ flex: 1, flexDirection: 'column', gap: '3' }}>
-                    <Box
-                      sx={{
-                        height: '16px',
-                        width: '128px',
-                        backgroundColor: 'display.background.secondary.default',
-                        borderRadius: 'md',
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        height: compact ? '24px' : '32px',
-                        width: '160px',
-                        backgroundColor: 'display.background.secondary.default',
-                        borderRadius: 'md',
-                      }}
-                    />
-                  </Flex>
-                </Flex>
-              </Card>
-            );
-          })}
-        </Grid>
-      </Box>
-    </Card>
-  );
-};
 
 /**
  * Renders a metric card based on its type.
@@ -246,7 +71,21 @@ export const SubscriptionCard = ({
   isLoading = false,
 }: SubscriptionCardProps) => {
   if (isLoading) {
-    return <SubscriptionCardSkeleton />;
+    /**
+     * use skeleton loader in the future here
+     */
+    return (
+      <Card
+        sx={{
+          width: 'full',
+          height: '400px',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Spinner />
+      </Card>
+    );
   }
 
   return (
