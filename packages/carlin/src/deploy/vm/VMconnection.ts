@@ -7,17 +7,29 @@ export interface VMServer {
   vmPassword?: string;
 }
 
-/**
- * generate SSH command with private key.
- * @param port - default ssh port: 22
- */
-const generateSSHCommand = (
-  userName: string,
-  host: string,
-  keyPath?: string,
-  port?: number
+interface SshCommandParams {
+  userName: string;
+  host: string;
+  keyPath?: string;
+  port?: number;
   // eslint-disable-next-line max-params
-): string[] => {
+}
+
+/**
+ * Generates an SSH command array for key-based authentication.
+ * @param userName - SSH username for the connection.
+ * @param host - Remote host address or hostname.
+ * @param keyPath - Optional path to the SSH private key file.
+ * @param port - SSH port (default: 22).
+ * @returns Array of command parts for spawning SSH process.
+ */
+const generateSSHCommand = ({
+  userName,
+  host,
+  keyPath,
+  port,
+  // eslint-disable-next-line max-params
+}: SshCommandParams): string[] => {
   const commandParts = ['ssh', '-T'];
 
   // Adds private key if provided
@@ -35,24 +47,32 @@ const generateSSHCommand = (
   return commandParts;
 };
 
+interface SshCommandWithPwdParams {
+  userName: string;
+  host: string;
+  password: string;
+  port?: number;
+}
+
 /**
- * Generate SSH command with password using native SSH.
- * The password will be passed via stdin when SSH process requests it.
- * @param port - default ssh port: 22
+ * Generate an SSH command configuration that uses password-based authentication
+ * with the native `ssh` client.
+ *
+ * The password is **not** embedded in the command line; instead, it is returned
+ * separately and is expected to be written to the SSH process stdin when the
+ * client prompts for a password. This avoids exposing the password in process
+ * listings but still relies on password authentication, which is generally less
+ * secure than key-based authentication.
  */
-const generateSSHCommandWithPwd = (
-  userName: string,
-  host: string,
-  password: string,
-  port?: number
+const generateSSHCommandWithPwd = ({
+  userName,
+  host,
+  password,
+  port,
   // eslint-disable-next-line max-params
-): { command: string[]; password: string } => {
+}: SshCommandWithPwdParams): { command: string[]; password: string } => {
   const commandParts = [
     'ssh',
-    '-o',
-    'StrictHostKeyChecking=no',
-    '-o',
-    'UserKnownHostsFile=/dev/null',
     '-o',
     'PubkeyAuthentication=no',
     '-o',
