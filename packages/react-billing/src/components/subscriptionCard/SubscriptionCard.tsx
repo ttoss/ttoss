@@ -1,5 +1,6 @@
 import { Box, Card, Flex, Grid } from '@ttoss/ui';
 
+import { getSubscriptionCardAccentBarSx } from './SubscriptionCard.styles';
 import type {
   MetricType,
   SubscriptionCardProps,
@@ -234,6 +235,7 @@ const renderMetricCard = (params: {
  * ```
  */
 export const SubscriptionCard = ({
+  variant = 'accent',
   icon,
   planName,
   price,
@@ -250,15 +252,7 @@ export const SubscriptionCard = ({
   return (
     <Card sx={{ width: 'full' }}>
       {/* Top accent bar */}
-      <Flex
-        sx={{
-          height: '12px',
-          width: 'full',
-          backgroundColor: 'input.background.accent.default',
-          borderTopLeftRadius: 'lg',
-          borderTopRightRadius: 'lg',
-        }}
-      />
+      <Flex sx={getSubscriptionCardAccentBarSx(variant)} />
 
       <Flex
         sx={{
@@ -288,6 +282,7 @@ export const SubscriptionCard = ({
             price={price}
             status={status}
             features={features}
+            variant={variant}
           />
 
           {actions.length > 0 && (

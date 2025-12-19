@@ -1,5 +1,9 @@
 import { Badge, Flex, Heading, Stack, Text } from '@ttoss/ui';
 
+import {
+  getSubscriptionCardHeaderIconSx,
+  type SubscriptionCardVariant,
+} from './SubscriptionCard.styles';
 import type {
   SubscriptionCardFeatureTag,
   SubscriptionCardPrice,
@@ -60,6 +64,11 @@ export const SubscriptionCardStatusBadge = ({ status }: StatusBadgeProps) => {
  */
 export interface SubscriptionCardHeaderSlotProps {
   /**
+   * Visual variant for the icon wrapper.
+   * @default 'spotlight'
+   */
+  variant?: SubscriptionCardVariant;
+  /**
    * Plan icon to display.
    */
   icon?: React.ReactNode;
@@ -85,12 +94,17 @@ export interface SubscriptionCardHeaderSlotProps {
  * Header slot containing plan info, status badges, and features.
  */
 export const SubscriptionCardHeaderSlot = ({
+  variant = 'spotlight-primary',
   icon,
   planName,
   price,
   status,
   features = [],
 }: SubscriptionCardHeaderSlotProps) => {
+  const scheduledUpdateLabel = 'Alteração Agendada';
+  const cancellationLabel = 'Renovação Cancelada';
+  const priceIntervalSuffix = price.interval ? '/' + price.interval : null;
+
   return (
     <Stack
       sx={{
@@ -107,22 +121,7 @@ export const SubscriptionCardHeaderSlot = ({
         }}
       >
         {/* Icon */}
-        <Flex
-          sx={{
-            flexShrink: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 'full',
-            border: 'md',
-            borderColor: 'display.border.muted.default',
-            backgroundColor: 'display.background.muted.default',
-            color: 'display.text.secondary.default',
-            width: '56px',
-            height: '56px',
-          }}
-        >
-          {icon}
-        </Flex>
+        <Flex sx={getSubscriptionCardHeaderIconSx(variant)}>{icon}</Flex>
 
         {/* Plan Details */}
         <Flex
@@ -147,7 +146,7 @@ export const SubscriptionCardHeaderSlot = ({
                 variant="informative"
                 sx={{ borderRadius: 'full' }}
               >
-                Alteração Agendada
+                {scheduledUpdateLabel}
               </Badge>
             )}
 
@@ -157,7 +156,7 @@ export const SubscriptionCardHeaderSlot = ({
                 variant="negative"
                 sx={{ borderRadius: 'full' }}
               >
-                Renovação Cancelada
+                {cancellationLabel}
               </Badge>
             )}
           </Flex>
@@ -187,7 +186,7 @@ export const SubscriptionCardHeaderSlot = ({
               }}
             >
               {price.value}
-              {price.interval && `/${price.interval}`}
+              {priceIntervalSuffix}
             </Text>
           </Flex>
 

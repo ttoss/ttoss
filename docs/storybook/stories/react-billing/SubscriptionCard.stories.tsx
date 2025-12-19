@@ -7,6 +7,29 @@ const meta: Meta<typeof SubscriptionCard> = {
   title: 'React Billing/SubscriptionCard',
   component: SubscriptionCard,
   tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: { type: 'radio' },
+      options: [
+        'spotlight-accent',
+        'spotlight-primary',
+        'primary',
+        'secondary',
+        'accent',
+      ],
+      description: 'Visual style variant of the subscription card',
+      table: {
+        defaultValue: { summary: 'spotlight-accent' },
+      },
+    },
+    planName: { control: 'text' },
+    icon: { control: false },
+    price: { control: 'object' },
+    status: { control: 'object' },
+    features: { control: 'object' },
+    actions: { control: 'object' },
+    metrics: { control: 'object' },
+  },
   parameters: {
     docs: {
       description: {
@@ -14,6 +37,7 @@ const meta: Meta<typeof SubscriptionCard> = {
           'SubscriptionCard displays comprehensive subscription information including plan details, status, actions, and various metrics.',
       },
     },
+    layout: 'padded',
   },
 };
 
@@ -40,83 +64,75 @@ const PlanIcon = () => {
 
 /**
  * Default subscription card showing an active subscription with all metric types.
+ * Use the controls to change the variant and see different visual styles.
  */
 export const Default: Story = {
-  render: () => {
-    return (
-      <Box sx={{ padding: '4' }}>
-        <SubscriptionCard
-          icon={<PlanIcon />}
-          planName="Starter Plan"
-          price={{ value: 'R$ 49,90', interval: 'mês' }}
-          status={{
-            status: 'active',
-            interval: 'Mensal',
-          }}
-          features={[
-            { label: 'OneClick Tracking' },
-            { label: 'Otimização de Campanhas' },
-          ]}
-          actions={[
-            {
-              label: 'Alterar Plano',
-              onClick: () => {},
-              variant: 'secondary',
-              leftIcon: 'fluent:arrow-swap-24-regular',
-            },
-            {
-              label: 'Gerenciar Assinatura',
-              onClick: () => {},
-              variant: 'accent',
-              leftIcon: 'fluent:settings-24-regular',
-            },
-          ]}
-          metrics={[
-            {
-              type: 'date',
-              label: 'Acesso válido até',
-              tooltip:
-                'Data em que sua assinatura expira e precisa ser renovada',
-              date: '11/12/2026',
-              remainingDaysMessage: 'Faltam 358 dias',
-              icon: 'fluent:calendar-24-regular',
-            },
-            {
-              type: 'percentage',
-              label: 'Conversões rastreadas',
-              tooltip:
-                'Número de conversões que você já rastreou neste período',
-              current: 750,
-              max: 2500,
-              formatValue: formatNumber,
-              showAlertThreshold: 80,
-              icon: 'fluent:target-24-regular',
-            },
-            {
-              type: 'number',
-              label: 'Contas de anúncios',
-              tooltip:
-                'Quantidade de contas de anúncios conectadas à sua assinatura',
-              current: 2,
-              max: 5,
-              footerText: 'Adicione mais contas para expandir seu alcance',
-              icon: 'fluent:people-24-regular',
-            },
-            {
-              type: 'percentage',
-              label: 'Limite de investimento',
-              tooltip:
-                'Valor total que você pode investir em anúncios neste período',
-              current: 2500,
-              max: 5000,
-              formatValue: formatCurrency,
-              showAlertThreshold: 80,
-              icon: 'fluent:arrow-trending-24-regular',
-            },
-          ]}
-        />
-      </Box>
-    );
+  args: {
+    variant: 'spotlight-accent',
+    icon: <PlanIcon />,
+    planName: 'Starter Plan',
+    price: { value: 'R$ 49,90', interval: 'mês' },
+    status: {
+      status: 'active',
+      interval: 'Mensal',
+    },
+    features: [
+      { label: 'OneClick Tracking' },
+      { label: 'Otimização de Campanhas' },
+    ],
+    actions: [
+      {
+        label: 'Alterar Plano',
+        onClick: () => {},
+        variant: 'secondary',
+        leftIcon: 'fluent:arrow-swap-24-regular',
+      },
+      {
+        label: 'Gerenciar Assinatura',
+        onClick: () => {},
+        variant: 'accent',
+        leftIcon: 'fluent:settings-24-regular',
+      },
+    ],
+    metrics: [
+      {
+        type: 'date',
+        label: 'Acesso válido até',
+        tooltip: 'Data em que sua assinatura expira e precisa ser renovada',
+        date: '11/12/2026',
+        remainingDaysMessage: 'Faltam 358 dias',
+        icon: 'fluent:calendar-24-regular',
+      },
+      {
+        type: 'percentage',
+        label: 'Conversões rastreadas',
+        tooltip: 'Número de conversões que você já rastreou neste período',
+        current: 750,
+        max: 2500,
+        formatValue: formatNumber,
+        showAlertThreshold: 80,
+        icon: 'fluent:target-24-regular',
+      },
+      {
+        type: 'number',
+        label: 'Contas de anúncios',
+        tooltip: 'Quantidade de contas de anúncios conectadas à sua assinatura',
+        current: 2,
+        max: 5,
+        footerText: 'Adicione mais contas para expandir seu alcance',
+        icon: 'fluent:people-24-regular',
+      },
+      {
+        type: 'percentage',
+        label: 'Limite de investimento',
+        tooltip: 'Valor total que você pode investir em anúncios neste período',
+        current: 2500,
+        max: 5000,
+        formatValue: formatCurrency,
+        showAlertThreshold: 80,
+        icon: 'fluent:arrow-trending-24-regular',
+      },
+    ],
   },
 };
 
@@ -366,24 +382,6 @@ export const CancelledSubscription: Story = {
 };
 
 /**
- * Loading state with skeleton.
- */
-export const Loading: Story = {
-  render: () => {
-    return (
-      <Box sx={{ padding: '4' }}>
-        <SubscriptionCard
-          planName="Loading..."
-          price={{ value: '' }}
-          status={{ status: 'active' }}
-          isLoading
-        />
-      </Box>
-    );
-  },
-};
-
-/**
  * Action buttons with loading state.
  */
 export const ActionLoading: Story = {
@@ -568,8 +566,10 @@ export const AnnualSubscription: Story = {
             {
               type: 'number',
               label: 'Contas de anúncios',
-              tooltip:
-                'Quantidade de contas de anúncios conectadas à sua assinatura',
+              tooltip: () => {
+                // eslint-disable-next-line no-console
+                console.log('Abrindo artigo de ajuda sobre contas');
+              },
               current: 2,
               max: null,
               footerText: 'Adicione mais contas para expandir seu alcance',

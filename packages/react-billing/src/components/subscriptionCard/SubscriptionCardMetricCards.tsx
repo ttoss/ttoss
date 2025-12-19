@@ -27,51 +27,6 @@ export interface MetricCardProps {
 }
 
 /**
- * Skeleton component for loading state.
- */
-const MetricCardSkeleton = () => {
-  return (
-    <Card
-      sx={{
-        backgroundColor: 'display.background.muted.default',
-        padding: '6',
-        minWidth: ['100%', '100%', '400px'],
-      }}
-    >
-      <Flex sx={{ gap: '4' }}>
-        <Box
-          sx={{
-            flexShrink: 0,
-            borderRadius: 'full',
-            backgroundColor: 'display.background.secondary.default',
-            width: '48px',
-            height: '48px',
-          }}
-        />
-        <Flex sx={{ flex: 1, flexDirection: 'column', gap: '3' }}>
-          <Box
-            sx={{
-              height: '16px',
-              width: '128px',
-              backgroundColor: 'display.background.secondary.default',
-              borderRadius: 'md',
-            }}
-          />
-          <Box
-            sx={{
-              height: '32px',
-              width: '160px',
-              backgroundColor: 'display.background.secondary.default',
-              borderRadius: 'md',
-            }}
-          />
-        </Flex>
-      </Flex>
-    </Card>
-  );
-};
-
-/**
  * Icon wrapper for metric cards.
  */
 const MetricIconWrapper = ({ icon }: { icon?: IconType }) => {
@@ -104,9 +59,12 @@ const MetricCardHeader = ({
   isClickable,
 }: {
   label: string;
-  tooltip?: string;
+  tooltip?: string | (() => void);
   isClickable: boolean;
 }) => {
+  const isTooltipAction = typeof tooltip === 'function';
+  const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
+
   return (
     <Flex sx={{ alignItems: 'center', gap: '2' }}>
       <Text
@@ -118,12 +76,30 @@ const MetricCardHeader = ({
       >
         {label}
       </Text>
-      {tooltip && (
+      {tooltipText && (
         <TooltipIcon
           icon="fluent:info-24-regular"
-          tooltip={{ children: tooltip }}
+          tooltip={{ children: tooltipText }}
           variant="info"
         />
+      )}
+      {isTooltipAction && (
+        <Text
+          onClick={(e) => {
+            e.stopPropagation();
+            tooltip();
+          }}
+          sx={{
+            fontSize: 'sm',
+            color: 'display.text.secondary.default',
+            cursor: 'pointer',
+            ':hover': {
+              color: 'action.text.primary.default',
+            },
+          }}
+        >
+          <Icon icon="fluent:info-24-regular" inline />
+        </Text>
       )}
       {isClickable && (
         <Text
@@ -408,10 +384,25 @@ const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
  *   }}
  * />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Metric with tooltip action (e.g., open help article)
+ * <MetricCard
+ *   metric={{
+ *     type: 'percentage',
+ *     label: 'Plan Usage',
+ *     current: 350,
+ *     max: 1000,
+ *     icon: 'fluent:gauge-24-regular',
+ *     tooltip: () => window.Intercom('showArticle', '123456'),
+ *   }}
+ * />
+ * ```
  */
 export const MetricCard = ({ metric, isLoading = false }: MetricCardProps) => {
   if (isLoading) {
-    return <MetricCardSkeleton />;
+    return null;
   }
 
   const isClickable = Boolean(metric.onClick || metric.helpArticleAction);

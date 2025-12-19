@@ -2,6 +2,8 @@ import type { IconType } from '@ttoss/react-icons';
 import type { ButtonProps } from '@ttoss/ui';
 import type * as React from 'react';
 
+import type { SubscriptionCardVariant } from './SubscriptionCard.styles';
+
 /**
  * Subscription status indicating the current state of the subscription.
  */
@@ -16,9 +18,11 @@ export interface BaseMetric {
    */
   label: string;
   /**
-   * Optional tooltip text for additional context.
+   * Optional tooltip text or action handler for additional context.
+   * When a string is provided, it displays a simple tooltip.
+   * When a function is provided, it's called when the tooltip icon is clicked (e.g., to open help articles).
    */
-  tooltip?: string;
+  tooltip?: string | (() => void);
   /**
    * Icon to display alongside the metric.
    */
@@ -179,6 +183,11 @@ export interface SubscriptionCardPrice {
  * Main SubscriptionCard props.
  */
 export interface SubscriptionCardProps {
+  /**
+   * Visual variant for the accent bar and header icon.
+   * @default 'spotlight'
+   */
+  variant?: SubscriptionCardVariant;
   /**
    * Plan icon to display. Can be a ReactNode or an IconType string.
    */
