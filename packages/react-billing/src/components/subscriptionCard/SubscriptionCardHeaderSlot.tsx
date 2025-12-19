@@ -124,7 +124,7 @@ export const SubscriptionCardHeaderSlot = ({
         {/* Icon */}
         {icon && (
           <Flex sx={getSubscriptionCardHeaderIconSx(variant)}>
-            <Icon icon={icon as string} />
+            <Icon icon={icon as string} width={24} height={24} />
           </Flex>
         )}
 
