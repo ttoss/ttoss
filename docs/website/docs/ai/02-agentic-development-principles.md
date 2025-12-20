@@ -196,7 +196,7 @@ Without explicit governance of tools, agents devolve into unreliable "prompt cha
 
 #### The Corollary of Tool Minimalism
 
-Fewer, more atomic tools outperform bloated toolsets. Aim for <10 high-utility tools per agent, each with clear, non-overlapping scope and minimal parameters. More tools increase decision overhead and error surface area exponentially.
+Fewer, more atomic tools outperform bloated toolsets. Aim for few high-utility tools per agent, each with clear, non-overlapping scope and minimal parameters. More tools increase decision overhead and error surface area exponentially.
 
 #### The Corollary of Token-Efficient Tool Design
 
