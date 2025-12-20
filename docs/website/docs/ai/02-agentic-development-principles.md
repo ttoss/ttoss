@@ -116,25 +116,9 @@ Any system composed of AI agents is inherently composed of unreliable components
 
 To prevent total system corruption from partial failure, agent actions must be treated as atomic units that are isolated from the global state until confirmed. This ensures that a failed or retried action does not leave the system in an inconsistent "zombie" state.
 
-### The Principle of Emergent Insight Constraint
-
-AI systems, trained on historical data distributions, excel at interpolation and optimization within known bounds but are epistemically constrained from generating truly novel, discontinuous insights without human-mediated disruption. This principle enforces the immutable reality that machine intelligence is derivative, not originative—product development must hybridize AI's efficiency with human serendipity to avoid convergent stagnation.
-
-**Failure Scenarios:** Homogenized Innovation Cycles: agents iteratively refine features within a narrow solution space, yielding incremental tweaks (e.g., UI polish) that masquerade as progress but fail to disrupt markets, as seen in AI-generated apps that echo incumbents without differentiation.
-
-#### The Corollary of Catalyst Injection Protocol
-
-Embed mandatory human "disruption gates" at iteration milestones (e.g., every 10 cycles), injecting contrarian prompts derived from user ethnography, cross-domain analogies, or failure autopsies to prime emergent reasoning.
-
 ## The Economics of Interaction
 
-Define how to allocate scarce resources (human attention, tokens, latency) to maximize ROI.
-
-### The Principle of Cognitive Bandwidth Conservation
-
-Human attention is a finite resource, and every AI output demands a "cognitive tax" for evaluation. Because verifying AI suggestions requires mental effort, low-quality or excessive outputs can quickly drain developer energy and reduce overall velocity. Workflows must prioritize high-signal outputs to conserve human bandwidth for high-value decision making, supporting [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
-
-**Failure Scenario:** An AI tool generates verbose, slightly incorrect code for every keystroke. The developer spends more energy correcting the AI than writing code, resulting in net-negative productivity.
+Every human-AI exchange costs something: attention, latency, tokens, or compute. Treat these as scarce resources and allocate them ruthlessly for maximum ROI. Waste them on low-value cycles and your whole workflow grinds to a halt.
 
 ### The Principle of Prompt Economics
 
@@ -153,20 +137,6 @@ Compute resources must be allocated where they yield the highest marginal return
 In manual development, the cognitive effort (friction) required to write complex, tangled code serves as a natural feedback signal that suggests refactoring is necessary. AI reduces the marginal cost of code generation to near-zero, effectively removing this pain signal. When the cost of "patching" (adding complexity) drops below the cost of "refactoring" (reducing complexity), the system inevitably trends toward entropy unless friction is artificially reintroduced via governance.
 
 **Failure Scenario:** A developer needs to handle a new edge case. Manually, writing the necessary boilerplate would take 30 minutes, prompting them to refactor the architecture. With AI, generating a "good enough" patch takes 10 seconds. The developer applies the patch. Repeated 50 times, this leads to a system that is functional but unmaintainable, created without the developer ever feeling the "pain" of the debt they accrued.
-
-### The Principle of Verification Asymmetry
-
-The cost of generating AI output is orders of magnitude lower than the cost of verifying it. This asymmetry inverts traditional productivity assumptions—teams can generate unlimited artifacts but remain bottlenecked by human verification capacity. Because validation requires domain expertise, attention, and time that cannot be parallelized, the throughput of an agentic system is bounded not by generation speed but by verification bandwidth. This supports [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by forcing teams to account for total cost-of-ownership.
-
-**Failure Scenario:** A team deploys AI agents to generate 50 pull requests per day, believing they've 10x'd productivity. However, each PR requires 30 minutes of careful review to catch subtle semantic errors (per [The Principle of Syntactic-Semantic Decoupling](#the-principle-of-syntactic-semantic-decoupling)). The review queue grows exponentially, engineers spend 100% of their time reviewing AI output rather than building, and net velocity decreases.
-
-#### The Corollary of Verification Investment
-
-Every dollar saved on AI-assisted generation must be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines). The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
-
-#### The Corollary of Review Debt
-
-Unreviewed AI output accumulates as hidden liability—it looks like progress but carries unknown risk. Unlike technical debt (which is visible in code complexity), review debt is invisible until failure. A backlog of "AI-generated but not verified" artifacts represents not value, but deferred risk with compounding interest.
 
 ## The Architecture of Flow
 
@@ -212,9 +182,33 @@ Just as in software engineering, AI agents maximize reliability when scoped to a
 
 **Failure Scenario:** A team creates a "Release Manager" agent instructed to "check git status, run tests, update version numbers, and write the changelog." The agent successfully writes the changelog but hallucinates test results because the test output context was pushed out of its active attention span by the verbose git logs.
 
-##### The Corollary of Modular Composability
+#### The Corollary of Modular Composability
 
 Agents should be designed as composable modules with strict input/output interfaces (schemas). This allows individual "cognitive modules" (e.g., a "SQL Query Writer") to be swapped, upgraded, or debugged independently without breaking the broader orchestration flow.
+
+### The Principle of Tool Atomicity and Efficiency
+
+AI agents extend beyond pure reasoning into action primarily through tools (function calls, APIs, retrieval systems, external executors). Tools represent the bridge between probabilistic generation and real-world effects, but poorly designed tools amplify unreliability, bloat context, encourage inefficient loops, and create new failure modes.
+
+Without explicit governance of tools, agents devolve into unreliable "prompt chains" rather than robust systems.
+
+**Failure Scenario:** An agent receives dozens of overlapping or verbose tools (e.g., separate "search_web", "search_news", "search_academic"). It wastes cycles debating which to use, returns excessively long results that overflow context, or hallucinates tool parameters — leading to repeated failures, high latency/cost, and eventual loss of trust.
+
+#### The Corollary of Tool Minimalism
+
+Fewer, more atomic tools outperform bloated toolsets. Aim for few high-utility tools per agent, each with clear, non-overlapping scope and minimal parameters. More tools increase decision overhead and error surface area exponentially.
+
+#### The Corollary of Token-Efficient Tool Design
+
+Tool outputs must be concise and structured (e.g., return summarized JSON, not raw HTML dumps). Verbose tool responses compete with critical context (violating [The Principle Finite Context Window](#the-principle-of-finite-context-window)) and encourage the agent to "wander."
+
+#### The Corollary of Tool-as-Contract
+
+Treat tool definitions as strict interfaces: precise schemas, idempotency where possible, and built-in validation. This shifts reliability from probabilistic prompt persuasion to structural enforcement (aligning with [The Principle of Structural Determinism](#the-principle-of-structural-determinism)).
+
+#### The Corollary of Retrieval as First-Class Tool
+
+For knowledge-heavy tasks, Retrieval-Augmented Generation (RAG) — dynamic, just-in-time retrieval — isn't optional; it's the primary mitigation for hallucinations and context scarcity. Static context loading fails at scale; agents must learn to retrieve relevant facts on-demand.
 
 ## The Protocol of Communication
 
@@ -233,6 +227,8 @@ Effective AI collaboration requires real-time adjustment of communication strate
 **Failure Scenario:** A developer creates a library of "perfect prompts" and mechanically reuses them across contexts. When the prompts fail, they conclude the AI is unreliable rather than recognizing that effective collaboration requires adapting their communication to the specific task, accumulated context, and current interaction quality.
 
 ## The Governance of Agency
+
+Humans must explicitly define the scope, authority, escalation paths, and risk boundaries for every agent. No agent can safely or reliably determine its own limits. Without a clear, written constitution of delegation, agentic systems drift into misalignment, overreach, or collapse.
 
 ### The Principle of Delegated Agency Scaling
 
@@ -261,6 +257,56 @@ The economics of automation are governed by convexity: the cost of verification 
 An AI agent's effective capability is capped by the operator's ownership and mental model of the system. In systems where the operator possesses deep knowledge ("Ownership"), AI acts as an extension of will, amplifying intent. In systems where the operator lacks deep knowledge ("Contracting"), AI acts as a shield against complexity, hiding necessary implementation details. You cannot effectively delegate authority to an agent if you cannot predict the side effects of its output.
 
 **Failure Scenario:** A contractor uses an AI agent to close a ticket in a legacy codebase they do not understand. The AI suggests a solution that works perfectly in isolation but relies on an internal API scheduled for deprecation. Because the operator lacks the Contextual Authority to know the API history, they accept the solution, solving the ticket today but creating a guaranteed failure for the next release.
+
+## The Symbiosis of Human-AI Agency
+
+AI scales volume and speed. Humans supply curation, contextual judgment, disruption and final "yes/no". The moment either side tries to do the other side’s job the whole system becomes slower, dumber and more expensive.
+
+This group collects the principles that force clean, complementary division of labor so the hybrid becomes dramatically stronger than either human-alone or AI-alone.
+
+### The Principle of Role Elevation in Human-AI Hybridization
+
+AI agents excel at high-volume generation of commodity outputs and automatable tasks, while humans retain irreplaceable advantages in contextual judgment, curation, and directional decision-making. Effective agentic systems require deliberate elevation of human roles to these higher-order functions, treating AI as an amplifier that handles routine execution and allows humans to focus on refinement, integration, and novelty introduction.
+
+**Failure Scenario:** Developers or teams resist reallocating responsibilities, insisting on retaining direct control over tasks that AI performs more efficiently (e.g., boilerplate generation or routine refactoring). This leads to diminished overall throughput, persistent bottlenecks in low-value work, and failure to capitalize on AI's scaling advantages, ultimately rendering the workflow less competitive as standards rise with widespread AI adoption.
+
+#### The Corollary of Curation Premium
+
+As AI drives the marginal cost of generation toward zero, the relative value of human curation—selecting, pruning, and rejecting suboptimal outputs—dramatically increases. Agentic workflows must explicitly design feedback loops that position humans as curators rather than primary generators, preserving cognitive bandwidth for high-signal interventions.
+
+#### The Corollary of Collaborative Amplification
+
+Human-AI interaction thrives in a "jam session" model: AI provides versatile, rapid ideation and execution across domains, while humans contribute specialized direction and structural integrity. Resistance to this interdependent dynamic stifles emergent creativity and multidisciplinary integration, limiting agentic systems to mechanical replication rather than amplified innovation.
+
+### The Principle of Emergent Insight Constraint
+
+AI systems, trained on historical data distributions, excel at interpolation and optimization within known bounds but are epistemically constrained from generating truly novel, discontinuous insights without human-mediated disruption. This principle enforces the immutable reality that machine intelligence is derivative, not originative—product development must hybridize AI's efficiency with human serendipity to avoid convergent stagnation.
+
+**Failure Scenarios:** Homogenized Innovation Cycles: agents iteratively refine features within a narrow solution space, yielding incremental tweaks (e.g., UI polish) that masquerade as progress but fail to disrupt markets, as seen in AI-generated apps that echo incumbents without differentiation.
+
+#### The Corollary of Catalyst Injection Protocol
+
+Embed mandatory human "disruption gates" at iteration milestones (e.g., every 10 cycles), injecting contrarian prompts derived from user ethnography, cross-domain analogies, or failure autopsies to prime emergent reasoning.
+
+### The Principle of Verification Asymmetry
+
+The cost of generating AI output is orders of magnitude lower than the cost of verifying it. This asymmetry inverts traditional productivity assumptions—teams can generate unlimited artifacts but remain bottlenecked by human verification capacity. Because validation requires domain expertise, attention, and time that cannot be parallelized, the throughput of an agentic system is bounded not by generation speed but by verification bandwidth. This supports [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by forcing teams to account for total cost-of-ownership.
+
+**Failure Scenario:** A team deploys AI agents to generate 50 pull requests per day, believing they've 10x'd productivity. However, each PR requires 30 minutes of careful review to catch subtle semantic errors (per [The Principle of Syntactic-Semantic Decoupling](#the-principle-of-syntactic-semantic-decoupling)). The review queue grows exponentially, engineers spend 100% of their time reviewing AI output rather than building, and net velocity decreases.
+
+#### The Corollary of Verification Investment
+
+Every dollar saved on AI-assisted generation must be matched by investment in automated verification infrastructure (tests, linters, type systems, CI pipelines). The ROI of agentic workflows is determined not by generation capability but by verification scalability. Teams that invest only in generation create an illusion of productivity while accumulating review debt.
+
+#### The Corollary of Review Debt
+
+Unreviewed AI output accumulates as hidden liability—it looks like progress but carries unknown risk. Unlike technical debt (which is visible in code complexity), review debt is invisible until failure. A backlog of "AI-generated but not verified" artifacts represents not value, but deferred risk with compounding interest.
+
+### The Principle of Cognitive Bandwidth Conservation
+
+Human attention is a finite resource, and every AI output demands a "cognitive tax" for evaluation. Because verifying AI suggestions requires mental effort, low-quality or excessive outputs can quickly drain developer energy and reduce overall velocity. Workflows must prioritize high-signal outputs to conserve human bandwidth for high-value decision making, supporting [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact).
+
+**Failure Scenario:** An AI tool generates verbose, slightly incorrect code for every keystroke. The developer spends more energy correcting the AI than writing code, resulting in net-negative productivity.
 
 ---
 
