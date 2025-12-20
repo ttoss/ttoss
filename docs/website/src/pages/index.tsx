@@ -5,42 +5,29 @@ import Layout from '@theme/Layout';
 
 import styles from './index.module.css';
 
-interface FeatureCardProps {
+interface BentoCardProps {
   title: string;
   description: string;
   icon: string;
   link: string;
+  size: 'large' | 'small';
 }
 
-const FeatureCard = ({ title, description, icon, link }: FeatureCardProps) => {
+const BentoCard = ({
+  title,
+  description,
+  icon,
+  link,
+  size,
+}: BentoCardProps) => {
   return (
-    <div className={styles.featureCard}>
-      <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{icon}</div>
-      <h3
-        style={{
-          fontSize: '1.25rem',
-          fontWeight: 'bold',
-          marginBottom: '0.75rem',
-        }}
-      >
-        {title}
-      </h3>
-      <p
-        style={{
-          marginBottom: '1rem',
-          color: 'var(--ifm-color-content-secondary)',
-        }}
-      >
-        {description}
-      </p>
-      <Link
-        to={link}
-        style={{
-          color: 'var(--ifm-color-primary)',
-          fontWeight: '500',
-          textDecoration: 'none',
-        }}
-      >
+    <div
+      className={`${styles.bentoCard} ${size === 'large' ? styles.bentoCardLarge : styles.bentoCardSmall}`}
+    >
+      <span className={styles.bentoCardIcon}>{icon}</span>
+      <h3 className={styles.bentoCardTitle}>{title}</h3>
+      <p className={styles.bentoCardDescription}>{description}</p>
+      <Link to={link} className={styles.bentoCardLink}>
         Learn more →
       </Link>
     </div>
@@ -54,24 +41,34 @@ interface StatCardProps {
 
 const StatCard = ({ number, label }: StatCardProps) => {
   return (
-    <div className={styles.textCenter}>
-      <div
-        style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: 'var(--ifm-color-primary)',
-        }}
-      >
-        {number}
-      </div>
-      <div
-        style={{
-          fontSize: '0.875rem',
-          color: 'var(--ifm-color-content-secondary)',
-        }}
-      >
-        {label}
-      </div>
+    <div className={styles.statCard}>
+      <div className={styles.statNumber}>{number}</div>
+      <div className={styles.statLabel}>{label}</div>
+    </div>
+  );
+};
+
+interface StakeholderCardProps {
+  icon: string;
+  title: string;
+  items: string[];
+}
+
+const StakeholderCard = ({ icon, title, items }: StakeholderCardProps) => {
+  return (
+    <div className={styles.stakeholderCard}>
+      <div className={styles.stakeholderIcon}>{icon}</div>
+      <h3 className={styles.stakeholderTitle}>{title}</h3>
+      <ul className={styles.stakeholderList}>
+        {items.map((item, index) => {
+          return (
+            <li key={index} className={styles.stakeholderListItem}>
+              <span className={styles.stakeholderListIcon}>✓</span>
+              {item}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
@@ -85,26 +82,31 @@ const Home = () => {
       description={siteConfig.tagline}
     >
       {/* Hero Section */}
-      <section className={`${styles.py20} ${styles.heroSection}`}>
+      <section className={styles.heroSection}>
         <div className={styles.containerCustom}>
           <div className={styles.heroContent}>
             <div className={styles.heroText}>
+              <div className={styles.heroBadge}>
+                <span className={styles.heroBadgeDot} />
+                AI-Native Development Platform
+              </div>
               <Heading as="h1" className={styles.heroTitle}>
-                Terezinha Tech Operations (ttoss)
+                Build Products Faster with{' '}
+                <span className={styles.heroTitleGradient}>
+                  AI-Augmented Teams
+                </span>
               </Heading>
-              <p className={styles.heroDescription}>{siteConfig.tagline}</p>
+              <p className={styles.heroDescription}>
+                Modular libraries, agentic development principles, and
+                battle-tested infrastructure for teams that ship. Configure
+                once, integrate everywhere.
+              </p>
               <div className={styles.heroButtons}>
-                <Link
-                  to="/docs/modules"
-                  className="button button--primary button--lg"
-                >
-                  Get Started
+                <Link to="/docs/ai" className={styles.heroButtonPrimary}>
+                  Start with AI →
                 </Link>
-                <Link
-                  to="/docs/carlin"
-                  className="button button--secondary button--outline button--lg"
-                >
-                  Try Carlin CLI
+                <Link to="/docs/modules" className={styles.heroButtonSecondary}>
+                  Explore Modules
                 </Link>
               </div>
             </div>
@@ -120,233 +122,255 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className={styles.py20}>
+      <section className={styles.statsSection}>
         <div className={styles.containerCustom}>
-          <div className={`${styles.statsContainer}`}>
-            <StatCard number="30+" label="Reusable Modules" />
-            <StatCard number="4" label="Core Pillars" />
-            <StatCard number="Design" label="System Ready" />
+          <div className={styles.statsContainer}>
+            <StatCard number="30+" label="Production Modules" />
+            <StatCard number="5" label="Core Pillars" />
+            <StatCard number="AI-Native" label="Workflows" />
             <StatCard number="100%" label="TypeScript" />
           </div>
         </div>
       </section>
 
-      {/* Three Pillars Section */}
-      <section
-        className={styles.py20}
-        style={{
-          backgroundColor: 'var(--ifm-color-emphasis-100)',
-        }}
-      >
+      {/* Bento Grid Section - Five Pillars */}
+      <section className={styles.bentoSection}>
         <div className={styles.containerCustom}>
-          <div className={`${styles.textCenter} ${styles.mb8}`}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>Platform</span>
             <Heading as="h2" className={styles.sectionTitle}>
-              Four Pillars of ttoss
+              Five Pillars of ttoss
             </Heading>
             <p className={styles.sectionDescription}>
-              A complete ecosystem designed to accelerate product development
-              with modular solutions, structured processes, design foundations,
-              and powerful automation tools.
+              A complete ecosystem for AI-augmented product development—from
+              principles to production.
             </p>
           </div>
 
-          <div className={styles.grid4}>
-            <FeatureCard
+          <div className={styles.bentoGrid}>
+            <BentoCard
+              icon="🤖"
+              title="AI & Agentic Development"
+              description="Principles and patterns for human-AI collaboration. Scale development velocity with agentic workflows while maintaining quality through structural guardrails."
+              link="/docs/ai"
+              size="large"
+            />
+            <BentoCard
               icon="📚"
               title="Modular Library"
-              description="30+ reusable NPM packages working in harmony. From GraphQL APIs to React components, authentication to internationalization - build faster with battle-tested modules."
+              description="30+ production-ready NPM packages. GraphQL APIs, React components, auth, i18n—everything you need."
               link="/docs/modules"
+              size="large"
             />
-            <FeatureCard
+            <BentoCard
               icon="🎨"
               title="Design System"
-              description="Comprehensive design foundation with design tokens, themes, and reusable UI components. Create consistent, accessible interfaces with battle-tested design patterns."
+              description="Design tokens, themes, and accessible UI components for consistent interfaces."
               link="/docs/design"
+              size="small"
             />
-            <FeatureCard
+            <BentoCard
               icon="🏗️"
               title="Operational Processes"
-              description="Structured workflows for Product, Engineering, and Design teams. Documented best practices that enable cross-functional collaboration and agile development."
+              description="Structured workflows for Product, Engineering, and Design teams."
               link="/docs/product"
+              size="small"
             />
-            <FeatureCard
+            <BentoCard
               icon="🛠️"
-              title="Carlin CLI Automation"
-              description="Powerful command-line interface for automated AWS deployments, infrastructure management, and DevOps operations. Deploy with confidence using simple commands."
+              title="Carlin CLI"
+              description="Automated AWS deployments and infrastructure management."
               link="/docs/carlin"
+              size="small"
             />
           </div>
         </div>
       </section>
 
-      {/* Context Architecture Highlight */}
-      <section className={styles.py20}>
+      {/* AI Principles Section */}
+      <section className={styles.principlesSection}>
         <div className={styles.containerCustom}>
-          <div className={`${styles.textCenter} ${styles.mb8}`}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>Human-AI Collaboration</span>
             <Heading as="h2" className={styles.sectionTitle}>
-              Configure Once, Integrate Everywhere
+              Agentic Development, Done Right
             </Heading>
             <p className={styles.sectionDescription}>
-              ttoss uses a unique context-based architecture that eliminates
-              repetitive configuration. Set up your theme, translations, and
-              notifications once at the root—all packages automatically adapt.
+              AI amplifies velocity, humans provide judgment. We define the
+              principles and patterns that make this partnership work in
+              production.
             </p>
           </div>
 
-          <div className={styles.benefitsGrid}>
-            <div className={styles.benefitSection}>
-              <h3>🎨 No More Prop Drilling</h3>
-              <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>
-                Traditional libraries require passing theme, locale, and
-                handlers through every component level. ttoss uses React Context
-                to make all packages context-aware.
+          <div className={styles.principlesGrid}>
+            <div className={styles.principleCard}>
+              <div className={styles.principleCardHeader}>
+                <span className={styles.principleCardIcon}>🧠</span>
+                <h3 className={styles.principleCardTitle}>
+                  Agentic Development Principles
+                </h3>
+              </div>
+              <p className={styles.principleCardDescription}>
+                AI agents are probabilistic, not deterministic. Our principles
+                help you design workflows that work with the grain of the
+                technology.
               </p>
-              <pre
-                style={{
-                  backgroundColor: 'var(--ifm-code-background)',
-                  padding: '1rem',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  overflow: 'auto',
-                }}
-              >
-                {`// Setup once at app root
-<ThemeProvider theme={bruttalTheme}>
-  <I18nProvider locale="pt-BR">
-    <NotificationsProvider>
-      {/* All ttoss packages work! */}
-      <Auth />
-      <Dashboard />
-    </NotificationsProvider>
-  </I18nProvider>
-</ThemeProvider>`}
-              </pre>
-            </div>
-
-            <div className={styles.benefitSection}>
-              <h3>🔌 Seamless Package Integration</h3>
-              <p style={{ marginBottom: '1rem', fontSize: '0.95rem' }}>
-                Every ttoss package—from authentication to forms—automatically
-                uses your app&apos;s theme, translations, and notification
-                system. Zero configuration per component.
-              </p>
-              <ul className={styles.benefitList}>
-                <li>
-                  <span>✓</span>
-                  <strong>Theme & Styling:</strong> All components use your
-                  theme tokens automatically
+              <ul className={styles.principleList}>
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Structural Determinism:</strong> Enforce constraints
+                    via schemas, not prompts
+                  </span>
                 </li>
-                <li>
-                  <span>✓</span>
-                  <strong>i18n:</strong> Switch languages app-wide, packages
-                  adapt instantly
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Context Economics:</strong> Treat every token as a
+                    scarce resource
+                  </span>
                 </li>
-                <li>
-                  <span>✓</span>
-                  <strong>Notifications:</strong> Consistent user feedback
-                  across all packages
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Delegated Agency:</strong> Scale autonomy with
+                    verification capability
+                  </span>
                 </li>
               </ul>
               <Link
-                to="/docs/modules/integration-architecture"
-                style={{
-                  color: 'var(--ifm-color-primary)',
-                  fontWeight: '500',
-                  textDecoration: 'none',
-                  fontSize: '0.95rem',
-                }}
+                to="/docs/ai/agentic-development-principles"
+                className={styles.principleCardLink}
               >
-                Learn about Integration Architecture →
+                Explore Principles →
+              </Link>
+            </div>
+
+            <div className={styles.principleCard}>
+              <div className={styles.principleCardHeader}>
+                <span className={styles.principleCardIcon}>⚙️</span>
+                <h3 className={styles.principleCardTitle}>
+                  Production-Ready Patterns
+                </h3>
+              </div>
+              <p className={styles.principleCardDescription}>
+                Reusable design patterns that solve cost, latency, reliability,
+                and risk challenges in every agentic system.
+              </p>
+              <ul className={styles.principleList}>
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Immediate Feedback Loops:</strong> AI integrated
+                    directly into dev flow
+                  </span>
+                </li>
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Artificial Friction:</strong> Guardrails that
+                    prevent entropy accumulation
+                  </span>
+                </li>
+                <li className={styles.principleListItem}>
+                  <span className={styles.principleListIcon}>✓</span>
+                  <span className={styles.principleListText}>
+                    <strong>Chain of Thought:</strong> Decompose complex tasks
+                    for reliable output
+                  </span>
+                </li>
+              </ul>
+              <Link
+                to="/docs/ai/agentic-design-patterns"
+                className={styles.principleCardLink}
+              >
+                View Patterns →
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Key Benefits Section */}
-      <section
-        className={styles.py20}
-        style={{
-          backgroundColor: 'var(--ifm-color-emphasis-100)',
-        }}
-      >
+      {/* Stakeholders Section */}
+      <section className={styles.stakeholdersSection}>
         <div className={styles.containerCustom}>
-          <div className={`${styles.textCenter} ${styles.mb8}`}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>For Your Team</span>
             <Heading as="h2" className={styles.sectionTitle}>
-              Built for Agility
+              Why Teams Choose ttoss
             </Heading>
             <p className={styles.sectionDescription}>
-              ttoss implements agile principles at the core, enabling teams to
-              pivot quickly and focus on customer value.
+              From individual developers to investment-ready startups—ship
+              faster without sacrificing quality.
             </p>
           </div>
 
-          <div className={styles.benefitsGrid}>
-            <div className={styles.benefitSection}>
-              <h3>🚀 Accelerate Time-to-Market</h3>
-              <ul className={styles.benefitList}>
-                <li>
-                  <span>✓</span>
-                  Eliminate &quot;reinventing the wheel&quot; with ready-to-use
-                  modules
-                </li>
-                <li>
-                  <span>✓</span>
-                  Reduce technical complexity through opinionated solutions
-                </li>
-                <li>
-                  <span>✓</span>
-                  Focus on features that generate customer value
-                </li>
-              </ul>
-            </div>
-
-            <div className={styles.benefitSection}>
-              <h3>⚡ Enable True Agility</h3>
-              <ul className={styles.benefitList}>
-                <li>
-                  <span>✓</span>
-                  <strong>Short turning radius</strong> - pivot quickly when
-                  needed
-                </li>
-                <li>
-                  <span>✓</span>
-                  Reduce project &quot;mass&quot; for maximum flexibility
-                </li>
-                <li>
-                  <span>✓</span>
-                  Maintain quality while adapting to change
-                </li>
-              </ul>
-            </div>
+          <div className={styles.grid4}>
+            <StakeholderCard
+              icon="👩‍💻"
+              title="For Developers"
+              items={[
+                'Type-safe modules that just work together',
+                'AI patterns that amplify your expertise',
+                'Less boilerplate, more building',
+              ]}
+            />
+            <StakeholderCard
+              icon="📊"
+              title="For Product Managers"
+              items={[
+                'Faster iteration with reusable infrastructure',
+                'Documented workflows for cross-team alignment',
+                'Predictable delivery with battle-tested patterns',
+              ]}
+            />
+            <StakeholderCard
+              icon="🎨"
+              title="For Designers"
+              items={[
+                'Unified design system with tokens and themes',
+                'Component library that matches your designs',
+                'Design-to-code consistency out of the box',
+              ]}
+            />
+            <StakeholderCard
+              icon="💼"
+              title="For Investors"
+              items={[
+                'Reduced technical risk with proven architecture',
+                'Faster time-to-market means faster validation',
+                'Scalable foundation for growth',
+              ]}
+            />
           </div>
         </div>
       </section>
 
-      {/* Technology Stack Section */}
-      <section className={styles.py20}>
+      {/* Tech Stack Section */}
+      <section className={styles.techSection}>
         <div className={styles.containerCustom}>
-          <div className={`${styles.textCenter} ${styles.mb8}`}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>Technology</span>
             <Heading as="h2" className={styles.sectionTitle}>
-              Modern Technology Stack
+              Modern, AI-Ready Stack
             </Heading>
             <p className={styles.sectionDescription}>
-              Built with cutting-edge technologies for scalability and developer
-              experience
+              Enterprise-grade technologies designed for AI-augmented
+              development
             </p>
           </div>
 
           <div className={styles.techGrid}>
             {[
-              'React',
               'TypeScript',
+              'React',
               'GraphQL',
-              'Theme UI',
               'AWS',
               'Node.js',
+              'AI Agents',
             ].map((tech) => {
               return (
-                <div key={tech} className={styles.techCard}>
+                <div key={tech} className={styles.techBadge}>
                   {tech}
                 </div>
               );
@@ -356,23 +380,23 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className={`${styles.py20} ${styles.ctaSection}`}>
+      <section className={styles.ctaSection}>
         <div className={styles.containerCustom}>
           <div className={styles.ctaContent}>
             <Heading as="h2" className={styles.ctaTitle}>
-              Ready to Accelerate Your Development?
+              Build Faster with AI-Augmented Development
             </Heading>
             <p className={styles.ctaDescription}>
-              Start building with ttoss modules, automate your AWS deployments
-              with Carlin, or explore our comprehensive design system and
-              operational workflows.
+              Explore our modular libraries, learn agentic development
+              principles, and deploy with confidence using battle-tested
+              infrastructure.
             </p>
             <div className={styles.ctaButtons}>
-              <Link to="/docs/modules" className={styles.ctaButtonPrimary}>
-                Browse Modules
+              <Link to="/docs/ai" className={styles.ctaButtonPrimary}>
+                Start with AI →
               </Link>
-              <Link to="/docs/design" className={styles.ctaButtonSecondary}>
-                View Design System
+              <Link to="/docs/modules" className={styles.ctaButtonSecondary}>
+                Browse Modules
               </Link>
             </div>
           </div>
