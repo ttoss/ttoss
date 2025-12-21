@@ -1488,6 +1488,9 @@ importers:
 
   packages/react-billing:
     dependencies:
+      '@ttoss/components':
+        specifier: workspace:^
+        version: link:../components
       '@ttoss/react-icons':
         specifier: workspace:^
         version: link:../react-icons

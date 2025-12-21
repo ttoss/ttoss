@@ -1,3 +1,4 @@
+import { MetricCard } from '@ttoss/components/MetricCard';
 import { Card, Flex, Spinner } from '@ttoss/ui';
 
 import { getSubscriptionCardAccentBarSx } from './SubscriptionCard.styles';
@@ -7,7 +8,6 @@ import type {
 } from './SubscriptionCard.types';
 import { SubscriptionCardActionsSlot } from './SubscriptionCardActionsSlot';
 import { SubscriptionCardHeaderSlot } from './SubscriptionCardHeaderSlot';
-import { MetricCard } from './SubscriptionCardMetricCards';
 
 /**
  * Renders a metric card based on its type.

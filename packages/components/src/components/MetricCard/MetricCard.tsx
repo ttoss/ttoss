@@ -1,30 +1,41 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon, type IconType } from '@ttoss/react-icons';
 import { Box, Card, Flex, Text, TooltipIcon } from '@ttoss/ui';
 
 import type {
   DateMetric,
+  Metric,
+  MetricCardProps,
   NumberMetric,
   PercentageMetric,
-} from './SubscriptionCard.types';
+} from './MetricCard.types';
 
-/**
- * Union type for all metric types.
- */
-type Metric = DateMetric | PercentageMetric | NumberMetric;
-
-/**
- * Props for the unified MetricCard component.
- */
-export interface MetricCardProps {
-  /**
-   * The metric configuration to display.
-   */
-  metric: Metric;
-  /**
-   * Whether the card is in loading state.
-   */
-  isLoading?: boolean;
-}
+const messages = defineMessages({
+  ofMax: {
+    defaultMessage: 'of {max}',
+    description: 'Text shown before the max value, e.g. "of 10" or "of ∞".',
+  },
+  percentageUsed: {
+    defaultMessage: '{percentage}% used',
+    description: 'Footer shown for percentage metrics, e.g. "80% used".',
+  },
+  unlimited: {
+    defaultMessage: 'Unlimited',
+    description: 'Shown when a metric has no maximum limit.',
+  },
+  infinity: {
+    defaultMessage: '∞',
+    description: 'Infinity symbol used when the maximum limit is unlimited.',
+  },
+  nearLimit: {
+    defaultMessage: 'Near limit',
+    description: 'Alert shown when usage is close to the limit.',
+  },
+  reachedLimit: {
+    defaultMessage: 'Reached limit',
+    description: 'Alert shown when usage has reached or exceeded the limit.',
+  },
+});
 
 /**
  * Icon wrapper for metric cards.
@@ -76,6 +87,7 @@ const MetricCardHeader = ({
       >
         {label}
       </Text>
+
       {tooltipText && (
         <TooltipIcon
           icon="fluent:info-24-regular"
@@ -83,6 +95,7 @@ const MetricCardHeader = ({
           variant="info"
         />
       )}
+
       {isTooltipAction && (
         <Text
           onClick={(e) => {
@@ -101,6 +114,7 @@ const MetricCardHeader = ({
           <Icon icon="fluent:info-24-regular" inline />
         </Text>
       )}
+
       {isClickable && (
         <Text
           sx={{
@@ -121,7 +135,6 @@ const MetricCardHeader = ({
 const DateMetricContent = ({ metric }: { metric: DateMetric }) => {
   return (
     <>
-      {/* Date value */}
       <Text
         sx={{
           fontSize: '2xl',
@@ -132,7 +145,6 @@ const DateMetricContent = ({ metric }: { metric: DateMetric }) => {
         {metric.date}
       </Text>
 
-      {/* Remaining days message */}
       {metric.remainingDaysMessage && (
         <Flex sx={{ alignItems: 'center', gap: '2' }}>
           <Text
@@ -172,6 +184,8 @@ const DateMetricContent = ({ metric }: { metric: DateMetric }) => {
  * Renders the content for a percentage metric.
  */
 const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
+  const { intl } = useI18n();
+
   const percentage =
     metric.max === null || metric.max <= 0
       ? null
@@ -185,12 +199,17 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
 
   const showAlert =
     percentage !== null &&
-    metric.showAlertThreshold &&
+    metric.showAlertThreshold !== undefined &&
     percentage >= metric.showAlertThreshold;
+
+  const isOverLimit = percentage !== null && percentage >= 100;
+  const maxText =
+    metric.max !== null
+      ? formatValue(metric.max)
+      : intl.formatMessage(messages.infinity);
 
   return (
     <>
-      {/* Value display */}
       <Flex
         sx={{
           alignItems: 'baseline',
@@ -213,11 +232,10 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
             color: 'display.text.secondary.default',
           }}
         >
-          de {metric.max !== null ? formatValue(metric.max) : '∞'}
+          {intl.formatMessage(messages.ofMax, { max: maxText })}
         </Text>
       </Flex>
 
-      {/* Progress bar */}
       <Box
         sx={{
           width: 'full',
@@ -238,7 +256,6 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
         />
       </Box>
 
-      {/* Footer with percentage and alert */}
       <Flex
         sx={{
           alignItems: 'center',
@@ -247,9 +264,12 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
         }}
       >
         <Text sx={{ color: 'display.text.secondary.default' }}>
-          {percentage !== null ? `${percentage}% utilizado` : 'Ilimitado'}
+          {percentage !== null
+            ? intl.formatMessage(messages.percentageUsed, { percentage })
+            : intl.formatMessage(messages.unlimited)}
         </Text>
-        {showAlert && (percentage === null || percentage !== 100) && (
+
+        {showAlert && !isOverLimit && (
           <Flex
             sx={{
               alignItems: 'center',
@@ -258,10 +278,13 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
             }}
           >
             <Icon icon="fluent:warning-24-regular" />
-            <Text sx={{ fontWeight: 'medium' }}>Próximo do limite</Text>
+            <Text sx={{ fontWeight: 'medium' }}>
+              {intl.formatMessage(messages.nearLimit)}
+            </Text>
           </Flex>
         )}
-        {showAlert && percentage !== null && percentage >= 100 && (
+
+        {showAlert && isOverLimit && (
           <Flex
             sx={{
               alignItems: 'center',
@@ -276,7 +299,7 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
                 color: 'feedback.text.negative.default',
               }}
             >
-              Atingiu o limite
+              {intl.formatMessage(messages.reachedLimit)}
             </Text>
           </Flex>
         )}
@@ -289,15 +312,21 @@ const PercentageMetricContent = ({ metric }: { metric: PercentageMetric }) => {
  * Renders the content for a number metric.
  */
 const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
+  const { intl } = useI18n();
+
   const formatValue =
     metric.formatValue ||
     ((val: number) => {
       return val.toString();
     });
 
+  const maxText =
+    metric.max !== null
+      ? formatValue(metric.max)
+      : intl.formatMessage(messages.infinity);
+
   return (
     <>
-      {/* Value display */}
       <Flex sx={{ alignItems: 'baseline', gap: '3' }}>
         <Text
           sx={{
@@ -314,11 +343,10 @@ const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
             color: 'display.text.secondary.default',
           }}
         >
-          de {metric.max !== null ? formatValue(metric.max) : '∞'}
+          {intl.formatMessage(messages.ofMax, { max: maxText })}
         </Text>
       </Flex>
 
-      {/* Footer text */}
       {metric.footerText && (
         <Text
           sx={{
@@ -336,19 +364,19 @@ const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
 };
 
 /**
- * Unified MetricCard component that displays different types of metrics.
+ * MetricCard component displays a metric in a consistent card layout.
  *
- * This component provides a consistent card layout for displaying various metric types
- * including dates, percentages, and numbers. It automatically adapts its content based
- * on the metric type while maintaining a unified visual design.
+ * It supports three metric types:
+ * - **date**: displays a date and optional remaining-days message
+ * - **percentage**: displays current/max values and a progress bar
+ * - **number**: displays current/max values and an optional footer text
  *
  * @example
  * ```tsx
- * // Date metric
  * <MetricCard
  *   metric={{
  *     type: 'date',
- *     label: 'Expiration Date',
+ *     label: 'Renewal date',
  *     date: '31/12/2025',
  *     icon: 'fluent:calendar-24-regular',
  *     remainingDaysMessage: '10 days remaining',
@@ -358,45 +386,14 @@ const NumberMetricContent = ({ metric }: { metric: NumberMetric }) => {
  *
  * @example
  * ```tsx
- * // Percentage metric with progress bar
  * <MetricCard
  *   metric={{
  *     type: 'percentage',
- *     label: 'Plan Usage',
+ *     label: 'Plan usage',
  *     current: 350,
  *     max: 1000,
  *     icon: 'fluent:gauge-24-regular',
  *     showAlertThreshold: 80,
- *   }}
- * />
- * ```
- *
- * @example
- * ```tsx
- * // Number metric
- * <MetricCard
- *   metric={{
- *     type: 'number',
- *     label: 'Active Projects',
- *     current: 3,
- *     max: 5,
- *     icon: 'fluent:people-24-regular',
- *     footerText: 'Add more projects to your plan',
- *   }}
- * />
- * ```
- *
- * @example
- * ```tsx
- * // Metric with tooltip action (e.g., open help article)
- * <MetricCard
- *   metric={{
- *     type: 'percentage',
- *     label: 'Plan Usage',
- *     current: 350,
- *     max: 1000,
- *     icon: 'fluent:gauge-24-regular',
- *     tooltip: () => window.Intercom('showArticle', '123456'),
  *   }}
  * />
  * ```
@@ -442,3 +439,5 @@ export const MetricCard = ({ metric, isLoading = false }: MetricCardProps) => {
     </Card>
   );
 };
+
+export type { Metric };

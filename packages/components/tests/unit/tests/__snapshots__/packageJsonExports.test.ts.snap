@@ -12,6 +12,7 @@ exports[`package.json exports should export all components 1`] = `
   "./List": "./src/components/List/index.ts",
   "./Markdown": "./src/components/Markdown/index.ts",
   "./Menu": "./src/components/Menu/index.ts",
+  "./MetricCard": "./src/components/MetricCard/index.ts",
   "./Modal": "./src/components/Modal/index.ts",
   "./NavList": "./src/components/NavList/index.ts",
   "./NotificationCard": "./src/components/NotificationCard/index.ts",
@@ -65,6 +66,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Menu": {
     "default": "./dist/esm/Menu/index.js",
     "types": "./dist/Menu/index.d.ts",
+  },
+  "./MetricCard": {
+    "default": "./dist/esm/MetricCard/index.js",
+    "types": "./dist/MetricCard/index.d.ts",
   },
   "./Modal": {
     "default": "./dist/esm/Modal/index.js",

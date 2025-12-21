@@ -23,6 +23,7 @@
     "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
     "./Markdown": "./src/components/Markdown/index.ts",
+    "./MetricCard": "./src/components/MetricCard/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
     "./NavList": "./src/components/NavList/index.ts",
@@ -67,6 +68,7 @@
   "peerDependencies": {
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
@@ -128,6 +130,10 @@
       "./Markdown": {
         "types": "./dist/Markdown/index.d.ts",
         "default": "./dist/esm/Markdown/index.js"
+      },
+      "./MetricCard": {
+        "types": "./dist/MetricCard/index.d.ts",
+        "default": "./dist/esm/MetricCard/index.js"
       },
       "./Menu": {
         "types": "./dist/Menu/index.d.ts",
