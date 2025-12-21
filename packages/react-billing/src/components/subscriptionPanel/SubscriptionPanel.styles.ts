@@ -26,7 +26,7 @@ type ThemeWithColors = {
   };
 };
 
-export type SubscriptionCardVariant =
+export type SubscriptionPanelVariant =
   | 'spotlight-accent'
   | 'spotlight-primary'
   | 'primary'
@@ -68,7 +68,7 @@ const getPrimaryGradientBackground = (t: unknown) => {
   return `linear-gradient(270deg, ${start}, ${middle}, ${start})`;
 };
 
-const getVariantStyles = (variantType: SubscriptionCardVariant) => {
+const getVariantStyles = (variantType: SubscriptionPanelVariant) => {
   const variants = {
     'spotlight-accent': {
       backgroundColor: 'input.background.accent.default',
@@ -105,8 +105,8 @@ const getVariantStyles = (variantType: SubscriptionCardVariant) => {
   return variants[variantType] || variants['spotlight-accent'];
 };
 
-export const getSubscriptionCardAccentBarSx = (
-  variant: SubscriptionCardVariant = 'spotlight-accent'
+export const getSubscriptionPanelAccentBarSx = (
+  variant: SubscriptionPanelVariant = 'spotlight-accent'
 ) => {
   const variantStyles = getVariantStyles(variant);
   const isSpotlight = variant.startsWith('spotlight-');
@@ -133,8 +133,8 @@ export const getSubscriptionCardAccentBarSx = (
   } as const;
 };
 
-export const getSubscriptionCardHeaderIconSx = (
-  variant: SubscriptionCardVariant = 'spotlight-accent'
+export const getSubscriptionPanelHeaderIconSx = (
+  variant: SubscriptionPanelVariant = 'spotlight-accent'
 ) => {
   const variantStyles = getVariantStyles(variant);
   const isSpotlight = variant.startsWith('spotlight-');
@@ -164,8 +164,8 @@ export const getSubscriptionCardHeaderIconSx = (
   } as const;
 };
 
-export const subscriptionCardAccentBarSx =
-  getSubscriptionCardAccentBarSx('spotlight-accent');
+export const SubscriptionPanelAccentBarSx =
+  getSubscriptionPanelAccentBarSx('spotlight-accent');
 
-export const subscriptionCardHeaderIconSx =
-  getSubscriptionCardHeaderIconSx('spotlight-accent');
+export const SubscriptionPanelHeaderIconSx =
+  getSubscriptionPanelHeaderIconSx('spotlight-accent');

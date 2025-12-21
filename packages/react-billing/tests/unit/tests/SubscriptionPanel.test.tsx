@@ -1,15 +1,23 @@
-import { fireEvent, render, screen } from '@ttoss/test-utils/react';
+import { render, screen } from '@ttoss/test-utils/react';
 
-import { SubscriptionCard } from '../../../src';
+import { SubscriptionPanel } from '../../../src';
 import {
-  getSubscriptionCardAccentBarSx,
-  getSubscriptionCardHeaderIconSx,
-} from '../../../src/components/subscriptionCard/SubscriptionCard.styles';
-import { MetricCard } from '../../../src/components/subscriptionCard/SubscriptionCardMetricCards';
+  getSubscriptionPanelAccentBarSx,
+  getSubscriptionPanelHeaderIconSx,
+} from '../../../src/components/subscriptionPanel/SubscriptionPanel.styles';
+import { SubscriptionPanelActionsSlot } from '../../../src/components/subscriptionPanel/SubscriptionPanelActionsSlot';
+
+jest.mock('@ttoss/components/MetricCard', () => {
+  const MetricCard = ({ metric }: { metric: { label?: string } }) => {
+    return <div data-testid="metric-card">{metric?.label}</div>;
+  };
+
+  return { MetricCard };
+});
 
 test('renders basic subscription card with required props', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90', interval: 'mês' }}
@@ -28,7 +36,7 @@ test('renders basic subscription card with required props', () => {
 
 test('renders features when provided', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Premium Plan"
       price={{ value: 'R$ 99,00' }}
@@ -48,7 +56,7 @@ test('renders action buttons when provided', () => {
   const handleClick = jest.fn();
 
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Enterprise Plan"
       price={{ value: 'R$ 299,00' }}
@@ -77,9 +85,9 @@ test('renders action buttons when provided', () => {
   expect(manageButton).toBeInTheDocument();
 });
 
-test('renders date metric correctly', () => {
+test('renders metrics section when provided', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90' }}
@@ -92,53 +100,14 @@ test('renders date metric correctly', () => {
           remainingDaysMessage: 'Faltam 358 dias',
           icon: 'fluent:calendar-24-regular',
         },
-      ]}
-    />
-  );
-
-  expect(screen.getByText('Acesso válido até')).toBeInTheDocument();
-  expect(screen.getByText('11/12/2026')).toBeInTheDocument();
-  expect(screen.getByText('Faltam 358 dias')).toBeInTheDocument();
-});
-
-test('renders percentage metric correctly', () => {
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('pt-BR').format(value);
-  };
-
-  render(
-    <SubscriptionCard
-      icon={'fluent:shield-24-regular'}
-      planName="Starter Plan"
-      price={{ value: 'R$ 49,90' }}
-      status={{ status: 'active' }}
-      metrics={[
         {
           type: 'percentage',
           label: 'Conversões rastreadas',
           current: 750,
           max: 2500,
-          formatValue: formatNumber,
           showAlertThreshold: 80,
           icon: 'fluent:target-24-regular',
         },
-      ]}
-    />
-  );
-
-  expect(screen.getByText('Conversões rastreadas')).toBeInTheDocument();
-  expect(screen.getByText('750')).toBeInTheDocument();
-  expect(screen.getByText(/de\s*2\.500/)).toBeInTheDocument();
-});
-
-test('renders number metric correctly', () => {
-  render(
-    <SubscriptionCard
-      icon={'fluent:shield-24-regular'}
-      planName="Starter Plan"
-      price={{ value: 'R$ 49,90' }}
-      status={{ status: 'active' }}
-      metrics={[
         {
           type: 'number',
           label: 'Contas de anúncios',
@@ -151,15 +120,15 @@ test('renders number metric correctly', () => {
     />
   );
 
+  expect(screen.getByText('Acesso válido até')).toBeInTheDocument();
+  expect(screen.getByText('Conversões rastreadas')).toBeInTheDocument();
   expect(screen.getByText('Contas de anúncios')).toBeInTheDocument();
-  expect(screen.getByText('2')).toBeInTheDocument();
-  expect(screen.getByText(/de\s*5/)).toBeInTheDocument();
-  expect(screen.getByText('Adicione mais contas')).toBeInTheDocument();
+  expect(screen.getAllByTestId('metric-card')).toHaveLength(3);
 });
 
 test('renders different subscription statuses correctly', () => {
   const { rerender } = render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -170,7 +139,7 @@ test('renders different subscription statuses correctly', () => {
   expect(screen.getByText('Ativo')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -181,7 +150,7 @@ test('renders different subscription statuses correctly', () => {
   expect(screen.getByText('Inativo')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -194,7 +163,7 @@ test('renders different subscription statuses correctly', () => {
 
 test('renders different variants correctly', () => {
   const { rerender } = render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -206,7 +175,7 @@ test('renders different variants correctly', () => {
   expect(screen.getByText('Test Plan')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -218,7 +187,7 @@ test('renders different variants correctly', () => {
   expect(screen.getByText('Test Plan')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -230,7 +199,7 @@ test('renders different variants correctly', () => {
   expect(screen.getByText('Test Plan')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -242,7 +211,7 @@ test('renders different variants correctly', () => {
   expect(screen.getByText('Test Plan')).toBeInTheDocument();
 
   rerender(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Test Plan"
       price={{ value: 'R$ 49,90' }}
@@ -256,7 +225,7 @@ test('renders different variants correctly', () => {
 
 test('omits optional sections when not provided', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Minimal Plan"
       price={{ value: 'Grátis' }}
@@ -271,7 +240,7 @@ test('omits optional sections when not provided', () => {
 
 test('renders scheduled update and cancellation badges when enabled', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Premium Plan"
       price={{ value: 'R$ 99,00', interval: 'mês' }}
@@ -290,7 +259,7 @@ test('renders scheduled update and cancellation badges when enabled', () => {
 
 test('renders loading state (skeleton) when isLoading is true', () => {
   render(
-    <SubscriptionCard
+    <SubscriptionPanel
       icon={'fluent:shield-24-regular'}
       planName="Starter Plan"
       price={{ value: 'R$ 49,90', interval: 'mês' }}
@@ -303,131 +272,78 @@ test('renders loading state (skeleton) when isLoading is true', () => {
 });
 
 test('style helpers apply animation only for spotlight variants', () => {
-  const spotlightAccent = getSubscriptionCardAccentBarSx('spotlight-accent');
-  const spotlightPrimary = getSubscriptionCardAccentBarSx('spotlight-primary');
-  const solidPrimary = getSubscriptionCardAccentBarSx('primary');
+  const spotlightAccent = getSubscriptionPanelAccentBarSx('spotlight-accent');
+  const spotlightPrimary = getSubscriptionPanelAccentBarSx('spotlight-primary');
+  const solidPrimary = getSubscriptionPanelAccentBarSx('primary');
 
   expect(spotlightAccent.animation).toBeDefined();
   expect(spotlightPrimary.animation).toBeDefined();
   expect(solidPrimary.animation).toBeUndefined();
 
-  const headerSpotlight = getSubscriptionCardHeaderIconSx('spotlight-accent');
-  const headerSolid = getSubscriptionCardHeaderIconSx('secondary');
+  const headerSpotlight = getSubscriptionPanelHeaderIconSx('spotlight-accent');
+  const headerSolid = getSubscriptionPanelHeaderIconSx('secondary');
 
   expect(headerSpotlight.animation).toBeDefined();
   expect(headerSolid.animation).toBeUndefined();
 });
 
-test('MetricCard: tooltip function triggers handler and does not trigger card click', () => {
-  const onTooltip = jest.fn();
-  const onCardClick = jest.fn();
+test('style helpers generate gradient backgrounds when theme provides colors', () => {
+  const accent = getSubscriptionPanelAccentBarSx('spotlight-accent');
 
-  const { container } = render(
-    <MetricCard
-      metric={{
-        type: 'number',
-        label: 'Contas de anúncios',
-        current: 2,
-        max: 5,
-        tooltip: onTooltip,
-        onClick: onCardClick,
-        icon: 'fluent:people-24-regular',
-      }}
-    />
-  );
+  expect(typeof accent.background).toBe('function');
+  const accentBg = (
+    accent.background as unknown as (t: unknown) => string | undefined
+  )({
+    colors: {
+      action: {
+        background: {
+          accent: { default: '#111', active: '#222' },
+        },
+      },
+    },
+  });
 
-  const tooltipIcon = container.querySelector(
-    'iconify-icon[icon="fluent:info-24-regular"]'
-  );
+  expect(accentBg).toContain('#111');
+  expect(accentBg).toContain('#222');
 
-  expect(tooltipIcon).toBeTruthy();
-  fireEvent.click(tooltipIcon as Element);
+  const primary = getSubscriptionPanelHeaderIconSx('spotlight-primary');
+  expect(typeof primary.background).toBe('function');
 
-  expect(onTooltip).toHaveBeenCalledTimes(1);
-  expect(onCardClick).toHaveBeenCalledTimes(0);
+  const primaryBg = (
+    primary.background as unknown as (t: unknown) => string | undefined
+  )({
+    colors: {
+      action: {
+        background: {
+          primary: { default: '#0a0a0a' },
+          secondary: { default: '#0b0b0b' },
+        },
+      },
+    },
+  });
+
+  expect(primaryBg).toContain('#0a0a0a');
+  expect(primaryBg).toContain('#0b0b0b');
 });
 
-test('MetricCard: clickable cards render open icon and call handler on click', () => {
-  const onCardClick = jest.fn();
-
-  const { container } = render(
-    <MetricCard
-      metric={{
-        type: 'date',
-        label: 'Acesso válido até',
-        date: '11/12/2026',
-        onClick: onCardClick,
-        icon: 'fluent:calendar-24-regular',
-      }}
-    />
-  );
-
-  expect(
-    container.querySelector('iconify-icon[icon="fluent:open-24-regular"]')
-  ).toBeTruthy();
-
-  fireEvent.click(screen.getByText('Acesso válido até'));
-  expect(onCardClick).toHaveBeenCalledTimes(1);
-});
-
-test('MetricCard: percentage max null renders unlimited state', () => {
-  render(
-    <MetricCard
-      metric={{
-        type: 'percentage',
-        label: 'Uso do plano',
-        current: 10,
-        max: null,
-      }}
-    />
-  );
-
-  expect(screen.getByText('Uso do plano')).toBeInTheDocument();
-  expect(screen.getByText(/de\s*∞/)).toBeInTheDocument();
-  expect(screen.getByText('Ilimitado')).toBeInTheDocument();
-});
-
-test('MetricCard: percentage shows alert near limit and at limit', () => {
-  const { rerender } = render(
-    <MetricCard
-      metric={{
-        type: 'percentage',
-        label: 'Uso do plano',
-        current: 90,
-        max: 100,
-        showAlertThreshold: 80,
-      }}
-    />
-  );
-
-  expect(screen.getByText('Próximo do limite')).toBeInTheDocument();
-
-  rerender(
-    <MetricCard
-      metric={{
-        type: 'percentage',
-        label: 'Uso do plano',
-        current: 100,
-        max: 100,
-        showAlertThreshold: 80,
-      }}
-    />
-  );
-
-  expect(screen.getByText('Atingiu o limite')).toBeInTheDocument();
-});
-
-test('MetricCard: isLoading true renders nothing', () => {
-  const { container } = render(
-    <MetricCard
-      isLoading
-      metric={{
-        type: 'date',
-        label: 'Acesso válido até',
-        date: '11/12/2026',
-      }}
-    />
-  );
-
+test('SubscriptionPanelActionsSlot returns null when actions is empty', () => {
+  const { container } = render(<SubscriptionPanelActionsSlot actions={[]} />);
   expect(container).toBeEmptyDOMElement();
+});
+
+test('SubscriptionPanelActionsSlot renders loading action state', () => {
+  render(
+    <SubscriptionPanelActionsSlot
+      actions={[
+        {
+          label: 'Gerenciar',
+          onClick: jest.fn(),
+          isLoading: true,
+        },
+      ]}
+    />
+  );
+
+  expect(screen.getByText('Processando...')).toBeInTheDocument();
+  expect(screen.getByRole('button')).toBeDisabled();
 });

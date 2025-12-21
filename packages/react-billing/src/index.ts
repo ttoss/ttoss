@@ -12,4 +12,4 @@ export {
   type PlanCardMetadataSlotVariant,
 } from './components/planCard/PlanCardMetadataSlot';
 export type { PlanCardVariant } from './components/planCard/PlanCardVariants';
-export { SubscriptionCard } from './components/subscriptionCard/SubscriptionCard';
+export { SubscriptionPanel } from './components/subscriptionPanel/SubscriptionPanel';

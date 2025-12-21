@@ -2,18 +2,18 @@ import { Icon } from '@ttoss/react-icons';
 import { Badge, Flex, Heading, Stack, Text } from '@ttoss/ui';
 
 import {
-  getSubscriptionCardHeaderIconSx,
-  type SubscriptionCardVariant,
-} from './SubscriptionCard.styles';
+  getSubscriptionPanelHeaderIconSx,
+  type SubscriptionPanelVariant,
+} from './SubscriptionPanel.styles';
 import type {
-  SubscriptionCardFeatureTag,
-  SubscriptionCardPrice,
-  SubscriptionCardStatusBadgeProps,
+  SubscriptionPanelFeatureTag,
+  SubscriptionPanelPrice,
+  SubscriptionPanelStatusBadgeProps,
   SubscriptionStatus,
-} from './SubscriptionCard.types';
+} from './SubscriptionPanel.types';
 
 /**
- * Props for the SubscriptionCardStatusBadge component.
+ * Props for the SubscriptionPanelStatusBadge component.
  */
 export interface StatusBadgeProps {
   /**
@@ -25,7 +25,7 @@ export interface StatusBadgeProps {
 /**
  * Renders a status badge for the subscription.
  */
-export const SubscriptionCardStatusBadge = ({ status }: StatusBadgeProps) => {
+export const SubscriptionPanelStatusBadge = ({ status }: StatusBadgeProps) => {
   const config: Record<
     SubscriptionStatus,
     { icon: string; label: string; variant: string }
@@ -61,14 +61,14 @@ export const SubscriptionCardStatusBadge = ({ status }: StatusBadgeProps) => {
 };
 
 /**
- * Props for the SubscriptionCardHeaderSlot component.
+ * Props for the SubscriptionPanelHeaderSlot component.
  */
-export interface SubscriptionCardHeaderSlotProps {
+export interface SubscriptionPanelHeaderSlotProps {
   /**
    * Visual variant for the icon wrapper.
    * @default 'spotlight'
    */
-  variant?: SubscriptionCardVariant;
+  variant?: SubscriptionPanelVariant;
   /**
    * Plan icon to display.
    */
@@ -80,28 +80,28 @@ export interface SubscriptionCardHeaderSlotProps {
   /**
    * Price configuration.
    */
-  price: SubscriptionCardPrice;
+  price: SubscriptionPanelPrice;
   /**
    * Status badge configuration.
    */
-  status: SubscriptionCardStatusBadgeProps;
+  status: SubscriptionPanelStatusBadgeProps;
   /**
    * Feature tags to display.
    */
-  features?: SubscriptionCardFeatureTag[];
+  features?: SubscriptionPanelFeatureTag[];
 }
 
 /**
  * Header slot containing plan info, status badges, and features.
  */
-export const SubscriptionCardHeaderSlot = ({
+export const SubscriptionPanelHeaderSlot = ({
   variant = 'spotlight-primary',
   icon,
   planName,
   price,
   status,
   features = [],
-}: SubscriptionCardHeaderSlotProps) => {
+}: SubscriptionPanelHeaderSlotProps) => {
   const scheduledUpdateLabel = 'Alteração Agendada';
   const cancellationLabel = 'Renovação Cancelada';
   const priceIntervalSuffix = price.interval ? '/' + price.interval : null;
@@ -123,7 +123,7 @@ export const SubscriptionCardHeaderSlot = ({
       >
         {/* Icon */}
         {icon && (
-          <Flex sx={getSubscriptionCardHeaderIconSx(variant)}>
+          <Flex sx={getSubscriptionPanelHeaderIconSx(variant)}>
             <Icon icon={icon as string} width={24} height={24} />
           </Flex>
         )}
@@ -137,7 +137,7 @@ export const SubscriptionCardHeaderSlot = ({
         >
           {/* Status Badges */}
           <Flex sx={{ flexWrap: 'wrap', gap: '2', alignItems: 'center' }}>
-            <SubscriptionCardStatusBadge status={status.status} />
+            <SubscriptionPanelStatusBadge status={status.status} />
 
             {status.interval && (
               <Badge variant="informative" sx={{ borderRadius: 'full' }}>

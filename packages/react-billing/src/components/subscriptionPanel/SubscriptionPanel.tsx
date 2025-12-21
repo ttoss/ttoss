@@ -1,13 +1,13 @@
 import { MetricCard } from '@ttoss/components/MetricCard';
 import { Card, Flex, Spinner } from '@ttoss/ui';
 
-import { getSubscriptionCardAccentBarSx } from './SubscriptionCard.styles';
+import { getSubscriptionPanelAccentBarSx } from './SubscriptionPanel.styles';
 import type {
   MetricType,
-  SubscriptionCardProps,
-} from './SubscriptionCard.types';
-import { SubscriptionCardActionsSlot } from './SubscriptionCardActionsSlot';
-import { SubscriptionCardHeaderSlot } from './SubscriptionCardHeaderSlot';
+  SubscriptionPanelProps,
+} from './SubscriptionPanel.types';
+import { SubscriptionPanelActionsSlot } from './SubscriptionPanelActionsSlot';
+import { SubscriptionPanelHeaderSlot } from './SubscriptionPanelHeaderSlot';
 
 /**
  * Renders a metric card based on its type.
@@ -22,7 +22,7 @@ const renderMetricCard = (params: {
 };
 
 /**
- * SubscriptionCard displays comprehensive subscription information including
+ * SubscriptionPanel displays comprehensive subscription information including
  * plan details, status, actions, and various metrics.
  *
  * It supports three types of metrics:
@@ -32,7 +32,7 @@ const renderMetricCard = (params: {
  *
  * @example
  * ```tsx
- * <SubscriptionCard
+ * <SubscriptionPanel
  *   planName="Premium Plan"
  *   price={{ value: "R$ 99,00", interval: "mês" }}
  *   status={{ status: "active", interval: "Mensal" }}
@@ -51,7 +51,7 @@ const renderMetricCard = (params: {
  * @example
  * ```tsx
  * // Compact mode for smaller spaces
- * <SubscriptionCard
+ * <SubscriptionPanel
  *   planName="Basic Plan"
  *   price={{ value: "R$ 29,00", interval: "mês" }}
  *   status={{ status: "active" }}
@@ -59,7 +59,7 @@ const renderMetricCard = (params: {
  * />
  * ```
  */
-export const SubscriptionCard = ({
+export const SubscriptionPanel = ({
   variant = 'accent',
   icon,
   planName,
@@ -69,7 +69,7 @@ export const SubscriptionCard = ({
   actions = [],
   metrics = [],
   isLoading = false,
-}: SubscriptionCardProps) => {
+}: SubscriptionPanelProps) => {
   if (isLoading) {
     /**
      * use skeleton loader in the future here
@@ -91,7 +91,7 @@ export const SubscriptionCard = ({
   return (
     <Card sx={{ width: 'full' }}>
       {/* Top accent bar */}
-      <Flex sx={getSubscriptionCardAccentBarSx(variant)} />
+      <Flex sx={getSubscriptionPanelAccentBarSx(variant)} />
 
       <Flex
         sx={{
@@ -115,7 +115,7 @@ export const SubscriptionCard = ({
             borderBottomColor: 'display.border.muted.default',
           }}
         >
-          <SubscriptionCardHeaderSlot
+          <SubscriptionPanelHeaderSlot
             icon={icon}
             planName={planName}
             price={price}
@@ -125,7 +125,7 @@ export const SubscriptionCard = ({
           />
 
           {actions.length > 0 && (
-            <SubscriptionCardActionsSlot actions={actions} />
+            <SubscriptionPanelActionsSlot actions={actions} />
           )}
         </Flex>
 

@@ -1,7 +1,7 @@
 import type { IconType } from '@ttoss/react-icons';
 import type { ButtonProps } from '@ttoss/ui';
 
-import type { SubscriptionCardVariant } from './SubscriptionCard.styles';
+import type { SubscriptionPanelVariant } from './SubscriptionPanel.styles';
 
 /**
  * Subscription status indicating the current state of the subscription.
@@ -109,7 +109,7 @@ export type MetricType = DateMetric | PercentageMetric | NumberMetric;
 /**
  * Status badge configuration.
  */
-export interface SubscriptionCardStatusBadgeProps {
+export interface SubscriptionPanelStatusBadgeProps {
   /**
    * The subscription status.
    */
@@ -131,7 +131,7 @@ export interface SubscriptionCardStatusBadgeProps {
 /**
  * Feature tag displayed in the card header.
  */
-export interface SubscriptionCardFeatureTag {
+export interface SubscriptionPanelFeatureTag {
   /**
    * Label text for the feature.
    */
@@ -145,7 +145,7 @@ export interface SubscriptionCardFeatureTag {
 /**
  * Action button configuration.
  */
-export interface SubscriptionCardAction extends Omit<ButtonProps, 'children'> {
+export interface SubscriptionPanelAction extends Omit<ButtonProps, 'children'> {
   /**
    * Button label text.
    */
@@ -167,7 +167,7 @@ export interface SubscriptionCardAction extends Omit<ButtonProps, 'children'> {
 /**
  * Price configuration.
  */
-export interface SubscriptionCardPrice {
+export interface SubscriptionPanelPrice {
   /**
    * Price value (e.g., "R$ 5,00").
    */
@@ -179,14 +179,14 @@ export interface SubscriptionCardPrice {
 }
 
 /**
- * Main SubscriptionCard props.
+ * Main SubscriptionPanel props.
  */
-export interface SubscriptionCardProps {
+export interface SubscriptionPanelProps {
   /**
    * Visual variant for the accent bar and header icon.
    * @default 'spotlight'
    */
-  variant?: SubscriptionCardVariant;
+  variant?: SubscriptionPanelVariant;
   /**
    * Plan icon to display. Can be a ReactNode or an IconType string.
    */
@@ -198,19 +198,19 @@ export interface SubscriptionCardProps {
   /**
    * Price configuration.
    */
-  price: SubscriptionCardPrice;
+  price: SubscriptionPanelPrice;
   /**
    * Status badge configuration.
    */
-  status: SubscriptionCardStatusBadgeProps;
+  status: SubscriptionPanelStatusBadgeProps;
   /**
    * Feature tags to display.
    */
-  features?: SubscriptionCardFeatureTag[];
+  features?: SubscriptionPanelFeatureTag[];
   /**
    * Action buttons.
    */
-  actions?: SubscriptionCardAction[];
+  actions?: SubscriptionPanelAction[];
   /**
    * Metrics to display in the card.
    */

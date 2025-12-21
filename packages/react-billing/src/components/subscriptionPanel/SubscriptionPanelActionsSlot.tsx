@@ -1,24 +1,24 @@
 import { Icon } from '@ttoss/react-icons';
 import { Button, Flex } from '@ttoss/ui';
 
-import type { SubscriptionCardAction } from './SubscriptionCard.types';
+import type { SubscriptionPanelAction } from './SubscriptionPanel.types';
 
 /**
- * Props for the SubscriptionCardActionsSlot component.
+ * Props for the SubscriptionPanelActionsSlot component.
  */
-export interface SubscriptionCardActionsSlotProps {
+export interface SubscriptionPanelActionsSlotProps {
   /**
    * Action buttons to render.
    */
-  actions: SubscriptionCardAction[];
+  actions: SubscriptionPanelAction[];
 }
 
 /**
  * Renders action buttons for the subscription card.
  */
-export const SubscriptionCardActionsSlot = ({
+export const SubscriptionPanelActionsSlot = ({
   actions,
-}: SubscriptionCardActionsSlotProps) => {
+}: SubscriptionPanelActionsSlotProps) => {
   if (actions.length === 0) {
     return null;
   }

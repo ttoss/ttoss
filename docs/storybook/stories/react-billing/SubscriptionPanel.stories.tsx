@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { SubscriptionCard } from '@ttoss/react-billing';
+import { SubscriptionPanel } from '@ttoss/react-billing';
 
-const meta: Meta<typeof SubscriptionCard> = {
-  title: 'React Billing/SubscriptionCard',
-  component: SubscriptionCard,
+const meta: Meta<typeof SubscriptionPanel> = {
+  title: 'React Billing/SubscriptionPanel',
+  component: SubscriptionPanel,
   tags: ['autodocs'],
   argTypes: {
     variant: {
@@ -32,7 +32,7 @@ const meta: Meta<typeof SubscriptionCard> = {
     docs: {
       description: {
         component:
-          'SubscriptionCard displays comprehensive subscription information including plan details, status, actions, and various metrics.',
+          'SubscriptionPanel displays comprehensive subscription information including plan details, status, actions, and various metrics.',
       },
     },
     layout: 'padded',
@@ -41,7 +41,7 @@ const meta: Meta<typeof SubscriptionCard> = {
 
 export default meta;
 
-type Story = StoryObj<typeof SubscriptionCard>;
+type Story = StoryObj<typeof SubscriptionPanel>;
 
 // Format helpers
 const formatCurrency = (value: number) => {
