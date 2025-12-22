@@ -1,4 +1,19 @@
 {
+  "0EjvY6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "∞",
+    "description": "Infinity symbol used when the maximum limit is unlimited."
+  },
+  "1DbX9V": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Near limit",
+    "description": "Alert shown when usage is close to the limit."
+  },
+  "4NwCn9": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Reached limit",
+    "description": "Alert shown when usage has reached or exceeded the limit."
+  },
   "G/yZLu": {
     "module": "@ttoss/components",
     "defaultMessage": "Remove"
@@ -26,6 +41,21 @@
   "gy0Ynb": {
     "module": "@ttoss/components",
     "defaultMessage": "Click or drag files here"
+  },
+  "oYpm71": {
+    "module": "@ttoss/components",
+    "defaultMessage": "of {max}",
+    "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rskBv4": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Unlimited",
+    "description": "Shown when a metric has no maximum limit."
+  },
+  "zr0OS6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{percentage}% used",
+    "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
   },
   "EO/33N": {
     "module": "@ttoss/react-auth",
