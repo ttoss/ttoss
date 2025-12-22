@@ -28,6 +28,7 @@ export const FormFieldSegmentedControl = <
     id,
     auxiliaryCheckbox,
     onChange,
+    variant = 'secondary',
     ...segmentedProps
   } = props;
 
@@ -49,7 +50,7 @@ export const FormFieldSegmentedControl = <
           <SegmentedControl
             {...segmentedProps}
             {...field}
-            variant="secondary"
+            variant={variant}
             value={field.value}
             onChange={(v: string | number) => {
               field.onChange(v);

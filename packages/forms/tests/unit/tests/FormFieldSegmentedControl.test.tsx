@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Form, FormFieldSegmentedControl, useForm } from '../../../src';
 
-test('submete o valor correto ao clicar na opção', async () => {
+test('should submit correct value when clicking an option', async () => {
   const user = userEvent.setup({ delay: null });
   const onSubmit = jest.fn();
 
@@ -36,7 +36,7 @@ test('submete o valor correto ao clicar na opção', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ choice: 'option1' });
 });
 
-test('renderiza as opções quando fornecidas como strings', () => {
+test('should render options when provided as strings', () => {
   const onSubmit = jest.fn();
 
   const options = ['A', 'B', 'C'];
@@ -61,7 +61,7 @@ test('renderiza as opções quando fornecidas como strings', () => {
   expect(screen.getByText('B')).toBeInTheDocument();
 });
 
-test('envia o valor padrão quando o campo está desabilitado', async () => {
+test('should submit default value when field is disabled', async () => {
   const user = userEvent.setup({ delay: null });
   const onSubmit = jest.fn();
 
@@ -88,7 +88,7 @@ test('envia o valor padrão quando o campo está desabilitado', async () => {
   expect(onSubmit).toHaveBeenCalledWith({ choiceDisabled: 'B' });
 });
 
-test('chama onChange quando fornecido como prop', async () => {
+test('should call onChange when provided as prop', async () => {
   const user = userEvent.setup({ delay: null });
   const onSubmit = jest.fn();
   const onChange = jest.fn();
@@ -121,7 +121,7 @@ test('chama onChange quando fornecido como prop', async () => {
   expect(onChange).toHaveBeenCalledWith('option2');
 });
 
-test('define aria-invalid quando há erro no campo', async () => {
+test('should set aria-invalid when there is a field error', async () => {
   const onSubmit = jest.fn();
 
   const RenderForm = () => {
