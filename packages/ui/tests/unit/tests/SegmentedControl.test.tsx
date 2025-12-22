@@ -118,3 +118,36 @@ test('should apply custom className', () => {
   const container = screen.getByText('Option 1').closest('.custom-class');
   expect(container).toBeInTheDocument();
 });
+
+test('should set data-variant attribute for primary variant', () => {
+  render(
+    <SegmentedControl options={['Option 1', 'Option 2']} variant="primary" />
+  );
+
+  const container = screen
+    .getByText('Option 1')
+    .closest('[data-variant="primary"]');
+  expect(container).toBeInTheDocument();
+});
+
+test('should set data-variant attribute for secondary variant', () => {
+  render(
+    <SegmentedControl options={['Option 1', 'Option 2']} variant="secondary" />
+  );
+
+  const container = screen
+    .getByText('Option 1')
+    .closest('[data-variant="secondary"]');
+  expect(container).toBeInTheDocument();
+});
+
+test('should set data-variant attribute for accent variant', () => {
+  render(
+    <SegmentedControl options={['Option 1', 'Option 2']} variant="accent" />
+  );
+
+  const container = screen
+    .getByText('Option 1')
+    .closest('[data-variant="accent"]');
+  expect(container).toBeInTheDocument();
+});

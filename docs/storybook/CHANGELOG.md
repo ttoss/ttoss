@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.5.3...@docs/storybook@3.6.0) (2025-12-22)
+
+### Features
+
+- segmented control variant and form field ([#811](https://github.com/ttoss/ttoss/issues/811)) ([3af6dde](https://github.com/ttoss/ttoss/commit/3af6dded7b9f0fe7027bd9740954fd9d83aaf332))
+
 ## [3.5.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.5.2...@docs/storybook@3.5.3) (2025-12-22)
 
 **Note:** Version bump only for package @docs/storybook
