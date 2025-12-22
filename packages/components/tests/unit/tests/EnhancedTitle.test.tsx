@@ -128,4 +128,155 @@ describe('EnhancedTitle', () => {
     );
     expect(screen.getByText('Feature')).toBeInTheDocument();
   });
+
+  test('renders with spotlight-accent variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="spotlight-accent"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with spotlight-primary variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="spotlight-primary"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with primary variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="primary"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with secondary variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="secondary"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with accent variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="accent"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with positive variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="positive"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with negative variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="negative"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with informative variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="informative"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders with muted variant', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        icon="fluent:star-24-filled"
+        variant="muted"
+      />
+    );
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  test('renders top badges without icons', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        topBadges={[{ label: 'No Icon Badge' }]}
+      />
+    );
+    expect(screen.getByText('No Icon Badge')).toBeInTheDocument();
+  });
+
+  test('renders with multiple top badges with different variants', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        topBadges={[
+          {
+            label: 'Badge 1',
+            variant: 'positive',
+            icon: 'fluent:checkmark-24-filled',
+          },
+          {
+            label: 'Badge 2',
+            variant: 'negative',
+            icon: 'fluent:dismiss-24-filled',
+          },
+          { label: 'Badge 3', variant: 'informative' },
+          { label: 'Badge 4', variant: 'muted' },
+        ]}
+      />
+    );
+    expect(screen.getByText('Badge 1')).toBeInTheDocument();
+    expect(screen.getByText('Badge 2')).toBeInTheDocument();
+    expect(screen.getByText('Badge 3')).toBeInTheDocument();
+    expect(screen.getByText('Badge 4')).toBeInTheDocument();
+  });
+
+  test('renders with multiple bottom badges with different icons', () => {
+    render(
+      <EnhancedTitle
+        title="Test Title"
+        bottomBadges={[
+          { label: 'Feature A', icon: 'fluent:star-24-filled' },
+          { label: 'Feature B', icon: 'fluent:rocket-24-filled' },
+          { label: 'Feature C' }, // Uses default icon
+        ]}
+      />
+    );
+    expect(screen.getByText('Feature A')).toBeInTheDocument();
+    expect(screen.getByText('Feature B')).toBeInTheDocument();
+    expect(screen.getByText('Feature C')).toBeInTheDocument();
+  });
 });
