@@ -1,6 +1,7 @@
 import { render, screen } from '@ttoss/test-utils/react';
 
 import { EnhancedTitle } from '../../../src/components/EnhancedTitle';
+import { getEnhancedTitleIconSx } from '../../../src/components/EnhancedTitle/EnhancedTitle.styles';
 
 describe('EnhancedTitle', () => {
   test('renders title correctly', () => {
@@ -278,5 +279,195 @@ describe('EnhancedTitle', () => {
     expect(screen.getByText('Feature A')).toBeInTheDocument();
     expect(screen.getByText('Feature B')).toBeInTheDocument();
     expect(screen.getByText('Feature C')).toBeInTheDocument();
+  });
+
+  describe('EnhancedTitle styles', () => {
+    test('getEnhancedTitleIconSx returns style object for each variant', () => {
+      const variants: Array<
+        | 'spotlight-accent'
+        | 'spotlight-primary'
+        | 'primary'
+        | 'secondary'
+        | 'accent'
+        | 'positive'
+        | 'negative'
+        | 'informative'
+        | 'muted'
+      > = [
+        'spotlight-accent',
+        'spotlight-primary',
+        'primary',
+        'secondary',
+        'accent',
+        'positive',
+        'negative',
+        'informative',
+        'muted',
+      ];
+
+      for (const variant of variants) {
+        const styles = getEnhancedTitleIconSx(variant);
+        expect(styles).toBeDefined();
+        expect(styles.flexShrink).toBe(0);
+        expect(styles.width).toBe('56px');
+        expect(styles.height).toBe('56px');
+      }
+    });
+
+    test('spotlight variants have animation and gradient background', () => {
+      const spotlightAccent = getEnhancedTitleIconSx('spotlight-accent');
+      const spotlightPrimary = getEnhancedTitleIconSx('spotlight-primary');
+
+      expect(spotlightAccent.animation).toBeDefined();
+      expect(spotlightAccent.backgroundSize).toBe('400% 400%');
+      expect(typeof spotlightAccent.background).toBe('function');
+
+      expect(spotlightPrimary.animation).toBeDefined();
+      expect(spotlightPrimary.backgroundSize).toBe('400% 400%');
+      expect(typeof spotlightPrimary.background).toBe('function');
+    });
+
+    test('non-spotlight variants do not have animation', () => {
+      const primary = getEnhancedTitleIconSx('primary');
+      const secondary = getEnhancedTitleIconSx('secondary');
+      const accent = getEnhancedTitleIconSx('accent');
+
+      expect(primary.animation).toBeUndefined();
+      expect(secondary.animation).toBeUndefined();
+      expect(accent.animation).toBeUndefined();
+    });
+
+    test('getAccentGradientBackground returns gradient when theme has accent colors', () => {
+      const spotlightAccent = getEnhancedTitleIconSx('spotlight-accent');
+      const backgroundFn = spotlightAccent.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithColors = {
+        colors: {
+          action: {
+            background: {
+              accent: { default: '#ff0000', active: '#00ff00' },
+            },
+          },
+        },
+      };
+
+      const gradient = backgroundFn(themeWithColors);
+      expect(gradient).toBeDefined();
+      expect(gradient).toContain('#ff0000');
+      expect(gradient).toContain('#00ff00');
+      expect(gradient).toContain('linear-gradient');
+    });
+
+    test('getAccentGradientBackground returns gradient from input.background when action not available', () => {
+      const spotlightAccent = getEnhancedTitleIconSx('spotlight-accent');
+      const backgroundFn = spotlightAccent.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithInputColors = {
+        colors: {
+          input: {
+            background: {
+              accent: { default: '#0000ff', active: '#ffff00' },
+            },
+          },
+        },
+      };
+
+      const gradient = backgroundFn(themeWithInputColors);
+      expect(gradient).toBeDefined();
+      expect(gradient).toContain('#0000ff');
+      expect(gradient).toContain('#ffff00');
+    });
+
+    test('getAccentGradientBackground returns undefined when no accent colors available', () => {
+      const spotlightAccent = getEnhancedTitleIconSx('spotlight-accent');
+      const backgroundFn = spotlightAccent.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithoutColors = { colors: {} };
+      const gradient = backgroundFn(themeWithoutColors);
+      expect(gradient).toBeUndefined();
+    });
+
+    test('getAccentGradientBackground uses default as middle when active not available', () => {
+      const spotlightAccent = getEnhancedTitleIconSx('spotlight-accent');
+      const backgroundFn = spotlightAccent.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithOnlyDefault = {
+        colors: {
+          action: {
+            background: {
+              accent: { default: '#abcdef' },
+            },
+          },
+        },
+      };
+
+      const gradient = backgroundFn(themeWithOnlyDefault);
+      expect(gradient).toBeDefined();
+      expect(gradient).toContain('#abcdef');
+    });
+
+    test('getPrimaryGradientBackground returns gradient when theme has primary colors', () => {
+      const spotlightPrimary = getEnhancedTitleIconSx('spotlight-primary');
+      const backgroundFn = spotlightPrimary.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithColors = {
+        colors: {
+          action: {
+            background: {
+              primary: { default: '#111111' },
+              secondary: { default: '#222222' },
+            },
+          },
+        },
+      };
+
+      const gradient = backgroundFn(themeWithColors);
+      expect(gradient).toBeDefined();
+      expect(gradient).toContain('#111111');
+      expect(gradient).toContain('#222222');
+      expect(gradient).toContain('linear-gradient');
+    });
+
+    test('getPrimaryGradientBackground returns undefined when no primary colors available', () => {
+      const spotlightPrimary = getEnhancedTitleIconSx('spotlight-primary');
+      const backgroundFn = spotlightPrimary.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithoutColors = { colors: {} };
+      const gradient = backgroundFn(themeWithoutColors);
+      expect(gradient).toBeUndefined();
+    });
+
+    test('getPrimaryGradientBackground uses primary as middle when secondary not available', () => {
+      const spotlightPrimary = getEnhancedTitleIconSx('spotlight-primary');
+      const backgroundFn = spotlightPrimary.background as (
+        t: unknown
+      ) => string | undefined;
+
+      const themeWithOnlyPrimary = {
+        colors: {
+          action: {
+            background: {
+              primary: { default: '#333333' },
+            },
+          },
+        },
+      };
+
+      const gradient = backgroundFn(themeWithOnlyPrimary);
+      expect(gradient).toBeDefined();
+      expect(gradient).toContain('#333333');
+    });
   });
 });
