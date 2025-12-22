@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.36.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.36.5...@ttoss/forms@0.36.6) (2025-12-22)
+
+### Bug Fixes
+
+- i18n pr problem ([#812](https://github.com/ttoss/ttoss/issues/812)) ([e927a25](https://github.com/ttoss/ttoss/commit/e927a25e376b15c43c4454f53f3956441fcfab14))
+
 ## [0.36.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.36.4...@ttoss/forms@0.36.5) (2025-12-18)
 
 **Note:** Version bump only for package @ttoss/forms
