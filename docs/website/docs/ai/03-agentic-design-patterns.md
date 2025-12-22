@@ -106,6 +106,32 @@ Assigning multiple agents to work simultaneously on the same critical path incre
 
 **Failure Scenario:** A developer asks an agent to fix a bug in a 2000-line legacy controller. The agent notices that the file relies on global variables and lacks type safety. To "fit in," the agent's fix also uses a global variable. The code works, but the debt is compounded.
 
+### Ownership-Preserving Delegation
+
+**The Problem:** When developers delegate implementation tasks to an AI agent in systems they do not fully master (operating in "Contracting" mode), the AI produces working code but obscures critical implementation details, side effects, and design rationales. Over time, this erodes the developer's mental model of the system, making it impossible to predict the side effects of future changes—directly violating the [Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority). The developer gradually becomes a mere approver of black-box patches, leading to progressive loss of ownership.
+
+**The Underlying Principle:** Derived from [The Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority).
+
+**The Strategy:** Structure every delegation of implementation tasks to mandate that the AI agent produces transparency artifacts alongside (or prior to) the final final code. These artifacts act as "living documentation" that actively maintain and update the human's mental model.
+
+Required artifacts the agent can generate:
+
+1. Detailed docstrings for all new or modified functions/classes:
+   - Clear purpose description.
+   - Explanation of parameters, returns, and exceptions.
+   - Explicit side effects (e.g., modifies global state, performs I/O, depends on external configurations).
+
+2. Usage examples (at least 2–3 realistic examples in the docstring or a dedicated section).
+3. Step-by-step reasoning (Chain-of-Thought) explaining key design decisions and trade-offs.
+4. Unit tests covering normal cases, edge cases, and expected failures (integrates well with The Semantic Validator).
+5. Change summary (narrative diff): what was changed, why, and potential impacts on other parts of the system.
+
+**Failure Scenario:**
+
+- Delegating direct implementation without requiring artifacts → "black-box patches".
+- Accepting only code + tests, skipping docstrings/examples → superficial mental model.
+- Skipping intermediate artifact review → blind approvals.
+
 ## Governance Patterns
 
 ### Human-in-the-Loop Veto
