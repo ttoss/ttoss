@@ -18,7 +18,7 @@ const meta = {
     },
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'accent', 'muted'],
+      options: ['primary', 'secondary', 'accent'],
       description: 'Variante visual que mapeia para tokens de tema',
     },
   },
