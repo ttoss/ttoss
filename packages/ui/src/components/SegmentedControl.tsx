@@ -18,6 +18,48 @@ export interface SegmentedControlProps {
   variant?: 'primary' | 'secondary' | 'accent';
 }
 
+// map variants to theme token paths used in the sx prop
+const variantTokens: Record<
+  NonNullable<SegmentedControlProps['variant']>,
+  {
+    selectedBg: string;
+    selectedColor: string;
+    unselectedColor: string;
+    hoverBg: string;
+    divider: string;
+    thumb: string;
+    border: string;
+  }
+> = {
+  primary: {
+    selectedBg: 'action.background.primary.default',
+    selectedColor: 'action.text.primary.default',
+    unselectedColor: 'display.text.primary.default',
+    hoverBg: 'action.background.muted.default',
+    divider: 'action.text.primary.default',
+    thumb: 'action.background.primary.default',
+    border: 'display.border.primary.default',
+  },
+  secondary: {
+    selectedBg: 'action.background.secondary.default',
+    selectedColor: 'action.text.secondary.default',
+    unselectedColor: 'display.text.secondary.default',
+    hoverBg: 'action.background.muted.default',
+    divider: 'action.text.secondary.default',
+    thumb: 'action.background.secondary.default',
+    border: 'display.border.muted.default',
+  },
+  accent: {
+    selectedBg: 'action.background.accent.default',
+    selectedColor: 'action.text.accent.default',
+    unselectedColor: 'action.text.accent.default',
+    hoverBg: 'action.background.muted.default',
+    divider: 'action.text.accent.default',
+    thumb: 'action.background.accent.default',
+    border: 'display.border.primary.default',
+  },
+};
+
 export const SegmentedControl = ({
   options,
   value: propValue,
@@ -54,51 +96,7 @@ export const SegmentedControl = ({
   });
 
   const currentValue = propValue !== undefined ? propValue : internalValue;
-
-  // map variants to theme token paths used in the sx prop
-  const variantTokens: Record<
-    NonNullable<SegmentedControlProps['variant']>,
-    {
-      selectedBg: string;
-      selectedColor: string;
-      unselectedColor: string;
-      hoverBg: string;
-      divider: string;
-      thumb: string;
-      border: string;
-    }
-  > = {
-    primary: {
-      selectedBg: 'action.background.primary.default',
-      selectedColor: 'action.text.primary.default',
-      unselectedColor: 'display.text.primary.default',
-      hoverBg: 'action.background.muted.default',
-      divider: 'action.text.primary.default',
-      thumb: 'action.background.primary.default',
-      border: 'display.border.primary.default',
-    },
-    secondary: {
-      selectedBg: 'action.background.secondary.default',
-      selectedColor: 'action.text.secondary.default',
-      unselectedColor: 'display.text.secondary.default',
-      hoverBg: 'action.background.muted.default',
-      divider: 'action.text.secondary.default',
-      thumb: 'action.background.secondary.default',
-      border: 'display.border.muted.default',
-    },
-    accent: {
-      selectedBg: 'action.background.accent.default',
-      selectedColor: 'action.text.accent.default',
-      unselectedColor: 'action.text.accent.default',
-      hoverBg: 'action.background.muted.default',
-      divider: 'action.text.accent.default',
-      thumb: 'action.background.accent.default',
-      border: 'display.border.primary.default',
-    },
-  };
-
-  const tokens =
-    variantTokens[variant as NonNullable<SegmentedControlProps['variant']>];
+  const tokens = variantTokens[variant];
 
   return (
     <Flex
