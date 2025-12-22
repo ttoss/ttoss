@@ -23,6 +23,7 @@
     "./JsonEditor": "./src/components/JsonEditor/index.ts",
     "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
+    "./LockedModal": "./src/components/LockedModal/index.ts",
     "./Markdown": "./src/components/Markdown/index.ts",
     "./MetricCard": "./src/components/MetricCard/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
@@ -131,6 +132,10 @@
       "./List": {
         "types": "./dist/List/index.d.ts",
         "default": "./dist/esm/List/index.js"
+      },
+      "./LockedModal": {
+        "types": "./dist/LockedModal/index.d.ts",
+        "default": "./dist/esm/LockedModal/index.js"
       },
       "./Markdown": {
         "types": "./dist/Markdown/index.d.ts",

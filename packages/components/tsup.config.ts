@@ -13,6 +13,7 @@ export const components = [
   'JsonEditor',
   'JsonView',
   'List',
+  'LockedModal',
   'Markdown',
   'Menu',
   'Modal',
