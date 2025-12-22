@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Box, Flex, FlexProps } from 'theme-ui';
+import type { FlexProps } from 'theme-ui';
+import { Box, Flex } from 'theme-ui';
 
 export interface SegmentedControlProps {
   options: (
@@ -13,6 +14,8 @@ export interface SegmentedControlProps {
   disabled?: boolean;
   className?: string;
   sx?: FlexProps['sx'];
+  /** Visual variant that maps to theme color tokens */
+  variant?: 'primary' | 'secondary' | 'accent';
 }
 
 export const SegmentedControl = ({
@@ -22,6 +25,7 @@ export const SegmentedControl = ({
   onChange,
   disabled,
   className,
+  variant = 'accent',
   sx,
   ...rest
 }: SegmentedControlProps) => {
@@ -51,14 +55,60 @@ export const SegmentedControl = ({
 
   const currentValue = propValue !== undefined ? propValue : internalValue;
 
+  // map variants to theme token paths used in the sx prop
+  const variantTokens: Record<
+    NonNullable<SegmentedControlProps['variant']>,
+    {
+      selectedBg: string;
+      selectedColor: string;
+      unselectedColor: string;
+      hoverBg: string;
+      divider: string;
+      thumb: string;
+      border: string;
+    }
+  > = {
+    primary: {
+      selectedBg: 'action.background.primary.default',
+      selectedColor: 'action.text.primary.default',
+      unselectedColor: 'display.text.primary.default',
+      hoverBg: 'action.background.muted.default',
+      divider: 'action.text.primary.default',
+      thumb: 'action.background.primary.default',
+      border: 'display.border.primary.default',
+    },
+    secondary: {
+      selectedBg: 'action.background.secondary.default',
+      selectedColor: 'action.text.secondary.default',
+      unselectedColor: 'display.text.secondary.default',
+      hoverBg: 'action.background.muted.default',
+      divider: 'action.text.secondary.default',
+      thumb: 'action.background.secondary.default',
+      border: 'display.border.muted.default',
+    },
+    accent: {
+      selectedBg: 'action.background.accent.default',
+      selectedColor: 'action.text.accent.default',
+      unselectedColor: 'action.text.accent.default',
+      hoverBg: 'action.background.muted.default',
+      divider: 'action.text.accent.default',
+      thumb: 'action.background.accent.default',
+      border: 'display.border.primary.default',
+    },
+  };
+
+  const tokens =
+    variantTokens[variant as NonNullable<SegmentedControlProps['variant']>];
+
   return (
     <Flex
       className={className}
+      data-variant={variant}
       sx={{
         width: '100%',
         borderRadius: '4xl',
         border: 'sm',
-        borderColor: 'display.border.primary.default',
+        borderColor: tokens.border,
         overflow: 'hidden',
         position: 'relative',
 
@@ -86,7 +136,7 @@ export const SegmentedControl = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'action.text.accent.default',
+          color: tokens.unselectedColor,
           flex: '1 1 auto',
           minWidth: 'min-content',
           whiteSpace: 'nowrap',
@@ -98,17 +148,17 @@ export const SegmentedControl = ({
 
           '&:focus': {
             outline: '2px solid',
-            outlineColor: 'action.background.accent.default',
+            outlineColor: tokens.selectedBg,
             outlineOffset: '2px',
             boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
           },
           '&:focus-visible': {
             outline: '2px solid',
-            outlineColor: 'action.background.accent.default',
+            outlineColor: tokens.selectedBg,
             outlineOffset: '2px',
           },
           '&:hover:not(.rc-segmented-item-selected)': {
-            backgroundColor: 'action.background.muted.default',
+            backgroundColor: tokens.hoverBg,
           },
 
           'input[type="radio"]': {
@@ -116,11 +166,11 @@ export const SegmentedControl = ({
           },
         },
         '.rc-segmented-item-selected': {
-          backgroundColor: 'action.background.accent.default',
-          color: 'action.text.accent.active',
+          backgroundColor: tokens.selectedBg,
+          color: tokens.selectedColor,
         },
         '.rc-segmented-thumb': {
-          backgroundColor: 'action.background.accent.default',
+          backgroundColor: tokens.thumb,
           borderRadius: '4xl',
           zIndex: -1,
           margin: 0,
@@ -183,7 +233,7 @@ export const SegmentedControl = ({
                     sx={{
                       height: '60%',
                       width: '1px',
-                      backgroundColor: 'action.text.accent.default',
+                      backgroundColor: tokens.divider,
                       opacity: 0.4,
                       alignSelf: 'center',
                       zIndex: 3,
