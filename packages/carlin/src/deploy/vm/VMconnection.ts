@@ -1,12 +1,3 @@
-export interface VMServer {
-  vmName: string;
-  vmUserName: string;
-  vmHost: string;
-  vmKeyPath: string;
-  vmPort?: number;
-  vmPassword?: string;
-}
-
 interface SshCommandParams {
   userName: string;
   host: string;
