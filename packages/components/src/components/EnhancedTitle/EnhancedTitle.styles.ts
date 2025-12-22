@@ -1,4 +1,6 @@
-import { keyframes } from '@ttoss/ui';
+import { keyframes, type ThemeUIStyleObject } from '@ttoss/ui';
+
+import type { EnhancedTitleVariant } from './EnhancedTitle.types';
 
 type ThemeWithColors = {
   colors?: {
@@ -25,13 +27,6 @@ type ThemeWithColors = {
     };
   };
 };
-
-export type SubscriptionPanelVariant =
-  | 'spotlight-accent'
-  | 'spotlight-primary'
-  | 'primary'
-  | 'secondary'
-  | 'accent';
 
 const gradientFlow = keyframes({
   '0%': { backgroundPosition: '0% 50%' },
@@ -68,70 +63,74 @@ const getPrimaryGradientBackground = (t: unknown) => {
   return `linear-gradient(270deg, ${start}, ${middle}, ${start})`;
 };
 
-const getVariantStyles = (variantType: SubscriptionPanelVariant) => {
-  const variants = {
+/**
+ * Returns style configuration for the icon wrapper based on variant.
+ */
+export const getEnhancedTitleIconSx = (
+  variant: EnhancedTitleVariant
+): ThemeUIStyleObject => {
+  const variantStyles: Record<EnhancedTitleVariant, ThemeUIStyleObject> = {
     'spotlight-accent': {
       backgroundColor: 'input.background.accent.default',
       color: 'action.text.accent.default',
       borderColor: 'display.border.muted.default',
-      gradientBackground: getAccentGradientBackground,
+      background: getAccentGradientBackground,
+      backgroundSize: '400% 400%',
+      animation: `${gradientFlow} 6s ease infinite`,
     },
     'spotlight-primary': {
       backgroundColor: 'action.background.primary.default',
       color: 'display.text.accent.default',
       borderColor: 'display.border.muted.default',
-      gradientBackground: getPrimaryGradientBackground,
+      background: getPrimaryGradientBackground,
+      backgroundSize: '400% 400%',
+      animation: `${gradientFlow} 6s ease infinite`,
     },
     primary: {
       backgroundColor: 'action.background.primary.default',
       color: 'action.text.primary.default',
       borderColor: 'display.border.muted.default',
-      gradientBackground: undefined,
     },
     secondary: {
       backgroundColor: 'action.background.secondary.default',
       color: 'action.text.primary.default',
       borderColor: 'display.border.muted.default',
-      gradientBackground: undefined,
     },
     accent: {
       backgroundColor: 'action.background.accent.default',
       color: 'action.text.accent.default',
       borderColor: 'display.border.muted.default',
-      gradientBackground: undefined,
+    },
+    positive: {
+      backgroundColor: 'display.bg.positive.boldest',
+      color: 'display.fg.positive.bolder',
+      borderColor: 'display.border.muted.default',
+    },
+    negative: {
+      backgroundColor: 'display.bg.negative.boldest',
+      color: 'display.fg.negative.bolder',
+      borderColor: 'display.border.muted.default',
+    },
+    informative: {
+      backgroundColor: 'display.bg.informative.boldest',
+      color: 'display.fg.informative.bolder',
+      borderColor: 'display.border.muted.default',
+    },
+    muted: {
+      backgroundColor: 'display.bg.muted.boldest',
+      color: 'display.fg.muted.bolder',
+      borderColor: 'display.border.muted.default',
     },
   };
 
-  return variants[variantType] || variants['spotlight-accent'];
-};
-
-export const getSubscriptionPanelAccentBarSx = (
-  variant: SubscriptionPanelVariant = 'spotlight-accent'
-) => {
-  const variantStyles = getVariantStyles(variant);
-  const isSpotlight = variant.startsWith('spotlight-');
-  const gradientBg =
-    variant === 'spotlight-accent'
-      ? getAccentGradientBackground
-      : getPrimaryGradientBackground;
-
   return {
-    height: '12px',
-    width: 'full',
-    borderTopLeftRadius: 'lg',
-    borderTopRightRadius: 'lg',
-    backgroundColor: variantStyles.backgroundColor,
-    color: variantStyles.color,
-    borderColor: variantStyles.borderColor,
-    ...(isSpotlight
-      ? {
-          background: gradientBg,
-          backgroundSize: '400% 400%',
-          animation: `${gradientFlow} 6s ease infinite`,
-        }
-      : {}),
-  } as const;
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '2xl',
+    border: 'md',
+    width: '56px',
+    height: '56px',
+    ...variantStyles[variant],
+  };
 };
-
-export const SubscriptionPanelAccentBarSx =
-  getSubscriptionPanelAccentBarSx('spotlight-accent');

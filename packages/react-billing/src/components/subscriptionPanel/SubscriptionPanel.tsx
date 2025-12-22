@@ -1,3 +1,4 @@
+import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
 import { MetricCard } from '@ttoss/components/MetricCard';
 import { Card, Flex, Spinner } from '@ttoss/ui';
 
@@ -7,7 +8,6 @@ import type {
   SubscriptionPanelProps,
 } from './SubscriptionPanel.types';
 import { SubscriptionPanelActionsSlot } from './SubscriptionPanelActionsSlot';
-import { SubscriptionPanelHeaderSlot } from './SubscriptionPanelHeaderSlot';
 
 /**
  * Renders a metric card based on its type.
@@ -115,13 +115,78 @@ export const SubscriptionPanel = ({
             borderBottomColor: 'display.border.muted.default',
           }}
         >
-          <SubscriptionPanelHeaderSlot
-            icon={icon}
-            planName={planName}
-            price={price}
-            status={status}
-            features={features}
+          <EnhancedTitle
             variant={variant}
+            icon={icon}
+            title={planName}
+            frontTitle={
+              price.interval ? `${price.value}/${price.interval}` : price.value
+            }
+            topBadges={[
+              // Status badge
+              ...(status.status === 'active'
+                ? [
+                    {
+                      label: 'Ativo',
+                      variant: 'positive' as const,
+                      icon: 'fluent:checkmark-circle-24-filled',
+                    },
+                  ]
+                : status.status === 'inactive'
+                  ? [
+                      {
+                        label: 'Inativo',
+                        variant: 'muted' as const,
+                        icon: 'fluent:dismiss-circle-24-filled',
+                      },
+                    ]
+                  : [
+                      {
+                        label: 'Cancelado',
+                        variant: 'negative' as const,
+                        icon: 'fluent:error-circle-24-filled',
+                      },
+                    ]),
+              // Interval badge
+              ...(status.interval
+                ? [
+                    {
+                      label: status.interval,
+                      variant: 'informative' as const,
+                    },
+                  ]
+                : []),
+              // Scheduled update badge
+              ...(status.hasScheduledUpdate
+                ? [
+                    {
+                      label: 'Alteração Agendada',
+                      variant: 'informative' as const,
+                      icon: 'fluent:clock-24-regular',
+                    },
+                  ]
+                : []),
+              // Cancellation badge
+              ...(status.hasCancellation
+                ? [
+                    {
+                      label: 'Renovação Cancelada',
+                      variant: 'negative' as const,
+                      icon: 'fluent:dismiss-circle-24-regular',
+                    },
+                  ]
+                : []),
+            ]}
+            bottomBadges={features.map((feature) => {
+              return {
+                label: feature.label,
+                icon:
+                  typeof feature.icon === 'string'
+                    ? feature.icon
+                    : 'fluent:checkmark-24-filled',
+                variant: 'muted' as const,
+              };
+            })}
           />
 
           {actions.length > 0 && (

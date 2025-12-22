@@ -17,6 +17,7 @@
     "./Accordion": "./src/components/Accordion/index.ts",
     "./DatePicker": "./src/components/DatePicker/index.ts",
     "./Drawer": "./src/components/Drawer/index.ts",
+    "./EnhancedTitle": "./src/components/EnhancedTitle/index.ts",
     "./InstallPwa": "./src/components/InstallPwa/index.ts",
     "./FileUploader": "./src/components/FileUploader/index.ts",
     "./JsonEditor": "./src/components/JsonEditor/index.ts",
@@ -106,6 +107,10 @@
       "./Drawer": {
         "types": "./dist/Drawer/index.d.ts",
         "default": "./dist/esm/Drawer/index.js"
+      },
+      "./EnhancedTitle": {
+        "types": "./dist/EnhancedTitle/index.d.ts",
+        "default": "./dist/esm/EnhancedTitle/index.js"
       },
       "./InstallPwa": {
         "types": "./dist/InstallPwa/index.d.ts",

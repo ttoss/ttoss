@@ -1,10 +1,7 @@
 import { render, screen } from '@ttoss/test-utils/react';
 
 import { SubscriptionPanel } from '../../../src';
-import {
-  getSubscriptionPanelAccentBarSx,
-  getSubscriptionPanelHeaderIconSx,
-} from '../../../src/components/subscriptionPanel/SubscriptionPanel.styles';
+import { getSubscriptionPanelAccentBarSx } from '../../../src/components/subscriptionPanel/SubscriptionPanel.styles';
 import { SubscriptionPanelActionsSlot } from '../../../src/components/subscriptionPanel/SubscriptionPanelActionsSlot';
 
 jest.mock('@ttoss/components/MetricCard', () => {
@@ -279,12 +276,6 @@ test('style helpers apply animation only for spotlight variants', () => {
   expect(spotlightAccent.animation).toBeDefined();
   expect(spotlightPrimary.animation).toBeDefined();
   expect(solidPrimary.animation).toBeUndefined();
-
-  const headerSpotlight = getSubscriptionPanelHeaderIconSx('spotlight-accent');
-  const headerSolid = getSubscriptionPanelHeaderIconSx('secondary');
-
-  expect(headerSpotlight.animation).toBeDefined();
-  expect(headerSolid.animation).toBeUndefined();
 });
 
 test('style helpers generate gradient backgrounds when theme provides colors', () => {
@@ -306,7 +297,7 @@ test('style helpers generate gradient backgrounds when theme provides colors', (
   expect(accentBg).toContain('#111');
   expect(accentBg).toContain('#222');
 
-  const primary = getSubscriptionPanelHeaderIconSx('spotlight-primary');
+  const primary = getSubscriptionPanelAccentBarSx('spotlight-primary');
   expect(typeof primary.background).toBe('function');
 
   const primaryBg = (

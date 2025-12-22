@@ -5,6 +5,7 @@ exports[`package.json exports should export all components 1`] = `
   "./Accordion": "./src/components/Accordion/index.ts",
   "./DatePicker": "./src/components/DatePicker/index.ts",
   "./Drawer": "./src/components/Drawer/index.ts",
+  "./EnhancedTitle": "./src/components/EnhancedTitle/index.ts",
   "./FileUploader": "./src/components/FileUploader/index.ts",
   "./InstallPwa": "./src/components/InstallPwa/index.ts",
   "./JsonEditor": "./src/components/JsonEditor/index.ts",
@@ -38,6 +39,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Drawer": {
     "default": "./dist/esm/Drawer/index.js",
     "types": "./dist/Drawer/index.d.ts",
+  },
+  "./EnhancedTitle": {
+    "types": "./dist/EnhancedTitle/index.d.ts",
+    "default": "./dist/esm/EnhancedTitle/index.js"
   },
   "./FileUploader": {
     "default": "./dist/esm/FileUploader/index.js",
