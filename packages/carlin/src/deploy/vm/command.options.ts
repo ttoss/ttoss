@@ -33,3 +33,8 @@ export const options = {
     default: false,
   },
 } as const;
+
+export type VmCommandOptions = Partial<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key in keyof typeof options]: any;
+}>;
