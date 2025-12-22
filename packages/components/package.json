@@ -17,12 +17,14 @@
     "./Accordion": "./src/components/Accordion/index.ts",
     "./DatePicker": "./src/components/DatePicker/index.ts",
     "./Drawer": "./src/components/Drawer/index.ts",
+    "./EnhancedTitle": "./src/components/EnhancedTitle/index.ts",
     "./InstallPwa": "./src/components/InstallPwa/index.ts",
     "./FileUploader": "./src/components/FileUploader/index.ts",
     "./JsonEditor": "./src/components/JsonEditor/index.ts",
     "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
     "./Markdown": "./src/components/Markdown/index.ts",
+    "./MetricCard": "./src/components/MetricCard/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
     "./NavList": "./src/components/NavList/index.ts",
@@ -67,6 +69,7 @@
   "peerDependencies": {
     "@ttoss/react-hooks": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },
@@ -105,6 +108,10 @@
         "types": "./dist/Drawer/index.d.ts",
         "default": "./dist/esm/Drawer/index.js"
       },
+      "./EnhancedTitle": {
+        "types": "./dist/EnhancedTitle/index.d.ts",
+        "default": "./dist/esm/EnhancedTitle/index.js"
+      },
       "./InstallPwa": {
         "types": "./dist/InstallPwa/index.d.ts",
         "default": "./dist/esm/InstallPwa/index.js"
@@ -128,6 +135,10 @@
       "./Markdown": {
         "types": "./dist/Markdown/index.d.ts",
         "default": "./dist/esm/Markdown/index.js"
+      },
+      "./MetricCard": {
+        "types": "./dist/MetricCard/index.d.ts",
+        "default": "./dist/esm/MetricCard/index.js"
       },
       "./Menu": {
         "types": "./dist/Menu/index.d.ts",

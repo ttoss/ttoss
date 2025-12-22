@@ -1,7 +1,7 @@
 import { Box } from '@ttoss/ui';
 import type * as React from 'react';
 
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 
 export interface PlanCardTopTagSlotProps {
   children: React.ReactNode;

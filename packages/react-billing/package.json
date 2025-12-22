@@ -21,6 +21,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^"
   },

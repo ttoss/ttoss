@@ -12,7 +12,8 @@ import {
 } from './PlanCardMetadataSlot';
 import { PlanCardPriceSlot } from './PlanCardPriceSlot';
 import { PlanCardTopTagSlot } from './PlanCardTopTagSlot';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export type PlanCardMetadata = PlanCardMetadataSlotService[];
 
@@ -41,7 +42,8 @@ export interface PlanCardProps extends Omit<CardProps, 'children'> {
 
 export const PlanCard = (props: PlanCardProps) => {
   const {
-    variant = 'default',
+    variant = 'primary',
+    topTag,
     title,
     subtitle,
     metadata = [],
@@ -53,30 +55,29 @@ export const PlanCard = (props: PlanCardProps) => {
   } = props;
 
   const effectiveMetadataVariant = metadataVariant ?? variant;
+  const variantStyles = getPlanCardVariantStyles(variant);
 
   return (
     <Card
       {...cardProps}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         width: 'full',
         maxWidth: '410px',
-        backgroundColor:
-          variant === 'enterprise'
-            ? 'display.background.primary.active'
-            : 'display.background.primary.default',
+        backgroundColor: variantStyles.backgroundColor,
+        borderColor: variantStyles.borderColor,
         ...cardProps.sx,
       }}
     >
-      {props.topTag && (
-        <PlanCardTopTagSlot variant={variant}>
-          {props.topTag}
-        </PlanCardTopTagSlot>
+      {topTag && (
+        <PlanCardTopTagSlot variant={variant}>{topTag}</PlanCardTopTagSlot>
       )}
 
       <PlanCardHeaderSlot
         title={title}
         subtitle={subtitle}
-        hasTopTag={Boolean(props.topTag)}
+        hasTopTag={Boolean(topTag)}
         variant={variant}
       />
 
