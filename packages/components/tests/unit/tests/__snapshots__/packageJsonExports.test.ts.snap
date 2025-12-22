@@ -41,7 +41,7 @@ exports[`package.json exports should export all components 2`] = `
     "types": "./dist/Drawer/index.d.ts",
   },
   "./EnhancedTitle": {
-    "default": "./dist/esm/EnhancedTitle/index.js"
+    "default": "./dist/esm/EnhancedTitle/index.js",
     "types": "./dist/EnhancedTitle/index.d.ts",
   },
   "./FileUploader": {
