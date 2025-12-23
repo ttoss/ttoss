@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { LockedModal } from '@ttoss/components/LockedModal';
+import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, Flex, Stack, Text } from '@ttoss/ui';
+import { Box, Button, Card, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 const meta: Meta<typeof LockedModal> = {
@@ -315,5 +316,134 @@ export const SingleAction: Story = {
         },
       },
     ],
+  },
+};
+
+/**
+ * Example inside SidebarCollapseLayout with custom zIndex
+ * to prevent modal from covering header/sidebar
+ */
+
+const LayoutWithModalExample = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <SidebarCollapseLayout>
+      <Layout.Header showSidebarButton={true}>
+        <Text sx={{ fontWeight: 'bold' }}>Application Header</Text>
+      </Layout.Header>
+
+      <Layout.Sidebar showSidebarButtonInDrawer={true}>
+        <Stack sx={{ gap: '4' }}>
+          <Text sx={{ fontWeight: 'semibold' }}>Menu Items</Text>
+          <Box>Dashboard</Box>
+          <Box>Analytics</Box>
+          <Box>Settings</Box>
+          <Box>Profile</Box>
+        </Stack>
+      </Layout.Sidebar>
+
+      <Layout.Main sx={{ position: 'relative' }}>
+        <Layout.Main.Header sx={{ borderBottom: '1px solid gray' }}>
+          <Text sx={{ fontWeight: 'semibold' }}>Page Content</Text>
+        </Layout.Main.Header>
+
+        <Layout.Main.Body>
+          <Stack sx={{ gap: '6', padding: '6' }}>
+            <Text>
+              This modal uses <code>position: absolute</code> and{' '}
+              <code>zIndex: 1</code> to stay below the header/sidebar and center
+              within Layout.Main.
+            </Text>
+            <Text>
+              The Layout.Main has <code>position: relative</code> to serve as
+              the positioning container.
+            </Text>
+            <Button
+              variant="primary"
+              onClick={() => {
+                return setIsOpen(true);
+              }}
+              sx={{ maxWidth: '200px' }}
+            >
+              Open Modal in Layout
+            </Button>
+          </Stack>
+
+          <LockedModal
+            isOpen={isOpen}
+            onRequestClose={() => {
+              return setIsOpen(false);
+            }}
+            zIndex={1}
+            header={{
+              icon: 'fluent:lock-closed-24-filled',
+              title: 'Feature Locked',
+              description: 'Modal centered in Main content',
+              variant: 'primary',
+            }}
+            actions={[
+              {
+                label: 'Close Modal',
+                icon: 'fluent:dismiss-16-regular',
+                variant: 'accent',
+                onClick: () => {
+                  return setIsOpen(false);
+                },
+              },
+            ]}
+          >
+            <Stack sx={{ gap: '4', alignItems: 'center', width: 'full' }}>
+              <Text
+                sx={{
+                  textAlign: 'center',
+                  color: 'display.text.secondary.default',
+                }}
+              >
+                Notice how the modal is centered within the main content area
+                (not the entire viewport) and appears below the header and
+                sidebar.
+              </Text>
+              <Box
+                sx={{
+                  backgroundColor: 'display.background.secondary.default',
+                  padding: '4',
+                  borderRadius: 'md',
+                  width: 'full',
+                }}
+              >
+                <Text
+                  sx={{
+                    fontSize: 'xs',
+                    fontFamily: 'monospace',
+                  }}
+                >
+                  Layout.Main: position relative
+                  <br />
+                  Modal overlay: position absolute
+                  <br />
+                  Modal zIndex: 1
+                  <br />
+                  Header/Sidebar zIndex: overlay (1300)
+                </Text>
+              </Box>
+            </Stack>
+          </LockedModal>
+        </Layout.Main.Body>
+
+        <Layout.Main.Footer sx={{ borderTop: '1px solid gray' }}>
+          <Text>Footer Content</Text>
+        </Layout.Main.Footer>
+      </Layout.Main>
+    </SidebarCollapseLayout>
+  );
+};
+
+export const InsideLayoutWithCustomZIndex: Story = {
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: () => {
+    return <LayoutWithModalExample />;
   },
 };

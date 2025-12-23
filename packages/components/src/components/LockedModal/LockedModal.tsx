@@ -72,6 +72,27 @@ type LockedModalProps = {
    * Optional list of actions to render as buttons in the footer
    */
   actions?: LockedModalAction[];
+  /**
+   * Optional style prop for the modal overlay and content
+   */
+  style?: {
+    overlay?: React.CSSProperties;
+    content?: React.CSSProperties;
+  };
+  /**
+   * Optional z-index value to control modal stacking order.
+   * Useful when using modal inside layouts like SidebarCollapseLayout
+   * to prevent it from covering header/sidebar elements.
+   * @default 'modal' (theme value)
+   *
+   * zIndex hierarchy reference:
+   * - modal: 1400
+   * - overlay: 1300 (sidebar layouts use this value to stay below header/sidebar)
+   * - dropdown: 1000
+   * - sticky: 1100
+   * - banner: 1200
+   */
+  zIndex?: string | number;
 };
 
 /**
@@ -109,6 +130,22 @@ type LockedModalProps = {
  *   <Text>This feature is only available for Pro users.</Text>
  * </LockedModal>
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Using inside SidebarCollapseLayout - modal won't cover header/sidebar
+ * <LockedModal
+ *   isOpen={isOpen}
+ *   zIndex={1}
+ *   header={{
+ *     icon: "fluent:lock-closed-24-filled",
+ *     title: "Feature Locked",
+ *     description: "Unlock this feature"
+ *   }}
+ * >
+ *   <Text>Content here</Text>
+ * </LockedModal>
+ * ```
  */
 export const LockedModal = ({
   isOpen,
@@ -118,6 +155,8 @@ export const LockedModal = ({
   secondButton,
   children,
   actions,
+  style,
+  zIndex,
 }: LockedModalProps) => {
   return (
     <Modal
@@ -131,8 +170,16 @@ export const LockedModal = ({
       appElement={
         (document.getElementById('root') as HTMLElement) || document.body
       }
+      style={{
+        overlay: {
+          zIndex,
+          ...style?.overlay,
+        },
+        content: { ...style?.content },
+      }}
     >
       <Card
+        className="lockedmodal-card"
         sx={{
           width: 'full',
           maxWidth: '620px',
@@ -164,6 +211,7 @@ export const LockedModal = ({
           {actions && actions.length > 0 && (
             <Card.Footer>
               <Flex
+                className="lockedmodal-footer"
                 sx={{
                   flexDirection: 'column',
                   gap: '4',
