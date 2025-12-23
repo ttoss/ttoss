@@ -189,4 +189,172 @@ describe('deployVM', () => {
     expect(mockChmodSync).toHaveBeenCalledWith('/key.pem', 0o400);
     expect(mockStream.pipe).toHaveBeenCalledWith(mockStdin);
   });
+
+  test('should handle SSH process spawn error', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockProcess: any = {
+      stdin: { writable: true, destroyed: false },
+      on: jest.fn((event: string, callback: (error: Error) => void) => {
+        if (event === 'error') {
+          callback(new Error('spawn ENOENT'));
+        }
+        return mockProcess;
+      }),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('spawn ENOENT');
+  });
+
+  test('should reject when SSH process closes with non-zero code', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = { write: jest.fn(), writable: true, destroyed: false };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(255);
+        return mockProcess;
+      }),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('Deploy failed with code 255');
+  });
+
+  test('should reject when SSH process stdin is null', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockProcess: any = {
+      stdin: null,
+      on: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('SSH process stdin is not available or not writable');
+  });
+
+  test('should reject when SSH process stdin is destroyed', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = { writable: true, destroyed: true };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('SSH process stdin is not available or not writable');
+  });
+
+  test('should reject when SSH process stdin is not writable', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = { writable: false, destroyed: false };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('SSH process stdin is not available or not writable');
+  });
+
+  test('should warn but continue when permission check fails for other reasons', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockImplementation(() => {
+      throw new Error('EACCES: permission denied');
+    });
+
+    const mockStdin = { write: jest.fn(), writable: true, destroyed: false };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(0);
+        return mockProcess;
+      }),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    jest
+      .spyOn(VMconnection, 'generateSSHCommand')
+      .mockReturnValue(['ssh', 'user@host']);
+
+    // Should NOT throw, only warn
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).resolves.toBeUndefined();
+  });
 });
