@@ -6,10 +6,10 @@ const esmModules = ['@iconify-icons'];
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 82.06,
-      branches: 77.14,
-      lines: 82.06,
-      functions: 76.11,
+      statements: 82.35,
+      branches: 78.5,
+      lines: 82.35,
+      functions: 76.1,
     },
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],

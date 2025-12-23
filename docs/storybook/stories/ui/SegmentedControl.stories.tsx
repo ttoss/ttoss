@@ -21,6 +21,11 @@ const meta = {
       options: ['primary', 'secondary', 'accent'],
       description: 'Variante visual que mapeia para tokens de tema',
     },
+    size: {
+      control: { type: 'select' },
+      options: ['sm', 'md', 'lg'],
+      description: 'Tamanho do componente',
+    },
   },
 } satisfies Meta<typeof SegmentedControl>;
 
@@ -97,5 +102,41 @@ export const Secondary: Story = {
     ],
     defaultValue: 'option1',
     variant: 'secondary',
+  },
+};
+
+export const Small: Story = {
+  args: {
+    options: [
+      { label: 'Small', value: 'small' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'small',
+    size: 'sm',
+  },
+};
+
+export const Medium: Story = {
+  args: {
+    options: [
+      { label: 'Medium', value: 'medium' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'medium',
+    size: 'md',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    options: [
+      { label: 'Large', value: 'large' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'large',
+    size: 'lg',
   },
 };
