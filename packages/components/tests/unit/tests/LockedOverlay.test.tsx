@@ -1,8 +1,14 @@
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
-import { LockedModal } from '../../../src/components/LockedModal';
+import { LockedOverlay } from '../../../src/components/LockedOverlay';
 
-describe('LockedModal', () => {
+describe('LockedOverlay', () => {
+  const overlayContentText = 'Overlay content';
+  const complexContentTitle = 'Complex Content';
+  const complexContentParagraph = 'This is a paragraph';
+  const complexItem1 = 'Item 1';
+  const complexItem2 = 'Item 2';
+
   const defaultProps = {
     isOpen: true,
     header: {
@@ -10,44 +16,29 @@ describe('LockedModal', () => {
       title: 'Feature Locked',
       description: 'This feature requires additional permissions',
     },
-    children: <div>Modal content</div>,
+    children: <div>{overlayContentText}</div>,
   };
 
-  beforeEach(() => {
-    // Create a root element for the modal
-    const root = document.createElement('div');
-    root.setAttribute('id', 'root');
-    document.body.appendChild(root);
-  });
-
-  afterEach(() => {
-    // Clean up
-    const root = document.getElementById('root');
-    if (root) {
-      document.body.removeChild(root);
-    }
-  });
-
   test('should render when isOpen is true', () => {
-    render(<LockedModal {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps} />);
 
     expect(screen.getByText('Feature Locked')).toBeInTheDocument();
     expect(
       screen.getByText('This feature requires additional permissions')
     ).toBeInTheDocument();
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    expect(screen.getByText(overlayContentText)).toBeInTheDocument();
   });
 
   test('should not render when isOpen is false', () => {
-    render(<LockedModal {...defaultProps} isOpen={false} />);
+    render(<LockedOverlay {...defaultProps} isOpen={false} />);
 
     expect(screen.queryByText('Feature Locked')).not.toBeInTheDocument();
-    expect(screen.queryByText('Modal content')).not.toBeInTheDocument();
+    expect(screen.queryByText(overlayContentText)).not.toBeInTheDocument();
   });
 
   test('should render with accent variant', () => {
     render(
-      <LockedModal
+      <LockedOverlay
         {...defaultProps}
         header={{ ...defaultProps.header, variant: 'accent' }}
       />
@@ -75,7 +66,7 @@ describe('LockedModal', () => {
       },
     ];
 
-    render(<LockedModal {...defaultProps} actions={actions} />);
+    render(<LockedOverlay {...defaultProps} actions={actions} />);
 
     expect(screen.getByText('Upgrade Now')).toBeInTheDocument();
     expect(screen.getByText('Learn More')).toBeInTheDocument();
@@ -92,7 +83,7 @@ describe('LockedModal', () => {
       },
     ];
 
-    render(<LockedModal {...defaultProps} actions={actions} />);
+    render(<LockedOverlay {...defaultProps} actions={actions} />);
 
     const button = screen.getByText('Click Me');
     fireEvent.click(button);
@@ -101,48 +92,60 @@ describe('LockedModal', () => {
   });
 
   test('should render without actions', () => {
-    render(<LockedModal {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps} />);
 
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    expect(screen.getByText(overlayContentText)).toBeInTheDocument();
     // Verify no buttons are rendered when actions are not provided
     const buttons = screen.queryAllByRole('button');
     expect(buttons).toHaveLength(0);
   });
 
-  test('should call onRequestClose when provided', () => {
+  test('should call onRequestClose when overlay is clicked', () => {
     const mockClose = jest.fn();
 
-    render(<LockedModal {...defaultProps} onRequestClose={mockClose} />);
+    render(<LockedOverlay {...defaultProps} onRequestClose={mockClose} />);
 
-    // Modal component has overlay that can be clicked
-    const overlay = document.querySelector('.ReactModal__Overlay');
-    if (overlay) {
-      fireEvent.click(overlay);
-      expect(mockClose).toHaveBeenCalled();
-    }
+    fireEvent.click(screen.getByTestId('lockedoverlay-overlay'));
+    expect(mockClose).toHaveBeenCalledTimes(1);
+  });
+
+  test('should not call onRequestClose when clicking inside content', () => {
+    const mockClose = jest.fn();
+
+    render(<LockedOverlay {...defaultProps} onRequestClose={mockClose} />);
+
+    fireEvent.click(screen.getByText(overlayContentText));
+    expect(mockClose).toHaveBeenCalledTimes(0);
   });
 
   test('should not close when onRequestClose is not provided', () => {
-    render(<LockedModal {...defaultProps} />);
+    render(<LockedOverlay {...defaultProps} />);
 
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    expect(screen.getByText(overlayContentText)).toBeInTheDocument();
   });
 
   test('should render with custom zIndex', () => {
-    render(<LockedModal {...defaultProps} zIndex={9999} />);
+    render(<LockedOverlay {...defaultProps} zIndex={9999} />);
 
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    const overlay = screen.getByTestId('lockedoverlay-overlay');
+    expect(overlay).toBeInTheDocument();
+  });
+
+  test('should render with default zIndex of 1', () => {
+    render(<LockedOverlay {...defaultProps} />);
+
+    expect(screen.getByTestId('lockedoverlay-overlay')).toBeInTheDocument();
   });
 
   test('should render with custom style', () => {
     const customStyle = {
-      overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-      content: { padding: '20px' },
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      padding: '20px',
     };
 
-    render(<LockedModal {...defaultProps} style={customStyle} />);
+    render(<LockedOverlay {...defaultProps} sx={customStyle} />);
 
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    expect(screen.getByText(overlayContentText)).toBeInTheDocument();
   });
 
   test('should render with firstButton and secondButton', () => {
@@ -160,7 +163,7 @@ describe('LockedModal', () => {
     };
 
     render(
-      <LockedModal
+      <LockedOverlay
         {...defaultProps}
         firstButton={firstButton}
         secondButton={secondButton}
@@ -193,16 +196,16 @@ describe('LockedModal', () => {
       },
     ];
 
-    render(<LockedModal {...defaultProps} actions={actions} />);
+    render(<LockedOverlay {...defaultProps} actions={actions} />);
 
     expect(screen.getByText('Primary Action')).toBeInTheDocument();
     expect(screen.getByText('Secondary Action')).toBeInTheDocument();
   });
 
   test('should render with empty actions array', () => {
-    render(<LockedModal {...defaultProps} actions={[]} />);
+    render(<LockedOverlay {...defaultProps} actions={[]} />);
 
-    expect(screen.getByText('Modal content')).toBeInTheDocument();
+    expect(screen.getByText(overlayContentText)).toBeInTheDocument();
     const buttons = screen.queryAllByRole('button');
     expect(buttons).toHaveLength(0);
   });
@@ -210,20 +213,27 @@ describe('LockedModal', () => {
   test('should render all children content', () => {
     const complexChildren = (
       <div>
-        <h3>Complex Content</h3>
-        <p>This is a paragraph</p>
+        <h3>{complexContentTitle}</h3>
+        <p>{complexContentParagraph}</p>
         <ul>
-          <li>Item 1</li>
-          <li>Item 2</li>
+          <li>{complexItem1}</li>
+          <li>{complexItem2}</li>
         </ul>
       </div>
     );
 
-    render(<LockedModal {...defaultProps}>{complexChildren}</LockedModal>);
+    render(<LockedOverlay {...defaultProps}>{complexChildren}</LockedOverlay>);
 
-    expect(screen.getByText('Complex Content')).toBeInTheDocument();
-    expect(screen.getByText('This is a paragraph')).toBeInTheDocument();
-    expect(screen.getByText('Item 1')).toBeInTheDocument();
-    expect(screen.getByText('Item 2')).toBeInTheDocument();
+    expect(screen.getByText(complexContentTitle)).toBeInTheDocument();
+    expect(screen.getByText(complexContentParagraph)).toBeInTheDocument();
+    expect(screen.getByText(complexItem1)).toBeInTheDocument();
+    expect(screen.getByText(complexItem2)).toBeInTheDocument();
+  });
+
+  test('should use position absolute for overlay positioning', () => {
+    render(<LockedOverlay {...defaultProps} />);
+
+    const overlay = screen.getByTestId('lockedoverlay-overlay');
+    expect(overlay).toBeInTheDocument();
   });
 });

@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { LockedModal } from '@ttoss/components/LockedModal';
+import { LockedOverlay } from '@ttoss/components/LockedOverlay';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-const meta: Meta<typeof LockedModal> = {
-  title: 'Components/LockedModal',
-  component: LockedModal,
+const meta: Meta<typeof LockedOverlay> = {
+  title: 'Components/LockedOverlay',
+  component: LockedOverlay,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
         component:
-          'A generic modal component for displaying locked features or restricted content. Provides a consistent UI for showing users content that requires additional permissions, plan upgrades, or other conditions to access.',
+          "A component for blocking and displaying locked features or restricted content within a specific container. Renders as an absolutely positioned overlay that blocks the parent container's content. The parent container must have `position: relative` for proper positioning.",
       },
     },
   },
@@ -21,7 +21,7 @@ const meta: Meta<typeof LockedModal> = {
   argTypes: {
     isOpen: {
       control: 'boolean',
-      description: 'Controls the modal visibility',
+      description: 'Controls the overlay visibility',
     },
     onRequestClose: {
       description: 'Optional close handler',
@@ -32,41 +32,45 @@ const meta: Meta<typeof LockedModal> = {
     },
     children: {
       control: false,
-      description: 'Content to be rendered in the modal body',
+      description: 'Content to be rendered in the overlay body',
     },
     actions: {
       control: 'object',
       description:
         'Optional list of actions to render as buttons in the footer',
     },
+    zIndex: {
+      control: 'number',
+      description: 'Optional z-index value (default: 1)',
+    },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof LockedModal>;
+type Story = StoryObj<typeof LockedOverlay>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LockedModalWrapper = (args: any) => {
+const LockedOverlayWrapper = (args: any) => {
   const [isOpen, setIsOpen] = React.useState(args.isOpen);
 
   return (
-    <>
+    <Box sx={{ position: 'relative', width: '1200px', height: '800px' }}>
       <button
         onClick={() => {
           return setIsOpen(true);
         }}
       >
-        Open Modal
+        Open Overlay
       </button>
-      <LockedModal
+      <LockedOverlay
         {...args}
         isOpen={isOpen}
         onRequestClose={() => {
-          // Close the modal when requested
+          // Close the overlay when requested
           return setIsOpen(false);
         }}
       />
-    </>
+    </Box>
   );
 };
 
@@ -75,7 +79,7 @@ const LockedModalWrapper = (args: any) => {
  */
 export const Default: Story = {
   render: (args) => {
-    return <LockedModalWrapper {...args} />;
+    return <LockedOverlayWrapper {...args} />;
   },
   args: {
     isOpen: false,
@@ -120,7 +124,7 @@ export const Default: Story = {
  */
 export const WithFeatureList: Story = {
   render: (args) => {
-    return <LockedModalWrapper {...args} />;
+    return <LockedOverlayWrapper {...args} />;
   },
   args: {
     isOpen: false,
@@ -211,7 +215,7 @@ export const WithFeatureList: Story = {
  */
 export const AccentVariant: Story = {
   render: (args) => {
-    return <LockedModalWrapper {...args} />;
+    return <LockedOverlayWrapper {...args} />;
   },
   args: {
     isOpen: false,
@@ -252,7 +256,7 @@ export const AccentVariant: Story = {
  */
 export const WithoutActions: Story = {
   render: (args) => {
-    return <LockedModalWrapper {...args} />;
+    return <LockedOverlayWrapper {...args} />;
   },
   args: {
     isOpen: false,
@@ -283,7 +287,7 @@ export const WithoutActions: Story = {
  */
 export const SingleAction: Story = {
   render: (args) => {
-    return <LockedModalWrapper {...args} />;
+    return <LockedOverlayWrapper {...args} />;
   },
   args: {
     isOpen: false,
@@ -321,10 +325,10 @@ export const SingleAction: Story = {
 
 /**
  * Example inside SidebarCollapseLayout with custom zIndex
- * to prevent modal from covering header/sidebar
+ * to prevent overlay from covering header/sidebar
  */
 
-const LayoutWithModalExample = () => {
+const LayoutWithOverlayExample = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -343,21 +347,20 @@ const LayoutWithModalExample = () => {
         </Stack>
       </Layout.Sidebar>
 
-      <Layout.Main sx={{ position: 'relative' }}>
+      <Layout.Main>
         <Layout.Main.Header sx={{ borderBottom: '1px solid gray' }}>
           <Text sx={{ fontWeight: 'semibold' }}>Page Content</Text>
         </Layout.Main.Header>
 
-        <Layout.Main.Body>
-          <Stack sx={{ gap: '6', padding: '6' }}>
+        <Layout.Main.Body sx={{ position: 'relative' }}>
+          <Stack sx={{ gap: '6', padding: '6', minHeight: '675px' }}>
             <Text>
-              This modal uses <code>position: absolute</code> and{' '}
-              <code>zIndex: 1</code> to stay below the header/sidebar and center
-              within Layout.Main.
+              This overlay uses <code>position: absolute</code> with{' '}
+              <code>top: 0, left: 0</code> to cover only the Main.Body.
             </Text>
             <Text>
-              The Layout.Main has <code>position: relative</code> to serve as
-              the positioning container.
+              The Layout.Main.Body has <code>position: relative</code> to serve
+              as the positioning container.
             </Text>
             <Button
               variant="primary"
@@ -366,11 +369,10 @@ const LayoutWithModalExample = () => {
               }}
               sx={{ maxWidth: '200px' }}
             >
-              Open Modal in Layout
+              Open Overlay in Body
             </Button>
           </Stack>
-
-          <LockedModal
+          <LockedOverlay
             isOpen={isOpen}
             onRequestClose={() => {
               return setIsOpen(false);
@@ -379,12 +381,12 @@ const LayoutWithModalExample = () => {
             header={{
               icon: 'fluent:lock-closed-24-filled',
               title: 'Feature Locked',
-              description: 'Modal centered in Main content',
+              description: 'Overlay centered in Main.Body content',
               variant: 'primary',
             }}
             actions={[
               {
-                label: 'Close Modal',
+                label: 'Close Overlay',
                 icon: 'fluent:dismiss-16-regular',
                 variant: 'accent',
                 onClick: () => {
@@ -400,9 +402,8 @@ const LayoutWithModalExample = () => {
                   color: 'display.text.secondary.default',
                 }}
               >
-                Notice how the modal is centered within the main content area
-                (not the entire viewport) and appears below the header and
-                sidebar.
+                Notice how the overlay covers only the Main.Body content area,
+                not the header or sidebar.
               </Text>
               <Box
                 sx={{
@@ -418,20 +419,25 @@ const LayoutWithModalExample = () => {
                     fontFamily: 'monospace',
                   }}
                 >
-                  Layout.Main: position relative
+                  Layout.Main.Body: position relative
                   <br />
-                  Modal overlay: position absolute
+                  Overlay: position absolute, top: 0, left: 0
                   <br />
-                  Modal zIndex: 1
+                  Overlay zIndex: 1
                   <br />
                   Header/Sidebar zIndex: overlay (1300)
                 </Text>
               </Box>
             </Stack>
-          </LockedModal>
+          </LockedOverlay>
         </Layout.Main.Body>
 
-        <Layout.Main.Footer sx={{ borderTop: '1px solid gray' }}>
+        <Layout.Main.Footer
+          sx={{
+            borderTop: '1px solid gray',
+            position: 'relative',
+          }}
+        >
           <Text>Footer Content</Text>
         </Layout.Main.Footer>
       </Layout.Main>
@@ -444,6 +450,6 @@ export const InsideLayoutWithCustomZIndex: Story = {
     layout: 'fullscreen',
   },
   render: () => {
-    return <LayoutWithModalExample />;
+    return <LayoutWithOverlayExample />;
   },
 };
