@@ -62,6 +62,24 @@ const TemplateComponent: React.FC = () => {
         />
       </Flex>
 
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldSegmentedControl
+          name="choiceSmall"
+          label="Small size"
+          options={['Small', 'Option']}
+          size="sm"
+        />
+      </Flex>
+
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+        <FormFieldSegmentedControl
+          name="choiceLarge"
+          label="Large size"
+          options={['Large', 'Option']}
+          size="lg"
+        />
+      </Flex>
+
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
       </Button>

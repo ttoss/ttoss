@@ -16,6 +16,8 @@ export interface SegmentedControlProps {
   sx?: FlexProps['sx'];
   /** Visual variant that maps to theme color tokens */
   variant?: 'primary' | 'secondary' | 'accent';
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 // map variants to theme token paths used in the sx prop
@@ -60,6 +62,32 @@ const variantTokens: Record<
   },
 };
 
+// map sizes to styling values
+const sizeTokens: Record<
+  NonNullable<SegmentedControlProps['size']>,
+  {
+    paddingX: string;
+    paddingY: string;
+    fontSize: string;
+  }
+> = {
+  sm: {
+    paddingX: '2',
+    paddingY: '1',
+    fontSize: 'sm',
+  },
+  md: {
+    paddingX: '3',
+    paddingY: '2',
+    fontSize: 'md',
+  },
+  lg: {
+    paddingX: '5',
+    paddingY: '3',
+    fontSize: 'lg',
+  },
+};
+
 export const SegmentedControl = ({
   options,
   value: propValue,
@@ -68,6 +96,7 @@ export const SegmentedControl = ({
   disabled,
   className,
   variant = 'accent',
+  size = 'md',
   sx,
   ...rest
 }: SegmentedControlProps) => {
@@ -97,6 +126,7 @@ export const SegmentedControl = ({
 
   const currentValue = propValue !== undefined ? propValue : internalValue;
   const tokens = variantTokens[variant];
+  const sizeStyles = sizeTokens[size];
 
   return (
     <Flex
@@ -128,9 +158,9 @@ export const SegmentedControl = ({
         '.rc-segmented-item': {
           borderRadius: '4xl',
           margin: 0,
-          paddingX: '5',
-          paddingY: '3',
-          fontSize: 'lg',
+          paddingX: sizeStyles.paddingX,
+          paddingY: sizeStyles.paddingY,
+          fontSize: sizeStyles.fontSize,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
