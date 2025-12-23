@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+jest.mock('node:child_process');
+jest.mock('node:fs');
+jest.mock('../../../../src/deploy/vm/VMconnection');
+
 import { spawn } from 'node:child_process';
 import { chmodSync, createReadStream, existsSync, statSync } from 'node:fs';
 
 import { deployVM } from '../../../../src/deploy/vm/deployVM';
 import * as VMconnection from '../../../../src/deploy/vm/VMconnection';
-
-jest.mock('node:child_process');
-jest.mock('node:fs');
-jest.mock('npmlog');
 
 describe('deployVM', () => {
   const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
@@ -17,6 +18,14 @@ describe('deployVM', () => {
     typeof createReadStream
   >;
   const mockChmodSync = chmodSync as jest.MockedFunction<typeof chmodSync>;
+  const mockGenerateSSHCommand =
+    VMconnection.generateSSHCommand as jest.MockedFunction<
+      typeof VMconnection.generateSSHCommand
+    >;
+  const mockGenerateSSHCommandWithPwd =
+    VMconnection.generateSSHCommandWithPwd as jest.MockedFunction<
+      typeof VMconnection.generateSSHCommandWithPwd
+    >;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -76,15 +85,17 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    // Mock createReadStream
     const mockStream = {
       pipe: jest.fn(),
     };
     mockCreateReadStream.mockReturnValue(mockStream as any);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', '-T', 'user@host', 'bash -s']);
+    mockGenerateSSHCommand.mockReturnValue([
+      'ssh',
+      '-T',
+      'user@host',
+      'bash -s',
+    ]);
 
     await expect(
       deployVM({
@@ -96,6 +107,12 @@ describe('deployVM', () => {
     ).resolves.toBeUndefined();
 
     expect(mockStream.pipe).toHaveBeenCalledWith(mockStdin);
+    expect(mockGenerateSSHCommand).toHaveBeenCalledWith({
+      userName: 'user',
+      host: 'host',
+      keyPath: '/valid/key.pem',
+      port: undefined,
+    });
   });
 
   test('should deploy successfully with password', async () => {
@@ -116,13 +133,12 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    // Mock createReadStream
     const mockStream = {
       pipe: jest.fn(),
     };
     mockCreateReadStream.mockReturnValue(mockStream as any);
 
-    jest.spyOn(VMconnection, 'generateSSHCommandWithPwd').mockReturnValue({
+    mockGenerateSSHCommandWithPwd.mockReturnValue({
       command: [
         'ssh',
         '-o',
@@ -145,6 +161,12 @@ describe('deployVM', () => {
 
     expect(mockStdin.write).toHaveBeenCalledWith('mypassword\n');
     expect(mockStream.pipe).toHaveBeenCalledWith(mockStdin);
+    expect(mockGenerateSSHCommandWithPwd).toHaveBeenCalledWith({
+      userName: 'user',
+      host: 'host',
+      password: 'mypassword',
+      port: undefined,
+    });
   });
 
   test('should fix SSH key permissions when fixPermissions is true', async () => {
@@ -168,15 +190,12 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    // Mock createReadStream
     const mockStream = {
       pipe: jest.fn(),
     };
     mockCreateReadStream.mockReturnValue(mockStream as any);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await deployVM({
       userName: 'user',
@@ -205,9 +224,7 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await expect(
       deployVM({
@@ -236,9 +253,7 @@ describe('deployVM', () => {
     const mockStream = { pipe: jest.fn() };
     mockCreateReadStream.mockReturnValue(mockStream as any);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await expect(
       deployVM({
@@ -260,9 +275,7 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await expect(
       deployVM({
@@ -285,9 +298,7 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await expect(
       deployVM({
@@ -310,9 +321,7 @@ describe('deployVM', () => {
     };
     mockSpawn.mockReturnValue(mockProcess);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     await expect(
       deployVM({
@@ -343,9 +352,7 @@ describe('deployVM', () => {
     const mockStream = { pipe: jest.fn() };
     mockCreateReadStream.mockReturnValue(mockStream as any);
 
-    jest
-      .spyOn(VMconnection, 'generateSSHCommand')
-      .mockReturnValue(['ssh', 'user@host']);
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
 
     // Should NOT throw, only warn
     await expect(
