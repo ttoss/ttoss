@@ -1,11 +1,6 @@
-import type { Argv } from 'yargs';
+import type { Argv, CommandModule } from 'yargs';
 import yargs from 'yargs';
 
-import { deployVMCommand } from '../../../../src/deploy/vm/command';
-import {
-  options,
-  type VmCommandOptions,
-} from '../../../../src/deploy/vm/command.options';
 import { deployVM } from '../../../../src/deploy/vm/deployVM';
 
 // Mock the dependencies
@@ -14,7 +9,35 @@ jest.mock('../../../../src/deploy/vm/deployVM', () => {
     deployVM: jest.fn(),
   };
 });
+
 jest.mock('npmlog');
+
+// Mock command.options to allow customization while reusing real values
+jest.mock('../../../../src/deploy/vm/command.options', () => {
+  // Import real options to reuse their values
+  const actualOptions = jest.requireActual(
+    '../../../../src/deploy/vm/command.options'
+  );
+
+  // Return the actual options, allowing tests to modify if needed
+  return {
+    ...actualOptions,
+    // Options are reused from the real implementation
+    // Tests can override individual values using mockOptions below
+  };
+});
+
+jest.mock('../../../../src/deploy/vm/command', () => {
+  const actualDeployVMCommand = jest.requireActual(
+    '../../../../src/deploy/vm/command'
+  );
+  return { ...actualDeployVMCommand };
+});
+
+// Import after mocking
+import * as commandModule from '../../../../src/deploy/vm/command';
+import { options } from '../../../../src/deploy/vm/command.options';
+const deployVMCommand = commandModule.deployVMCommand;
 
 // Import after mocking
 import log from 'npmlog';
@@ -26,9 +49,11 @@ const mockLogError = log.error as jest.MockedFunction<typeof log.error>;
 const mockDeployVM = deployVM as jest.MockedFunction<typeof deployVM>;
 
 // Create local CLI (as in command.test.ts)
-const cli = yargs().command(deployVMCommand);
+// Type cast to resolve interface compatibility with yargs
+const cli = yargs().command(commandModule.deployVMCommand as CommandModule);
 
-const parse = (command: string, options: VmCommandOptions = {}) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parse = (command: string, options: any = {}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Promise<any>((resolve, reject) => {
     cli.parse(command, options, (err, argv) => {
@@ -114,35 +139,56 @@ describe('vm command', () => {
   });
 
   describe('builder function', () => {
+    const isBuilderFunction = (
+      builder: unknown
+    ): builder is (yargs: Argv) => Argv => {
+      return typeof builder === 'function';
+    };
+
     test('should return yargs instance with options', () => {
+      if (!isBuilderFunction(deployVMCommand.builder)) {
+        throw new Error('builder must be a function');
+      }
+
       const mockYargs = {
         options: jest.fn().mockReturnThis(),
       } as unknown as Argv;
 
-      const result = deployVMCommand.builder(mockYargs as Argv);
+      const result = deployVMCommand.builder(mockYargs);
 
       expect(mockYargs.options).toHaveBeenCalled();
+      expect(mockYargs.options).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'user-name': expect.objectContaining({
+            group: 'Deploy VM Options',
+          }),
+        })
+      );
       expect(result).toBe(mockYargs);
     });
 
     test('should add group to individual options', () => {
+      if (!isBuilderFunction(deployVMCommand.builder)) {
+        throw new Error('builder must be a function');
+      }
+
       let optionsCount = 0;
 
       const mockYargs = {
-        options: jest.fn((opts) => {
+        options: jest.fn(() => {
           // Count each option
-          const optionsArray = Object.values(opts);
+          const optionsArray = Object.values(options);
           optionsCount = optionsArray.length;
 
           // Verify each option has group property
-          for (const option of Object.values(opts)) {
+          for (const option of Object.values(options)) {
             expect(option).toHaveProperty('group', 'Deploy VM Options');
           }
           return mockYargs;
         }),
       } as unknown as Argv;
 
-      deployVMCommand.builder(mockYargs as Argv);
+      deployVMCommand.builder(mockYargs);
 
       expect(optionsCount).toBe(7);
     });
