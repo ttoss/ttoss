@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.90](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.89...@terezinha-farm/vite-app@0.12.90) (2025-12-22)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.12.89](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.88...@terezinha-farm/vite-app@0.12.89) (2025-12-22)
+
+### Bug Fixes
+
+- i18n pr problem ([#812](https://github.com/ttoss/ttoss/issues/812)) ([e927a25](https://github.com/ttoss/ttoss/commit/e927a25e376b15c43c4454f53f3956441fcfab14))
+
 ## [0.12.88](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.87...@terezinha-farm/vite-app@0.12.88) (2025-12-18)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

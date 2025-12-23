@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.37.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.36.6...@ttoss/forms@0.37.0) (2025-12-22)
+
+### Features
+
+- segmented control variant and form field ([#811](https://github.com/ttoss/ttoss/issues/811)) ([3af6dde](https://github.com/ttoss/ttoss/commit/3af6dded7b9f0fe7027bd9740954fd9d83aaf332))
+
+## [0.36.6](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.36.5...@ttoss/forms@0.36.6) (2025-12-22)
+
+### Bug Fixes
+
+- i18n pr problem ([#812](https://github.com/ttoss/ttoss/issues/812)) ([e927a25](https://github.com/ttoss/ttoss/commit/e927a25e376b15c43c4454f53f3956441fcfab14))
+
 ## [0.36.5](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.36.4...@ttoss/forms@0.36.5) (2025-12-18)
 
 **Note:** Version bump only for package @ttoss/forms

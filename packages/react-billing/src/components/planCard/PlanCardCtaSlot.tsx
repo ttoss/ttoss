@@ -1,7 +1,7 @@
 import { Button, Flex } from '@ttoss/ui';
 
 import type { PlanCardButtonProps } from './PlanCard';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
 
 export interface PlanCardCtaSlotProps {
   buttonProps?: PlanCardButtonProps;
@@ -13,13 +13,14 @@ export const PlanCardCtaSlot = ({ buttonProps }: PlanCardCtaSlotProps) => {
     label: ctaLabel = 'Assine agora',
     sx: buttonSx,
     leftIcon,
-    variant,
+    variant: buttonVariant,
     ...restButtonProps
   } = buttonProps ?? {};
 
   return (
     <Flex
       sx={{
+        marginTop: 'auto',
         paddingY: '2',
         paddingX: '6',
         width: 'full',
@@ -28,7 +29,7 @@ export const PlanCardCtaSlot = ({ buttonProps }: PlanCardCtaSlotProps) => {
     >
       <Button
         {...restButtonProps}
-        variant={variant ?? 'accent'}
+        variant={buttonVariant ?? 'accent'}
         leftIcon={leftIcon}
         sx={{
           width: 'full',

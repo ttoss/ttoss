@@ -5,6 +5,7 @@ exports[`package.json exports should export all components 1`] = `
   "./Accordion": "./src/components/Accordion/index.ts",
   "./DatePicker": "./src/components/DatePicker/index.ts",
   "./Drawer": "./src/components/Drawer/index.ts",
+  "./EnhancedTitle": "./src/components/EnhancedTitle/index.ts",
   "./FileUploader": "./src/components/FileUploader/index.ts",
   "./InstallPwa": "./src/components/InstallPwa/index.ts",
   "./JsonEditor": "./src/components/JsonEditor/index.ts",
@@ -12,6 +13,7 @@ exports[`package.json exports should export all components 1`] = `
   "./List": "./src/components/List/index.ts",
   "./Markdown": "./src/components/Markdown/index.ts",
   "./Menu": "./src/components/Menu/index.ts",
+  "./MetricCard": "./src/components/MetricCard/index.ts",
   "./Modal": "./src/components/Modal/index.ts",
   "./NavList": "./src/components/NavList/index.ts",
   "./NotificationCard": "./src/components/NotificationCard/index.ts",
@@ -37,6 +39,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Drawer": {
     "default": "./dist/esm/Drawer/index.js",
     "types": "./dist/Drawer/index.d.ts",
+  },
+  "./EnhancedTitle": {
+    "default": "./dist/esm/EnhancedTitle/index.js",
+    "types": "./dist/EnhancedTitle/index.d.ts",
   },
   "./FileUploader": {
     "default": "./dist/esm/FileUploader/index.js",
@@ -65,6 +71,10 @@ exports[`package.json exports should export all components 2`] = `
   "./Menu": {
     "default": "./dist/esm/Menu/index.js",
     "types": "./dist/Menu/index.d.ts",
+  },
+  "./MetricCard": {
+    "default": "./dist/esm/MetricCard/index.js",
+    "types": "./dist/MetricCard/index.d.ts",
   },
   "./Modal": {
     "default": "./dist/esm/Modal/index.js",

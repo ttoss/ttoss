@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.3.2...@ttoss/ui@6.4.0) (2025-12-22)
+
+### Features
+
+- segmented control variant and form field ([#811](https://github.com/ttoss/ttoss/issues/811)) ([3af6dde](https://github.com/ttoss/ttoss/commit/3af6dded7b9f0fe7027bd9740954fd9d83aaf332))
+
 ## [6.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.3.1...@ttoss/ui@6.3.2) (2025-12-18)
 
 **Note:** Version bump only for package @ttoss/ui

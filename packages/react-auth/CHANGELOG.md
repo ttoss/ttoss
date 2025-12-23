@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.83](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.82...@ttoss/react-auth@2.6.83) (2025-12-22)
+
+**Note:** Version bump only for package @ttoss/react-auth
+
+## [2.6.82](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.81...@ttoss/react-auth@2.6.82) (2025-12-22)
+
+### Bug Fixes
+
+- i18n pr problem ([#812](https://github.com/ttoss/ttoss/issues/812)) ([e927a25](https://github.com/ttoss/ttoss/commit/e927a25e376b15c43c4454f53f3956441fcfab14))
+
 ## [2.6.81](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth@2.6.80...@ttoss/react-auth@2.6.81) (2025-12-18)
 
 **Note:** Version bump only for package @ttoss/react-auth

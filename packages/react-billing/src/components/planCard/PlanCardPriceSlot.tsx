@@ -1,7 +1,8 @@
 import { Flex, Text } from '@ttoss/ui';
 
 import type { PlanCardPrice } from './PlanCard';
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardPriceSlotProps {
   price: PlanCardPrice;
@@ -10,9 +11,9 @@ export interface PlanCardPriceSlotProps {
 
 export const PlanCardPriceSlot = ({
   price,
-  variant = 'default',
+  variant = 'primary',
 }: PlanCardPriceSlotProps) => {
-  const isEnterprise = variant === 'enterprise';
+  const variantStyles = getPlanCardVariantStyles(variant);
 
   return (
     <Flex
@@ -30,7 +31,7 @@ export const PlanCardPriceSlot = ({
           sx={{
             fontSize: '4xl',
             fontWeight: 'bold',
-            color: isEnterprise ? 'white' : 'display.text.primary.default',
+            color: variantStyles.color,
           }}
         >
           {price.value}
@@ -38,7 +39,7 @@ export const PlanCardPriceSlot = ({
         <Text
           sx={{
             fontSize: 'sm',
-            color: isEnterprise ? 'white' : 'display.text.secondary.default',
+            color: variantStyles.secondaryColor,
           }}
         >
           {price.interval}
@@ -48,7 +49,7 @@ export const PlanCardPriceSlot = ({
         <Text
           sx={{
             fontSize: 'md',
-            color: isEnterprise ? 'white' : 'display.text.secondary.default',
+            color: variantStyles.secondaryColor,
           }}
         >
           {price.description}

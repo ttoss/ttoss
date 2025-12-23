@@ -4,11 +4,12 @@ export {
   type PlanCardMetadata,
   type PlanCardPrice,
   type PlanCardProps,
-} from './components/PlanCard';
+} from './components/planCard/PlanCard';
 export {
   type PlanCardMetadataSlotParameter,
   type PlanCardMetadataSlotProps,
   type PlanCardMetadataSlotService,
   type PlanCardMetadataSlotVariant,
-} from './components/PlanCardMetadataSlot';
-export type { PlanCardVariant } from './components/PlanCardVariant';
+} from './components/planCard/PlanCardMetadataSlot';
+export type { PlanCardVariant } from './components/planCard/PlanCardVariants';
+export { SubscriptionPanel } from './components/subscriptionPanel/SubscriptionPanel';

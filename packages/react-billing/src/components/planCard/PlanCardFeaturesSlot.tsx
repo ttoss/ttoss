@@ -2,7 +2,8 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-import type { PlanCardVariant } from './PlanCardVariant';
+import type { PlanCardVariant } from './PlanCardVariants';
+import { getPlanCardVariantStyles } from './PlanCardVariants';
 
 export interface PlanCardFeaturesSlotProps {
   features: unknown[];
@@ -13,12 +14,10 @@ const featuresTitle = 'RECURSOS';
 
 export const PlanCardFeaturesSlot = ({
   features,
-  variant = 'default',
+  variant = 'primary',
 }: PlanCardFeaturesSlotProps) => {
-  const isEnterprise = variant === 'enterprise';
-  const featureColor = isEnterprise
-    ? 'white'
-    : 'feedback.text.positive.default';
+  const variantStyles = getPlanCardVariantStyles(variant);
+  const featurePositiveColor = variantStyles.positiveColor;
 
   return (
     <Box
@@ -35,7 +34,7 @@ export const PlanCardFeaturesSlot = ({
         <Flex
           sx={{
             letterSpacing: 'widest',
-            color: isEnterprise ? 'white' : 'text',
+            color: variantStyles.color,
           }}
         >
           {featuresTitle}
@@ -51,7 +50,7 @@ export const PlanCardFeaturesSlot = ({
                 key={index}
                 sx={{
                   fontSize: 'sm',
-                  color: featureColor,
+                  color: featurePositiveColor,
                   alignItems: 'center',
                   gap: '3',
                 }}
@@ -60,7 +59,7 @@ export const PlanCardFeaturesSlot = ({
                 <Text
                   sx={{
                     fontSize: 'sm',
-                    color: featureColor,
+                    color: featurePositiveColor,
                     alignItems: 'center',
                   }}
                 >

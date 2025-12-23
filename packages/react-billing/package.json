@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-billing",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Billing UI components for React apps.",
   "author": "Giovane Guimarães",
   "repository": {
@@ -21,6 +21,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^"
   },
