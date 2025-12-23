@@ -14,7 +14,7 @@ const meta: Meta<typeof SpotlightCard> = {
     secondButton: { control: 'object' },
     variant: {
       control: { type: 'radio' },
-      options: ['accent', 'primary'],
+      options: ['accent', 'primary', 'positive', 'caution', 'negative'],
       description: 'Estilo visual do card',
       table: {
         defaultValue: { summary: 'accent' },
@@ -149,5 +149,68 @@ export const FinanceDashboardContext: Story = {
     secondButton: {
       children: 'Documentation',
     },
+  },
+};
+
+/**
+ * Positive Variant
+ */
+export const PositiveVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'positive',
+    title: 'Success',
+    badge: 'Completed',
+    description:
+      'Your task has been completed successfully. All systems are operational.',
+    icon: 'material-symbols:check-circle-outline',
+  },
+};
+
+/**
+ * Caution Variant
+ */
+export const CautionVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'caution',
+    title: 'Warning',
+    badge: 'Attention',
+    description:
+      'Please review the following items before proceeding with the action.',
+    icon: 'material-symbols:warning-outline',
+  },
+};
+
+/**
+ * Negative Variant
+ */
+export const NegativeVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'negative',
+    title: 'Error',
+    badge: 'Critical',
+    description:
+      'An error occurred while processing your request. Please try again.',
+    icon: 'material-symbols:error-outline',
+  },
+};
+
+/**
+ * Custom SVG Icon
+ */
+export const CustomIconVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: 'accent',
+    title: 'Custom Icon',
+    badge: 'SVG',
+    description: 'SpotlightCard with a custom SVG icon instead of icon string.',
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+      </svg>
+    ),
   },
 };

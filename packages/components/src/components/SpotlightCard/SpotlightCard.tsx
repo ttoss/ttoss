@@ -1,4 +1,3 @@
-import { Icon, type IconType } from '@ttoss/react-icons';
 import type { ButtonProps } from '@ttoss/ui';
 import { Box, Button, Card, Flex, keyframes, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -10,15 +9,40 @@ interface SpotlightTheme {
         primary: { default: string };
         secondary: { default: string };
         accent: { default: string; active?: string };
+        muted: { default: string };
+        negative: { default: string };
+        caution: { default: string };
       };
       text: {
         primary: { default: string };
         accent: { default: string };
+        secondary: { default: string };
+        muted: { default: string };
+        negative: { default: string };
+        caution: { default: string };
       };
     };
     display: {
       border: { muted: { default: string } };
-      text: { accent: { default: string } };
+      text: {
+        accent: { default: string };
+        muted: { default: string };
+      };
+      background: {
+        muted: { default: string };
+      };
+    };
+    feedback: {
+      background: {
+        positive: { default: string };
+        caution: { default: string };
+        negative: { default: string };
+      };
+      text: {
+        positive: { default: string };
+        caution: { default: string };
+        negative: { default: string };
+      };
     };
   };
 }
@@ -26,7 +50,10 @@ interface SpotlightTheme {
 type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
-  icon: IconType;
+  /**
+   * Icon to display. Can be an icon string from @ttoss/react-icons or a custom ReactNode (SVG, component, etc.)
+   */
+  icon: React.ReactNode;
   /**
    * Title of the card. Pass a ReactNode for styling.
    */
@@ -38,7 +65,7 @@ export type SpotlightCardProps = {
   description: string;
   firstButton?: ButtonPropType;
   secondButton?: ButtonPropType;
-  variant?: 'accent' | 'primary';
+  variant?: 'accent' | 'primary' | 'positive' | 'caution' | 'negative';
 };
 
 export const SpotlightCard = ({
@@ -57,40 +84,92 @@ export const SpotlightCard = ({
   });
 
   const hasButtons = !!firstButton || !!secondButton;
-  const isAccent = variant === 'accent';
 
-  // --- COLORS ---
-  const textColorToken = isAccent
-    ? 'action.text.accent.default'
-    : 'action.text.primary.default';
+  // --- VARIANT CONFIG ---
+  const variantConfig = {
+    accent: {
+      textColor: 'action.text.accent.default',
+      iconColor: 'action.text.accent.default',
+      iconBg: 'rgba(255,255,255,0.3)',
+      badgeBg: 'action.background.primary.default',
+      badgeText: 'action.text.primary.default',
+      btnPrimaryVariant: 'primary',
+      btnPrimaryColor: 'action.text.primary.default',
+      btnSecondaryBorder: 'currentColor',
+      borderColor: 'transparent',
+      bgStart: 'action.background.accent.default',
+      bgMiddle: 'action.background.accent.active',
+      useOverlay: true,
+    },
+    primary: {
+      textColor: 'action.text.primary.default',
+      iconColor: 'display.text.accent.default',
+      iconBg: 'action.background.secondary.default',
+      badgeBg: 'action.background.accent.default',
+      badgeText: 'action.text.accent.default',
+      btnPrimaryVariant: 'accent',
+      btnPrimaryColor: 'action.text.accent.default',
+      btnSecondaryBorder: 'display.border.muted.default',
+      borderColor: 'display.border.muted.default',
+      bgStart: 'action.background.primary.default',
+      bgMiddle: 'action.background.secondary.default',
+      useOverlay: false,
+    },
+    positive: {
+      textColor: '#0a5f0a',
+      iconColor: '#0a5f0a',
+      iconBg: 'rgba(200,255,200,0.5)',
+      badgeBg: '#0a5f0a',
+      badgeText: '#ffffff',
+      btnPrimaryVariant: 'primary',
+      btnPrimaryColor: 'action.text.primary.default',
+      btnSecondaryBorder: 'currentColor',
+      borderColor: '#22c55e',
+      bgStart: '#22c55e',
+      bgMiddle: '#16a34a',
+      useOverlay: true,
+    },
+    caution: {
+      textColor: '#92400e',
+      iconColor: '#92400e',
+      iconBg: 'rgba(255,240,200,0.5)',
+      badgeBg: '#92400e',
+      badgeText: '#ffffff',
+      btnPrimaryVariant: 'primary',
+      btnPrimaryColor: 'action.text.primary.default',
+      btnSecondaryBorder: 'currentColor',
+      borderColor: '#fbbf24',
+      bgStart: '#fbbf24',
+      bgMiddle: '#f59e0b',
+      useOverlay: true,
+    },
+    negative: {
+      textColor: '#7f1d1d',
+      iconColor: '#7f1d1d',
+      iconBg: 'rgba(255,200,200,0.5)',
+      badgeBg: '#7f1d1d',
+      badgeText: '#ffffff',
+      btnPrimaryVariant: 'primary',
+      btnPrimaryColor: 'action.text.primary.default',
+      btnSecondaryBorder: 'currentColor',
+      borderColor: '#ef4444',
+      bgStart: '#ef4444',
+      bgMiddle: '#dc2626',
+      useOverlay: true,
+    },
+  };
 
-  const iconColorToken = isAccent
-    ? 'action.text.accent.default'
-    : 'display.text.accent.default';
+  const config = variantConfig[variant];
 
-  const iconBgToken = isAccent
-    ? 'rgba(255,255,255,0.3)'
-    : 'action.background.secondary.default';
-
-  // Badge Colors
-  const badgeBgToken = isAccent
-    ? 'action.background.primary.default'
-    : 'action.background.accent.default';
-
-  const badgeTextToken = isAccent
-    ? 'action.text.primary.default'
-    : 'action.text.accent.default';
-
-  // Buttons Colors
-  const btnPrimaryVariant = isAccent ? 'primary' : 'accent';
-  const btnPrimaryColorToken = isAccent
-    ? 'action.text.primary.default'
-    : 'action.text.accent.default';
-
-  const btnSecondaryColorToken = textColorToken;
-  const btnSecondaryBorderColorToken = isAccent
-    ? 'currentColor'
-    : 'display.border.muted.default';
+  const textColorToken = config.textColor;
+  const iconColorToken = config.iconColor;
+  const iconBgToken = config.iconBg;
+  const badgeBgToken = config.badgeBg;
+  const badgeTextToken = config.badgeText;
+  const btnPrimaryVariant = config.btnPrimaryVariant;
+  const btnPrimaryColorToken = config.btnPrimaryColor;
+  const btnSecondaryColorToken = config.textColor;
+  const btnSecondaryBorderColorToken = config.btnSecondaryBorder;
 
   const renderButton = (
     prop: ButtonPropType,
@@ -136,21 +215,29 @@ export const SpotlightCard = ({
         justifyContent: 'space-between',
         background: (t) => {
           const theme = t as SpotlightTheme;
-          const bgStart = isAccent
-            ? theme.colors?.action?.background?.accent?.default
-            : theme.colors?.action?.background?.primary?.default;
-          const bgMiddle = isAccent
-            ? theme.colors?.action?.background?.accent?.active
-            : theme.colors?.action?.background?.secondary?.default;
 
-          if (isAccent) {
-            return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), 
+          // Helper to get nested color value
+          const getColor = (path: string) => {
+            const parts = path.split('.');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let value: any = theme.colors;
+            for (const part of parts) {
+              value = value?.[part];
+            }
+            return typeof value === 'object' ? value.default : value;
+          };
+
+          const bgStart = getColor(config.bgStart);
+          const bgMiddle = getColor(config.bgMiddle);
+
+          if (config.useOverlay) {
+            return `linear-gradient(270deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%), 
                     linear-gradient(0deg, ${bgStart}, ${bgStart})`;
           }
           return `linear-gradient(270deg, ${bgStart}, ${bgMiddle}, ${bgStart})`;
         },
-        backgroundSize: isAccent ? '200% 100%, auto' : '400% 400%',
-        animation: `${gradientFlow} 6s ease infinite`,
+        backgroundSize: config.useOverlay ? '300% 100%, auto' : '600% 600%',
+        animation: `${gradientFlow} 3s ease infinite`,
         width: '100%',
         minHeight: '104px',
         borderRadius: 'xl',
@@ -162,7 +249,7 @@ export const SpotlightCard = ({
         overflow: 'hidden',
         borderWidth: '1px',
         borderStyle: 'solid',
-        borderColor: isAccent ? 'transparent' : 'display.border.muted.default',
+        borderColor: config.borderColor,
       }}
       data-testid="spotlight-card"
     >
@@ -180,7 +267,17 @@ export const SpotlightCard = ({
             color: iconColorToken,
           }}
         >
-          <Icon icon={icon} width={32} />
+          {typeof icon === 'string' ? (
+            <Box
+              // @ts-expect-error - iconify-icon is a custom element
+              as="iconify-icon"
+              {...{ icon }}
+              width={32}
+              height={32}
+            />
+          ) : (
+            icon
+          )}
         </Box>
 
         <Box sx={{ minWidth: 0 }}>
@@ -265,7 +362,7 @@ export const SpotlightCard = ({
               borderWidth: '1px',
               borderStyle: 'solid',
               borderColor: btnSecondaryBorderColorToken,
-              opacity: isAccent ? 0.6 : 1,
+              opacity: config.useOverlay ? 0.6 : 1,
               cursor: 'pointer',
               ':hover': {
                 backgroundColor: 'rgba(255,255,255,0.2)',

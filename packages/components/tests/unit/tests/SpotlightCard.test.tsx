@@ -155,4 +155,114 @@ describe('SpotlightCard', () => {
 
     expect(screen.getByText('Accent Explicit')).toBeInTheDocument();
   });
+
+  test('should render positive variant', () => {
+    render(
+      <SpotlightCard
+        title="Positive Card"
+        description="This card uses the positive variant"
+        icon="symbol"
+        variant="positive"
+      />
+    );
+
+    expect(screen.getByText('Positive Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render caution variant', () => {
+    render(
+      <SpotlightCard
+        title="Caution Card"
+        description="This card uses the caution variant"
+        icon="symbol"
+        variant="caution"
+      />
+    );
+
+    expect(screen.getByText('Caution Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render negative variant', () => {
+    render(
+      <SpotlightCard
+        title="Negative Card"
+        description="This card uses the negative variant"
+        icon="symbol"
+        variant="negative"
+      />
+    );
+
+    expect(screen.getByText('Negative Card')).toBeInTheDocument();
+    expect(screen.getByTestId('spotlight-card')).toBeInTheDocument();
+  });
+
+  test('should render positive variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Positive with buttons"
+        description="Positive variant with buttons"
+        icon="symbol"
+        variant="positive"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render caution variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Caution with buttons"
+        description="Caution variant with buttons"
+        icon="symbol"
+        variant="caution"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render negative variant with buttons', () => {
+    render(
+      <SpotlightCard
+        title="Negative with buttons"
+        description="Negative variant with buttons"
+        icon="symbol"
+        variant="negative"
+        firstButton={{ children: 'First' }}
+        secondButton={{ children: 'Second' }}
+      />
+    );
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+  });
+
+  test('should render with custom ReactNode icon', () => {
+    const CustomIcon = () => {
+      return (
+        <svg data-testid="custom-icon" width="32" height="32">
+          <circle cx="16" cy="16" r="8" />
+        </svg>
+      );
+    };
+
+    render(
+      <SpotlightCard
+        title="Custom Icon"
+        description="Card with custom SVG icon"
+        icon={<CustomIcon />}
+      />
+    );
+
+    expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+  });
 });
