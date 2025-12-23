@@ -26,11 +26,16 @@ import type {
 
 const templates: DashboardTemplate[] = [];
 const filters: DashboardFilter[] = [];
+const selectedTemplate: DashboardTemplate | undefined = undefined;
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider>
-      <DashboardProvider filters={filters} templates={templates}>
+      <DashboardProvider
+        filters={filters}
+        templates={templates}
+        selectedTemplate={selectedTemplate}
+      >
         <App />
       </DashboardProvider>
     </ThemeProvider>
@@ -50,31 +55,29 @@ import type {
 import { DashboardFilterType } from '@ttoss/react-dashboard';
 
 const MyDashboard = () => {
-  const templates: DashboardTemplate[] = [
-    {
-      id: 'default',
-      name: 'Default Template',
-      description: 'My default dashboard layout',
-      grid: [
-        {
-          i: 'card-1',
-          x: 0,
-          y: 0,
-          w: 4,
-          h: 4,
-          card: {
-            title: 'Total Revenue',
-            numberType: 'currency',
-            type: 'bigNumber',
-            sourceType: [{ source: 'api' }],
-            data: {
-              api: { total: 150000 },
-            },
+  const selectedTemplate: DashboardTemplate = {
+    id: 'default',
+    name: 'Default Template',
+    description: 'My default dashboard layout',
+    grid: [
+      {
+        i: 'card-1',
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          title: 'Total Revenue',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {
+            api: { total: 150000 },
           },
         },
-      ],
-    },
-  ];
+      },
+    ],
+  };
 
   const filters: DashboardFilter[] = [
     {
@@ -85,7 +88,14 @@ const MyDashboard = () => {
     },
   ];
 
-  return <Dashboard templates={templates} filters={filters} loading={false} />;
+  return (
+    <Dashboard
+      selectedTemplate={selectedTemplate}
+      templates={[]}
+      filters={filters}
+      loading={false}
+    />
+  );
 };
 ```
 
@@ -99,6 +109,7 @@ The main dashboard component that orchestrates the entire dashboard experience.
 import { Dashboard } from '@ttoss/react-dashboard';
 
 <Dashboard
+  selectedTemplate={selectedTemplate}
   templates={templates}
   filters={filters}
   loading={false}
@@ -111,13 +122,14 @@ import { Dashboard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop              | Type                                   | Default | Description                                |
-| ----------------- | -------------------------------------- | ------- | ------------------------------------------ |
-| `templates`       | `DashboardTemplate[]`                  | `[]`    | Array of dashboard templates               |
-| `filters`         | `DashboardFilter[]`                    | `[]`    | Array of dashboard filters                 |
-| `loading`         | `boolean`                              | `false` | Loading state for the dashboard            |
-| `headerChildren`  | `React.ReactNode`                      | -       | Additional content to render in the header |
-| `onFiltersChange` | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change               |
+| Prop               | Type                                   | Default | Description                                |
+| ------------------ | -------------------------------------- | ------- | ------------------------------------------ |
+| `selectedTemplate` | `DashboardTemplate \| undefined`       | -       | The template to display in the dashboard   |
+| `templates`        | `DashboardTemplate[]`                  | `[]`    | Array of dashboard templates               |
+| `filters`          | `DashboardFilter[]`                    | `[]`    | Array of dashboard filters                 |
+| `loading`          | `boolean`                              | `false` | Loading state for the dashboard            |
+| `headerChildren`   | `React.ReactNode`                      | -       | Additional content to render in the header |
+| `onFiltersChange`  | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change               |
 
 ### DashboardProvider
 
@@ -129,6 +141,7 @@ import { DashboardProvider } from '@ttoss/react-dashboard';
 <DashboardProvider
   filters={filters}
   templates={templates}
+  selectedTemplate={selectedTemplate}
   onFiltersChange={handleFiltersChange}
 >
   {children}
@@ -137,12 +150,13 @@ import { DashboardProvider } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop              | Type                                   | Default | Description                  |
-| ----------------- | -------------------------------------- | ------- | ---------------------------- |
-| `children`        | `React.ReactNode`                      | -       | Child components             |
-| `filters`         | `DashboardFilter[]`                    | `[]`    | Filter state                 |
-| `templates`       | `DashboardTemplate[]`                  | `[]`    | Template state               |
-| `onFiltersChange` | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change |
+| Prop               | Type                                   | Default | Description                  |
+| ------------------ | -------------------------------------- | ------- | ---------------------------- |
+| `children`         | `React.ReactNode`                      | -       | Child components             |
+| `filters`          | `DashboardFilter[]`                    | `[]`    | Filter state                 |
+| `templates`        | `DashboardTemplate[]`                  | `[]`    | Template state               |
+| `selectedTemplate` | `DashboardTemplate \| undefined`       | -       | The template to display      |
+| `onFiltersChange`  | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change |
 
 ### useDashboard Hook
 
@@ -163,12 +177,12 @@ const MyComponent = () => {
 
 **Returns:**
 
-| Property           | Type                                                 | Description                                  |
-| ------------------ | ---------------------------------------------------- | -------------------------------------------- |
-| `filters`          | `DashboardFilter[]`                                  | Current filter state                         |
-| `updateFilter`     | `(key: string, value: DashboardFilterValue) => void` | Function to update a specific filter by key  |
-| `templates`        | `DashboardTemplate[]`                                | Current template state                       |
-| `selectedTemplate` | `DashboardTemplate \| undefined`                     | Currently selected template based on filters |
+| Property           | Type                                                 | Description                                 |
+| ------------------ | ---------------------------------------------------- | ------------------------------------------- |
+| `filters`          | `DashboardFilter[]`                                  | Current filter state                        |
+| `updateFilter`     | `(key: string, value: DashboardFilterValue) => void` | Function to update a specific filter by key |
+| `templates`        | `DashboardTemplate[]`                                | Current template state                      |
+| `selectedTemplate` | `DashboardTemplate \| undefined`                     | Currently selected template passed as prop  |
 
 ### DashboardCard
 
@@ -437,60 +451,54 @@ import type {
 import { DashboardFilterType } from '@ttoss/react-dashboard';
 
 const App = () => {
-  const templates: DashboardTemplate[] = [
-    {
-      id: 'default',
-      name: 'Default Dashboard',
-      grid: [
-        {
-          i: 'revenue',
-          x: 0,
-          y: 0,
-          w: 4,
-          h: 4,
-          card: {
-            title: 'Total Revenue',
-            numberType: 'currency',
-            type: 'bigNumber',
-            sourceType: [{ source: 'api' }],
-            data: {
-              api: { total: 150000 },
-            },
-            trend: {
-              value: 15.5,
-              status: 'positive',
-            },
+  const selectedTemplate: DashboardTemplate = {
+    id: 'default',
+    name: 'Default Dashboard',
+    grid: [
+      {
+        i: 'revenue',
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          title: 'Total Revenue',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {
+            api: { total: 150000 },
+          },
+          trend: {
+            value: 15.5,
+            status: 'positive',
           },
         },
-        {
-          i: 'roas',
-          x: 4,
-          y: 0,
-          w: 4,
-          h: 4,
-          card: {
-            title: 'ROAS',
-            numberType: 'number',
-            type: 'bigNumber',
-            sourceType: [{ source: 'api' }],
-            data: {
-              api: { total: 3.5 },
-            },
-            variant: 'light-green',
+      },
+      {
+        i: 'roas',
+        x: 4,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          title: 'ROAS',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {
+            api: { total: 3.5 },
           },
+          variant: 'light-green',
         },
-      ],
-    },
-  ];
+      },
+    ],
+  };
+
+  // Optional: Keep templates array if you need to switch between templates
+  const templates: DashboardTemplate[] = [selectedTemplate];
 
   const filters: DashboardFilter[] = [
-    {
-      key: 'template',
-      type: DashboardFilterType.SELECT,
-      label: 'Template',
-      value: 'default',
-      options: [{ label: 'Default Dashboard', value: 'default' }],
-    },
     {
       key: 'date-range',
       type: DashboardFilterType.DATE_RANGE,
@@ -525,6 +533,7 @@ const App = () => {
 
   return (
     <Dashboard
+      selectedTemplate={selectedTemplate}
       templates={templates}
       filters={filters}
       loading={false}

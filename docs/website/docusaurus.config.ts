@@ -67,6 +67,7 @@ const config: Config = {
           'react-auth',
           'react-auth-core',
           'react-auth-strapi',
+          'react-dashboard',
           'react-feature-flags',
           'react-hooks',
           'react-i18n',
