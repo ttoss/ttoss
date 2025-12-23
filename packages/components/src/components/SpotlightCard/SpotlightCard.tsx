@@ -26,7 +26,10 @@ interface SpotlightTheme {
 type ButtonPropType = ButtonProps | React.ReactNode;
 
 export type SpotlightCardProps = {
-  icon: IconType;
+  /**
+   * The icon to display. Can be a string identifier (e.g., 'home', 'user') or an IconType object for custom icons.
+   */
+  icon: string | IconType;
   /**
    * Title of the card. Pass a ReactNode for styling.
    */
