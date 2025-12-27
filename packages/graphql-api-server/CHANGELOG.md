@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.10.0 (2025-12-27)
+
+### Features
+
+- create http-server mcp ([#819](https://github.com/ttoss/ttoss/issues/819)) ([1566679](https://github.com/ttoss/ttoss/commit/156667902440d0de2ae2fc4729b2d5c72ddc8604))
+
 # 0.9.0 (2025-12-27)
 
 ### Features

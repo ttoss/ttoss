@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "HTTP Server for ttoss environment",
   "license": "MIT",
   "author": "ttoss",
