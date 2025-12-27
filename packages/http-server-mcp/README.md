@@ -1,6 +1,6 @@
 # @ttoss/http-server-mcp
 
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io) server integration for [@ttoss/http-server](../http-server).
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io) server integration for [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server).
 
 ## Installation
 
@@ -204,7 +204,7 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 
 ## Related Packages
 
-- [@ttoss/http-server](../http-server) - HTTP server foundation
+- [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
 - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - MCP SDK
 
 ## Resources

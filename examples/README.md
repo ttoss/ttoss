@@ -43,6 +43,7 @@ When adding new examples:
 4. Add comments explaining non-obvious code
 5. Use TypeScript for better documentation through types
 6. Set `"private": true` in `package.json` (examples aren't published)
+7. Optionally, create a `build` script with `tsc --noEmit` to validate ttoss/packages compatibility.
 
 ## Example Template Structure
 
@@ -59,4 +60,4 @@ examples/
 ## Learn More
 
 - [ttoss Documentation](https://ttoss.dev)
-- [Package Documentation](../packages)
+- [Packages Documentation](https://ttoss.dev/docs/modules/packages)
