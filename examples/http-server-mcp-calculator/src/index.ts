@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   addHealthCheck,
   App,
@@ -10,7 +11,6 @@ import {
   Server as McpServer,
   z,
 } from '@ttoss/http-server-mcp';
-import { log } from '@ttoss/logger';
 
 /**
  * Business logic: Simple sum function
@@ -108,13 +108,13 @@ app.use(mcpRouter.routes());
 const PORT = 3000;
 
 app.listen(PORT, () => {
-  log.info(`🚀 Server running on http://localhost:${PORT}`);
-  log.info(`\n📍 Available endpoints:`);
-  log.info(`   - Health: GET http://localhost:${PORT}/health`);
-  log.info(`   - REST:   POST http://localhost:${PORT}/sum`);
-  log.info(`   - MCP:    POST http://localhost:${PORT}/mcp`);
-  log.info(`\n💡 Try it out:`);
-  log.info(
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`\n📍 Available endpoints:`);
+  console.log(`   - Health: GET http://localhost:${PORT}/health`);
+  console.log(`   - REST:   POST http://localhost:${PORT}/sum`);
+  console.log(`   - MCP:    POST http://localhost:${PORT}/mcp`);
+  console.log(`\n💡 Try it out:`);
+  console.log(
     `   curl -X POST http://localhost:${PORT}/sum -H "Content-Type: application/json" -d '{"a": 5, "b": 3}'`
   );
 });

@@ -9,7 +9,6 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/logger"
   },
-  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
