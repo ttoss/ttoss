@@ -1,3 +1,5 @@
 import { jestUnitConfig } from '@ttoss/config';
 
-export default jestUnitConfig();
+export default jestUnitConfig({
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+});
