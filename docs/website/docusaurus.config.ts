@@ -56,6 +56,7 @@ const config: Config = {
           'graphql-api-cli',
           'graphql-api-server',
           'http-server',
+          'http-server-mcp',
           'i18n-cli',
           'ids',
           'lambda-postgres-query',

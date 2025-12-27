@@ -1,13 +1,16 @@
 {
-  "name": "@ttoss/logger",
-  "version": "0.7.1",
-  "description": "A simple module to configure and send notifications to services like Discord from your applications.",
+  "name": "@ttoss/http-server-mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "license": "MIT",
-  "contributors": [],
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/logger"
+    "directory": "packages/http-server-mcp"
   },
   "type": "module",
   "exports": {
@@ -21,19 +24,31 @@
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@ttoss/http-server": "workspace:^",
+    "zod": "^3.25.76"
+  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@ttoss/test-utils": "workspace:^",
+    "@types/koa": "^3.0.1",
     "jest": "^30.2.0",
+    "supertest": "^7.1.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [],
+  "keywords": [
+    "ai",
+    "koa",
+    "llm",
+    "mcp",
+    "model-context-protocol",
+    "server"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
     },
