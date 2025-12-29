@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.6.2...@docs/storybook@3.7.0) (2025-12-29)
+
+### Features
+
+- create lockedOverlay component ([#815](https://github.com/ttoss/ttoss/issues/815)) ([958cd24](https://github.com/ttoss/ttoss/commit/958cd24c90e77ff34fa6a2b4fbace8f08be383ae))
+
 ## [3.6.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.6.1...@docs/storybook@3.6.2) (2025-12-23)
 
 **Note:** Version bump only for package @docs/storybook
