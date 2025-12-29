@@ -130,7 +130,7 @@ export const SpotlightCard = ({
     <Card
       sx={{
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: ['row'],
         flexWrap: 'nowrap',
         alignItems: 'center',
         justifyContent: 'space-between',

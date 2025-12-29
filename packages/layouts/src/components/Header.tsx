@@ -1,5 +1,6 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, BoxProps, Flex, IconButton } from '@ttoss/ui';
+import type { BoxProps } from '@ttoss/ui';
+import { Box, Flex, IconButton } from '@ttoss/ui';
 import * as React from 'react';
 
 import { useIsDesktop } from '../useIsDesktop';
@@ -80,6 +81,7 @@ export const Header = ({
         borderBottom: 'sm',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.primary.default',
+        zIndex: 'overlay',
         ...(sidebarSlot ? {} : paddingSx),
         ...boxProps.sx,
       }}
