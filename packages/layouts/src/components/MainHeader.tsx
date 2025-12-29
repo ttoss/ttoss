@@ -8,8 +8,6 @@ export const MainHeader = (props: BoxProps) => {
       {...props}
       as="header"
       sx={{
-        paddingX: '4',
-        paddingY: '3',
         borderBottom: 'sm',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.primary.default',

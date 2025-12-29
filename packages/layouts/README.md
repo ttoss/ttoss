@@ -60,7 +60,7 @@ The Main component provides a structured content area with three distinct sectio
   </Layout.Main.Header>
 
   <Layout.Main.Body>
-    Main content with consistent padding and scroll handling
+    Main content with theme-controlled padding and scroll handling
   </Layout.Main.Body>
 
   <Layout.Main.Footer>
@@ -79,7 +79,7 @@ The Main component provides a structured content area with three distinct sectio
 
 - **Clear Content Hierarchy**: Separates page header, content, and footer concerns
 - **Automatic Scroll Management**: Body handles overflow while keeping header/footer fixed
-- **Consistent Spacing**: Each section has optimized padding and layout
+- **Consistent Spacing**: Each section has optimized padding and layout (theme-controlled for Main.Body)
 - **Accessibility**: Proper semantic HTML elements (`<header>`, `<main>`, `<footer>`)
 
 ## Automatic Layout Composition
@@ -180,7 +180,57 @@ export const theme = {
 };
 ```
 
-Other layout components (Header, Sidebar, Footer) also accept the `variant` prop for theme-driven customization.
+The layout components use theme variants for customizable padding. Define these variants in your theme:
+
+```js
+// theme.js
+export const theme = {
+  variants: {
+    layout: {
+      main: {
+        body: {
+          paddingX: '10', // Horizontal padding for body
+          paddingY: '6', // Vertical padding for body
+        },
+        header: {
+          paddingX: '4', // Horizontal padding for header
+          paddingY: '3', // Vertical padding for header
+        },
+        footer: {
+          paddingX: '10', // Horizontal padding for footer
+          paddingY: '3', // Vertical padding for footer
+        },
+      },
+    },
+  },
+};
+```
+
+To remove padding for specific themes, set the padding properties to `undefined`:
+
+```js
+// theme.js - No padding theme
+export const noPaddingTheme = {
+  variants: {
+    layout: {
+      main: {
+        body: {
+          paddingX: undefined,
+          paddingY: '6',
+        },
+        header: {
+          paddingX: undefined,
+          paddingY: undefined,
+        },
+        footer: {
+          paddingX: undefined,
+          paddingY: undefined,
+        },
+      },
+    },
+  },
+};
+```
 
 ## Advanced Usage
 

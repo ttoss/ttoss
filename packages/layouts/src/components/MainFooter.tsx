@@ -7,8 +7,6 @@ export const MainFooter = (props: BoxProps) => {
       variant="layout.main.footer"
       {...props}
       sx={{
-        paddingX: '10',
-        paddingY: '3',
         borderTop: 'sm',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.primary.default',
