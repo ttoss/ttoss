@@ -78,25 +78,6 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000/mcp \
   --tool-name sum --tool-arg a=5 --tool-arg b=3
 ```
 
-Or test manually with raw JSON-RPC:
-
-```bash
-curl -X POST http://localhost:3000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "tools/call",
-    "params": {
-      "name": "sum",
-      "arguments": {
-        "a": 5,
-        "b": 3
-      }
-    },
-    "id": 1
-  }'
-```
-
 ## Key Concepts
 
 ### 1. Shared Business Logic

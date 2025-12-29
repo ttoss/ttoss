@@ -38,6 +38,43 @@ Each principle includes:
 
 <TOCInline toc={toc} />
 
+## The Foundations of Hybrid Allocation
+
+Agentic systems are hybrid by nature: probabilistic AI (LLMs/ML) paired with deterministic components (code, rules, schemas). Success depends on allocating tasks correctly based on problem structure.
+
+Well-structured problems (clear rules, predictable outcomes, low ambiguity) belong to deterministic execution. Ill-structured problems (ambiguous, contextual, incomplete data, multiple paths) require probabilistic AI.
+
+These principles come first: they define what to delegate to AI versus code before applying physics, economics, or governance rules. Proper allocation is the foundation of reliable, efficient, and trustworthy agentic design.
+
+### The Principle of Problem Structure Allocation
+
+Well-structured problems—those with clear rules, predictable inputs, finite outcomes, and low ambiguity—are best solved by traditional deterministic systems (rule-based logic, schemas, and conventional programming). Ill-structured problems—characterized by ambiguity, contextual variability, incomplete information, and multiple viable paths—require probabilistic AI models capable of pattern recognition, inference under uncertainty, and adaptive generation. Effective agentic systems allocate subtasks accordingly: route structured components to code-enforced determinism and reserve LLM invocation for genuinely ill-structured elements. This allocation maximizes reliability, minimizes token waste, and aligns compute cost with value created.
+
+**Failure Scenario:** A team builds an agent that uses an expensive LLM to validate form inputs (e.g., checking if an email address is correctly formatted or if a date falls within a range). The model occasionally hallucinates edge cases or introduces variability, leading to inconsistent behavior that could have been prevented with simple regex or type checks—wasting resources while reducing trustworthiness.
+
+#### The Corollary of Structural Diagnosis
+
+Before implementing any agent capability, explicitly classify the sub-problem as well- or ill-structured. If a constraint or decision can be fully expressed in code, schema, or mathematical rules, it must be extracted from the probabilistic layer and enforced deterministically. Only delegate to the LLM what inherently demands tolerance for ambiguity, context synthesis, or creative exploration.
+
+### The Principle of Mandatory Hybridization
+
+No production-grade agentic system can rely solely on probabilistic AI for end-to-end execution. Pure LLM-driven agents inherit inherent variability, hallucinations, and drift; pure deterministic systems lack adaptability to real-world ambiguity. All reliable agents must therefore be hybrid: probabilistic components handle perception, exploration, and generation in ill-structured domains, while deterministic layers (validators, protocols, state machines) enforce boundaries, ensure compliance, and collapse variability into guaranteed outcomes. Hybridization is not optional enhancement—it is the only engineering path to scalability and trust.
+
+**Failure Scenario:** A developer constructs a "fully agentic" workflow where an LLM chain generates, validates, and executes database mutations directly. Subtle prompt drift causes occasional invalid SQL or policy violations, resulting in data corruption that propagates silently until discovered in audit—because no structural enforcement separated probabilistic creativity from deterministic action.
+
+#### The Corollary of Deterministic Enforcement Supremacy
+
+Wherever a reliability requirement exists (data integrity, compliance, financial transactions, user-facing actions), probabilistic outputs must pass through rigid, code-enforced guardrails before commitment. Prompts alone cannot substitute for schemas, type systems, or transaction rollbacks; attempting "semantic persuasion" to achieve structural guarantees inevitably fails under distribution shift.
+
+### The Principle of Graduated Agency by Structure and Risk
+
+Agency—the degree of autonomous decision-making granted to an agent—must scale inversely with problem structure and consequence severity. Grant high autonomy only to probabilistic components operating in ill-structured, low-risk domains where variability is tolerable and exploration adds value. In well-structured or high-stakes contexts, constrain agency through deterministic rules, mandatory verification steps, or human-in-the-loop escalation. This asymmetric approach prevents catastrophic failure while preserving the benefits of AI where they matter most.
+**Failure Scenario:** An enterprise deploys a fully autonomous agent for customer refund processing (a partially structured task with high financial risk). The LLM probabilistically interprets ambiguous return policies, occasionally approving ineligible claims and causing significant revenue leakage—because agency was not calibrated to the mixed structure and elevated risk profile.
+
+#### The Corollary of Risk-Structured Delegation
+
+Map every agent workflow to a risk-structure matrix: low-risk/ill-structured → maximal LLM agency; high-risk/well-structured → minimal agency with deterministic overrides. Intermediate cases require hybrid escalation paths, ensuring probabilistic flexibility never bypasses non-negotiable constraints. This calibration aligns with asymmetric risk tolerance: accept variability where upside outweighs downside, enforce certainty elsewhere.
+
 ## The Physics of AI Integration
 
 Define the immutable properties and technical constraints of the models we are working with. We cannot change these rules; we can only manage them.
