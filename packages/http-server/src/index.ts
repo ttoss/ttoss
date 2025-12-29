@@ -1,7 +1,10 @@
 import { bodyParser } from '@koa/bodyparser';
-import App from 'koa';
-import Router from '@koa/router';
 import cors from '@koa/cors';
 import multer from '@koa/multer';
+import Router from '@koa/router';
+import App from 'koa';
 
-export { App, Router, cors, bodyParser, multer };
+export { App, bodyParser, cors, multer, Router };
+
+export * from './addHealthCheck';
+export type { File as MulterFile } from '@koa/multer';
