@@ -760,6 +760,24 @@ exports[`Bruttal theme snapshot 1`] = `
       "lineSpace": "3.5",
     },
   },
+  "variants": {
+    "layout": {
+      "main": {
+        "body": {
+          "paddingX": "10",
+          "paddingY": "6",
+        },
+        "footer": {
+          "paddingX": "10",
+          "paddingY": "3",
+        },
+        "header": {
+          "paddingX": "4",
+          "paddingY": "3",
+        },
+      },
+    },
+  },
   "zIndices": {
     "auto": "auto",
     "banner": 1200,
