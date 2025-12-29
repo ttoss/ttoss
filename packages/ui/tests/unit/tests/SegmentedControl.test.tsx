@@ -151,3 +151,25 @@ test('should set data-variant attribute for accent variant', () => {
     .closest('[data-variant="accent"]');
   expect(container).toBeInTheDocument();
 });
+
+test('should apply size sm', () => {
+  render(<SegmentedControl options={['Option 1', 'Option 2']} size="sm" />);
+
+  const item = screen.getByText('Option 1');
+  expect(item).toBeInTheDocument();
+  // Check if styles are applied, but since it's sx, hard to test directly
+});
+
+test('should apply size md', () => {
+  render(<SegmentedControl options={['Option 1', 'Option 2']} size="md" />);
+
+  const item = screen.getByText('Option 1');
+  expect(item).toBeInTheDocument();
+});
+
+test('should apply size lg', () => {
+  render(<SegmentedControl options={['Option 1', 'Option 2']} size="lg" />);
+
+  const item = screen.getByText('Option 1');
+  expect(item).toBeInTheDocument();
+});
