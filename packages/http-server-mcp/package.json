@@ -1,7 +1,7 @@
 {
-  "name": "@ttoss/http-server",
+  "name": "@ttoss/http-server-mcp",
   "version": "0.3.1",
-  "description": "HTTP Server for ttoss environment",
+  "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/http-server"
+    "directory": "packages/http-server-mcp"
   },
   "type": "module",
   "exports": {
@@ -25,25 +25,23 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@koa/bodyparser": "^6.0.0",
-    "@koa/cors": "^5.0.0",
-    "@koa/multer": "^4.0.0",
-    "@koa/router": "^15.1.1",
-    "koa": "^3.1.1",
-    "multer": "2.0.2"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@ttoss/http-server": "workspace:^",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.1",
-    "@types/koa__cors": "^5.0.1",
-    "@types/koa__multer": "^2.0.8",
-    "@types/koa__router": "^12.0.5",
     "jest": "^30.2.0",
     "supertest": "^7.1.4",
     "tsup": "^8.5.1"
   },
   "keywords": [
+    "ai",
     "koa",
+    "llm",
+    "mcp",
+    "model-context-protocol",
     "server"
   ],
   "publishConfig": {

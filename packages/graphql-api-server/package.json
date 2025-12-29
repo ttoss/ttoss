@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-server",
-  "version": "0.8.18",
+  "version": "0.10.1",
   "description": "GraphQL API Server",
   "license": "MIT",
   "author": "ttoss",
@@ -39,7 +39,7 @@
     "@types/supertest": "^6.0.2",
     "graphql": "^16.11.0",
     "jest": "^30.2.0",
-    "supertest": "^7.0.0",
+    "supertest": "^7.1.4",
     "tsup": "^8.5.1"
   },
   "keywords": [

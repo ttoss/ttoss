@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.2.0...@docs/website@2.2.1) (2025-12-29)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.2.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.25...@docs/website@2.2.0) (2025-12-27)
+
+### Features
+
+- create http-server mcp ([#819](https://github.com/ttoss/ttoss/issues/819)) ([1566679](https://github.com/ttoss/ttoss/commit/156667902440d0de2ae2fc4729b2d5c72ddc8604))
+
+# [2.1.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.25...@docs/website@2.1.0) (2025-12-27)
+
+### Features
+
+- create http-server mcp ([#819](https://github.com/ttoss/ttoss/issues/819)) ([1566679](https://github.com/ttoss/ttoss/commit/156667902440d0de2ae2fc4729b2d5c72ddc8604))
+
+## [2.0.25](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.24...@docs/website@2.0.25) (2025-12-26)
+
+**Note:** Version bump only for package @docs/website
+
 ## [2.0.24](https://github.com/ttoss/ttoss/compare/@docs/website@2.0.23...@docs/website@2.0.24) (2025-12-23)
 
 **Note:** Version bump only for package @docs/website
