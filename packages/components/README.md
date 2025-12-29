@@ -148,6 +148,38 @@ import { List, ListItem } from '@ttoss/components/List';
 </List>;
 ```
 
+### LockedOverlay
+
+Block and display locked features or restricted content within a container. Unlike modals, overlays block only their parent container. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-lockedoverlay--docs)
+
+```tsx
+import { LockedOverlay } from '@ttoss/components/LockedOverlay';
+
+// Parent must have position: relative
+<Box sx={{ position: 'relative' }}>
+  <LockedOverlay
+    isOpen={isOpen}
+    onRequestClose={() => setIsOpen(false)}
+    header={{
+      icon: 'fluent:lock-closed-24-filled',
+      title: 'Premium Feature',
+      description: 'Available in Pro plan only',
+      variant: 'primary',
+    }}
+    actions={[
+      {
+        label: 'Upgrade Now',
+        icon: 'fluent-emoji-high-contrast:sparkles',
+        variant: 'primary',
+        onClick: handleUpgrade,
+      },
+    ]}
+  >
+    <Text>This feature is only available for Pro users.</Text>
+  </LockedOverlay>
+</Box>;
+```
+
 ### Markdown
 
 Render markdown content with theme integration. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-markdown--docs)
