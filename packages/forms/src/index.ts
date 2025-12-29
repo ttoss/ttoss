@@ -15,6 +15,7 @@ export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldRadioCard } from './FormFieldRadioCard';
 export type { FormRadioOption } from './FormFieldRadioCardIcony';
 export { FormFieldRadioCardIcony } from './FormFieldRadioCardIcony';
+export { FormFieldSegmentedControl } from './FormFieldSegmentedControl';
 export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';

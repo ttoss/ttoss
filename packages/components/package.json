@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "2.11.4",
+  "version": "2.11.7",
   "description": "React components for ttoss ecosystem.",
   "license": "MIT",
   "author": "ttoss",
@@ -24,8 +24,8 @@
     "./JsonView": "./src/components/JsonView/index.ts",
     "./List": "./src/components/List/index.ts",
     "./Markdown": "./src/components/Markdown/index.ts",
-    "./MetricCard": "./src/components/MetricCard/index.ts",
     "./Menu": "./src/components/Menu/index.ts",
+    "./MetricCard": "./src/components/MetricCard/index.ts",
     "./Modal": "./src/components/Modal/index.ts",
     "./NavList": "./src/components/NavList/index.ts",
     "./NotificationCard": "./src/components/NotificationCard/index.ts",
@@ -136,13 +136,13 @@
         "types": "./dist/Markdown/index.d.ts",
         "default": "./dist/esm/Markdown/index.js"
       },
-      "./MetricCard": {
-        "types": "./dist/MetricCard/index.d.ts",
-        "default": "./dist/esm/MetricCard/index.js"
-      },
       "./Menu": {
         "types": "./dist/Menu/index.d.ts",
         "default": "./dist/esm/Menu/index.js"
+      },
+      "./MetricCard": {
+        "types": "./dist/MetricCard/index.d.ts",
+        "default": "./dist/esm/MetricCard/index.js"
       },
       "./Modal": {
         "types": "./dist/Modal/index.d.ts",

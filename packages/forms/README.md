@@ -398,6 +398,25 @@ const options = [
 />
 ```
 
+### FormFieldSegmentedControl
+
+Segmented control field wrapping the `SegmentedControl` from `@ttoss/ui`. Use this field when you want a compact set of mutually-exclusive options presented as segmented buttons.
+
+Props are the common form field props plus any `SegmentedControl` props (except `value` and `className`). Notably, the `variant` prop is supported and defaults to `"secondary"` if not provided.
+
+```tsx
+<FormFieldSegmentedControl
+  name="viewMode"
+  label="View"
+  options={[
+    { value: 'list', label: 'List' },
+    { value: 'grid', label: 'Grid' },
+  ]}
+  variant="primary" // optional, defaults to "secondary"
+  defaultValue="list"
+/>
+```
+
 When using a `placeholder`, an empty option is automatically added if not present:
 
 ```tsx

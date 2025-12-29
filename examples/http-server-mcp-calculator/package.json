@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "http-server-mcp-calculator",
+  "version": "0.1.0",
+  "description": "Example demonstrating REST and MCP endpoints sharing the same business logic",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@ttoss/http-server": "workspace:^",
+    "@ttoss/http-server-mcp": "workspace:^",
+    "@ttoss/logger": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

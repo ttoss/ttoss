@@ -42,85 +42,68 @@ const config: Config = {
      */
     ...(isDevelopment
       ? []
-      : [
-          'appsync-api',
-          'auth-core',
-          'aws-appsync-nodejs',
-          'cloud-auth',
-          'cloud-vpc',
-          'components',
-          'config',
-          'forms',
-          'google-maps',
-          'graphql-api',
-          'graphql-api-cli',
-          'graphql-api-server',
-          'http-server',
-          'i18n-cli',
-          'ids',
-          'lambda-postgres-query',
-          'layouts',
-          'logger',
-          'monorepo',
-          'postgresdb',
-          'postgresdb-cli',
-          'react-auth',
-          'react-auth-core',
-          'react-auth-strapi',
-          'react-feature-flags',
-          'react-hooks',
-          'react-i18n',
-          'react-icons',
-          'react-notifications',
-          'read-config-file',
-          'test-utils',
-          'theme',
-          'ui',
-        ].map((pkg) => {
-          const entryPoints = (() => {
-            const packageJsonObj = JSON.parse(
-              fs.readFileSync(`../../packages/${pkg}/package.json`, 'utf-8')
+      : fs
+          .readdirSync('../../packages', { withFileTypes: true })
+          .filter((dirent) => {
+            return (
+              dirent.isDirectory() &&
+              fs.existsSync(
+                path.join('../../packages', dirent.name, 'README.md')
+              )
             );
+          })
+          .map((dirent) => {
+            return dirent.name;
+          })
+          .filter((pkg) => {
+            const excludedPackages = ['eslint-config'];
+            return !excludedPackages.includes(pkg);
+          })
+          .map((pkg) => {
+            const entryPoints = (() => {
+              const packageJsonObj = JSON.parse(
+                fs.readFileSync(`../../packages/${pkg}/package.json`, 'utf-8')
+              );
 
-            if (!packageJsonObj.exports) {
-              return [`../../packages/${pkg}/src/index.ts`];
-            }
+              if (!packageJsonObj.exports) {
+                return [`../../packages/${pkg}/src/index.ts`];
+              }
 
-            const entryPoints = Object.values(packageJsonObj.exports)
-              .filter((filepath: string) => {
-                return filepath.endsWith('.ts');
-              })
-              .map((filepath: string) => {
-                return path.join(`../../packages/${pkg}`, filepath);
-              });
+              const entryPoints = Object.values(packageJsonObj.exports)
+                .filter((filepath: string) => {
+                  return filepath.endsWith('.ts');
+                })
+                .map((filepath: string) => {
+                  return path.join(`../../packages/${pkg}`, filepath);
+                });
 
-            if (entryPoints.length === 0) {
-              return [`../../packages/${pkg}/src/index.ts`];
-            }
+              if (entryPoints.length === 0) {
+                return [`../../packages/${pkg}/src/index.ts`];
+              }
 
-            return entryPoints;
-          })();
+              return entryPoints;
+            })();
 
-          /**
-           * https://typedoc-plugin-markdown.org/plugins/docusaurus/quick-start#add-the-plugin-to-docusaurusconfigjs
-           */
-          return [
-            'docusaurus-plugin-typedoc',
-            {
-              id: pkg,
-              entryPoints,
-              tsconfig: `../../packages/${pkg}/tsconfig.json`,
-              out: `./docs/modules/packages/${pkg}`,
-              sidebar: {
-                autoConfiguration: true,
+            /**
+             * https://typedoc-plugin-markdown.org/plugins/docusaurus/quick-start#add-the-plugin-to-docusaurusconfigjs
+             */
+            return [
+              'docusaurus-plugin-typedoc',
+              {
+                id: pkg,
+                entryPoints,
+                tsconfig: `../../packages/${pkg}/tsconfig.json`,
+                out: `./docs/modules/packages/${pkg}`,
+                sidebar: {
+                  autoConfiguration: true,
+                },
+                excludeExternals: true,
+                excludeNotDocumented: true,
+                excludeNotDocumentedKinds: ['Namespace'],
+                skipErrorChecking: true,
               },
-              excludeExternals: true,
-              excludeNotDocumented: true,
-              excludeNotDocumentedKinds: ['Namespace'],
-              skipErrorChecking: true,
-            },
-          ];
-        })),
+            ];
+          })),
     [
       '@docusaurus/plugin-client-redirects',
       {
@@ -140,7 +123,20 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/ttoss/ttoss/tree/main/docs/website/',
+          editUrl: ({ docPath }) => {
+            if (docPath.startsWith('modules/packages/')) {
+              if (docPath.endsWith('/index/index.md')) {
+                const packageName = docPath
+                  .replace('modules/packages/', '')
+                  .replace('/index/index.md', '');
+                return `https://github.com/ttoss/ttoss/tree/main/packages/${packageName}/README.md`;
+              } else {
+                // Disable edit for auto-generated API docs
+                return null;
+              }
+            }
+            return `https://github.com/ttoss/ttoss/tree/main/docs/website/${docPath}`;
+          },
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
