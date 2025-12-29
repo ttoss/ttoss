@@ -15,6 +15,8 @@ The very first question you must answer, before any architecture diagram or code
 
 This single classification determines whether traditional deterministic software, probabilistic AI (LLMs and other ML models), or a hybrid of both is the right approach.
 
+<!--truncate-->
+
 ## Defining the Two Categories
 
 Well-structured problems are those where:
