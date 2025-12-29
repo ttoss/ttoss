@@ -54,24 +54,6 @@ jest.config.ts
    export default jestUnitConfig();
    ```
 
-1. For e2e tests, create a `jest.config.ts` file in the `tests/e2e` folder.
-
-   ```ts
-   import { jestE2EConfig } from '@ttoss/config';
-
-   export default jestE2EConfig();
-   ```
-
-1. Create a Babel configuration file in each test folder: `tests/unit/babel.config.cjs` and `tests/e2e/babel.config.cjs`. Jest needs Babel to transpile the code before running the tests.
-
-   ```js
-   const { babelConfig } = require('@ttoss/config');
-
-   const config = babelConfig({});
-
-   module.exports = config;
-   ```
-
 1. Create a `tsconfig.json` file at `tests/tsconfig.json` with the following content:
 
    ```json
@@ -90,6 +72,24 @@ jest.config.ts
 
    ```ts
    import { myFunction } from 'src/myFunction';
+   ```
+
+1. For e2e tests, create a `jest.config.ts` file in the `tests/e2e` folder.
+
+   ```ts
+   import { jestE2EConfig } from '@ttoss/config';
+
+   export default jestE2EConfig();
+   ```
+
+1. Create a Babel configuration file in each test folder: `tests/unit/babel.config.cjs` and `tests/e2e/babel.config.cjs`. Jest needs Babel to transpile the code before running the tests.
+
+   ```js
+   const { babelConfig } = require('@ttoss/config');
+
+   const config = babelConfig({});
+
+   module.exports = config;
    ```
 
 1. Add the following scripts to the `package.json` file:
