@@ -59,9 +59,7 @@ The Main component provides a structured content area with three distinct sectio
     <button>Action Button</button>
   </Layout.Main.Header>
 
-  <Layout.Main.Body>
-    Main content with theme-controlled padding and scroll handling
-  </Layout.Main.Body>
+  <Layout.Main.Body>Main content with scroll handling</Layout.Main.Body>
 
   <Layout.Main.Footer>
     <span>Last updated: Today</span>
@@ -79,7 +77,7 @@ The Main component provides a structured content area with three distinct sectio
 
 - **Clear Content Hierarchy**: Separates page header, content, and footer concerns
 - **Automatic Scroll Management**: Body handles overflow while keeping header/footer fixed
-- **Consistent Spacing**: Each section has optimized padding and layout (theme-controlled for Main.Body)
+- **Consistent Spacing**: Each section has optimized padding and layout
 - **Accessibility**: Proper semantic HTML elements (`<header>`, `<main>`, `<footer>`)
 
 ## Automatic Layout Composition
@@ -162,74 +160,48 @@ All components integrate seamlessly with `@ttoss/ui` theme system via `sx` prop:
 </Layout.Main>
 ```
 
-### Layout Variant Usage
+### Inner Container Styling with containerSx
 
-The `Main` component applies `variant="layout.container"` to its internal Container, ensuring consistent layout width and padding based on your theme. Define `layout.container` in your theme for global control:
+The `MainHeader`, `MainFooter`, and `MainBody` components (`Layout.Main.Header`, `Layout.Main.Footer`, `Layout.Main.Body`) include an inner `Container` component for consistent layout width and padding. While the `sx` prop styles the outer `Box` element, the `containerSx` prop allows you to customize the inner `Container`'s styling.
 
-```js
-// theme.js
-export const theme = {
-  layout: {
-    container: {
-      maxWidth: ['100%', '1100px'],
-      minWidth: ['100%', '1100px'],
-      marginX: 'auto',
-      paddingX: '4',
-    },
-  },
-};
-```
+**Key Differences:**
 
-The layout components use theme variants for customizable padding. Define these variants in your theme:
+- **`sx`**: Styles the outer `Box` wrapper (background, borders, positioning, etc.)
+- **`containerSx`**: Styles the inner `Container` (max-width, padding, margins, etc.)
 
-```js
-// theme.js
-export const theme = {
-  variants: {
-    layout: {
-      main: {
-        body: {
-          paddingX: '10', // Horizontal padding for body
-          paddingY: '6', // Vertical padding for body
-        },
-        header: {
-          paddingX: '4', // Horizontal padding for header
-          paddingY: '3', // Vertical padding for header
-        },
-        footer: {
-          paddingX: '10', // Horizontal padding for footer
-          paddingY: '3', // Vertical padding for footer
-        },
-      },
-    },
-  },
-};
-```
+**When to use `containerSx`:**
 
-To remove padding for specific themes, set the padding properties to `undefined`:
+- Override default container padding or max-width
+- Apply theme-specific container styling
+- Customize spacing within the layout structure
 
-```js
-// theme.js - No padding theme
-export const noPaddingTheme = {
-  variants: {
-    layout: {
-      main: {
-        body: {
-          paddingX: undefined,
-          paddingY: '6',
-        },
-        header: {
-          paddingX: undefined,
-          paddingY: undefined,
-        },
-        footer: {
-          paddingX: undefined,
-          paddingY: undefined,
-        },
-      },
-    },
-  },
-};
+**Examples:**
+
+```tsx
+// Customize container padding for MainBody
+<Layout.Main.Body
+  containerSx={{
+    paddingX: '8', // Override default padding
+    maxWidth: '1200px', // Custom max-width
+  }}
+>
+  Content with custom container styling
+</Layout.Main.Body>
+
+// Style outer Box background while customizing inner container
+<Layout.Main.Header
+  sx={{
+    backgroundColor: 'gray.100', // Outer Box background
+    boxShadow: 'md', // Outer Box shadow
+  }}
+  containerSx={{
+    paddingY: '6', // Inner container vertical padding
+    justifyContent: 'space-between', // Inner container alignment
+  }}
+>
+  <Logo />
+  <Navigation />
+</Layout.Main.Header>
 ```
 
 ## Advanced Usage

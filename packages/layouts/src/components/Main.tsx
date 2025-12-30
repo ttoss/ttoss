@@ -8,7 +8,6 @@ import { MainHeader } from './MainHeader';
 export const Main = (props: BoxProps) => {
   return (
     <Box
-      variant="layout.main"
       sx={{
         overflowX: 'auto',
         overflowY: 'auto',
