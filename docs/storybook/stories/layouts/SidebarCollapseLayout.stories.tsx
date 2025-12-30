@@ -57,9 +57,6 @@ const SidebarCollapseLayoutTemplate = ({
 
       <Layout.Main>
         <Layout.Main.Header
-          containerSx={{
-            paddingY: '2',
-          }}
           sx={{
             borderBottom: '1px solid gray',
           }}
@@ -67,18 +64,9 @@ const SidebarCollapseLayoutTemplate = ({
           Main Header
         </Layout.Main.Header>
 
-        <Layout.Main.Body
-          containerSx={{
-            paddingY: '4',
-          }}
-        >
-          {mainContent}
-        </Layout.Main.Body>
+        <Layout.Main.Body>{mainContent}</Layout.Main.Body>
 
         <Layout.Main.Footer
-          containerSx={{
-            paddingY: '2',
-          }}
           sx={{
             borderTop: '1px solid gray',
           }}

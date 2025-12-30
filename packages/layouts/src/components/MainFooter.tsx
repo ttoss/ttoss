@@ -19,6 +19,7 @@ export const MainFooter = ({ containerSx, ...props }: MainFooterProps) => {
       }}
     >
       <Container
+        paddingY="3"
         variant="layout.container"
         data-testid="main-footer-container"
         sx={containerSx}

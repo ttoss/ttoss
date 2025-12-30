@@ -18,6 +18,7 @@ export const MainBody = ({ containerSx, ...props }: MainBodyProps) => {
       }}
     >
       <Container
+        paddingY="6"
         variant="layout.container"
         data-testid="main-body-container"
         sx={{

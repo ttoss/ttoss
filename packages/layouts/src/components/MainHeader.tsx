@@ -20,6 +20,7 @@ export const MainHeader = ({ containerSx, ...props }: MainHeaderProps) => {
       }}
     >
       <Container
+        paddingY="3"
         variant="layout.container"
         data-testid="main-header-container"
         sx={containerSx}
