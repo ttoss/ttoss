@@ -18,7 +18,9 @@ export const MainFooter = ({ containerSx, ...props }: MainFooterProps) => {
         ...props.sx,
       }}
     >
-      <Container sx={containerSx}>{props.children}</Container>
+      <Container data-testid="main-footer-container" sx={containerSx}>
+        {props.children}
+      </Container>
     </Box>
   );
 };

@@ -61,10 +61,8 @@ const SidebarCollapseLayoutTemplate = ({
             maxWidth: ['100%', '1200px'],
             minWidth: ['100%', '1200px'],
             paddingY: '2',
-            //bg: 'blue',
           }}
           sx={{
-            //bg: 'lightblue',
             borderBottom: '1px solid gray',
           }}
         >
@@ -76,13 +74,7 @@ const SidebarCollapseLayoutTemplate = ({
             maxWidth: ['100%', '1200px'],
             minWidth: ['100%', '1200px'],
             paddingY: '4',
-            //bg: 'red',
           }}
-          sx={
-            {
-              //bg: 'yellow',
-            }
-          }
         >
           {mainContent}
         </Layout.Main.Body>
@@ -92,10 +84,8 @@ const SidebarCollapseLayoutTemplate = ({
             maxWidth: ['100%', '1200px'],
             minWidth: ['100%', '1200px'],
             paddingY: '2',
-            //bg: 'green',
           }}
           sx={{
-            //bg: 'lightgreen',
             borderTop: '1px solid gray',
           }}
         >
