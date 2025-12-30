@@ -16,6 +16,22 @@ We accept technical debt when it buys us **speed of learning** or **market timin
 
 Unmanaged debt—sloppy code written without intent or boundaries—is not leverage; it is negligence.
 
+## Systemic vs. Modular Debt
+
+We distinguish between **Modular Debt** (acceptable) and **Systemic Debt** (unacceptable).
+
+### Defining Systemic Technical Debt
+
+**Systemic Technical Debt** is complexity that permeates the core data models, fundamental architecture, or shared business logic. It creates tight coupling between unrelated components, meaning a change in one area causes regressions in another. Unlike modular debt, systemic debt cannot be paid down incrementally; it often requires a full system rewrite.
+
+### Avoiding Systemic Debt
+
+To ensure debt remains modular and recoverable:
+
+1.  **Protect the Core**: Never compromise the integrity of your core domain models or database schemas for the sake of a quick UI fix.
+2.  **Strict Boundaries**: Enforce unidirectional data flow and strict architectural boundaries.
+3.  **Debt at the Edges**: Push "messy" code to the edges of the system (UI components, specific API adapters, scripts). Keep the center (Business Logic) clean.
+
 ## Strategies for Managing Debt
 
 To ensure technical debt remains a tool rather than a trap, we apply the following strategies:
