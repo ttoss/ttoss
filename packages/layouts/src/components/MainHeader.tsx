@@ -19,7 +19,11 @@ export const MainHeader = ({ containerSx, ...props }: MainHeaderProps) => {
         ...props.sx,
       }}
     >
-      <Container data-testid="main-header-container" sx={containerSx}>
+      <Container
+        variant="layout.container"
+        data-testid="main-header-container"
+        sx={containerSx}
+      >
         {props.children}
       </Container>
     </Box>
