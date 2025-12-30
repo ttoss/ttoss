@@ -620,23 +620,4 @@ export const BruttalTheme: Theme = {
       letterSpacing: 'wide',
     },
   },
-  // @ts-expect-error Theme type does not include variants
-  variants: {
-    layout: {
-      main: {
-        body: {
-          paddingX: '10',
-          paddingY: '6',
-        },
-        header: {
-          paddingX: '4',
-          paddingY: '3',
-        },
-        footer: {
-          paddingX: '10',
-          paddingY: '3',
-        },
-      },
-    },
-  },
 };

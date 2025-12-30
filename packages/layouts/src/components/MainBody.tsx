@@ -1,20 +1,30 @@
 import type { BoxProps } from '@ttoss/ui';
-import { Box } from '@ttoss/ui';
+import { Box, Container } from '@ttoss/ui';
 
-export const MainBody = (props: BoxProps) => {
+export type MainBodyProps = BoxProps & {
+  containerSx?: BoxProps['sx'];
+};
+
+export const MainBody = ({ containerSx, ...props }: MainBodyProps) => {
   return (
     <Box
       variant="layout.main.body"
       {...props}
       as="main"
       sx={{
-        overflowY: 'auto',
         width: 'full',
-        height: 'full',
+        flex: 1,
         ...props.sx,
       }}
     >
-      {props.children}
+      <Container
+        variant="layout.container"
+        sx={{
+          ...containerSx,
+        }}
+      >
+        {props.children}
+      </Container>
     </Box>
   );
 };

@@ -1,7 +1,11 @@
 import type { BoxProps } from '@ttoss/ui';
-import { Box } from '@ttoss/ui';
+import { Box, Container } from '@ttoss/ui';
 
-export const MainHeader = (props: BoxProps) => {
+export type MainHeaderProps = BoxProps & {
+  containerSx?: BoxProps['sx'];
+};
+
+export const MainHeader = ({ containerSx, ...props }: MainHeaderProps) => {
   return (
     <Box
       variant="layout.main.header"
@@ -15,7 +19,7 @@ export const MainHeader = (props: BoxProps) => {
         ...props.sx,
       }}
     >
-      {props.children}
+      <Container sx={containerSx}>{props.children}</Container>
     </Box>
   );
 };

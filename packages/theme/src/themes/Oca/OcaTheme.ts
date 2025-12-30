@@ -185,33 +185,6 @@ export const OcaTheme: Theme = createTheme(
      * Components
      */
 
-    layout: {
-      container: {
-        maxWidth: ['100%', '1300px'],
-        minWidth: ['100%', '1300px'],
-      },
-    },
-
-    // @ts-expect-error Theme type does not include variants
-    variants: {
-      layout: {
-        main: {
-          body: {
-            paddingX: undefined,
-            paddingY: '6',
-          },
-          header: {
-            paddingX: undefined,
-            paddingY: '3',
-          },
-          footer: {
-            paddingX: undefined,
-            paddingY: '3',
-          },
-        },
-      },
-    },
-
     buttons: {
       accent: {
         borderRadius: 'full',
