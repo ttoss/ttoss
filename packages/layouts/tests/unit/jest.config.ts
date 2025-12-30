@@ -4,9 +4,9 @@ const config = jestUnitConfig({
   testEnvironment: 'jsdom',
   coverageThreshold: {
     global: {
-      statements: 92.13,
+      statements: 92.37,
       branches: 62.06,
-      lines: 92.13,
+      lines: 92.37,
       functions: 86.95,
     },
   },
