@@ -164,6 +164,8 @@ All components integrate seamlessly with `@ttoss/ui` theme system via `sx` prop:
 
 The `MainHeader`, `MainFooter`, and `MainBody` components (`Layout.Main.Header`, `Layout.Main.Footer`, `Layout.Main.Body`) include an inner `Container` component for consistent layout width and padding. While the `sx` prop styles the outer `Box` element, the `containerSx` prop allows you to customize the inner `Container`'s styling.
 
+The inner `Container` uses the `layout.container` variant, which by default limits the maxWidth to 1200px on larger screens (responsive: 100% on mobile).
+
 **Key Differences:**
 
 - **`sx`**: Styles the outer `Box` wrapper (background, borders, positioning, etc.)
