@@ -12,7 +12,7 @@ tags:
 
 Technical debt is often viewed solely as a negative consequence of poor engineering—a mess that needs to be cleaned up. However, at ttoss, we view technical debt through a different lens: as a financial instrument called **leverage**.
 
-This is especially true in the age of AI. As code generation becomes a commodity, the ability to strategically incur and repay debt defines the velocity of a team. When used consciously, technical debt allows us to ship faster, learn earlier, and capture market opportunities. When accumulated unconsciously, it becomes **entropy** that grinds development to a halt.
+This is especially true in the age of AI. As [code generation becomes a commodity](/blog/2025-12-26-coding-is-now-a-commodity.md), the ability to strategically incur and repay debt defines the velocity of a team. When used consciously, technical debt allows us to ship faster, learn earlier, and capture market opportunities. When accumulated unconsciously, it becomes **entropy** that grinds development to a halt.
 
 The difference between leverage and negligence lies in how we manage it.
 
@@ -79,6 +79,8 @@ This aligns with [The Corollary of Invisible Risk](/docs/ai/agentic-development-
 ### 5. Atomic State Decomposition
 
 We break complex workflows into discrete, atomic steps. This allows us to isolate "messy" logic to a single step in a process, making it easy to swap out implementation details without rewriting the whole flow. This is [The Principle of Atomic Debt Containment](/docs/ai/agentic-development-principles#the-principle-of-atomic-debt-containment).
+
+_For more detailed guidelines on avoiding systemic technical debt, refer to our [Technical Debt Management Documentation](/docs/engineering/guidelines/technical-debt)._
 
 ## Conclusion
 

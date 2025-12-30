@@ -1,5 +1,5 @@
 ---
-title: Technical Debt Management
+title: Technical Debt
 ---
 
 Technical debt is often viewed solely as a negative consequence of poor engineering. However, at **ttoss**, we view technical debt as a financial instrument: **leverage**. When used consciously, it allows us to ship faster and learn earlier. When accumulated unconsciously, it becomes **entropy** that grinds development to a halt.
