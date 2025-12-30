@@ -185,6 +185,13 @@ export const OcaTheme: Theme = createTheme(
      * Components
      */
 
+    layout: {
+      container: {
+        maxWidth: ['100%', '1200px'],
+        minWidth: ['100%', '1200px'],
+      },
+    },
+
     buttons: {
       accent: {
         borderRadius: 'full',
