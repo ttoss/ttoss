@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.7.1...@docs/storybook@3.8.0) (2025-12-30)
+
+### Features
+
+- implement theme-controlled padding for layout components ([#821](https://github.com/ttoss/ttoss/issues/821)) ([fad18ed](https://github.com/ttoss/ttoss/commit/fad18edd6f29e2dc3e17e4cb363e567899dbea18))
+
 ## [3.7.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.7.0...@docs/storybook@3.7.1) (2025-12-29)
 
 **Note:** Version bump only for package @docs/storybook
