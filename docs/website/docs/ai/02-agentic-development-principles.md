@@ -267,6 +267,32 @@ Dynamic routing based on criticality. Not all code paths deserve the same level 
 
 Define how to integrate AI into the development cycle to accelerate delivery and maintain flow.
 
+### The Principle of Architecture over Artifacts
+
+Prefer architecture that keeps the next change cheap, even when AI can ship faster today.
+
+AI can generate working code faster than we can evaluate its long-term structural impact. This creates a velocity trap: output grows quickly, while coupling, duplication, and rigidity accumulate quietly. This principle governs the decision point (merge or rework): treat AI-generated code as a proposal, not an artifact you must keep.
+
+Apply [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) to compare the marginal value of shipping sooner against the marginal cost of future friction. Use the difficulty of the next related change as the "interest rate" on the debt you are about to take. This complements structural mitigations like [The Principle of Atomic Debt Containment](#the-principle-of-atomic-debt-containment) and [The Principle of Execution Isolation](#the-principle-of-execution-isolation): those define boundaries; this one forces the judgment call that prevents slow decay under [The Principle of Zero-Cost Erosion](#the-principle-of-zero-cost-erosion) and [The Principle of Pattern Inertia](#the-principle-of-pattern-inertia).
+
+**Failure Scenario:** A developer accepts an AI-generated payment integration that adds conditional logic directly to a core function. It works immediately, but subsequent integrations follow the pattern, creating a fragile, nested monolith. What felt like fast delivery created a system where every future change carries disproportionate risk. Had the developer applied [The Corollary of Modular Debt](#the-corollary-of-modular-debt), each provider would be isolated.
+
+#### The Corollary of Architectural Prompting
+
+Prevent structural decay by explicitly specifying architectural patterns in prompts (e.g., "use the Strategy Pattern"). Instruct agents on _how_ to build, not just _what_ to build, to align output with system boundaries.
+
+#### The Corollary of The Next Move Test
+
+Evaluate code by asking: "Does this make the next related feature easier or harder to implement?" If it requires duplication or increases complexity, reject it, even if it works. This operationalizes [The Principle of Economic Technical Debt](#the-principle-of-economic-technical-debt): the cost of the next change is the interest rate on the debt you are incurring.
+
+#### The Corollary of Boundary Enforcement
+
+Enforce decoupling through explicit interfaces. Agents often couple modules to solve prompts quickly; developers must reject monolithic solutions in favor of small, isolated modules with clear contracts, applying [The Corollary of Decoupled Agency](#the-corollary-of-decoupled-agency).
+
+#### The Corollary of Deletion Supremacy
+
+Reject workarounds that add complexity (e.g., edge-case patches) when refactoring is the correct solution. If the cost of integration exceeds the cost of refactoring, refactor first. This inverts the AI's bias toward addition: where [The Principle of Zero-Cost Erosion](#the-principle-of-zero-cost-erosion) makes patching feel free, this corollary reintroduces the friction of architectural judgment.
+
 ### The Principle of Compounding Context
 
 AI workflows must be designed as interconnected layers where the output of one agent automatically persists into a shared memory layer to become the context for downstream agents. This ensures that intelligence accumulates over time rather than resetting after every task, reducing the transaction cost of information transfer and minimizing rework. This aligns with [E1: The Principle of Quantified Overall Economics](/docs/product/product-development/principles#e1-the-principle-of-quantified-overall-economics-select-actions-based-on-quantified-overall-economic-impact) by preserving value generated in earlier stages. Effective compounding requires managing [The Principle of Finite Context Window](#the-principle-of-finite-context-window).
