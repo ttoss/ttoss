@@ -100,7 +100,7 @@ High confidence scores are internal probability assessments, not external verifi
 
 ### The Principle of Structural Determinism
 
-Probabilistic systems can only be made deterministic through structural enforcement, not semantic persuasion. In traditional software engineering, the developer's primary role is to write deterministic logic that explicitly defines the system's behavior. In Applied AI, the model generates behavior probabilistically (see [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output)). Therefore, the developer's role shifts from writing the flow to architecting the boundaries—constructing rigid constraints (schemas, validators, type-checks) that force a non-deterministic model to collapse into a reliable, deterministic outcome. This is the primary mitigation for [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output).
+Probabilistic systems can only be made deterministic through structural enforcement, not semantic persuasion. In traditional software engineering, the developer's primary role is to write deterministic logic that explicitly defines the system's behavior. In Applied AI, the model generates behavior probabilistically (see [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output)). Therefore, the developer's role shifts from writing the flow to architecting the boundaries—constructing rigid constraints (schemas, validators, type-checks) that force a non-deterministic model to collapse into a reliable, deterministic outcome. This is the primary mitigation for [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output) and the only way to override [The Principle of Interpretive Competition](#the-principle-of-interpretive-competition).
 
 **Failure Scenario:** A developer writes a prompt asking an agent to "extract the user's age and ensure it is a valid number between 18 and 100." When the model occasionally returns "eighteen" or "N/A," the developer adds more capital letters to the prompt ("MUST BE AN INTEGER"). The flakiness persists because the developer is attempting to solve a structural constraint problem with semantic persuasion.
 
@@ -149,6 +149,20 @@ AI models function as statistical pattern matchers that prioritize local consist
 #### The Corollary of Contextual Hygiene
 
 Because AI amplifies existing patterns, the cleanliness of the input context (the code currently in the buffer) determines the quality of the output. Before asking an agent to extend a module, the operator must first ensure the immediate context represents the desired standard, or the agent will scale the dysfunction.
+
+### The Principle of Interpretive Competition
+
+Instructions (prompts) do not execute like traditional code; they compete for influence within an interpretive hierarchy. In a production environment, system prompts are often "outvoted" by stronger signals, such as the model’s base training (RLHF), few-shot patterns, or user intent. This explains the necessity of [The Principle of Structural Determinism](#the-principle-of-structural-determinism). It shifts the developer's mental model from "writing commands" to "managing a signal stack."
+
+**Failure Scenario:** The "Low-Friction Zone" Trap. A developer builds a prompt that works perfectly in a simple demo. In production, as context grows and user inputs become more complex, the system prompt is "outvoted" by the noise, leading to failure. The developer blames the model rather than the signal hierarchy.
+
+#### The Corollary of The Control Stack
+
+Recognize that a system prompt is a "shallow" control. For mission-critical behaviors that must never be outvoted, move the logic out of the context window entirely and into Structural Enforcement (schemas/validators) or Model Steering (fine-tuning/adapters).
+
+#### The Corollary of Signal Diagnosis
+
+When an agent fails to follow an instruction, do not simply "shout" with capital letters. Identify which signal in the hierarchy (training, context load, or user message) is outvoting your instruction and address that layer.
 
 ### The Principle of Distributed Unreliability
 
@@ -367,7 +381,7 @@ This section defines how humans and AI agents should exchange information—thro
 
 ### The Principle of Signal Entropy
 
-In a probabilistic system, ambiguity is not neutral; it is noise. Unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel. Reducing entropy requires [The Principle of Structural Determinism](#the-principle-of-structural-determinism).
+In a probabilistic system, ambiguity is noise. Unlike a human collaborator, an AI agent lacks "grounding"—the shared biological, social, and historical context that allows humans to infer meaning from incomplete data. Therefore, any information not explicitly transmitted in the signal (the prompt) is subject to entropy, degrading into randomness or hallucination. Effective protocol requires forcibly increasing the signal-to-noise ratio to overcome the physics of the channel. Reducing entropy requires [The Principle of Structural Determinism](#the-principle-of-structural-determinism).
 
 **Failure Scenario:** A developer tells an agent to "refactor this function to be cleaner." Because "cleaner" is semantically ambiguous and the agent lacks the team's shared definition of "clean code," it removes essential error handling logic, treating it as "clutter."
 
@@ -384,6 +398,20 @@ In agentic systems, unstructured or ad-hoc communication introduces exponential 
 This draws from emerging industry realities (e.g., protocols like MCP, A2A, or ACP for tool/agent interoperability), where lack of standards creates silos, much like how ttoss frames signal entropy as an unavoidable probabilistic constraint. It complements their focus on clarity and adaptation without overlapping directly.
 
 **Failure Scenario:** Two AI agents designed to collaborate on a multi-step workflow use different message formats and intent definitions. Without a shared protocol, they misinterpret each other's outputs, leading to failed tasks and increased human intervention to mediate communication.
+
+### The Principle of Instructional Shallowness
+
+Prompts and system instructions are interpreted contextual hints that compete with deeper model signals (pre-training, adapters, emergent hierarchies); they cannot enforce persistent control and will be outvoted under friction. Rely on them only for low-stakes, shallow nudges; achieve reliable behavior through structural enforcement, steering, or weight-level interventions instead of semantic persuasion. This reinforces [The Principle of Signal Entropy](#the-principle-of-signal-entropy).
+
+**Failure Scenario:** System prompts for tone or safety erode in long conversations or under user pushback, leading to drift without explicit rule violation. Over-engineered prompts are blamed for "model stupidity" when deeper tools (e.g., validators, decoding constraints) were needed.
+
+#### The Corollary of Deep Control Priority
+
+Prioritize deeper control layers (e.g., adapters, tool atomicity, schemas) for any behavior that must persist or resist adversarial inputs.
+
+#### The Corollary of Demo Illusion
+
+Treat instructions as competing text, not commands—early demo success in low-friction zones does not scale.
 
 ## The Governance of Agency
 
