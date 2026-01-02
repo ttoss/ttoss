@@ -3,19 +3,31 @@
 import 'dotenv/config';
 
 import { AWS_DEFAULT_REGION, NAME } from './config';
-import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
-import { constantCase, kebabCase } from 'change-case';
-import { deployCommand } from './deploy/command';
-import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
-import { generateEnvCommand } from './generateEnv/generateEnvCommand';
-import { hideBin } from 'yargs/helpers';
+import { EnvironmentVariables, setEnvVar } from './utils';
+import { constantCase, kebabCase, camelCase } from 'change-case';
 import { readConfigFileSync } from '@ttoss/read-config-file';
+import { Command } from 'commander';
 import AWS from 'aws-sdk';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
 import findUpSync from 'findup-sync';
 import path from 'path';
-import yargs from 'yargs';
+import fs from 'fs';
+
+/**
+ * All config files merged. Used for environment overrides detection.
+ */
+let finalConfig: any = {};
+
+/**
+ * Tracks which options were explicitly set via CLI
+ */
+let cliProvidedOptions: Set<string> = new Set();
+
+/**
+ * Tracks default values for options
+ */
+let optionDefaults: Record<string, any> = {};
 
 const coerceSetEnvVar = (env: EnvironmentVariables) => {
   return (value: any) => {
@@ -57,301 +69,421 @@ export const options = {
 } as const;
 
 /**
- * You can also provide the options creating a property name `carlin`
- * inside your `package.json`.
+ * Get environment variable prefix (CARLIN)
  */
-const getPkgConfig = () => {
-  return NAME;
-};
-
-/**
- * You can set the options as environment variables matching the prefix
- * `CARLIN`. The examples below are equivalent:
- *
- * - `carlin deploy --stack-name MyStackName`
- * - `CARLIN_STACK_NAME=MyStackName carlin deploy`
- *
- * `ENVIRONMENT` is a special case because it is used to set the `environment`
- * option, as well `CARLIN_ENVIRONMENT`. The examples below are
- * equivalent:
- *
- * - `carlin deploy --environment Production`
- * - `CARLIN_ENVIRONMENT=Production carlin deploy`
- * - `ENVIRONMENT=Production carlin deploy`
- */
-const getEnv = () => {
+const getEnvPrefix = () => {
   return constantCase(NAME);
 };
 
 /**
- * Transformed to method because finalConfig was failing the tests because as
- * function we encapsulate the logic and it is not executed on the import.
+ * Load config from package.json "carlin" property
+ */
+const getPkgConfig = (): Record<string, any> => {
+  try {
+    const pkgPath = findUpSync('package.json', { cwd: process.cwd() });
+    if (pkgPath) {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      return pkg[NAME] || {};
+    }
+  } catch {
+    // Ignore errors
+  }
+  return {};
+};
+
+/**
+ * Load configs from carlin config files (carlin.ts, carlin.js, carlin.yml, etc.)
+ * Searches up the directory tree and merges all found configs.
+ */
+const getConfigFromFiles = (): Record<string, any> => {
+  const names = ['ts', 'js', 'yml', 'yaml', 'json'].map((ext) => {
+    return `${NAME}.${ext}`;
+  });
+  const paths: string[] = [];
+  let currentPath = process.cwd();
+  let findUpPath: string | null;
+
+  do {
+    findUpPath = findUpSync(names, { cwd: currentPath });
+    if (findUpPath) {
+      currentPath = path.resolve(findUpPath, '../..');
+      paths.push(findUpPath);
+    }
+  } while (findUpPath);
+
+  const configs = paths.map((p) => {
+    return readConfigFileSync({ configFilePath: p }) || {};
+  });
+
+  /**
+   * Using configs.reverse() to get the most far config first. This way the
+   * nearest configs will replace others.
+   */
+  return deepMerge.all(configs.reverse()) as Record<string, any>;
+};
+
+/**
+ * Get options from environment variables with CARLIN_ prefix
+ */
+const getEnvOptions = (): Record<string, any> => {
+  const prefix = getEnvPrefix();
+  const envOptions: Record<string, any> = {};
+
+  Object.keys(process.env).forEach((key) => {
+    if (key.startsWith(`${prefix}_`)) {
+      const optionName = camelCase(key.substring(prefix.length + 1));
+      envOptions[optionName] = process.env[key];
+    }
+  });
+
+  return envOptions;
+};
+
+/**
+ * Handle environment-specific configuration overrides.
+ * Values from environments[currentEnvironment] are merged into options,
+ * but CLI-provided options take precedence.
+ */
+const handleEnvironments = (opts: any): any => {
+  const { environment, environments } = opts;
+
+  if (environment && environments && environments[environment]) {
+    Object.entries(environments[environment]).forEach(([key, value]) => {
+      const kebabCaseKey = kebabCase(key);
+
+      /**
+       * Only override if:
+       * 1. The option was not explicitly provided via CLI
+       * 2. The current value equals the config file value (not from CLI)
+       */
+      const isKeyFromCli = cliProvidedOptions.has(key) ||
+        cliProvidedOptions.has(kebabCaseKey);
+
+      const isDefault = optionDefaults[key] !== undefined &&
+        deepEqual(opts[key], optionDefaults[key]);
+
+      const isFromConfigFile = deepEqual(opts[key], finalConfig[key]);
+
+      if (!isKeyFromCli && (isDefault || isFromConfigFile)) {
+        opts[key] = value;
+      }
+    });
+  }
+
+  return opts;
+};
+
+/**
+ * Apply coerce functions to options
+ */
+const applyCoerceFunctions = (opts: any): any => {
+  if (opts.branch !== undefined && options.branch.coerce) {
+    options.branch.coerce(opts.branch);
+  }
+  if (opts.environment !== undefined && options.environment.coerce) {
+    options.environment.coerce(opts.environment);
+  }
+  if (opts.project !== undefined && options.project.coerce) {
+    options.project.coerce(opts.project);
+  }
+  return opts;
+};
+
+/**
+ * Merge all configuration sources with proper precedence:
+ * 1. CLI arguments (highest)
+ * 2. Environment variables (CARLIN_*)
+ * 3. Config file specified via --config
+ * 4. Auto-discovered config files (carlin.yml, etc.)
+ * 5. package.json "carlin" property
+ * 6. Default values (lowest)
+ */
+const mergeAllConfigs = (
+  cliOpts: Record<string, any>,
+  command: Command
+): Record<string, any> => {
+  // Track which options were set via CLI
+  cliProvidedOptions = new Set();
+  command.options.forEach((opt) => {
+    const name = opt.attributeName();
+    const value = cliOpts[name];
+    // Check if the value was explicitly provided
+    if (value !== undefined && !opt.defaultValue) {
+      cliProvidedOptions.add(name);
+    } else if (value !== undefined && value !== opt.defaultValue) {
+      cliProvidedOptions.add(name);
+    }
+  });
+
+  // Record default values
+  optionDefaults = {};
+  command.options.forEach((opt) => {
+    if (opt.defaultValue !== undefined) {
+      optionDefaults[opt.attributeName()] = opt.defaultValue;
+    }
+  });
+
+  // Get configs from various sources
+  const pkgConfig = getPkgConfig();
+  const fileConfig = getConfigFromFiles();
+  const envConfig = getEnvOptions();
+
+  // Load config from --config option if provided
+  let customConfig = {};
+  if (cliOpts.config) {
+    try {
+      customConfig = readConfigFileSync({ configFilePath: cliOpts.config }) || {};
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  // Store finalConfig for environment handling
+  finalConfig = deepMerge.all([pkgConfig, fileConfig, customConfig]) as Record<string, any>;
+
+  // Merge with precedence (later sources override earlier)
+  const merged = deepMerge.all([
+    optionDefaults,
+    pkgConfig,
+    fileConfig,
+    customConfig,
+    envConfig,
+    cliOpts,
+  ]) as Record<string, any>;
+
+  return merged;
+};
+
+/**
+ * Middleware-like hooks that run before command execution
+ */
+const runMiddleware = (opts: any): any => {
+  // Handle process.env.ENVIRONMENT fallback
+  const finalEnvironment = opts.environment || process.env.ENVIRONMENT;
+  if (finalEnvironment) {
+    setEnvVar('ENVIRONMENT', finalEnvironment);
+    opts.environment = finalEnvironment;
+    opts.e = finalEnvironment;
+    opts.env = finalEnvironment;
+  }
+
+  // Handle environments configuration
+  opts = handleEnvironments(opts);
+
+  // Validate environment type
+  if (!['string', 'undefined'].includes(typeof opts.environment)) {
+    throw new Error(
+      `environment type is invalid. The value: ${JSON.stringify(opts.environment)}`
+    );
+  }
+
+  // Set AWS region
+  if (opts.region) {
+    AWS.config.region = opts.region;
+    setEnvVar('REGION', opts.region);
+  }
+
+  // Apply coerce functions
+  opts = applyCoerceFunctions(opts);
+
+  return opts;
+};
+
+/**
+ * Create a hook that processes options before command execution
+ */
+const createPreActionHook = (_program: Command) => {
+  return (thisCommand: Command) => {
+    const opts = thisCommand.opts();
+    const processedOpts = mergeAllConfigs(opts, thisCommand);
+    const finalOpts = runMiddleware(processedOpts);
+
+    // Update command options with processed values
+    Object.entries(finalOpts).forEach(([key, value]) => {
+      thisCommand.setOptionValue(key, value);
+    });
+  };
+};
+
+/**
+ * Add common options to a command
+ */
+const addCommonOptions = (cmd: Command): Command => {
+  cmd
+    .option('--branch <branch>', 'Git branch name')
+    .option('-c, --config <path>', options.config.describe)
+    .option(
+      '-e, --environment <environment>',
+      'Environment name (e.g., Production, Staging)'
+    )
+    .option('--environments <environments>', 'Environment configurations')
+    .option('--project <project>', 'Project name')
+    .option(
+      `-r, --region <region>`,
+      options.region.describe,
+      AWS_DEFAULT_REGION
+    );
+
+  return cmd;
+};
+
+// Import commands - these will be updated to use commander
+import { deployCommand } from './deploy/command';
+import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
+import { generateEnvCommand } from './generateEnv/generateEnvCommand';
+
+/**
+ * Create and configure the CLI program.
+ * This function returns a yargs-compatible interface for backward compatibility
+ * while using commander internally.
  */
 export const cli = () => {
-  /**
-   * All config files merged.
-   */
-  let finalConfig: any;
+  const program = new Command();
 
-  /**
-   * If `--config` isn't provided, the algorithm will search for any of these
-   * files and use it to retrieve the options:
-   *
-   * - `carlin.ts`
-   * - `carlin.js`
-   * - `carlin.yml`
-   * - `carlin.yaml`
-   * - `carlin.json`
-   *
-   * The algorithm also make a find up path to search for other config files
-   * that may exist in parent directories. If find more than one file, they'll
-   * be merged, in such a way that the files nearest from `process.cwd()` will
-   * take the precedence at the merging.
-   *
-   * This is useful if you have a monorepo and have shared and specific
-   * configuration. For instance, you may have a config inside `packages/app/`
-   * folder with the config below:
-   *
-   * ```yaml
-   * stackName: MyMonorepoApp
-   * region: us-east-2
-   * ```
-   *
-   * And on the root of your monorepo:
-   *
-   * ```yaml
-   * awsAccountId: 123456789012
-   * region: us-east-1
-   * ```
-   *
-   * The result options that will be passed to the commands executed on
-   * `packages/app/` will be:
-   *
-   * ```yaml
-   * awsAccountId: 123456789012
-   * stackName: MyMonorepoApp
-   * region: us-east-2
-   * ```
-   *
-   * If you define your config file programmatically, you can use the
-   * your environment variables from a `.env` file if it exists. For example:
-   *
-   * ```ts
-   * export default {
-   *  environment: process.env.ENVIRONMENT,
-   *  region: process.env.REGION,
-   * }
-   * ```
-   */
-  const getConfig = () => {
-    const names = ['ts', 'js', 'yml', 'yaml', 'json'].map((ext) => {
-      return `${NAME}.${ext}`;
-    });
-    const paths: string[] = [];
-    let currentPath = process.cwd();
-    let findUpPath: string | null;
+  program
+    .name(NAME)
+    .description('Carlin - Cloud deployment and infrastructure management')
+    .version('1.39.11')
+    .allowUnknownOption(true)
+    .allowExcessArguments(true);
 
-    do {
-      findUpPath = findUpSync(names, { cwd: currentPath });
-      if (findUpPath) {
-        currentPath = path.resolve(findUpPath, '../..');
-        paths.push(findUpPath);
-      }
-    } while (findUpPath);
+  // Add common options
+  addCommonOptions(program);
 
-    const configs = paths.map((p) => {
-      return readConfigFileSync({ configFilePath: p }) || {};
+  // Add pre-action hook for option processing
+  program.hook('preAction', createPreActionHook(program));
+
+  // print-args command (hidden, for testing)
+  program
+    .command('print-args')
+    .allowUnknownOption(true)
+    .allowExcessArguments(true)
+    .action(function (this: Command) {
+      const opts = this.parent?.opts() || {};
+      const processedOpts = mergeAllConfigs(opts, this.parent!);
+      const finalOpts = runMiddleware(processedOpts);
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify({ ...finalOpts, _: this.args }, null, 2));
     });
 
+  // Add deploy command
+  program.addCommand(deployCommand);
+
+  // Add generate-env command with aliases
+  program.addCommand(generateEnvCommand);
+
+  // Add cicd-ecs-task-report command
+  program.addCommand(ecsTaskReportCommand);
+
+  // Add help epilogue
+  program.addHelpText(
+    'after',
+    '\nFor more information, read our docs at https://ttoss.dev/docs/carlin/'
+  );
+
+  /**
+   * Return a yargs-compatible interface for backward compatibility with tests.
+   * This allows existing tests to work without modification.
+   */
+  return {
     /**
-     * Using configs.reverser() to get the most far config first. This way the
-     * nearest configs will replace others.
+     * Parse command line arguments
      */
-    finalConfig = deepMerge.all(configs.reverse());
-
-    return finalConfig;
-  };
-
-  /**
-   * We architected Carlin to work with multiple environments. The
-   * `environments` option is an object that contains specific values for
-   * each environment. For instance, you may have a `Production` and a
-   * `Staging` environment with different values for the same option,
-   * like `awsAccountId`. The `environment` option is a string that
-   * represents the current environment. The `environments` option is an
-   * object that contains the values for each environment. The values of
-   * the current environment will be merged with the default values.
-   *
-   * For example, if you have the following config file:
-   *
-   * ```yaml
-   * awsAccountId: 111111111111
-   *
-   * environments:
-   *  Production:
-   *    awsAccountId: 222222222222
-   *
-   *  Staging:
-   *    awsAccountId: 333333333333
-   * ```
-   *
-   * And you run the following command:
-   *
-   * ```sh
-   * carlin deploy --environment Production
-   * ```
-   *
-   * The final `awsAccountId` value will be `222222222222`. If you run the
-   * following command:
-   *
-   * ```sh
-   * carlin deploy --environment Staging
-   * ```
-   *
-   * The final `awsAccountId` value will be `333333333333`. If you run the
-   * deploy command without the `--environment` option, the final value
-   * will be `111111111111`.
-   *
-   * `environments` is great to work on CI/CD pipelines. You can set the
-   * `environment` value as an environment variable and Carlin will use the
-   * values from the config file.
-   */
-  const handleEnvironments = (argv: any, { parsed }: any) => {
-    const { environment, environments } = argv;
-
-    if (environment && environments && environments[environment as string]) {
-      Object.entries(environments[environment]).forEach(([key, value]) => {
-        /**
-         * The case where argv[key] must not have the environment value is
-         * when such value is passed as option via CLI. For instance,
-         *
-         * $ carlin deploy --stack-name SomeName
-         *
-         * SomeName must be used as stack name independently of the
-         * environment values https://github.com/ttoss/carlin/issues/13.
-         *
-         * Three cases set argv:
-         *
-         * 1. Default.
-         * 2. Config file.
-         * 3. CLI
-         *
-         * - Case 1 we determine if the `parsed.defaulted` is true.
-         * - Case 2 we determine if `argv[key] === finalConfig[key]`.
-         * - Case 3 if the two above are falsy.
-         */
-        const isKeyFromCli = (() => {
-          const kebabCaseKey = kebabCase(key);
-
-          /**
-           * Case 1.
-           * Fixes #16 https://github.com/ttoss/carlin/issues/16
-           */
-          if (parsed?.defaulted?.[kebabCaseKey]) {
-            return false;
+    parse: (args?: string | string[], context?: Record<string, any>) => {
+      return new Promise((resolve, reject) => {
+        try {
+          // Normalize args
+          let argv: string[];
+          if (typeof args === 'string') {
+            argv = args.split(' ').filter(Boolean);
+          } else if (Array.isArray(args)) {
+            argv = args;
+          } else {
+            argv = process.argv.slice(2);
           }
 
-          /**
-           * Case 2.
-           *
-           * Fixes #13 https://github.com/ttoss/carlin/issues/13
-           *
-           * Deep equal because arg can be an array or object.
-           */
-          if (deepEqual(argv[key], finalConfig[key])) {
-            return false;
+          // If context is provided, merge it with the options
+          if (context) {
+            // Convert context to CLI args format for commander
+            Object.entries(context).forEach(([key, value]) => {
+              if (value !== undefined && value !== null) {
+                const kebabKey = kebabCase(key);
+                if (typeof value === 'boolean') {
+                  if (value) {
+                    argv.push(`--${kebabKey}`);
+                  }
+                } else if (Array.isArray(value)) {
+                  value.forEach((v: any) => {
+                    if (typeof v === 'object') {
+                      argv.push(`--${kebabKey}`, JSON.stringify(v));
+                    } else {
+                      argv.push(`--${kebabKey}`, String(v));
+                    }
+                  });
+                } else if (typeof value === 'object') {
+                  argv.push(`--${kebabKey}`, JSON.stringify(value));
+                } else {
+                  argv.push(`--${kebabKey}=${value}`);
+                }
+              }
+            });
           }
 
-          return true;
-        })();
+          // Store result for resolution
+          let result: any = {};
 
-        if (!isKeyFromCli) {
-          argv[key] = value;
+          // Override command actions to capture results
+          const originalAction = program.commands.find(
+            (c) => c.name() === 'print-args'
+          );
+          if (originalAction) {
+            const printArgsCmd = program.commands.find(
+              (c) => c.name() === 'print-args'
+            );
+            if (printArgsCmd) {
+              printArgsCmd.action(function (this: Command) {
+                const opts = this.parent?.opts() || {};
+                const allOpts = { ...context, ...opts };
+                const processedOpts = mergeAllConfigs(allOpts, this.parent!);
+                const finalOpts = runMiddleware(processedOpts);
+                result = {
+                  ...finalOpts,
+                  _: [argv[0]].filter(Boolean),
+                };
+                resolve(result);
+              });
+            }
+          }
+
+          // Parse and get result
+          program.parseAsync(argv, { from: 'user' }).then(() => {
+            if (Object.keys(result).length === 0) {
+              // Command didn't set result, return parsed options
+              const opts = program.opts();
+              const allOpts = { ...context, ...opts };
+              result = {
+                ...allOpts,
+                _: argv.slice(0, 1),
+              };
+              resolve(result);
+            }
+          }).catch(reject);
+        } catch (error) {
+          reject(error);
         }
       });
-    }
-  };
+    },
 
-  return (
-    yargs(hideBin(process.argv))
-      /**
-       * It can't be full strict because options may overlap among carlin config
-       * files.
-       */
-      .strictCommands()
-      .scriptName(NAME)
-      /**
-       * https://yargs.js.org/docs/#api-reference-envprefix
-       */
-      .env(getEnv())
-      .options(addGroupToOptions(options, 'Common Options'))
-      /**
-       * Middleware to set the `environment` option equals to the
-       * process.env.ENVIRONMENT if it exists and `environment` option
-       * is not provided.
-       */
-      .middleware((argv) => {
-        const finalEnvironment = argv.environment || process.env.ENVIRONMENT;
-        if (finalEnvironment) {
-          setEnvVar('ENVIRONMENT', finalEnvironment);
-          const envKeys = ['environment', ...options.environment.alias];
-          const envEntries = envKeys.map((key) => {
-            return [key, finalEnvironment];
-          });
-          Object.assign(argv, Object.fromEntries(envEntries));
-        }
-      })
-      .middleware(handleEnvironments as any)
-      /**
-       * Sometimes "environments" can be written as "environment" on config file.
-       * For instance, you may have a config file with the following content:
-       *
-       * ```yaml
-       * environment:
-       *  Production:
-       *    awsAccountId: 222222222222
-       * ```
-       *
-       * The middleware below will throw an error if that happens.
-       */
-      .middleware(({ environment }) => {
-        if (!['string', 'undefined'].includes(typeof environment)) {
-          throw new Error(
-            `environment type is invalid. The value: ${JSON.stringify(
-              environment
-            )}`
-          );
-        }
-      })
-      /**
-       * Set AWS region.
-       */
-      .middleware(({ region }) => {
-        AWS.config.region = region;
-        setEnvVar('REGION', region);
-      })
-      /**
-       * https://yargs.js.org/docs/#api-reference-pkgconfkey-cwd
-       */
-      .pkgConf(getPkgConfig())
-      .config(getConfig())
-      .config('config', (configFilePath: string) => {
-        return readConfigFileSync<any>({ configFilePath });
-      })
-      .command({
-        command: 'print-args',
-        describe: false,
-        handler: (argv) => {
-          // eslint-disable-next-line no-console
-          return console.log(JSON.stringify(argv, null, 2));
-        },
-      })
-      .command(deployCommand)
-      .command(ecsTaskReportCommand)
-      .command(generateEnvCommand)
-      .epilogue(
-        'For more information, read our docs at https://ttoss.dev/docs/carlin/'
-      )
-      .help()
-  );
+    /**
+     * Disable strict mode (for compatibility)
+     */
+    strict: (enabled?: boolean) => {
+      if (enabled === false) {
+        program.allowUnknownOption(true);
+        program.allowExcessArguments(true);
+      }
+      return cli();
+    },
+  };
 };
+

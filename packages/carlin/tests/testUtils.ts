@@ -45,5 +45,8 @@ import { cli } from 'src/cli';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseCli = async (arg: any, context: any) => {
-  return cli().strict(false).parse(arg, context);
+  const cliInstance = cli();
+  // Merge context with parsed args for backward compatibility
+  const mergedContext = { ...optionsFromConfigFiles, ...context };
+  return cliInstance.parse(arg, mergedContext);
 };

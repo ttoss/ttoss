@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import log from 'npmlog';
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import { Command } from 'commander';
 
-import { addGroupToOptions, getAwsAccountId } from '../utils';
-import { deployBaseStackCommand } from './baseStack/command';
-import { deployCicdCommand } from './cicd/command';
+import { getAwsAccountId } from '../utils';
 import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
 import { printStackOutputsAfterDeploy } from './cloudformation.core';
-import { deployLambdaLayerCommand } from './lambdaLayer/command';
 import { readDockerfile } from './readDockerfile';
 import { getStackName, setPreDefinedStackName } from './stackName';
-import { deployStaticAppCommand } from './staticApp/command';
-import { deployVercelCommand } from './vercel/command';
 
 const logPrefix = 'deploy';
 
@@ -34,19 +29,6 @@ const checkAwsAccountId = async (awsAccountId: string) => {
     log.error(logPrefix, error.message);
     process.exit();
   }
-};
-
-const describeDeployCommand: CommandModule = {
-  command: 'describe',
-  describe: 'Print the outputs of the deployment.',
-  handler: async ({ stackName }) => {
-    try {
-      const newStackName = (stackName as string) || (await getStackName());
-      await printStackOutputsAfterDeploy({ stackName: newStackName });
-    } catch (error: any) {
-      log.info(logPrefix, 'Cannot describe stack. Message: %s', error.message);
-    }
-  },
 };
 
 export const options = {
@@ -201,113 +183,181 @@ export const examples: ReadonlyArray<[string, string?]> = [
   ],
 ];
 
-export const deployCommand: CommandModule<
-  any,
-  InferredOptionTypes<typeof options>
-> = {
-  command: 'deploy [deploy]',
-  describe: 'Deploy cloud resources.',
-  builder: (yargsBuilder) => {
-    yargsBuilder
-      .example(examples)
-      .options(addGroupToOptions(options, 'Deploy Options'))
-      /**
-       * Set stack name.
-       */
-      .middleware(({ stackName }) => {
-        if (stackName) {
-          setPreDefinedStackName(stackName);
-        }
-      })
-      /**
-       * Set lambdaImage if lambdaDockerfile exists.
-       */
-      .middleware((argv) => {
-        if (argv.lambdaDockerfile) {
-          Object.assign(argv, {
-            lambdaImage: true,
-          });
-        }
-      })
-      /**
-       * Check AWS account id.
-       */
-      .middleware(
-        async ({
-          environments,
-          environment,
-          awsAccountId: defaultAwsAccountId,
-        }) => {
-          const envAwsAccountId: string | undefined = (() => {
-            return environments && environment && environments[environment]
-              ? environments[environment].awsAccountId
-              : undefined;
-          })();
+/**
+ * Process parameters option - convert object format to array format if needed
+ */
+const processParameters = (params: any): any[] => {
+  if (Array.isArray(params)) {
+    return params;
+  }
 
-          if (envAwsAccountId) {
-            await checkAwsAccountId(envAwsAccountId);
-          }
-
-          if (defaultAwsAccountId) {
-            await checkAwsAccountId(defaultAwsAccountId);
-          }
-        }
-      )
-      .middleware(({ skipDeploy }) => {
-        if (skipDeploy) {
-          log.warn(
-            logPrefix,
-            "Skip deploy flag is true, then the deploy command wasn't executed."
-          );
-          process.exit(0);
-        }
-      })
-      /**
-       * Raise error if old options are used.
-       */
-      .middleware(({ lambdaExternals, lambdaInput }) => {
-        if (lambdaInput) {
-          throw new Error(
-            'Option "lambdaInput" was removed. Please use "lambdaEntryPoints" instead.'
-          );
-        }
-
-        if (lambdaExternals) {
-          throw new Error(
-            'Option "lambdaExternals" was removed. Please use "lambdaExternal" instead.'
-          );
-        }
-      });
-
-    const commands = [
-      deployLambdaLayerCommand,
-      describeDeployCommand,
-      deployBaseStackCommand,
-      deployStaticAppCommand,
-      deployCicdCommand,
-      deployVercelCommand,
-    ];
-
-    yargsBuilder.positional('deploy', {
-      choices: commands.map(({ command }) => {
-        return command as string;
-      }),
-      describe: 'Deploy command.',
-      type: 'string',
+  if (typeof params === 'object' && params !== null) {
+    return Object.entries(params).map(([key, value]) => {
+      return { key, value };
     });
+  }
 
-    for (const command of commands) {
-      yargsBuilder.command(command as CommandModule);
-      continue;
-    }
+  return [];
+};
 
-    return yargsBuilder;
-  },
-  handler: ({ destroy, ...rest }) => {
+/**
+ * Pre-action hook to handle deploy-specific middleware
+ */
+const handleDeployPreAction = async (opts: any) => {
+  // Set stack name
+  if (opts.stackName) {
+    setPreDefinedStackName(opts.stackName);
+  }
+
+  // Set lambdaImage if lambdaDockerfile exists
+  if (opts.lambdaDockerfile) {
+    opts.lambdaImage = true;
+  }
+
+  // Check AWS account id
+  const { environments, environment, awsAccountId: defaultAwsAccountId } = opts;
+
+  const envAwsAccountId: string | undefined = (() => {
+    return environments && environment && environments[environment]
+      ? environments[environment].awsAccountId
+      : undefined;
+  })();
+
+  if (envAwsAccountId) {
+    await checkAwsAccountId(envAwsAccountId);
+  }
+
+  if (defaultAwsAccountId) {
+    await checkAwsAccountId(defaultAwsAccountId);
+  }
+
+  // Skip deploy if flag is set
+  if (opts.skipDeploy) {
+    log.warn(
+      logPrefix,
+      "Skip deploy flag is true, then the deploy command wasn't executed."
+    );
+    process.exit(0);
+  }
+
+  // Raise error if old options are used
+  if (opts.lambdaInput) {
+    throw new Error(
+      'Option "lambdaInput" was removed. Please use "lambdaEntryPoints" instead.'
+    );
+  }
+
+  if (opts.lambdaExternals) {
+    throw new Error(
+      'Option "lambdaExternals" was removed. Please use "lambdaExternal" instead.'
+    );
+  }
+
+  // Process parameters
+  opts.parameters = processParameters(opts.parameters);
+
+  // Process lambda-dockerfile
+  if (typeof opts.lambdaDockerfile === 'string') {
+    opts.lambdaDockerfile = readDockerfile(opts.lambdaDockerfile);
+  }
+
+  return opts;
+};
+
+// Import subcommands
+import { deployBaseStackCommand } from './baseStack/command';
+import { deployCicdCommand } from './cicd/command';
+import { deployLambdaLayerCommand } from './lambdaLayer/command';
+import { deployStaticAppCommand } from './staticApp/command';
+import { deployVercelCommand } from './vercel/command';
+
+/**
+ * Create the deploy command with all subcommands
+ */
+export const deployCommand = new Command('deploy')
+  .description('Deploy cloud resources.')
+  .allowUnknownOption(true)
+  .allowExcessArguments(true)
+  .option('--aws-account-id <id>', options['aws-account-id'].describe)
+  .option('--destroy', options.destroy.describe, options.destroy.default)
+  .option(
+    '--lambda-dockerfile <path>',
+    options['lambda-dockerfile'].describe,
+    options['lambda-dockerfile'].default
+  )
+  .option(
+    '--lambda-image',
+    options['lambda-image'].describe,
+    options['lambda-image'].default
+  )
+  .option(
+    '--lambda-external <modules...>',
+    options['lambda-external'].describe
+  )
+  .option(
+    '--lambda-entry-points-base-dir <dir>',
+    options['lambda-entry-points-base-dir'].describe,
+    options['lambda-entry-points-base-dir'].default
+  )
+  .option(
+    '--lambda-entry-points <files...>',
+    options['lambda-entry-points'].describe
+  )
+  .option(
+    '--lambda-format <format>',
+    options['lambda-format'].describe,
+    options['lambda-format'].default
+  )
+  .option(
+    '--lambda-outdir <dir>',
+    options['lambda-outdir'].describe,
+    options['lambda-outdir'].default
+  )
+  .option(
+    '--lambda-runtime <runtime>',
+    options['lambda-runtime'].describe,
+    options['lambda-runtime'].default
+  )
+  .option('-p, --parameters <params...>', options.parameters.describe)
+  .option(
+    '--skip-deploy',
+    options['skip-deploy'].describe,
+    options['skip-deploy'].default
+  )
+  .option('--stack-name <name>', options['stack-name'].describe)
+  .option('-t, --template-path <path>', options['template-path'].describe)
+  .hook('preAction', async (thisCommand) => {
+    const opts = thisCommand.opts();
+    await handleDeployPreAction(opts);
+  })
+  .action(async function (this: Command) {
+    const opts = this.opts();
+    const { destroy, ...rest } = opts;
+
     if (destroy) {
       destroyCloudFormation();
     } else {
       deployCloudFormation(rest as any);
     }
-  },
-};
+  });
+
+// Add describe subcommand
+deployCommand
+  .command('describe')
+  .description('Print the outputs of the deployment.')
+  .action(async function (this: Command) {
+    try {
+      const parentOpts = this.parent?.opts() || {};
+      const newStackName = parentOpts.stackName || (await getStackName());
+      await printStackOutputsAfterDeploy({ stackName: newStackName });
+    } catch (error: any) {
+      log.info(logPrefix, 'Cannot describe stack. Message: %s', error.message);
+    }
+  });
+
+// Add subcommands
+deployCommand.addCommand(deployBaseStackCommand);
+deployCommand.addCommand(deployCicdCommand);
+deployCommand.addCommand(deployLambdaLayerCommand);
+deployCommand.addCommand(deployStaticAppCommand);
+deployCommand.addCommand(deployVercelCommand);
