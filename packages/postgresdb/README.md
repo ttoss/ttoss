@@ -98,11 +98,11 @@ export const db = initialize({
 **Option 2 - Environment variables (`.env`):**
 
 ```env
-DB_NAME=postgres
-DB_USERNAME=postgres
-DB_PASSWORD=mysecretpassword
-DB_HOST=localhost
-DB_PORT=5432
+DATABASE_NAME=postgres
+DATABASE_USER=postgres
+DATABASE_PASSWORD=mysecretpassword
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
 ```
 
 Environment variables are automatically used if defined.
