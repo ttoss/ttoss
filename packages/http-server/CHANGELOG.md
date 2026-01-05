@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.2 (2026-01-05)
+
+### Bug Fixes
+
+- http server exports ([66d6010](https://github.com/ttoss/ttoss/commit/66d6010225f18836b2f1930799914924cac08e45))
+
 ## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.3.0...@ttoss/http-server@0.3.1) (2025-12-28)
 
 ### Bug Fixes
