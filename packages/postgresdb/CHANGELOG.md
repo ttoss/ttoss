@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.27](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.26...@ttoss/postgresdb@0.2.27) (2026-01-05)
+
+### Bug Fixes
+
+- packagejson ([b4b2bf8](https://github.com/ttoss/ttoss/commit/b4b2bf831d2ef84567652a3edbbb5482d7bcdaeb))
+
 ## 0.2.26 (2026-01-05)
 
 ### Bug Fixes
