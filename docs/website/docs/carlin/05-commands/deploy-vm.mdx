@@ -189,23 +189,30 @@ done
 
 ### Conditional Permission Fixing
 
-Fix permissions only when needed:
+Automatically fix local SSH key permissions only when needed:
 
 ```bash
-# First, try running without fixing permissions
-carlin deploy vm \
-  --user-name ubuntu \
-  --host 10.0.1.50 \
-  --script-path ./deploy.sh \
-  --key-path ~/.ssh/key.pem
+# Your local key has overly permissive permissions (e.g., 0644)
+ls -l ~/.ssh/my-key.pem
+# -rw-r--r--  1 user  staff  ... ~/.ssh/my-key.pem
 
-# If you hit a "Permission denied" error, re-run with --fix-permissions
+# First attempt: SSH fails because the key is too open
 carlin deploy vm \
   --user-name ubuntu \
   --host 10.0.1.50 \
   --script-path ./deploy.sh \
-  --key-path ~/.ssh/key.pem \
+  --key-path ~/.ssh/my-key.pem
+# SSH error example:
+# "Permissions 0644 for '~/.ssh/my-key.pem' are too open"
+
+# Second attempt: let Carlin fix the local key to 0400 before connecting
+carlin deploy vm \
+  --user-name ubuntu \
+  --host 10.0.1.50 \
+  --script-path ./deploy.sh \
+  --key-path ~/.ssh/my-key.pem \
   --fix-permissions
+# Carlin updates ~/.ssh/my-key.pem to 0400, then retries the SSH connection
 ```
 
 ## Related Commands
