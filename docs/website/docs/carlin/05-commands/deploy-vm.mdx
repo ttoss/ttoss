@@ -92,13 +92,10 @@ flowchart TD
     B -->|Password| D[Use Password]
     C --> E[Establish SSH Connection]
     D --> E
-    E --> F[Upload Script via SCP]
-    F --> G{Fix Permissions?}
-    G -->|Yes| H[chmod +x script]
-    G -->|No| I[Execute Script]
-    H --> I
-    I --> J[Stream Output to Console]
-    J --> K[Deployment Complete]
+    E --> F[Stream Script via SSH stdin]
+    F --> G[Execute Script on Remote Host]
+    G --> H[Stream Output to Console]
+    H --> I[Deployment Complete]
 ```
 
 ## Security Best Practices
