@@ -26,34 +26,6 @@ export const deployVMCommand: CommandModule<
     fixPermissions,
   }) => {
     try {
-      if (typeof userName !== 'string') {
-        throw new Error('Invalid or missing "userName" option for deploy-vm command.');
-      }
-
-      if (typeof host !== 'string') {
-        throw new Error('Invalid or missing "host" option for deploy-vm command.');
-      }
-
-      if (typeof scriptPath !== 'string') {
-        throw new Error('Invalid or missing "scriptPath" option for deploy-vm command.');
-      }
-
-      if (keyPath !== undefined && typeof keyPath !== 'string') {
-        throw new Error('Invalid "keyPath" option for deploy-vm command.');
-      }
-
-      if (password != null && typeof password !== 'string') {
-        throw new Error('Invalid "password" option for deploy-vm command.');
-      }
-
-      if (port != null && typeof port !== 'number') {
-        throw new Error('Invalid "port" option for deploy-vm command.');
-      }
-
-      if (typeof fixPermissions !== 'boolean') {
-        throw new Error('Invalid "fixPermissions" option for deploy-vm command.');
-      }
-
       await deployVM({
         userName,
         host,
