@@ -38,8 +38,8 @@ export const deployVMCommand: CommandModule<
         throw new Error('Invalid or missing "scriptPath" option for deploy-vm command.');
       }
 
-      if (typeof keyPath !== 'string') {
-        throw new Error('Invalid or missing "keyPath" option for deploy-vm command.');
+      if (keyPath !== undefined && typeof keyPath !== 'string') {
+        throw new Error('Invalid "keyPath" option for deploy-vm command.');
       }
 
       if (password != null && typeof password !== 'string') {
