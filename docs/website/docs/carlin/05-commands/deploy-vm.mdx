@@ -192,6 +192,14 @@ done
 Fix permissions only when needed:
 
 ```bash
+# First, try running without fixing permissions
+carlin deploy vm \
+  --user-name ubuntu \
+  --host 10.0.1.50 \
+  --script-path ./deploy.sh \
+  --key-path ~/.ssh/key.pem
+
+# If you hit a "Permission denied" error, re-run with --fix-permissions
 carlin deploy vm \
   --user-name ubuntu \
   --host 10.0.1.50 \
