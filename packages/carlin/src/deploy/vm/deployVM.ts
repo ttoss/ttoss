@@ -161,7 +161,6 @@ export const deployVM = async ({
 
     const sshProcess = spawn(sshCommand[0], sshCommand.slice(1), {
       stdio: ['pipe', 'inherit', 'inherit'],
-      shell: true,
     });
 
     const validateStdin = (
