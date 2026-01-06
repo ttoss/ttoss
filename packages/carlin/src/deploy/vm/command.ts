@@ -7,17 +7,8 @@ import { deployVM } from './deployVM';
 
 const logPrefix = 'deploy-vm';
 
-export interface VMServer {
-  name: string;
-  userName: string;
-  host: string;
-  keyPath: string;
-  port?: number;
-  password?: string;
-}
-
 export const deployVMCommand: CommandModule<
-  VMServer,
+  Record<string, unknown>,
   InferredOptionTypes<typeof options>
 > = {
   command: 'vm',
