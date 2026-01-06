@@ -10,6 +10,10 @@ Deploy scripts to remote Virtual Machines via SSH with automated file transfer, 
 carlin deploy vm --user-name ubuntu --host 192.168.1.100 --script-path ./deploy.sh --key-path ~/.ssh/my-key.pem
 ```
 
+:::note Command Usage
+All examples use `carlin` directly, assuming carlin is [installed globally or available in your PATH](/docs/carlin/getting-started). If you've installed carlin as a project dependency, either add a script to your `package.json` or run commands via `npx carlin` or `pnpm exec carlin`.
+:::
+
 ## What It Does
 
 The VM deployment command:
@@ -71,14 +75,14 @@ carlin deploy vm \
 
 ## Common Options
 
-| Option              | Type      | Required | Default | Description                                       |
-| ------------------- | --------- | -------- | ------- | ------------------------------------------------- |
-| `--user-name`       | `string`  | ✅       | -       | SSH username for VM authentication                |
-| `--host`            | `string`  | ✅       | -       | VM hostname or IP address                         |
-| `--script-path`     | `string`  | ✅       | -       | Local path to deployment script                   |
-| `--key-path`        | `string`  | ⚠️       | -       | Path to SSH private key (required if no password) |
-| `--password`        | `string`  | ⚠️       | -       | SSH password (required if no key)                 |
-| `--port`            | `number`  | ❌       | `22`    | SSH port number                                   |
+| Option              | Type      | Required | Default | Description                                            |
+| ------------------- | --------- | -------- | ------- | ------------------------------------------------------ |
+| `--user-name`       | `string`  | ✅       | -       | SSH username for VM authentication                     |
+| `--host`            | `string`  | ✅       | -       | VM hostname or IP address                              |
+| `--script-path`     | `string`  | ✅       | -       | Local path to deployment script                        |
+| `--key-path`        | `string`  | ⚠️       | -       | Path to SSH private key (required if no password)      |
+| `--password`        | `string`  | ⚠️       | -       | SSH password (required if no key)                      |
+| `--port`            | `number`  | ❌       | `22`    | SSH port number                                        |
 | `--fix-permissions` | `boolean` | ❌       | `false` | Automatically fix SSH key file permissions if too open |
 
 **Authentication Note**: Provide either `--key-path` or `--password`, not both.
@@ -112,14 +116,14 @@ flowchart TD
 
 ## Troubleshooting
 
-| Issue                           | Cause                              | Fix                                                                                                                                      |
-| ------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                         |
-| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                     |
-| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                           |
-| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                      |
+| Issue                           | Cause                              | Fix                                                                                                                                                      |
+| ------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                                         |
+| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                                     |
+| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                                           |
+| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                                      |
 | `Host key verification failed`  | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
-| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                           |
+| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                                           |
 
 ## Integration With CI/CD
 
