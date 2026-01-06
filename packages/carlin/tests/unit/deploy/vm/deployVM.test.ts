@@ -364,4 +364,117 @@ describe('deployVM', () => {
       })
     ).resolves.toBeUndefined();
   });
+
+  test('should cleanup SIGINT handler after successful deployment', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = {
+      write: jest.fn(),
+      writable: true,
+      destroyed: false,
+      pipe: jest.fn(),
+    };
+
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(0);
+        return mockProcess;
+      }),
+      kill: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    // Track SIGINT listeners
+    const initialListenerCount = process.listenerCount('SIGINT');
+
+    await deployVM({
+      userName: 'user',
+      host: 'host',
+      scriptPath: '/path/script.sh',
+      keyPath: '/key.pem',
+    });
+
+    // Verify listener was cleaned up
+    const finalListenerCount = process.listenerCount('SIGINT');
+    expect(finalListenerCount).toBe(initialListenerCount);
+  });
+
+  test('should cleanup SIGINT handler after failed deployment', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = { write: jest.fn(), writable: true, destroyed: false };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(1);
+        return mockProcess;
+      }),
+      kill: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    // Track SIGINT listeners
+    const initialListenerCount = process.listenerCount('SIGINT');
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('Deploy failed with code 1');
+
+    // Verify listener was cleaned up even on failure
+    const finalListenerCount = process.listenerCount('SIGINT');
+    expect(finalListenerCount).toBe(initialListenerCount);
+  });
+
+  test('should cleanup SIGINT handler after SSH process error', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockProcess: any = {
+      stdin: { writable: true, destroyed: false },
+      on: jest.fn((event: string, callback: (error: Error) => void) => {
+        if (event === 'error') {
+          callback(new Error('SSH connection failed'));
+        }
+        return mockProcess;
+      }),
+      kill: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    // Track SIGINT listeners
+    const initialListenerCount = process.listenerCount('SIGINT');
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('SSH connection failed');
+
+    // Verify listener was cleaned up even on error
+    const finalListenerCount = process.listenerCount('SIGINT');
+    expect(finalListenerCount).toBe(initialListenerCount);
+  });
 });

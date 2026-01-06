@@ -201,7 +201,23 @@ export const deployVM = async ({
     // Pipe deployment script to stdin
     deployScript.pipe(sshProcess.stdin);
 
+    // Define SIGINT handler that can be properly cleaned up
+    const handleSigint = () => {
+      log.info(logPrefix, 'Interrupting deployment...');
+      sshProcess.kill('SIGINT');
+      process.exit(130);
+    };
+
+    // Register SIGINT handler
+    process.on('SIGINT', handleSigint);
+
+    // Cleanup function to remove SIGINT handler
+    const cleanup = () => {
+      process.off('SIGINT', handleSigint);
+    };
+
     sshProcess.on('close', (code) => {
+      cleanup();
       if (code === 0) {
         resolve();
       } else {
@@ -210,13 +226,8 @@ export const deployVM = async ({
     });
 
     sshProcess.on('error', (error) => {
+      cleanup();
       reject(error);
-    });
-
-    process.on('SIGINT', () => {
-      log.info(logPrefix, 'Interrupting deployment...');
-      sshProcess.kill('SIGINT');
-      process.exit(130);
     });
   });
 };
