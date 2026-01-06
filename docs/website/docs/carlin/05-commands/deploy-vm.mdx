@@ -79,7 +79,7 @@ carlin deploy vm \
 | `--key-path`        | `string`  | ⚠️       | -       | Path to SSH private key (required if no password) |
 | `--password`        | `string`  | ⚠️       | -       | SSH password (required if no key)                 |
 | `--port`            | `number`  | ❌       | `22`    | SSH port number                                   |
-| `--fix-permissions` | `boolean` | ❌       | `false` | Automatically fix script execution permissions    |
+| `--fix-permissions` | `boolean` | ❌       | `false` | Automatically fix SSH key file permissions if too open |
 
 **Authentication Note**: Provide either `--key-path` or `--password`, not both.
 
