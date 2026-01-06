@@ -1,28 +1,22 @@
 # @ttoss/lambda-postgres-query
 
-This package creates an AWS Lambda function that can query an RDS Postgres database inside a private subnet of a VPC.
+Create an AWS Lambda function to securely query a PostgreSQL database in a private VPC subnet without exposing the database to the internet.
 
-The goal of this package is to provide a way to query a Postgres database from a Lambda function without exposing the database to the internet. If your project needs to query a Postgres database and access to the internet, you can follow two approaches:
+## When to Use
 
-1. Create a Lambda function inside a VPC and use a NAT Gateway to access the internet. This approach is expensive because you need to pay for the NAT Gateway.
-
-2. Decompose your architecture into multiple Lambdas—some inside the VPC and some outside the VPC. The Lambda inside the VPC can query the database, and the Lambda outside the VPC can query the Lambda inside the VPC. On this approach, Lambdas outside the VPC invoke Lambdas inside the VPC using the AWS SDK to query the database. This approach is complex and requires more effort to maintain.
-
-_Check this StackOverflow question for more information: [Why can't an AWS lambda function inside a public subnet in a VPC connect to the internet?](https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the)_
+This package solves the challenge of querying a PostgreSQL database from AWS Lambda functions without internet access. Traditional approaches require expensive NAT Gateways or complex multi-Lambda architectures. This package provides a simpler solution by deploying a dedicated Lambda function within your VPC.
 
 ## Installation
-
-To install this package, you need to run the following command:
 
 ```bash
 pnpm install @ttoss/lambda-postgres-query
 ```
 
-## Usage
+## Setup
 
-### CloudFormation
+### CloudFormation Template
 
-Create a `src/cloudformation.ts` file with the following content:
+Create a CloudFormation template to deploy the Lambda function:
 
 ```typescript
 import { createLambdaPostgresQueryTemplate } from '@ttoss/lambda-postgres-query/cloudformation';
@@ -32,26 +26,32 @@ const template = createLambdaPostgresQueryTemplate();
 export default template;
 ```
 
-Create a `src/handler.ts` file with the following content:
+### Lambda Handler
+
+Create a handler file that exports the Lambda function:
 
 ```typescript
 export { handler } from '@ttoss/lambda-postgres-query';
 ```
 
-Provide the following environment variables in the `.env` file:
+### Environment Variables
+
+Configure the following environment variables:
 
 ```env
-DATABASE_NAME=
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
-DATABASE_HOST=
-DATABASE_HOST_READ_ONLY=
-DATABASE_PORT=
-SECURITY_GROUP_IDS=
-SUBNET_IDS=
+DATABASE_NAME=your_database_name
+DATABASE_USERNAME=your_username
+DATABASE_PASSWORD=your_password
+DATABASE_HOST=your_database_host
+DATABASE_HOST_READ_ONLY=your_read_only_host  # Optional
+DATABASE_PORT=5432
+SECURITY_GROUP_IDS=sg-xxxxx,sg-yyyyy
+SUBNET_IDS=subnet-xxxxx,subnet-yyyyy
 ```
 
-Add the `deploy` script to the `package.json` file:
+### Deployment
+
+Add a deploy script to your `package.json`:
 
 ```json
 {
@@ -61,44 +61,94 @@ Add the `deploy` script to the `package.json` file:
 }
 ```
 
-[Deploy](https://ttoss.dev/docs/carlin/commands/deploy) them using the following command:
+Deploy using Carlin:
 
 ```bash
 pnpm deploy
 ```
 
-_**Note:** When deploying using carlin, you need to set `lambdaFormat: 'cjs'` because `pg` package doesn't support ESM format._
+**Note:** Set `lambdaFormat: 'cjs'` in your Carlin configuration, as the `pg` package requires CommonJS.
 
-It'll create the necessary resources to query the Postgres database and display the name of the Lambda function created.
+## Usage
 
-### Querying the database
+### Querying from External Lambdas
 
-To query the database from Lambdas outside the VPC, do the following:
+Query the database from Lambda functions outside the VPC:
 
 ```typescript
 import { query } from '@ttoss/lambda-postgres-query';
 import type { Handler } from 'aws-lambda';
 
 export const handler: Handler = async (event) => {
-  const text = 'SELECT * FROM table_name';
-  const result = await query({ text });
+  const result = await query('SELECT * FROM users');
   return result.rows;
 };
 ```
 
-## API
+### Advanced Query Options
 
-### `createLambdaQueryTemplate`
+```typescript
+import { query } from '@ttoss/lambda-postgres-query';
 
-This function creates a CloudFormation template to deploy the Lambda function that queries the Postgres database.
+// Query with parameters
+const result = await query({
+  text: 'SELECT * FROM users WHERE id = $1',
+  values: [userId],
+});
 
-### `query`
+// Use read-only connection
+const result = await query({
+  text: 'SELECT * FROM users',
+  readOnly: true, // Defaults to true
+});
 
-This function queries the Postgres database using the environment variables provided. It uses the [`pg`](https://node-postgres.com/) package to connect to the database.
+// Disable automatic camelCase conversion
+const result = await query({
+  text: 'SELECT * FROM users',
+  camelCaseKeys: false, // Defaults to true
+});
+
+// Specify custom Lambda function name
+const result = await query({
+  text: 'SELECT * FROM users',
+  lambdaPostgresQueryFunction: 'custom-function-name',
+});
+```
+
+## API Reference
+
+### `createLambdaPostgresQueryTemplate(options?)`
+
+Creates a CloudFormation template for the PostgreSQL query Lambda function.
 
 #### Parameters
 
-It accepts all the [`QueryConfig` object from the `pg` package](https://node-postgres.com/apis/client#queryconfig) with the following additional properties:
+- `handler` (string, optional): Lambda handler function name. Default: `'handler.handler'`
+- `memorySize` (number, optional): Lambda memory size in MB. Default: `128`
+- `timeout` (number, optional): Lambda timeout in seconds. Default: `30`
 
-- `readOnly`: A boolean that indicates if the query should be executed on the read-only database, in case you provided the `DATABASE_HOST_READ_ONLY` value. Default is `true`.
-- `lambdaPostgresQueryFunction`: The name of the Lambda function that queries the database. Default is the value of the `LAMBDA_POSTGRES_QUERY_FUNCTION` environment variable.
+#### Returns
+
+A CloudFormation template object.
+
+### `query(params)`
+
+Queries the PostgreSQL database by invoking the VPC Lambda function.
+
+#### Parameters
+
+Accepts either a SQL string or an options object extending [`QueryConfig`](https://node-postgres.com/apis/client#queryconfig) with additional properties:
+
+- `text` (string): SQL query text
+- `values` (array, optional): Query parameter values
+- `readOnly` (boolean, optional): Use read-only database host if available. Default: `true`
+- `lambdaPostgresQueryFunction` (string, optional): Name of the query Lambda function. Default: `LAMBDA_POSTGRES_QUERY_FUNCTION` environment variable
+- `camelCaseKeys` (boolean, optional): Convert snake_case column names to camelCase. Default: `true`
+
+#### Returns
+
+A [`QueryResult`](https://node-postgres.com/apis/result) object with transformed rows.
+
+### `handler`
+
+AWS Lambda handler function for processing database queries within the VPC.

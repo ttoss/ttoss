@@ -20,6 +20,9 @@
       "dependsOn": ["^build", "i18n"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
+    "@docs/website#build": {
+      "inputs": ["**/*", "../packages/*/README.md"]
+    },
     "test": {
       "dependsOn": ["i18n", "build-config"],
       "outputs": []
