@@ -164,6 +164,19 @@ export const deployVM = async ({
       shell: true,
     });
 
+    // Store SIGINT handler reference for cleanup
+    const sigintHandler = () => {
+      log.info(logPrefix, 'Interrupting deployment...');
+      sshProcess.kill('SIGINT');
+      process.exit(130);
+    };
+
+    process.on('SIGINT', sigintHandler);
+
+    const cleanup = () => {
+      process.removeListener('SIGINT', sigintHandler);
+    };
+
     const validateStdin = (
       stdin: typeof sshProcess.stdin
     ): stdin is NonNullable<typeof stdin> => {
@@ -187,6 +200,7 @@ export const deployVM = async ({
 
     // Validate stdin is available and writable
     if (!validateStdin(sshProcess.stdin)) {
+      cleanup();
       reject(new Error('SSH process stdin is not available or not writable'));
       return;
     }
@@ -202,6 +216,7 @@ export const deployVM = async ({
     deployScript.pipe(sshProcess.stdin);
 
     sshProcess.on('close', (code) => {
+      cleanup();
       if (code === 0) {
         resolve();
       } else {
@@ -210,13 +225,8 @@ export const deployVM = async ({
     });
 
     sshProcess.on('error', (error) => {
+      cleanup();
       reject(error);
-    });
-
-    process.on('SIGINT', () => {
-      log.info(logPrefix, 'Interrupting deployment...');
-      sshProcess.kill('SIGINT');
-      process.exit(130);
     });
   });
 };

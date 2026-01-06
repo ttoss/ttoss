@@ -364,4 +364,162 @@ describe('deployVM', () => {
       })
     ).resolves.toBeUndefined();
   });
+
+  test('should clean up SIGINT handler on successful deployment', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = {
+      write: jest.fn(),
+      writable: true,
+      destroyed: false,
+      pipe: jest.fn(),
+    };
+
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(0);
+        return mockProcess;
+      }),
+      kill: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    // Spy on process event listeners
+    const processOnSpy = jest.spyOn(process, 'on');
+    const processRemoveListenerSpy = jest.spyOn(process, 'removeListener');
+
+    await deployVM({
+      userName: 'user',
+      host: 'host',
+      scriptPath: '/path/script.sh',
+      keyPath: '/key.pem',
+    });
+
+    // Verify SIGINT handler was registered
+    expect(processOnSpy).toHaveBeenCalledWith('SIGINT', expect.any(Function));
+
+    // Verify SIGINT handler was cleaned up
+    expect(processRemoveListenerSpy).toHaveBeenCalledWith(
+      'SIGINT',
+      expect.any(Function)
+    );
+
+    processOnSpy.mockRestore();
+    processRemoveListenerSpy.mockRestore();
+  });
+
+  test('should clean up SIGINT handler on SSH process error', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockProcess: any = {
+      stdin: { writable: true, destroyed: false },
+      on: jest.fn((event: string, callback: (error: Error) => void) => {
+        if (event === 'error') {
+          callback(new Error('spawn ENOENT'));
+        }
+        return mockProcess;
+      }),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    const processRemoveListenerSpy = jest.spyOn(process, 'removeListener');
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('spawn ENOENT');
+
+    // Verify SIGINT handler was cleaned up even on error
+    expect(processRemoveListenerSpy).toHaveBeenCalledWith(
+      'SIGINT',
+      expect.any(Function)
+    );
+
+    processRemoveListenerSpy.mockRestore();
+  });
+
+  test('should clean up SIGINT handler on stdin validation failure', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockProcess: any = {
+      stdin: null,
+      on: jest.fn(),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    const processRemoveListenerSpy = jest.spyOn(process, 'removeListener');
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('SSH process stdin is not available or not writable');
+
+    // Verify SIGINT handler was cleaned up even on stdin validation failure
+    expect(processRemoveListenerSpy).toHaveBeenCalledWith(
+      'SIGINT',
+      expect.any(Function)
+    );
+
+    processRemoveListenerSpy.mockRestore();
+  });
+
+  test('should clean up SIGINT handler on deployment failure (non-zero exit)', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockStatSync.mockReturnValue({ mode: 0o100400 } as any);
+
+    const mockStdin = { write: jest.fn(), writable: true, destroyed: false };
+    const mockProcess: any = {
+      stdin: mockStdin,
+      on: jest.fn((event: string, callback: (code: number) => void) => {
+        if (event === 'close') callback(255);
+        return mockProcess;
+      }),
+    };
+    mockSpawn.mockReturnValue(mockProcess);
+
+    const mockStream = { pipe: jest.fn() };
+    mockCreateReadStream.mockReturnValue(mockStream as any);
+
+    mockGenerateSSHCommand.mockReturnValue(['ssh', 'user@host']);
+
+    const processRemoveListenerSpy = jest.spyOn(process, 'removeListener');
+
+    await expect(
+      deployVM({
+        userName: 'user',
+        host: 'host',
+        scriptPath: '/path/script.sh',
+        keyPath: '/key.pem',
+      })
+    ).rejects.toThrow('Deploy failed with code 255');
+
+    // Verify SIGINT handler was cleaned up even on deployment failure
+    expect(processRemoveListenerSpy).toHaveBeenCalledWith(
+      'SIGINT',
+      expect.any(Function)
+    );
+
+    processRemoveListenerSpy.mockRestore();
+  });
 });

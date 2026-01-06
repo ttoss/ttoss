@@ -27,23 +27,36 @@ export const deployVMCommand: CommandModule<
   }) => {
     try {
       if (typeof userName !== 'string') {
-        throw new Error('Invalid or missing "userName" option for deploy-vm command.');
+        throw new Error(
+          'Invalid or missing "userName" option for deploy-vm command.'
+        );
       }
 
       if (typeof host !== 'string') {
-        throw new Error('Invalid or missing "host" option for deploy-vm command.');
+        throw new Error(
+          'Invalid or missing "host" option for deploy-vm command.'
+        );
       }
 
       if (typeof scriptPath !== 'string') {
-        throw new Error('Invalid or missing "scriptPath" option for deploy-vm command.');
+        throw new Error(
+          'Invalid or missing "scriptPath" option for deploy-vm command.'
+        );
       }
 
-      if (typeof keyPath !== 'string') {
-        throw new Error('Invalid or missing "keyPath" option for deploy-vm command.');
+      // Validate that either keyPath or password is provided
+      if (keyPath != null && typeof keyPath !== 'string') {
+        throw new Error('Invalid "keyPath" option for deploy-vm command.');
       }
 
       if (password != null && typeof password !== 'string') {
         throw new Error('Invalid "password" option for deploy-vm command.');
+      }
+
+      if (!keyPath && !password) {
+        throw new Error(
+          'Either "keyPath" or "password" must be provided for authentication.'
+        );
       }
 
       if (port != null && typeof port !== 'number') {
@@ -51,7 +64,9 @@ export const deployVMCommand: CommandModule<
       }
 
       if (typeof fixPermissions !== 'boolean') {
-        throw new Error('Invalid "fixPermissions" option for deploy-vm command.');
+        throw new Error(
+          'Invalid "fixPermissions" option for deploy-vm command.'
+        );
       }
 
       await deployVM({
