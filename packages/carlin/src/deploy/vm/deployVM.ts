@@ -190,6 +190,13 @@ export const deployVM = async ({
       return;
     }
 
+    // Validate that the deployment script exists before creating a read stream
+    if (!existsSync(scriptPath)) {
+      const message = `Deployment script not found at path: ${scriptPath}`;
+      log.error(logPrefix, message);
+      reject(new Error(message));
+      return;
+    }
     const deployScript = createReadStream(scriptPath);
 
     // Send password via stdin when using password authentication
