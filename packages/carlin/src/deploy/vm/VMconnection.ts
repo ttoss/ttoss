@@ -3,7 +3,6 @@ interface SshCommandParams {
   host: string;
   keyPath?: string;
   port?: number;
-  // eslint-disable-next-line max-params
 }
 
 /**
@@ -19,7 +18,6 @@ const generateSSHCommand = ({
   host,
   keyPath,
   port,
-  // eslint-disable-next-line max-params
 }: SshCommandParams): string[] => {
   const commandParts = ['ssh', '-T'];
 
@@ -60,7 +58,6 @@ const generateSSHCommandWithPwd = ({
   host,
   password,
   port,
-  // eslint-disable-next-line max-params
 }: SshCommandWithPwdParams): { command: string[]; password: string } => {
   const commandParts = [
     'ssh',
