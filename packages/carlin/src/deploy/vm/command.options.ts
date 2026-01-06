@@ -34,7 +34,14 @@ export const options = {
   },
 } as const;
 
+type OptionValueType<TOption> = TOption extends { type: 'string' }
+  ? string
+  : TOption extends { type: 'number' }
+  ? number
+  : TOption extends { type: 'boolean' }
+  ? boolean
+  : unknown;
+
 export type VmCommandOptions = Partial<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key in keyof typeof options]: any;
+  [key in keyof typeof options]: OptionValueType<(typeof options)[key]>;
 }>;
