@@ -90,13 +90,13 @@ flowchart TD
     A[Start Deployment] --> B{Authentication Type}
     B -->|SSH Key| C[Read Private Key]
     B -->|Password| D[Use Password]
-    C --> E[Establish SSH Connection]
-    D --> E
-    E --> F[Upload Script via SCP]
-    F --> G{Fix Permissions?}
-    G -->|Yes| H[chmod +x script]
-    G -->|No| I[Execute Script]
-    H --> I
+    C --> F{Fix SSH Key Permissions?}
+    F -->|Yes| G[Adjust SSH Key Permissions (chmod 600)]
+    F -->|No| E[Establish SSH Connection]
+    G --> E
+    D --> E[Establish SSH Connection]
+    E --> H[Upload Script via SCP]
+    H --> I[Execute Script]
     I --> J[Stream Output to Console]
     J --> K[Deployment Complete]
 ```
