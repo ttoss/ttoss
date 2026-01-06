@@ -112,14 +112,14 @@ flowchart TD
 
 ## Troubleshooting
 
-| Issue                           | Cause                              | Fix                                                                                                 |
-| ------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                    |
-| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                |
-| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                      |
-| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                 |
-| `Host key verification failed`  | SSH host key not trusted           | Add host to `~/.ssh/known_hosts` or use `StrictHostKeyChecking=no` (not recommended for production) |
-| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                      |
+| Issue                           | Cause                              | Fix                                                                                                                                      |
+| ------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                         |
+| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                     |
+| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                           |
+| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                      |
+| `Host key verification failed`  | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
+| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                           |
 
 ## Integration With CI/CD
 
