@@ -136,7 +136,7 @@ Automate VM deployments in your pipeline:
       --user-name ubuntu \
       --host ${{ secrets.VM_HOST }} \
       --script-path ./scripts/deploy.sh \
-      --key-path ./deploy-key.pem
+      --key-path ./deploy-key.pem \
       --fix-permissions
     rm deploy-key.pem
 ```
