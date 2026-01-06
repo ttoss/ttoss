@@ -15,9 +15,9 @@ carlin deploy vm --user-name ubuntu --host 192.168.1.100 --script-path ./deploy.
 The VM deployment command:
 
 - Establishes secure SSH connections using key-based or password authentication
-- Transfers deployment scripts to the target VM
-- Optionally fixes file permissions for execution
-- Executes scripts remotely and streams output
+- Pipes deployment script content directly through SSH to bash
+- Optionally fixes SSH key file permissions before connecting
+- Executes scripts remotely and streams output to console
 - Provides detailed logging for troubleshooting
 
 ## Use Cases
@@ -91,12 +91,12 @@ flowchart TD
     B -->|SSH Key| C[Read Private Key]
     B -->|Password| D[Use Password]
     C --> F{Fix SSH Key Permissions?}
-    F -->|Yes| G[Adjust SSH Key Permissions (chmod 600)]
+    F -->|Yes| G[Adjust SSH Key Permissions (chmod 400)]
     F -->|No| E[Establish SSH Connection]
     G --> E
     D --> E[Establish SSH Connection]
-    E --> H[Upload Script via SCP]
-    H --> I[Execute Script]
+    E --> H[Pipe Script Content to SSH stdin]
+    H --> I[Execute Script via bash -s]
     I --> J[Stream Output to Console]
     J --> K[Deployment Complete]
 ```
@@ -117,7 +117,7 @@ flowchart TD
 | `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                         |
 | `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                     |
 | `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                           |
-| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                      |
+| `Permission denied` on execute  | Script not executable on remote VM | Ensure script has execute permissions on the remote VM or modify script to be executable                                                  |
 | `Host key verification failed`  | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
 | `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                           |
 
