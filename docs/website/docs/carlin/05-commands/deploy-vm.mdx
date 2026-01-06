@@ -16,7 +16,7 @@ The VM deployment command:
 
 - Establishes secure SSH connections using key-based or password authentication
 - Transfers deployment scripts to the target VM
-- Optionally fixes file permissions for execution
+- Optionally fixes SSH key file permissions if they're too open (when using key-based auth)
 - Executes scripts remotely and streams output
 - Provides detailed logging for troubleshooting
 
@@ -57,7 +57,7 @@ carlin deploy vm \
   --password $DEPLOY_PASSWORD
 ```
 
-### Deploy With Custom Port and Permission Fix
+### Deploy With Custom Port and SSH Key Permission Fix
 
 ```bash
 carlin deploy vm \
@@ -88,15 +88,15 @@ carlin deploy vm \
 ```mermaid
 flowchart TD
     A[Start Deployment] --> B{Authentication Type}
-    B -->|SSH Key| C[Read Private Key]
+    B -->|SSH Key| C[Check Key Permissions]
     B -->|Password| D[Use Password]
-    C --> E[Establish SSH Connection]
-    D --> E
-    E --> F[Upload Script via SCP]
-    F --> G{Fix Permissions?}
-    G -->|Yes| H[chmod +x script]
-    G -->|No| I[Execute Script]
-    H --> I
+    C --> E{Fix Permissions Flag?}
+    E -->|Yes| F[Auto-fix: chmod 400]
+    E -->|No & Invalid| G[Error: Key permissions too open]
+    F --> H[Establish SSH Connection]
+    E -->|No & Valid| H
+    D --> H
+    H --> I[Upload & Execute Script]
     I --> J[Stream Output to Console]
     J --> K[Deployment Complete]
 ```
@@ -112,14 +112,15 @@ flowchart TD
 
 ## Troubleshooting
 
-| Issue                           | Cause                              | Fix                                                                                                                                      |
-| ------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                         |
-| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                     |
-| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                           |
-| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                      |
-| `Host key verification failed`  | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
-| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                           |
+| Issue                             | Cause                              | Fix                                                                                                                                      |
+| --------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `Permission denied (publickey)`   | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                         |
+| `Connection refused`              | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                     |
+| `Script not found`                | Invalid local path                 | Verify `--script-path` points to existing file                                                                                           |
+| `Invalid SSH key permissions`     | SSH key file permissions too open  | Use `--fix-permissions` flag or manually run `chmod 400 ~/.ssh/your-key.pem`                                                             |
+| `Permission denied` on execute    | Script not executable on remote VM | Ensure script has shebang line (e.g., `#!/bin/bash`) or manually SSH and run `chmod +x` on the uploaded script                          |
+| `Host key verification failed`    | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
+| `Connection timeout`              | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                           |
 
 ## Integration With CI/CD
 
@@ -187,9 +188,9 @@ for host in vm1.example.com vm2.example.com vm3.example.com; do
 done
 ```
 
-### Conditional Permission Fixing
+### Automatic SSH Key Permission Fixing
 
-Fix permissions only when needed:
+The `--fix-permissions` flag automatically fixes SSH private key file permissions if they're too open (not 400 or 600). This is useful when deploying from CI/CD environments where key files may be created with default permissions:
 
 ```bash
 carlin deploy vm \
@@ -199,6 +200,8 @@ carlin deploy vm \
   --key-path ~/.ssh/key.pem \
   --fix-permissions
 ```
+
+**Note**: This flag only affects the **local SSH key file** permissions, not the script permissions on the remote VM. If your deployment script needs execution permissions on the remote VM, ensure it includes a proper shebang line (e.g., `#!/bin/bash`).
 
 ## Related Commands
 
