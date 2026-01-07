@@ -14,6 +14,7 @@ export const components = [
   'JsonEditor',
   'JsonView',
   'List',
+  'LockedOverlay',
   'Markdown',
   'Menu',
   'MetricCard',

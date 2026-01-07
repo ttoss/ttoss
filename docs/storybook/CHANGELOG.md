@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.8.0...@docs/storybook@3.8.1) (2026-01-01)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.8.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.7.1...@docs/storybook@3.8.0) (2025-12-30)
+
+### Features
+
+- implement theme-controlled padding for layout components ([#821](https://github.com/ttoss/ttoss/issues/821)) ([fad18ed](https://github.com/ttoss/ttoss/commit/fad18edd6f29e2dc3e17e4cb363e567899dbea18))
+
+## [3.7.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.7.0...@docs/storybook@3.7.1) (2025-12-29)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.7.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.6.2...@docs/storybook@3.7.0) (2025-12-29)
+
+### Features
+
+- create lockedOverlay component ([#815](https://github.com/ttoss/ttoss/issues/815)) ([958cd24](https://github.com/ttoss/ttoss/commit/958cd24c90e77ff34fa6a2b4fbace8f08be383ae))
+
 ## [3.6.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.6.1...@docs/storybook@3.6.2) (2025-12-23)
 
 **Note:** Version bump only for package @docs/storybook

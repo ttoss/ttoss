@@ -1,5 +1,5 @@
 import type { BoxProps } from '@ttoss/ui';
-import { Box, Container } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
 
 import { MainBody } from './MainBody';
 import { MainFooter } from './MainFooter';
@@ -11,18 +11,13 @@ export const Main = (props: BoxProps) => {
       variant="layout.main"
       sx={{
         overflowX: 'auto',
+        overflowY: 'auto',
         flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <Container
-        variant="layout.container"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {props.children}
-      </Container>
+      {props.children}
     </Box>
   );
 };

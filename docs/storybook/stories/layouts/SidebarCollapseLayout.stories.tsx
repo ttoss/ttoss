@@ -63,7 +63,9 @@ const SidebarCollapseLayoutTemplate = ({
         >
           Main Header
         </Layout.Main.Header>
+
         <Layout.Main.Body>{mainContent}</Layout.Main.Body>
+
         <Layout.Main.Footer
           sx={{
             borderTop: '1px solid gray',

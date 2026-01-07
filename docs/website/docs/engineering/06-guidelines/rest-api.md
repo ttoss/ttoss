@@ -189,7 +189,6 @@ Some points to consider about Carlin algorithm (you can check the documentation 
 1. Name your methods with the HTTP method in uppercase. For example, `GET`, `POST`, `PUT`, `DELETE`.
 
 1. Use the `APIGatewayProxyHandler` type from `aws-lambda` to define the method signature.
-
    1. Don't forget to install [`@types/aws-lambda`](https://www.npmjs.com/package/@types/aws-lambda).
 
    1. It should be `APIGatewayProxyHandler` instead of `APIGatewayProxyHandlerV2` because of the [input format of a Lambda function for proxy integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format).
@@ -197,7 +196,6 @@ Some points to consider about Carlin algorithm (you can check the documentation 
 1. Use the `Globals` property to define common properties for all functions.
 
 1. Name your CloudFormation function resources with the following pattern: `{ResourceName}{HTTPMethod}Function`. Examples:
-
    1. `UsersGETFunction`: `GET /users`
 
    1. `UserIdGETFunction`: `GET /user/{id}`

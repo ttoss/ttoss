@@ -11,6 +11,7 @@ exports[`package.json exports should export all components 1`] = `
   "./JsonEditor": "./src/components/JsonEditor/index.ts",
   "./JsonView": "./src/components/JsonView/index.ts",
   "./List": "./src/components/List/index.ts",
+  "./LockedOverlay": "./src/components/LockedOverlay/index.ts",
   "./Markdown": "./src/components/Markdown/index.ts",
   "./Menu": "./src/components/Menu/index.ts",
   "./MetricCard": "./src/components/MetricCard/index.ts",
@@ -63,6 +64,10 @@ exports[`package.json exports should export all components 2`] = `
   "./List": {
     "default": "./dist/esm/List/index.js",
     "types": "./dist/List/index.d.ts",
+  },
+  "./LockedOverlay": {
+    "default": "./dist/esm/LockedOverlay/index.js",
+    "types": "./dist/LockedOverlay/index.d.ts",
   },
   "./Markdown": {
     "default": "./dist/esm/Markdown/index.js",

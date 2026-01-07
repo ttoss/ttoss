@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.27](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.26...@ttoss/postgresdb@0.2.27) (2026-01-05)
+
+### Bug Fixes
+
+- packagejson ([b4b2bf8](https://github.com/ttoss/ttoss/commit/b4b2bf831d2ef84567652a3edbbb5482d7bcdaeb))
+
+## 0.2.26 (2026-01-05)
+
+### Bug Fixes
+
+- change postgresdb initialize ([78f6f9d](https://github.com/ttoss/ttoss/commit/78f6f9dda644af4b525b1266ef1966df12056613))
+
 ## [0.2.25](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.24...@ttoss/postgresdb@0.2.25) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/postgresdb

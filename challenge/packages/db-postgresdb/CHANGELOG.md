@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.32](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.31...@ttoss-challenge/db-postgresdb@0.1.32) (2026-01-05)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## [0.1.31](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.30...@ttoss-challenge/db-postgresdb@0.1.31) (2026-01-05)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
+## 0.1.30 (2026-01-05)
+
+**Note:** Version bump only for package @ttoss-challenge/db-postgresdb
+
 ## [0.1.29](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-postgresdb@0.1.28...@ttoss-challenge/db-postgresdb@0.1.29) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss-challenge/db-postgresdb

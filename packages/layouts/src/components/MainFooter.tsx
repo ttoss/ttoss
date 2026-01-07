@@ -1,14 +1,16 @@
 import type { BoxProps } from '@ttoss/ui';
-import { Box } from '@ttoss/ui';
+import { Box, Container } from '@ttoss/ui';
 
-export const MainFooter = (props: BoxProps) => {
+export type MainFooterProps = BoxProps & {
+  containerSx?: BoxProps['sx'];
+};
+
+export const MainFooter = ({ containerSx, ...props }: MainFooterProps) => {
   return (
     <Box
       variant="layout.main.footer"
       {...props}
       sx={{
-        paddingX: '10',
-        paddingY: '3',
         borderTop: 'sm',
         borderColor: 'display.border.muted.default',
         backgroundColor: 'navigation.background.primary.default',
@@ -16,7 +18,14 @@ export const MainFooter = (props: BoxProps) => {
         ...props.sx,
       }}
     >
-      {props.children}
+      <Container
+        paddingY="3"
+        variant="layout.container"
+        data-testid="main-footer-container"
+        sx={containerSx}
+      >
+        {props.children}
+      </Container>
     </Box>
   );
 };

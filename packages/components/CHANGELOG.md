@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.3](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.12.2...@ttoss/components@2.12.3) (2026-01-01)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.12.2](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.12.1...@ttoss/components@2.12.2) (2025-12-30)
+
+**Note:** Version bump only for package @ttoss/components
+
+## [2.12.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.12.0...@ttoss/components@2.12.1) (2025-12-29)
+
+**Note:** Version bump only for package @ttoss/components
+
+# [2.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.11.7...@ttoss/components@2.12.0) (2025-12-29)
+
+### Features
+
+- create lockedOverlay component ([#815](https://github.com/ttoss/ttoss/issues/815)) ([958cd24](https://github.com/ttoss/ttoss/commit/958cd24c90e77ff34fa6a2b4fbace8f08be383ae))
+
 ## [2.11.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.11.6...@ttoss/components@2.11.7) (2025-12-23)
 
 ### Bug Fixes

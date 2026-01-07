@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.24 (2026-01-05)
+
+### Bug Fixes
+
+- http server exports ([66d6010](https://github.com/ttoss/ttoss/commit/66d6010225f18836b2f1930799914924cac08e45))
+
 ## [0.1.23](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb-cli@0.1.22...@ttoss/postgresdb-cli@0.1.23) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/postgresdb-cli

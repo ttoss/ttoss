@@ -19,11 +19,11 @@ export const initialize = async <Models extends { [key: string]: ModelCtor }>({
     sequelize: Sequelize;
   } & Models
 > => {
-  const username = process.env.DB_USERNAME,
-    password = process.env.DB_PASSWORD,
-    database = process.env.DB_NAME,
-    host = process.env.DB_HOST,
-    port = Number(process.env.DB_PORT) || 5432;
+  const username = process.env.DATABASE_USER,
+    password = process.env.DATABASE_PASSWORD,
+    database = process.env.DATABASE_NAME,
+    host = process.env.DATABASE_HOST,
+    port = Number(process.env.DATABASE_PORT) || 5432;
 
   if (!sequelize) {
     sequelize = new Sequelize({

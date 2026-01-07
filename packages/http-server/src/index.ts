@@ -8,3 +8,8 @@ export { App, bodyParser, cors, multer, Router };
 
 export * from './addHealthCheck';
 export type { File as MulterFile } from '@koa/multer';
+
+/**
+ * Export types to avoid The inferred type of cannot be named without a reference to
+ */
+export * from '@koa/router';

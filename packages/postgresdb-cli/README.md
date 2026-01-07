@@ -15,11 +15,11 @@ Define your `db` object using [@ttoss/postgresdb](https://ttoss.dev/docs/modules
 Set connection environment variables in `.env` files:
 
 ```env
-DB_NAME=postgres
-DB_USERNAME=postgres
-DB_PASSWORD=mysecretpassword
-DB_HOST=localhost
-DB_PORT=5432
+DATABASE_NAME=postgres
+DATABASE_USER=postgres
+DATABASE_PASSWORD=mysecretpassword
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
 ```
 
 **Environment-specific configuration:** Use `--environment` or `-e` flag to load `.env.<environment>` files (e.g., `.env.Production`, `.env.Staging`) instead of the default `.env`. This prevents accidental use of production credentials.
@@ -58,12 +58,12 @@ This loads variables from `.env.Production`.
 ```json
 {
   "scripts": {
-    "sync:dev": "ttoss-postgresdb sync -e Development",
-    "sync:staging": "ttoss-postgresdb sync --alter -e Staging",
-    "sync:prod": "ttoss-postgresdb sync --alter -e Production"
+    "sync": "ttoss-postgresdb sync"
   }
 }
 ```
+
+Then run `pnpm sync -e Development` or `pnpm sync --alter -e Production` from the command line.
 
 **Options:**
 
