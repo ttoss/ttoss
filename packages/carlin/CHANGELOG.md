@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.40.0 (2026-01-07)
+
+### Features
+
+- **carlin:** add VM deployment functionality with SSH support ([#810](https://github.com/ttoss/ttoss/issues/810)) ([9003a69](https://github.com/ttoss/ttoss/commit/9003a69309a0fa0d9cbb41647a3b9fc9f4cb3cab)), closes [#839](https://github.com/ttoss/ttoss/issues/839)
+
 ## 1.39.12 (2025-12-04)
 
 **Note:** Version bump only for package carlin
