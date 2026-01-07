@@ -3,7 +3,6 @@ interface SshCommandParams {
   host: string;
   keyPath?: string;
   port?: number;
-  // eslint-disable-next-line max-params
 }
 
 /**
@@ -19,7 +18,6 @@ const generateSSHCommand = ({
   host,
   keyPath,
   port,
-  // eslint-disable-next-line max-params
 }: SshCommandParams): string[] => {
   const commandParts = ['ssh', '-T'];
 
@@ -49,18 +47,25 @@ interface SshCommandWithPwdParams {
  * Generate an SSH command configuration that uses password-based authentication
  * with the native `ssh` client.
  *
+ * ⚠️ **IMPORTANT LIMITATION**: This implementation may not work reliably because
+ * SSH's password prompt reads directly from `/dev/tty`, not from stdin. Writing
+ * the password to stdin will likely fail. To support password authentication
+ * properly, consider using utilities like `sshpass` or SSH libraries like
+ * `node-ssh` or `ssh2` that handle interactive password prompts correctly.
+ *
  * The password is **not** embedded in the command line; instead, it is returned
  * separately and is expected to be written to the SSH process stdin when the
  * client prompts for a password. This avoids exposing the password in process
  * listings but still relies on password authentication, which is generally less
  * secure than key-based authentication.
+ *
+ * **Recommendation**: Use key-based authentication with `generateSSHCommand` instead.
  */
 const generateSSHCommandWithPwd = ({
   userName,
   host,
   password,
   port,
-  // eslint-disable-next-line max-params
 }: SshCommandWithPwdParams): { command: string[]; password: string } => {
   const commandParts = [
     'ssh',
