@@ -34,6 +34,7 @@ const templates: DashboardTemplate[] = [
           color: undefined,
           variant: 'dark',
           numberType: 'number',
+          numberDecimalPlaces: 0,
           type: 'bigNumber',
           sourceType: [
             {

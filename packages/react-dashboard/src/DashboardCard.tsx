@@ -47,6 +47,7 @@ export interface DashboardCard {
   color?: string;
   variant?: CardVariant;
   numberType: CardNumberType;
+  numberDecimalPlaces?: number;
   type: DashboardCardType;
   sourceType: CardSourceType[];
   labels?: Array<string | number>;

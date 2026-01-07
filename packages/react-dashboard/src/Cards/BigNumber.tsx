@@ -6,7 +6,8 @@ import { CardWrapper } from './Wrapper';
 
 const formatNumber = (
   value: number | undefined,
-  type: 'number' | 'percentage' | 'currency'
+  type: 'number' | 'percentage' | 'currency',
+  numberDecimalPlaces?: number
 ): string => {
   if (value === undefined || value === null) {
     return '-';
@@ -22,10 +23,9 @@ const formatNumber = (
       return `${value.toFixed(2)}%`;
     case 'number':
     default: {
-      // For numbers like ROAS, add 'x' suffix if it's a multiplier
       const formatted = new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: numberDecimalPlaces ?? 2,
+        maximumFractionDigits: numberDecimalPlaces ?? 2,
       }).format(value);
       return formatted;
     }
@@ -47,7 +47,6 @@ const getValueColor = (color?: string, variant?: CardVariant): string => {
   if (!color) {
     return 'display.text.primary.default';
   }
-  // Use green for positive metrics (ROAS, ROI, Lucro, etc.)
   if (['green', 'accent', 'positive'].includes(color.toLowerCase())) {
     return 'display.text.accent.default';
   }
@@ -67,10 +66,13 @@ const getTrendColor = (
 };
 
 export const BigNumber = (props: DashboardCard) => {
-  const total = props.data.api?.total ?? props.data.meta?.total ?? undefined;
-  const formattedValue = formatNumber(total, props.numberType);
+  const total = props.data.meta?.total ?? props.data.api?.total ?? undefined;
+  const formattedValue = formatNumber(
+    total,
+    props.numberType,
+    props.numberDecimalPlaces
+  );
 
-  // Add 'x' suffix for ROAS-like metrics if it's a number type
   const displayValue =
     props.numberType === 'number' && props.title.toLowerCase().includes('roas')
       ? `${formattedValue}x`

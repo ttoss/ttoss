@@ -8,7 +8,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Individual dashboard card component. Currently supports `bigNumber` type with various formatting options, variants, and features like trends and status indicators.',
+          'Individual dashboard card component. Currently supports `bigNumber` type with various formatting options, variants, and features like trends and status indicators. Use `numberDecimalPlaces` to control the number of decimal places displayed (defaults to 2).',
       },
     },
   },
@@ -92,7 +92,7 @@ export const NumberCard: StoryObj = {
     docs: {
       description: {
         story:
-          'Number formatted card. For metrics like ROAS, automatically adds an "x" suffix. Formatted to 2 decimal places with locale-specific number formatting.',
+          'Number formatted card. For metrics like ROAS, automatically adds an "x" suffix. Formatted to 2 decimal places by default (can be customized with `numberDecimalPlaces` prop) with locale-specific number formatting.',
       },
     },
   },
@@ -304,6 +304,69 @@ export const LightGreenVariant: StoryObj = {
       description: {
         story:
           'Card with light green variant. Uses a light green background with green accent text, perfect for positive metrics like ROAS or ROI.',
+      },
+    },
+  },
+};
+
+export const CustomDecimalPlaces: StoryObj = {
+  render: () => {
+    return (
+      <Stack
+        sx={{
+          gap: '4',
+          padding: '4',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="Precise Metric (0 decimals)"
+            description="No decimal places"
+            numberType="number"
+            numberDecimalPlaces={0}
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{
+              api: { total: 1234.567 },
+            }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="Standard Metric (2 decimals)"
+            description="Default 2 decimal places"
+            numberType="number"
+            numberDecimalPlaces={2}
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{
+              api: { total: 1234.567 },
+            }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="High Precision (4 decimals)"
+            description="4 decimal places"
+            numberType="number"
+            numberDecimalPlaces={4}
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{
+              api: { total: 1234.567 },
+            }}
+          />
+        </Box>
+      </Stack>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the `numberDecimalPlaces` prop to control decimal precision. The prop only affects `numberType="number"` formatting. Currency and percentage types have their own fixed formatting rules.',
       },
     },
   },
