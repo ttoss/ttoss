@@ -1,0 +1,238 @@
+---
+title: deploy vm
+---
+
+## Overview
+
+Deploy scripts to remote Virtual Machines via SSH with automated file transfer, permission management, and execution orchestration.
+
+```bash
+carlin deploy vm --user-name ubuntu --host 192.168.1.100 --script-path ./deploy.sh --key-path ~/.ssh/my-key.pem
+```
+
+## What It Does
+
+The VM deployment command:
+
+- Establishes secure SSH connections using key-based or password authentication
+- Streams deployment scripts to the target VM via SSH stdin
+- Optionally fixes SSH key file permissions (chmod 400) to ensure SSH acceptance
+- Executes scripts remotely and streams output
+- Provides detailed logging for troubleshooting
+
+## Use Cases
+
+- Deploy application updates to VMs without manual SSH sessions
+- Execute maintenance scripts across multiple servers
+- Automate configuration management tasks
+- Orchestrate multi-step deployment workflows
+
+## Requirements
+
+- **Carlin**: Expected in version 1.40.0 or higher (feature currently in development and not available in 1.39.x)
+- **Node.js**: Version 24.x or higher
+- **Network Access**: SSH connectivity to target VM (port 22 by default)
+- **Authentication**: Valid SSH key or password credentials
+- **VM Access**: User account with appropriate permissions on target VM
+
+## Quick Examples
+
+### Deploy With SSH Key
+
+```bash
+carlin deploy vm \
+  --user-name ubuntu \
+  --host 10.0.1.50 \
+  --script-path ./scripts/deploy-app.sh \
+  --key-path ~/.ssh/production.pem
+```
+
+### Deploy With Password Authentication
+
+:::warning Password Authentication Limitations
+
+**Security Risk**: Passing passwords via command-line arguments exposes them in:
+
+- Process listings (visible to other users via `ps` or `top`)
+- Shell history files
+- CI/CD logs
+
+**Technical Limitation**: The current implementation may not work reliably with password authentication because SSH's password prompt reads directly from `/dev/tty`, not stdin. This method is provided for compatibility but **key-based authentication is strongly recommended** for production use.
+
+**Recommended Alternative**: Use SSH key-based authentication with `--key-path` instead.
+
+:::
+
+```bash
+# NOT RECOMMENDED - For demonstration only
+# Password may be exposed in process list and shell history
+carlin deploy vm \
+  --user-name root \
+  --host example.com \
+  --script-path ./deploy.sh \
+  --password "$DEPLOY_PASSWORD"
+```
+
+### Deploy With Custom Port and Permission Fix
+
+```bash
+carlin deploy vm \
+  --user-name deploy \
+  --host 192.168.1.100 \
+  --port 2222 \
+  --script-path ./deploy.sh \
+  --key-path ~/.ssh/deploy-key \
+  --fix-permissions
+```
+
+## Common Options
+
+| Option              | Type      | Required | Default | Description                                            |
+| ------------------- | --------- | -------- | ------- | ------------------------------------------------------ |
+| `--user-name`       | `string`  | ✅       | -       | SSH username for VM authentication                     |
+| `--host`            | `string`  | ✅       | -       | VM hostname or IP address                              |
+| `--script-path`     | `string`  | ✅       | -       | Local path to deployment script                        |
+| `--key-path`        | `string`  | ⚠️       | -       | Path to SSH private key (required if no password)      |
+| `--password`        | `string`  | ⚠️       | -       | SSH password (required if no key)                      |
+| `--port`            | `number`  | ❌       | `22`    | SSH port number                                        |
+| `--fix-permissions` | `boolean` | ❌       | `false` | Automatically fix SSH key file permissions if too open |
+
+**Authentication Note**: Provide either `--key-path` or `--password`, not both.
+
+## Execution Flow
+
+```mermaid
+flowchart TD
+    A[Start Deployment] --> B{Authentication Type}
+    B -->|SSH Key| C[Read Private Key]
+    B -->|Password| D[Use Password]
+    C --> F{Fix SSH Key Permissions?}
+    F -->|Yes| G[Adjust SSH Key Permissions (chmod 400)]
+    F -->|No| E[Establish SSH Connection]
+    G --> E
+    D --> E[Establish SSH Connection]
+    E --> H[Stream Script via SSH stdin]
+    H --> I[Execute Script with bash -s]
+    I --> J[Stream Output to Console]
+    J --> K[Deployment Complete]
+```
+
+## Security Best Practices
+
+- **Use SSH Keys**: Prefer key-based authentication over passwords for production deployments
+- **Restrict Key Access**: Set proper file permissions on private keys (`chmod 600`)
+- **Principle of Least Privilege**: Use dedicated deployment users with minimal required permissions
+- **Secure Password Storage**: Never hardcode passwords; use environment variables or secure vaults
+- **Audit Logs**: Enable SSH logging on target VMs for security monitoring
+- **Network Isolation**: Deploy through bastion hosts or VPNs for production environments
+
+## Troubleshooting
+
+| Issue                           | Cause                              | Fix                                                                                                                                                      |
+| ------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Permission denied (publickey)` | SSH key not authorized             | Add public key to `~/.ssh/authorized_keys` on VM                                                                                                         |
+| `Connection refused`            | SSH service not running / firewall | Verify SSH daemon status; check security group rules                                                                                                     |
+| `Script not found`              | Invalid local path                 | Verify `--script-path` points to existing file                                                                                                           |
+| `Permission denied` on execute  | Script not executable              | Use `--fix-permissions` flag or manually `chmod +x`                                                                                                      |
+| `Host key verification failed`  | SSH host key not trusted           | Verify the VM's SSH host key fingerprint and add it to `~/.ssh/known_hosts` (for example using `ssh` or `ssh-keyscan`); do not disable host key checking |
+| `Connection timeout`            | Network unreachable / wrong port   | Verify host reachability; check `--port` value                                                                                                           |
+
+## Integration With CI/CD
+
+Automate VM deployments in your pipeline:
+
+```yaml
+# GitHub Actions example
+- name: Deploy to VM
+  env:
+    SSH_KEY: ${{ secrets.DEPLOY_KEY }}
+  run: |
+    echo "$SSH_KEY" > deploy-key.pem
+    carlin deploy vm \
+      --user-name ubuntu \
+      --host ${{ secrets.VM_HOST }} \
+      --script-path ./scripts/deploy.sh \
+      --key-path ./deploy-key.pem \
+      --fix-permissions
+    rm deploy-key.pem
+```
+
+## Script Requirements
+
+Your deployment script should:
+
+- Include shebang line (e.g., `#!/bin/bash`)
+- Handle errors gracefully with proper exit codes
+- Log important operations for debugging
+- Be idempotent when possible (safe to run multiple times)
+
+**Example deployment script:**
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+echo "Starting deployment..."
+
+# Pull latest code
+cd /var/www/app
+git pull origin main
+
+# Install dependencies
+npm ci
+
+# Restart service
+sudo systemctl restart app
+
+echo "Deployment completed successfully!"
+```
+
+## Advanced Usage
+
+### Multiple VM Deployments
+
+Deploy to multiple VMs sequentially:
+
+```bash
+for host in vm1.example.com vm2.example.com vm3.example.com; do
+  carlin deploy vm \
+    --user-name deploy \
+    --host "$host" \
+    --script-path ./deploy.sh \
+    --key-path ~/.ssh/deploy-key
+done
+```
+
+### Conditional Permission Fixing
+
+Automatically fix local SSH key permissions only when needed:
+
+```bash
+# Your local key has overly permissive permissions (e.g., 0644)
+ls -l ~/.ssh/my-key.pem
+# -rw-r--r--  1 user  staff  ... ~/.ssh/my-key.pem
+
+# First attempt: SSH fails because the key is too open
+carlin deploy vm \
+  --user-name ubuntu \
+  --host 10.0.1.50 \
+  --script-path ./deploy.sh \
+  --key-path ~/.ssh/my-key.pem
+# SSH error example:
+# "Permissions 0644 for '~/.ssh/my-key.pem' are too open"
+
+# Second attempt: let Carlin fix the local key to 0400 before connecting
+carlin deploy vm \
+  --user-name ubuntu \
+  --host 10.0.1.50 \
+  --script-path ./deploy.sh \
+  --key-path ~/.ssh/my-key.pem \
+  --fix-permissions
+# Carlin updates ~/.ssh/my-key.pem to 0400, then retries the SSH connection
+```
+
+## Related Commands
+
+- [deploy cicd](/docs/carlin/commands/deploy-cicd) - Automate deployments using serverless CI/CD
+- [Base Stack](/docs/carlin/commands/deploy-base-stack) - Foundation for cloud infrastructure
+- [generate-env](/docs/carlin/commands/generate-env) - Generate environment files for deployments
