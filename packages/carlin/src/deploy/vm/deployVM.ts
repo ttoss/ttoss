@@ -80,7 +80,7 @@ export const deployVM = async ({
   return new Promise((resolve, reject) => {
     if (!keyPath && !password) {
       throw new Error(
-        `Authentication method required. Provide either --vm-key-path for SSH key authentication or --vm-password for password authentication.`
+        `Authentication method required. Provide either --key-path for SSH key authentication or --password for password authentication.`
       );
     }
 
@@ -119,7 +119,7 @@ export const deployVM = async ({
             );
             log.error(logPrefix, `SSH requires permissions 400 or 600`);
             log.error(logPrefix, `Fix manually: ${fixCommand}`);
-            log.error(logPrefix, `Or run with: --vm-fix-permissions`);
+            log.error(logPrefix, `Or run with: --fix-permissions`);
             throw new Error(
               `Invalid SSH key permissions: ${permissionStr}. Expected 400 or 600.`
             );
@@ -130,15 +130,21 @@ export const deployVM = async ({
             `SSH key permissions OK: ${permissions.toString(8)}`
           );
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        if (error.message.includes('Invalid SSH key permissions')) {
-          throw error; // Re-throw permission errors
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          if (error.message.includes('Invalid SSH key permissions')) {
+            throw error; // Re-throw permission errors
+          }
+          log.warn(
+            logPrefix,
+            `Warning: Could not check key permissions: ${error.message}`
+          );
+        } else {
+          log.warn(
+            logPrefix,
+            'Warning: Could not check key permissions: Unknown error'
+          );
         }
-        log.warn(
-          logPrefix,
-          `Warning: Could not check key permissions: ${error.message}`
-        );
       }
     }
 
@@ -148,11 +154,17 @@ export const deployVM = async ({
     if (keyPath) {
       sshCommand = generateSSHCommand({ userName, host, keyPath, port });
     } else {
-      // password must be defined here due to earlier validation
+      // Explicit type narrowing: password must be defined due to earlier validation
+      if (!password) {
+        throw new Error(
+          'Password authentication selected but no password was provided.'
+        );
+      }
+
       const result = generateSSHCommandWithPwd({
         userName,
         host,
-        password: password!,
+        password,
         port,
       });
       sshCommand = result.command;
@@ -207,7 +219,22 @@ export const deployVM = async ({
     // Pipe deployment script to stdin
     deployScript.pipe(sshProcess.stdin);
 
+    // Register SIGINT handler with cleanup
+    const sigintHandler = () => {
+      log.info(logPrefix, 'Interrupting deployment...');
+      sshProcess.kill('SIGINT');
+      process.exit(130);
+    };
+
+    process.on('SIGINT', sigintHandler);
+
+    // Cleanup function to remove SIGINT handler
+    const cleanup = () => {
+      process.removeListener('SIGINT', sigintHandler);
+    };
+
     sshProcess.on('close', (code) => {
+      cleanup();
       if (code === 0) {
         resolve();
       } else {
@@ -216,13 +243,8 @@ export const deployVM = async ({
     });
 
     sshProcess.on('error', (error) => {
+      cleanup();
       reject(error);
-    });
-
-    process.on('SIGINT', () => {
-      log.info(logPrefix, 'Interrupting deployment...');
-      sshProcess.kill('SIGINT');
-      process.exit(130);
     });
   });
 };
