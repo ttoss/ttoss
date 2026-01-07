@@ -50,7 +50,7 @@ Create `models/User.ts`:
 import { Table, Column, Model } from '@ttoss/postgresdb';
 
 @Table
-export class User extends Model<User> {
+export class User extends Model {
   @Column
   declare name: string;
 
@@ -130,6 +130,66 @@ const user = await db.User.create({
 });
 ```
 
+## Vector Support (pgvector)
+
+This package includes built-in support for [pgvector](https://github.com/pgvector/pgvector), enabling vector similarity search for AI/ML applications like semantic search, recommendations, and RAG systems.
+
+### Setup
+
+Enable pgvector by setting `createVectorExtension: true` when initializing:
+
+```typescript
+import { initialize } from '@ttoss/postgresdb';
+import * as models from './models';
+
+export const db = await initialize({
+  models,
+  createVectorExtension: true, // Automatically creates the pgvector extension
+});
+```
+
+This automatically executes `CREATE EXTENSION IF NOT EXISTS vector` on your database.
+
+### Using VECTOR Type
+
+Define vector columns using `DataType.VECTOR(dimensions)`:
+
+```typescript
+import { Table, Column, Model, DataType } from '@ttoss/postgresdb';
+
+@Table
+class Document extends Model {
+  @Column
+  declare content: string;
+
+  @Column({
+    type: DataType.VECTOR(1536), // 1536-dimensional vector (e.g., OpenAI embeddings)
+    allowNull: true,
+  })
+  declare embedding: number[];
+}
+```
+
+### Vector Operations
+
+```typescript
+import { db } from './db';
+
+// Create document with embedding
+const doc = await db.Document.create({
+  content: 'Machine learning tutorial',
+  embedding: [0.1, 0.2, 0.3, ...], // 1536-dimensional array
+});
+
+// Find similar documents using cosine distance
+const similar = await db.Document.findAll({
+  order: sequelize.literal(`embedding <=> '[0.1, 0.2, 0.3, ...]'`),
+  limit: 5,
+});
+```
+
+For advanced vector operations and indexing, see the [pgvector documentation](https://github.com/pgvector/pgvector#readme).
+
 ## Monorepo Usage
 
 Share models across packages with this setup:
@@ -192,6 +252,12 @@ export const db = initialize({ models });
 Testing models with decorators requires special configuration because Jest's Babel transformer doesn't properly transpile TypeScript decorators. The solution is to build your models before running tests.
 
 **Why test your models?** Beyond validating functionality, tests serve as a critical safety check for schema changes. They ensure that running `sync --alter` won't accidentally remove columns or relationships from your database. If a model property is missing or incorrectly defined, tests will fail before you can damage production data.
+
+:::warning Import from compiled output
+
+Tests must import models from the compiled output (`dist/index`), not source files, because decorators aren't transpiled by Jest's Babel transformer. See [this Stack Overflow answer](https://stackoverflow.com/a/53920890/8786986) for details.
+
+:::
 
 ### Setup
 
@@ -282,7 +348,6 @@ describe('User model', () => {
 
 ### Key Points
 
-- **Import from `dist/`**: Tests must import models from the compiled output (`dist/index`), not source files, because decorators aren't transpiled by Jest's Babel transformer. See [this Stack Overflow answer](https://stackoverflow.com/a/53920890/8786986) for details.
 - **Testcontainers**: Use [`@testcontainers/postgresql`](https://www.npmjs.com/package/@testcontainers/postgresql) to spin up isolated PostgreSQL instances for each test run.
 - **Timeout**: Set a longer timeout with `jest.setTimeout(60000)` as container startup can take time.
 - **Sync schema**: Call `sequelize.sync()` after initialization to create tables based on your models.
@@ -304,6 +369,26 @@ Initializes database connection and loads models.
 
 All [sequelize-typescript](https://www.npmjs.com/package/sequelize-typescript) decorators are exported: `@Table`, `@Column`, `@ForeignKey`, etc.
 
+### DataType
+
+All standard Sequelize data types are available through `DataType`, including:
+
+- **`DataType.VECTOR(dimensions)`**: PostgreSQL vector type for storing embeddings (requires [pgvector](https://github.com/pgvector/pgvector) extension). Use for AI/ML applications like semantic search and recommendations.
+
+Example:
+
+```typescript
+import { Column, DataType } from '@ttoss/postgresdb';
+
+@Column({
+  type: DataType.VECTOR(768), // 768-dimensional vector
+  allowNull: true,
+})
+declare embedding: number[];
+```
+
+See [Sequelize DataTypes documentation](https://sequelize.org/docs/v6/core-concepts/model-basics/#data-types) for all available types.
+
 ### Types
 
 #### `ModelColumns<T>`
@@ -314,7 +399,7 @@ Extracts column types from a model:
 import { Column, Model, type ModelColumns, Table } from '@ttoss/postgresdb';
 
 @Table
-class User extends Model<User> {
+class User extends Model {
   @Column
   declare name?: string;
 
