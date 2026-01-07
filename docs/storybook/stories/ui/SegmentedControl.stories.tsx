@@ -11,15 +11,20 @@ const meta = {
   argTypes: {
     disabled: {
       control: 'boolean',
-      description: 'Desabilita o componente inteiro',
+      description: 'Disables the entire component',
     },
     options: {
-      description: 'Lista de opções (strings, números ou objetos)',
+      description: 'List of options (strings, numbers or objects)',
     },
     variant: {
       control: { type: 'select' },
       options: ['primary', 'secondary', 'accent'],
-      description: 'Variante visual que mapeia para tokens de tema',
+      description: 'Visual variant that maps to theme tokens',
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['sm', 'md', 'lg'],
+      description: 'Component size',
     },
   },
 } satisfies Meta<typeof SegmentedControl>;
@@ -96,6 +101,45 @@ export const Secondary: Story = {
       { label: 'Option 3', value: 'option3' },
     ],
     defaultValue: 'option1',
+    variant: 'secondary',
+  },
+};
+
+export const Small: Story = {
+  args: {
+    options: [
+      { label: 'Option 1', value: 'small' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'small',
+    size: 'sm',
+    variant: 'secondary',
+  },
+};
+
+export const Medium: Story = {
+  args: {
+    options: [
+      { label: 'Option 1', value: 'medium' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'medium',
+    size: 'md',
+    variant: 'secondary',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    options: [
+      { label: 'Option 1', value: 'large' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ],
+    defaultValue: 'large',
+    size: 'lg',
     variant: 'secondary',
   },
 };

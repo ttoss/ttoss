@@ -21,7 +21,9 @@
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
     "@docs/website#build": {
-      "inputs": ["**/*", "../packages/*/README.md"]
+      "dependsOn": ["^build", "i18n"],
+      "inputs": ["**/*", "../packages/*/README.md"],
+      "outputs": ["build/**"]
     },
     "test": {
       "dependsOn": ["i18n", "build-config"],

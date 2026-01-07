@@ -16,6 +16,14 @@ export interface SegmentedControlProps {
   sx?: FlexProps['sx'];
   /** Visual variant that maps to theme color tokens */
   variant?: 'primary' | 'secondary' | 'accent';
+  /**
+   * Size variant that controls padding and font size.
+   *
+   * - `sm`: Compact size with reduced padding and smaller text, suited for dense layouts.
+   * - `md`: Default size with balanced padding and typography for general use.
+   * - `lg`: Larger size with increased padding and larger text for emphasis.
+   */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 // map variants to theme token paths used in the sx prop
@@ -36,16 +44,16 @@ const variantTokens: Record<
     selectedColor: 'action.text.primary.default',
     unselectedColor: 'display.text.primary.default',
     hoverBg: 'action.background.muted.default',
-    divider: 'action.text.primary.default',
+    divider: 'action.text.muted.default',
     thumb: 'action.background.primary.default',
-    border: 'display.border.primary.default',
+    border: 'display.border.muted.default',
   },
   secondary: {
     selectedBg: 'action.background.secondary.default',
     selectedColor: 'action.text.secondary.default',
     unselectedColor: 'display.text.secondary.default',
     hoverBg: 'action.background.muted.default',
-    divider: 'action.text.secondary.default',
+    divider: 'action.text.muted.default',
     thumb: 'action.background.secondary.default',
     border: 'display.border.muted.default',
   },
@@ -54,9 +62,35 @@ const variantTokens: Record<
     selectedColor: 'action.text.accent.default',
     unselectedColor: 'action.text.accent.default',
     hoverBg: 'action.background.muted.default',
-    divider: 'action.text.accent.default',
+    divider: 'action.text.muted.default',
     thumb: 'action.background.accent.default',
-    border: 'display.border.primary.default',
+    border: 'display.border.muted.default',
+  },
+};
+
+// map sizes to styling values
+const sizeTokens: Record<
+  NonNullable<SegmentedControlProps['size']>,
+  {
+    paddingX: string;
+    paddingY: string;
+    fontSize: string;
+  }
+> = {
+  sm: {
+    paddingX: '2',
+    paddingY: '1',
+    fontSize: 'sm',
+  },
+  md: {
+    paddingX: '3',
+    paddingY: '2',
+    fontSize: 'md',
+  },
+  lg: {
+    paddingX: '5',
+    paddingY: '3',
+    fontSize: 'lg',
   },
 };
 
@@ -68,6 +102,7 @@ export const SegmentedControl = ({
   disabled,
   className,
   variant = 'accent',
+  size = 'md',
   sx,
   ...rest
 }: SegmentedControlProps) => {
@@ -97,11 +132,13 @@ export const SegmentedControl = ({
 
   const currentValue = propValue !== undefined ? propValue : internalValue;
   const tokens = variantTokens[variant];
+  const sizeStyles = sizeTokens[size];
 
   return (
     <Flex
       className={className}
       data-variant={variant}
+      data-size={size}
       sx={{
         width: '100%',
         borderRadius: '4xl',
@@ -128,9 +165,9 @@ export const SegmentedControl = ({
         '.rc-segmented-item': {
           borderRadius: '4xl',
           margin: 0,
-          paddingX: '5',
-          paddingY: '3',
-          fontSize: 'lg',
+          paddingX: sizeStyles.paddingX,
+          paddingY: sizeStyles.paddingY,
+          fontSize: sizeStyles.fontSize,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
