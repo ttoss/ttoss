@@ -1585,6 +1585,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/react':
         specifier: ^19.2.7
         version: 19.2.7
