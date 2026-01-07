@@ -108,35 +108,38 @@ export const Secondary: Story = {
 export const Small: Story = {
   args: {
     options: [
-      { label: 'Small', value: 'small' },
+      { label: 'Option 1', value: 'small' },
       { label: 'Option 2', value: 'option2' },
       { label: 'Option 3', value: 'option3' },
     ],
     defaultValue: 'small',
     size: 'sm',
+    variant: 'secondary',
   },
 };
 
 export const Medium: Story = {
   args: {
     options: [
-      { label: 'Medium', value: 'medium' },
+      { label: 'Option 1', value: 'medium' },
       { label: 'Option 2', value: 'option2' },
       { label: 'Option 3', value: 'option3' },
     ],
     defaultValue: 'medium',
     size: 'md',
+    variant: 'secondary',
   },
 };
 
 export const Large: Story = {
   args: {
     options: [
-      { label: 'Large', value: 'large' },
+      { label: 'Option 1', value: 'large' },
       { label: 'Option 2', value: 'option2' },
       { label: 'Option 3', value: 'option3' },
     ],
     defaultValue: 'large',
     size: 'lg',
+    variant: 'secondary',
   },
 };
