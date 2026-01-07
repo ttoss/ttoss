@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.4.3...@ttoss/ui@6.5.0) (2026-01-07)
+
+### Features
+
+- add new size for segmented control ([#817](https://github.com/ttoss/ttoss/issues/817)) ([3f10b2f](https://github.com/ttoss/ttoss/commit/3f10b2ff80123e6b64110d698710f7fd80e569ed))
+
 ## [6.4.3](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.4.1...@ttoss/ui@6.4.3) (2026-01-01)
 
 **Note:** Version bump only for package @ttoss/ui
