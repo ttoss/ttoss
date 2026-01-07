@@ -8,9 +8,9 @@ describe('BigNumber', () => {
     description: 'Total revenue generated',
     numberType: 'number',
     type: 'bigNumber',
-    sourceType: [{ source: 'api' }],
+    sourceType: [{ source: 'meta' }],
     data: {
-      api: { total: 1234.56 },
+      meta: { total: 1234.56 },
     },
   };
 
@@ -76,7 +76,7 @@ describe('BigNumber', () => {
     expect(screen.getByText(/999,00/)).toBeInTheDocument();
   });
 
-  test('should prioritize api data over meta data', () => {
+  test('should prioritize meta data over api data', () => {
     render(
       <BigNumber
         {...baseCard}
@@ -87,8 +87,8 @@ describe('BigNumber', () => {
       />
     );
 
-    expect(screen.getByText(/100,00/)).toBeInTheDocument();
-    expect(screen.queryByText(/200,00/)).not.toBeInTheDocument();
+    expect(screen.getByText(/200,00/)).toBeInTheDocument();
+    expect(screen.queryByText(/100,00/)).not.toBeInTheDocument();
   });
 
   test('should add x suffix for ROAS-like metrics', () => {

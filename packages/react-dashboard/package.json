@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
     "@types/react": "^19.2.7",
     "@types/react-grid-layout": "^1.3.6",
     "jest": "^30.2.0",
