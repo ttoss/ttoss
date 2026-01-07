@@ -16,7 +16,13 @@ export interface SegmentedControlProps {
   sx?: FlexProps['sx'];
   /** Visual variant that maps to theme color tokens */
   variant?: 'primary' | 'secondary' | 'accent';
-  /** Size variant */
+  /**
+   * Size variant that controls padding and font size.
+   *
+   * - `sm`: Compact size with reduced padding and smaller text, suited for dense layouts.
+   * - `md`: Default size with balanced padding and typography for general use.
+   * - `lg`: Larger size with increased padding and larger text for emphasis.
+   */
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -132,6 +138,7 @@ export const SegmentedControl = ({
     <Flex
       className={className}
       data-variant={variant}
+      data-size={size}
       sx={{
         width: '100%',
         borderRadius: '4xl',
