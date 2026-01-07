@@ -21,12 +21,13 @@
   ],
   "scripts": {
     "build": "tsup",
-    "pretest": "tsc --project ./tests/tsconfig.pretest.json",
+    "pretest": "tsup --config ./tests/tsup.pretest.config.ts",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
     "pg": "^8.16.3",
+    "pgvector": "^0.2.1",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6"
   },

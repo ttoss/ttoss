@@ -1,8 +1,7 @@
-import {
-  PostgreSqlContainer,
-  StartedPostgreSqlContainer,
-} from '@testcontainers/postgresql';
-import { initialize, Sequelize } from '@ttoss/postgresdb';
+import type { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import type { Sequelize } from '@ttoss/postgresdb';
+import { initialize } from '@ttoss/postgresdb';
 import { models } from 'dist/index';
 
 let sequelize: Sequelize;
