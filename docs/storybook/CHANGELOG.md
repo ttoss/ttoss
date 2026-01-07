@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.9.0...@docs/storybook@3.10.0) (2026-01-07)
+
+### Features
+
+- add decimals places control to dashboard cards ([#838](https://github.com/ttoss/ttoss/issues/838)) ([88daaae](https://github.com/ttoss/ttoss/commit/88daaae69a3e829bd2680e7e1cc938d9eff94561))
+
 # [3.9.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.8.1...@docs/storybook@3.9.0) (2026-01-07)
 
 ### Features

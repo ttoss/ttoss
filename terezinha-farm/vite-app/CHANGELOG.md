@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.101...@terezinha-farm/vite-app@0.13.0) (2026-01-07)
+
+### Features
+
+- add decimals places control to dashboard cards ([#838](https://github.com/ttoss/ttoss/issues/838)) ([88daaae](https://github.com/ttoss/ttoss/commit/88daaae69a3e829bd2680e7e1cc938d9eff94561))
+
 ## [0.12.101](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.12.100...@terezinha-farm/vite-app@0.12.101) (2026-01-07)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

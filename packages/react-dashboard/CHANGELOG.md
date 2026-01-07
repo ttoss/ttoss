@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.1.19...@ttoss/react-dashboard@0.2.0) (2026-01-07)
+
+### Features
+
+- add decimals places control to dashboard cards ([#838](https://github.com/ttoss/ttoss/issues/838)) ([88daaae](https://github.com/ttoss/ttoss/commit/88daaae69a3e829bd2680e7e1cc938d9eff94561))
+
 ## [0.1.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.1.18...@ttoss/react-dashboard@0.1.19) (2026-01-07)
 
 **Note:** Version bump only for package @ttoss/react-dashboard
