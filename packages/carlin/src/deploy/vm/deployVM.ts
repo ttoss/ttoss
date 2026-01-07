@@ -130,15 +130,21 @@ export const deployVM = async ({
             `SSH key permissions OK: ${permissions.toString(8)}`
           );
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        if (error.message.includes('Invalid SSH key permissions')) {
-          throw error; // Re-throw permission errors
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          if (error.message.includes('Invalid SSH key permissions')) {
+            throw error; // Re-throw permission errors
+          }
+          log.warn(
+            logPrefix,
+            `Warning: Could not check key permissions: ${error.message}`
+          );
+        } else {
+          log.warn(
+            logPrefix,
+            'Warning: Could not check key permissions: Unknown error'
+          );
         }
-        log.warn(
-          logPrefix,
-          `Warning: Could not check key permissions: ${error.message}`
-        );
       }
     }
 
