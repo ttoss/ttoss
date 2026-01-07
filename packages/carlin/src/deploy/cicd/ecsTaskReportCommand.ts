@@ -1,4 +1,4 @@
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import { Command } from 'commander';
 import AWS from 'aws-sdk';
 import log from 'npmlog';
 
@@ -39,27 +39,16 @@ const sendEcsTaskReport = async ({ status }: { status: Status }) => {
   log.info(logPrefix, 'Report sent.');
 };
 
-const options = {
-  status: {
-    choices: ['Approved', 'Rejected', 'MainTagFound'] as Status[],
-    demandOption: true,
-    type: 'string',
-  },
-} as const;
-
 /**
  * Used to send report to ECS Task Report Handler Lambda.
  */
-export const ecsTaskReportCommand: CommandModule<
-  any,
-  InferredOptionTypes<typeof options>
-> = {
-  command: 'cicd-ecs-task-report',
-  describe: false,
-  builder: (yargs) => {
-    return yargs.options(options);
-  },
-  handler: async (args) => {
-    return sendEcsTaskReport(args as any);
-  },
-};
+export const ecsTaskReportCommand = new Command('cicd-ecs-task-report')
+  .description('Send report to ECS Task Report Handler Lambda.')
+  .requiredOption(
+    '--status <status>',
+    'Execution status (Approved, Rejected, MainTagFound)'
+  )
+  .action(async function (this: Command) {
+    const opts = this.opts();
+    await sendEcsTaskReport({ status: opts.status as Status });
+  });
