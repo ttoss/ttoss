@@ -23,7 +23,7 @@
     "@docs/website#build": {
       "dependsOn": ["^build", "i18n"],
       "inputs": ["**/*", "../packages/*/README.md"],
-      "outputs": ["build/**", "dist/**", ".next/**"]
+      "outputs": ["build/**"]
     },
     "test": {
       "dependsOn": ["i18n", "build-config"],
