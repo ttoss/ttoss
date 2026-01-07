@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/postgresdb@1.0.8...@terezinha-farm/postgresdb@1.1.0) (2026-01-07)
+
+### Features
+
+- vector type ([#843](https://github.com/ttoss/ttoss/issues/843)) ([9c56f9f](https://github.com/ttoss/ttoss/commit/9c56f9feb293b85b487906b351c391fe8af303ad))
+
 ## [1.0.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/postgresdb@1.0.7...@terezinha-farm/postgresdb@1.0.8) (2026-01-05)
 
 **Note:** Version bump only for package @terezinha-farm/postgresdb

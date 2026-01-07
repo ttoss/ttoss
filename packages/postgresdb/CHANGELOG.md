@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.27...@ttoss/postgresdb@0.3.0) (2026-01-07)
+
+### Features
+
+- vector type ([#843](https://github.com/ttoss/ttoss/issues/843)) ([9c56f9f](https://github.com/ttoss/ttoss/commit/9c56f9feb293b85b487906b351c391fe8af303ad))
+
 ## [0.2.27](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.26...@ttoss/postgresdb@0.2.27) (2026-01-05)
 
 ### Bug Fixes
