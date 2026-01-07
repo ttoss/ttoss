@@ -80,7 +80,7 @@ export const deployVM = async ({
   return new Promise((resolve, reject) => {
     if (!keyPath && !password) {
       throw new Error(
-        `Authentication method required. Provide either --vm-key-path for SSH key authentication or --vm-password for password authentication.`
+        `Authentication method required. Provide either --key-path for SSH key authentication or --password for password authentication.`
       );
     }
 
@@ -119,7 +119,7 @@ export const deployVM = async ({
             );
             log.error(logPrefix, `SSH requires permissions 400 or 600`);
             log.error(logPrefix, `Fix manually: ${fixCommand}`);
-            log.error(logPrefix, `Or run with: --vm-fix-permissions`);
+            log.error(logPrefix, `Or run with: --fix-permissions`);
             throw new Error(
               `Invalid SSH key permissions: ${permissionStr}. Expected 400 or 600.`
             );
