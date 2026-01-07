@@ -1,3 +1,8 @@
+---
+applyTo: '**'
+description: General instructions that apply to the entire repository.
+---
+
 # General Instructions
 
 ## Language Requirements
@@ -49,6 +54,68 @@ This command:
 - After any change to files containing `defineMessages`
 
 **Important**: Failing to run this command after i18n changes will result in outdated translation files and potential runtime issues.
+
+## Code Style Guidelines
+
+### Function Arguments
+
+**MANDATORY**: Prefer object parameters over multiple positional arguments for functions.
+
+**Benefits**:
+
+- Self-documenting code with named properties
+- Easy to add optional parameters without breaking existing calls
+- Order-independent arguments
+- Better IDE autocomplete and type checking
+
+**Examples**:
+
+```typescript
+// ❌ AVOID: Multiple positional parameters
+function createUser(
+  name: string,
+  email: string,
+  age: number,
+  isActive: boolean
+) {
+  // ...
+}
+createUser('John', 'john@example.com', 30, true);
+
+// ✅ PREFER: Object parameter
+function createUser(params: {
+  name: string;
+  email: string;
+  age: number;
+  isActive: boolean;
+}) {
+  // ...
+}
+createUser({
+  name: 'John',
+  email: 'john@example.com',
+  age: 30,
+  isActive: true,
+});
+
+// ✅ EVEN BETTER: Destructured object parameter with type
+interface CreateUserParams {
+  name: string;
+  email: string;
+  age: number;
+  isActive: boolean;
+}
+
+function createUser({ name, email, age, isActive }: CreateUserParams) {
+  // ...
+}
+```
+
+**When to use positional parameters**:
+
+- Single parameter functions
+- Simple utility functions with 1-2 obvious parameters (e.g., `Math.max(a, b)`)
+- Callbacks with standard signatures (e.g., `.map((item, index) => ...)`)
 
 ## Reporting Enhancement Opportunities
 

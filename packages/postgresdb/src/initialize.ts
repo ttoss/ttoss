@@ -9,10 +9,17 @@ let sequelize: Sequelize;
 
 export type Options<Models> = Omit<SequelizeOptions, 'models' | 'dialect'> & {
   models: Models;
+  /**
+   * If true, creates the pgvector extension in the database.
+   * This is required to use VECTOR data types.
+   * @default false
+   */
+  createVectorExtension?: boolean;
 };
 
 export const initialize = async <Models extends { [key: string]: ModelCtor }>({
   models,
+  createVectorExtension = false,
   ...restOptions
 }: Options<Models>): Promise<
   {
@@ -49,6 +56,11 @@ export const initialize = async <Models extends { [key: string]: ModelCtor }>({
 
   if (username && password && database && host && port) {
     await sequelize.authenticate();
+  }
+
+  // Create the pgvector extension
+  if (createVectorExtension) {
+    await sequelize.query('CREATE EXTENSION IF NOT EXISTS vector;');
   }
 
   const close = sequelize.close;

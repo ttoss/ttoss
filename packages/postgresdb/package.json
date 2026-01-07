@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.2.27",
+  "version": "0.3.0",
   "description": "A library to handle PostgreSQL database connections and queries",
   "license": "MIT",
   "author": "ttoss",
@@ -21,15 +21,18 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "echo jest"
+    "pretest": "tsup --config ./tests/tsup.pretest.config.ts",
+    "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
     "pg": "^8.16.3",
+    "pgvector": "^0.2.1",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^11.8.1",
     "@ttoss/config": "workspace:^",
     "jest": "^30.2.0",
     "tsup": "^8.5.1"

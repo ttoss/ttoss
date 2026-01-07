@@ -1,5 +1,5 @@
-import { defineConfig } from 'tsup';
 import { tsupConfig } from '@ttoss/config';
+import { defineConfig } from 'tsup';
 
 export const tsup = defineConfig({
   ...tsupConfig(),

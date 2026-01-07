@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.27.27",
+  "version": "1.28.0",
   "description": "Monorepo setup for ttoss",
   "license": "MIT",
   "author": "ttoss",
@@ -24,14 +24,10 @@
     "test": "echo test"
   },
   "dependencies": {
-    "js-yaml": "^4.1.1",
-    "npmlog": "^7.0.1",
-    "yargs": "^17.7.2"
+    "commander": "^14.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/npmlog": "^7.0.0",
-    "@types/yargs": "^17.0.33",
     "tsup": "^8.5.1"
   },
   "publishConfig": {

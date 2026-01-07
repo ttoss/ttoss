@@ -677,7 +677,7 @@ importers:
         version: 8.21.3(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@theme-ui/css':
         specifier: ^0.17.1
-        version: 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+        version: 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -783,10 +783,10 @@ importers:
         version: 19.8.1
       '@formatjs/ts-transformer':
         specifier: ^3.14.0
-        version: 3.14.0
+        version: 3.14.0(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       babel-plugin-formatjs:
         specifier: ^10.5.39
-        version: 10.5.39
+        version: 10.5.39(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       babel-plugin-transform-import-meta:
         specifier: ^2.3.3
         version: 2.3.3(@babel/core@7.28.0)
@@ -847,7 +847,7 @@ importers:
         version: 4.4.4(eslint-plugin-import@2.32.0)(eslint@9.32.0(jiti@2.5.1))
       eslint-plugin-formatjs:
         specifier: ^5.4.2
-        version: 5.4.2(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.3)
+        version: 5.4.2(eslint@9.32.0(jiti@2.5.1))(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))(typescript@5.9.3)
       eslint-plugin-import:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.48.1(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.4)(eslint@9.32.0(jiti@2.5.1))
@@ -1160,7 +1160,7 @@ importers:
     dependencies:
       '@formatjs/cli-lib':
         specifier: ^6.3.3
-        version: 6.6.6
+        version: 6.6.6(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.3
@@ -1326,25 +1326,13 @@ importers:
 
   packages/monorepo:
     dependencies:
-      js-yaml:
-        specifier: ^4.1.1
-        version: 4.1.1
-      npmlog:
-        specifier: ^7.0.1
-        version: 7.0.1
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.2
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
-      '@types/npmlog':
-        specifier: ^7.0.0
-        version: 7.0.0
-      '@types/yargs':
-        specifier: ^17.0.33
-        version: 17.0.33
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.1)
@@ -1354,6 +1342,9 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
+      pgvector:
+        specifier: ^0.2.1
+        version: 0.2.1
       sequelize:
         specifier: ^6.37.7
         version: 6.37.7(pg@8.16.3)
@@ -1361,6 +1352,9 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6(@types/node@22.19.0)(@types/validator@13.15.2)(reflect-metadata@0.2.2)(sequelize@6.37.7(pg@8.16.3))
     devDependencies:
+      '@testcontainers/postgresql':
+        specifier: ^11.8.1
+        version: 11.8.1
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
@@ -7701,6 +7695,10 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
+  bs-logger@0.2.6:
+    resolution: {integrity: sha512-pd8DCoxmbgc7hyPKOvxtqNcjYoOsABPQdcCUjGp3d42VR2CX1ORhk2A87oqqu5R1kk+76nsxZupkmyd+MVtCog==}
+    engines: {node: '>= 6'}
+
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
 
@@ -12675,6 +12673,10 @@ packages:
   pgpass@1.0.5:
     resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
 
+  pgvector@0.2.1:
+    resolution: {integrity: sha512-nKaQY9wtuiidwLMdVIce1O3kL0d+FxrigCVzsShnoqzOSaWWWOvuctb/sYwlai5cTwwzRSNa+a/NtN2kVZGNJw==}
+    engines: {node: '>= 18'}
+
   picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
 
@@ -14733,6 +14735,33 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  ts-jest@29.4.6:
+    resolution: {integrity: sha512-fSpWtOO/1AjSNQguk43hb/JCo16oJDnMJf3CdEGNkqsEX3t0KX96xvyX1D7PfLCpVoKu4MfVrqUkFyblYoY4lA==}
+    engines: {node: ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@babel/core': '>=7.0.0-beta.0 <8'
+      '@jest/transform': ^29.0.0 || ^30.0.0
+      '@jest/types': ^29.0.0 || ^30.0.0
+      babel-jest: ^29.0.0 || ^30.0.0
+      esbuild: '*'
+      jest: ^29.0.0 || ^30.0.0
+      jest-util: ^29.0.0 || ^30.0.0
+      typescript: '>=4.3 <6'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@jest/transform':
+        optional: true
+      '@jest/types':
+        optional: true
+      babel-jest:
+        optional: true
+      esbuild:
+        optional: true
+      jest-util:
+        optional: true
+
   ts-morph@12.0.0:
     resolution: {integrity: sha512-VHC8XgU2fFW7yO1f/b3mxKDje1vmyzFXHWzOYmKEkCEwcLjDtbdLgBQviqj4ZwP4MJkQtRo6Ha2I29lq/B+VxA==}
 
@@ -15427,6 +15456,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -19428,11 +19458,11 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@formatjs/cli-lib@6.6.6':
+  '@formatjs/cli-lib@6.6.6(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))':
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.9.4
       '@formatjs/icu-skeleton-parser': 1.8.8
-      '@formatjs/ts-transformer': 3.13.23
+      '@formatjs/ts-transformer': 3.13.23(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       '@types/estree': 1.0.8
       '@types/fs-extra': 11.0.4
       '@types/json-stable-stringify': 1.1.0
@@ -19533,7 +19563,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  '@formatjs/ts-transformer@3.13.23':
+  '@formatjs/ts-transformer@3.13.23(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))':
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.9.4
       '@types/json-stable-stringify': 1.1.0
@@ -19542,8 +19572,10 @@ snapshots:
       json-stable-stringify: 1.3.0
       tslib: 2.8.1
       typescript: 5.9.3
+    optionalDependencies:
+      ts-jest: 29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
 
-  '@formatjs/ts-transformer@3.14.0':
+  '@formatjs/ts-transformer@3.14.0(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))':
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.11.2
       '@types/json-stable-stringify': 1.1.0
@@ -19552,8 +19584,10 @@ snapshots:
       json-stable-stringify: 1.3.0
       tslib: 2.8.1
       typescript: 5.9.3
+    optionalDependencies:
+      ts-jest: 29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
 
-  '@formatjs/ts-transformer@3.14.2':
+  '@formatjs/ts-transformer@3.14.2(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))':
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.11.4
       '@types/node': 22.19.0
@@ -19561,6 +19595,8 @@ snapshots:
       json-stable-stringify: 1.3.0
       tslib: 2.8.1
       typescript: 5.9.3
+    optionalDependencies:
+      ts-jest: 29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
 
   '@gerrit0/mini-shiki@3.18.0':
     dependencies:
@@ -20427,7 +20463,7 @@ snapshots:
       https-proxy-agent: 7.0.6
       node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 8.1.0
-      semver: 7.7.2
+      semver: 7.7.3
       tar: 7.4.3
     transitivePeerDependencies:
       - encoding
@@ -21637,7 +21673,7 @@ snapshots:
       react-docgen: 7.1.1
       react-dom: 19.2.1(react@19.2.1)
       resolve: 1.22.10
-      semver: 7.7.2
+      semver: 7.7.3
       storybook: 10.0.6(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(vite@6.3.5(@types/node@22.19.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
       tsconfig-paths: 4.2.0
       webpack: 5.101.0(esbuild@0.27.0)
@@ -21967,7 +22003,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.7)(react@19.2.1)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       deepmerge: 4.3.1
       react: 19.2.1
 
@@ -21978,7 +22014,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
       '@types/styled-system': 5.1.23
       react: 19.2.1
@@ -21986,11 +22022,11 @@ snapshots:
   '@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.7)(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       deepmerge: 4.3.1
       react: 19.2.1
 
-  '@theme-ui/css@0.17.2(@emotion/react@11.14.0(react@19.2.1))':
+  '@theme-ui/css@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.7)(react@19.2.1)
       csstype: 3.1.3
@@ -21999,13 +22035,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.7)(react@19.2.1)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       react: 19.2.1
 
   '@theme-ui/match-media@0.17.2(@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1))(@theme-ui/css@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1)))(react@19.2.1)':
     dependencies:
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       react: 19.2.1
 
   '@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)':
@@ -22013,7 +22049,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.7)(react@19.2.1)
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       react: 19.2.1
 
   '@tootallnate/once@2.0.0': {}
@@ -22728,7 +22764,7 @@ snapshots:
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.2
+      semver: 7.7.3
       ts-api-utils: 2.1.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -22742,7 +22778,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.48.1
       debug: 4.4.3
       minimatch: 9.0.5
-      semver: 7.7.2
+      semver: 7.7.3
       tinyglobby: 0.2.15
       ts-api-utils: 2.1.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -23581,7 +23617,7 @@ snapshots:
     dependencies:
       object.assign: 4.1.7
 
-  babel-plugin-formatjs@10.5.39:
+  babel-plugin-formatjs@10.5.39(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)):
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.27.1
@@ -23589,7 +23625,7 @@ snapshots:
       '@babel/traverse': 7.28.0
       '@babel/types': 7.28.2
       '@formatjs/icu-messageformat-parser': 2.11.2
-      '@formatjs/ts-transformer': 3.14.0
+      '@formatjs/ts-transformer': 3.14.0(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       '@types/babel__core': 7.20.5
       '@types/babel__helper-plugin-utils': 7.10.3
       '@types/babel__traverse': 7.28.0
@@ -23864,6 +23900,11 @@ snapshots:
       electron-to-chromium: 1.5.264
       node-releases: 2.0.27
       update-browserslist-db: 1.2.1(browserslist@4.28.1)
+
+  bs-logger@0.2.6:
+    dependencies:
+      fast-json-stable-stringify: 2.1.0
+    optional: true
 
   bser@2.1.1:
     dependencies:
@@ -24599,7 +24640,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.7.2
+      semver: 7.7.3
     optionalDependencies:
       webpack: 5.101.0
 
@@ -24612,7 +24653,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.7.2
+      semver: 7.7.3
     optionalDependencies:
       webpack: 5.101.0(esbuild@0.27.0)
 
@@ -25685,10 +25726,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-formatjs@5.4.2(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.3):
+  eslint-plugin-formatjs@5.4.2(eslint@9.32.0(jiti@2.5.1))(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.11.4
-      '@formatjs/ts-transformer': 3.14.2
+      '@formatjs/ts-transformer': 3.14.2(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3))
       '@types/eslint': 9.6.1
       '@types/picomatch': 3.0.2
       '@typescript-eslint/utils': 8.39.0(eslint@9.32.0(jiti@2.5.1))(typescript@5.9.3)
@@ -26452,7 +26493,7 @@ snapshots:
       minimatch: 3.1.2
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
-      semver: 7.7.2
+      semver: 7.7.3
       tapable: 2.2.2
       typescript: 5.9.3
       webpack: 5.101.0(esbuild@0.27.0)
@@ -27405,7 +27446,7 @@ snapshots:
 
   is-bun-module@2.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   is-callable@1.2.7: {}
 
@@ -27628,7 +27669,7 @@ snapshots:
       '@babel/parser': 7.28.0
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.2
+      semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
 
@@ -27992,7 +28033,7 @@ snapshots:
       jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.7.0
-      semver: 7.7.2
+      semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
 
@@ -28017,7 +28058,7 @@ snapshots:
       jest-message-util: 30.2.0
       jest-util: 30.2.0
       pretty-format: 30.2.0
-      semver: 7.7.2
+      semver: 7.7.3
       synckit: 0.11.11
     transitivePeerDependencies:
       - supports-color
@@ -28490,7 +28531,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   make-error@1.3.6: {}
 
@@ -29680,7 +29721,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.1.0
       registry-url: 6.0.1
-      semver: 7.7.2
+      semver: 7.7.3
 
   package-manager-detector@1.3.0: {}
 
@@ -29870,6 +29911,8 @@ snapshots:
   pgpass@1.0.5:
     dependencies:
       split2: 4.2.0
+
+  pgvector@0.2.1: {}
 
   picocolors@1.0.0: {}
 
@@ -30074,7 +30117,7 @@ snapshots:
       cosmiconfig: 8.3.6(typescript@5.9.3)
       jiti: 1.21.7
       postcss: 8.5.6
-      semver: 7.7.2
+      semver: 7.7.3
       webpack: 5.101.0
     transitivePeerDependencies:
       - typescript
@@ -31368,7 +31411,7 @@ snapshots:
 
   semver-diff@4.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   semver@6.3.1: {}
 
@@ -32236,7 +32279,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
       '@theme-ui/components': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1))(react@19.2.1)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(react@19.2.1))
+      '@theme-ui/css': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))
       '@theme-ui/global': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
       react: 19.2.1
@@ -32346,6 +32389,28 @@ snapshots:
   ts-dedent@2.2.0: {}
 
   ts-interface-checker@0.1.13: {}
+
+  ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3):
+    dependencies:
+      bs-logger: 0.2.6
+      fast-json-stable-stringify: 2.1.0
+      handlebars: 4.7.8
+      jest: 30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3))
+      json5: 2.2.3
+      lodash.memoize: 4.1.2
+      make-error: 1.3.6
+      semver: 7.7.3
+      type-fest: 4.41.0
+      typescript: 5.9.3
+      yargs-parser: 21.1.1
+    optionalDependencies:
+      '@babel/core': 7.28.0
+      '@jest/transform': 30.2.0
+      '@jest/types': 30.2.0
+      babel-jest: 30.2.0(@babel/core@7.28.0)
+      esbuild: 0.27.0
+      jest-util: 30.2.0
+    optional: true
 
   ts-morph@12.0.0:
     dependencies:
@@ -32762,7 +32827,7 @@ snapshots:
       is-yarn-global: 0.4.1
       latest-version: 7.0.0
       pupa: 3.1.0
-      semver: 7.7.2
+      semver: 7.7.3
       semver-diff: 4.0.0
       xdg-basedir: 5.1.0
 
