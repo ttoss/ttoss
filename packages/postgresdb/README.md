@@ -50,7 +50,7 @@ Create `models/User.ts`:
 import { Table, Column, Model } from '@ttoss/postgresdb';
 
 @Table
-export class User extends Model<User> {
+export class User extends Model {
   @Column
   declare name: string;
 
@@ -314,7 +314,7 @@ Extracts column types from a model:
 import { Column, Model, type ModelColumns, Table } from '@ttoss/postgresdb';
 
 @Table
-class User extends Model<User> {
+class User extends Model {
   @Column
   declare name?: string;
 
