@@ -154,11 +154,17 @@ export const deployVM = async ({
     if (keyPath) {
       sshCommand = generateSSHCommand({ userName, host, keyPath, port });
     } else {
-      // password must be defined here due to earlier validation
+      // Explicit type narrowing: password must be defined due to earlier validation
+      if (!password) {
+        throw new Error(
+          'Password authentication selected but no password was provided.'
+        );
+      }
+
       const result = generateSSHCommandWithPwd({
         userName,
         host,
-        password: password!,
+        password,
         port,
       });
       sshCommand = result.command;
@@ -213,7 +219,22 @@ export const deployVM = async ({
     // Pipe deployment script to stdin
     deployScript.pipe(sshProcess.stdin);
 
+    // Register SIGINT handler with cleanup
+    const sigintHandler = () => {
+      log.info(logPrefix, 'Interrupting deployment...');
+      sshProcess.kill('SIGINT');
+      process.exit(130);
+    };
+
+    process.on('SIGINT', sigintHandler);
+
+    // Cleanup function to remove SIGINT handler
+    const cleanup = () => {
+      process.removeListener('SIGINT', sigintHandler);
+    };
+
     sshProcess.on('close', (code) => {
+      cleanup();
       if (code === 0) {
         resolve();
       } else {
@@ -222,13 +243,8 @@ export const deployVM = async ({
     });
 
     sshProcess.on('error', (error) => {
+      cleanup();
       reject(error);
-    });
-
-    process.on('SIGINT', () => {
-      log.info(logPrefix, 'Interrupting deployment...');
-      sshProcess.kill('SIGINT');
-      process.exit(130);
     });
   });
 };
