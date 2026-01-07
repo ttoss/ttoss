@@ -37,10 +37,10 @@ export const options = {
 type OptionValueType<TOption> = TOption extends { type: 'string' }
   ? string
   : TOption extends { type: 'number' }
-  ? number
-  : TOption extends { type: 'boolean' }
-  ? boolean
-  : unknown;
+    ? number
+    : TOption extends { type: 'boolean' }
+      ? boolean
+      : unknown;
 
 export type VmCommandOptions = Partial<{
   [key in keyof typeof options]: OptionValueType<(typeof options)[key]>;
