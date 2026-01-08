@@ -73,11 +73,6 @@ export const BigNumber = (props: DashboardCard) => {
     props.numberDecimalPlaces
   );
 
-  const displayValue =
-    props.numberType === 'number' && props.title.toLowerCase().includes('roas')
-      ? `${formattedValue}x`
-      : formattedValue;
-
   const valueColor = getValueColor(props.color, props.variant);
   const variant = props.variant || 'default';
 
@@ -101,7 +96,7 @@ export const BigNumber = (props: DashboardCard) => {
             lineHeight: '1.2',
           }}
         >
-          {displayValue}
+          {formattedValue}
         </Text>
 
         {props.trend && (

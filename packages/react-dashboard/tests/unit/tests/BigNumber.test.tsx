@@ -91,19 +91,6 @@ describe('BigNumber', () => {
     expect(screen.queryByText(/100,00/)).not.toBeInTheDocument();
   });
 
-  test('should add x suffix for ROAS-like metrics', () => {
-    render(
-      <BigNumber
-        {...baseCard}
-        title="ROAS"
-        numberType="number"
-        data={{ api: { total: 3.5 } }}
-      />
-    );
-
-    expect(screen.getByText(/3,50x/)).toBeInTheDocument();
-  });
-
   test('should render trend indicator with positive status', () => {
     render(
       <BigNumber {...baseCard} trend={{ value: 10.5, status: 'positive' }} />
