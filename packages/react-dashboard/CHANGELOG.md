@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.2.0...@ttoss/react-dashboard@0.2.1) (2026-01-09)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 # [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.1.19...@ttoss/react-dashboard@0.2.0) (2026-01-07)
 
 ### Features
