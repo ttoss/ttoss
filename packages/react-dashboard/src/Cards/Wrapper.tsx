@@ -1,6 +1,6 @@
 import { Box, Flex, Text, TooltipIcon } from '@ttoss/ui';
 
-import { CardVariant } from '../DashboardCard';
+import type { CardVariant } from '../DashboardCard';
 
 export const CardWrapper = ({
   title,
@@ -33,7 +33,7 @@ export const CardWrapper = ({
         return 'feedback.text.positive.default';
       case 'default':
       default:
-        return 'display.text.primary.default';
+        return 'input.background.muted.disabled';
     }
   };
 
@@ -57,8 +57,9 @@ export const CardWrapper = ({
         }}
       >
         <Text
-          variant="h5"
           sx={{
+            fontSize: 'sm',
+            fontWeight: 'bold',
             color: getTitleColor(),
             flex: 1,
             minWidth: 0,
