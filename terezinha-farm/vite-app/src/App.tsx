@@ -253,8 +253,8 @@ const templates: DashboardTemplate[] = [
           },
           trend: {
             value: 16.59,
-            status: 'positive',
-            type: 'higher',
+            status: 'negative',
+            type: 'lower',
           },
           additionalInfo: undefined,
           metrics: [],

@@ -442,6 +442,56 @@ type DashboardCardType =
 type CardVariant = 'default' | 'dark' | 'light-green';
 ```
 
+### TrendIndicator
+
+Trend indicator that displays a percentage change with visual indicators.
+
+```tsx
+type TrendIndicator = {
+  value: number;
+  status?: 'positive' | 'negative' | 'neutral';
+  type?: 'higher' | 'lower';
+};
+```
+
+**Behavior:**
+
+- **Positive status**: Displays an up arrow icon and the percentage value (e.g., "10.5% vs. período anterior")
+- **Negative status**: Displays a down arrow icon and the percentage value (e.g., "5.2% vs. período anterior")
+- **Neutral status**: Displays no arrow icon, only the percentage value (e.g., "0.0% vs. período anterior")
+- The value is always formatted to 1 decimal place followed by "%"
+- Note: Positive values do not include a "+" sign prefix
+
+**Example:**
+
+```tsx
+trend={{
+  value: 15.5,
+  status: 'positive',
+  type: 'higher', // Optional: indicates if higher/lower is good
+}}
+```
+
+### StatusIndicator
+
+Status indicator that displays text with an optional icon.
+
+```tsx
+type StatusIndicator = {
+  text: string;
+  icon?: string;
+};
+```
+
+**Example:**
+
+```tsx
+status={{
+  text: 'Active',
+  icon: 'mdi:check-circle',
+}}
+```
+
 ## Complete Example
 
 ```tsx
