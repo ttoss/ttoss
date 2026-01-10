@@ -10,16 +10,27 @@ tags:
   - architecture
 ---
 
-The most important decision an engineer must take today is a binary choice about their role in the loop:
+The single most important decision an engineer must make today is a binary choice regarding their role in the software development lifecycle.
 
-**Option A:** Continue reviewing code as if a human wrote it, inevitably becoming the bottleneck that slows down the entire team.
-**Option B:** Change your review policy, ceding low-level control to AI to gain high-level velocity.
+**Option A:** Continue reviewing code line-by-line as if a human wrote it. This path guarantees you become the bottleneck, stifling your team's throughput.
 
-If you choose Option A, to remain the bottleneck, this article is not for you. You will likely continue to drown in pull requests until your velocity metrics force a change.
+**Option B:** Evolve your review policy, relinquishing low-level implementation control to AI to unlock high-level architectural velocity.
 
-If you choose Option B, you are ready to change your paradigms. But you can't just "let AI code" without a system; that leads to chaos. You need strategies to maintain control without reading every line. Here are the five strategies that make Option B possible.
+If you choose Option A, this article is not for you. You will likely continue to drown in an ever-increasing tide of pull requests until external metrics force a change.
+
+If you choose Option B, you are ready for a paradigm shift. However, blindly "letting AI code" without a governance system invites chaos. You need robust strategies to maintain system quality without scrutinizing every line of implementation. Here are the five strategies that make Option B a reality.
 
 <!-- truncate -->
+
+## The Velocity Trap: Why Option A is Mathematically Impossible
+
+This decision is driven by a hard mathematical reality.
+
+An experienced engineer can meaningfully review perhaps 200 lines of complex code per hour. An AI agent can generate 200 lines of code _per second_.
+
+If you choose **Option A**, you are pitting linear human processing speed against exponential AI generation speed. As your team adopts more AI tools, the volume of code produced will increase by orders of magnitude. If your review policy remains "human eyes on every line," your backlog will grow infinitely, and your velocity will asymptote to zero.
+
+You cannot out-read the machine. You must out-think it.
 
 ## Strategy 1: Climb the Abstraction Ladder
 
@@ -31,15 +42,15 @@ The shift is simple: **Stop reviewing the lowest level** (functions, in this exa
 
 If a product has a Stripe integration, you should not care if the code uses a ternary operator or an `if-else` block. You should care that there is a **Billing System** containing a **Stripe Module** that adheres to a specific contract.
 
-Your job is to maintain a clear mental model of the higher levels (Packages and Systems). This aligns with [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles#the-principle-of-contractual-specialization). By keeping the boundaries rigid, you can let the AI handle the implementation details within those boundaries. As noted in [Coding is Now a Commodity](/blog/2025/12/26/coding-is-now-a-commodity), the value has shifted from the "bricks" (functions) to the "blueprint" (system architecture).
+Your job is to maintain a clear mental model of the higher levels (Product and Systems). This aligns with [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles#the-principle-of-contractual-specialization). By keeping the boundaries rigid, you can let the AI handle the implementation details within those boundaries. As noted in [Coding is Now a Commodity](/blog/2025/12/26/coding-is-now-a-commodity), the value has shifted from the "bricks" (functions) to the "blueprint" (system architecture).
 
 ## Strategy 2: Review Instructions, Not Code
 
 When you find a flaw in the architecture or logic, your instinct will be to fix the code. **Resist it.**
 
-If the AI generates code that violates your architecture, it is not a code failure; it is an instruction failure. Instead of rewriting the code, rewriting the **instruction** or the **system prompt** that generated it.
+If the AI generates code that violates your architecture, it is a **mentorship failure**. Instead of rewriting the code, rewrite the **instruction** or the **system prompt** that generated it.
 
-This transforms you from a code reviewer into an architect of agency. As discussed in [From Scripter to Architect](/blog/2025/12/17/from-scripter-to-architect), you are no longer the author of the flow; you are the architect of the boundaries. If you fix the code manually, you teach nothing. If you fix the instruction, you fix the next 100 generations.
+This transforms you from a code reviewer into an architect of agency. As discussed in [From Scripter to Architect](/blog/2025/12/17/from-scripter-to-architect), you are no longer the author of the flow; you are the architect of the boundaries. If you fix the code manually, you teach nothing and fix only one instance. If you fix the instruction, you maintain the "employee" that will write the next 100 features.
 
 ## Strategy 3: Automated Verification as the Safety Net
 
@@ -71,4 +82,8 @@ Instead of agonizing over potential edge cases in code review, you ensure you ha
 
 ## Conclusion
 
-The choice is yours. You can be the senior engineer who catches every missing semicolon but ships one feature a month. Or you can be the architect who defines the packages, writes the instructions, and enforces the tests—allowing your AI workforce to ship at the speed of compute.
+The decision to shift from reviewer to architect is about relevance and leverage.
+
+You can remain the gatekeeper who catches every missing semicolon, proudly "owning" every line of code while shipping one feature a month. Or you can evolve into the architect who defines the systems, authors the instructions, and enforces the verification loops—empowering an AI workforce to ship at the speed of compute.
+
+The first path leads to traditional engineering. The second path defines the future of engineering. Make your choice.
