@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.0.26 (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+- lambda postgres query ([5f83de8](https://github.com/ttoss/ttoss/commit/5f83de840ddbd7789343ca2aeb81c981a6266303))
+
 ## 2.0.25 (2025-12-04)
 
 **Note:** Version bump only for package @ttoss/react-i18n

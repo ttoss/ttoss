@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.4.2...@docs/website@2.4.3) (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+
 ## [2.4.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.4.1...@docs/website@2.4.2) (2026-01-10)
 
 ### Bug Fixes

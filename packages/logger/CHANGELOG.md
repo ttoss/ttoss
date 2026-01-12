@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.2 (2026-01-12)
+
+### Bug Fixes
+
+- lambda postgres query ([5f83de8](https://github.com/ttoss/ttoss/commit/5f83de840ddbd7789343ca2aeb81c981a6266303))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.7.0...@ttoss/logger@0.7.1) (2025-12-04)
 
 **Note:** Version bump only for package @ttoss/logger

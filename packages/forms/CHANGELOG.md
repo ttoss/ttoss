@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.38.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.38.0...@ttoss/forms@0.38.1) (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+
 # [0.38.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.37.5...@ttoss/forms@0.38.0) (2026-01-07)
 
 ### Features

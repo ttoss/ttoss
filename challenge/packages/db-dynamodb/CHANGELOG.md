@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.43 (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+- lambda postgres query ([5f83de8](https://github.com/ttoss/ttoss/commit/5f83de840ddbd7789343ca2aeb81c981a6266303))
+
 ## [0.2.42](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-dynamodb@0.2.41...@ttoss-challenge/db-dynamodb@0.2.42) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss-challenge/db-dynamodb

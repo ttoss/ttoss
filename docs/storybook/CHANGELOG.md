@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.10.2...@docs/storybook@3.10.3) (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+
 ## [3.10.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.10.1...@docs/storybook@3.10.2) (2026-01-12)
 
 **Note:** Version bump only for package @docs/storybook

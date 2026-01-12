@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.12...@ttoss/react-notifications@2.5.13) (2026-01-12)
+
+### Bug Fixes
+
+- components ([#847](https://github.com/ttoss/ttoss/issues/847)) ([f71637c](https://github.com/ttoss/ttoss/commit/f71637ceac610c0d5e830639d1fbfa053458a8bd))
+
 ## [2.5.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.11...@ttoss/react-notifications@2.5.12) (2026-01-07)
 
 **Note:** Version bump only for package @ttoss/react-notifications
