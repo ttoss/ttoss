@@ -101,10 +101,10 @@ describe('Accordion Component', () => {
     expect(screen.getByText('Content for section 3')).toBeInTheDocument();
   });
 
-  test('calls onChange callback when item is toggled', async () => {
+  test('calls onAccordionChange callback when item is toggled', async () => {
     const user = userEvent.setup();
     const handleChange = jest.fn();
-    render(<Accordion items={defaultItems} onChange={handleChange} />);
+    render(<Accordion items={defaultItems} onAccordionChange={handleChange} />);
 
     await user.click(screen.getByText('Section 1'));
 
