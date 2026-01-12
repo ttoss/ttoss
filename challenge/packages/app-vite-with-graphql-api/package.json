@@ -16,7 +16,7 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": "^19.2.3",
-    "react-dom": "^19.2.1",
+    "react-dom": "^19.2.3",
     "react-relay": "^18.2.0",
     "relay-runtime": "^18.2.0",
     "vite-plugin-relay": "^2.1.0"
