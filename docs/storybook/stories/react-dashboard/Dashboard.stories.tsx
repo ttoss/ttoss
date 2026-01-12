@@ -100,7 +100,7 @@ const defaultTemplates: DashboardTemplate[] = [
             api: { total: 2.35 },
           },
           trend: {
-            value: -5.2,
+            value: 5.2,
             status: 'negative',
           },
         },

@@ -1,7 +1,11 @@
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Text } from '@ttoss/ui';
 
-import type { CardVariant, DashboardCard } from '../DashboardCard';
+import type {
+  CardVariant,
+  DashboardCard,
+  TrendIndicator,
+} from '../DashboardCard';
 import { CardWrapper } from './Wrapper';
 
 const formatNumber = (
@@ -53,16 +57,30 @@ const getValueColor = (color?: string, variant?: CardVariant): string => {
   return 'display.text.primary.default';
 };
 
-const getTrendColor = (
-  status?: 'positive' | 'negative' | 'neutral'
-): string => {
-  if (status === 'positive') {
-    return 'feedback.text.positive.default';
+const getTrendColor = (trend?: TrendIndicator): string => {
+  const colors = {
+    positive: 'feedback.text.positive.default',
+    negative: 'feedback.text.negative.default',
+    neutral: 'display.text.primary.default',
+  };
+  if (!trend) {
+    return colors.neutral;
   }
-  if (status === 'negative') {
-    return 'feedback.text.negative.default';
+  const isGoodTrend =
+    (trend.type === 'higher' && trend.status === 'positive') ||
+    (trend.type === 'lower' && trend.status === 'negative');
+
+  if (isGoodTrend) {
+    return colors.positive;
   }
-  return 'display.text.primary.default';
+
+  const isBadTrend =
+    (trend.type === 'higher' && trend.status === 'negative') ||
+    (trend.type === 'lower' && trend.status === 'positive');
+  if (isBadTrend) {
+    return colors.negative;
+  }
+  return colors.neutral;
 };
 
 export const BigNumber = (props: DashboardCard) => {
@@ -108,7 +126,7 @@ export const BigNumber = (props: DashboardCard) => {
           >
             <Box
               sx={{
-                color: getTrendColor(props.trend.status),
+                color: getTrendColor(props.trend),
                 display: 'flex',
                 alignItems: 'center',
               }}
@@ -119,19 +137,16 @@ export const BigNumber = (props: DashboardCard) => {
                 <Icon icon="mdi:arrow-down" width={16} />
               ) : null}
             </Box>
-            {['positive', 'negative'].includes(props.trend?.status || '') && (
-              <Text
-                sx={{
-                  color: getTrendColor(props.trend.status),
-                  fontSize: 'sm',
-                  fontWeight: 'medium',
-                }}
-              >
-                {props.trend.status === 'positive' ? '+' : ''}
-                {props.trend.value.toFixed(1)}%{' '}
-                {props.trend ? 'vs. período anterior' : ''}
-              </Text>
-            )}
+            <Text
+              sx={{
+                color: getTrendColor(props.trend),
+                fontSize: 'sm',
+                fontWeight: 'medium',
+              }}
+            >
+              {props.trend.value.toFixed(1)}%{' '}
+              {props.trend ? 'vs. período anterior' : ''}
+            </Text>
           </Flex>
         )}
 
