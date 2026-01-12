@@ -8,15 +8,15 @@ React components for the ttoss ecosystem. **ESM only** package.
 pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
 ```
 
-**📖 [View all components in Storybook](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)**
+[View all components in Storybook](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
 
-## Components Overview
+## Components
 
 All components are theme-aware and integrate seamlessly with `@ttoss/ui`.
 
 ### Accordion
 
-Collapsible content sections. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
+Collapsible content sections. [Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
 
 ```tsx
 import {
@@ -37,9 +37,32 @@ import {
 </Accordion>;
 ```
 
+### DatePicker
+
+Date range picker with presets and mobile support. [Docs](https://storybook.ttoss.dev/?path=/docs/components-datepicker--docs)
+
+```tsx
+import { DatePicker } from '@ttoss/components/DatePicker';
+
+<DatePicker
+  label="Select period"
+  value={dateRange}
+  onChange={setDateRange}
+  presets={[
+    {
+      label: 'Last 7 days',
+      getValue: () => ({
+        from: subDays(new Date(), 7),
+        to: new Date(),
+      }),
+    },
+  ]}
+/>;
+```
+
 ### Drawer
 
-Slide-out panels from screen edges. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-drawer--docs)
+Slide-out panels from screen edges. [Docs](https://storybook.ttoss.dev/?path=/docs/components-drawer--docs)
 
 ```tsx
 import { Drawer } from '@ttoss/components/Drawer';
@@ -49,65 +72,56 @@ import { Drawer } from '@ttoss/components/Drawer';
 </Drawer>;
 ```
 
+### EnhancedTitle
+
+Structured title section with icon, badges, and metadata. [Docs](https://storybook.ttoss.dev/?path=/docs/components-enhancedtitle--docs)
+
+```tsx
+import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
+
+<EnhancedTitle
+  icon="fluent:shield-24-filled"
+  title="Starter Plan"
+  frontTitle="$49.90/mo"
+  description="Perfect for small teams"
+  variant="primary"
+  topBadges={[
+    {
+      label: 'Active',
+      variant: 'positive',
+      icon: 'fluent:checkmark-circle-24-filled',
+    },
+  ]}
+  bottomBadges={[
+    { label: 'OneClick Tracking', icon: 'fluent:checkmark-24-filled' },
+  ]}
+/>;
+```
+
 ### FileUploader
 
-Controlled file uploader with drag-and-drop support. Displays uploaded files with previews, clickable links, and remove functionality. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
+Controlled file uploader with drag-and-drop, previews, and validation. [Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
 
 ```tsx
 import { FileUploader } from '@ttoss/components/FileUploader';
-import { useState } from 'react';
-
-const [files, setFiles] = useState([
-  {
-    id: 'file-1',
-    name: 'document.pdf',
-    url: 'https://example.com/files/document.pdf',
-  },
-  {
-    id: 'file-2',
-    name: 'image.jpg',
-    imageUrl: 'https://example.com/images/thumb.jpg', // Optional preview
-    url: 'https://example.com/files/image.jpg',
-  },
-]);
 
 <FileUploader
-  // Required: Upload handler
   onUpload={async (file, onProgress) => {
-    // Your upload logic here
-    onProgress?.(50); // Report progress
     const result = await uploadToServer(file);
     return { url: result.url, id: result.id, name: result.name };
   }}
-  // Controlled files list
   files={files}
-  // Callbacks
-  onUploadComplete={(file, result) => {
-    setFiles([...files, { id: result.id, name: file.name, url: result.url }]);
-  }}
-  onRemove={(file, index) => {
-    setFiles(files.filter((_, i) => i !== index));
-  }}
-  // Optional: Validation
+  onUploadComplete={(file, result) => setFiles([...files, result])}
+  onRemove={(file, index) => setFiles(files.filter((_, i) => i !== index))}
   accept="image/*,.pdf"
-  maxSize={10 * 1024 * 1024} // 10MB
+  maxSize={10 * 1024 * 1024}
   maxFiles={5}
 />;
 ```
 
-**Key Features:**
-
-- **Controlled component**: Pass `files` prop to display uploaded files
-- **Clickable file names**: Names are links that open the file URL
-- **Image previews**: Show thumbnails when `imageUrl` is provided
-- **Remove functionality**: Each file has a remove button
-- **Upload callbacks**: `onUploadStart`, `onUploadProgress`, `onUploadComplete`, `onUploadError`
-- **Validation**: File type, size, and quantity limits
-- **Drag-and-drop**: Native drag-and-drop support
-
 ### InstallPwa
 
-PWA installation prompt component. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-installpwa--docs)
+PWA installation prompt component.
 
 ```tsx
 import { InstallPwa } from '@ttoss/components/InstallPwa';
@@ -117,7 +131,7 @@ import { InstallPwa } from '@ttoss/components/InstallPwa';
 
 ### JsonEditor
 
-JSON editor component. Re-exports from [json-edit-react](https://carlosdevpereira.github.io/json-edit-react/). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
+JSON editor component. Re-exports from [json-edit-react](https://carlosdevpereira.github.io/json-edit-react/). [Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
 
 ```tsx
 import { JsonEditor } from '@ttoss/components/JsonEditor';
@@ -127,7 +141,7 @@ import { JsonEditor } from '@ttoss/components/JsonEditor';
 
 ### JsonView
 
-JSON viewer component. Re-exports from [react-json-view-lite](https://github.com/AnyRoad/react-json-view-lite). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-jsonview--docs)
+JSON viewer component. Re-exports from [react-json-view-lite](https://github.com/AnyRoad/react-json-view-lite).
 
 ```tsx
 import { JsonView } from '@ttoss/components/JsonView';
@@ -137,7 +151,7 @@ import { JsonView } from '@ttoss/components/JsonView';
 
 ### List
 
-Unordered lists with customizable items. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-list--docs)
+Unordered lists with customizable items. [Docs](https://storybook.ttoss.dev/?path=/docs/components-list--docs)
 
 ```tsx
 import { List, ListItem } from '@ttoss/components/List';
@@ -150,12 +164,11 @@ import { List, ListItem } from '@ttoss/components/List';
 
 ### LockedOverlay
 
-Block and display locked features or restricted content within a container. Unlike modals, overlays block only their parent container. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-lockedoverlay--docs)
+Block and display locked features or restricted content within a container. Unlike modals, overlays block only their parent container. [Docs](https://storybook.ttoss.dev/?path=/docs/components-lockedoverlay--docs)
 
 ```tsx
 import { LockedOverlay } from '@ttoss/components/LockedOverlay';
 
-// Parent must have position: relative
 <Box sx={{ position: 'relative' }}>
   <LockedOverlay
     isOpen={isOpen}
@@ -182,7 +195,7 @@ import { LockedOverlay } from '@ttoss/components/LockedOverlay';
 
 ### Markdown
 
-Render markdown content with theme integration. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-markdown--docs)
+Render markdown content with theme integration. [Docs](https://storybook.ttoss.dev/?path=/docs/components-markdown--docs)
 
 ```tsx
 import { Markdown } from '@ttoss/components/Markdown';
@@ -198,7 +211,7 @@ import { Markdown } from '@ttoss/components/Markdown';
 
 ### Menu
 
-Dropdown menus with customizable triggers. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
+Dropdown menus with customizable triggers. [Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
 
 ```tsx
 import { Menu } from '@ttoss/components/Menu';
@@ -209,95 +222,44 @@ import { Menu } from '@ttoss/components/Menu';
 </Menu>;
 ```
 
+### MetricCard
+
+Display metrics with progress visualization, status indicators, and contextual information. [Docs](https://storybook.ttoss.dev/?path=/docs/components-metriccard--docs)
+
+```tsx
+import { MetricCard } from '@ttoss/components/MetricCard';
+
+<MetricCard
+  metric={{
+    type: 'number',
+    value: 8,
+    max: 10,
+    label: 'Active Users',
+    icon: 'mdi:account-group',
+  }}
+/>;
+```
+
 ### NavList
 
-Navigation lists for sidebars, menus, and dropdowns with icons, grouping, and routing integration. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-navlist--docs)
+Navigation lists for sidebars, menus, and dropdowns with icons, grouping, and routing integration. [Docs](https://storybook.ttoss.dev/?path=/docs/components-navlist--docs)
 
 ```tsx
 import { NavList } from '@ttoss/components/NavList';
 
-// Simple navigation
 <NavList
   items={[
     { id: '1', label: 'Home', href: '/', icon: 'mdi:home' },
     { id: '2', label: 'Profile', href: '/profile', icon: 'mdi:account' },
-    { id: '3', label: 'Settings', href: '/settings', icon: 'mdi:cog' },
   ]}
   variant="sidebar"
-/>
-
-// With groups
-<NavList
-  groups={[
-    {
-      id: 'main',
-      label: 'Main Menu',
-      items: [
-        { id: '1', label: 'Dashboard', href: '/dashboard', icon: 'mdi:view-dashboard' },
-        { id: '2', label: 'Analytics', href: '/analytics', icon: 'mdi:chart-line' },
-      ],
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      items: [
-        { id: '3', label: 'Account', href: '/account', icon: 'mdi:account-cog' },
-      ],
-      divider: true, // Divider after group
-    },
-  ]}
-/>
-
-// With Next.js routing
-import NextLink from 'next/link';
-
-<NavList
-  items={items}
   LinkComponent={NextLink}
-  onItemClick={(item) => console.log('Clicked:', item)}
-/>
-
-// Custom Link Component
-// IMPORTANT: Always spread {...props} to preserve styling
-// React Router example (uses 'to' instead of 'href')
-import { Link as RouterLink } from 'react-router-dom';
-
-const ReactRouterLink = ({
-  href,
-  children,
-  ...props
-}: React.PropsWithChildren<LinkComponentProps>) => {
-  return (
-    <RouterLink
-      to={href}
-      {...props} // Required to preserve NavList styles
-    >
-      {children}
-    </RouterLink>
-  );
-};
-
-<NavList items={items} LinkComponent={ReactRouterLink} />
+/>;
 ```
-
-**Variants:**
-
-- `sidebar` - Sidebar navigation with larger icons (20px) and generous spacing
-- `menu` - Card-based menu with hover animations (18px icons)
-- `dropdown` - Compact dropdown with subtle borders (16px icons)
-
-**Features:**
-
-- **Auto-grouping** - Items automatically group by `group` property
-- **Active states** - Highlight active items with `active` prop
-- **Disabled items** - Prevent interaction with `disabled` prop
-- **Dividers** - Visual separators with `divider` prop on items or groups
-- **Icon support** - 200k+ icons via `@ttoss/react-icons`
-- **Custom routing** - Compatible with Next.js, React Router via `LinkComponent`
 
 ### Modal
 
-Theme-aware modals with accessibility features. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-modal--docs)
+Theme-aware modals with accessibility features. [Docs](https://storybook.ttoss.dev/?path=/docs/components-modal--docs)
 
 ```tsx
 import { Modal } from '@ttoss/components/Modal';
@@ -313,7 +275,7 @@ import { Modal } from '@ttoss/components/Modal';
 
 ### NotificationCard
 
-Display notification messages with actions. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationcard--docs)
+Display notification messages with actions. [Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationcard--docs)
 
 ```tsx
 import { NotificationCard } from '@ttoss/components/NotificationCard';
@@ -327,7 +289,7 @@ import { NotificationCard } from '@ttoss/components/NotificationCard';
 
 ### NotificationsMenu
 
-Menu component for displaying notifications. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationsmenu--docs)
+Menu component for displaying notifications. [Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationsmenu--docs)
 
 ```tsx
 import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
@@ -340,7 +302,7 @@ import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
 
 ### Search
 
-Debounced search input with loading states. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-search--docs)
+Debounced search input with loading states. [Docs](https://storybook.ttoss.dev/?path=/docs/components-search--docs)
 
 ```tsx
 import { Search } from '@ttoss/components/Search';
@@ -353,9 +315,25 @@ import { Search } from '@ttoss/components/Search';
 />;
 ```
 
+### SpotlightCard
+
+Interactive card with spotlight effect, icon, and action buttons. [Docs](https://storybook.ttoss.dev/?path=/docs/components-spotlightcard--docs)
+
+```tsx
+import { SpotlightCard } from '@ttoss/components/SpotlightCard';
+
+<SpotlightCard
+  icon="mdi:rocket-launch"
+  title="Launch Product"
+  description="Deploy your product to production"
+  primaryButton={{ label: 'Deploy', onClick: handleDeploy }}
+  secondaryButton={{ label: 'Preview', onClick: handlePreview }}
+/>;
+```
+
 ### Table
 
-Flexible tables with sorting and pagination. Uses [TanStack Table](https://tanstack.com/table/latest). [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
+Flexible tables with sorting and pagination. Uses [TanStack Table](https://tanstack.com/table/latest). [Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
 
 ```tsx
 import {
@@ -364,14 +342,12 @@ import {
   createColumnHelper,
 } from '@ttoss/components/Table';
 
-const columns = [
-  columnHelper.accessor('name', { header: 'Name' }),
-  columnHelper.accessor('email', { header: 'Email' }),
-];
-
 const table = useReactTable({
   data,
-  columns,
+  columns: [
+    columnHelper.accessor('name', { header: 'Name' }),
+    columnHelper.accessor('email', { header: 'Email' }),
+  ],
   getCoreRowModel: getCoreRowModel(),
 });
 
@@ -403,7 +379,7 @@ const table = useReactTable({
 
 ### Tabs
 
-Tab navigation with content panels. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-tabs--docs)
+Tab navigation with content panels. [Docs](https://storybook.ttoss.dev/?path=/docs/components-tabs--docs)
 
 ```tsx
 import { Tabs } from '@ttoss/components/Tabs';
@@ -422,7 +398,7 @@ import { Tabs } from '@ttoss/components/Tabs';
 
 ### Toast
 
-Toast notification system. [📖 Docs](https://storybook.ttoss.dev/?path=/docs/components-toast--docs)
+Toast notification system. [Docs](https://storybook.ttoss.dev/?path=/docs/components-toast--docs)
 
 ```tsx
 import { Toast } from '@ttoss/components/Toast';
@@ -433,8 +409,4 @@ import { Toast } from '@ttoss/components/Toast';
   isOpen={isOpen}
   onClose={() => setIsOpen(false)}
 />;
-```
-
-```
-
 ```

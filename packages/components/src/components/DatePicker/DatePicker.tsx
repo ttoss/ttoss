@@ -1,5 +1,3 @@
-import 'react-day-picker/style.css';
-
 import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Flex, Label, Text } from '@ttoss/ui';
 import * as React from 'react';

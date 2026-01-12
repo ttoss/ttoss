@@ -40,7 +40,7 @@
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.2.1",
     "eslint-plugin-storybook": "10.0.6",
-    "react": "^19.2.1",
+    "react": "^19.2.3",
     "react-dom": "^19.2.1",
     "storybook": "^10.0.6"
   }

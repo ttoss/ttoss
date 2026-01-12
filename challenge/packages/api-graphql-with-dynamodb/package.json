@@ -16,6 +16,6 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/graphql-api": "workspace:^",
-    "tsx": "^4.19.2"
+    "tsx": "^4.21.0"
   }
 }
