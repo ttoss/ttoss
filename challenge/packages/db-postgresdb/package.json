@@ -15,6 +15,6 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/postgresdb-cli": "workspace:^",
     "dotenv": "^17.0.1",
-    "tsx": "^4.19.2"
+    "tsx": "^4.21.0"
   }
 }
