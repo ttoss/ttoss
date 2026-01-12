@@ -16,25 +16,23 @@ All components are theme-aware and integrate seamlessly with `@ttoss/ui`.
 
 ### Accordion
 
-Collapsible content sections. [Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
+Accessible accordion component with collapsible content sections. [Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
 
 ```tsx
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemButton,
-  AccordionItemHeading,
-  AccordionItemPanel,
-} from '@ttoss/components/Accordion';
+import { Accordion } from '@ttoss/components/Accordion';
 
-<Accordion allowMultipleExpanded>
-  <AccordionItem>
-    <AccordionItemHeading>
-      <AccordionItemButton>Section Title</AccordionItemButton>
-    </AccordionItemHeading>
-    <AccordionItemPanel>Section content</AccordionItemPanel>
-  </AccordionItem>
-</Accordion>;
+<Accordion
+  items={[
+    {
+      title: 'Section 1',
+      content: 'Content for section 1',
+    },
+    {
+      title: 'Section 2',
+      content: 'Content for section 2',
+    },
+  ]}
+/>;
 ```
 
 ### DatePicker
