@@ -1,25 +1,59 @@
 import type { BoxProps } from '@ttoss/ui';
-import { Box } from '@ttoss/ui';
+import { Box, Button } from '@ttoss/ui';
 import * as React from 'react';
 
-type AccordionContextValue = {
-  expandedItems: string[];
-  toggleItem: (uuid: string) => void;
-  allowMultipleExpanded: boolean;
+/**
+ * Individual item for the Accordion component.
+ */
+export type AccordionItem = {
+  /**
+   * Unique identifier for the accordion item.
+   * If not provided, will use the index as the key.
+   */
+  id?: string;
+  /**
+   * Title displayed in the accordion header.
+   */
+  title: React.ReactNode;
+  /**
+   * Content displayed when the accordion item is expanded.
+   */
+  content: React.ReactNode;
+  /**
+   * Whether the item is disabled.
+   * @default false
+   */
+  disabled?: boolean;
 };
 
-const AccordionContext = React.createContext<AccordionContextValue | null>(
-  null
-);
-
-const useAccordionContext = () => {
-  const context = React.useContext(AccordionContext);
-  if (!context) {
-    throw new Error(
-      'Accordion components must be used within an Accordion component'
-    );
-  }
-  return context;
+/**
+ * Render props for custom accordion item rendering.
+ */
+export type AccordionRenderItemProps = {
+  /**
+   * The accordion item data.
+   */
+  item: AccordionItem;
+  /**
+   * Index of the item in the items array.
+   */
+  index: number;
+  /**
+   * Whether the item is currently expanded.
+   */
+  isExpanded: boolean;
+  /**
+   * Function to toggle the item's expanded state.
+   */
+  toggle: () => void;
+  /**
+   * Generated IDs for accessibility.
+   */
+  ids: {
+    itemId: string;
+    headingId: string;
+    panelId: string;
+  };
 };
 
 /**
@@ -27,356 +61,231 @@ const useAccordionContext = () => {
  */
 export type AccordionProps = BoxProps & {
   /**
+   * Array of accordion items to render.
+   */
+  items: AccordionItem[];
+  /**
    * Whether multiple items can be expanded at once.
    * @default false
    */
-  allowMultipleExpanded?: boolean;
+  multiple?: boolean;
   /**
-   * Whether all items can be collapsed (none expanded).
-   * @default false
+   * Index or array of indices for initially expanded items.
    */
-  allowZeroExpanded?: boolean;
-  /**
-   * Array of item UUIDs that should be expanded initially.
-   */
-  preExpanded?: string[];
+  defaultExpanded?: number | number[];
   /**
    * Callback invoked when items are expanded or collapsed.
-   * Receives array of currently expanded item UUIDs.
+   * Receives array of currently expanded indices.
    */
-  onExpandedChange?: (expandedUuids: string[]) => void;
+  onAccordionChange?: (expandedIndices: number[]) => void;
+  /**
+   * Custom render function for accordion items.
+   * Provides full control over item rendering while maintaining accessibility.
+   */
+  renderItem?: (props: AccordionRenderItemProps) => React.ReactNode;
 };
 
 /**
  * Accessible accordion component with collapsible content sections.
  *
- * This component provides an expandable/collapsible interface for organizing
- * content into sections. It supports single or multiple expanded sections,
- * keyboard navigation, and follows WAI-ARIA accordion pattern for accessibility.
+ * This component provides a simplified API for creating expandable/collapsible
+ * content sections. It uses design tokens from @ttoss/theme for consistent styling
+ * and follows WAI-ARIA accordion pattern for accessibility.
  *
  * @example
  * ```tsx
- * <Accordion>
- *   <AccordionItem>
- *     <AccordionItemHeading>
- *       <AccordionItemButton>Section 1</AccordionItemButton>
- *     </AccordionItemHeading>
- *     <AccordionItemPanel>
- *       Content for section 1
- *     </AccordionItemPanel>
- *   </AccordionItem>
- * </Accordion>
+ * <Accordion
+ *   items={[
+ *     {
+ *       title: 'Section 1',
+ *       content: 'Content for section 1',
+ *     },
+ *     {
+ *       title: 'Section 2',
+ *       content: 'Content for section 2',
+ *     },
+ *   ]}
+ * />
  * ```
  *
  * @example
  * ```tsx
- * <Accordion allowMultipleExpanded preExpanded={['item-1']}>
- *   <AccordionItem uuid="item-1">
- *     <AccordionItemHeading>
- *       <AccordionItemButton>Pre-expanded Section</AccordionItemButton>
- *     </AccordionItemHeading>
- *     <AccordionItemPanel>
- *       This section is expanded by default
- *     </AccordionItemPanel>
- *   </AccordionItem>
- * </Accordion>
+ * <Accordion
+ *   multiple
+ *   defaultExpanded={[0, 1]}
+ *   items={[
+ *     {
+ *       id: 'item-1',
+ *       title: 'Pre-expanded Section 1',
+ *       content: <div>Rich content</div>,
+ *     },
+ *     {
+ *       id: 'item-2',
+ *       title: 'Pre-expanded Section 2',
+ *       content: <p>More content</p>,
+ *     },
+ *   ]}
+ *   onAccordionChange={(expanded) => console.log('Expanded items:', expanded)}
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Custom rendering with renderItem
+ * <Accordion
+ *   items={items}
+ *   renderItem={({ item, isExpanded, toggle, ids }) => (
+ *     <CustomAccordionItem
+ *       item={item}
+ *       isExpanded={isExpanded}
+ *       onToggle={toggle}
+ *       headingId={ids.headingId}
+ *       panelId={ids.panelId}
+ *     />
+ *   )}
+ * />
  * ```
  */
 export const Accordion = ({
-  children,
-  allowMultipleExpanded = false,
-  allowZeroExpanded = false,
-  preExpanded = [],
-  onExpandedChange,
+  items,
+  multiple = false,
+  defaultExpanded,
+  onAccordionChange,
+  renderItem,
+  sx,
   ...boxProps
 }: AccordionProps) => {
-  const [expandedItems, setExpandedItems] =
-    React.useState<string[]>(preExpanded);
+  const [expandedIndices, setExpandedIndices] = React.useState<number[]>(() => {
+    if (defaultExpanded === undefined) {
+      return [];
+    }
+    return Array.isArray(defaultExpanded) ? defaultExpanded : [defaultExpanded];
+  });
 
   const toggleItem = React.useCallback(
-    (uuid: string) => {
-      setExpandedItems((prev) => {
-        const isExpanded = prev.includes(uuid);
-        let newExpanded: string[];
+    (index: number) => {
+      setExpandedIndices((prev) => {
+        const isExpanded = prev.includes(index);
+        let newExpanded: number[];
 
         if (isExpanded) {
-          // Collapsing
-          if (!allowZeroExpanded && prev.length === 1) {
-            // Don't collapse if it's the last expanded item and allowZeroExpanded is false
-            return prev;
-          }
-          newExpanded = prev.filter((id) => {
-            return id !== uuid;
+          newExpanded = prev.filter((i) => {
+            return i !== index;
           });
         } else {
-          // Expanding
-          if (allowMultipleExpanded) {
-            newExpanded = [...prev, uuid];
-          } else {
-            newExpanded = [uuid];
-          }
+          newExpanded = multiple ? [...prev, index] : [index];
         }
 
-        onExpandedChange?.(newExpanded);
+        onAccordionChange?.(newExpanded);
         return newExpanded;
       });
     },
-    [allowMultipleExpanded, allowZeroExpanded, onExpandedChange]
+    [multiple, onAccordionChange]
   );
-
-  return (
-    <AccordionContext.Provider
-      value={{ expandedItems, toggleItem, allowMultipleExpanded }}
-    >
-      <Box variant="accordion" {...boxProps}>
-        {children}
-      </Box>
-    </AccordionContext.Provider>
-  );
-};
-
-type AccordionItemContextValue = {
-  uuid: string;
-  isExpanded: boolean;
-  headingId: string;
-  panelId: string;
-};
-
-const AccordionItemContext =
-  React.createContext<AccordionItemContextValue | null>(null);
-
-const useAccordionItemContext = () => {
-  const context = React.useContext(AccordionItemContext);
-  if (!context) {
-    throw new Error(
-      'AccordionItem sub-components must be used within an AccordionItem'
-    );
-  }
-  return context;
-};
-
-/**
- * Props for the AccordionItem component.
- */
-export type AccordionItemProps = {
-  /**
-   * Unique identifier for the accordion item.
-   * If not provided, a random UUID will be generated.
-   */
-  uuid?: string;
-  /**
-   * Child components (typically AccordionItemHeading and AccordionItemPanel).
-   */
-  children: React.ReactNode;
-  /**
-   * Optional className for styling.
-   */
-  className?: string;
-};
-
-/**
- * Individual item within an Accordion.
- *
- * Each AccordionItem should contain an AccordionItemHeading and AccordionItemPanel.
- *
- * @example
- * ```tsx
- * <AccordionItem uuid="unique-id">
- *   <AccordionItemHeading>
- *     <AccordionItemButton>Title</AccordionItemButton>
- *   </AccordionItemHeading>
- *   <AccordionItemPanel>Content</AccordionItemPanel>
- * </AccordionItem>
- * ```
- */
-export const AccordionItem = ({
-  uuid: providedUuid,
-  children,
-  className,
-}: AccordionItemProps) => {
-  const { expandedItems } = useAccordionContext();
-  const generatedId = React.useId();
-  const uuid = providedUuid || generatedId;
-
-  const isExpanded = expandedItems.includes(uuid);
-  const headingId = `accordion-heading-${uuid}`;
-  const panelId = `accordion-panel-${uuid}`;
-
-  return (
-    <AccordionItemContext.Provider
-      value={{ uuid, isExpanded, headingId, panelId }}
-    >
-      <Box
-        className={className}
-        sx={{
-          marginBottom: 3,
-        }}
-      >
-        {children}
-      </Box>
-    </AccordionItemContext.Provider>
-  );
-};
-
-/**
- * Props for the AccordionItemHeading component.
- */
-export type AccordionItemHeadingProps = {
-  /**
-   * Child component (typically AccordionItemButton).
-   */
-  children: React.ReactNode;
-  /**
-   * Optional className for styling.
-   */
-  className?: string;
-};
-
-/**
- * Heading wrapper for an accordion item.
- *
- * Should contain an AccordionItemButton as its child.
- *
- * @example
- * ```tsx
- * <AccordionItemHeading>
- *   <AccordionItemButton>Click to expand</AccordionItemButton>
- * </AccordionItemHeading>
- * ```
- */
-export const AccordionItemHeading = ({
-  children,
-  className,
-}: AccordionItemHeadingProps) => {
-  const { headingId } = useAccordionItemContext();
 
   return (
     <Box
-      id={headingId}
-      className={className}
-      role="heading"
-      aria-level={3}
       sx={{
-        padding: 'md',
-        border: '1px solid',
-        borderColor: 'black',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        ...sx,
       }}
+      {...boxProps}
     >
-      {children}
-    </Box>
-  );
-};
+      {items.map((item, index) => {
+        const isExpanded = expandedIndices.includes(index);
+        const itemId = item.id || `accordion-item-${index}`;
+        const headingId = `${itemId}-heading`;
+        const panelId = `${itemId}-panel`;
 
-/**
- * Props for the AccordionItemButton component.
- */
-export type AccordionItemButtonProps = {
-  /**
-   * Content to display in the button (typically text or elements).
-   */
-  children: React.ReactNode;
-  /**
-   * Optional className for styling.
-   */
-  className?: string;
-};
+        // Custom rendering if renderItem is provided
+        if (renderItem) {
+          return (
+            <React.Fragment key={itemId}>
+              {renderItem({
+                item,
+                index,
+                isExpanded,
+                toggle: () => {
+                  return toggleItem(index);
+                },
+                ids: { itemId, headingId, panelId },
+              })}
+            </React.Fragment>
+          );
+        }
 
-/**
- * Button that toggles the expansion state of an accordion item.
- *
- * This is the clickable element within AccordionItemHeading that
- * expands or collapses the associated AccordionItemPanel.
- *
- * @example
- * ```tsx
- * <AccordionItemButton>
- *   Click to toggle content
- * </AccordionItemButton>
- * ```
- */
-export const AccordionItemButton = ({
-  children,
-  className,
-}: AccordionItemButtonProps) => {
-  const { toggleItem } = useAccordionContext();
-  const { uuid, isExpanded, panelId, headingId } = useAccordionItemContext();
+        // Default rendering
+        return (
+          <Box
+            key={itemId}
+            sx={{
+              border: 'sm',
+              borderColor: 'display.border.muted.default',
+              borderRadius: 'md',
+              overflow: 'hidden',
+            }}
+          >
+            <Button
+              id={headingId}
+              type="button"
+              disabled={item.disabled}
+              onClick={() => {
+                toggleItem(index);
+              }}
+              aria-expanded={isExpanded}
+              aria-controls={panelId}
+              rightIcon={isExpanded ? 'chevron-up' : 'chevron-down'}
+              sx={{
+                width: '100%',
+                justifyContent: 'space-between',
+                backgroundColor: isExpanded
+                  ? 'display.background.muted.default'
+                  : 'display.background.primary.default',
+                color: item.disabled
+                  ? 'display.text.muted.default'
+                  : 'display.text.primary.default',
+                fontWeight: 500,
+                border: 'none',
+                borderRadius: 0,
+                transition: 'background-color 0.2s ease',
+                '&:hover:not(:disabled)': {
+                  backgroundColor: 'display.background.muted.default',
+                },
+                '&:focus': {
+                  outline: 'none',
+                  boxShadow: (theme) => {
+                    return `inset 0 0 0 1px ${
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (theme.colors as any)?.input?.border?.accent?.default ||
+                      'currentColor'
+                    }`;
+                  },
+                },
+              }}
+            >
+              {item.title}
+            </Button>
 
-  return (
-    <Box
-      as="button"
-      className={className}
-      onClick={() => {
-        return toggleItem(uuid);
-      }}
-      aria-expanded={isExpanded}
-      aria-controls={panelId}
-      id={`${headingId}-button`}
-      sx={{
-        width: '100%',
-        textAlign: 'left',
-        cursor: 'pointer',
-        background: 'none',
-        border: 'none',
-        padding: 0,
-        font: 'inherit',
-        '&:hover': {
-          opacity: 0.8,
-        },
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
-
-/**
- * Props for the AccordionItemPanel component.
- */
-export type AccordionItemPanelProps = {
-  /**
-   * Content to display in the panel when expanded.
-   */
-  children: React.ReactNode;
-  /**
-   * Optional className for styling.
-   */
-  className?: string;
-};
-
-/**
- * Content panel of an accordion item that can be expanded or collapsed.
- *
- * This component contains the content that is shown/hidden when the
- * AccordionItemButton is clicked.
- *
- * @example
- * ```tsx
- * <AccordionItemPanel>
- *   <p>This content is shown when the accordion item is expanded.</p>
- * </AccordionItemPanel>
- * ```
- */
-export const AccordionItemPanel = ({
-  children,
-  className,
-}: AccordionItemPanelProps) => {
-  const { isExpanded, panelId, headingId } = useAccordionItemContext();
-
-  if (!isExpanded) {
-    return null;
-  }
-
-  return (
-    <Box
-      id={panelId}
-      className={className}
-      role="region"
-      aria-labelledby={headingId}
-      sx={{
-        padding: 2,
-      }}
-    >
-      {children}
+            {isExpanded && (
+              <Box
+                id={panelId}
+                role="region"
+                aria-labelledby={headingId}
+                sx={{
+                  padding: 4,
+                  borderTop: 'sm',
+                  borderColor: 'display.border.muted.default',
+                  backgroundColor: 'display.background.primary.default',
+                }}
+              >
+                {item.content}
+              </Box>
+            )}
+          </Box>
+        );
+      })}
     </Box>
   );
 };
