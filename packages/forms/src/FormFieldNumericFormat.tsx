@@ -1,3 +1,4 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Input, type InputProps } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import type { NumericFormatProps } from 'react-number-format';
@@ -5,6 +6,19 @@ import { NumericFormat } from 'react-number-format';
 
 import type { FormFieldProps } from './FormField';
 import { FormField } from './FormField';
+
+const messages = defineMessages({
+  decimalSeparator: {
+    defaultMessage: '.',
+    description:
+      'Decimal separator for number formatting (e.g., "." for 1.23 or "," for 1,23)',
+  },
+  thousandSeparator: {
+    defaultMessage: ',',
+    description:
+      'Thousand separator for number formatting (e.g., "," for 1,000 or "." for 1.000)',
+  },
+});
 
 export type FormFieldNumericFormatProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -18,8 +32,27 @@ export const FormFieldNumericFormat = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   disabled,
+  decimalSeparator,
+  thousandSeparator,
+  placeholder,
+  prefix,
+  decimalScale,
   ...props
 }: FormFieldNumericFormatProps<TFieldValues, TName>) => {
+  const { intl } = useI18n();
+
+  const finalDecimalSeparator =
+    decimalSeparator ?? intl.formatMessage(messages.decimalSeparator);
+  const finalThousandSeparator =
+    thousandSeparator ?? intl.formatMessage(messages.thousandSeparator);
+
+  // Auto-generate placeholder when prefix and decimalScale are provided
+  const finalPlaceholder =
+    placeholder ??
+    (prefix && decimalScale !== undefined && decimalScale >= 0
+      ? `${prefix} 0${decimalScale > 0 ? finalDecimalSeparator : ''}${'0'.repeat(decimalScale)}`
+      : undefined);
+
   const {
     label,
     name,
@@ -55,6 +88,11 @@ export const FormFieldNumericFormat = <
         return (
           <NumericFormat
             {...numericFormatProps}
+            decimalSeparator={finalDecimalSeparator}
+            thousandSeparator={finalThousandSeparator}
+            placeholder={finalPlaceholder}
+            prefix={prefix}
+            decimalScale={decimalScale}
             name={field.name}
             value={field.value}
             onBlur={(e) => {
