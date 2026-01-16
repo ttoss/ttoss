@@ -259,5 +259,15 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "i6IsKy": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ".",
+    "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "yktL1M": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ",",
+    "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
   }
 }
