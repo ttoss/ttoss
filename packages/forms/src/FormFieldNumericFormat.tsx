@@ -46,7 +46,7 @@ export const FormFieldNumericFormat = <
   const finalThousandSeparator =
     thousandSeparator ?? intl.formatMessage(messages.thousandSeparator);
 
-  // Auto-generate placeholder for currency inputs with prefix
+  // Auto-generate placeholder when prefix and decimalScale are provided
   const finalPlaceholder =
     placeholder ??
     (prefix && decimalScale !== undefined
