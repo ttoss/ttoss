@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.3.0...@ttoss/postgresdb@0.4.0) (2026-01-16)
+
+### Features
+
+- **postgresdb:** export all sequelize-typescript hook decorators ([#851](https://github.com/ttoss/ttoss/issues/851)) ([8499e91](https://github.com/ttoss/ttoss/commit/8499e917e3551ada9d5d520b9f4dcd6373ae1d54))
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.2.27...@ttoss/postgresdb@0.3.0) (2026-01-07)
 
 ### Features
