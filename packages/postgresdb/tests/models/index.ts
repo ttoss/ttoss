@@ -68,11 +68,15 @@ class Product extends Model {
   })
   declare beforeUpdateCalled: boolean;
 
+  private static generateSlug(name: string): string {
+    return name.toLowerCase().replace(/\s+/g, '-');
+  }
+
   @BeforeCreate
   static setSlugOnCreate(instance: Product) {
     instance.beforeCreateCalled = true;
     if (instance.name && !instance.slug) {
-      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
+      instance.slug = Product.generateSlug(instance.name);
     }
   }
 
@@ -80,7 +84,7 @@ class Product extends Model {
   static updateSlugOnUpdate(instance: Product) {
     instance.beforeUpdateCalled = true;
     if (instance.changed('name') && instance.name) {
-      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
+      instance.slug = Product.generateSlug(instance.name);
     }
   }
 }
