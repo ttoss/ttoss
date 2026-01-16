@@ -1,3 +1,4 @@
+import { I18nProvider } from '@ttoss/react-i18n';
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 
@@ -156,5 +157,63 @@ describe('FormFieldNumericFormat custom onBlur and onValueChange', () => {
     await user.tab();
 
     expect(customOnBlur).toHaveBeenCalled();
+  });
+});
+
+describe('FormFieldNumericFormat i18n separators', () => {
+  test('should use default i18n separators when not specified', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onSubmit = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldNumericFormat
+            name="amount"
+            label="Amount"
+            decimalScale={2}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />, { wrapper: I18nProvider });
+
+    await user.type(screen.getByLabelText('Amount'), '1234.56');
+    await user.click(screen.getByText('Submit'));
+
+    expect(onSubmit).toHaveBeenCalledWith({ amount: 1234.56 });
+  });
+
+  test('should override i18n separators with explicit props', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onSubmit = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldNumericFormat
+            name="amount"
+            label="Amount"
+            decimalSeparator=","
+            thousandSeparator="."
+            decimalScale={2}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />, { wrapper: I18nProvider });
+
+    await user.type(screen.getByLabelText('Amount'), '1234.56');
+    await user.click(screen.getByText('Submit'));
+
+    expect(onSubmit).toHaveBeenCalledWith({ amount: 1234.56 });
   });
 });
