@@ -369,6 +369,77 @@ Initializes database connection and loads models.
 
 All [sequelize-typescript](https://www.npmjs.com/package/sequelize-typescript) decorators are exported: `@Table`, `@Column`, `@ForeignKey`, etc.
 
+#### Hooks
+
+Lifecycle hooks allow you to execute code at specific points in the model lifecycle. All hook decorators from sequelize-typescript are available:
+
+**Instance Hooks:**
+
+- `@BeforeValidate`, `@AfterValidate`, `@ValidationFailed`
+- `@BeforeCreate`, `@AfterCreate`
+- `@BeforeUpdate`, `@AfterUpdate`
+- `@BeforeDestroy`, `@AfterDestroy`
+- `@BeforeSave`, `@AfterSave` (v4 only)
+- `@BeforeUpsert`, `@AfterUpsert` (v4 only)
+- `@BeforeRestore`, `@AfterRestore`
+
+**Bulk Hooks:**
+
+- `@BeforeBulkCreate`, `@AfterBulkCreate`
+- `@BeforeBulkUpdate`, `@AfterBulkUpdate`
+- `@BeforeBulkDestroy`, `@AfterBulkDestroy`
+- `@BeforeBulkRestore`, `@AfterBulkRestore`
+- `@BeforeBulkSync`, `@AfterBulkSync`
+
+**Query Hooks:**
+
+- `@BeforeFind`, `@AfterFind`
+- `@BeforeFindAfterExpandIncludeAll`, `@BeforeFindAfterOptions`
+- `@BeforeCount`
+
+**Connection Hooks:**
+
+- `@BeforeConnect`, `@AfterConnect`
+- `@BeforeDefine`, `@AfterDefine`
+- `@BeforeInit`, `@AfterInit`
+
+**Example:**
+
+```typescript
+import {
+  Table,
+  Column,
+  Model,
+  BeforeCreate,
+  BeforeUpdate,
+} from '@ttoss/postgresdb';
+
+@Table
+class Product extends Model {
+  @Column
+  declare name: string;
+
+  @Column
+  declare slug: string;
+
+  @BeforeCreate
+  static generateSlug(instance: Product) {
+    if (instance.name && !instance.slug) {
+      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
+    }
+  }
+
+  @BeforeUpdate
+  static updateSlug(instance: Product) {
+    if (instance.changed('name') && instance.name) {
+      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
+    }
+  }
+}
+```
+
+See the [sequelize-typescript hooks documentation](https://github.com/sequelize/sequelize-typescript#hooks) for more details.
+
 ### DataType
 
 All standard Sequelize data types are available through `DataType`, including:
