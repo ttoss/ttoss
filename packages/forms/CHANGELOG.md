@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.39.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.38.1...@ttoss/forms@0.39.0) (2026-01-16)
+
+### Features
+
+- **forms:** consolidate i18n separator logic in FormFieldNumericFormat ([#849](https://github.com/ttoss/ttoss/issues/849)) ([7c87bca](https://github.com/ttoss/ttoss/commit/7c87bca059ab6e454b48fb3439774c2498c8a44b))
+
 ## [0.38.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.38.0...@ttoss/forms@0.38.1) (2026-01-12)
 
 ### Bug Fixes
