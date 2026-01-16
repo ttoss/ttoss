@@ -17,7 +17,6 @@ export const FormFieldCurrencyInput = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   prefix,
-  decimalSeparator = '.',
   ...formFieldNumericFormatProps
 }: FormFieldCurrencyInputProps<TFieldValues, TName>) => {
   return (
@@ -25,8 +24,6 @@ export const FormFieldCurrencyInput = <
       fixedDecimalScale
       decimalScale={2}
       prefix={prefix}
-      decimalSeparator={decimalSeparator}
-      placeholder={`${prefix} 0${decimalSeparator}00`}
       allowNegative={false}
       {...formFieldNumericFormatProps}
     />
