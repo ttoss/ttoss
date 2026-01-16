@@ -195,20 +195,10 @@
     "defaultMessage": "{percentage}% used",
     "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
   },
-  "0+4wTp": {
-    "module": "@ttoss/forms",
-    "defaultMessage": ",",
-    "description": "Thousand separator for currency formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
-  },
   "D1C6fR": {
     "module": "@ttoss/forms",
     "defaultMessage": "Field must be at least {min} characters",
     "description": "Min length field"
-  },
-  "JnCaDG": {
-    "module": "@ttoss/forms",
-    "defaultMessage": ".",
-    "description": "Decimal separator for currency formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
   },
   "MfWGyg": {
     "module": "@ttoss/forms",
@@ -219,5 +209,15 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "i6IsKy": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ".",
+    "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "yktL1M": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ",",
+    "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
   }
 }

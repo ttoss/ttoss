@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.10.3...@docs/storybook@3.11.0) (2026-01-16)
+
+### Features
+
+- **forms:** consolidate i18n separator logic in FormFieldNumericFormat ([#849](https://github.com/ttoss/ttoss/issues/849)) ([7c87bca](https://github.com/ttoss/ttoss/commit/7c87bca059ab6e454b48fb3439774c2498c8a44b))
+
 ## [3.10.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.10.2...@docs/storybook@3.10.3) (2026-01-12)
 
 ### Bug Fixes
