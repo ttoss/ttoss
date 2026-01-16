@@ -34,6 +34,9 @@ export const FormFieldNumericFormat = <
   disabled,
   decimalSeparator,
   thousandSeparator,
+  placeholder,
+  prefix,
+  decimalScale,
   ...props
 }: FormFieldNumericFormatProps<TFieldValues, TName>) => {
   const { intl } = useI18n();
@@ -42,6 +45,13 @@ export const FormFieldNumericFormat = <
     decimalSeparator ?? intl.formatMessage(messages.decimalSeparator);
   const finalThousandSeparator =
     thousandSeparator ?? intl.formatMessage(messages.thousandSeparator);
+
+  // Auto-generate placeholder when prefix and decimalScale are provided
+  const finalPlaceholder =
+    placeholder ??
+    (prefix && decimalScale !== undefined && decimalScale >= 0
+      ? `${prefix} 0${decimalScale > 0 ? finalDecimalSeparator : ''}${'0'.repeat(decimalScale)}`
+      : undefined);
 
   const {
     label,
@@ -80,6 +90,9 @@ export const FormFieldNumericFormat = <
             {...numericFormatProps}
             decimalSeparator={finalDecimalSeparator}
             thousandSeparator={finalThousandSeparator}
+            placeholder={finalPlaceholder}
+            prefix={prefix}
+            decimalScale={decimalScale}
             name={field.name}
             value={field.value}
             onBlur={(e) => {
