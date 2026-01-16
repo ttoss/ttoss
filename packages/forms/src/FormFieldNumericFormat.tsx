@@ -49,8 +49,8 @@ export const FormFieldNumericFormat = <
   // Auto-generate placeholder when prefix and decimalScale are provided
   const finalPlaceholder =
     placeholder ??
-    (prefix && decimalScale !== undefined
-      ? `${prefix} 0${finalDecimalSeparator}${'0'.repeat(decimalScale)}`
+    (prefix && decimalScale !== undefined && decimalScale >= 0
+      ? `${prefix} 0${decimalScale > 0 ? finalDecimalSeparator : ''}${'0'.repeat(decimalScale)}`
       : undefined);
 
   const {
