@@ -11,7 +11,7 @@ pnpm add @ttoss/http-server
 ## Quick Start
 
 ```typescript
-import { App, Router, bodyParser, cors } from '@ttoss/http-server';
+import { App, Router, bodyParser, cors, serve } from '@ttoss/http-server';
 
 const app = new App();
 
@@ -49,6 +49,57 @@ app.listen(3000);
 ```
 
 ## Core Features
+
+### Static File Serving
+
+Serve static files from a directory using the `serve` middleware:
+
+```typescript
+import { App, serve } from '@ttoss/http-server';
+
+const app = new App();
+
+// Serve files from the 'public' directory
+app.use(serve('./public'));
+
+app.listen(3000);
+// Files in ./public are now accessible at http://localhost:3000
+```
+
+**Advanced Options:**
+
+```typescript
+// With custom options
+app.use(
+  serve('./public', {
+    maxage: 3600000, // Cache files for 1 hour (in milliseconds)
+    index: 'index.html', // Default file to serve for directories
+    hidden: false, // Don't serve hidden files
+    gzip: true, // Enable gzip compression
+  })
+);
+```
+
+**Combining with Routes:**
+
+```typescript
+import { App, Router, serve } from '@ttoss/http-server';
+
+const app = new App();
+const router = new Router();
+
+// Define API routes first
+router.get('/api/users', (ctx) => {
+  ctx.body = [{ id: 1, name: 'John' }];
+});
+
+app.use(router.routes());
+
+// Static files are served after API routes
+app.use(serve('./public'));
+
+app.listen(3000);
+```
 
 ### Route Parameters
 
@@ -109,5 +160,6 @@ All exports are re-exported from established Koa ecosystem packages:
 - **`bodyParser`** - [Koa body parser](https://github.com/koajs/bodyparser) for JSON/form parsing
 - **`cors`** - [Koa CORS](https://github.com/koajs/cors) for cross-origin requests
 - **`multer`** - [Koa multer](https://github.com/koajs/multer) for file uploads
+- **`serve`** - [Koa static](https://github.com/koajs/static) for serving static files
 - **`addHealthCheck({ app, path? })`** - Adds a health endpoint (defaults to `/health`) returning `{ status: 'ok' }`
 - **`MulterFile`** (type) - File type for uploaded files
