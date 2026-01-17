@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.3.0...@ttoss/react-auth-strapi@0.3.1) (2026-01-17)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.2.60...@ttoss/react-auth-strapi@0.3.0) (2026-01-16)
 
 ### Features
