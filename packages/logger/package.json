@@ -3,12 +3,12 @@
   "version": "0.7.2",
   "description": "A simple module to configure and send notifications to services like Discord from your applications.",
   "license": "MIT",
-  "contributors": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/logger"
   },
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
