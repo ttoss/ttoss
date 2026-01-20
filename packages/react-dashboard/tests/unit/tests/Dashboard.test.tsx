@@ -143,4 +143,175 @@ describe('Dashboard', () => {
 
     expect(screen.getByTestId('template-id')).toHaveTextContent('template-2');
   });
+
+  test('should render dashboard with section dividers', () => {
+    const templateWithDivider: DashboardTemplate = {
+      id: 'template-with-divider',
+      name: 'Template with Divider',
+      grid: [
+        {
+          i: 'divider-1',
+          x: 0,
+          y: 0,
+          w: 12,
+          h: 2,
+          card: {
+            type: 'sectionDivider',
+            title: 'Performance Metrics',
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[templateWithDivider]}
+        filters={mockFilters}
+        selectedTemplate={templateWithDivider}
+      />
+    );
+
+    expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+  });
+
+  test('should render dashboard with mixed cards and section dividers', () => {
+    const templateWithMixed: DashboardTemplate = {
+      id: 'template-mixed',
+      name: 'Template with Mixed Content',
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue',
+            numberType: 'currency',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {
+              api: { total: 1000 },
+            },
+          },
+        },
+        {
+          i: 'divider-1',
+          x: 0,
+          y: 2,
+          w: 12,
+          h: 2,
+          card: {
+            type: 'sectionDivider',
+            title: 'Performance Metrics',
+          },
+        },
+        {
+          i: 'card-2',
+          x: 0,
+          y: 4,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'ROAS',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {
+              api: { total: 3.5 },
+            },
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[templateWithMixed]}
+        filters={mockFilters}
+        selectedTemplate={templateWithMixed}
+      />
+    );
+
+    // Should render both cards and divider
+    expect(screen.getByText('Revenue')).toBeInTheDocument();
+    expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+    expect(screen.getByText('ROAS')).toBeInTheDocument();
+  });
+
+  test('should handle multiple section dividers in template', () => {
+    const templateWithMultipleDividers: DashboardTemplate = {
+      id: 'template-multiple-dividers',
+      name: 'Template with Multiple Dividers',
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Total Revenue',
+            numberType: 'currency',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {
+              api: { total: 150000 },
+            },
+          },
+        },
+        {
+          i: 'divider-1',
+          x: 0,
+          y: 2,
+          w: 12,
+          h: 2,
+          card: {
+            type: 'sectionDivider',
+            title: 'Revenue Metrics',
+          },
+        },
+        {
+          i: 'card-2',
+          x: 0,
+          y: 4,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'CTR',
+            numberType: 'percentage',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {
+              api: { total: 2.35 },
+            },
+          },
+        },
+        {
+          i: 'divider-2',
+          x: 0,
+          y: 6,
+          w: 12,
+          h: 2,
+          card: {
+            type: 'sectionDivider',
+            title: 'Performance Metrics',
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[templateWithMultipleDividers]}
+        filters={mockFilters}
+        selectedTemplate={templateWithMultipleDividers}
+      />
+    );
+
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
+    expect(screen.getByText('Revenue Metrics')).toBeInTheDocument();
+    expect(screen.getByText('CTR')).toBeInTheDocument();
+    expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+  });
 });
