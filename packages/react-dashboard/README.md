@@ -274,6 +274,71 @@ import { DashboardGrid } from '@ttoss/react-dashboard';
 | --------- | --------- | ------- | ----------------------------- |
 | `loading` | `boolean` | -       | Shows loading spinner if true |
 
+### DashboardSectionDivider
+
+Component that displays a section divider with a title and horizontal line to visually separate sections in the dashboard grid.
+
+```tsx
+import { DashboardSectionDivider } from '@ttoss/react-dashboard';
+
+<DashboardSectionDivider title="Performance Metrics" />;
+```
+
+**Props:**
+
+| Prop    | Type     | Default | Description                |
+| ------- | -------- | ------- | -------------------------- |
+| `title` | `string` | -       | The title of the section   |
+| `type`  | `string` | -       | Must be `'sectionDivider'` |
+
+**Usage in Dashboard Grid:**
+
+Section dividers can be added to the dashboard grid just like regular cards. They help organize dashboard content into logical sections:
+
+```tsx
+const selectedTemplate: DashboardTemplate = {
+  id: 'default',
+  name: 'Default Template',
+  grid: [
+    {
+      i: 'card-1',
+      x: 0,
+      y: 0,
+      w: 4,
+      h: 4,
+      card: {
+        title: 'Total Revenue',
+        type: 'bigNumber',
+        // ... other card properties
+      },
+    },
+    {
+      i: 'divider-1',
+      x: 0,
+      y: 4,
+      w: 12, // Full width for divider
+      h: 2, // Smaller height for divider
+      card: {
+        type: 'sectionDivider',
+        title: 'Performance Metrics',
+      },
+    },
+    {
+      i: 'card-2',
+      x: 0,
+      y: 6,
+      w: 4,
+      h: 4,
+      card: {
+        title: 'ROAS',
+        type: 'bigNumber',
+        // ... other card properties
+      },
+    },
+  ],
+};
+```
+
 ## Filter Types
 
 ### Text Filter
@@ -364,7 +429,7 @@ interface DashboardTemplate {
 
 ```tsx
 interface DashboardGridItem extends ReactGridLayout.Layout {
-  card: DashboardCard;
+  card: DashboardCard | SectionDivider;
 }
 ```
 
@@ -490,6 +555,33 @@ status={{
   text: 'Active',
   icon: 'mdi:check-circle',
 }}
+```
+
+### SectionDivider
+
+Type for section divider items in the dashboard grid.
+
+```tsx
+type SectionDivider = {
+  type: 'sectionDivider';
+  title: string;
+};
+```
+
+**Example:**
+
+```tsx
+{
+  i: 'divider-1',
+  x: 0,
+  y: 4,
+  w: 12,
+  h: 2,
+  card: {
+    type: 'sectionDivider',
+    title: 'Performance Metrics',
+  },
+}
 ```
 
 ## Complete Example

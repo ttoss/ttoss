@@ -5,6 +5,7 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { DashboardTemplate } from './Dashboard';
 import { DashboardCard } from './DashboardCard';
+import { DashboardSectionDivider } from './DashboardSectionDivider';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -81,9 +82,16 @@ export const DashboardGrid = ({
           containerPadding={[0, 0]}
         >
           {selectedTemplate.grid.map((item) => {
+            if (item.card.type === 'sectionDivider') {
+              return (
+                <div key={item.i}>
+                  <DashboardSectionDivider {...item.card} />
+                </div>
+              );
+            }
             return (
               <div key={item.i}>
-                <DashboardCard {...item.card} />
+                <DashboardCard {...(item.card as DashboardCard)} />
               </div>
             );
           })}
