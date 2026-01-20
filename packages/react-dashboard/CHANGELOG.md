@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.2.4...@ttoss/react-dashboard@0.3.0) (2026-01-20)
+
+### Features
+
+- add section divisor to dashboard grid ([#854](https://github.com/ttoss/ttoss/issues/854)) ([1ddf75a](https://github.com/ttoss/ttoss/commit/1ddf75a254bf95588182af230ba94b66e09d0443))
+
 ## [0.2.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.2.3...@ttoss/react-dashboard@0.2.4) (2026-01-16)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

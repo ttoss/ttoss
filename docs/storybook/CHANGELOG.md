@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.11.1...@docs/storybook@3.12.0) (2026-01-20)
+
+### Features
+
+- add section divisor to dashboard grid ([#854](https://github.com/ttoss/ttoss/issues/854)) ([1ddf75a](https://github.com/ttoss/ttoss/commit/1ddf75a254bf95588182af230ba94b66e09d0443))
+
 ## [3.11.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.11.0...@docs/storybook@3.11.1) (2026-01-17)
 
 **Note:** Version bump only for package @docs/storybook
