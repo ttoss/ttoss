@@ -297,15 +297,19 @@ export const DatePicker = ({
                     fontSize: ['12px', '14px'],
                     width: ['32px', '36px'],
                     height: ['32px', '36px'],
+                    cursor: 'pointer',
                   },
                   '& .rdp-range_start .rdp-day_button': {
-                    backgroundColor: 'action.background.primary.default',
+                    backgroundColor: 'action.background.accent.default',
+                    color: 'black',
                   },
                   '& .rdp-range_end .rdp-day_button': {
-                    backgroundColor: 'action.background.primary.default',
+                    backgroundColor: 'action.background.accent.default',
+                    color: 'black',
                   },
                   '& .rdp-day_button:hover': {
-                    backgroundColor: 'action.background.accent.default',
+                    backgroundColor: 'action.background.primary.default',
+                    color: 'action.text.primary.default',
                   },
                   '& .rdp-day_selected': {
                     backgroundColor: 'action.background.accent.default',
