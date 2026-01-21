@@ -15,7 +15,7 @@ export const DashboardSectionDivider = ({ title }: SectionDivider) => {
         justifyContent: 'center',
         flexDirection: 'row',
         gap: '6',
-        paddingTop: '10',
+        paddingTop: '6',
       }}
     >
       <Text
