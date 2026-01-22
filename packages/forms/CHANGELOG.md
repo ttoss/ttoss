@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.40.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.40.0...@ttoss/forms@0.40.1) (2026-01-22)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 # [0.40.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.39.1...@ttoss/forms@0.40.0) (2026-01-22)
 
 ### Features
