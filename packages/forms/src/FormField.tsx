@@ -47,9 +47,9 @@ export type FormFieldProps<
    * Optional auxiliary checkbox to render between the field and error message.
    * Useful for input confirmation or conditional display of other fields.
    */
-  auxiliaryCheckbox?: Omit<
-    AuxiliaryCheckboxProps<TFieldValues, FieldPath<TFieldValues>>,
-    'disabled'
+  auxiliaryCheckbox?: AuxiliaryCheckboxProps<
+    TFieldValues,
+    FieldPath<TFieldValues>
   >;
 } & SxProp;
 
@@ -199,7 +199,10 @@ export const FormField = <
     >
       {memoizedRender}
       {auxiliaryCheckbox && (
-        <AuxiliaryCheckbox {...auxiliaryCheckbox} disabled={disabled} />
+        <AuxiliaryCheckbox
+          {...auxiliaryCheckbox}
+          disabled={auxiliaryCheckbox.disabled || disabled}
+        />
       )}
       <FormErrorMessage name={errorNameToDisplay} />
       {warning && !hasError && (

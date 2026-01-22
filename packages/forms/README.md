@@ -233,6 +233,7 @@ All form field components share common props:
 - `defaultValue`: Initial field value
 - `tooltip`: Label tooltip configuration
 - `warning`: Warning message displayed below the field
+- `auxiliaryCheckbox`: Optional auxiliary checkbox configuration
 - `sx`: Theme-UI styling object
 
 ### Disabling Form Fields
@@ -283,6 +284,44 @@ const formMethods = useForm({
 // This field will be disabled even though the form is enabled
 <FormFieldInput name="id" label="ID" disabled />;
 ```
+
+### Auxiliary Checkbox
+
+Form fields can include an optional auxiliary checkbox rendered between the field and error message. This is useful for input confirmation, terms acceptance, or conditional display of other fields.
+
+```tsx
+<FormFieldInput
+  name="email"
+  label="Email"
+  auxiliaryCheckbox={{
+    name: 'confirmEmail',
+    label: 'Send me promotional emails',
+  }}
+/>
+```
+
+The auxiliary checkbox can be disabled independently of the main field:
+
+```tsx
+<FormFieldInput
+  name="email"
+  label="Email"
+  auxiliaryCheckbox={{
+    name: 'confirmEmail',
+    label: 'Send me promotional emails',
+    disabled: true, // Checkbox is disabled, but email field is enabled
+  }}
+/>
+```
+
+**Props for `auxiliaryCheckbox`:**
+
+- `name` (required): Field name for the checkbox
+- `label` (required): Checkbox label text
+- `disabled`: Disables the checkbox (independent of field disabled state)
+- `defaultValue`: Initial checkbox value
+
+The auxiliary checkbox's disabled state is the logical OR of its own `disabled` prop and the field's disabled state.
 
 ### FormFieldInput
 

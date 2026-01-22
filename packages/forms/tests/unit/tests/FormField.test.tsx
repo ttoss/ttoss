@@ -221,6 +221,39 @@ describe('Combined validation (schema + rules)', () => {
 });
 
 describe('Form disabled state', () => {
+  test('should disable auxiliary checkbox while keeping field enabled', () => {
+    const RenderFormWithAuxiliary = () => {
+      const formMethods = useForm({});
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="email"
+            label="Email"
+            defaultValue=""
+            auxiliaryCheckbox={{
+              name: 'confirmEmail',
+              label: 'Confirm email',
+              disabled: true,
+            }}
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderFormWithAuxiliary />);
+
+    const input = screen.getByLabelText('Email');
+    const auxiliaryCheckbox = screen.getByLabelText('Confirm email');
+
+    expect(input).not.toBeDisabled();
+    expect(auxiliaryCheckbox).toBeDisabled();
+  });
+
   test('should disable all fields when useForm has disabled set to true', async () => {
     const user = userEvent.setup({ delay: null });
 
@@ -432,5 +465,40 @@ describe('Form disabled state', () => {
     );
 
     expect(asyncOnSubmit).toHaveBeenCalledWith({ firstName: 'John' });
+  });
+});
+
+describe('Auxiliary checkbox', () => {
+  test('should disable auxiliary checkbox while keeping field enabled', () => {
+    const RenderFormWithAuxiliary = () => {
+      const formMethods = useForm({});
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormField
+            name="email"
+            label="Email"
+            defaultValue=""
+            auxiliaryCheckbox={{
+              name: 'confirmEmail',
+              label: 'Confirm email',
+              disabled: true,
+            }}
+            render={({ field }) => {
+              return <Input {...field} />;
+            }}
+          />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderFormWithAuxiliary />);
+
+    const input = screen.getByLabelText('Email');
+    const auxiliaryCheckbox = screen.getByLabelText('Confirm email');
+
+    expect(input).not.toBeDisabled();
+    expect(auxiliaryCheckbox).toBeDisabled();
   });
 });
