@@ -101,6 +101,7 @@ export const AuxiliaryCheckbox = <
         flexDirection: 'row',
         alignItems: 'center',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
+        opacity: isDisabled ? 0.5 : 1,
       }}
     >
       <Flex
