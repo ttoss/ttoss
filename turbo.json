@@ -25,6 +25,11 @@
       "inputs": ["**/*", "../packages/*/README.md"],
       "outputs": ["build/**"]
     },
+    "@docs/website#deploy": {
+      "dependsOn": ["build"],
+      "inputs": ["**/*", "../packages/*/README.md"],
+      "outputs": [".carlin/**"]
+    },
     "test": {
       "dependsOn": ["i18n", "build-config"],
       "outputs": []
