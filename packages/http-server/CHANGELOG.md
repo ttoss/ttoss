@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.4.0 (2026-01-17)
+
+### Features
+
+- **http-server:** export serve middleware for static file serving ([#853](https://github.com/ttoss/ttoss/issues/853)) ([658c331](https://github.com/ttoss/ttoss/commit/658c331780d55d3953f8a7c3f46812221abe3bb2))
+
 ## 0.3.2 (2026-01-05)
 
 ### Bug Fixes

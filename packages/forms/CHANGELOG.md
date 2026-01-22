@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.40.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.39.1...@ttoss/forms@0.40.0) (2026-01-22)
+
+### Features
+
+- reduce opacity on disabled auxiliary checkbox ([#856](https://github.com/ttoss/ttoss/issues/856)) ([847706a](https://github.com/ttoss/ttoss/commit/847706af1cca228f5d39d2f3a5e135ee89f054e1))
+
+## [0.39.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.39.0...@ttoss/forms@0.39.1) (2026-01-21)
+
+**Note:** Version bump only for package @ttoss/forms
+
 # [0.39.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.38.1...@ttoss/forms@0.39.0) (2026-01-16)
 
 ### Features

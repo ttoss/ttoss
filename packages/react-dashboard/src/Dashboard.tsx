@@ -7,9 +7,10 @@ import type { DashboardFilter } from './DashboardFilters';
 import { DashboardGrid } from './DashboardGrid';
 import { DashboardHeader } from './DashboardHeader';
 import { DashboardProvider } from './DashboardProvider';
+import type { SectionDivider } from './DashboardSectionDivider';
 
 export type DashboardGridItem = ReactGridLayout.Layout & {
-  card: DashboardCard;
+  card: DashboardCard | SectionDivider;
 };
 
 export interface DashboardTemplate {

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.15.1...@terezinha-farm/vite-app@0.15.2) (2026-01-22)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.15.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.15.0...@terezinha-farm/vite-app@0.15.1) (2026-01-21)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.14.2...@terezinha-farm/vite-app@0.15.0) (2026-01-20)
+
+### Features
+
+- add section divisor to dashboard grid ([#854](https://github.com/ttoss/ttoss/issues/854)) ([1ddf75a](https://github.com/ttoss/ttoss/commit/1ddf75a254bf95588182af230ba94b66e09d0443))
+
+## [0.14.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.14.1...@terezinha-farm/vite-app@0.14.2) (2026-01-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.14.1](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.14.0...@terezinha-farm/vite-app@0.14.1) (2026-01-17)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 # [0.14.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.13.3...@terezinha-farm/vite-app@0.14.0) (2026-01-16)
 
 ### Features

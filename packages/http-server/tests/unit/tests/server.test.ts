@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
 import {
   addHealthCheck,
   App,
@@ -6,6 +10,7 @@ import {
   multer,
   type MulterFile,
   Router,
+  serve,
 } from 'src/index';
 import request from 'supertest';
 
@@ -369,6 +374,127 @@ describe('addHealthCheck', () => {
 
     const response = await request(app.callback()).get('/health');
 
+    expect(response.status).toBe(404);
+  });
+});
+
+// serve static files tests
+describe('serve middleware', () => {
+  let tempDir: string;
+  let testFilePath: string;
+  let nestedFilePath: string;
+
+  beforeAll(() => {
+    // Create temporary directory and test files
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'http-server-test-'));
+    testFilePath = path.join(tempDir, 'test.txt');
+    fs.writeFileSync(testFilePath, 'Hello from static file');
+
+    const nestedDir = path.join(tempDir, 'nested');
+    fs.mkdirSync(nestedDir);
+    nestedFilePath = path.join(nestedDir, 'nested.html');
+    fs.writeFileSync(nestedFilePath, '<html><body>Nested</body></html>');
+  });
+
+  afterAll(() => {
+    // Clean up temporary files
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  test('should serve static files from directory', async () => {
+    const app = new App();
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).get('/test.txt');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('Hello from static file');
+  });
+
+  test('should serve nested static files', async () => {
+    const app = new App();
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).get('/nested/nested.html');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('<html><body>Nested</body></html>');
+    expect(response.headers['content-type']).toContain('text/html');
+  });
+
+  test('should return 404 for non-existent files', async () => {
+    const app = new App();
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).get('/does-not-exist.txt');
+
+    expect(response.status).toBe(404);
+  });
+
+  test('should work with other middleware', async () => {
+    const app = new App();
+    const router = new Router();
+
+    // Add dynamic route
+    router.get('/api/data', (ctx) => {
+      ctx.body = { message: 'API response' };
+    });
+
+    app.use(router.routes());
+    app.use(serve(tempDir));
+
+    // Test dynamic route
+    const apiResponse = await request(app.callback()).get('/api/data');
+    expect(apiResponse.status).toBe(200);
+    expect(apiResponse.body).toEqual({ message: 'API response' });
+
+    // Test static file
+    const staticResponse = await request(app.callback()).get('/test.txt');
+    expect(staticResponse.status).toBe(200);
+    expect(staticResponse.text).toBe('Hello from static file');
+  });
+
+  test('should respect maxage option', async () => {
+    const app = new App();
+    app.use(serve(tempDir, { maxage: 3600000 })); // 1 hour in ms
+
+    const response = await request(app.callback()).get('/test.txt');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['cache-control']).toContain('max-age=3600');
+  });
+
+  test('should handle index files when accessing directory', async () => {
+    const app = new App();
+    const indexDir = path.join(tempDir, 'with-index');
+    fs.mkdirSync(indexDir);
+    fs.writeFileSync(path.join(indexDir, 'index.html'), '<html>Index</html>');
+
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).get('/with-index/');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('<html>Index</html>');
+  });
+
+  test('should handle HEAD requests', async () => {
+    const app = new App();
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).head('/test.txt');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('text/plain');
+  });
+
+  test('should prevent directory traversal attacks', async () => {
+    const app = new App();
+    app.use(serve(tempDir));
+
+    const response = await request(app.callback()).get('/../../../etc/passwd');
+
+    // koa-static returns 404 for malformed paths, not 403
     expect(response.status).toBe(404);
   });
 });

@@ -24,7 +24,7 @@ const formatNumber = (
         currency: 'BRL',
       }).format(value);
     case 'percentage':
-      return `${value.toFixed(2)}%`;
+      return `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
     case 'number':
     default: {
       const formatted = new Intl.NumberFormat('pt-BR', {

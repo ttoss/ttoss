@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.7.2...@ttoss/logger@0.7.3) (2026-01-17)
+
+### Bug Fixes
+
+- add type module ([39ee52e](https://github.com/ttoss/ttoss/commit/39ee52e6e2ae49efdb1a6b1bc786620769b59ea7))
+
 ## 0.7.2 (2026-01-12)
 
 ### Bug Fixes

@@ -571,3 +571,235 @@ export const WithTextFilter: StoryObj = {
     },
   },
 };
+
+export const WithSectionDividers: StoryObj = {
+  render: () => {
+    const templateWithDividers: DashboardTemplate[] = [
+      {
+        id: 'with-dividers',
+        name: 'Dashboard with Section Dividers',
+        description: 'Dashboard organized with section dividers',
+        grid: [
+          {
+            i: 'revenue',
+            x: 0,
+            y: 0,
+            w: 4,
+            h: 4,
+            card: {
+              title: 'Total Revenue',
+              description: 'Revenue from all sources',
+              numberType: 'currency',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 150000 },
+              },
+              trend: {
+                value: 15.5,
+                status: 'positive',
+              },
+            },
+          },
+          {
+            i: 'roas',
+            x: 4,
+            y: 0,
+            w: 4,
+            h: 4,
+            card: {
+              title: 'ROAS',
+              description: 'Return on ad spend',
+              numberType: 'number',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 3.5 },
+              },
+              variant: 'light-green',
+            },
+          },
+          {
+            i: 'impressions',
+            x: 8,
+            y: 0,
+            w: 4,
+            h: 4,
+            card: {
+              title: 'Impressions',
+              numberType: 'number',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 1250000 },
+              },
+            },
+          },
+          {
+            i: 'divider-1',
+            x: 0,
+            y: 4,
+            w: 12,
+            h: 2,
+            card: {
+              type: 'sectionDivider',
+              title: 'Performance Metrics',
+            },
+          },
+          {
+            i: 'ctr',
+            x: 0,
+            y: 6,
+            w: 3,
+            h: 4,
+            card: {
+              title: 'CTR',
+              description: 'Click-through rate',
+              numberType: 'percentage',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 2.35 },
+              },
+              trend: {
+                value: 5.2,
+                status: 'negative',
+              },
+            },
+          },
+          {
+            i: 'clicks',
+            x: 3,
+            y: 6,
+            w: 3,
+            h: 4,
+            card: {
+              title: 'Clicks',
+              numberType: 'number',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 29375 },
+              },
+            },
+          },
+          {
+            i: 'cpm',
+            x: 6,
+            y: 6,
+            w: 3,
+            h: 4,
+            card: {
+              title: 'CPM',
+              description: 'Cost per mille',
+              numberType: 'currency',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 12.5 },
+              },
+            },
+          },
+          {
+            i: 'cpc',
+            x: 9,
+            y: 6,
+            w: 3,
+            h: 4,
+            card: {
+              title: 'CPC',
+              description: 'Cost per click',
+              numberType: 'currency',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 0.85 },
+              },
+              variant: 'dark',
+            },
+          },
+          {
+            i: 'divider-2',
+            x: 0,
+            y: 10,
+            w: 12,
+            h: 2,
+            card: {
+              type: 'sectionDivider',
+              title: 'Engagement Metrics',
+            },
+          },
+          {
+            i: 'conversions',
+            x: 0,
+            y: 12,
+            w: 6,
+            h: 4,
+            card: {
+              title: 'Conversions',
+              numberType: 'number',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 1250 },
+              },
+              trend: {
+                value: 8.3,
+                status: 'positive',
+              },
+            },
+          },
+          {
+            i: 'conversion-rate',
+            x: 6,
+            y: 12,
+            w: 6,
+            h: 4,
+            card: {
+              title: 'Conversion Rate',
+              numberType: 'percentage',
+              type: 'bigNumber',
+              sourceType: [{ source: 'api' }],
+              data: {
+                api: { total: 4.25 },
+              },
+            },
+          },
+        ],
+      },
+    ];
+
+    const filters: DashboardFilter[] = [
+      {
+        key: 'template',
+        type: DashboardFilterType.SELECT,
+        label: 'Template',
+        value: 'with-dividers',
+        options: [
+          { label: 'Dashboard with Section Dividers', value: 'with-dividers' },
+        ],
+      },
+    ];
+
+    const selectedTemplate = templateWithDividers[0];
+
+    return (
+      <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
+        <Dashboard
+          templates={templateWithDividers}
+          filters={filters}
+          selectedTemplate={selectedTemplate}
+          loading={false}
+        />
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dashboard organized with section dividers. Section dividers help organize dashboard content into logical sections, making it easier to scan and understand different groups of metrics. They can be added to the grid layout just like regular cards, using `type: "sectionDivider"` and a `title` property.',
+      },
+    },
+  },
+};

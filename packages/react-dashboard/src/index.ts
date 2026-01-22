@@ -9,3 +9,5 @@ export { type DashboardFilterValue } from './DashboardFilters';
 export { DashboardGrid } from './DashboardGrid';
 export { DashboardHeader } from './DashboardHeader';
 export { DashboardProvider, useDashboard } from './DashboardProvider';
+export { DashboardSectionDivider } from './DashboardSectionDivider';
+export { type SectionDivider } from './DashboardSectionDivider';

@@ -3,8 +3,9 @@ import cors from '@koa/cors';
 import multer from '@koa/multer';
 import Router from '@koa/router';
 import App from 'koa';
+import serve from 'koa-static';
 
-export { App, bodyParser, cors, multer, Router };
+export { App, bodyParser, cors, multer, Router, serve };
 
 export * from './addHealthCheck';
 export type { File as MulterFile } from '@koa/multer';
