@@ -97,7 +97,7 @@ describe('BigNumber', () => {
     );
 
     expect(screen.getByText(/10\.5%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. período anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
   });
 
   test('should render trend indicator with negative status', () => {
@@ -106,7 +106,7 @@ describe('BigNumber', () => {
     );
 
     expect(screen.getByText(/5\.2%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. período anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
   });
 
   test('should render trend indicator with neutral status', () => {
@@ -114,7 +114,7 @@ describe('BigNumber', () => {
 
     // Neutral trends still display the trend text
     expect(screen.getByText(/0\.0%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. período anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
   });
 
   test('should render additional info', () => {
