@@ -1,4 +1,4 @@
-import { Box, Flex, Text, TooltipIcon } from '@ttoss/ui';
+import { Box, Flex, Heading, TooltipIcon } from '@ttoss/ui';
 
 import type { CardVariant } from '../DashboardCard';
 
@@ -21,7 +21,7 @@ export const CardWrapper = ({
         return 'feedback.background.positive.default';
       case 'default':
       default:
-        return 'display.background.primary.default';
+        return '#f9fafb';
     }
   };
 
@@ -33,7 +33,7 @@ export const CardWrapper = ({
         return 'feedback.text.positive.default';
       case 'default':
       default:
-        return 'input.background.muted.disabled';
+        return 'input.text.muted.default';
     }
   };
 
@@ -43,11 +43,12 @@ export const CardWrapper = ({
         flexDirection: 'column',
         gap: '3',
         backgroundColor: getBackgroundColor(),
+        border: 'md',
+        borderColor: 'display.border.muted.default',
         borderRadius: 'lg',
-        padding: '4',
+        padding: '6',
         width: '100%',
         height: '100%',
-        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)',
       }}
     >
       <Box
@@ -56,30 +57,38 @@ export const CardWrapper = ({
           gap: '2',
         }}
       >
-        <Text
+        <Flex
           sx={{
-            fontSize: 'sm',
-            fontWeight: 'bold',
-            color: getTitleColor(),
-            flex: 1,
-            minWidth: 0,
+            alignItems: 'center',
+            justifyContent: 'flex-start',
           }}
         >
-          {title}
-        </Text>
-        {description && (
-          <TooltipIcon
-            variant="info"
-            icon="ant-design:info-circle-outlined"
-            tooltip={{
-              children: description,
-            }}
+          <Heading
+            as="h6"
             sx={{
-              marginLeft: '2',
-              flexShrink: 0,
+              textTransform: 'uppercase',
+              color: getTitleColor(),
+              textWrapStyle: 'pretty',
             }}
-          />
-        )}
+            title={title}
+          >
+            {title}
+          </Heading>
+          {description && (
+            <TooltipIcon
+              variant="info"
+              icon="ant-design:info-circle-outlined"
+              tooltip={{
+                children: description,
+              }}
+              sx={{
+                fontSize: 'sm',
+                color: getTitleColor(),
+                marginLeft: '2',
+              }}
+            />
+          )}
+        </Flex>
       </Box>
       <Flex
         sx={{

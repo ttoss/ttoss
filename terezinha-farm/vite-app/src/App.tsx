@@ -15,9 +15,8 @@ const markdown = '# ~Hi~, *Pluto*!';
 
 const templates: DashboardTemplate[] = [
   {
-    id: 'meta-ad-account',
-    name: 'Dashboard de conta de anúncio',
-    description: undefined,
+    id: 'default',
+    name: 'Padrão',
     grid: [
       {
         i: '1',
@@ -28,13 +27,10 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Cliques',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
-          variant: 'dark',
-          numberType: 'number',
-          numberDecimalPlaces: 0,
+          title: 'Investimento total',
+          description: 'Valor total investido em anúncios na plataforma Meta',
+          variant: 'default',
+          numberType: 'currency',
           type: 'bigNumber',
           sourceType: [
             {
@@ -42,21 +38,20 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
           data: {
             meta: {
-              total: 100,
-            },
-            api: {
-              total: 0,
+              total: 10784.99,
             },
           },
           trend: {
-            value: -0.95,
-            status: 'negative',
+            value: 46.82,
+            status: 'positive',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -69,11 +64,10 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Investimento',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
-          variant: 'dark',
+          title: 'Faturamento Total Rastreado',
+          description:
+            'Valor total de vendas rastreadas através dos eventos de compra',
+          variant: 'default',
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [
@@ -82,21 +76,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 551.2,
-            },
-            api: {
-              total: 0,
+              total: 3883.83,
             },
           },
           trend: {
-            value: -0.12,
+            value: 32.36,
             status: 'negative',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -109,12 +103,11 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Impresões',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
-          variant: undefined,
+          title: 'ROAS',
+          description:
+            'Return on Ad Spend - Retorno sobre investimento em publicidade. Representa quantas vezes o valor investido foi recuperado em vendas',
           numberType: 'number',
+          numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [
             {
@@ -122,21 +115,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 2475,
-            },
-            api: {
-              total: 0,
+              total: 0.36,
             },
           },
           trend: {
-            value: -0.97,
+            value: 53.85,
             status: 'negative',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -149,12 +142,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'CPM',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
-          variant: 'light-green',
+          title: 'Número de compras',
+          description:
+            'Quantidade total de compras realizadas e rastreadas através dos anúncios',
+          variant: 'default',
           numberType: 'number',
+          numberDecimalPlaces: 0,
           type: 'bigNumber',
           sourceType: [
             {
@@ -162,21 +155,20 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             meta: {
-              total: 222.707071,
-            },
-            api: {
-              total: 0,
+              total: 10,
             },
           },
           trend: {
-            value: 26.54,
-            status: 'positive',
+            value: 9.09,
+            status: 'negative',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -189,12 +181,11 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'CPA',
-          description: 'Total de CPA',
-          icon: undefined,
-          color: undefined,
-          variant: undefined,
-          numberType: 'currency',
+          title: 'Impressões',
+          description:
+            'Número total de vezes que os anúncios foram exibidos aos usuários',
+          numberType: 'number',
+          numberDecimalPlaces: 0,
           type: 'bigNumber',
           sourceType: [
             {
@@ -202,21 +193,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 6.263636,
-            },
-            api: {
-              total: 0,
+              total: 181135,
             },
           },
           trend: {
-            value: 16.98,
-            status: 'negative',
-            type: 'lower',
+            value: 46.11,
+            status: 'positive',
+            type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -229,12 +220,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'CPC',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'Alcance',
+          description:
+            'Número de pessoas únicas que viram pelo menos uma vez os anúncios',
           variant: 'default',
-          numberType: 'currency',
+          numberType: 'number',
+          numberDecimalPlaces: 0,
           type: 'bigNumber',
           sourceType: [
             {
@@ -242,21 +233,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 5.512,
-            },
-            api: {
-              total: 0,
+              total: 55543,
             },
           },
           trend: {
-            value: 16.59,
-            status: 'negative',
-            type: 'lower',
+            value: 33.58,
+            status: 'positive',
+            type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -269,13 +260,10 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'CTR',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
-          numberDecimalPlaces: 1,
+          title: 'Frequência',
+          description: 'Número médio de vezes que cada pessoa viu os anúncios',
           variant: 'default',
-          numberType: 'percentage',
+          numberType: 'number',
           type: 'bigNumber',
           sourceType: [
             {
@@ -283,21 +271,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 4.040404,
-            },
-            api: {
-              total: 0,
+              total: 3.26,
             },
           },
           trend: {
-            value: 0.57,
+            value: 9.4,
             status: 'positive',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -310,12 +298,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Total de Compras',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'CPM',
+          description:
+            'Custo por Mil Impressões - Valor gasto para exibir o anúncio mil vezes',
           variant: 'default',
           numberType: 'number',
+          numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [
             {
@@ -323,21 +311,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 59.54,
             },
           },
           trend: {
             value: 0,
             status: 'neutral',
-            type: 'higher',
+            type: 'lower',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -350,12 +338,11 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Custo por Compra',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'Cliques',
+          description: 'Número total de cliques nos anúncios',
           variant: 'default',
-          numberType: 'currency',
+          numberType: 'number',
+          numberDecimalPlaces: 0,
           type: 'bigNumber',
           sourceType: [
             {
@@ -363,21 +350,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 3902,
             },
           },
           trend: {
-            value: 0,
-            status: 'neutral',
+            value: 70.32,
+            status: 'positive',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -390,12 +377,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Custo por Inicialização de Checkout',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'CTR',
+          description:
+            'Click-Through Rate - Taxa de cliques. Percentual de pessoas que clicaram no anúncio em relação ao total de impressões',
           variant: 'default',
-          numberType: 'currency',
+          numberType: 'percentage',
+          numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [
             {
@@ -403,21 +390,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 2.15,
             },
           },
           trend: {
-            value: 0,
-            status: 'neutral',
+            value: 16.22,
+            status: 'positive',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -430,12 +417,11 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Total de Inicializações de Checkout',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'CPC',
+          description: 'Custo por Clique',
           variant: 'default',
-          numberType: 'number',
+          numberType: 'currency',
+          numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [
             {
@@ -443,21 +429,21 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 2.76,
             },
           },
           trend: {
-            value: 0,
-            status: 'neutral',
-            type: 'higher',
+            value: 14.02,
+            status: 'positive',
+            type: 'lower',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -470,12 +456,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Custo por Lead',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'Hook Rate Anúncios',
+          description:
+            'Taxa de engajamento de vídeo. Calculado como: Visualizações de vídeo ÷ Impressões. Mede a porcentagem de pessoas que assistiram ao vídeo em relação ao total de impressões',
           variant: 'default',
-          numberType: 'currency',
+          numberType: 'percentage',
+          numberDecimalPlaces: 1,
           type: 'bigNumber',
           sourceType: [
             {
@@ -483,39 +469,184 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 19.3,
             },
           },
           trend: {
-            value: 0,
-            status: 'neutral',
+            value: 8.1,
+            status: 'negative',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
       {
         i: '13',
-        w: 12,
-        h: 2,
+        w: 3,
+        h: 3,
         x: 0,
-        y: 12,
+        y: 9,
         isResizable: false,
         isDraggable: false,
         card: {
-          type: 'sectionDivider',
-          title: 'Métricas de performance',
+          title: 'Checkouts',
+          description: 'Número total de checkouts iniciados pelos usuários',
+          variant: 'default',
+          numberType: 'number',
+          numberDecimalPlaces: 0,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 31,
+            },
+          },
+          trend: {
+            value: 55,
+            status: 'positive',
+            type: 'higher',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
         },
       },
       {
         i: '14',
+        w: 3,
+        h: 3,
+        x: 3,
+        y: 9,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Taxa de conversão do checkout',
+          description:
+            'Percentual de checkouts que resultaram em compras. Calculado como: Compras ÷ Checkouts iniciados',
+          variant: 'default',
+          numberType: 'percentage',
+          numberDecimalPlaces: 1,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 32.3,
+            },
+          },
+          trend: {
+            value: 41.27,
+            status: 'negative',
+            type: 'higher',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '15',
+        w: 3,
+        h: 3,
+        x: 6,
+        y: 9,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Taxa de perda do site',
+          description:
+            'Percentual de cliques que não resultaram em visualização da página de destino. Calculado como: Visualizações de landing page ÷ Cliques únicos. Valores menores indicam menor perda de tráfego',
+          variant: 'default',
+          numberType: 'percentage',
+          numberDecimalPlaces: 0,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 85,
+            },
+          },
+          trend: {
+            value: 7.61,
+            status: 'positive',
+            type: 'lower',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '16',
+        w: 3,
+        h: 3,
+        x: 9,
+        y: 9,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Número de leads',
+          description: 'Quantidade total de leads gerados através dos anúncios',
+          variant: 'default',
+          numberType: 'number',
+          numberDecimalPlaces: 0,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 56,
+            },
+          },
+          trend: {
+            value: 24.44,
+            status: 'positive',
+            type: 'higher',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '17',
         w: 3,
         h: 3,
         x: 0,
@@ -523,12 +654,12 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
-          title: 'Total de Leads',
-          description: undefined,
-          icon: undefined,
-          color: undefined,
+          title: 'Taxa de conversão do site - Leads',
+          description:
+            'Percentual de visitantes da landing page que se converteram em leads. Calculado como: Leads ÷ Visualizações de landing page',
           variant: 'default',
-          numberType: 'number',
+          numberType: 'percentage',
+          numberDecimalPlaces: 1,
           type: 'bigNumber',
           sourceType: [
             {
@@ -536,21 +667,233 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: undefined,
+          labels: [],
           data: {
             meta: {
-              total: 0,
-            },
-            api: {
-              total: 0,
+              total: 3.5,
             },
           },
           trend: {
-            value: 0,
-            status: 'neutral',
+            value: 20.45,
+            status: 'negative',
             type: 'higher',
           },
-          additionalInfo: undefined,
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '18',
+        w: 3,
+        h: 3,
+        x: 3,
+        y: 12,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por Lead',
+          description:
+            'Valor médio gasto para gerar cada lead através dos anúncios',
+          variant: 'default',
+          numberType: 'currency',
+          numberDecimalPlaces: 2,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 192.59,
+            },
+          },
+          trend: {
+            value: 17.98,
+            status: 'negative',
+            type: 'lower',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '19',
+        w: 3,
+        h: 3,
+        x: 6,
+        y: 12,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por checkout',
+          description: 'Valor médio gasto para gerar cada checkout iniciado',
+          variant: 'default',
+          numberType: 'currency',
+          numberDecimalPlaces: 2,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 347.9,
+            },
+          },
+          trend: {
+            value: 5.28,
+            status: 'positive',
+            type: 'lower',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '20',
+        w: 3,
+        h: 3,
+        x: 9,
+        y: 12,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Custo por compra',
+          description:
+            'Valor médio gasto para gerar cada compra através dos anúncios',
+          variant: 'default',
+          numberType: 'currency',
+          numberDecimalPlaces: 2,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 1078.5,
+            },
+          },
+          trend: {
+            value: 61.5,
+            status: 'negative',
+            type: 'lower',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '21',
+        w: 3,
+        h: 3,
+        x: 0,
+        y: 13,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Taxa de conversão do site - Compras',
+          description:
+            'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
+          variant: 'default',
+          numberType: 'percentage',
+          numberDecimalPlaces: 1,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 0.6,
+            },
+          },
+          trend: {
+            value: 45.45,
+            status: 'negative',
+            type: 'higher',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
+          metrics: [],
+        },
+      },
+      {
+        i: '22',
+        w: 12,
+        h: 2,
+        x: 0,
+        y: 16,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          type: 'sectionDivider',
+          title: 'Test',
+        },
+      },
+      {
+        i: '23',
+        w: 3,
+        h: 3,
+        x: 0,
+        y: 18,
+        isResizable: false,
+        isDraggable: false,
+        card: {
+          title: 'Taxa de conversão do site - Compras',
+          description:
+            'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
+          variant: 'default',
+          numberType: 'percentage',
+          numberDecimalPlaces: 1,
+          type: 'bigNumber',
+          sourceType: [
+            {
+              source: 'meta',
+              level: 'adAccount',
+            },
+          ],
+          labels: [],
+          data: {
+            meta: {
+              total: 0.6,
+            },
+          },
+          trend: {
+            value: 45.45,
+            status: 'negative',
+            type: 'higher',
+          },
+          status: {
+            text: '',
+            icon: '',
+          },
           metrics: [],
         },
       },
@@ -890,13 +1233,24 @@ export const App = () => {
         Logout
       </Button>
       <Markdown>{markdown}</Markdown>
-      <Dashboard
-        selectedTemplate={selectedTemplate}
-        filters={dashboardFilters}
-        templates={templates}
-        onFiltersChange={setDashboardFilters}
-        loading={loading}
-      />
+      <Flex
+        sx={{
+          width: '100%',
+          height: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Flex sx={{ width: '60%', height: '100%' }}>
+          <Dashboard
+            selectedTemplate={selectedTemplate}
+            filters={dashboardFilters}
+            templates={templates}
+            onFiltersChange={setDashboardFilters}
+            loading={loading}
+          />
+        </Flex>
+      </Flex>
 
       <Flex sx={{ paddingX: 'xl' }}>
         <Box sx={{ flex: 1 }}>{/* <FarmWrongPagination /> */}</Box>

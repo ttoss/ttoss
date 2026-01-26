@@ -123,7 +123,7 @@ export const WithPositiveTrend: StoryObj = {
     docs: {
       description: {
         story:
-          'Card with positive trend indicator. Shows an up arrow icon and percentage value (e.g., "15.5%") compared to the previous period. Note: positive values do not include a "+" sign prefix.',
+          'Card with positive trend indicator. Shows an up arrow icon and percentage value (e.g., "15.5% vs. anterior"). Note: positive values do not include a "+" sign prefix.',
       },
     },
   },
@@ -154,7 +154,7 @@ export const WithNegativeTrend: StoryObj = {
     docs: {
       description: {
         story:
-          'Card with negative trend indicator. Shows a down arrow and percentage change in red.',
+          'Card with negative trend indicator. Shows a down arrow and percentage change (e.g., "5.2% vs. anterior") in red.',
       },
     },
   },
@@ -184,7 +184,7 @@ export const WithNeutralTrend: StoryObj = {
     docs: {
       description: {
         story:
-          'Card with neutral trend indicator. Shows the percentage value without an arrow icon when status is neutral.',
+          'Card with neutral trend indicator. Shows the percentage value (e.g., "0.1% vs. anterior") without an arrow icon when status is neutral.',
       },
     },
   },

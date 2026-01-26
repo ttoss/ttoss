@@ -521,9 +521,9 @@ type TrendIndicator = {
 
 **Behavior:**
 
-- **Positive status**: Displays an up arrow icon and the percentage value (e.g., "10.5% vs. período anterior")
-- **Negative status**: Displays a down arrow icon and the percentage value (e.g., "5.2% vs. período anterior")
-- **Neutral status**: Displays no arrow icon, only the percentage value (e.g., "0.0% vs. período anterior")
+- **Positive status**: Displays an up arrow icon and the percentage value (e.g., "10.5% vs. anterior")
+- **Negative status**: Displays a down arrow icon and the percentage value (e.g., "5.2% vs. anterior")
+- **Neutral status**: Displays no arrow icon, only the percentage value (e.g., "0.0% vs. anterior")
 - The value is always formatted to 1 decimal place followed by "%"
 - Note: Positive values do not include a "+" sign prefix
 

@@ -49,7 +49,7 @@ const getValueColor = (color?: string, variant?: CardVariant): string => {
 
   // For default variant
   if (!color) {
-    return 'display.text.primary.default';
+    return 'feedback.text.positive.default';
   }
   if (['green', 'accent', 'positive'].includes(color.toLowerCase())) {
     return 'display.text.accent.default';
@@ -57,11 +57,22 @@ const getValueColor = (color?: string, variant?: CardVariant): string => {
   return 'display.text.primary.default';
 };
 
-const getTrendColor = (trend?: TrendIndicator): string => {
+const getTrendColor = (
+  trend?: TrendIndicator
+): { color: string; backgroundColor: string } => {
   const colors = {
-    positive: 'feedback.text.positive.default',
-    negative: 'feedback.text.negative.default',
-    neutral: 'display.text.primary.default',
+    positive: {
+      color: '#15803d',
+      backgroundColor: 'feedback.background.positive.default',
+    },
+    negative: {
+      color: 'feedback.text.negative.default',
+      backgroundColor: 'feedback.background.negative.default',
+    },
+    neutral: {
+      color: 'input.text.muted.default',
+      backgroundColor: 'display.border.muted.default',
+    },
   };
   if (!trend) {
     return colors.neutral;
@@ -109,7 +120,7 @@ export const BigNumber = (props: DashboardCard) => {
         <Text
           sx={{
             color: valueColor,
-            fontSize: '2xl',
+            fontSize: '1.65rem',
             fontWeight: 'bold',
             lineHeight: '1.2',
           }}
@@ -126,26 +137,33 @@ export const BigNumber = (props: DashboardCard) => {
           >
             <Box
               sx={{
-                color: getTrendColor(props.trend),
+                color: getTrendColor(props.trend).color,
+                backgroundColor: getTrendColor(props.trend).backgroundColor,
+                padding: '1',
+                fontSize: '2xs',
+                fontWeight: 'bold',
+                borderRadius: 'sm',
                 display: 'flex',
                 alignItems: 'center',
               }}
             >
               {props.trend.status === 'positive' ? (
-                <Icon icon="mdi:arrow-up" width={16} />
+                <Icon icon="mdi:arrow-up" width={10} />
               ) : props.trend.status === 'negative' ? (
-                <Icon icon="mdi:arrow-down" width={16} />
-              ) : null}
+                <Icon icon="mdi:arrow-down" width={10} />
+              ) : (
+                <Icon icon="mdi:minus" width={10} />
+              )}
+              {props.trend.value.toFixed(1)}%{' '}
             </Box>
             <Text
               sx={{
-                color: getTrendColor(props.trend),
-                fontSize: 'sm',
+                color: 'input.background.muted.disabled',
+                fontSize: '2xs',
                 fontWeight: 'medium',
               }}
             >
-              {props.trend.value.toFixed(1)}%{' '}
-              {props.trend ? 'vs. período anterior' : ''}
+              {props.trend ? 'vs. anterior' : ''}
             </Text>
           </Flex>
         )}

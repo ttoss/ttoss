@@ -35,7 +35,7 @@ const DashboardContent = ({
     >
       <DashboardHeader>{headerChildren}</DashboardHeader>
 
-      <Divider />
+      <Divider color="display.border.muted.default" />
 
       <DashboardGrid loading={loading} selectedTemplate={selectedTemplate} />
     </Flex>
