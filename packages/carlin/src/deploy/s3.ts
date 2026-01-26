@@ -1,14 +1,44 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import AWS from 'aws-sdk';
+import type { S3ClientConfig } from '@aws-sdk/client-s3';
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  ListObjectVersionsCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { glob } from 'glob';
 import mime from 'mime-types';
 import log from 'npmlog';
 
+import { getEnvVar } from '../utils';
+
 const logPrefix = 's3';
 
-export const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+/**
+ * S3 client cache to avoid creating multiple clients.
+ * Each client is created with different parameters.
+ */
+const s3Clients: { [key: string]: S3Client } = {};
+
+export const s3 = () => {
+  const s3ClientConfig: S3ClientConfig = {
+    region: getEnvVar('REGION'),
+  };
+
+  const key = JSON.stringify(s3ClientConfig);
+
+  if (!s3Clients[key]) {
+    s3Clients[key] = new S3Client(s3ClientConfig);
+  }
+
+  return s3Clients[key];
+};
 
 export const getBucketKeyUrl = ({
   bucket,
@@ -37,7 +67,8 @@ export const uploadFileToS3 = async ({
     throw new Error('file or filePath must be defined');
   }
 
-  let params: AWS.S3.PutObjectRequest = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const params: any = {
     Bucket: bucket,
     Key: key.split(path.sep).join('/'),
   };
@@ -47,22 +78,23 @@ export const uploadFileToS3 = async ({
     params.Body = file;
   } else if (filePath) {
     const readFile = await fs.promises.readFile(filePath);
-    params = {
-      ...params,
-      ContentType:
-        contentType || mime.contentType(path.extname(filePath)) || undefined,
-    };
+    params.ContentType =
+      contentType || mime.contentType(path.extname(filePath)) || undefined;
     params.Body = Buffer.from(readFile);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { Bucket, Key, VersionId } = (await s3.upload(params).promise()) as any;
+  const upload = new Upload({
+    client: s3(),
+    params,
+  });
+
+  const result = await upload.done();
 
   return {
-    bucket: Bucket as string,
-    key: Key as string,
-    versionId: VersionId as string,
-    url: getBucketKeyUrl({ bucket: Bucket, key: Key }),
+    bucket: result.Bucket as string,
+    key: result.Key as string,
+    versionId: result.VersionId as string,
+    url: getBucketKeyUrl({ bucket: result.Bucket!, key: result.Key! }),
   };
 };
 
@@ -94,27 +126,23 @@ export const getAllFilesInsideADirectory = async ({
  */
 export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
   try {
-    const root404Exists = await s3
-      .headObject({
-        Bucket: bucket,
-        Key: '404.html',
-      })
-      .promise()
+    const headCommand = new HeadObjectCommand({
+      Bucket: bucket,
+      Key: '404.html',
+    });
+    const root404Exists = await s3()
+      .send(headCommand)
       .catch(() => {
-        /**
-         * If the file does not exist, return false.
-         */
         return false;
       });
 
     if (root404Exists) {
-      await s3
-        .copyObject({
-          Bucket: bucket,
-          CopySource: `${bucket}/404.html`,
-          Key: '404/index.html',
-        })
-        .promise();
+      const copyCommand = new CopyObjectCommand({
+        Bucket: bucket,
+        CopySource: `${bucket}/404.html`,
+        Key: '404/index.html',
+      });
+      await s3().send(copyCommand);
     }
   } catch (error) {
     log.error(logPrefix, `Cannot copy 404.html to 404/index.html`);
@@ -187,12 +215,11 @@ export const emptyS3Directory = async ({
 }) => {
   log.info(logPrefix, `${bucket}/${directory} will be empty`);
   try {
-    const { Contents, IsTruncated } = await s3
-      .listObjectsV2({
-        Bucket: bucket,
-        Prefix: directory,
-      })
-      .promise();
+    const listCommand = new ListObjectsV2Command({
+      Bucket: bucket,
+      Prefix: directory,
+    });
+    const { Contents, IsTruncated } = await s3().send(listCommand);
 
     if (Contents && Contents.length > 0) {
       /**
@@ -201,12 +228,11 @@ export const emptyS3Directory = async ({
       const objectsPromises = Contents.filter(({ Key }) => {
         return !!Key;
       }).map(async ({ Key }) => {
-        const { Versions = [] } = await s3
-          .listObjectVersions({
-            Bucket: bucket,
-            Prefix: Key,
-          })
-          .promise();
+        const listVersionsCommand = new ListObjectVersionsCommand({
+          Bucket: bucket,
+          Prefix: Key,
+        });
+        const { Versions = [] } = await s3().send(listVersionsCommand);
         return {
           Key: Key as string,
           Versions: Versions.map(({ VersionId }) => {
@@ -240,12 +266,11 @@ export const emptyS3Directory = async ({
       for (let i = 0; i < objectsWithVersionsIds.length; i += BATCH_SIZE) {
         const batch = objectsWithVersionsIds.slice(i, i + BATCH_SIZE);
 
-        const result = await s3
-          .deleteObjects({
-            Bucket: bucket,
-            Delete: { Objects: batch },
-          })
-          .promise();
+        const deleteCommand = new DeleteObjectsCommand({
+          Bucket: bucket,
+          Delete: { Objects: batch },
+        });
+        const result = await s3().send(deleteCommand);
 
         if (result.Errors && result.Errors.length > 0) {
           const firstError = result.Errors[0];
@@ -280,10 +305,130 @@ export const deleteS3Directory = async ({
   try {
     log.info(logPrefix, `${bucket}/${directory} is being deleted...`);
     await emptyS3Directory({ bucket, directory });
-    await s3.deleteObject({ Bucket: bucket, Key: directory }).promise();
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: directory,
+    });
+    await s3().send(deleteCommand);
     log.info(logPrefix, `${bucket}/${directory} was deleted.`);
   } catch (error) {
     log.error(logPrefix, `Cannot delete ${bucket}/${directory}.`);
+    throw error;
+  }
+};
+
+/**
+ * Delete old S3 files based on retention period.
+ * Files older than the specified number of days will be deleted.
+ */
+export const deleteOldS3Files = async ({
+  bucket,
+  continuationToken,
+  directory = '',
+  retentionDays,
+  totalDeleted = 0,
+}: {
+  bucket: string;
+  continuationToken?: string;
+  directory?: string;
+  retentionDays: number;
+  totalDeleted?: number;
+}): Promise<number> => {
+  if (!continuationToken) {
+    log.info(
+      logPrefix,
+      `Deleting files older than ${retentionDays} days from ${bucket}/${directory}...`
+    );
+  }
+
+  try {
+    const listCommand = new ListObjectsV2Command({
+      Bucket: bucket,
+      Prefix: directory,
+      ContinuationToken: continuationToken,
+    });
+    const { Contents, IsTruncated, NextContinuationToken } =
+      await s3().send(listCommand);
+
+    let deletedCount = 0;
+
+    if (Contents && Contents.length > 0) {
+      const now = new Date();
+      const retentionMs = retentionDays * 24 * 60 * 60 * 1000;
+
+      const oldFiles = Contents.filter(({ Key, LastModified }) => {
+        if (!Key || !LastModified) {
+          return false;
+        }
+        const fileAge = now.getTime() - LastModified.getTime();
+        return fileAge > retentionMs;
+      }).map(({ Key }) => {
+        return Key as string;
+      });
+
+      if (oldFiles.length > 0) {
+        /**
+         * Batch delete operations in groups of 1000 (AWS limit)
+         */
+        const BATCH_SIZE = 1000;
+        for (let i = 0; i < oldFiles.length; i += BATCH_SIZE) {
+          const batch = oldFiles.slice(i, i + BATCH_SIZE);
+
+          const deleteCommand = new DeleteObjectsCommand({
+            Bucket: bucket,
+            Delete: {
+              Objects: batch.map((Key) => {
+                return { Key };
+              }),
+            },
+          });
+          const result = await s3().send(deleteCommand);
+
+          if (result.Errors && result.Errors.length > 0) {
+            const firstError = result.Errors[0];
+            throw new Error(
+              `Error deleting old files from ${bucket}/${directory}: ${JSON.stringify(firstError)}`
+            );
+          }
+        }
+
+        deletedCount = oldFiles.length;
+      }
+    }
+
+    /**
+     * Handle pagination if results were truncated
+     */
+    if (IsTruncated && NextContinuationToken) {
+      return await deleteOldS3Files({
+        bucket,
+        continuationToken: NextContinuationToken,
+        directory,
+        retentionDays,
+        totalDeleted: totalDeleted + deletedCount,
+      });
+    }
+
+    const finalTotal = totalDeleted + deletedCount;
+
+    if (finalTotal === 0) {
+      log.info(
+        logPrefix,
+        `No files older than ${retentionDays} days found in ${bucket}/${directory}`
+      );
+    } else {
+      log.info(
+        logPrefix,
+        `Deleted ${finalTotal} old files from ${bucket}/${directory}`
+      );
+    }
+
+    return finalTotal;
+  } catch (error) {
+    log.error(
+      logPrefix,
+      `Cannot delete old files from ${bucket}/${directory}.`
+    );
     throw error;
   }
 };

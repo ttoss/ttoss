@@ -1,11 +1,11 @@
-# @ttoss/react-auth
+# @ttoss/react-auth-cognito
 
 AWS Cognito authentication module for React applications using AWS Amplify, built on top of `@ttoss/react-auth-core` for provider-agnostic authentication patterns.
 
 ## Installation
 
 ```shell
-pnpm add @ttoss/react-auth @ttoss/react-notifications aws-amplify
+pnpm add @ttoss/react-auth-cognito @ttoss/react-notifications aws-amplify
 ```
 
 ## Core Concepts
@@ -42,7 +42,7 @@ Amplify.configure({ Auth: authConfig });
 ### 2. Setup Authentication Provider
 
 ```tsx
-import { AuthProvider } from '@ttoss/react-auth';
+import { AuthProvider } from '@ttoss/react-auth-cognito';
 import { NotificationsProvider } from '@ttoss/react-notifications';
 
 function App() {
@@ -59,12 +59,22 @@ function App() {
 ### 3. Use Authentication in Components
 
 ```tsx
-import { Auth, useAuth } from '@ttoss/react-auth';
+import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import { Navigate } from 'react-router-dom';
 
 // Authentication form component
 function LoginPage() {
   return <Auth />;
+}
+
+// Authentication form with error handling
+function LoginPageWithErrorHandling() {
+  const handleAuthError = (error: Error) => {
+    console.error('Authentication error:', error);
+    // Custom error handling logic
+  };
+
+  return <Auth onError={handleAuthError} />;
 }
 
 // Protected route component
@@ -93,6 +103,30 @@ function UserProfile() {
 
 ## API Reference
 
+### `<Auth />`
+
+The main authentication component that renders sign-in, sign-up, and password recovery flows.
+
+**Props:**
+
+- `signUpTerms?: React.ReactNode` - Optional terms and conditions to display during sign-up
+- `logo?: React.ReactNode` - Optional logo to display in the authentication form
+- `layout?: 'default' | 'centered'` - Layout style for the authentication form
+- `onError?: (error: Error) => void` - Callback function invoked when authentication errors occur. Receives the error object from failed authentication operations (sign-in, sign-up, password reset, etc.)
+
+**Example:**
+
+```tsx
+<Auth
+  logo={<img src="/logo.png" alt="Logo" />}
+  signUpTerms={<p>By signing up, you agree to our Terms of Service</p>}
+  onError={(error) => {
+    console.error('Auth error:', error);
+    // Send to error tracking service
+  }}
+/>
+```
+
 ### `useAuth()`
 
 Returns authentication state and methods:
@@ -110,7 +144,7 @@ const {
 Retrieve current authentication data programmatically:
 
 ```tsx
-import { getAuthData } from '@ttoss/react-auth';
+import { getAuthData } from '@ttoss/react-auth-cognito';
 
 const authData = await getAuthData({ includeTokens: true });
 ```
@@ -120,7 +154,7 @@ const authData = await getAuthData({ includeTokens: true });
 Check if user is currently authenticated:
 
 ```tsx
-import { checkAuth } from '@ttoss/react-auth';
+import { checkAuth } from '@ttoss/react-auth-cognito';
 
 const isAuthenticated = await checkAuth();
 ```

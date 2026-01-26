@@ -1,5 +1,5 @@
 import { Markdown } from '@ttoss/components/Markdown';
-import { Auth, useAuth } from '@ttoss/react-auth';
+import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import type { DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';

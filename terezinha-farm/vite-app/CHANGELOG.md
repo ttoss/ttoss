@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.5](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.15.4...@terezinha-farm/vite-app@0.15.5) (2026-01-26)
+
+### Bug Fixes
+
+- rename react auth to react auth cognito ([#861](https://github.com/ttoss/ttoss/issues/861)) ([1cb08c9](https://github.com/ttoss/ttoss/commit/1cb08c936dad54904f3b817998974d299444f97f))
+
+## [0.15.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.15.3...@terezinha-farm/vite-app@0.15.4) (2026-01-26)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.15.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.15.2...@terezinha-farm/vite-app@0.15.3) (2026-01-22)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

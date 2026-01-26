@@ -6,14 +6,13 @@ jest.mock('./getStaticAppBucket');
 
 jest.mock('./invalidateCloudFront');
 
-jest.mock('./removeOldVersions');
-
 jest.mock('./uploadBuiltAppToS3');
+
+import { faker } from '@ttoss/test-utils/faker';
 
 import { AWS_DEFAULT_REGION } from '../../config';
 import { deploy } from '../cloudformation.core';
 import { deployStaticApp } from './deployStaticApp';
-import { faker } from '@ttoss/test-utils/faker';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
 

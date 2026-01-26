@@ -1,7 +1,7 @@
 {
-  "name": "@ttoss/react-auth",
-  "version": "2.7.4",
-  "description": "ttoss authentication module for React apps.",
+  "name": "@ttoss/react-auth-cognito",
+  "version": "2.7.6",
+  "description": "React authentication components using AWS Cognito",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/react-auth"
+    "directory": "packages/react-auth-cognito"
   },
   "type": "module",
   "exports": {

@@ -1,9 +1,10 @@
 import './amplify.ts';
 
 import { configureLogger } from '@ttoss/logger';
-import { AuthProvider } from '@ttoss/react-auth';
+import { AuthProvider } from '@ttoss/react-auth-cognito';
 import { FeatureFlagsProvider } from '@ttoss/react-feature-flags';
-import { I18nProvider, LoadLocaleData } from '@ttoss/react-i18n';
+import type { LoadLocaleData } from '@ttoss/react-i18n';
+import { I18nProvider } from '@ttoss/react-i18n';
 import { NotificationsProvider } from '@ttoss/react-notifications';
 import { OcaTheme } from '@ttoss/theme/Oca';
 import { ThemeProvider } from '@ttoss/ui';
