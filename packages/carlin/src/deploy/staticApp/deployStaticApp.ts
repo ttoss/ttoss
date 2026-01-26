@@ -2,7 +2,6 @@ import { deploy } from '../cloudformation.core';
 import { handleDeployError, handleDeployInitialization } from '../utils';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { invalidateCloudFront } from './invalidateCloudFront';
-import { removeOldVersions } from './removeOldVersions';
 import { getStaticAppTemplate } from './staticApp.template';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
 
@@ -66,10 +65,6 @@ export const deployStaticApp = async ({
       const { Outputs } = await deploy({ params, template });
 
       await invalidateCloudFront({ outputs: Outputs });
-
-      if (!skipUpload) {
-        await removeOldVersions({ bucket });
-      }
     } else {
       /**
        * Stack doesn't exist. Deploy CloudFormation first, get the bucket name,

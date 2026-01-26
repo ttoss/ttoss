@@ -20,7 +20,7 @@ Here are some examples of packages available in the **ttoss** [modules](/docs/mo
 
 - [graphql-api](/docs/modules/packages/graphql-api/): This module facilitates the creation of GraphQL APIs in Node.js projects. By using graphql-api, teams can quickly set up GraphQL endpoints, enabling them to build scalable and flexible APIs without reinventing the wheel.
 
-- [react-auth](/docs/modules/packages/react-auth/): This module provides a solution for user authentication in React applications. It helps teams implement secure authentication processes, so they can focus on developing user-facing features rather than managing authentication logic.
+- [react-auth-core](/docs/modules/packages/react-auth-core/): This module provides a solution for user authentication in React applications. It helps teams implement secure authentication processes, so they can focus on developing user-facing features rather than managing authentication logic.
 
 - [react-i18n](/docs/modules/packages/react-i18n/): This package simplifies internationalization (i18n) in React projects. By using react-i18n, teams can easily implement localization, ensuring their applications are accessible to a global audience without getting bogged down in the complexities of i18n.
 

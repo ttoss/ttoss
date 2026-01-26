@@ -1,11 +1,12 @@
+import { kebabCase, pascalCase } from 'change-case';
+
 import {
   getCurrentBranch,
-  getEnvVar,
   getEnvironment,
+  getEnvVar,
   getPackageName,
   setEnvVar,
 } from '../utils';
-import { kebabCase, pascalCase } from 'change-case';
 
 /**
  * Used by CLI set stack name when it is defined.

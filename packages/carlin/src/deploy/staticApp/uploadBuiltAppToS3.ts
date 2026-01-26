@@ -1,6 +1,6 @@
 import {
   copyRoot404To404Index,
-  emptyS3Directory,
+  deleteOldS3Files,
   getAllFilesInsideADirectory,
   uploadDirectoryToS3,
 } from '../s3';
@@ -24,7 +24,7 @@ export const uploadBuiltAppToS3 = async ({
   if (directory) {
     const files = await getAllFilesInsideADirectory({ directory });
     if (files.length > 0) {
-      await emptyS3Directory({ bucket });
+      await deleteOldS3Files({ bucket, retentionDays: 7 });
     }
     await uploadDirectoryToS3({ bucket, directory });
     return;
@@ -33,7 +33,7 @@ export const uploadBuiltAppToS3 = async ({
   const defaultDirectory = await findDefaultBuildFolder();
 
   if (defaultDirectory) {
-    await emptyS3Directory({ bucket });
+    await deleteOldS3Files({ bucket, retentionDays: 7 });
     await uploadDirectoryToS3({ bucket, directory: defaultDirectory });
     await copyRoot404To404Index({ bucket });
     return;
