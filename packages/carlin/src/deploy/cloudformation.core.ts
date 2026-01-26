@@ -1,22 +1,24 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import type {
+  CloudFormationClientConfig,
+  CreateStackCommandInput,
+  DescribeStackResourceCommandInput,
+  UpdateStackCommandInput,
+  ValidateTemplateCommandInput,
+} from '@aws-sdk/client-cloudformation';
 import {
   CloudFormationClient,
-  CloudFormationClientConfig,
   CreateStackCommand,
-  CreateStackCommandInput,
   DeleteStackCommand,
   DescribeStackEventsCommand,
   DescribeStackResourceCommand,
-  DescribeStackResourceCommandInput,
   DescribeStacksCommand,
   ListStackResourcesCommand,
   UpdateStackCommand,
-  UpdateStackCommandInput,
   UpdateTerminationProtectionCommand,
   ValidateTemplateCommand,
-  ValidateTemplateCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import type { CloudFormationTemplate } from '@ttoss/cloudformation';
 import AWS from 'aws-sdk';

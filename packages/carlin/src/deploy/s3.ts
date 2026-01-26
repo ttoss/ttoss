@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import type { S3ClientConfig } from '@aws-sdk/client-s3';
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
@@ -15,9 +16,29 @@ import { glob } from 'glob';
 import mime from 'mime-types';
 import log from 'npmlog';
 
+import { getEnvVar } from '../utils';
+
 const logPrefix = 's3';
 
-export const s3 = new S3Client({ region: process.env.AWS_REGION });
+/**
+ * S3 client cache to avoid creating multiple clients.
+ * Each client is created with different parameters.
+ */
+const s3Clients: { [key: string]: S3Client } = {};
+
+export const s3 = () => {
+  const s3ClientConfig: S3ClientConfig = {
+    region: getEnvVar('REGION'),
+  };
+
+  const key = JSON.stringify(s3ClientConfig);
+
+  if (!s3Clients[key]) {
+    s3Clients[key] = new S3Client(s3ClientConfig);
+  }
+
+  return s3Clients[key];
+};
 
 export const getBucketKeyUrl = ({
   bucket,
@@ -63,7 +84,7 @@ export const uploadFileToS3 = async ({
   }
 
   const upload = new Upload({
-    client: s3,
+    client: s3(),
     params,
   });
 
@@ -109,9 +130,11 @@ export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
       Bucket: bucket,
       Key: '404.html',
     });
-    const root404Exists = await s3.send(headCommand).catch(() => {
-      return false;
-    });
+    const root404Exists = await s3()
+      .send(headCommand)
+      .catch(() => {
+        return false;
+      });
 
     if (root404Exists) {
       const copyCommand = new CopyObjectCommand({
@@ -119,7 +142,7 @@ export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
         CopySource: `${bucket}/404.html`,
         Key: '404/index.html',
       });
-      await s3.send(copyCommand);
+      await s3().send(copyCommand);
     }
   } catch (error) {
     log.error(logPrefix, `Cannot copy 404.html to 404/index.html`);
@@ -196,7 +219,7 @@ export const emptyS3Directory = async ({
       Bucket: bucket,
       Prefix: directory,
     });
-    const { Contents, IsTruncated } = await s3.send(listCommand);
+    const { Contents, IsTruncated } = await s3().send(listCommand);
 
     if (Contents && Contents.length > 0) {
       /**
@@ -209,7 +232,7 @@ export const emptyS3Directory = async ({
           Bucket: bucket,
           Prefix: Key,
         });
-        const { Versions = [] } = await s3.send(listVersionsCommand);
+        const { Versions = [] } = await s3().send(listVersionsCommand);
         return {
           Key: Key as string,
           Versions: Versions.map(({ VersionId }) => {
@@ -247,7 +270,7 @@ export const emptyS3Directory = async ({
           Bucket: bucket,
           Delete: { Objects: batch },
         });
-        const result = await s3.send(deleteCommand);
+        const result = await s3().send(deleteCommand);
 
         if (result.Errors && result.Errors.length > 0) {
           const firstError = result.Errors[0];
@@ -286,7 +309,7 @@ export const deleteS3Directory = async ({
       Bucket: bucket,
       Key: directory,
     });
-    await s3.send(deleteCommand);
+    await s3().send(deleteCommand);
     log.info(logPrefix, `${bucket}/${directory} was deleted.`);
   } catch (error) {
     log.error(logPrefix, `Cannot delete ${bucket}/${directory}.`);
@@ -317,7 +340,7 @@ export const deleteOldS3Files = async ({
       Bucket: bucket,
       Prefix: directory,
     });
-    const { Contents, IsTruncated } = await s3.send(listCommand);
+    const { Contents, IsTruncated } = await s3().send(listCommand);
 
     if (!Contents || Contents.length === 0) {
       log.info(logPrefix, `No files found in ${bucket}/${directory}`);
@@ -365,7 +388,7 @@ export const deleteOldS3Files = async ({
           }),
         },
       });
-      const result = await s3.send(deleteCommand);
+      const result = await s3().send(deleteCommand);
 
       if (result.Errors && result.Errors.length > 0) {
         const firstError = result.Errors[0];
