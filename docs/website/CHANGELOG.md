@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.4.4 (2026-01-26)
+
+### Bug Fixes
+
+- do not remove entire files on deploy static app ([#862](https://github.com/ttoss/ttoss/issues/862)) ([97b6b75](https://github.com/ttoss/ttoss/commit/97b6b755bd2205d77e91b3024096a5b37d441348))
+
 ## [2.4.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.4.2...@docs/website@2.4.3) (2026-01-12)
 
 ### Bug Fixes

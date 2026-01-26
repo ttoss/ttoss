@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.40.2 (2026-01-26)
+
+### Bug Fixes
+
+- do not remove entire files on deploy static app ([#862](https://github.com/ttoss/ttoss/issues/862)) ([97b6b75](https://github.com/ttoss/ttoss/commit/97b6b755bd2205d77e91b3024096a5b37d441348))
+
 ## [1.40.1](https://github.com/ttoss/ttoss/compare/carlin@1.40.0...carlin@1.40.1) (2026-01-12)
 
 **Note:** Version bump only for package carlin
