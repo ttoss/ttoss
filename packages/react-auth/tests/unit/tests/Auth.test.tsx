@@ -211,3 +211,168 @@ test('should call Amplify Auth.resetPassword when forgot password is triggered',
     username: email,
   });
 });
+
+describe('onError callback', () => {
+  test('should call onError when signIn fails', async () => {
+    const onError = jest.fn();
+    const testError = new Error('Invalid credentials');
+    (amplifyAuth.signIn as jest.Mock).mockRejectedValueOnce(testError);
+
+    const user = userEvent.setup({ delay: null });
+
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await screen.findByLabelText('Email');
+
+    await user.type(screen.getByLabelText('Email'), email);
+    await user.type(screen.getByLabelText('Password'), password);
+
+    const submitButton = screen.getByRole('button', { name: /Sign in/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  test('should call onError when signUp fails', async () => {
+    const onError = jest.fn();
+    const testError = new Error('User already exists');
+    (amplifyAuth.signUp as jest.Mock).mockRejectedValueOnce(testError);
+
+    const user = userEvent.setup();
+
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Sign up')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Sign up'));
+
+    await user.type(screen.getByLabelText('Email'), email);
+    await user.type(screen.getByLabelText('Password'), password);
+    await user.type(screen.getByLabelText('Confirm password'), password);
+
+    await user.click(screen.getByRole('button', { name: /Sign up/i }));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+      expect(amplifyAuth.signUp).toHaveBeenCalled();
+    });
+  });
+
+  test('should call onError when confirmSignUp fails', async () => {
+    const onError = jest.fn();
+    const testError = new Error('Invalid code');
+
+    // Mock signUp to succeed first, then confirmSignUp to fail
+    (amplifyAuth.signUp as jest.Mock).mockResolvedValueOnce({});
+    (amplifyAuth.confirmSignUp as jest.Mock).mockRejectedValueOnce(testError);
+
+    const user = userEvent.setup();
+
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Sign up')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Sign up'));
+
+    await user.type(screen.getByLabelText('Email'), email);
+    await user.type(screen.getByLabelText('Password'), password);
+    await user.type(screen.getByLabelText('Confirm password'), password);
+
+    await user.click(screen.getByRole('button', { name: /Sign up/i }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Code')).toBeInTheDocument();
+    });
+
+    const confirmationCode = '123456';
+    await user.type(screen.getByLabelText('Code'), confirmationCode);
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  test('should call onError when resetPassword fails', async () => {
+    const onError = jest.fn();
+    const testError = new Error('User not found');
+    (amplifyAuth.resetPassword as jest.Mock).mockRejectedValueOnce(testError);
+
+    const user = userEvent.setup({ delay: null });
+
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Forgot password?'));
+
+    await user.type(screen.getByLabelText('Registered Email'), email);
+    await user.click(screen.getByRole('button', { name: 'Recover Password' }));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  test('should call onError when confirmResetPassword fails', async () => {
+    const onError = jest.fn();
+    const testError = new Error('Invalid confirmation code');
+    (amplifyAuth.confirmResetPassword as jest.Mock).mockRejectedValueOnce(
+      testError
+    );
+
+    const user = userEvent.setup({ delay: null });
+
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Forgot password?'));
+
+    await user.type(screen.getByLabelText('Registered Email'), email);
+    await user.click(screen.getByRole('button', { name: 'Recover Password' }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Confirmation code')).toBeInTheDocument();
+    });
+
+    const code = '678901';
+    await user.type(screen.getByLabelText('Confirmation code'), code);
+    await user.type(screen.getByLabelText('New Password'), password);
+    await user.click(screen.getByRole('button', { name: 'Reset Password' }));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+    });
+  });
+});

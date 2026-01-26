@@ -67,6 +67,16 @@ function LoginPage() {
   return <Auth />;
 }
 
+// Authentication form with error handling
+function LoginPageWithErrorHandling() {
+  const handleAuthError = (error: Error) => {
+    console.error('Authentication error:', error);
+    // Custom error handling logic
+  };
+
+  return <Auth onError={handleAuthError} />;
+}
+
 // Protected route component
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -92,6 +102,30 @@ function UserProfile() {
 ```
 
 ## API Reference
+
+### `<Auth />`
+
+The main authentication component that renders sign-in, sign-up, and password recovery flows.
+
+**Props:**
+
+- `signUpTerms?: React.ReactNode` - Optional terms and conditions to display during sign-up
+- `logo?: React.ReactNode` - Optional logo to display in the authentication form
+- `layout?: 'default' | 'centered'` - Layout style for the authentication form
+- `onError?: (error: Error) => void` - Callback function invoked when authentication errors occur. Receives the error object from failed authentication operations (sign-in, sign-up, password reset, etc.)
+
+**Example:**
+
+```tsx
+<Auth
+  logo={<img src="/logo.png" alt="Logo" />}
+  signUpTerms={<p>By signing up, you agree to our Terms of Service</p>}
+  onError={(error) => {
+    console.error('Auth error:', error);
+    // Send to error tracking service
+  }}
+/>
+```
 
 ### `useAuth()`
 
