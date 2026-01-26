@@ -20,9 +20,20 @@ import {
 } from 'aws-amplify/auth';
 import * as React from 'react';
 
-export type AuthProps = Pick<AuthCoreProps, 'signUpTerms' | 'logo' | 'layout'>;
+export type AuthProps = Pick<
+  AuthCoreProps,
+  'signUpTerms' | 'logo' | 'layout'
+> & {
+  /**
+   * Callback function invoked when an error occurs during authentication operations.
+   * Receives the error object that was caught.
+   */
+  onError?: (error: Error) => void;
+};
 
 export const Auth = (props: AuthProps) => {
+  const { onError } = props;
+
   const { intl } = useI18n();
 
   const { screen, setScreen } = useAuthScreen();
@@ -54,10 +65,11 @@ export const Auth = (props: AuthProps) => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        onError?.(error);
         addNotification({ type: 'error', message: error.message });
       }
     },
-    [addNotification, intl, setScreen]
+    [addNotification, intl, setScreen, onError]
   );
 
   const onSignUp = React.useCallback<OnSignUp>(
@@ -76,10 +88,11 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'confirmSignUpWithCode', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        onError?.(error);
         addNotification({ type: 'error', message: error.message });
       }
     },
-    [setScreen, addNotification]
+    [setScreen, addNotification, onError]
   );
 
   const onConfirmSignUpWithCode = React.useCallback<OnConfirmSignUpWithCode>(
@@ -89,10 +102,11 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'signIn' });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        onError?.(error);
         addNotification({ type: 'error', message: error.message });
       }
     },
-    [setScreen, addNotification]
+    [setScreen, addNotification, onError]
   );
 
   const onForgotPassword = React.useCallback<OnForgotPassword>(
@@ -102,10 +116,11 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'confirmResetPassword', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        onError?.(error);
         addNotification({ type: 'error', message: error.message });
       }
     },
-    [setScreen, addNotification]
+    [setScreen, addNotification, onError]
   );
 
   const onForgotPasswordResetPassword =
@@ -121,10 +136,11 @@ export const Auth = (props: AuthProps) => {
           setScreen({ value: 'signIn' });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
+          onError?.(error);
           addNotification({ type: 'error', message: error.message });
         }
       },
-      [setScreen, addNotification]
+      [setScreen, addNotification, onError]
     );
 
   return (
