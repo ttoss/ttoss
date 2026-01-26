@@ -677,7 +677,7 @@ importers:
         version: 8.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+        version: 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1018,7 +1018,7 @@ importers:
         version: 4.0.2(graphql@16.11.0)
       '@graphql-codegen/typescript':
         specifier: ^4.1.6
-        version: 4.1.6(encoding@0.1.13)(graphql@16.11.0)
+        version: 4.1.6(graphql@16.11.0)
       commander:
         specifier: ^14.0.0
         version: 14.0.0
@@ -1387,7 +1387,7 @@ importers:
         specifier: ^8.5.1
         version: 8.5.1(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
 
-  packages/react-auth:
+  packages/react-auth-cognito:
     dependencies:
       '@ttoss/react-auth-core':
         specifier: workspace:^
@@ -2040,9 +2040,9 @@ importers:
       '@ttoss/logger':
         specifier: workspace:^
         version: link:../../packages/logger
-      '@ttoss/react-auth':
+      '@ttoss/react-auth-cognito':
         specifier: workspace:^
-        version: link:../../packages/react-auth
+        version: link:../../packages/react-auth-cognito
       '@ttoss/react-dashboard':
         specifier: workspace:^
         version: link:../../packages/react-dashboard
@@ -15875,7 +15875,7 @@ snapshots:
 
   '@antfu/utils@8.1.1': {}
 
-  '@ardatan/relay-compiler@12.0.3(encoding@0.1.13)(graphql@16.11.0)':
+  '@ardatan/relay-compiler@12.0.3(graphql@16.11.0)':
     dependencies:
       '@babel/generator': 7.28.0
       '@babel/parser': 7.28.0
@@ -15886,7 +15886,7 @@ snapshots:
       immutable: 3.7.6
       invariant: 2.2.4
       nullthrows: 1.1.1
-      relay-runtime: 12.0.0(encoding@0.1.13)
+      relay-runtime: 12.0.0
       signedsource: 1.0.0
     transitivePeerDependencies:
       - encoding
@@ -19637,22 +19637,22 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.6.3
 
-  '@graphql-codegen/typescript@4.1.6(encoding@0.1.13)(graphql@16.11.0)':
+  '@graphql-codegen/typescript@4.1.6(graphql@16.11.0)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.1.1(graphql@16.11.0)
       '@graphql-codegen/schema-ast': 4.1.0(graphql@16.11.0)
-      '@graphql-codegen/visitor-plugin-common': 5.8.0(encoding@0.1.13)(graphql@16.11.0)
+      '@graphql-codegen/visitor-plugin-common': 5.8.0(graphql@16.11.0)
       auto-bind: 4.0.0
       graphql: 16.11.0
       tslib: 2.6.3
     transitivePeerDependencies:
       - encoding
 
-  '@graphql-codegen/visitor-plugin-common@5.8.0(encoding@0.1.13)(graphql@16.11.0)':
+  '@graphql-codegen/visitor-plugin-common@5.8.0(graphql@16.11.0)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.1.1(graphql@16.11.0)
       '@graphql-tools/optimize': 2.0.0(graphql@16.11.0)
-      '@graphql-tools/relay-operation-optimizer': 7.0.21(encoding@0.1.13)(graphql@16.11.0)
+      '@graphql-tools/relay-operation-optimizer': 7.0.21(graphql@16.11.0)
       '@graphql-tools/utils': 10.9.1(graphql@16.11.0)
       auto-bind: 4.0.0
       change-case-all: 1.0.15
@@ -19709,9 +19709,9 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.8.1
 
-  '@graphql-tools/relay-operation-optimizer@7.0.21(encoding@0.1.13)(graphql@16.11.0)':
+  '@graphql-tools/relay-operation-optimizer@7.0.21(graphql@16.11.0)':
     dependencies:
-      '@ardatan/relay-compiler': 12.0.3(encoding@0.1.13)(graphql@16.11.0)
+      '@ardatan/relay-compiler': 12.0.3(graphql@16.11.0)
       '@graphql-tools/utils': 10.9.1(graphql@16.11.0)
       graphql: 16.11.0
       tslib: 2.8.1
@@ -22009,7 +22009,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@19.2.3)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       deepmerge: 4.3.1
       react: 19.2.3
 
@@ -22020,7 +22020,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
       '@types/styled-system': 5.1.23
       react: 19.2.3
@@ -22028,11 +22028,11 @@ snapshots:
   '@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       deepmerge: 4.3.1
       react: 19.2.3
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.2.3))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@19.2.3)
       csstype: 3.2.3
@@ -22041,13 +22041,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@19.2.3)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       react: 19.2.3
 
   '@theme-ui/match-media@0.17.2(@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3)))(react@19.2.3)':
     dependencies:
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       react: 19.2.3
 
   '@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)':
@@ -22055,7 +22055,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@19.2.3)
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       react: 19.2.3
 
   '@tootallnate/once@2.0.0': {}
@@ -31102,7 +31102,7 @@ snapshots:
 
   relay-compiler@18.2.0: {}
 
-  relay-runtime@12.0.0(encoding@0.1.13):
+  relay-runtime@12.0.0:
     dependencies:
       '@babel/runtime': 7.28.2
       fbjs: 3.0.5(encoding@0.1.13)
@@ -32307,7 +32307,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
       '@theme-ui/components': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react@19.2.3)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.3))
       '@theme-ui/global': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
