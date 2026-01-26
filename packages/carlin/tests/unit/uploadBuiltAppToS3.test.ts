@@ -18,7 +18,7 @@ describe('uploadBuiltAppToS3', () => {
       jest
         .spyOn(s3, 'getAllFilesInsideADirectory')
         .mockResolvedValue(['file1.js', 'file2.html']);
-      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue();
+      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(5);
       jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
 
       await uploadBuiltAppToS3({
@@ -41,7 +41,7 @@ describe('uploadBuiltAppToS3', () => {
 
     test('should not delete old files when directory is empty', async () => {
       jest.spyOn(s3, 'getAllFilesInsideADirectory').mockResolvedValue([]);
-      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue();
+      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(0);
       jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
 
       await uploadBuiltAppToS3({
@@ -66,7 +66,7 @@ describe('uploadBuiltAppToS3', () => {
       jest
         .spyOn(findDefaultBuildFolder, 'findDefaultBuildFolder')
         .mockResolvedValue(mockDefaultDirectory);
-      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue();
+      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(3);
       jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
       jest.spyOn(s3, 'copyRoot404To404Index').mockResolvedValue();
 

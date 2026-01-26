@@ -323,92 +323,107 @@ export const deleteS3Directory = async ({
  */
 export const deleteOldS3Files = async ({
   bucket,
+  continuationToken,
   directory = '',
   retentionDays,
+  totalDeleted = 0,
 }: {
   bucket: string;
+  continuationToken?: string;
   directory?: string;
   retentionDays: number;
-}) => {
-  log.info(
-    logPrefix,
-    `Deleting files older than ${retentionDays} days from ${bucket}/${directory}...`
-  );
+  totalDeleted?: number;
+}): Promise<number> => {
+  if (!continuationToken) {
+    log.info(
+      logPrefix,
+      `Deleting files older than ${retentionDays} days from ${bucket}/${directory}...`
+    );
+  }
 
   try {
     const listCommand = new ListObjectsV2Command({
       Bucket: bucket,
       Prefix: directory,
+      ContinuationToken: continuationToken,
     });
-    const { Contents, IsTruncated } = await s3().send(listCommand);
+    const { Contents, IsTruncated, NextContinuationToken } =
+      await s3().send(listCommand);
 
-    if (!Contents || Contents.length === 0) {
-      log.info(logPrefix, `No files found in ${bucket}/${directory}`);
-      return;
-    }
+    let deletedCount = 0;
 
-    const now = new Date();
-    const retentionMs = retentionDays * 24 * 60 * 60 * 1000;
+    if (Contents && Contents.length > 0) {
+      const now = new Date();
+      const retentionMs = retentionDays * 24 * 60 * 60 * 1000;
 
-    const oldFiles = Contents.filter(({ Key, LastModified }) => {
-      if (!Key || !LastModified) {
-        return false;
-      }
-      const fileAge = now.getTime() - LastModified.getTime();
-      return fileAge > retentionMs;
-    }).map(({ Key }) => {
-      return Key as string;
-    });
-
-    if (oldFiles.length === 0) {
-      log.info(
-        logPrefix,
-        `No files older than ${retentionDays} days found in ${bucket}/${directory}`
-      );
-      return;
-    }
-
-    log.info(
-      logPrefix,
-      `Found ${oldFiles.length} files to delete from ${bucket}/${directory}`
-    );
-
-    /**
-     * Batch delete operations in groups of 1000 (AWS limit)
-     */
-    const BATCH_SIZE = 1000;
-    for (let i = 0; i < oldFiles.length; i += BATCH_SIZE) {
-      const batch = oldFiles.slice(i, i + BATCH_SIZE);
-
-      const deleteCommand = new DeleteObjectsCommand({
-        Bucket: bucket,
-        Delete: {
-          Objects: batch.map((Key) => {
-            return { Key };
-          }),
-        },
+      const oldFiles = Contents.filter(({ Key, LastModified }) => {
+        if (!Key || !LastModified) {
+          return false;
+        }
+        const fileAge = now.getTime() - LastModified.getTime();
+        return fileAge > retentionMs;
+      }).map(({ Key }) => {
+        return Key as string;
       });
-      const result = await s3().send(deleteCommand);
 
-      if (result.Errors && result.Errors.length > 0) {
-        const firstError = result.Errors[0];
-        throw new Error(
-          `Error deleting old files from ${bucket}/${directory}: ${JSON.stringify(firstError)}`
-        );
+      if (oldFiles.length > 0) {
+        /**
+         * Batch delete operations in groups of 1000 (AWS limit)
+         */
+        const BATCH_SIZE = 1000;
+        for (let i = 0; i < oldFiles.length; i += BATCH_SIZE) {
+          const batch = oldFiles.slice(i, i + BATCH_SIZE);
+
+          const deleteCommand = new DeleteObjectsCommand({
+            Bucket: bucket,
+            Delete: {
+              Objects: batch.map((Key) => {
+                return { Key };
+              }),
+            },
+          });
+          const result = await s3().send(deleteCommand);
+
+          if (result.Errors && result.Errors.length > 0) {
+            const firstError = result.Errors[0];
+            throw new Error(
+              `Error deleting old files from ${bucket}/${directory}: ${JSON.stringify(firstError)}`
+            );
+          }
+        }
+
+        deletedCount = oldFiles.length;
       }
     }
 
     /**
      * Handle pagination if results were truncated
      */
-    if (IsTruncated) {
-      await deleteOldS3Files({ bucket, directory, retentionDays });
+    if (IsTruncated && NextContinuationToken) {
+      return await deleteOldS3Files({
+        bucket,
+        continuationToken: NextContinuationToken,
+        directory,
+        retentionDays,
+        totalDeleted: totalDeleted + deletedCount,
+      });
     }
 
-    log.info(
-      logPrefix,
-      `Deleted ${oldFiles.length} old files from ${bucket}/${directory}`
-    );
+    const finalTotal = totalDeleted + deletedCount;
+
+    if (finalTotal === 0) {
+      log.info(
+        logPrefix,
+        `No files older than ${retentionDays} days found in ${bucket}/${directory}`
+      );
+    } else {
+      log.info(
+        logPrefix,
+        `Deleted ${finalTotal} old files from ${bucket}/${directory}`
+      );
+    }
+
+    return finalTotal;
   } catch (error) {
     log.error(
       logPrefix,

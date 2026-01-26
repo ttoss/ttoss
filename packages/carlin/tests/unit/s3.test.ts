@@ -322,6 +322,7 @@ describe('S3 Utils', () => {
         .resolvesOnce({
           Contents: [{ Key: 'old-file1.txt', LastModified: oldDate }],
           IsTruncated: true,
+          NextContinuationToken: 'token-123',
         })
         .resolvesOnce({
           Contents: [{ Key: 'old-file2.txt', LastModified: oldDate }],
@@ -330,12 +331,13 @@ describe('S3 Utils', () => {
         .on(DeleteObjectsCommand)
         .resolves({});
 
-      await deleteOldS3Files({
+      const result = await deleteOldS3Files({
         bucket: 'test-bucket',
         directory: 'test-dir',
         retentionDays: 7,
       });
 
+      expect(result).toBe(2);
       expect(s3Mock.commandCalls(ListObjectsV2Command)).toHaveLength(2);
       expect(s3Mock.commandCalls(DeleteObjectsCommand)).toHaveLength(2);
     });
