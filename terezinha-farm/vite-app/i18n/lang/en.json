@@ -58,7 +58,7 @@
     "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
   },
   "EO/33N": {
-    "module": "@ttoss/react-auth",
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Signed in successfully"
   },
   "0XOzcH": {

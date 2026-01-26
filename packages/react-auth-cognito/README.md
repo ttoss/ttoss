@@ -1,11 +1,11 @@
-# @ttoss/react-auth
+# @ttoss/react-auth-cognito
 
 AWS Cognito authentication module for React applications using AWS Amplify, built on top of `@ttoss/react-auth-core` for provider-agnostic authentication patterns.
 
 ## Installation
 
 ```shell
-pnpm add @ttoss/react-auth @ttoss/react-notifications aws-amplify
+pnpm add @ttoss/react-auth-cognito @ttoss/react-notifications aws-amplify
 ```
 
 ## Core Concepts
@@ -42,7 +42,7 @@ Amplify.configure({ Auth: authConfig });
 ### 2. Setup Authentication Provider
 
 ```tsx
-import { AuthProvider } from '@ttoss/react-auth';
+import { AuthProvider } from '@ttoss/react-auth-cognito';
 import { NotificationsProvider } from '@ttoss/react-notifications';
 
 function App() {
@@ -59,7 +59,7 @@ function App() {
 ### 3. Use Authentication in Components
 
 ```tsx
-import { Auth, useAuth } from '@ttoss/react-auth';
+import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import { Navigate } from 'react-router-dom';
 
 // Authentication form component
@@ -144,7 +144,7 @@ const {
 Retrieve current authentication data programmatically:
 
 ```tsx
-import { getAuthData } from '@ttoss/react-auth';
+import { getAuthData } from '@ttoss/react-auth-cognito';
 
 const authData = await getAuthData({ includeTokens: true });
 ```
@@ -154,7 +154,7 @@ const authData = await getAuthData({ includeTokens: true });
 Check if user is currently authenticated:
 
 ```tsx
-import { checkAuth } from '@ttoss/react-auth';
+import { checkAuth } from '@ttoss/react-auth-cognito';
 
 const isAuthenticated = await checkAuth();
 ```
