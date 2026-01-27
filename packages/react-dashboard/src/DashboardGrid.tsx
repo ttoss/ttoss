@@ -1,6 +1,6 @@
 import 'react-grid-layout/css/styles.css';
 
-import { Box, Flex, Spinner } from '@ttoss/ui';
+import { Box, Flex, Global, Spinner } from '@ttoss/ui';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { DashboardTemplate } from './Dashboard';
@@ -60,6 +60,13 @@ export const DashboardGrid = ({
 
   return (
     <Box sx={{ width: '100%', height: 'full' }}>
+      <Global
+        styles={{
+          '.react-grid-item:has([data-tooltip-id]:hover)': {
+            zIndex: 1,
+          },
+        }}
+      />
       {loading ? (
         <Flex
           sx={{
@@ -77,7 +84,7 @@ export const DashboardGrid = ({
           layouts={layouts}
           breakpoints={breakpoints}
           cols={cols}
-          rowHeight={30}
+          rowHeight={32}
           margin={[10, 10]}
           containerPadding={[0, 0]}
         >
