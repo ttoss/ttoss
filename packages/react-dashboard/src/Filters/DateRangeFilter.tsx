@@ -1,10 +1,12 @@
 import { type DateRangePreset, FormFieldDatePicker } from '@ttoss/forms';
 import { FormProvider, useForm } from '@ttoss/forms';
+import type { SxProp } from '@ttoss/ui';
 import * as React from 'react';
 
 export type { DateRange } from '@ttoss/components/DatePicker';
 
 interface DateRangePickerProps {
+  sx?: SxProp['sx'];
   label: string;
   value?: { from: Date | undefined; to: Date | undefined };
   presets?: DateRangePreset[];
@@ -14,6 +16,7 @@ interface DateRangePickerProps {
 }
 
 export const DateRangeFilter = ({
+  sx,
   label,
   value,
   presets,
@@ -62,7 +65,12 @@ export const DateRangeFilter = ({
 
   return (
     <FormProvider {...formMethods}>
-      <FormFieldDatePicker name="dateRange" label={label} presets={presets} />
+      <FormFieldDatePicker
+        name="dateRange"
+        label={label}
+        presets={presets}
+        sx={sx}
+      />
     </FormProvider>
   );
 };

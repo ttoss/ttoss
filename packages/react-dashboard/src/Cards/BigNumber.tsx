@@ -140,7 +140,7 @@ export const BigNumber = (props: DashboardCard) => {
                 color: getTrendColor(props.trend).color,
                 backgroundColor: getTrendColor(props.trend).backgroundColor,
                 padding: '1',
-                fontSize: '2xs',
+                fontSize: 'xs',
                 fontWeight: 'bold',
                 borderRadius: 'sm',
                 display: 'flex',
@@ -148,18 +148,18 @@ export const BigNumber = (props: DashboardCard) => {
               }}
             >
               {props.trend.status === 'positive' ? (
-                <Icon icon="mdi:arrow-up" width={10} />
+                <Icon icon="mdi:arrow-up" width={12} />
               ) : props.trend.status === 'negative' ? (
-                <Icon icon="mdi:arrow-down" width={10} />
+                <Icon icon="mdi:arrow-down" width={12} />
               ) : (
-                <Icon icon="mdi:minus" width={10} />
+                <Icon icon="mdi:minus" width={12} />
               )}
               {props.trend.value.toFixed(1)}%{' '}
             </Box>
             <Text
               sx={{
                 color: 'input.background.muted.disabled',
-                fontSize: '2xs',
+                fontSize: 'xs',
                 fontWeight: 'medium',
               }}
             >

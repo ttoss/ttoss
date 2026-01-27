@@ -77,9 +77,12 @@ export const CardWrapper = ({
           {description && (
             <TooltipIcon
               variant="info"
-              icon="ant-design:info-circle-outlined"
+              icon="info"
               tooltip={{
                 children: description,
+                sx: {
+                  maxWidth: '300px',
+                },
               }}
               sx={{
                 fontSize: 'sm',

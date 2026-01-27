@@ -89,6 +89,7 @@ export const DashboardFilters = () => {
           case DashboardFilterType.DATE_RANGE:
             return (
               <DateRangeFilter
+                sx={{ minWidth: 'auto' }}
                 label={filter.label}
                 key={filter.key}
                 value={filter.value as DateRange | undefined}
