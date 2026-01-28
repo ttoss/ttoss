@@ -77,21 +77,33 @@ const getTrendColor = (
   if (!trend) {
     return colors.neutral;
   }
-  const isGoodTrend =
-    (trend.type === 'higher' && trend.status === 'positive') ||
-    (trend.type === 'lower' && trend.status === 'negative');
+  const isGoodTrend = trend.status === 'positive';
 
   if (isGoodTrend) {
     return colors.positive;
   }
 
-  const isBadTrend =
-    (trend.type === 'higher' && trend.status === 'negative') ||
-    (trend.type === 'lower' && trend.status === 'positive');
+  const isBadTrend = trend.status === 'negative';
   if (isBadTrend) {
     return colors.negative;
   }
   return colors.neutral;
+};
+
+const TrendIcon = ({ trend }: { trend: TrendIndicator }) => {
+  let icon = 'mdi:minus';
+  if (
+    (trend.type === 'higher' && trend.status === 'positive') ||
+    (trend.type === 'lower' && trend.status === 'negative')
+  ) {
+    icon = 'mdi:arrow-up';
+  } else if (
+    (trend.type === 'higher' && trend.status === 'negative') ||
+    (trend.type === 'lower' && trend.status === 'positive')
+  ) {
+    icon = 'mdi:arrow-down';
+  }
+  return <Icon icon={icon} width={12} />;
 };
 
 export const BigNumber = (props: DashboardCard) => {
@@ -147,13 +159,7 @@ export const BigNumber = (props: DashboardCard) => {
                 alignItems: 'center',
               }}
             >
-              {props.trend.status === 'positive' ? (
-                <Icon icon="mdi:arrow-up" width={12} />
-              ) : props.trend.status === 'negative' ? (
-                <Icon icon="mdi:arrow-down" width={12} />
-              ) : (
-                <Icon icon="mdi:minus" width={12} />
-              )}
+              <TrendIcon trend={props.trend} />
               {props.trend.value.toFixed(1)}%{' '}
             </Box>
             <Text
