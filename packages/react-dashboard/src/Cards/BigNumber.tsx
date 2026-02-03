@@ -140,7 +140,7 @@ export const BigNumber = (props: DashboardCard) => {
           {formattedValue}
         </Text>
 
-        {props.trend && (
+        {props.trend?.value && (
           <Flex
             sx={{
               alignItems: 'center',
