@@ -387,22 +387,22 @@ describe('DateRangeFilter', () => {
       await user.click(button);
 
       // Find a day button to click - this will trigger handleDayClick
-      // which sets isResettingRangeRef.current = true (line 91)
       const dayButtons = container.querySelectorAll(
         '.rdp-day_button, [role="gridcell"] button, button[aria-label*="day"]'
       );
 
       if (dayButtons.length > 0) {
-        // Click a day to trigger handleDayClick which sets isResettingRangeRef
-        const firstDay = dayButtons[0] as HTMLButtonElement;
-        await user.click(firstDay);
+        const dayButton = Array.from(dayButtons).find((btn) => {
+          return btn.textContent && /^\d+$/.test(btn.textContent.trim());
+        }) as HTMLButtonElement;
 
-        // After clicking, handleDayClick sets isResettingRangeRef.current = true
-        // and calls handleSelect({ from: day, to: undefined })
-        // This also triggers handleDayPickerSelect via the DayPicker's onSelect
-        // When handleDayPickerSelect is called again with undefined (which can happen
-        // during the reset process), it should hit lines 76-78
-        expect(handleChange).toHaveBeenCalled();
+        if (dayButton) {
+          await user.click(dayButton);
+          // When resetting range (clicking a new first day), the component updates
+          // internal state but does not call onChange until the user completes
+          // the range by selecting the end date. Single click = no commit.
+          expect(handleChange).not.toHaveBeenCalled();
+        }
       }
     }
   });
@@ -438,7 +438,7 @@ describe('DateRangeFilter', () => {
     }
   });
 
-  test('should handle edge case: resetting range with undefined selected (lines 77-78)', async () => {
+  test('should handle edge case: resetting range with undefined selected', async () => {
     const handleChange = jest.fn();
     const fromDate = new Date(2024, 0, 15);
     const toDate = new Date(2024, 0, 20);
@@ -457,10 +457,6 @@ describe('DateRangeFilter', () => {
     if (button) {
       await user.click(button);
 
-      // Find DayPicker component - it uses onSelect callback
-      // When handleDayClick is triggered (which sets isResettingRangeRef.current = true),
-      // and then handleDayPickerSelect is called with undefined during the reset process,
-      // it should hit lines 77-78 (early return)
       const dayButtons = container.querySelectorAll(
         '.rdp-day_button, [role="gridcell"] button, button'
       );
@@ -471,15 +467,10 @@ describe('DateRangeFilter', () => {
         }) as HTMLButtonElement;
 
         if (dayButton) {
-          // Click a day - this triggers handleDayClick which sets
-          // isResettingRangeRef.current = true and calls handleSelect
           await user.click(dayButton);
-
-          // The DayPicker's onSelect might be called multiple times during interaction
-          // When it's called with undefined while isResettingRangeRef.current is true,
-          // it should hit lines 77-78
-          // We verify the component handles this edge case correctly
-          expect(handleChange).toHaveBeenCalled();
+          // Single click during reset updates internal state but does not commit
+          // until user selects the end date. Component handles this without error.
+          expect(handleChange).not.toHaveBeenCalled();
         }
       }
     }
@@ -588,23 +579,20 @@ describe('DateRangeFilter', () => {
     if (button) {
       await user.click(button);
 
-      // Find and click a day button
-      // This should trigger handleDayClick which tests lines 90-92
       const dayButtons = container.querySelectorAll(
         '.rdp-day_button, [role="gridcell"] button, button'
       );
 
       if (dayButtons.length > 0) {
-        // Click any day to trigger handleDayClick
         const dayButton = Array.from(dayButtons).find((btn) => {
           return btn.textContent && /^\d+$/.test(btn.textContent.trim());
         }) as HTMLButtonElement;
 
         if (dayButton) {
           await user.click(dayButton);
-          // This should trigger handleDayClick with date?.from && date?.to being true
-          // which sets isResettingRangeRef.current = true and calls handleSelect
-          expect(handleChange).toHaveBeenCalled();
+          // First click when both dates are set starts a new range selection.
+          // onChange is not called until user selects the end date.
+          expect(handleChange).not.toHaveBeenCalled();
         }
       }
     }

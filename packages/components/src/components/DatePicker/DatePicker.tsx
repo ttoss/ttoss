@@ -32,6 +32,9 @@ export const DatePicker = ({
   onChange,
 }: DatePickerProps) => {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
+  const [pickerSelection, setPickerSelection] = React.useState<
+    DateRange | undefined
+  >(value);
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const isResettingRangeRef = React.useRef(false);
@@ -39,6 +42,12 @@ export const DatePicker = ({
   React.useEffect(() => {
     setDate(value);
   }, [value]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setPickerSelection(date);
+    }
+  }, [isOpen, date]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,37 +68,56 @@ export const DatePicker = ({
     };
   }, [isOpen]);
 
-  const handleSelect = (range: DateRange | undefined) => {
+  const commitSelection = (range: DateRange | undefined) => {
     setDate(range);
     onChange?.(range);
   };
 
   const handlePresetClick = (preset: DateRangePreset) => {
     const range = preset.getValue();
-    handleSelect(range);
+    commitSelection(range);
     setIsOpen(false);
   };
 
   const handleDayPickerSelect = (selected: DateRange | undefined) => {
-    if (isResettingRangeRef.current && !selected) {
-      isResettingRangeRef.current = false;
+    if (
+      isResettingRangeRef.current &&
+      !selected &&
+      pickerSelection?.from &&
+      !pickerSelection?.to
+    ) {
+      commitSelection({ from: pickerSelection.from, to: pickerSelection.from });
+      setIsOpen(false);
       return;
     }
 
     isResettingRangeRef.current = false;
-    if (selected?.from || selected?.to) {
-      handleSelect(selected);
-    } else {
-      handleSelect(undefined);
+
+    const hadFullRange = date?.from && date?.to;
+    const hadPartialPicker = pickerSelection?.from && !pickerSelection?.to;
+    if (hadFullRange && !hadPartialPicker && selected?.from && selected?.to) {
+      const clickedDay =
+        selected.from.getTime() === date?.from?.getTime()
+          ? selected.to
+          : selected.from;
+      setPickerSelection({ from: clickedDay, to: undefined });
+      return;
+    }
+
+    setPickerSelection(selected);
+
+    if (selected?.from && selected?.to) {
+      commitSelection(selected);
+      setIsOpen(false);
+    } else if (!selected?.from && !selected?.to) {
+      commitSelection(undefined);
     }
   };
 
   const handleDayClick = (day: Date) => {
     if (date?.from && date?.to) {
       isResettingRangeRef.current = true;
-      handleSelect({ from: day, to: undefined });
-    } else {
-      setIsOpen(false);
+      setPickerSelection({ from: day, to: undefined });
     }
   };
 
@@ -348,7 +376,14 @@ export const DatePicker = ({
                 <DayPicker
                   mode="range"
                   locale={ptBR}
-                  selected={date}
+                  selected={
+                    pickerSelection?.from
+                      ? {
+                          from: pickerSelection.from,
+                          to: pickerSelection.to ?? pickerSelection.from,
+                        }
+                      : undefined
+                  }
                   onSelect={(selected) => {
                     return handleDayPickerSelect(
                       selected as DateRange | undefined
