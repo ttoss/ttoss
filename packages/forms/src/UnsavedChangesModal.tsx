@@ -77,6 +77,9 @@ export const UnsavedChangesModal = ({
           display: 'flex',
           flexDirection: 'column',
           gap: '4',
+          backgroundColor: 'display.background.primary.default',
+          padding: '6',
+          borderRadius: 'lg',
         }}
       >
         <Heading
