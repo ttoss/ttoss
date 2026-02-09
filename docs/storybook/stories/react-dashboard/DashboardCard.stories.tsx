@@ -8,7 +8,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Individual dashboard card component. Currently supports `bigNumber` type with various formatting options, variants, and features like trends and status indicators. Use `numberDecimalPlaces` to control the number of decimal places displayed (defaults to 2).',
+          'Individual dashboard card component. Currently supports `bigNumber` type with various formatting options, variants, and features like trends and status indicators. Use `numberDecimalPlaces` to control the number of decimal places displayed (defaults to 2). Use the optional `suffix` prop to append text after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`); the suffix is not shown when the value is undefined.',
       },
     },
   },
@@ -304,6 +304,65 @@ export const LightGreenVariant: StoryObj = {
       description: {
         story:
           'Card with light green variant. Uses a light green background with green accent text, perfect for positive metrics like ROAS or ROI.',
+      },
+    },
+  },
+};
+
+export const WithSuffix: StoryObj = {
+  render: () => {
+    return (
+      <Stack
+        sx={{
+          gap: '4',
+          padding: '4',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="Weight"
+            description="Total weight"
+            numberType="number"
+            numberDecimalPlaces={2}
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 1500.5 } }}
+            suffix="kg"
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="Units"
+            description="Quantity in units"
+            numberType="currency"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 12500 } }}
+            suffix="un"
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            title="Change (p.p.)"
+            description="Percentage points"
+            numberType="percentage"
+            numberDecimalPlaces={1}
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 2.3 } }}
+            suffix="p.p."
+          />
+        </Box>
+      </Stack>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Use the `suffix` prop to append a unit or qualifier after the formatted number (e.g. "kg", "un", "p.p."). The suffix is rendered with a space before it. When the value is undefined, only a dash is shown and no suffix is appended.',
       },
     },
   },
