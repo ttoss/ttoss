@@ -52,6 +52,7 @@ export interface DashboardCard {
   sourceType: CardSourceType[];
   labels?: Array<string | number>;
   data: DashboardCardData;
+  suffix?: string;
   trend?: TrendIndicator;
   additionalInfo?: string;
   status?: StatusIndicator;

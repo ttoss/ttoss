@@ -210,22 +210,23 @@ import { DashboardCard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                      | Default | Description                                                                               |
-| --------------------- | ------------------------- | ------- | ----------------------------------------------------------------------------------------- |
-| `title`               | `string`                  | -       | Card title                                                                                |
-| `description`         | `string`                  | -       | Optional card description                                                                 |
-| `icon`                | `string`                  | -       | Optional icon name                                                                        |
-| `color`               | `string`                  | -       | Optional color for the card                                                               |
-| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                     |
-| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                         |
-| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                   |
-| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`) |
-| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                 |
-| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                              |
-| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                            |
-| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                  |
-| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                      |
-| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                 |
+| Prop                  | Type                      | Default | Description                                                                                                           |
+| --------------------- | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `title`               | `string`                  | -       | Card title                                                                                                            |
+| `description`         | `string`                  | -       | Optional card description                                                                                             |
+| `icon`                | `string`                  | -       | Optional icon name                                                                                                    |
+| `color`               | `string`                  | -       | Optional color for the card                                                                                           |
+| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                                                 |
+| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                                                     |
+| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                                               |
+| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`)                             |
+| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                                             |
+| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                                                          |
+| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                                                        |
+| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                                              |
+| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                                                  |
+| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                                             |
+| `suffix`              | `string`                  | -       | Optional text appended after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`). Not shown when value is undefined. |
 
 ### DashboardFilters
 

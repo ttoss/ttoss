@@ -8,32 +8,45 @@ import type {
 } from '../DashboardCard';
 import { CardWrapper } from './Wrapper';
 
-const formatNumber = (
-  value: number | undefined,
-  type: 'number' | 'percentage' | 'currency',
-  numberDecimalPlaces?: number
-): string => {
+const formatNumber = ({
+  value,
+  type,
+  numberDecimalPlaces,
+  suffix,
+}: {
+  value: number | undefined;
+  type: 'number' | 'percentage' | 'currency';
+  numberDecimalPlaces?: number;
+  suffix?: string;
+}): string => {
   if (value === undefined || value === null) {
     return '-';
   }
 
+  let formatted = '';
   switch (type) {
     case 'currency':
-      return new Intl.NumberFormat('pt-BR', {
+      formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
       }).format(value);
+      break;
     case 'percentage':
-      return `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
+      formatted = `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
+      break;
     case 'number':
     default: {
-      const formatted = new Intl.NumberFormat('pt-BR', {
+      formatted = new Intl.NumberFormat('pt-BR', {
         minimumFractionDigits: numberDecimalPlaces ?? 2,
         maximumFractionDigits: numberDecimalPlaces ?? 2,
       }).format(value);
-      return formatted;
+      break;
     }
   }
+  if (suffix) {
+    formatted += ` ${suffix}`;
+  }
+  return formatted;
 };
 
 const getValueColor = (color?: string, variant?: CardVariant): string => {
@@ -108,11 +121,12 @@ const TrendIcon = ({ trend }: { trend: TrendIndicator }) => {
 
 export const BigNumber = (props: DashboardCard) => {
   const total = props.data.meta?.total ?? props.data.api?.total ?? undefined;
-  const formattedValue = formatNumber(
-    total,
-    props.numberType,
-    props.numberDecimalPlaces
-  );
+  const formattedValue = formatNumber({
+    value: total,
+    type: props.numberType,
+    numberDecimalPlaces: props.numberDecimalPlaces,
+    suffix: props.suffix,
+  });
 
   const valueColor = getValueColor(props.color, props.variant);
   const variant = props.variant || 'default';
