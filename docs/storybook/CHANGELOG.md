@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.12.7...@docs/storybook@3.13.0) (2026-02-10)
+
+### Features
+
+- add optional suffix to dashboard card value ([#868](https://github.com/ttoss/ttoss/issues/868)) ([247725c](https://github.com/ttoss/ttoss/commit/247725c28b09ee5c305318e8c8666d0bbea2f477))
+
 ## [3.12.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.12.6...@docs/storybook@3.12.7) (2026-02-03)
 
 **Note:** Version bump only for package @docs/storybook
