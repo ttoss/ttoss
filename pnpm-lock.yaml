@@ -20869,14 +20869,14 @@ snapshots:
       eslint: 9.32.0(jiti@2.5.1)
       eslint-visitor-keys: 3.4.3
 
-  '@eslint-community/eslint-utils@4.9.0(eslint@10.0.0(jiti@2.5.1))':
-    dependencies:
-      eslint: 10.0.0(jiti@2.5.1)
-      eslint-visitor-keys: 3.4.3
-
   '@eslint-community/eslint-utils@4.9.0(eslint@9.32.0(jiti@2.5.1))':
     dependencies:
       eslint: 9.32.0(jiti@2.5.1)
+      eslint-visitor-keys: 3.4.3
+
+  '@eslint-community/eslint-utils@4.9.1(eslint@10.0.0(jiti@2.5.1))':
+    dependencies:
+      eslint: 10.0.0(jiti@2.5.1)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/eslint-utils@4.9.1(eslint@9.32.0(jiti@2.5.1))':
@@ -27903,7 +27903,7 @@ snapshots:
 
   eslint@10.0.0(jiti@2.5.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.0(eslint@10.0.0(jiti@2.5.1))
+      '@eslint-community/eslint-utils': 4.9.1(eslint@10.0.0(jiti@2.5.1))
       '@eslint-community/regexpp': 4.12.2
       '@eslint/config-array': 0.23.1
       '@eslint/config-helpers': 0.5.2
