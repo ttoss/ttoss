@@ -221,6 +221,9 @@ importers:
       '@ttoss/react-notifications':
         specifier: workspace:^
         version: link:../../packages/react-notifications
+      '@ttoss/react-wizard':
+        specifier: workspace:^
+        version: link:../../packages/react-wizard
       '@ttoss/theme':
         specifier: workspace:^
         version: link:../../packages/theme
@@ -1732,6 +1735,39 @@ importers:
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../ui
+      '@types/react':
+        specifier: ^19.2.8
+        version: 19.2.8
+      jest:
+        specifier: ^30.2.0
+        version: 30.2.0(@types/node@22.19.0)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.19.0)(typescript@5.9.3))
+      react:
+        specifier: ^19.2.3
+        version: 19.2.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.13.5)(jiti@2.5.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+
+  packages/react-wizard:
+    devDependencies:
+      '@ttoss/config':
+        specifier: workspace:^
+        version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
+      '@ttoss/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
+      '@ttoss/ui':
+        specifier: workspace:^
+        version: link:../ui
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
       '@types/react':
         specifier: ^19.2.8
         version: 19.2.8

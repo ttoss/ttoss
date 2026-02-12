@@ -8,6 +8,8 @@ import { execSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { createDirectory, createFile } from './utils';
+
 const rootJestConfig = `import { jestRootConfig } from '@ttoss/config';
 
 export default jestRootConfig();
@@ -68,34 +70,6 @@ describe('Test Setup', () => {
 });
 
 `;
-
-const createDirectory = ({ dirPath }: { dirPath: string }) => {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-    // eslint-disable-next-line no-console
-    console.log(`✓ Created directory: ${dirPath}`);
-  } else {
-    // eslint-disable-next-line no-console
-    console.log(`- Directory already exists: ${dirPath}`);
-  }
-};
-
-const createFile = ({
-  filePath,
-  content,
-}: {
-  filePath: string;
-  content: string;
-}) => {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, content);
-    // eslint-disable-next-line no-console
-    console.log(`✓ Created file: ${filePath}`);
-  } else {
-    // eslint-disable-next-line no-console
-    console.log(`- File already exists: ${filePath}`);
-  }
-};
 
 const installDependencies = ({ dir }: { dir: string }) => {
   const packageJsonPath = path.join(dir, 'package.json');
