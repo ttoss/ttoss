@@ -33,6 +33,9 @@ export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
+  /**
+   * TODO: uncomment when eslint-plugin-react supports ESLint 10
+   */
   // {
   //   files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
   //   ...reactPlugin.configs.flat.recommended,
