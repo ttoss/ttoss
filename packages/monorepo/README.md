@@ -12,7 +12,7 @@ pnpm add -Dw @ttoss/monorepo
 
 ### setup-monorepo
 
-Setup monorepo configuration following [ttoss configuration guidelines](https://ttoss.dev/docs/config/README.md).
+Setup monorepo configuration following [ttoss configuration guidelines](https://ttoss.dev/docs/modules/packages/config/).
 
 This command creates all necessary configuration files for ESLint, Prettier, Husky, commitlint, lint-staged, Lerna, Syncpack, and pnpm workspace in your monorepo root.
 
