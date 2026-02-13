@@ -1,7 +1,10 @@
 import { defineMessage } from '@ttoss/react-i18n';
 import * as z from 'zod';
 
-const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
+const customErrorMap = (
+  issue: z.ZodIssueOptionalMessage,
+  ctx: z.ErrorMapCtx
+) => {
   if (issue.code === z.ZodIssueCode.invalid_type) {
     if (issue.received === 'undefined') {
       return {
@@ -39,4 +42,5 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   return { message: ctx.defaultError };
 };
 
-z.setErrorMap(customErrorMap);
+// Type assertion needed because we're extending Zod's error map to support i18n message descriptors
+z.setErrorMap(customErrorMap as z.ZodErrorMap);
