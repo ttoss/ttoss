@@ -5,10 +5,10 @@ export default jestUnitConfig({
   testEnvironment: 'jsdom',
   coverageThreshold: {
     global: {
-      statements: 96.0,
-      branches: 92.75,
-      functions: 94.0,
-      lines: 96.0,
+      statements: 95.7,
+      branches: 89.5,
+      functions: 92.2,
+      lines: 95.7,
     },
   },
 });

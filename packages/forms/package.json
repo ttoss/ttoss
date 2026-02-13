@@ -29,9 +29,10 @@
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^5.2.2",
-    "react-hook-form": "^7.66.1",
+    "react-hook-form": "^7.71.1",
     "react-number-format": "^5.4.4",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "zod": "^4.3.6"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
@@ -48,10 +49,10 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.14",
     "jest": "^30.2.0",
-    "react": "^19.2.3",
-    "react-error-boundary": "^6.0.0",
+    "react": "^19.2.4",
+    "react-error-boundary": "^6.1.0",
     "tsup": "^8.5.1",
     "yup": "^1.7.1"
   },

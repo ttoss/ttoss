@@ -49,6 +49,9 @@ export const Wizard = ({
 }: WizardProps) => {
   const { intl } = useI18n();
   const [currentStep, setCurrentStep] = React.useState(initialStep);
+  const stepValidationRef = React.useRef<
+    (() => boolean | Promise<boolean>) | null
+  >(null);
 
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
@@ -69,23 +72,19 @@ export const Wizard = ({
     [currentStep]
   );
 
-  const goToStep = React.useCallback(
-    ({ stepIndex }: { stepIndex: number }) => {
-      if (
-        stepIndex >= 0 &&
-        stepIndex < totalSteps &&
-        stepIndex <= currentStep
-      ) {
-        setCurrentStep(stepIndex);
-        onStepChange?.({ stepIndex });
-      }
-    },
-    [currentStep, totalSteps, onStepChange]
-  );
-
   const goToNext = React.useCallback(async () => {
     const step = steps[currentStep];
 
+    // Check step validation from setStepValidation first
+    if (stepValidationRef.current) {
+      const canProceed = await stepValidationRef.current();
+
+      if (!canProceed) {
+        return;
+      }
+    }
+
+    // Then check the step's onNext callback
     if (step.onNext) {
       const canProceed = await step.onNext();
 
@@ -98,6 +97,8 @@ export const Wizard = ({
       onComplete?.();
     } else {
       const nextStep = currentStep + 1;
+      // Clear validation before moving to next step
+      stepValidationRef.current = null;
       setCurrentStep(nextStep);
       onStepChange?.({ stepIndex: nextStep });
     }
@@ -106,10 +107,35 @@ export const Wizard = ({
   const goToPrevious = React.useCallback(() => {
     if (!isFirstStep) {
       const prevStep = currentStep - 1;
+      // Clear validation before moving to previous step
+      stepValidationRef.current = null;
       setCurrentStep(prevStep);
       onStepChange?.({ stepIndex: prevStep });
     }
   }, [currentStep, isFirstStep, onStepChange]);
+
+  const goToStep = React.useCallback(
+    ({ stepIndex }: { stepIndex: number }) => {
+      if (
+        stepIndex >= 0 &&
+        stepIndex < totalSteps &&
+        stepIndex <= currentStep
+      ) {
+        // Clear validation before moving to the target step
+        stepValidationRef.current = null;
+        setCurrentStep(stepIndex);
+        onStepChange?.({ stepIndex });
+      }
+    },
+    [currentStep, totalSteps, onStepChange]
+  );
+
+  const setStepValidation = React.useCallback(
+    (validate: () => boolean | Promise<boolean>) => {
+      stepValidationRef.current = validate;
+    },
+    []
+  );
 
   const contextValue = React.useMemo(() => {
     return {
@@ -121,6 +147,7 @@ export const Wizard = ({
       isFirstStep,
       isLastStep,
       getStepStatus,
+      setStepValidation,
     };
   }, [
     currentStep,
@@ -131,6 +158,7 @@ export const Wizard = ({
     isFirstStep,
     isLastStep,
     getStepStatus,
+    setStepValidation,
   ]);
 
   return (

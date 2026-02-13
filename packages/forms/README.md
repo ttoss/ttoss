@@ -1,12 +1,14 @@
 # @ttoss/forms
 
-**@ttoss/forms** provides React form components built on [React Hook Form](https://react-hook-form.com/) and [Yup](https://github.com/jquense/yup), with integrated i18n support and theme styling.
+**@ttoss/forms** provides React form components built on [React Hook Form](https://react-hook-form.com/), with schema validation using [Zod](https://zod.dev/), integrated i18n support, and theme styling.
+
+> **Note:** Yup support is deprecated and will be removed in a future version. Please migrate to Zod for new projects.
 
 ## Installation
 
 ```shell
 pnpm i @ttoss/forms @ttoss/react-i18n @ttoss/ui @emotion/react
-pnpm i --save-dev @ttoss/i18n-cli
+pnpm i -D @ttoss/i18n-cli
 ```
 
 **Note:** This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). I18n configuration is required—see [@ttoss/react-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/) for setup details.
@@ -20,21 +22,21 @@ import {
   FormFieldCheckbox,
   FormFieldInput,
   useForm,
-  yup,
-  yupResolver,
+  z,
+  zodResolver,
 } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
 
-const schema = yup.object({
-  firstName: yup.string().required('First name is required'),
-  age: yup.number().required('Age is required'),
-  receiveEmails: yup.boolean(),
+const schema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  age: z.number(),
+  receiveEmails: z.boolean(),
 });
 
 export const FormComponent = () => {
   const formMethods = useForm({
     mode: 'all',
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = (data) => {
@@ -58,20 +60,20 @@ export const FormComponent = () => {
 
 All React Hook Form APIs are re-exported from `@ttoss/forms`, including hooks like `useForm`, `useController`, `useFieldArray`, and `useFormContext`. See the [React Hook Form documentation](https://react-hook-form.com/docs) for complete API details.
 
-## Yup Validation
+## Zod Validation (Recommended)
 
-Import `yup` and `yupResolver` directly from `@ttoss/forms`:
+Import `z` and `zodResolver` directly from `@ttoss/forms` for schema validation using [Zod](https://zod.dev/):
 
 ```tsx
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Form, FormFieldInput, useForm, z, zodResolver } from '@ttoss/forms';
 
-const schema = yup.object({
-  firstName: yup.string().required(),
+const schema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
 });
 
 const MyForm = () => {
   const formMethods = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   return (
@@ -87,59 +89,91 @@ const MyForm = () => {
 
 Invalid fields display default error messages like "Field is required". These messages are defined using i18n and can be customized for each locale.
 
-#### Default Yup Messages
+#### Default Zod Messages
 
-The package provides internationalized default messages for common Yup validation errors. These are automatically extracted when you run `pnpm run i18n`:
+The package provides internationalized default messages for common Zod validation errors. These are automatically extracted when you run `pnpm run i18n`:
 
 - **Required field**: "Field is required"
-- **Type mismatch**: "Invalid Value for Field of type (type)"
-- **Minimum length**: "Field must be at least (min) characters"
+- **Type mismatch**: "Invalid Value for Field of type {expected}"
+- **Minimum length**: "Field must be at least {min} characters"
 
 To customize these messages for your locale, extract the i18n messages and translate them in your application's i18n files (e.g., `i18n/compiled/pt-BR.json`). See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for more details.
 
-#### Custom Schema Messages
+### Custom Validations
 
-You can also provide custom error messages directly in your Yup schemas using i18n patterns:
+The package extends Zod with custom validation methods for Brazilian documents:
+
+#### CPF Validation
 
 ```tsx
-import { useI18n } from '@ttoss/react-i18n';
-import { useMemo } from 'react';
+import { z } from '@ttoss/forms';
+
+const schema = z.object({
+  cpf: z.string().cpf(), // Uses default message: "Invalid CPF"
+  // Or with custom message:
+  cpfCustom: z.string().cpf('CPF inválido'),
+});
+```
+
+#### CNPJ Validation
+
+````
+
+```tsx
+import { z } from '@ttoss/forms';
+
+const schema = z.object({
+  cnpj: z.string().cnpj(), // Uses default message: "Invalid CNPJ"
+  // Or with custom message:
+  cnpjCustom: z.string().cnpj('CNPJ inválido'),
+});
+````
+
+#### Password Validation
+
+```tsx
+import { passwordSchema } from '@ttoss/forms';
+import { z } from '@ttoss/forms';
+
+const schema = z.object({
+  // Required password (minimum 8 characters)
+  password: passwordSchema({ required: true }),
+
+  // Optional password (accepts empty string or minimum 8 characters)
+  optionalPassword: passwordSchema(),
+});
+```
+
+## Yup Validation (Deprecated)
+
+> **DEPRECATION WARNING:** Yup support is deprecated and will be removed in a future major version. Please migrate to Zod for new projects. Existing Yup schemas will continue to work, but we recommend planning your migration to Zod.
+
+For legacy projects still using Yup, you can import `yup` and `yupResolver` from `@ttoss/forms`:
+
+```tsx
+import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
+
+const schema = yup.object({
+  firstName: yup.string().required(),
+});
 
 const MyForm = () => {
-  const {
-    intl: { formatMessage },
-  } = useI18n();
+  const formMethods = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        name: yup.string().required(
-          formatMessage({
-            defaultMessage: 'Name must not be null',
-            description: 'Name required constraint',
-          })
-        ),
-        age: yup.number().min(
-          18,
-          formatMessage(
-            {
-              defaultMessage: 'You must be {age} years old or more',
-              description: 'Min age constraint message',
-            },
-            { age: 18 }
-          )
-        ),
-      }),
-    [formatMessage]
+  return (
+    <Form {...formMethods} onSubmit={(data) => console.log(data)}>
+      <FormFieldInput name="firstName" label="First Name" />
+      <Button type="submit">Submit</Button>
+    </Form>
   );
-
-  // ... rest of form implementation
 };
 ```
 
 ## Validation Approaches
 
-There are two ways to validate form fields in `@ttoss/forms`: schema-based validation using Yup schemas with `yupResolver`, and field-level validation using the `rules` prop on individual form fields.
+There are two ways to validate form fields in `@ttoss/forms`: schema-based validation using Zod schemas with `zodResolver`, and field-level validation using the `rules` prop on individual form fields.
 
 **IMPORTANT:** You cannot mix both validation methods for the same field—choose either schema-based or field-level validation per field.
 
@@ -159,16 +193,18 @@ There are two ways to validate form fields in `@ttoss/forms`: schema-based valid
 
 ### 1. Schema-based Validation (Recommended)
 
-Use Yup schemas with `yupResolver` for complex validation logic:
+Use Zod schemas with `zodResolver` for complex validation logic:
 
 ```tsx
-const schema = yup.object({
-  email: yup.string().email().required(),
-  age: yup.number().min(18).max(100).required(),
+import { z, zodResolver } from '@ttoss/forms';
+
+const schema = z.object({
+  email: z.string().email(),
+  age: z.number().min(18).max(100),
 });
 
 const formMethods = useForm({
-  resolver: yupResolver(schema),
+  resolver: zodResolver(schema),
 });
 ```
 
@@ -609,15 +645,15 @@ Import from `@ttoss/forms/multistep-form`:
 
 ```tsx
 import { MultistepForm } from '@ttoss/forms/multistep-form';
-import { FormFieldInput, yup } from '@ttoss/forms';
+import { FormFieldInput, z } from '@ttoss/forms';
 
 const steps = [
   {
     label: 'Step 1',
     question: 'What is your name?',
     fields: <FormFieldInput name="name" label="Name" />,
-    schema: yup.object({
-      name: yup.string().required('Name is required'),
+    schema: z.object({
+      name: z.string().min(1, 'Name is required'),
     }),
   },
   {
@@ -625,11 +661,8 @@ const steps = [
     question: 'How old are you?',
     fields: <FormFieldInput type="number" name="age" label="Age" />,
     defaultValues: { age: 18 },
-    schema: yup.object({
-      age: yup
-        .number()
-        .min(18, 'Must be at least 18')
-        .required('Age is required'),
+    schema: z.object({
+      age: z.number().min(18, 'Must be at least 18'),
     }),
   },
 ];
@@ -664,7 +697,7 @@ Each step object contains:
 - `label`: Step label for navigation
 - `question`: Question or instruction text
 - `fields`: React element(s) containing form fields
-- `schema`: Yup validation schema
+- `schema`: Zod validation schema
 - `defaultValues`: Optional default values for step fields
 
 ### Header Types

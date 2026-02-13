@@ -105,4 +105,9 @@ export interface WizardContextValue {
    * Get the status of a step by index.
    */
   getStepStatus: (params: { stepIndex: number }) => WizardStepStatus;
+  /**
+   * Register a validation function for the current step.
+   * This allows step content components to provide their own validation logic.
+   */
+  setStepValidation: (validate: () => boolean | Promise<boolean>) => void;
 }
