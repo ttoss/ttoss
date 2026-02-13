@@ -15,6 +15,7 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
+  "type": "module",
   "scripts": {
     "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",
@@ -26,21 +27,21 @@
     "syncpack:list": "syncpack list-mismatches"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@lerna-lite/changed": "^4.9.4",
-    "@lerna-lite/cli": "^4.9.4",
-    "@lerna-lite/list": "^4.9.4",
-    "@lerna-lite/version": "^4.9.4",
+    "@commitlint/cli": "^20.4.1",
+    "@lerna-lite/changed": "^4.11.2",
+    "@lerna-lite/cli": "^4.11.2",
+    "@lerna-lite/list": "^4.11.2",
+    "@lerna-lite/version": "^4.11.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.39.1",
+    "eslint": "^10.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.1",
     "syncpack": "13.0.4",
-    "turbo": "^2.6.2",
+    "turbo": "^2.8.7",
     "typescript": "~5.9.3"
   },
   "keywords": [
@@ -54,7 +55,7 @@
     "node": "^24.0.0",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.29.3",
   "pnpm": {
     "overrides": {
       "@types/parse-path": "7.0.3",

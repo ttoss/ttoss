@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
+import { defineConfig } from 'eslint/config';
 import turboConfig from 'eslint-config-turbo/flat';
 import formatjs from 'eslint-plugin-formatjs';
 import importPlugin from 'eslint-plugin-import';
@@ -18,7 +19,7 @@ import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config([
+export default defineConfig(
   {
     ignores: [
       '**/node_modules/**',
@@ -32,8 +33,17 @@ export default tseslint.config([
   eslint.configs.recommended,
   tseslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
-  reactPlugin.configs.flat.recommended,
-  reactPlugin.configs.flat['jsx-runtime'],
+  /**
+   * TODO: uncomment when eslint-plugin-react supports ESLint 10
+   */
+  // {
+  //   files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+  //   ...reactPlugin.configs.flat.recommended,
+  // },
+  // {
+  //   files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+  //   ...reactPlugin.configs.flat['jsx-runtime'],
+  // },
   relay.configs.recommended,
   reactHooks.configs.flat.recommended,
   {
@@ -147,5 +157,5 @@ export default tseslint.config([
       ],
     },
   },
-  eslintPluginPrettierRecommended,
-]);
+  eslintPluginPrettierRecommended
+);

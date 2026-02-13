@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-undef
-module.exports = {
+export default {
   reject: [
     /**
      * It breaks carlin build.
