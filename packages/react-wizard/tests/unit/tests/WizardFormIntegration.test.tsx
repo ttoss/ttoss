@@ -204,9 +204,11 @@ describe('Wizard Form Integration', () => {
     const lastNameInput = screen.getByLabelText('Last Name');
     const emailInput = screen.getByLabelText('Email');
 
-    await user.type(firstNameInput, 'John');
-    await user.type(lastNameInput, 'Doe');
-    await user.type(emailInput, 'john.doe@example.com');
+    await act(async () => {
+      await user.type(firstNameInput, 'John');
+      await user.type(lastNameInput, 'Doe');
+      await user.type(emailInput, 'john.doe@example.com');
+    });
 
     // Wait for values to be set
     await waitFor(() => {
