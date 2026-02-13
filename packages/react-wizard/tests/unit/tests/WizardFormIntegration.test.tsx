@@ -206,7 +206,9 @@ describe('Wizard Form Integration', () => {
 
     expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
 
-    await user.click(screen.getByText('Next'));
+    await act(async () => {
+      await user.click(screen.getByText('Next'));
+    });
 
     // Should now be on step 2
     await waitFor(() => {
