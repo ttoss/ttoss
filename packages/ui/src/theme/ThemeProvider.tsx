@@ -4,6 +4,8 @@ import type * as React from 'react';
 import type { Theme } from 'theme-ui';
 import { ThemeUIProvider } from 'theme-ui';
 
+import { ChakraProvider } from '../chakra/ChakraThemeProvider';
+
 export type ThemeProviderProps = {
   children?: React.ReactNode;
   theme?: Theme;
@@ -21,16 +23,18 @@ export const ThemeProvider = ({
   return (
     <>
       <ThemeUIProvider theme={theme}>
-        <Global
-          styles={css`
-            ${fonts
-              .map((url) => {
-                return `@import url('${url}');`;
-              })
-              .join('\n')}
-          `}
-        />
-        {children}
+        <ChakraProvider theme={theme}>
+          <Global
+            styles={css`
+              ${fonts
+                .map((url) => {
+                  return `@import url('${url}');`;
+                })
+                .join('\n')}
+            `}
+          />
+          {children}
+        </ChakraProvider>
       </ThemeUIProvider>
     </>
   );
