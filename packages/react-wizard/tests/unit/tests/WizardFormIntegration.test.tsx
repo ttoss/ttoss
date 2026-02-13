@@ -89,7 +89,7 @@ const TestWizardForm = ({
       ),
       onNext: async () => {
         // Validate only Step 1 fields
-        return await trigger(['firstName', 'lastName', 'email']);
+        return trigger(['firstName', 'lastName', 'email']);
       },
     },
     {
@@ -121,7 +121,7 @@ const TestWizardForm = ({
       ),
       onNext: async () => {
         // Validate only Step 2 fields
-        return await trigger(['street', 'city', 'country']);
+        return trigger(['street', 'city', 'country']);
       },
     },
     {
@@ -143,7 +143,7 @@ const TestWizardForm = ({
       ),
       onNext: async () => {
         // Validate only Step 3 fields
-        return await trigger(['phone', 'comments']);
+        return trigger(['phone', 'comments']);
       },
     },
     {
@@ -256,19 +256,13 @@ describe('Wizard Form Integration', () => {
     await user.type(screen.getByLabelText('Last Name'), 'Doe');
     await user.type(screen.getByLabelText('Email'), 'john.doe@example.com');
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Email')).toHaveValue(
-        'john.doe@example.com'
-      );
-    });
+    expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
 
     await act(async () => {
       await user.click(screen.getByText('Next'));
     });
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Street')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('Street')).toBeInTheDocument();
 
     // Try to navigate without filling step 2 fields
     await act(async () => {
@@ -276,10 +270,8 @@ describe('Wizard Form Integration', () => {
     });
 
     // Should still be on step 2
-    await waitFor(() => {
-      expect(screen.getByLabelText('Street')).toBeInTheDocument();
-      expect(screen.getByText('Street is required')).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText('Street')).toBeInTheDocument();
+    expect(screen.getByText('Street is required')).toBeInTheDocument();
   });
 
   test('calls onCancel when cancel button is clicked', async () => {
@@ -294,17 +286,3 @@ describe('Wizard Form Integration', () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });
-
-/**
- * Note: Additional comprehensive tests covering full multi-step flows with
- * complex form state preservation across all steps would require more
- * sophisticated test setup to handle edge cases with React Hook Form,
- * Chakra UI Select components, and unmount/remount cycles.
- *
- * The tests above verify the core functionality:
- * - Wizard renders with form fields
- * - Step-by-step validation works correctly
- * - Invalid data prevents navigation
- * - Valid dat allows progression
- * - Cancel functionality works
- */

@@ -244,6 +244,11 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
+  "UibUNJ": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {expected}",
+    "description": "Invalid Value"
+  },
   "ZhaPt0": {
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
@@ -258,10 +263,5 @@
     "module": "@ttoss/forms",
     "defaultMessage": ",",
     "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
-  },
-  "UibUNJ": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Invalid Value for Field of type {expected}",
-    "description": "Invalid Value"
   }
 }

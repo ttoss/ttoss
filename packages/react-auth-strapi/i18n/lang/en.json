@@ -241,6 +241,11 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
+  "UibUNJ": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {expected}",
+    "description": "Invalid Value"
+  },
   "ZhaPt0": {
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",

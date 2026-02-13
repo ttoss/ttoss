@@ -105,7 +105,7 @@ describe('Zod Integration', () => {
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
 
-    await screen.findByText(/Invalid Value for Field/);
+    await screen.findByText(/Invalid Value for Field of type number/);
   });
 
   test('should validate CNPJ with custom zod method', async () => {
