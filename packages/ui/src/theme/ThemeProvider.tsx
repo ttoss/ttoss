@@ -23,7 +23,7 @@ export const ThemeProvider = ({
   return (
     <>
       <ThemeUIProvider theme={theme}>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider>
           <Global
             styles={css`
               ${fonts
