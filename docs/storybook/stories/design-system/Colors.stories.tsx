@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Box, Flex, Grid, Text, useTheme } from '@ttoss/ui';
 
 type ColorProps = {
@@ -34,7 +34,7 @@ export default {
   component: Color,
 } as Meta;
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const { theme } = useTheme();
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

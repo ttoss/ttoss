@@ -1,11 +1,16 @@
-/**
- * Properties assigned:
- *
- * - `matchMedia`
- */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 (() => {
   if (typeof window === 'undefined') {
     return;
+  }
+
+  if (!window?.structuredClone) {
+    Object.defineProperty(window, 'structuredClone', {
+      writable: true,
+      value: (obj: any) => {
+        return JSON.parse(JSON.stringify(obj));
+      },
+    });
   }
 
   if (!window?.matchMedia) {

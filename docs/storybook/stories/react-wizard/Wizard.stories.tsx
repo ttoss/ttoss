@@ -38,7 +38,7 @@ const StepInfo = () => {
   const { currentStep, totalSteps } = useWizard();
 
   return (
-    <Text sx={{ fontSize: 0, color: 'textMuted' }}>
+    <Text sx={{ fontSize: 0, color: 'display.text.muted.default' }}>
       Step {currentStep + 1} of {totalSteps}
     </Text>
   );
