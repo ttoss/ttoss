@@ -7,6 +7,8 @@ import {
 import * as React from 'react';
 import type { Theme } from 'theme-ui';
 
+import { useTheme } from '../theme/useTheme';
+
 /**
  * Helper function to wrap token values in Chakra UI v3 format.
  * Each token value must be wrapped in an object with a `value` property.
@@ -96,7 +98,6 @@ const toChakraTheme = (
 
 export type ChakraThemeProviderProps = {
   children?: React.ReactNode;
-  theme: Theme;
 };
 
 /**
@@ -125,13 +126,12 @@ export type ChakraThemeProviderProps = {
  * }
  * ```
  */
-export const ChakraProvider = ({
-  children,
-  theme,
-}: ChakraThemeProviderProps) => {
+export const ChakraProvider = ({ children }: ChakraThemeProviderProps) => {
+  const themeUITheme = useTheme();
+
   const chakraSystem = React.useMemo(() => {
-    return toChakraTheme(theme);
-  }, [theme]);
+    return toChakraTheme(themeUITheme.theme);
+  }, [themeUITheme.theme]);
 
   return (
     <ChakraProviderBase value={chakraSystem}>{children}</ChakraProviderBase>
