@@ -1,3 +1,3 @@
-const { lintstagedConfig } = require('@ttoss/config');
+import { lintstagedConfig } from '@ttoss/config';
 
-module.exports = lintstagedConfig();
+export default lintstagedConfig();

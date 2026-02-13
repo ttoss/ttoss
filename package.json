@@ -15,6 +15,7 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
+  "type": "module",
   "scripts": {
     "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",

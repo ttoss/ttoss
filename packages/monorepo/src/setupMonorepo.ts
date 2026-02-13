@@ -40,9 +40,9 @@ const createPackageJsonIfNotExists = ({ dir }: { dir: string }) => {
   return true;
 };
 
-const prettierrcConfig = `const { prettierConfig } = require('@ttoss/config');
+const prettierrcConfig = `import { prettierConfig } from '@ttoss/config';
 
-module.exports = prettierConfig();
+export default prettierConfig();
 `;
 
 const eslintConfig = `import ttossEslintConfig from '@ttoss/eslint-config';
@@ -50,19 +50,19 @@ const eslintConfig = `import ttossEslintConfig from '@ttoss/eslint-config';
 export default [...ttossEslintConfig];
 `;
 
-const commitlintConfig = `const { commitlintConfig } = require('@ttoss/config');
+const commitlintConfig = `import { commitlintConfig } from '@ttoss/config';
 
-module.exports = commitlintConfig();
+export default commitlintConfig();
 `;
 
-const lintstagedConfig = `const { lintstagedConfig } = require('@ttoss/config');
+const lintstagedConfig = `import { lintstagedConfig } from '@ttoss/config';
 
-module.exports = lintstagedConfig();
+export default lintstagedConfig();
 `;
 
-const syncpackrcConfig = `const { syncpackConfig } = require('@ttoss/config');
+const syncpackrcConfig = `import { syncpackConfig } from '@ttoss/config';
 
-module.exports = syncpackConfig();
+export default syncpackConfig();
 `;
 
 const lernaConfig = `{
@@ -495,6 +495,12 @@ export const setupMonorepo = ({ dir }: { dir: string }) => {
   // eslint-disable-next-line no-console
   console.log('\n📝 Creating configuration files...\n');
 
+  // Create pnpm-workspace.yaml file first (required before installing workspace dependencies)
+  createFile({
+    filePath: path.join(absoluteDir, 'pnpm-workspace.yaml'),
+    content: pnpmWorkspaceConfig,
+  });
+
   // Create ESLint and Prettier config files
   createFile({
     filePath: path.join(absoluteDir, '.prettierrc.js'),
@@ -502,7 +508,7 @@ export const setupMonorepo = ({ dir }: { dir: string }) => {
   });
 
   createFile({
-    filePath: path.join(absoluteDir, 'eslint.config.mjs'),
+    filePath: path.join(absoluteDir, 'eslint.config.js'),
     content: eslintConfig,
   });
 
@@ -542,12 +548,6 @@ export const setupMonorepo = ({ dir }: { dir: string }) => {
   createFile({
     filePath: path.join(absoluteDir, '.syncpackrc.js'),
     content: syncpackrcConfig,
-  });
-
-  // Create pnpm-workspace.yaml file
-  createFile({
-    filePath: path.join(absoluteDir, 'pnpm-workspace.yaml'),
-    content: pnpmWorkspaceConfig,
   });
 
   // Create .gitignore file
