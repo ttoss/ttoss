@@ -26,7 +26,7 @@
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.11.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.3",
+    "react-dom": "^19.2.4",
     "react-relay": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "relay-runtime": "^18.2.0",
