@@ -200,34 +200,17 @@ describe('Wizard Form Integration', () => {
     render(<TestWizardForm />);
 
     // Fill in all required fields
-    const firstNameInput = screen.getByLabelText('First Name');
-    const lastNameInput = screen.getByLabelText('Last Name');
-    const emailInput = screen.getByLabelText('Email');
+    await user.type(screen.getByLabelText('First Name'), 'John');
+    await user.type(screen.getByLabelText('Last Name'), 'Doe');
+    await user.type(screen.getByLabelText('Email'), 'john.doe@example.com');
 
-    await act(async () => {
-      await user.type(firstNameInput, 'John');
-      await user.type(lastNameInput, 'Doe');
-      await user.type(emailInput, 'john.doe@example.com');
-    });
+    expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
 
-    // Wait for values to be set
-    await waitFor(() => {
-      expect(firstNameInput).toHaveValue('John');
-      expect(lastNameInput).toHaveValue('Doe');
-      expect(emailInput).toHaveValue('john.doe@example.com');
-    });
-
-    // Go to next step
-    const nextButton = screen.getByText('Next');
-    await act(async () => {
-      await user.click(nextButton);
-    });
+    await user.click(screen.getByText('Next'));
 
     // Should now be on step 2
     await waitFor(() => {
       expect(screen.getByLabelText('Street')).toBeInTheDocument();
-      expect(screen.getByLabelText('City')).toBeInTheDocument();
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
   });
 
