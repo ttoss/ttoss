@@ -1,0 +1,65 @@
+{
+  "name": "@ttoss/react-wizard",
+  "version": "0.1.0",
+  "description": "A React wizard component for guiding users through multi-step flows with configurable step list layouts.",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/react-wizard"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "i18n": "ttoss-i18n",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@chakra-ui/react": "^3",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0",
+    "react-icons": "^5"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "@types/jest": "^30.0.0",
+    "@types/react": "^19.2.14",
+    "jest": "^30.2.0",
+    "react": "^19.2.4",
+    "tsup": "^8.5.1"
+  },
+  "keywords": [
+    "React",
+    "multi-step",
+    "stepper",
+    "ui",
+    "wizard"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
+    "provenance": true
+  }
+}

@@ -6,6 +6,8 @@ import {
   FormFieldRadio,
   yup,
   yupResolver,
+  z,
+  zodResolver,
 } from '../../../src';
 
 test('should be defined', () => {
@@ -16,4 +18,6 @@ test('should be defined', () => {
   expect(FormFieldRadio).toBeDefined();
   expect(yup).toBeDefined();
   expect(yupResolver).toBeDefined();
+  expect(z).toBeDefined();
+  expect(zodResolver).toBeDefined();
 });

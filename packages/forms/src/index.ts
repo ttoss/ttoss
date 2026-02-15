@@ -21,7 +21,9 @@ export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
 export { yup } from './yup/yup';
+export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';
+export { zodResolver } from '@hookform/resolvers/zod';
 
 /**
  * Export everything from react-hook-form without using export *
