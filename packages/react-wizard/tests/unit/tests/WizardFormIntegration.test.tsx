@@ -271,8 +271,14 @@ describe('Wizard Form Integration', () => {
     });
 
     // Should still be on step 2
-    expect(screen.getByLabelText('Street')).toBeInTheDocument();
-    expect(screen.getByText('Street is required')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Street')).toBeInTheDocument();
+    });
+
+    // Should show validation errors
+    await waitFor(() => {
+      expect(screen.getByText('Street is required')).toBeInTheDocument();
+    });
   });
 
   test('calls onCancel when cancel button is clicked', async () => {
