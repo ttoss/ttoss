@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.39 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## [0.7.38](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-cli@0.7.37...@ttoss/i18n-cli@0.7.38) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/i18n-cli

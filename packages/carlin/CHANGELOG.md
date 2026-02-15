@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.41.0](https://github.com/ttoss/ttoss/compare/carlin@1.40.2...carlin@1.41.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## 1.40.2 (2026-01-26)
 
 ### Bug Fixes

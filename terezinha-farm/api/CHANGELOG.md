@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.34 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## [0.19.33](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.32...@terezinha-farm/api@0.19.33) (2026-01-17)
 
 **Note:** Version bump only for package @terezinha-farm/api

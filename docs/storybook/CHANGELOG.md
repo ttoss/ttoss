@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.14.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.13.0...@docs/storybook@3.14.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 # [3.13.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.12.7...@docs/storybook@3.13.0) (2026-02-10)
 
 ### Features
