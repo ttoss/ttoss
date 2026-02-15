@@ -206,8 +206,17 @@ describe('Wizard Form Integration', () => {
 
     expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
 
+    // Trigger validation by tabbing out
+    await user.tab();
+
+    // Wait for form to be validated and Next button to be ready
+    const nextButton = screen.getByText('Next');
+    await waitFor(() => {
+      expect(nextButton).not.toBeDisabled();
+    });
+
     await act(async () => {
-      await user.click(screen.getByText('Next'));
+      await user.click(nextButton);
     });
 
     // Should now be on step 2
@@ -245,11 +254,16 @@ describe('Wizard Form Integration', () => {
 
     expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
 
+    // Trigger validation by tabbing out
+    await user.tab();
+
     await act(async () => {
       await user.click(screen.getByText('Next'));
     });
 
-    expect(screen.getByLabelText('Street')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Street')).toBeInTheDocument();
+    });
 
     // Try to navigate without filling step 2 fields
     await act(async () => {
