@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Tabs } from '@ttoss/components/Tabs';
 import { Icon } from '@ttoss/react-icons';
 import { Flex } from '@ttoss/ui';
@@ -68,6 +68,18 @@ const RenderTable = () => {
   );
 };
 
+/**
+ * Basic tabs with icons, labels, and a disabled tab.
+ * Click tabs to switch between different content panels. Disabled tabs cannot be activated.
+ */
 export const Example: StoryObj = {
   render: RenderTable,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates tab navigation with icons, multiple panels, and a disabled state. The third tab (Dataloggers) is disabled and cannot be clicked.',
+      },
+    },
+  },
 };

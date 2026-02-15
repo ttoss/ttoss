@@ -234,6 +234,9 @@ importers:
       '@babel/core':
         specifier: ^7.27.4
         version: 7.28.0
+      '@fluentui/storybook-llms-extractor':
+        specifier: ^0.0.3
+        version: 0.0.3
       '@storybook/addon-a11y':
         specifier: ^10.2.8
         version: 10.2.8(storybook@10.2.8(@testing-library/dom@10.4.1)(prettier@3.7.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
@@ -689,7 +692,7 @@ importers:
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -4572,6 +4575,10 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
+  '@fluentui/storybook-llms-extractor@0.0.3':
+    resolution: {integrity: sha512-U3NvUd2D8JFdC9x582s4pNoN/GbildsNlP9TZskEDyhe45Zhaer1qnsgLNRWwowRoo1zGJoDMFYUFaISANFUvA==}
+    hasBin: true
+
   '@formatjs/cli-lib@6.6.6':
     resolution: {integrity: sha512-yWcW2fJB7wLblOPED+1NfaUU0dHBt/UZSsw774lh/oxKrr+rOfFTHciqTMif1H533mRcxkPtIZf/WdPsgzqgXA==}
     engines: {node: '>= 16'}
@@ -5282,6 +5289,9 @@ packages:
 
   '@mermaid-js/parser@0.6.2':
     resolution: {integrity: sha512-+PO02uGF6L6Cs0Bw8RpGhikVvMWEysfAyl27qTlroUB8jSWr1lL0Sf6zi78ZxlSnmgSY2AMMKVgghnN9jTtwkQ==}
+
+  '@mixmark-io/domino@2.2.0':
+    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
   '@modelcontextprotocol/sdk@1.25.1':
     resolution: {integrity: sha512-yO28oVFFC7EBoiKdAn+VqRm+plcfv4v0xp6osG/VsCB0NlPZWi87ajbCZZ8f/RvOFLEu7//rSRmuZZ7lMoe3gQ==}
@@ -10688,6 +10698,11 @@ packages:
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -13421,6 +13436,16 @@ packages:
   pkg-types@2.2.0:
     resolution: {integrity: sha512-2SM/GZGAEkPp3KWORxQZns4M+WSeXbC2HEvmOIJe3Cmiv6ieAJvdVhDldtHqM5J1Y7MrR1XhkBT/rMlhh9FdqQ==}
 
+  playwright-core@1.58.2:
+    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.58.2:
+    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
@@ -15590,6 +15615,12 @@ packages:
   turbo@2.6.2:
     resolution: {integrity: sha512-LiQAFS6iWvnY8ViGtoPgduWBeuGH9B32XR4p8H8jxU5PudwyHiiyf1jQW0fCC8gCCTz9itkIbqZLIyUu5AG33w==}
     hasBin: true
+
+  turndown-plugin-gfm@1.0.2:
+    resolution: {integrity: sha512-vwz9tfvF7XN/jE0dGoBei3FXWuvll78ohzCZQuOb+ZjWrs3a0XhQVomJEb2Qh4VHTPNRO4GPZh0V7VRbiWwkRg==}
+
+  turndown@7.2.2:
+    resolution: {integrity: sha512-1F7db8BiExOKxjSMU2b7if62D/XOyQyZbPKq/nUwopfgnHlqXHqQ0lvfUTeUIr1lZJzOPFn43dODyMSIfvWRKQ==}
 
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
@@ -20786,6 +20817,14 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
+  '@fluentui/storybook-llms-extractor@0.0.3':
+    dependencies:
+      '@swc/helpers': 0.5.18
+      playwright: 1.58.2
+      turndown: 7.2.2
+      turndown-plugin-gfm: 1.0.2
+      yargs: 17.7.2
+
   '@formatjs/cli-lib@6.6.6(ts-jest@29.4.6(@babel/core@7.28.0)(@jest/transform@30.2.0)(@jest/types@30.2.0)(babel-jest@30.2.0(@babel/core@7.28.0))(esbuild@0.27.0)(jest-util@30.2.0)(jest@30.2.0(@types/node@24.10.13)(babel-plugin-macros@3.1.0)(esbuild-register@3.6.0(esbuild@0.27.0))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.18))(@types/node@24.10.13)(typescript@5.9.3)))(typescript@5.9.3))':
     dependencies:
       '@formatjs/icu-messageformat-parser': 2.9.4
@@ -21844,6 +21883,8 @@ snapshots:
   '@mermaid-js/parser@0.6.2':
     dependencies:
       langium: 3.3.1
+
+  '@mixmark-io/domino@2.2.0': {}
 
   '@modelcontextprotocol/sdk@1.25.1(hono@4.11.3)(zod@3.25.76)':
     dependencies:
@@ -23663,7 +23704,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       deepmerge: 4.3.1
       react: 19.2.4
 
@@ -23674,7 +23715,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@types/styled-system': 5.1.23
       react: 19.2.4
@@ -23682,11 +23723,11 @@ snapshots:
   '@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       deepmerge: 4.3.1
       react: 19.2.4
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.2.4))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
       csstype: 3.2.3
@@ -23695,13 +23736,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       react: 19.2.4
 
   '@theme-ui/match-media@0.17.2(@theme-ui/core@0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4)))(react@19.2.4)':
     dependencies:
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       react: 19.2.4
 
   '@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)':
@@ -23709,7 +23750,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       react: 19.2.4
 
   '@tootallnate/once@2.0.0': {}
@@ -28784,6 +28825,9 @@ snapshots:
 
   fs.realpath@1.0.0: {}
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -32183,6 +32227,14 @@ snapshots:
       exsolve: 1.0.7
       pathe: 2.0.3
 
+  playwright-core@1.58.2: {}
+
+  playwright@1.58.2:
+    dependencies:
+      playwright-core: 1.58.2
+    optionalDependencies:
+      fsevents: 2.3.2
+
   pluralize@8.0.0: {}
 
   points-on-curve@0.2.0: {}
@@ -34536,7 +34588,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@theme-ui/components': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@theme-ui/theme-provider@0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4))(react@19.2.4)
       '@theme-ui/core': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.4))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))
       '@theme-ui/global': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       '@theme-ui/theme-provider': 0.17.2(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(react@19.2.4)
       react: 19.2.4
@@ -34801,6 +34853,12 @@ snapshots:
       turbo-linux-arm64: 2.6.2
       turbo-windows-64: 2.6.2
       turbo-windows-arm64: 2.6.2
+
+  turndown-plugin-gfm@1.0.2: {}
+
+  turndown@7.2.2:
+    dependencies:
+      '@mixmark-io/domino': 2.2.0
 
   tweetnacl@0.14.5: {}
 
