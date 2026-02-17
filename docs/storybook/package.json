@@ -7,6 +7,7 @@
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "i18n": "pnpm ttoss-i18n",
     "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
+    "@fluentui/storybook-llms-extractor": "^0.0.3",
     "@storybook/addon-a11y": "^10.2.8",
     "@storybook/addon-docs": "^10.2.8",
     "@storybook/addon-links": "^10.2.8",
