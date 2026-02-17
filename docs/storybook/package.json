@@ -7,7 +7,7 @@
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
-    "generate-llms": "storybook-llms-extractor --config llms.config.js",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "i18n": "pnpm ttoss-i18n",
     "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
