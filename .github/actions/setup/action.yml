@@ -39,9 +39,13 @@ runs:
     - name: Install Playwright browsers (for Storybook llms.txt generation)
       shell: bash
       run: |
-        if [ -d "node_modules/.pnpm/@fluentui+storybook-llms-extractor@"* ]; then
+        if pnpm list @fluentui/storybook-llms-extractor --depth -1 > /dev/null 2>&1; then
           echo "Installing Playwright Chromium for llms.txt generation..."
-          find node_modules/.pnpm/@fluentui+storybook-llms-extractor@*/node_modules/@fluentui/storybook-llms-extractor/node_modules/.bin -name "playwright" -type f -exec {} install --with-deps chromium \; || true
+          if pnpm exec playwright --version > /dev/null 2>&1; then
+            pnpm exec playwright install --with-deps chromium
+          else
+            echo "Playwright CLI not found in dependencies, skipping Playwright installation"
+          fi
         else
           echo "Storybook llms extractor not found, skipping Playwright installation"
         fi
