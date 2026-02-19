@@ -1,6 +1,8 @@
-import { Box, BoxProps } from '@ttoss/ui';
-import * as React from 'react';
-import { FieldValues, FormProvider, FormProviderProps } from 'react-hook-form';
+import type { BoxProps } from '@ttoss/ui';
+import { Box } from '@ttoss/ui';
+import type * as React from 'react';
+import type { FieldValues, FormProviderProps } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 
 export const Form = <
   TFieldValues extends FieldValues,

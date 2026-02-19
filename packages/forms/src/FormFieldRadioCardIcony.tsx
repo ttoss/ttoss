@@ -1,6 +1,7 @@
-import { Box, Flex, Tag, Text, ThemeUIStyleObject } from '@ttoss/ui';
-import * as React from 'react';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import type { ThemeUIStyleObject } from '@ttoss/ui';
+import { Box, Flex, Tag, Text } from '@ttoss/ui';
+import type * as React from 'react';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
