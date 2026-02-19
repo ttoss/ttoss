@@ -32,6 +32,37 @@ This command:
 
 **Important**: Always run this command before considering your changes complete.
 
+## Running Tests in Packages
+
+When working on packages, you can run tests using the following commands from the package directory:
+
+```bash
+# Run all tests in the package
+pnpm run test
+
+# Run tests matching a specific file path pattern
+pnpm run test --testPathPatterns=<pattern>
+
+# Run tests matching a specific test name pattern
+pnpm run test --testNamePattern=<pattern>
+```
+
+**Command Options**:
+
+- `pnpm run test`: Runs all tests in the package
+- `pnpm run test --testPathPatterns=<pattern>`: An array of regexp pattern strings that are matched against all test paths before executing the test. Useful for running tests in specific files or directories.
+- `pnpm run test --testNamePattern=<pattern>`: Run only tests with a name that matches the regex pattern. Useful for running specific test cases by their descriptions.
+
+**Examples**:
+
+```bash
+# Run all tests in WizardFormIntegration.test.tsx
+pnpm run test --testPathPatterns=WizardFormIntegration
+
+# Run only the test named "prevents navigation from step 2"
+pnpm run test --testNamePattern="prevents navigation from step 2"
+```
+
 ## Internationalization (i18n) Message Updates
 
 **MANDATORY**: If you make any changes to i18n messages (adding, modifying, or removing `defineMessages` content), run the following command before finishing the task:

@@ -18,6 +18,9 @@
   "YrM3u5": {
     "defaultMessage": "Unsaved Changes",
     "description": "Title for unsaved changes confirmation modal"
+  "UibUNJ": {
+    "defaultMessage": "Invalid Value for Field of type {expected}",
+    "description": "Invalid Value"
   },
   "ZhaPt0": {
     "defaultMessage": "Invalid Value for Field of type {type}",

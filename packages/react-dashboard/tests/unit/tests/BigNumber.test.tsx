@@ -93,7 +93,10 @@ describe('BigNumber', () => {
 
   test('should render trend indicator with positive status', () => {
     render(
-      <BigNumber {...baseCard} trend={{ value: 10.5, status: 'positive' }} />
+      <BigNumber
+        {...baseCard}
+        trend={{ value: 10.5, status: 'positive', type: 'higher' }}
+      />
     );
 
     expect(screen.getByText(/10\.5%/)).toBeInTheDocument();
@@ -102,7 +105,10 @@ describe('BigNumber', () => {
 
   test('should render trend indicator with negative status', () => {
     render(
-      <BigNumber {...baseCard} trend={{ value: 5.2, status: 'negative' }} />
+      <BigNumber
+        {...baseCard}
+        trend={{ value: 5.2, status: 'negative', type: 'higher' }}
+      />
     );
 
     expect(screen.getByText(/5\.2%/)).toBeInTheDocument();
@@ -110,7 +116,12 @@ describe('BigNumber', () => {
   });
 
   test('should render trend indicator with neutral status', () => {
-    render(<BigNumber {...baseCard} trend={{ value: 0, status: 'neutral' }} />);
+    render(
+      <BigNumber
+        {...baseCard}
+        trend={{ value: 0, status: 'neutral', type: 'higher' }}
+      />
+    );
 
     // Neutral trends still display the trend text
     expect(screen.getByText(/0\.0%/)).toBeInTheDocument();
@@ -168,5 +179,59 @@ describe('BigNumber', () => {
     render(<BigNumber {...baseCard} color={undefined} />);
 
     expect(screen.getByText(/1\.234,56/)).toBeInTheDocument();
+  });
+
+  describe('suffix prop', () => {
+    test('should append suffix to formatted number', () => {
+      render(<BigNumber {...baseCard} suffix="kg" />);
+
+      expect(screen.getByText(/1\.234,56 kg/)).toBeInTheDocument();
+    });
+
+    test('should append suffix to formatted currency', () => {
+      render(
+        <BigNumber
+          {...baseCard}
+          numberType="currency"
+          data={{ api: { total: 500 } }}
+          suffix="un"
+        />
+      );
+
+      expect(screen.getByText(/R\$\s*500,00 un/)).toBeInTheDocument();
+    });
+
+    test('should append suffix to formatted percentage', () => {
+      render(
+        <BigNumber
+          {...baseCard}
+          numberType="percentage"
+          data={{ api: { total: 12.5 } }}
+          suffix="p.p."
+        />
+      );
+
+      expect(screen.getByText(/12\.50% p\.p\./)).toBeInTheDocument();
+    });
+
+    test('should not append anything when suffix is not provided', () => {
+      render(<BigNumber {...baseCard} />);
+
+      const valueEl = screen.getByText(/1\.234,56/);
+      expect(valueEl).toBeInTheDocument();
+      expect(valueEl.textContent).toBe('1.234,56');
+    });
+
+    test('should not append suffix when value is undefined (dash)', () => {
+      render(
+        <BigNumber
+          {...baseCard}
+          data={{ api: { total: undefined } }}
+          suffix="kg"
+        />
+      );
+
+      expect(screen.getByText('-')).toBeInTheDocument();
+    });
   });
 });

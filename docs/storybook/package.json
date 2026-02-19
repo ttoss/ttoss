@@ -1,18 +1,20 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "3.12.7",
+  "version": "3.15.0",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "i18n": "pnpm ttoss-i18n",
     "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.33.0",
     "@iconify-icons/mdi-light": "^1.2.5",
     "@iconify/icons-carbon": "^1.2.20",
     "@ttoss/components": "workspace:^",
@@ -31,17 +33,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
-    "@storybook/addon-a11y": "^10.0.6",
-    "@storybook/addon-docs": "^10.0.6",
-    "@storybook/addon-links": "^10.0.6",
-    "@storybook/addon-webpack5-compiler-babel": "^3.0.6",
-    "@storybook/react-webpack5": "^10.0.6",
+    "@fluentui/storybook-llms-extractor": "^0.0.3",
+    "@storybook/addon-a11y": "^10.2.8",
+    "@storybook/addon-docs": "^10.2.8",
+    "@storybook/addon-links": "^10.2.8",
+    "@storybook/addon-webpack5-compiler-babel": "^4.0.0",
+    "@storybook/react-webpack5": "^10.2.8",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^9.2.1",
-    "eslint-plugin-storybook": "10.0.6",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "storybook": "^10.0.6"
+    "eslint-plugin-storybook": "10.2.8",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "storybook": "^10.2.8"
   }
 }

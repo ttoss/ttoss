@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.6.20 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## [0.6.19](https://github.com/ttoss/ttoss/compare/@ttoss/relay-amplify@0.6.18...@ttoss/relay-amplify@0.6.19) (2025-11-22)
 
 **Note:** Version bump only for package @ttoss/relay-amplify

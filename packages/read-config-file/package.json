@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/read-config-file",
-  "version": "2.0.20",
+  "version": "2.1.0",
   "description": "Read a configuration file",
   "license": "MIT",
   "author": "ttoss",
@@ -33,7 +33,7 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.14",
     "jest": "^30.2.0",
     "tsup": "^8.5.1"
   },

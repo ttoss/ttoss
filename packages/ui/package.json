@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "6.5.1",
+  "version": "6.6.0",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "license": "MIT",
   "author": "ttoss",
@@ -26,6 +26,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "@chakra-ui/react": "^3.33.0",
     "@theme-ui/match-media": "^0.17.2",
     "@ttoss/theme": "workspace:^",
     "rc-segmented": "^2.7.0",
@@ -45,9 +46,9 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.14",
     "jest": "^30.2.0",
-    "react": "^19.2.3",
+    "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
   "keywords": [

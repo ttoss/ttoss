@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloudformation",
-  "version": "0.11.10",
+  "version": "0.12.0",
   "description": "CloudFormation utils.",
   "license": "MIT",
   "author": "ttoss",
@@ -32,7 +32,7 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.19.0",
+    "@types/node": "^24.10.13",
     "jest": "^30.2.0",
     "tsup": "^8.5.1"
   },

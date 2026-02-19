@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-strapi",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "Authentication components and abstractions for React apps using Strapi.",
   "license": "MIT",
   "author": "ttoss",
@@ -37,9 +37,9 @@
     "@ttoss/react-auth-core": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.14",
     "jest": "^30.2.0",
-    "react": "^19.2.3",
+    "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
   "keywords": [

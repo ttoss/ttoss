@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.15.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.14.0...@docs/storybook@3.15.0) (2026-02-17)
+
+### Features
+
+- add llms to sb ([#871](https://github.com/ttoss/ttoss/issues/871)) ([2566226](https://github.com/ttoss/ttoss/commit/25662268a9b4abc5604865fc8cb3b764b3cb129d))
+
+# [3.14.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.13.0...@docs/storybook@3.14.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
+# [3.13.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.12.7...@docs/storybook@3.13.0) (2026-02-10)
+
+### Features
+
+- add optional suffix to dashboard card value ([#868](https://github.com/ttoss/ttoss/issues/868)) ([247725c](https://github.com/ttoss/ttoss/commit/247725c28b09ee5c305318e8c8666d0bbea2f477))
+
 ## [3.12.7](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.12.6...@docs/storybook@3.12.7) (2026-02-03)
 
 **Note:** Version bump only for package @docs/storybook

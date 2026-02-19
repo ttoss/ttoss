@@ -81,6 +81,10 @@
     "module": "@ttoss/forms",
     "defaultMessage": "Unsaved Changes",
     "description": "Title for unsaved changes confirmation modal"
+  "UibUNJ": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {expected}",
+    "description": "Invalid Value"
   },
   "ZhaPt0": {
     "module": "@ttoss/forms",

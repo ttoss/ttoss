@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.28.1 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 # 1.28.0 (2026-01-07)
 
 ### Features

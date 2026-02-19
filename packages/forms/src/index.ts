@@ -29,7 +29,9 @@ export {
   type UseUnsavedChangesOptions,
 } from './useUnsavedChanges';
 export { yup } from './yup/yup';
+export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';
+export { zodResolver } from '@hookform/resolvers/zod';
 
 /**
  * Export everything from react-hook-form without using export *

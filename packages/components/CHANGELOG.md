@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.12.7...@ttoss/components@2.13.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [2.12.7](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.12.6...@ttoss/components@2.12.7) (2026-02-03)
 
 **Note:** Version bump only for package @ttoss/components

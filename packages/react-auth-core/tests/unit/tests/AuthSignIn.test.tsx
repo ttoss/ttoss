@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils/react';
+import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { AuthSignIn } from 'src/AuthSignIn';
 
 const onSignIn = jest.fn();
@@ -33,7 +33,7 @@ test('Should not call the onSubmit function if click on the login button without
 });
 
 test('Should call the onSubmit function if click on the login button with the fields filled', async () => {
-  const user = userEvent.setup({ advanceTimers: jest.runAllTimersAsync });
+  const user = userEvent.setup({ delay: null });
 
   render(
     <AuthSignIn
@@ -51,6 +51,10 @@ test('Should call the onSubmit function if click on the login button with the fi
   await user.type(password, userForm.password);
 
   await user.tab();
+
+  await waitFor(() => {
+    expect(buttonSubmit).not.toBeDisabled();
+  });
 
   await user.click(buttonSubmit);
 
