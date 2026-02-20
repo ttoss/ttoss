@@ -19,6 +19,7 @@ interface DatePickerProps {
   value?: DateRange;
   presets?: DateRangePreset[];
   onChange?: (range: DateRange | undefined) => void;
+  disabled?: boolean;
 }
 
 const formatDate = (date: Date) => {
@@ -30,6 +31,7 @@ export const DatePicker = ({
   value,
   presets,
   onChange,
+  disabled,
 }: DatePickerProps) => {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
   const [pickerSelection, setPickerSelection] = React.useState<
@@ -128,6 +130,7 @@ export const DatePicker = ({
     >
       {label && <Label>{label}</Label>}
       <Button
+        disabled={disabled}
         variant="secondary"
         onClick={() => {
           return setIsOpen(!isOpen);
@@ -144,6 +147,9 @@ export const DatePicker = ({
           borderColor: 'display.border.muted.default',
           height: '40px',
           minWidth: ['auto', '240px'],
+          '&:disabled': {
+            borderColor: 'display.border.muted.default',
+          },
         }}
       >
         {date?.from ? (
@@ -173,7 +179,6 @@ export const DatePicker = ({
         ) : (
           <Text sx={{ fontSize: ['12px', '14px'] }}>Selecione o período</Text>
         )}
-        <Icon icon="mdi:chevron-down" size={16} />
       </Button>
 
       {isOpen && (
@@ -374,6 +379,7 @@ export const DatePicker = ({
                 }}
               >
                 <DayPicker
+                  disabled={disabled}
                   mode="range"
                   locale={ptBR}
                   selected={

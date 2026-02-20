@@ -11,8 +11,9 @@ export const SelectFilter = (props: {
   value: DashboardFilterValue;
   options: { label: string; value: string | number | boolean }[];
   onChange: (value: DashboardFilterValue | undefined) => void;
+  disabled?: boolean;
 }) => {
-  const { value, onChange, label, options } = props;
+  const { value, onChange, label, options, disabled } = props;
 
   const formMethods = useForm<{ value: SelectValue }>({
     defaultValues: {
@@ -42,6 +43,7 @@ export const SelectFilter = (props: {
         name="value"
         label={label}
         options={options}
+        disabled={disabled}
         sx={{ fontSize: 'sm' }}
       />
     </FormProvider>

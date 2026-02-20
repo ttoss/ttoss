@@ -1,6 +1,6 @@
 import { Markdown } from '@ttoss/components/Markdown';
 import { Auth, useAuth } from '@ttoss/react-auth-cognito';
-import type { DashboardFilter } from '@ttoss/react-dashboard';
+import type { CardCatalogItem, DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
@@ -17,6 +17,7 @@ const templates: DashboardTemplate[] = [
   {
     id: 'default',
     name: 'Padrão',
+    editable: false,
     grid: [
       {
         i: '1',
@@ -1094,6 +1095,190 @@ const subQuarters = (date: Date, quarters: number) => {
   return subMonths(date, quarters * 3);
 };
 
+const cardCatalog: CardCatalogItem[] = [
+  {
+    w: 12,
+    h: 2,
+    card: {
+      title: 'Adicionar Divisor de seção',
+      type: 'sectionDivider',
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Faturamento total',
+      description: 'Valor total de faturamento',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Faturamento Total Rastreado',
+      description:
+        'Valor total de vendas rastreadas através dos eventos de compra',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'ROAS',
+      description:
+        'Return on Ad Spend - Retorno sobre investimento em publicidade. Representa quantas vezes o valor investido foi recuperado em vendas',
+      variant: 'default',
+      numberType: 'number',
+      numberDecimalPlaces: 2,
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Total de Vendas',
+      description: 'Valor total de vendas',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Investimento total',
+      description: 'Valor total investido em anúncios na plataforma Meta',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Cliques',
+      variant: 'default',
+      numberType: 'number',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Impressões',
+      variant: 'default',
+      numberType: 'number',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'CTR',
+      variant: 'default',
+      numberType: 'percentage',
+      numberDecimalPlaces: 2,
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+];
+
 const filters: DashboardFilter[] = [
   {
     key: 'template',
@@ -1179,8 +1364,23 @@ export const App = () => {
   const isNiceHiEnabled = useFeatureFlag('nice-hi');
 
   // Manage filters state outside Dashboard
-  const [dashboardFilters, setDashboardFilters] =
+  const [dashboardFilters, setDashboardFiltersState] =
     React.useState<DashboardFilter[]>(filters);
+
+  // Skip the next template filter onChange from SelectFilter when we set it programmatically
+  // (e.g. after "Save as new"), to avoid a loop: SelectFilter's effect can fire with stale
+  // form value and overwrite our update.
+  const skipNextTemplateFilterChangeRef = React.useRef(false);
+  const setDashboardFilters = React.useCallback(
+    (updater: React.SetStateAction<DashboardFilter[]>) => {
+      if (skipNextTemplateFilterChangeRef.current) {
+        skipNextTemplateFilterChangeRef.current = false;
+        return;
+      }
+      setDashboardFiltersState(updater);
+    },
+    []
+  );
 
   // Find initial selected template based on template filter value
   const getSelectedTemplate = React.useCallback(
@@ -1198,6 +1398,10 @@ export const App = () => {
     []
   );
 
+  // Manage templates in state so we can save / save as new
+  const [templatesState, setTemplatesState] =
+    React.useState<DashboardTemplate[]>(templates);
+
   // Manage selectedTemplate state based on template filter
   const [selectedTemplate, setSelectedTemplate] = React.useState<
     DashboardTemplate | undefined
@@ -1205,11 +1409,57 @@ export const App = () => {
     return getSelectedTemplate(dashboardFilters);
   });
 
-  // Update selectedTemplate when template filter changes
+  // Update selectedTemplate when template filter changes (use templatesState)
   React.useEffect(() => {
-    const newSelectedTemplate = getSelectedTemplate(dashboardFilters);
-    setSelectedTemplate(newSelectedTemplate);
-  }, [dashboardFilters, getSelectedTemplate]);
+    const templateFilter = dashboardFilters.find((f) => {
+      return f.key === 'template';
+    });
+    const value = templateFilter?.value;
+    const newSelectedTemplate = value
+      ? templatesState.find((t) => {
+          return t.id === value;
+        })
+      : undefined;
+    setSelectedTemplate(newSelectedTemplate ?? undefined);
+  }, [dashboardFilters, templatesState]);
+
+  // Derive filters with template options from templatesState (avoids sync effect / infinite loop)
+  const filtersWithTemplateOptions = React.useMemo(() => {
+    return dashboardFilters.map((f) => {
+      return f.key === 'template'
+        ? {
+            ...f,
+            options: templatesState.map((t) => {
+              return { label: t.name, value: t.id };
+            }),
+          }
+        : f;
+    });
+  }, [dashboardFilters, templatesState]);
+
+  const handleSaveLayout = React.useCallback((template: DashboardTemplate) => {
+    setTemplatesState((prev) => {
+      return prev.map((t) => {
+        return t.id === template.id ? template : t;
+      });
+    });
+  }, []);
+
+  const handleSaveAsNewTemplate = React.useCallback(
+    (template: DashboardTemplate) => {
+      setTemplatesState((prev) => {
+        return [...prev, template];
+      });
+      setSelectedTemplate(template);
+      skipNextTemplateFilterChangeRef.current = true;
+      setDashboardFiltersState((prev) => {
+        return prev.map((f) => {
+          return f.key === 'template' ? { ...f, value: template.id } : f;
+        });
+      });
+    },
+    []
+  );
 
   const [loading, setLoading] = React.useState(true);
 
@@ -1244,10 +1494,14 @@ export const App = () => {
         <Flex sx={{ width: '60%', height: '100%' }}>
           <Dashboard
             selectedTemplate={selectedTemplate}
-            filters={dashboardFilters}
-            templates={templates}
+            filters={filtersWithTemplateOptions}
+            templates={templatesState}
             onFiltersChange={setDashboardFilters}
             loading={loading}
+            editable
+            onSaveLayout={handleSaveLayout}
+            onSaveAsNewTemplate={handleSaveAsNewTemplate}
+            cardCatalog={cardCatalog}
           />
         </Flex>
       </Flex>
