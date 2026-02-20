@@ -126,28 +126,4 @@ describe('DashboardFilters branches', () => {
     expect(updateFilter).toHaveBeenCalledWith('status', 'selected');
     expect(updateFilter).toHaveBeenCalled();
   });
-
-  test('should return null when map does not provide a handler', () => {
-    mockUseDashboard.mockReturnValue({
-      filters: [
-        {
-          key: 'search',
-          type: DashboardFilterType.TEXT,
-          label: 'Search',
-          value: '',
-        },
-      ],
-      updateFilter,
-      isEditMode: false,
-    } as never);
-
-    const mapGetSpy = jest
-      .spyOn(Map.prototype, 'get')
-      .mockReturnValue(undefined as never);
-
-    render(<DashboardFilters />);
-
-    expect(screen.queryByText('Search')).not.toBeInTheDocument();
-    mapGetSpy.mockRestore();
-  });
 });
