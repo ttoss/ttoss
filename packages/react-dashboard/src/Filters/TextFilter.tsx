@@ -9,8 +9,9 @@ export const TextFilter = (props: {
   value: DashboardFilterValue;
   placeholder?: string;
   onChange: (value: DashboardFilterValue) => void;
+  disabled?: boolean;
 }) => {
-  const { value, onChange, label, placeholder } = props;
+  const { value, onChange, label, placeholder, disabled } = props;
 
   const formMethods = useForm<{ value: string }>({
     defaultValues: {
@@ -40,6 +41,7 @@ export const TextFilter = (props: {
         name="value"
         label={label}
         placeholder={placeholder}
+        disabled={disabled}
         sx={{ fontSize: 'sm' }}
       />
     </FormProvider>
