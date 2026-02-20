@@ -1693,9 +1693,6 @@ importers:
         specifier: ^2.2.0
         version: 2.3.0(react@19.2.3)
     devDependencies:
-      '@ttoss/components':
-        specifier: workspace:^
-        version: link:../components
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
