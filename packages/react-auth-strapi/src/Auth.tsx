@@ -1,8 +1,10 @@
 import {
   Auth as AuthCore,
   type AuthProps,
+  type AuthScreen,
   type OnConfirmSignUpCheckEmail,
   type OnForgotPassword,
+  type OnForgotPasswordResetPassword,
   type OnSignIn,
   type OnSignUp,
   useAuthScreen,
@@ -13,10 +15,12 @@ import * as React from 'react';
 import { useAuth } from './AuthProvider';
 import { storage } from './storage';
 
-export const Auth = (props: Pick<AuthProps, 'logo' | 'layout'>) => {
+export const Auth = (
+  props: Pick<AuthProps, 'logo' | 'layout'> & { initialScreen?: AuthScreen }
+) => {
   const { setAuthData, apiUrl } = useAuth();
 
-  const { screen, setScreen } = useAuthScreen();
+  const { screen, setScreen } = useAuthScreen(props.initialScreen);
 
   const { addNotification } = useNotifications();
 
@@ -163,6 +167,9 @@ export const Auth = (props: Pick<AuthProps, 'logo' | 'layout'>) => {
           });
           return;
         }
+
+        // Transition to reset password screen after email is sent
+        setScreen({ value: 'confirmResetPassword', context: { email } });
       } catch {
         addNotification({
           title: 'Network Error',
@@ -172,8 +179,56 @@ export const Auth = (props: Pick<AuthProps, 'logo' | 'layout'>) => {
         });
       }
     },
-    [addNotification, apiUrl]
+    [addNotification, setScreen, apiUrl]
   );
+
+  const onForgotPasswordResetPassword: OnForgotPasswordResetPassword =
+    React.useCallback(
+      async ({ code, newPassword }) => {
+        try {
+          const response = await fetch(`${apiUrl}/auth/reset-password`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              code,
+              password: newPassword,
+              passwordConfirmation: newPassword,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            addNotification({
+              title: 'Reset password failed',
+              message:
+                data.error?.message ||
+                'An error occurred during password reset.',
+              type: 'error',
+            });
+            return;
+          }
+
+          addNotification({
+            title: 'Password reset successful',
+            message: 'You can now sign in with your new password.',
+            type: 'success',
+          });
+
+          setScreen({ value: 'signIn' });
+        } catch {
+          addNotification({
+            title: 'Network Error',
+            message:
+              'Unable to connect to the server. Please check your connection.',
+            type: 'error',
+          });
+        }
+      },
+      [addNotification, setScreen, apiUrl]
+    );
 
   const onConfirmSignUpCheckEmail: OnConfirmSignUpCheckEmail =
     React.useCallback(async () => {
@@ -182,12 +237,14 @@ export const Auth = (props: Pick<AuthProps, 'logo' | 'layout'>) => {
 
   return (
     <AuthCore
-      {...props}
+      logo={props.logo}
+      layout={props.layout}
       screen={screen}
       setScreen={setScreen}
       onSignIn={onSignIn}
       onSignUp={onSignUp}
       onForgotPassword={onForgotPassword}
+      onForgotPasswordResetPassword={onForgotPasswordResetPassword}
       onConfirmSignUpCheckEmail={onConfirmSignUpCheckEmail}
     />
   );

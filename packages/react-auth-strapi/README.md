@@ -123,6 +123,35 @@ The component automatically handles:
 - **Email confirmation**: Manages email verification process
 - **Error notifications**: Shows user-friendly error messages
 
+#### Props
+
+```tsx
+<Auth
+  initialScreen={{ value: 'signUp' }} // Optional: start on a specific screen
+  logo={<MyLogo />} // Optional: custom logo
+  layout={{
+    // Optional: layout configuration
+    fullScreen: true,
+    sideContent: <BrandingContent />,
+    sideContentPosition: 'left',
+  }}
+/>
+```
+
+**initialScreen**: Set the initial authentication screen to display. Useful for:
+
+- Deep linking to specific auth flows (e.g., `/auth/signup` → `{ value: 'signUp' }`)
+- Redirecting users to password reset from email links
+- Pre-selecting sign up vs sign in based on user context
+
+Available screens:
+
+- `{ value: 'signIn' }` - Sign in screen (default)
+- `{ value: 'signUp' }` - Sign up screen
+- `{ value: 'forgotPassword' }` - Forgot password screen
+- `{ value: 'confirmSignUpCheckEmail' }` - Email confirmation reminder
+- `{ value: 'confirmResetPassword', context: { email: string } }` - Password reset screen
+
 ### useAuth Hook
 
 Enhanced version of the core useAuth hook with Strapi-specific context:
