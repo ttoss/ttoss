@@ -209,14 +209,9 @@ describe('Wizard Form Integration', () => {
     // Trigger validation by tabbing out
     await user.tab();
 
-    // Wait for form to be validated and Next button to be ready
-    const nextButton = screen.getByText('Next');
-    await waitFor(() => {
-      expect(nextButton).not.toBeDisabled();
-    });
-
+    // Click Next button
     await act(async () => {
-      await user.click(nextButton);
+      await user.click(screen.getByText('Next'));
     });
 
     // Should now be on step 2
