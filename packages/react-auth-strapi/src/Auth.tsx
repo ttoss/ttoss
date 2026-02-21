@@ -15,6 +15,8 @@ import * as React from 'react';
 import { useAuth } from './AuthProvider';
 import { storage } from './storage';
 
+export type { AuthScreen };
+
 export const Auth = (
   props: Pick<AuthProps, 'logo' | 'layout'> & { initialScreen?: AuthScreen }
 ) => {
@@ -184,7 +186,7 @@ export const Auth = (
 
   const onForgotPasswordResetPassword: OnForgotPasswordResetPassword =
     React.useCallback(
-      async ({ code, newPassword }) => {
+      async ({ email: _email, code, newPassword }) => {
         try {
           const response = await fetch(`${apiUrl}/auth/reset-password`, {
             method: 'POST',

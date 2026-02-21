@@ -299,3 +299,158 @@ describe('Auth component with initialScreen', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('Auth component URL parameter flow', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetch.mockClear();
+  });
+
+  test('should handle password reset flow from email link with URL parameters', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    // Simulate URL parameters from email link:
+    // /auth?initialScreen=confirmResetPassword&code=XYZ789
+    const codeFromUrl = 'XYZ789';
+    const initialScreen: AuthScreen = {
+      value: 'confirmResetPassword',
+      context: { code: codeFromUrl },
+    };
+
+    // Mock successful password reset
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => {
+        return {
+          jwt: 'new-jwt-token',
+          user: { id: '1', email: 'user@example.com', confirmed: true },
+        };
+      },
+    } as Response);
+
+    render(
+      <TestWrapper>
+        <Auth initialScreen={initialScreen} />
+      </TestWrapper>
+    );
+
+    // Verify password reset screen is displayed
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Reset Password' })
+      ).toBeInTheDocument();
+    });
+
+    // Verify form fields are present
+    const codeInput = screen.getByLabelText(/confirmation code/i);
+    const newPasswordInput = screen.getByLabelText(/new password/i);
+    expect(codeInput).toBeInTheDocument();
+    expect(newPasswordInput).toBeInTheDocument();
+
+    // Fill in the form with the code from URL
+    await user.clear(codeInput);
+    await user.type(codeInput, codeFromUrl);
+    await user.type(newPasswordInput, 'NewPassword123!');
+
+    // Submit the reset password form
+    const submitButton = screen.getByRole('button', {
+      name: /reset password/i,
+    });
+    await user.click(submitButton);
+
+    // Verify API was called with correct data
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.test.com/api/auth/reset-password',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            code: codeFromUrl,
+            password: 'NewPassword123!',
+            passwordConfirmation: 'NewPassword123!',
+          }),
+        })
+      );
+    });
+
+    // Should navigate to sign in screen after successful password reset
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Sign in' })
+      ).toBeInTheDocument();
+    });
+  });
+
+  test('should handle initialScreen parameter without code for other screens', async () => {
+    // Simulate URL: /auth?initialScreen=signUp
+    const initialScreen: AuthScreen = {
+      value: 'signUp',
+    };
+
+    render(
+      <TestWrapper>
+        <Auth initialScreen={initialScreen} />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Sign up' })
+      ).toBeInTheDocument();
+    });
+  });
+
+  test('should render default signIn screen when no URL parameters provided', async () => {
+    // Simulate URL: /auth (no parameters)
+    render(
+      <TestWrapper>
+        <Auth />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Sign in' })
+      ).toBeInTheDocument();
+    });
+  });
+
+  test('should handle confirmSignUpCheckEmail from URL parameters', async () => {
+    // Simulate URL: /auth?initialScreen=confirmSignUpCheckEmail
+    const initialScreen: AuthScreen = {
+      value: 'confirmSignUpCheckEmail',
+    };
+
+    render(
+      <TestWrapper>
+        <Auth initialScreen={initialScreen} />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/check your inbox/i)).toBeInTheDocument();
+    });
+  });
+
+  test('should handle forgotPassword screen from URL parameters', async () => {
+    // Simulate URL: /auth?initialScreen=forgotPassword
+    const initialScreen: AuthScreen = {
+      value: 'forgotPassword',
+    };
+
+    render(
+      <TestWrapper>
+        <Auth initialScreen={initialScreen} />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Recovering Password' })
+      ).toBeInTheDocument();
+    });
+  });
+});
