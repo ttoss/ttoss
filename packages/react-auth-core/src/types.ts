@@ -32,7 +32,10 @@ export type AuthScreen =
   | { value: 'confirmSignUpWithCode'; context: { email: string } }
   | { value: 'confirmSignUpCheckEmail' }
   | { value: 'forgotPassword' }
-  | { value: 'confirmResetPassword'; context: { email: string } };
+  | {
+      value: 'confirmResetPassword';
+      context: { email?: string; code?: string };
+    };
 
 // Input types for authentication actions
 export type OnSignInInput = {
@@ -57,8 +60,8 @@ export type OnForgotPasswordInput = {
 };
 
 export type OnForgotPasswordResetPasswordInput = {
-  email: string;
-  code: string;
+  email?: string;
+  code?: string;
   newPassword: string;
 };
 
