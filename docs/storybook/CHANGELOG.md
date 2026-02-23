@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.16.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.15.1...@docs/storybook@3.16.0) (2026-02-23)
+
+### Features
+
+- chakra colors ([#874](https://github.com/ttoss/ttoss/issues/874)) ([043d8d2](https://github.com/ttoss/ttoss/commit/043d8d2e95285d72f5c22d2867297c6e16da0d97))
+
 ## [3.15.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.15.0...@docs/storybook@3.15.1) (2026-02-21)
 
 **Note:** Version bump only for package @docs/storybook
