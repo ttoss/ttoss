@@ -14,7 +14,8 @@ import { AuthCard } from './AuthCard';
 import type { OnForgotPasswordResetPassword } from './types';
 
 export type AuthForgotPasswordResetPasswordProps = {
-  email: string;
+  email?: string;
+  maxCodeLength?: number;
   onForgotPasswordResetPassword: OnForgotPasswordResetPassword;
   onGoToSignIn: () => void;
   passwordMinimumLength?: number;
@@ -25,25 +26,37 @@ export const AuthForgotPasswordResetPassword = (
 ) => {
   const { intl } = useI18n();
 
+  const codeValidation = yup.string().required(
+    intl.formatMessage({
+      description: 'Required field.',
+      defaultMessage: 'Required field',
+    })
+  );
+
   const schema = yup.object().shape({
-    code: yup
-      .string()
-      .required(
-        intl.formatMessage({
-          description: 'Required field.',
-          defaultMessage: 'Required field',
-        })
-      )
-      .max(
-        6,
-        intl.formatMessage(
-          {
-            description: 'Maximum {value} characters.',
-            defaultMessage: 'Maximum {value} characters',
-          },
-          { value: 6 }
-        )
-      ),
+    code: props.maxCodeLength
+      ? codeValidation
+          .min(
+            props.maxCodeLength,
+            intl.formatMessage(
+              {
+                description: 'Minimum {value} characters.',
+                defaultMessage: 'Minimum {value} characters',
+              },
+              { value: props.maxCodeLength }
+            )
+          )
+          .max(
+            props.maxCodeLength,
+            intl.formatMessage(
+              {
+                description: 'Maximum {value} characters.',
+                defaultMessage: 'Maximum {value} characters',
+              },
+              { value: props.maxCodeLength }
+            )
+          )
+      : codeValidation,
     newPassword: yup
       .string()
       .required(

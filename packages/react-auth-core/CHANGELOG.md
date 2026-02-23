@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.0...@ttoss/react-auth-core@0.4.1) (2026-02-21)
+
+### Bug Fixes
+
+- auth strapi forgot password ([#873](https://github.com/ttoss/ttoss/issues/873)) ([409d6a6](https://github.com/ttoss/ttoss/commit/409d6a60f976fd84444758431a5514389eea77da))
+
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.3.5...@ttoss/react-auth-core@0.4.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [0.3.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.3.4...@ttoss/react-auth-core@0.3.5) (2026-02-03)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

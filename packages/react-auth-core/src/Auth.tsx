@@ -2,7 +2,8 @@ import { useNotifications } from '@ttoss/react-notifications';
 import { Flex } from '@ttoss/ui';
 import * as React from 'react';
 
-import { LogoContextProps, LogoProvider } from './AuthCard';
+import type { LogoContextProps } from './AuthCard';
+import { LogoProvider } from './AuthCard';
 import { AuthConfirmSignUpCheckEmail } from './AuthConfirmSignUpCheckEmail';
 import { AuthConfirmSignUpWithCode } from './AuthConfirmSignUpWithCode';
 import { AuthForgotPassword } from './AuthForgotPassword';
@@ -21,18 +22,44 @@ import type {
   OnSignUp,
   SignUpTerms,
 } from './types';
+import { useAuthScreen } from './useAuthScreen';
 
 type AuthLogicProps = {
   screen: AuthScreen;
   setScreen: (screen: AuthScreen) => void;
   signUpTerms?: SignUpTerms;
   passwordMinimumLength?: number;
+  maxForgotPasswordCodeLength?: number;
   onSignIn: OnSignIn;
   onSignUp?: OnSignUp;
   onConfirmSignUpCheckEmail?: OnConfirmSignUpCheckEmail;
   onConfirmSignUpWithCode?: OnConfirmSignUpWithCode;
   onForgotPassword?: OnForgotPassword;
   onForgotPasswordResetPassword?: OnForgotPasswordResetPassword;
+};
+
+type AuthPropsBase = {
+  signUpTerms?: SignUpTerms;
+  passwordMinimumLength?: number;
+  maxForgotPasswordCodeLength?: number;
+  onSignIn: OnSignIn;
+  onSignUp?: OnSignUp;
+  onConfirmSignUpCheckEmail?: OnConfirmSignUpCheckEmail;
+  onConfirmSignUpWithCode?: OnConfirmSignUpWithCode;
+  onForgotPassword?: OnForgotPassword;
+  onForgotPasswordResetPassword?: OnForgotPasswordResetPassword;
+};
+
+type AuthPropsWithScreen = AuthPropsBase & {
+  screen: AuthScreen;
+  setScreen: (screen: AuthScreen) => void;
+  initialScreen?: never;
+};
+
+type AuthPropsWithInitialScreen = AuthPropsBase & {
+  screen?: never;
+  setScreen?: never;
+  initialScreen?: AuthScreen;
 };
 
 const AuthLogic = (props: AuthLogicProps) => {
@@ -47,6 +74,7 @@ const AuthLogic = (props: AuthLogicProps) => {
     onForgotPasswordResetPassword,
     passwordMinimumLength,
     signUpTerms,
+    maxForgotPasswordCodeLength,
   } = props;
 
   const { clearNotifications, setLoading } = useNotifications();
@@ -142,6 +170,7 @@ const AuthLogic = (props: AuthLogicProps) => {
         )}
         onGoToSignIn={onGoToSignIn}
         email={screen.context.email}
+        maxCodeLength={maxForgotPasswordCodeLength}
       />
     );
   }
@@ -173,22 +202,39 @@ type AuthLayout = {
 };
 
 export type AuthProps = LogoContextProps &
-  AuthLogicProps & {
+  (AuthPropsWithScreen | AuthPropsWithInitialScreen) & {
     layout?: AuthLayout;
   };
 
 export const Auth = (props: AuthProps) => {
   const { layout = { fullScreen: true } } = props;
 
+  // Use provided screen/setScreen or create them from initialScreen
+  const authScreenHook = useAuthScreen(props.initialScreen);
+  const screen = props.screen ?? authScreenHook.screen;
+  const setScreen = props.setScreen ?? authScreenHook.setScreen;
+
   const withLogoNode = React.useMemo(() => {
     return (
       <LogoProvider logo={props.logo}>
         <ErrorBoundary>
-          <AuthLogic {...props} />
+          <AuthLogic
+            screen={screen}
+            setScreen={setScreen}
+            signUpTerms={props.signUpTerms}
+            passwordMinimumLength={props.passwordMinimumLength}
+            maxForgotPasswordCodeLength={props.maxForgotPasswordCodeLength}
+            onSignIn={props.onSignIn}
+            onSignUp={props.onSignUp}
+            onConfirmSignUpCheckEmail={props.onConfirmSignUpCheckEmail}
+            onConfirmSignUpWithCode={props.onConfirmSignUpWithCode}
+            onForgotPassword={props.onForgotPassword}
+            onForgotPasswordResetPassword={props.onForgotPasswordResetPassword}
+          />
         </ErrorBoundary>
       </LogoProvider>
     );
-  }, [props]);
+  }, [props, screen, setScreen]);
 
   if (layout.fullScreen) {
     if (layout.sideContentPosition) {

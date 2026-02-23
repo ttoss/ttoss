@@ -36,3 +36,16 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
+    - name: Install Playwright browsers (for Storybook llms.txt generation)
+      shell: bash
+      run: |
+        if pnpm list @fluentui/storybook-llms-extractor --depth -1 > /dev/null 2>&1; then
+          echo "Installing Playwright Chromium for llms.txt generation..."
+          if pnpm exec playwright --version > /dev/null 2>&1; then
+            pnpm exec playwright install --with-deps chromium
+          else
+            echo "Playwright CLI not found in dependencies, skipping Playwright installation"
+          fi
+        else
+          echo "Storybook llms extractor not found, skipping Playwright installation"
+        fi

@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Menu } from '@ttoss/components/Menu';
 import { NotificationCard } from '@ttoss/components/NotificationCard';
 import { Icon } from '@ttoss/react-icons';
@@ -6,6 +6,23 @@ import { Flex } from '@ttoss/ui';
 
 export default {
   title: 'Components/Menu',
+  component: Menu,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Dropdown menu component with customizable trigger icon and content. Perfect for navigation menus, notification panels, and action lists. Theme-aware with responsive behavior.',
+      },
+    },
+  },
+  argTypes: {
+    menuIcon: {
+      control: 'text',
+      description:
+        'Icon identifier from @ttoss/react-icons for the menu trigger',
+    },
+  },
 } as Meta;
 
 interface MenuItem {
@@ -32,6 +49,10 @@ const menuItems: MenuItem[] = [
   },
 ];
 
+/**
+ * Basic menu with navigation links and icons.
+ * Each menu item shows hover effects and smooth transitions.
+ */
 export const Example: StoryFn = () => {
   return (
     <Menu>
@@ -80,6 +101,10 @@ export const Example: StoryFn = () => {
   );
 };
 
+/**
+ * Menu with notification card content.
+ * Demonstrates using Menu as a notification center with custom trigger icon and wider width.
+ */
 export const WithNotificationCard: StoryFn = () => {
   return (
     <Menu

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/vite-app",
-  "version": "0.15.10",
+  "version": "0.16.1",
   "type": "module",
   "scripts": {
     "prebuild": "pnpm relay",
@@ -25,8 +25,8 @@
     "@ttoss/theme": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.11.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-relay": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "relay-runtime": "^18.2.0",
@@ -39,7 +39,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.0.2",
     "@types/react-relay": "^16.0.6",
     "@types/relay-runtime": "^14.1.23",

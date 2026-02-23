@@ -5,7 +5,7 @@ React component library built on [Theme UI](https://theme-ui.com/) for building 
 ## Installation
 
 ```shell
-pnpm add @ttoss/ui @ttoss/react-icons @emotion/react
+pnpm add @ttoss/ui @ttoss/react-icons @emotion/react @chakra-ui/react
 ```
 
 **ESM Only**: This package requires ES modules support.
@@ -60,6 +60,61 @@ export const customTheme: Theme = {
 ```
 
 **Note**: No custom JSX pragma needed when using `sx` prop directly on library components.
+
+## Chakra UI Integration
+
+This package integrates seamlessly with [Chakra UI](https://chakra-ui.com/). You can import and use any Chakra UI component directly, and it will automatically be styled according to your theme configuration.
+
+### Using Chakra UI Components
+
+```tsx
+import { Button } from '@chakra-ui/react';
+import { ThemeProvider } from '@ttoss/ui';
+import { BruttalTheme } from '@ttoss/theme/Bruttal';
+
+export const App = () => (
+  <ThemeProvider theme={BruttalTheme}>
+    {/* Chakra Button automatically styled with BruttalTheme */}
+    <Button colorScheme="blue">Chakra Button</Button>
+  </ThemeProvider>
+);
+```
+
+### Customizing Chakra Components via Theme
+
+You can customize how Chakra UI components render by adding component specifications to your theme:
+
+```tsx
+import type { Theme } from '@ttoss/ui';
+
+export const customTheme: Theme = {
+  colors: {
+    primary: '#007acc',
+  },
+  // Customize Chakra UI Button component
+  components: {
+    Button: {
+      defaultProps: {
+        size: 'lg',
+        variant: 'solid',
+      },
+      variants: {
+        solid: {
+          bg: 'primary',
+          color: 'white',
+        },
+      },
+    },
+  },
+};
+```
+
+**Key Points:**
+
+- All Chakra UI components work out of the box with `ThemeProvider`
+- Component styles are controlled through theme configuration
+- No need for additional setup or wrappers
+- Full access to Chakra's [component theming API](https://chakra-ui.com/docs/styled-system/component-style)
 
 ## Available Components
 
