@@ -1,10 +1,10 @@
 import { defineRecipe } from '@chakra-ui/react';
 
-export const buttonRecipe = defineRecipe({
+export const button = defineRecipe({
   className: 'button',
   base: {
     color: 'action.text.primary.default',
-    backgroundColor: 'action.background.primary.default',
+    backgroundColor: 'navigation.text.accent.default',
     borderColor: 'action.border.primary.default',
     _hover: {
       backgroundColor: 'action.background.primary.active',
@@ -25,14 +25,14 @@ export const buttonRecipe = defineRecipe({
     variant: {
       solid: {
         color: 'action.text.primary.default',
-        backgroundColor: 'action.background.primary.default',
+        backgroundColor: 'navigation.text.accent.default',
         _hover: {
           backgroundColor: 'action.background.primary.active',
         },
       },
       outline: {
         color: 'action.text.primary.default',
-        backgroundColor: 'transparent',
+        backgroundColor: 'navigation.text.accent.default',
         borderColor: 'action.border.primary.default',
         _hover: {
           backgroundColor: 'action.background.primary.default',

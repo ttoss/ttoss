@@ -1,6 +1,6 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
 
-export const stepsSlotRecipe = defineSlotRecipe({
+export const steps = defineSlotRecipe({
   className: 'steps',
   slots: [
     'root',

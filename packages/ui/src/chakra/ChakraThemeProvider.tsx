@@ -8,8 +8,8 @@ import * as React from 'react';
 import type { Theme } from 'theme-ui';
 
 import { useTheme } from '../theme/useTheme';
-import * as recipes from './recipes/recipes';
-import * as slotRecipes from './recipes/slotRecipes';
+import * as recipes from './recipes';
+import * as slotRecipes from './slotRecipes';
 
 /**
  * Helper function to wrap token values in Chakra UI v3 format.
@@ -76,7 +76,6 @@ const toChakraTheme = (
     theme: {
       tokens: {
         borders: wrapTokenValues(themeUITheme.borders),
-        colors: wrapTokenValues(themeUITheme.rawColors),
         fonts: wrapTokenValues(themeUITheme.fonts),
         fontSizes: wrapTokenValues(themeUITheme.fontSizes),
         fontWeights: wrapTokenValues(themeUITheme.fontWeights),
@@ -86,6 +85,9 @@ const toChakraTheme = (
         sizes: wrapTokenValues(themeUITheme.sizes),
         spacing: wrapTokenValues(themeUITheme.space),
         zIndex: wrapTokenValues(themeUITheme.zIndices),
+      },
+      semanticTokens: {
+        colors: wrapTokenValues(themeUITheme.rawColors),
       },
       breakpoints:
         themeUITheme.breakpoints && Array.isArray(themeUITheme.breakpoints)
@@ -97,7 +99,6 @@ const toChakraTheme = (
               '2xl': themeUITheme.breakpoints[4],
             }
           : undefined,
-      // Recipes and slot recipes can be passed via overrides.theme
       recipes: { ...recipes, ...overrides.theme?.recipes },
       slotRecipes: { ...slotRecipes, ...overrides.theme?.slotRecipes },
     },
