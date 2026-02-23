@@ -1,4 +1,4 @@
-import { Preview } from '@storybook/react-webpack5';
+import type { Preview } from '@storybook/react-webpack5';
 import { I18nProvider } from '@ttoss/react-i18n';
 
 import { defaultThemeObject, themesObjects } from '../themes/themesObject';
@@ -43,6 +43,14 @@ const preview: Preview = {
       );
     },
   ],
+  parameters: {
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: ['Introduction', '*'],
+      },
+    },
+  },
   tags: ['autodocs'],
 };
 

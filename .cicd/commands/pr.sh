@@ -22,7 +22,7 @@ pnpm turbo run i18n build test --filter=[main]
 # This command uses the git status --porcelain command to check if there are
 # any modified, untracked, or staged files in the repository. If the output
 # of the command is not empty (-z checks for empty output), it means there are changed files.
-pnpm run lint -- --allow-empty
+pnpm run lint -- --no-stash --allow-empty
 [ -z "$(git status --porcelain)" ] || { echo "Error: There are changes after i18n/build/test. Please, commit them locally and push again"; git status; exit 1; }
 
 # Run deploy separately from command above because we don't want to deploy
