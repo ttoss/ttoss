@@ -18,7 +18,7 @@
   "scripts": {
     "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",
-    "lint": "lint-staged --diff main --quiet --no-stash --allow-empty",
+    "lint": "lint-staged --diff main --quiet --allow-empty",
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
     "storybook": "pnpm --filter @docs/storybook run storybook",

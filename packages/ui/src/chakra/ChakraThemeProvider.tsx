@@ -8,6 +8,8 @@ import * as React from 'react';
 import type { Theme } from 'theme-ui';
 
 import { useTheme } from '../theme/useTheme';
+import * as recipes from './recipes';
+import * as slotRecipes from './slotRecipes';
 
 /**
  * Helper function to wrap token values in Chakra UI v3 format.
@@ -56,6 +58,12 @@ const wrapTokenValues = <T extends Record<string, any>>(
  *         brand: { 500: { value: '#0469E3' } },
  *       },
  *     },
+ *     recipes: {
+ *       button: defineRecipe({ ... }),
+ *     },
+ *     slotRecipes: {
+ *       steps: defineSlotRecipe({ ... }),
+ *     },
  *   },
  * });
  * ```
@@ -68,7 +76,6 @@ const toChakraTheme = (
     theme: {
       tokens: {
         borders: wrapTokenValues(themeUITheme.borders),
-        colors: wrapTokenValues(themeUITheme.rawColors ?? themeUITheme.colors),
         fonts: wrapTokenValues(themeUITheme.fonts),
         fontSizes: wrapTokenValues(themeUITheme.fontSizes),
         fontWeights: wrapTokenValues(themeUITheme.fontWeights),
@@ -78,6 +85,9 @@ const toChakraTheme = (
         sizes: wrapTokenValues(themeUITheme.sizes),
         spacing: wrapTokenValues(themeUITheme.space),
         zIndex: wrapTokenValues(themeUITheme.zIndices),
+      },
+      semanticTokens: {
+        colors: wrapTokenValues(themeUITheme.rawColors),
       },
       breakpoints:
         themeUITheme.breakpoints && Array.isArray(themeUITheme.breakpoints)
@@ -89,6 +99,8 @@ const toChakraTheme = (
               '2xl': themeUITheme.breakpoints[4],
             }
           : undefined,
+      recipes: { ...recipes, ...overrides.theme?.recipes },
+      slotRecipes: { ...slotRecipes, ...overrides.theme?.slotRecipes },
     },
     ...overrides,
   };
@@ -98,6 +110,31 @@ const toChakraTheme = (
 
 export type ChakraThemeProviderProps = {
   children?: React.ReactNode;
+  /**
+   * Optional Theme UI theme to use instead of reading from context.
+   * Useful when you need to pass a specific theme directly.
+   */
+  themeUITheme?: Theme;
+  /**
+   * Optional Chakra-specific config overrides.
+   * Use this to add recipes, slot recipes, or customize tokens.
+   *
+   * @example
+   * ```tsx
+   * <ChakraProvider
+   *   overrides={{
+   *     theme: {
+   *       slotRecipes: {
+   *         steps: stepsSlotRecipe,
+   *       },
+   *     },
+   *   }}
+   * >
+   *   ...
+   * </ChakraProvider>
+   * ```
+   */
+  overrides?: Parameters<typeof createSystem>[1];
 };
 
 /**
@@ -105,12 +142,12 @@ export type ChakraThemeProviderProps = {
  * theme-ui `ThemeProvider`.
  *
  * **Must be rendered as a child of `ThemeProvider`** so that `useThemeUI()`
- * can read the active theme.
+ * can read the active theme (unless `themeUITheme` prop is provided).
  *
  * This component automatically converts theme-ui tokens to Chakra UI v3
  * system format, allowing seamless integration between both systems.
  *
- * @example
+ * @example Basic usage (inherits from ThemeProvider context)
  * ```tsx
  * import { ThemeProvider } from '@ttoss/ui';
  * import { ChakraProvider } from '@ttoss/ui/chakra';
@@ -125,13 +162,40 @@ export type ChakraThemeProviderProps = {
  *   );
  * }
  * ```
+ *
+ * @example With custom theme
+ * ```tsx
+ * <ChakraProvider themeUITheme={customTheme}>
+ *   <Button>Click me</Button>
+ * </ChakraProvider>
+ * ```
+ *
+ * @example With recipe overrides
+ * ```tsx
+ * <ChakraProvider
+ *   overrides={{
+ *     theme: {
+ *       slotRecipes: {
+ *         steps: customStepsRecipe,
+ *       },
+ *     },
+ *   }}
+ * >
+ *   <Steps.Root>...</Steps.Root>
+ * </ChakraProvider>
+ * ```
  */
-export const ChakraProvider = ({ children }: ChakraThemeProviderProps) => {
-  const themeUITheme = useTheme();
+export const ChakraProvider = ({
+  children,
+  themeUITheme: themeUIThemeProp,
+  overrides,
+}: ChakraThemeProviderProps) => {
+  const themeUIThemeContext = useTheme();
+  const themeUITheme = themeUIThemeProp ?? themeUIThemeContext.theme;
 
   const chakraSystem = React.useMemo(() => {
-    return toChakraTheme(themeUITheme.theme);
-  }, [themeUITheme.theme]);
+    return toChakraTheme(themeUITheme, overrides);
+  }, [themeUITheme, overrides]);
 
   return (
     <ChakraProviderBase value={chakraSystem}>{children}</ChakraProviderBase>

@@ -4,6 +4,7 @@ import {
   type DashboardFilter,
   DashboardFilterType,
   type DashboardTemplate,
+  DEFAULT_CARD_CATALOG,
 } from '@ttoss/react-dashboard';
 import { Box, Heading, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -799,6 +800,182 @@ export const WithSectionDividers: StoryObj = {
       description: {
         story:
           'Dashboard organized with section dividers. Section dividers help organize dashboard content into logical sections, making it easier to scan and understand different groups of metrics. They can be added to the grid layout just like regular cards, using `type: "sectionDivider"` and a `title` property.',
+      },
+    },
+  },
+};
+
+const EditableCustomizeStory = () => {
+  const initialTemplate: DashboardTemplate = {
+    id: 'editable-dashboard',
+    name: 'Editable Dashboard',
+    description: 'Dashboard configured for layout customization',
+    editable: true,
+    grid: [
+      {
+        i: 'revenue',
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          title: 'Total Revenue',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {
+            api: { total: 180000 },
+          },
+          trend: {
+            value: 12.4,
+            status: 'positive',
+          },
+        },
+      },
+      {
+        i: 'divider-1',
+        x: 0,
+        y: 4,
+        w: 12,
+        h: 2,
+        card: {
+          type: 'sectionDivider',
+          title: 'Efficiency',
+        },
+      },
+      {
+        i: 'roas',
+        x: 0,
+        y: 6,
+        w: 4,
+        h: 4,
+        card: {
+          title: 'ROAS',
+          numberType: 'number',
+          numberDecimalPlaces: 2,
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {
+            api: { total: 3.72 },
+          },
+          variant: 'light-green',
+        },
+      },
+    ],
+  };
+
+  const [templates, setTemplates] = React.useState<DashboardTemplate[]>([
+    initialTemplate,
+  ]);
+  const [selectedTemplateId, setSelectedTemplateId] = React.useState(
+    initialTemplate.id
+  );
+  const [filters, setFilters] = React.useState<DashboardFilter[]>([
+    {
+      key: 'template',
+      type: DashboardFilterType.SELECT,
+      label: 'Template',
+      value: initialTemplate.id,
+      options: [
+        {
+          label: initialTemplate.name,
+          value: initialTemplate.id,
+        },
+      ],
+    },
+  ]);
+
+  const selectedTemplate =
+    templates.find((template) => {
+      return template.id === selectedTemplateId;
+    }) || templates[0];
+
+  const handleFiltersChange = (updatedFilters: DashboardFilter[]) => {
+    setFilters(updatedFilters);
+    const templateFilter = updatedFilters.find((filter) => {
+      return filter.key === 'template';
+    });
+    if (templateFilter?.value && typeof templateFilter.value === 'string') {
+      setSelectedTemplateId(templateFilter.value);
+    }
+  };
+
+  const updateTemplateFilterOptions = React.useCallback(
+    (nextTemplates: DashboardTemplate[], activeTemplateId: string) => {
+      setFilters((prev) => {
+        return prev.map((filter) => {
+          if (filter.key !== 'template') return filter;
+          return {
+            ...filter,
+            value: activeTemplateId,
+            options: nextTemplates.map((template) => {
+              return {
+                label: template.name,
+                value: template.id,
+              };
+            }),
+          };
+        });
+      });
+    },
+    []
+  );
+
+  const handleSaveLayout = (updatedTemplate: DashboardTemplate) => {
+    const normalizedTemplate = { ...updatedTemplate, editable: true };
+    setTemplates((prev) => {
+      const nextTemplates = prev.map((template) => {
+        return template.id === normalizedTemplate.id
+          ? normalizedTemplate
+          : template;
+      });
+      updateTemplateFilterOptions(nextTemplates, normalizedTemplate.id);
+      return nextTemplates;
+    });
+  };
+
+  const handleSaveAsNewTemplate = (newTemplate: DashboardTemplate) => {
+    const normalizedTemplate = { ...newTemplate, editable: true };
+    setTemplates((prev) => {
+      const nextTemplates = [...prev, normalizedTemplate];
+      updateTemplateFilterOptions(nextTemplates, normalizedTemplate.id);
+      return nextTemplates;
+    });
+    setSelectedTemplateId(normalizedTemplate.id);
+  };
+
+  const handleCancelEdit = () => {
+    // eslint-disable-next-line no-console
+    console.log('Edit mode canceled');
+  };
+
+  return (
+    <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
+      <Dashboard
+        templates={templates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        editable
+        cardCatalog={DEFAULT_CARD_CATALOG}
+        onFiltersChange={handleFiltersChange}
+        onSaveLayout={handleSaveLayout}
+        onSaveAsNewTemplate={handleSaveAsNewTemplate}
+        onCancelEdit={handleCancelEdit}
+      />
+    </Box>
+  );
+};
+
+export const EditableCustomizeMode: StoryObj = {
+  render: () => {
+    return <EditableCustomizeStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dashboard with edit mode enabled. Use the toolbar to edit layout, add/remove cards from catalog, save the current template, or save as a new template.',
       },
     },
   },

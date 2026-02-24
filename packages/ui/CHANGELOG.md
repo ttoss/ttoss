@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.6.0...@ttoss/ui@6.7.0) (2026-02-23)
+
+### Features
+
+- chakra colors ([#874](https://github.com/ttoss/ttoss/issues/874)) ([043d8d2](https://github.com/ttoss/ttoss/commit/043d8d2e95285d72f5c22d2867297c6e16da0d97))
+
 # 6.6.0 (2026-02-15)
 
 ### Bug Fixes

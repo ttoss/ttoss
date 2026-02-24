@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.1...@ttoss/react-auth-cognito@2.8.2) (2026-02-23)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.0...@ttoss/react-auth-cognito@2.8.1) (2026-02-21)
+
+### Bug Fixes
+
+- auth strapi forgot password ([#873](https://github.com/ttoss/ttoss/issues/873)) ([409d6a6](https://github.com/ttoss/ttoss/commit/409d6a60f976fd84444758431a5514389eea77da))
+
 # [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.7.7...@ttoss/react-auth-cognito@2.8.0) (2026-02-15)
 
 ### Features
