@@ -14,11 +14,16 @@ describe('useUnsavedChanges', () => {
     enabled?: boolean;
     onAttemptLeave?: () => void;
   }) => {
-    const { showModal, isDirty, handleDiscard, handleKeepEditing } =
-      useUnsavedChanges({
-        enabled,
-        onAttemptLeave,
-      });
+    const {
+      showModal,
+      isDirty,
+      handleDiscard,
+      handleKeepEditing,
+      handleAttemptNavigation,
+    } = useUnsavedChanges({
+      enabled,
+      onAttemptLeave,
+    });
 
     return (
       <>
@@ -30,6 +35,14 @@ describe('useUnsavedChanges', () => {
         </Button>
         <Button onClick={handleKeepEditing} data-testid="keep-editing-btn">
           Test Keep Editing
+        </Button>
+        <Button
+          onClick={() => {
+            return handleAttemptNavigation();
+          }}
+          data-testid="attempt-nav-btn"
+        >
+          Test Attempt Navigation
         </Button>
         <UnsavedChangesModal
           isOpen={showModal}
@@ -159,20 +172,24 @@ describe('useUnsavedChanges', () => {
 
     render(<FormWithUnsavedChanges />);
 
-    // Manually open modal by clicking keep editing test button
-    // (In real usage, modal would open via handleAttemptNavigation)
+    // Make form dirty so navigation attempt can trigger the modal
     const input = screen.getByLabelText('Email');
     await user.type(input, 'test@example.com');
 
-    // Use the handleDiscard to show modal (simulate navigation attempt)
-    const discardBtn = screen.getByTestId('discard-btn');
-    await user.click(discardBtn);
+    await waitFor(() => {
+      expect(screen.getByTestId('is-dirty')).toHaveTextContent('dirty');
+    });
 
-    // Click keep editing
-    const keepEditingBtn = screen.getByTestId('keep-editing-btn');
-    await user.click(keepEditingBtn);
+    // Simulate a navigation attempt that opens the modal
+    await user.click(screen.getByTestId('attempt-nav-btn'));
 
-    // Modal should still be closed (since we're using the button directly)
+    // Modal should now be open
+    expect(screen.getByTestId('show-modal')).toHaveTextContent('open');
+
+    // Click keep editing to close the modal
+    await user.click(screen.getByTestId('keep-editing-btn'));
+
+    // Modal should now be closed
     expect(screen.getByTestId('show-modal')).toHaveTextContent('closed');
   });
 

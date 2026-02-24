@@ -239,17 +239,13 @@ export const useUnsavedChanges = ({
    * Close modal and proceed with discard action
    */
   const handleDiscard = React.useCallback(() => {
-    if (enabled && isDirty) {
-      const navigationAction = pendingNavigation;
-      setPendingNavigation(null);
-      setShowModal(false);
-      navigationAction?.();
-      return;
-    }
+    const navigationAction = pendingNavigation;
 
     setPendingNavigation(null);
     setShowModal(false);
-  }, [enabled, isDirty, pendingNavigation]);
+
+    navigationAction?.();
+  }, [pendingNavigation]);
 
   return {
     showModal,

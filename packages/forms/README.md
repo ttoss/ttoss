@@ -62,7 +62,7 @@ All React Hook Form APIs are re-exported from `@ttoss/forms`, including hooks li
 
 ## Unsaved Changes Guard
 
-Use `useUnsavedChanges` together with `UnsavedChangesModal` to block navigation when guarded fields have unsaved values.
+Use `useUnsavedChanges` together with `UnsavedChangesModal` to block navigation when guarded fields have unsaved values. If no fields are marked with `unsavedChangesGuard`, any dirty field in the form will block navigation.
 
 ### 1) Mark guarded fields
 
