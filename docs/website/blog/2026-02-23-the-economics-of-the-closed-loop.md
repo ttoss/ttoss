@@ -1,5 +1,6 @@
 ---
 title: The Economics of Closed Loop Agents
+description: How closed-loop, test-driven AI agents transform human-in-the-loop coding workflows by reducing the verification tax and aligning with Agentic Development Principles.
 authors: arantespp
 tags: [ai, engineering-management, agentic-development, testing]
 ---
