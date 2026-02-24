@@ -48,11 +48,11 @@ Only _then_ does the human review the PR.
 
 ## A Practical Example: The ttoss Monorepo
 
-We apply these principles directly in the [ttoss project](https://github.com/ttoss/ttoss). The repository is structured as a monorepo with multiple independent packages, each containing its own comprehensive test suite.
+We apply these principles directly in the [ttoss project](https://github.com/ttoss/ttoss). The repository is structured as a monorepo with multiple independent packages, and many of the core application and library packages include their own focused test suites.
 
 You can explore the structure here: [github.com/ttoss/ttoss/tree/main/packages](https://github.com/ttoss/ttoss/tree/main/packages).
 
-This architecture is intentional. By isolating functionality into small packages with dedicated tests, we create "closed loops" for our agents. When an agent works on a specific package (like `@ttoss/react-auth` or `@ttoss/forms`), it can run the tests for just that package in seconds. This provides the fast, precise feedback signal the agent needs to self-correct, without running the entire application or waiting for a human review.
+This architecture is intentional. By isolating functionality into small packages and adding dedicated tests where they provide the most leverage, we create "closed loops" for our agents. When an agent works on a specific package (like `@ttoss/react-auth` or `@ttoss/forms`), it can run the tests for just that package in seconds. This provides the fast, precise feedback signal the agent needs to self-correct, without running the entire application or waiting for a human review.
 
 ## Conclusion: Tests are the Currency of Autonomy
 
