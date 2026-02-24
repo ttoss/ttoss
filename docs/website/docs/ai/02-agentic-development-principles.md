@@ -174,6 +174,20 @@ Any system composed of AI agents is inherently composed of unreliable components
 
 To prevent total system corruption from partial failure, agent actions must be treated as atomic units that are isolated from the global state until confirmed. This ensures that a failed or retried action does not leave the system in an inconsistent "zombie" state.
 
+### The Principle of Automated Closed Loops
+
+AI agents function as control systems where the codebase is the plant and the prompt is the controller. Open-loop systems (prompt → code) are inherently unstable because errors accumulate without correction. Stability requires a closed loop where the output is measured against a reference (tests, types, linters) and the error signal is fed back to the agent. Because human feedback is high-latency and expensive, this loop must be closed by automated systems to be economically viable.
+
+**Failure Scenario:** A developer uses an LLM to generate a large feature in one go. The code looks correct but contains subtle logic errors. The developer spends hours debugging (acting as the slow feedback loop), negating the speed advantage of the AI.
+
+#### The Corollary of Verification Latency
+
+The stability of an agentic system is inversely proportional to the latency of its feedback loop. Automated tests (milliseconds) provide infinitely higher stability per dollar than human review (minutes/hours). Agents must run in tight, automated loops to self-correct before requesting human attention. This operationalizes [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
+
+#### The Corollary of The Verification Tax
+
+AI shifts the cost of software development from creation (typing code) to verification (reviewing code). If verification relies on human effort, the total cost of development may increase despite faster generation. To capture the value of AI, verification must be offloaded to machines (tests) allows the agent to pay the tax.
+
 ## The Economics of Interaction
 
 Every human-AI exchange costs something: attention, latency, tokens, or compute. Treat these as scarce resources and allocate them ruthlessly for maximum ROI. Waste them on low-value cycles and your whole workflow grinds to a halt.
