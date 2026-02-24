@@ -186,7 +186,7 @@ The stability of an agentic system is inversely proportional to the latency of i
 
 #### The Corollary of The Verification Tax
 
-AI shifts the cost of software development from creation (typing code) to verification (reviewing code). If verification relies on human effort, the total cost of development may increase despite faster generation. To capture the value of AI, verification must be offloaded to machines (tests) allows the agent to pay the tax.
+AI shifts the cost of software development from creation (typing code) to verification (reviewing code). If verification relies on human effort, the total cost of development may increase despite faster generation. To capture the value of AI, verification must be offloaded to machines (tests), which allows the agent to pay the tax.
 
 ## The Economics of Interaction
 
