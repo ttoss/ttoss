@@ -184,7 +184,7 @@ AI agents function as control systems where the codebase is the plant and the pr
 
 The stability of an agentic system is inversely proportional to the latency of its feedback loop. Automated tests (milliseconds) provide infinitely higher stability per dollar than human review (minutes/hours). Agents must run in tight, automated loops to self-correct before requesting human attention. This operationalizes [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
 
-#### The Corollary of The Verification Tax
+#### The Corollary of the Verification Tax
 
 AI shifts the cost of software development from creation (typing code) to verification (reviewing code). If verification relies on human effort, the total cost of development may increase despite faster generation. To capture the value of AI, verification must be offloaded to machines (tests), which allows the agent to pay the tax.
 
