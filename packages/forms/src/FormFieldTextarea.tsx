@@ -25,6 +25,7 @@ export const FormFieldTextarea = <
     css,
     rules,
     id,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onBlur,
     onChange,
@@ -43,6 +44,7 @@ export const FormFieldTextarea = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (

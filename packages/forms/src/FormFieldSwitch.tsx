@@ -25,6 +25,7 @@ export const FormFieldSwitch = <
     rules,
     id,
     defaultValue,
+    unsavedChangesGuard,
     onBlur,
     onChange,
     ...switchProps
@@ -42,6 +43,7 @@ export const FormFieldSwitch = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field, fieldState }) => {
         return (
           <Switch

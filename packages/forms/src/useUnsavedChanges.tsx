@@ -1,6 +1,54 @@
-import { useI18n } from '@ttoss/react-i18n';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import * as React from 'react';
 import { useFormContext } from 'react-hook-form';
+
+import { useUnsavedChangesGuardContext } from './UnsavedChangesGuardContext';
+
+const messages = defineMessages({
+  leaveWarning: {
+    defaultMessage: 'You have unsaved changes. Are you sure you want to leave?',
+    description: 'Browser native dialog message for unsaved changes',
+  },
+});
+
+const getPathValue = ({ object, path }: { object: unknown; path: string }) => {
+  return path.split('.').reduce<unknown>((value, pathPart) => {
+    if (value === null || value === undefined) {
+      return undefined;
+    }
+
+    if (typeof value !== 'object') {
+      return undefined;
+    }
+
+    return (value as Record<string, unknown>)[pathPart];
+  }, object);
+};
+
+const hasDirtyTrackedFields = ({
+  dirtyFields,
+  trackedFields,
+}: {
+  dirtyFields: unknown;
+  trackedFields: string[];
+}) => {
+  return trackedFields.some((fieldName) => {
+    return Boolean(
+      getPathValue({
+        object: dirtyFields,
+        path: fieldName,
+      })
+    );
+  });
+};
+
+export type UnsavedNavigationHandlerOptions = {
+  onProceed?: () => void;
+};
+
+export type CreateUnsavedNavigationHandlerOptions = {
+  onProceed: () => void;
+};
 
 export type UseUnsavedChangesOptions = {
   /**
@@ -18,6 +66,38 @@ export type UseUnsavedChangesOptions = {
   onAttemptLeave?: () => void;
 };
 
+export type UseUnsavedChangesReturn = {
+  /**
+   * Whether the modal should be shown.
+   */
+  showModal: boolean;
+  /**
+   * Whether the form has unsaved changes.
+   */
+  isDirty: boolean;
+  /**
+   * Handler for when user wants to discard changes.
+   */
+  handleDiscard: () => void;
+  /**
+   * Handler for when user wants to keep editing.
+   */
+  handleKeepEditing: () => void;
+  /**
+   * Handler to call when user attempts navigation.
+   * Returns true if navigation should be blocked.
+   */
+  handleAttemptNavigation: (
+    options?: UnsavedNavigationHandlerOptions
+  ) => boolean;
+  /**
+   * Creates a guarded navigation handler that can be used in links or buttons.
+   */
+  createNavigationHandler: (
+    options: CreateUnsavedNavigationHandlerOptions
+  ) => () => void;
+};
+
 /**
  * Hook that provides unsaved changes protection for forms.
  * Tracks form dirty state and prevents page navigation when there are unsaved changes.
@@ -28,11 +108,27 @@ export type UseUnsavedChangesOptions = {
  * @example
  * ```tsx
  * const MyFormContent = () => {
- *   const { showModal, handleDiscard, handleKeepEditing } = useUnsavedChanges();
+ *   const {
+ *     showModal,
+ *     handleDiscard,
+ *     handleKeepEditing,
+ *     createNavigationHandler,
+ *   } = useUnsavedChanges();
+ *
+ *   const goToDashboard = createNavigationHandler({
+ *     onProceed: () => {
+ *       navigate('/dashboard');
+ *     },
+ *   });
  *
  *   return (
  *     <>
- *       <FormFieldInput name="email" label="Email" />
+ *       <FormFieldInput
+ *         name="email"
+ *         label="Email"
+ *         unsavedChangesGuard={true}
+ *       />
+ *       <Button type="button" onClick={goToDashboard}>Go to Dashboard</Button>
  *       <UnsavedChangesModal
  *         isOpen={showModal}
  *         onDiscard={handleDiscard}
@@ -56,19 +152,28 @@ export const useUnsavedChanges = ({
   enabled = true,
   message,
   onAttemptLeave,
-}: UseUnsavedChangesOptions = {}) => {
+}: UseUnsavedChangesOptions = {}): UseUnsavedChangesReturn => {
   const { intl } = useI18n();
+  const { trackedFields } = useUnsavedChangesGuardContext();
 
   // Get form context - will be null if not inside a FormProvider
   const formContext = useFormContext();
-  const isDirty = formContext?.formState?.isDirty ?? false;
+  const isFormDirty = formContext?.formState?.isDirty ?? false;
+
+  const [pendingNavigation, setPendingNavigation] = React.useState<
+    (() => void) | null
+  >(null);
+
+  const trackedFieldsDirty = hasDirtyTrackedFields({
+    dirtyFields: formContext?.formState?.dirtyFields,
+    trackedFields,
+  });
+
+  const isDirty = trackedFields.length > 0 ? trackedFieldsDirty : isFormDirty;
 
   const [showModal, setShowModal] = React.useState(false);
 
-  const defaultMessage = intl.formatMessage({
-    defaultMessage: 'You have unsaved changes. Are you sure you want to leave?',
-    description: 'Browser native dialog message for unsaved changes',
-  });
+  const defaultMessage = intl.formatMessage(messages.leaveWarning);
 
   const warningMessage = message || defaultMessage;
 
@@ -96,19 +201,37 @@ export const useUnsavedChanges = ({
   /**
    * Open the modal when user attempts to navigate
    */
-  const handleAttemptNavigation = React.useCallback(() => {
-    if (enabled && isDirty) {
-      setShowModal(true);
-      onAttemptLeave?.();
-      return true; // Indicates navigation should be blocked
-    }
-    return false; // Allow navigation
-  }, [enabled, isDirty, onAttemptLeave]);
+  const handleAttemptNavigation = React.useCallback(
+    ({ onProceed }: UnsavedNavigationHandlerOptions = {}) => {
+      if (enabled && isDirty) {
+        setPendingNavigation(() => {
+          return onProceed ?? null;
+        });
+        setShowModal(true);
+        onAttemptLeave?.();
+        return true; // Indicates navigation should be blocked
+      }
+
+      onProceed?.();
+      return false; // Allow navigation
+    },
+    [enabled, isDirty, onAttemptLeave]
+  );
+
+  const createNavigationHandler = React.useCallback(
+    ({ onProceed }: CreateUnsavedNavigationHandlerOptions) => {
+      return () => {
+        handleAttemptNavigation({ onProceed });
+      };
+    },
+    [handleAttemptNavigation]
+  );
 
   /**
    * Close modal and allow user to continue editing
    */
   const handleKeepEditing = React.useCallback(() => {
+    setPendingNavigation(null);
     setShowModal(false);
   }, []);
 
@@ -116,31 +239,24 @@ export const useUnsavedChanges = ({
    * Close modal and proceed with discard action
    */
   const handleDiscard = React.useCallback(() => {
+    if (enabled && isDirty) {
+      const navigationAction = pendingNavigation;
+      setPendingNavigation(null);
+      setShowModal(false);
+      navigationAction?.();
+      return;
+    }
+
+    setPendingNavigation(null);
     setShowModal(false);
-    // The caller should handle actual discard logic (e.g., reset form, navigate away)
-  }, []);
+  }, [enabled, isDirty, pendingNavigation]);
 
   return {
-    /**
-     * Whether the modal should be shown
-     */
     showModal,
-    /**
-     * Whether the form has unsaved changes
-     */
     isDirty,
-    /**
-     * Handler for when user wants to discard changes
-     */
     handleDiscard,
-    /**
-     * Handler for when user wants to keep editing
-     */
     handleKeepEditing,
-    /**
-     * Handler to call when user attempts navigation
-     * Returns true if navigation should be blocked
-     */
     handleAttemptNavigation,
+    createNavigationHandler,
   };
 };

@@ -26,6 +26,7 @@ export const FormFieldSegmentedControl = <
     css,
     rules,
     id,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onChange,
     variant = 'secondary',
@@ -44,6 +45,7 @@ export const FormFieldSegmentedControl = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (

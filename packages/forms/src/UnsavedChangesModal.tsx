@@ -1,6 +1,26 @@
 import { Modal } from '@ttoss/components/Modal';
-import { useI18n } from '@ttoss/react-i18n';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, Button, Flex, Heading, Text } from '@ttoss/ui';
+
+const messages = defineMessages({
+  defaultTitle: {
+    defaultMessage: 'Unsaved Changes',
+    description: 'Title for unsaved changes confirmation modal',
+  },
+  defaultMessage: {
+    defaultMessage:
+      'You have unsaved changes. Are you sure you want to discard them?',
+    description: 'Message for unsaved changes confirmation modal',
+  },
+  discardLabel: {
+    defaultMessage: 'Discard Changes',
+    description: 'Button label to discard unsaved changes',
+  },
+  keepEditingLabel: {
+    defaultMessage: 'Keep Editing',
+    description: 'Button label to continue editing',
+  },
+});
 
 export type UnsavedChangesModalProps = {
   /**
@@ -38,26 +58,13 @@ export const UnsavedChangesModal = ({
 }: UnsavedChangesModalProps) => {
   const { intl } = useI18n();
 
-  const defaultTitle = intl.formatMessage({
-    defaultMessage: 'Unsaved Changes',
-    description: 'Title for unsaved changes confirmation modal',
-  });
+  const defaultTitle = intl.formatMessage(messages.defaultTitle);
 
-  const defaultMessage = intl.formatMessage({
-    defaultMessage:
-      'You have unsaved changes. Are you sure you want to discard them?',
-    description: 'Message for unsaved changes confirmation modal',
-  });
+  const defaultMessage = intl.formatMessage(messages.defaultMessage);
 
-  const discardLabel = intl.formatMessage({
-    defaultMessage: 'Discard Changes',
-    description: 'Button label to discard unsaved changes',
-  });
+  const discardLabel = intl.formatMessage(messages.discardLabel);
 
-  const keepEditingLabel = intl.formatMessage({
-    defaultMessage: 'Keep Editing',
-    description: 'Button label to continue editing',
-  });
+  const keepEditingLabel = intl.formatMessage(messages.keepEditingLabel);
 
   return (
     <Modal

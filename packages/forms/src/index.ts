@@ -25,8 +25,11 @@ export {
   type UnsavedChangesModalProps,
 } from './UnsavedChangesModal';
 export {
+  type CreateUnsavedNavigationHandlerOptions,
+  type UnsavedNavigationHandlerOptions,
   useUnsavedChanges,
   type UseUnsavedChangesOptions,
+  type UseUnsavedChangesReturn,
 } from './useUnsavedChanges';
 export { yup } from './yup/yup';
 export { z } from './zod/zod';

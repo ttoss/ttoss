@@ -37,6 +37,7 @@ export const FormFieldRadioCard = <
     id,
     defaultValue,
     options,
+    unsavedChangesGuard,
     direction = 'column',
     width = 'full',
     onBlur,
@@ -56,6 +57,7 @@ export const FormFieldRadioCard = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field }) => {
         return (
           <Flex

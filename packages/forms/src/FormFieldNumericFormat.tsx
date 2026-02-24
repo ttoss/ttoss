@@ -65,6 +65,7 @@ export const FormFieldNumericFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onBlur,
     onValueChange,
@@ -83,6 +84,7 @@ export const FormFieldNumericFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field }) => {
         return (

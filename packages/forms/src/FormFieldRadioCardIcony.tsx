@@ -51,6 +51,7 @@ export const FormFieldRadioCardIcony = <
     rules,
     id,
     defaultValue,
+    unsavedChangesGuard,
     options,
     direction = 'row',
     width = 'full',
@@ -68,6 +69,7 @@ export const FormFieldRadioCardIcony = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field }) => {
         const isDisabled = disabled ?? field.disabled;
         const handleOptionClick = (optionValue: string | number) => {

@@ -60,6 +60,51 @@ export const FormComponent = () => {
 
 All React Hook Form APIs are re-exported from `@ttoss/forms`, including hooks like `useForm`, `useController`, `useFieldArray`, and `useFormContext`. See the [React Hook Form documentation](https://react-hook-form.com/docs) for complete API details.
 
+## Unsaved Changes Guard
+
+Use `useUnsavedChanges` together with `UnsavedChangesModal` to block navigation when guarded fields have unsaved values.
+
+### 1) Mark guarded fields
+
+Add `unsavedChangesGuard` to any field that should block navigation:
+
+```tsx
+<FormFieldInput name="email" label="Email" unsavedChangesGuard={true} />
+<FormFieldInput name="name" label="Name" unsavedChangesGuard={true} />
+```
+
+### 2) Guard navigation attempts
+
+Use `createNavigationHandler` (or `handleAttemptNavigation`) before changing page/route:
+
+```tsx
+const { showModal, handleDiscard, handleKeepEditing, createNavigationHandler } =
+  useUnsavedChanges();
+
+const navigateToDashboard = createNavigationHandler({
+  onProceed: () => {
+    // your router navigation here
+  },
+});
+
+<Button type="button" onClick={navigateToDashboard}>
+  Go to Dashboard
+</Button>;
+
+<UnsavedChangesModal
+  isOpen={showModal}
+  onDiscard={handleDiscard}
+  onKeepEditing={handleKeepEditing}
+/>;
+```
+
+### Behavior
+
+- If at least one guarded field is dirty, navigation is blocked and the modal opens.
+- `Discard Changes` continues the pending navigation callback.
+- `Keep Editing` closes the modal and keeps the user on the current page.
+- Browser tab close/reload is also guarded using `beforeunload`.
+
 ## Zod Validation (Recommended)
 
 Import `z` and `zodResolver` directly from `@ttoss/forms` for schema validation using [Zod](https://zod.dev/):

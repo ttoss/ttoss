@@ -22,7 +22,7 @@ describe('useUnsavedChanges', () => {
 
     return (
       <>
-        <FormFieldInput name="email" label="Email" />
+        <FormFieldInput name="email" label="Email" unsavedChangesGuard={true} />
         <div data-testid="is-dirty">{isDirty ? 'dirty' : 'clean'}</div>
         <div data-testid="show-modal">{showModal ? 'open' : 'closed'}</div>
         <Button onClick={handleDiscard} data-testid="discard-btn">
@@ -350,5 +350,173 @@ describe('useUnsavedChanges', () => {
     await waitFor(() => {
       expect(screen.getByTestId('blocked')).toHaveTextContent('allowed');
     });
+  });
+
+  test('should execute pending navigation only after discard confirmation', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onProceed = jest.fn();
+
+    const FormContentWithPendingNavigation = () => {
+      const {
+        handleAttemptNavigation,
+        handleDiscard,
+        handleKeepEditing,
+        showModal,
+      } = useUnsavedChanges();
+
+      return (
+        <>
+          <FormFieldInput
+            name="email"
+            label="Email"
+            unsavedChangesGuard={true}
+          />
+          <Button
+            data-testid="attempt-nav-btn"
+            onClick={() => {
+              handleAttemptNavigation({ onProceed });
+            }}
+          >
+            Attempt Navigation
+          </Button>
+          <UnsavedChangesModal
+            isOpen={showModal}
+            onDiscard={handleDiscard}
+            onKeepEditing={handleKeepEditing}
+          />
+        </>
+      );
+    };
+
+    const FormWithPendingNavigation = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormContentWithPendingNavigation />
+        </Form>
+      );
+    };
+
+    render(<FormWithPendingNavigation />);
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com');
+
+    await user.click(screen.getByTestId('attempt-nav-btn'));
+
+    expect(onProceed).not.toHaveBeenCalled();
+    expect(screen.getByText('Unsaved Changes')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Keep Editing'));
+    expect(onProceed).not.toHaveBeenCalled();
+
+    await user.click(screen.getByTestId('attempt-nav-btn'));
+    await user.click(screen.getByText('Discard Changes'));
+
+    expect(onProceed).toHaveBeenCalledTimes(1);
+  });
+
+  test('should allow navigation when only unguarded fields are dirty', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const FormContentWithMixedGuards = () => {
+      const { handleAttemptNavigation } = useUnsavedChanges();
+      const [blocked, setBlocked] = React.useState<boolean | null>(null);
+
+      return (
+        <>
+          <FormFieldInput
+            name="guarded"
+            label="Guarded"
+            unsavedChangesGuard={true}
+          />
+          <FormFieldInput name="unguarded" label="Unguarded" />
+          <Button
+            data-testid="attempt-nav-btn"
+            onClick={() => {
+              setBlocked(handleAttemptNavigation());
+            }}
+          >
+            Attempt Navigation
+          </Button>
+          {blocked !== null && (
+            <div data-testid="blocked">{blocked ? 'blocked' : 'allowed'}</div>
+          )}
+        </>
+      );
+    };
+
+    const FormWithMixedGuards = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormContentWithMixedGuards />
+        </Form>
+      );
+    };
+
+    render(<FormWithMixedGuards />);
+
+    await user.type(
+      screen.getByLabelText('Unguarded'),
+      'only this field changed'
+    );
+    await user.click(screen.getByTestId('attempt-nav-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('blocked')).toHaveTextContent('allowed');
+    });
+  });
+
+  test('createNavigationHandler should proceed immediately when form is clean', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onProceed = jest.fn();
+
+    const FormContentWithCreateHandler = () => {
+      const { createNavigationHandler, handleDiscard, showModal } =
+        useUnsavedChanges();
+
+      const guardedNavigation = React.useMemo(() => {
+        return createNavigationHandler({ onProceed });
+      }, [createNavigationHandler]);
+
+      return (
+        <>
+          <FormFieldInput
+            name="email"
+            label="Email"
+            unsavedChangesGuard={true}
+          />
+          <Button data-testid="navigate-btn" onClick={guardedNavigation}>
+            Navigate
+          </Button>
+          <Button data-testid="discard-btn" onClick={handleDiscard}>
+            Discard
+          </Button>
+          <div data-testid="show-modal">{showModal ? 'open' : 'closed'}</div>
+        </>
+      );
+    };
+
+    const FormWithCreateHandler = () => {
+      const formMethods = useForm();
+      return (
+        <Form {...formMethods} onSubmit={jest.fn()}>
+          <FormContentWithCreateHandler />
+        </Form>
+      );
+    };
+
+    render(<FormWithCreateHandler />);
+
+    await user.click(screen.getByTestId('navigate-btn'));
+
+    expect(onProceed).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('show-modal')).toHaveTextContent('closed');
+
+    // Calling discard while clean should keep modal closed and not crash
+    await user.click(screen.getByTestId('discard-btn'));
+    expect(screen.getByTestId('show-modal')).toHaveTextContent('closed');
   });
 });
