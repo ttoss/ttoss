@@ -60,6 +60,6 @@ This architecture is intentional. By isolating functionality into small packages
 If you want autonomous agents, writing tests is no longer a "quality assurance" task—it is a "specification" task.
 
 In the past, we wrote tests to catch regressions. In the future, we write tests to define the "Setpoint" for our AI controllers. The better your tests (sensors), the tighter the loop, and the more autonomy you can safely buy.
-For a complementary view focused on verification costs and how to architect these feedback systems, see [From Reviewer to Architect: Escaping the AI Verification Trap](/blog/from-reviewer-to-architect-escaping-the-ai-verification-trap).
+For a complementary view focused on verification costs and how to architect these feedback systems, see [From Reviewer to Architect: Escaping the AI Verification Trap](/blog/2025/12/18/from-reviewer-to-architect).
 
 Stop being the feedback loop. Build one.
