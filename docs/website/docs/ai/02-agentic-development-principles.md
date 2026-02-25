@@ -188,6 +188,10 @@ The stability of an agentic system is inversely proportional to the latency of i
 
 AI shifts the cost of software development from creation (typing code) to verification (reviewing code). If verification relies on human effort, the total cost of development may increase despite faster generation. To capture the value of AI, verification must be offloaded to machines (tests), which allows the agent to pay the tax.
 
+#### The Corollary of Deterministic Verification
+
+Verification must be structurally enforced, not semantically requested. Instructing agents via prompts to "run tests after changes" creates a weak closed loop vulnerable to [The Principle of Distributed Unreliability](#the-principle-of-distributed-unreliability)—agents can time out, skip commands, or report execution that never occurred. Strong closed loops encode verification in CI infrastructure (e.g., GitHub Actions on pull requests), converting "did tests run?" from a probabilistic agent responsibility into a well-structured, deterministic gate. This operationalizes [The Principle of Problem Structure Allocation](#the-principle-of-problem-structure-allocation) and [The Principle of Structural Determinism](#the-principle-of-structural-determinism) by moving verification from prompts into enforceable infrastructure.
+
 ## The Economics of Interaction
 
 Every human-AI exchange costs something: attention, latency, tokens, or compute. Treat these as scarce resources and allocate them ruthlessly for maximum ROI. Waste them on low-value cycles and your whole workflow grinds to a halt.
