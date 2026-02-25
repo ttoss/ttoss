@@ -290,6 +290,7 @@ import { DashboardCard } from '@ttoss/react-dashboard';
 
 | Prop                  | Type                      | Default | Description                                                                                                           |
 | --------------------- | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | `string`                  | -       | Card identification                                                                                                   |
 | `title`               | `string`                  | -       | Card title                                                                                                            |
 | `description`         | `string`                  | -       | Optional card description                                                                                             |
 | `icon`                | `string`                  | -       | Optional icon name                                                                                                    |
@@ -386,6 +387,7 @@ const selectedTemplate: DashboardTemplate = {
       w: 4,
       h: 4,
       card: {
+        id: 'abc-123',
         title: 'Total Revenue',
         type: 'bigNumber',
         // ... other card properties
@@ -409,6 +411,7 @@ const selectedTemplate: DashboardTemplate = {
       w: 4,
       h: 4,
       card: {
+        id: 'def-456',
         title: 'ROAS',
         type: 'bigNumber',
         // ... other card properties
@@ -694,6 +697,7 @@ const App = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-123',
           title: 'Total Revenue',
           numberType: 'currency',
           type: 'bigNumber',
@@ -714,6 +718,7 @@ const App = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-456',
           title: 'ROAS',
           numberType: 'number',
           numberDecimalPlaces: 2,
