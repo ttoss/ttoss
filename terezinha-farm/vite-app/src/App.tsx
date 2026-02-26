@@ -28,6 +28,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'bb3e74d3-d970-47ad-b923-fd16767aa6bd',
           title: 'Investimento total',
           description: 'Valor total investido em anúncios na plataforma Meta',
           variant: 'default',
@@ -65,6 +66,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'b57f462f-080d-451f-aa0c-6c2b6d7fe05c',
           title: 'Faturamento Total Rastreado',
           description:
             'Valor total de vendas rastreadas através dos eventos de compra',
@@ -104,6 +106,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '6256081f-842c-43e5-bb82-38e61c8b56c1',
           title: 'ROAS',
           description:
             'Return on Ad Spend - Retorno sobre investimento em publicidade. Representa quantas vezes o valor investido foi recuperado em vendas',
@@ -143,6 +146,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'b0511b0d-02bb-4f82-8a31-e9412352f404',
           title: 'Número de compras',
           description:
             'Quantidade total de compras realizadas e rastreadas através dos anúncios',
@@ -182,6 +186,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '298a140a-766e-45e3-a01a-e1830350153a',
           title: 'Impressões',
           description:
             'Número total de vezes que os anúncios foram exibidos aos usuários',
@@ -221,6 +226,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '3281120b-3d20-45f5-8d45-638c66757555',
           title: 'Alcance',
           description:
             'Número de pessoas únicas que viram pelo menos uma vez os anúncios',
@@ -261,6 +267,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '4196180c-4d30-45f5-8d45-638c66757555',
           title: 'Frequência',
           description: 'Número médio de vezes que cada pessoa viu os anúncios',
           variant: 'default',
@@ -299,6 +306,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '50a11e0d-5d40-45f5-8d45-638c66757555',
           title: 'CPM',
           description:
             'Custo por Mil Impressões - Valor gasto para exibir o anúncio mil vezes',
@@ -339,6 +347,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '60b1200e-6d50-45f5-8d45-638c66757555',
           title: 'Cliques',
           description: 'Número total de cliques nos anúncios',
           variant: 'default',
@@ -378,6 +387,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '70c1220f-7d60-45f5-8d45-638c66757555',
           title: 'CTR',
           description:
             'Click-Through Rate - Taxa de cliques. Percentual de pessoas que clicaram no anúncio em relação ao total de impressões',
@@ -418,6 +428,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '80d12410-8d70-45f5-8d45-638c66757555',
           title: 'CPC',
           description: 'Custo por Clique',
           variant: 'default',
@@ -457,6 +468,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '90e12611-9d80-45f5-8d45-638c66757555',
           title: 'Hook Rate Anúncios',
           description:
             'Taxa de engajamento de vídeo. Calculado como: Visualizações de vídeo ÷ Impressões. Mede a porcentagem de pessoas que assistiram ao vídeo em relação ao total de impressões',
@@ -497,6 +509,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '100f2812-af90-45f5-8d45-638c66757555',
           title: 'Checkouts',
           description: 'Número total de checkouts iniciados pelos usuários',
           variant: 'default',
@@ -814,6 +827,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '241f2a13-bfa0-45f5-8d45-638c66757555',
           title: 'Taxa de conversão do site - Compras',
           description:
             'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
@@ -867,6 +881,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '251f2a13-bfa0-45f5-8d45-638c66757555',
           title: 'Taxa de conversão do site - Compras',
           description:
             'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
@@ -913,6 +928,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '261f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'oneclickads' }],
           title: 'Faturamento Bruto',
           variant: 'dark',
@@ -938,6 +954,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '271f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Taxas',
           numberType: 'currency',
@@ -959,6 +976,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '281f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'ROAS',
           variant: 'light-green',
@@ -985,6 +1003,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '291f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Faturamento líquido total',
           description: 'Total de faturamento líquido',
@@ -1007,6 +1026,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '301f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Lucro Líquido',
           variant: 'default',
@@ -1033,6 +1053,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '311f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'ROI',
           description: 'Total de ROI',

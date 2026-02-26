@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.17.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.16.0...@docs/storybook@3.17.0) (2026-02-26)
+
+### Features
+
+- dashboard cards with id ([#877](https://github.com/ttoss/ttoss/issues/877)) ([1285246](https://github.com/ttoss/ttoss/commit/128524605d51b70d180f551d0b2f092297cf3c34))
+
 # [3.16.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.15.1...@docs/storybook@3.16.0) (2026-02-23)
 
 ### Features

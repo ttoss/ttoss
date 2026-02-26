@@ -41,6 +41,7 @@ type MetricsRecord = {
   >;
 }[SourceType];
 export interface DashboardCard {
+  id: string;
   title: string;
   description?: string;
   icon?: string;
