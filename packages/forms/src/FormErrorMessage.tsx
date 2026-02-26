@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ErrorMessage } from '@hookform/error-message';
-import { FormattedMessage, MessageDescriptor } from '@ttoss/react-i18n';
+import type { MessageDescriptor } from '@ttoss/react-i18n';
+import { FormattedMessage } from '@ttoss/react-i18n';
 import { HelpText } from '@ttoss/ui';
-import {
-  FieldError,
-  FieldName,
-  FieldValues,
-  useFormContext,
-} from 'react-hook-form';
+import type { FieldError, FieldName, FieldValues } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 type ModifiedDescriptor = MessageDescriptor & { values?: any };
 

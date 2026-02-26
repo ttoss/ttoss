@@ -32,6 +32,7 @@ export const FormFieldDatePicker = <
     id,
     defaultValue,
     presets,
+    unsavedChangesGuard,
     disabled,
     ...datePickerProps
   } = props;
@@ -48,6 +49,7 @@ export const FormFieldDatePicker = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field }) => {
         return (
           <DatePicker

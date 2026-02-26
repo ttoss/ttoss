@@ -26,6 +26,7 @@ export const FormFieldPassword = <
     rules,
     id,
     leadingIcon,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onBlur,
     onChange,
@@ -44,6 +45,7 @@ export const FormFieldPassword = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (
