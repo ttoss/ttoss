@@ -15,6 +15,7 @@ const uniqueId = () => {
 export type CardCatalogItem = Pick<DashboardGridItem, 'w' | 'h' | 'card'>;
 
 const defaultBigNumberCard: DashboardCard = {
+  id: 'a0167a7b-5f7a-4f3c-8ee6-e2cc3ffba0dc',
   title: 'New metric',
   numberType: 'number',
   type: 'bigNumber',

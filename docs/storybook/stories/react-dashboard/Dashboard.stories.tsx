@@ -37,6 +37,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 4,
         h: 4,
         card: {
+          id: 'abc-123',
           title: 'Total Revenue',
           description: 'Revenue from all sources',
           numberType: 'currency',
@@ -58,6 +59,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 4,
         h: 4,
         card: {
+          id: 'abc-456',
           title: 'ROAS',
           description: 'Return on ad spend',
           numberType: 'number',
@@ -76,6 +78,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 4,
         h: 4,
         card: {
+          id: 'abc-789',
           title: 'Impressions',
           numberType: 'number',
           type: 'bigNumber',
@@ -92,6 +95,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 3,
         h: 4,
         card: {
+          id: 'abc-101',
           title: 'CTR',
           description: 'Click-through rate',
           numberType: 'percentage',
@@ -113,6 +117,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 3,
         h: 4,
         card: {
+          id: 'abc-102',
           title: 'Clicks',
           numberType: 'number',
           type: 'bigNumber',
@@ -129,6 +134,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 3,
         h: 4,
         card: {
+          id: 'abc-103',
           title: 'CPM',
           description: 'Cost per mille',
           numberType: 'currency',
@@ -146,6 +152,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 3,
         h: 4,
         card: {
+          id: 'abc-104',
           title: 'CPC',
           description: 'Cost per click',
           numberType: 'currency',
@@ -171,6 +178,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 6,
         h: 4,
         card: {
+          id: 'abc-105',
           title: 'Active Users',
           numberType: 'number',
           type: 'bigNumber',
@@ -191,6 +199,7 @@ const defaultTemplates: DashboardTemplate[] = [
         w: 6,
         h: 4,
         card: {
+          id: 'abc-106',
           title: 'Sessions',
           numberType: 'number',
           type: 'bigNumber',
@@ -460,6 +469,7 @@ export const SingleCardDashboard: StoryObj = {
             w: 12,
             h: 6,
             card: {
+              id: 'abc-107',
               title: 'Total Revenue',
               description: 'Revenue from all sources this month',
               numberType: 'currency',
@@ -675,6 +685,7 @@ export const WithSectionDividers: StoryObj = {
             w: 3,
             h: 4,
             card: {
+              id: 'abc-108',
               title: 'Clicks',
               numberType: 'number',
               type: 'bigNumber',
@@ -691,6 +702,7 @@ export const WithSectionDividers: StoryObj = {
             w: 3,
             h: 4,
             card: {
+              id: 'abc-109',
               title: 'CPM',
               description: 'Cost per mille',
               numberType: 'currency',
@@ -708,6 +720,7 @@ export const WithSectionDividers: StoryObj = {
             w: 3,
             h: 4,
             card: {
+              id: 'abc-110',
               title: 'CPC',
               description: 'Cost per click',
               numberType: 'currency',
@@ -737,6 +750,7 @@ export const WithSectionDividers: StoryObj = {
             w: 6,
             h: 4,
             card: {
+              id: 'abc-111',
               title: 'Conversions',
               numberType: 'number',
               type: 'bigNumber',
@@ -757,6 +771,7 @@ export const WithSectionDividers: StoryObj = {
             w: 6,
             h: 4,
             card: {
+              id: 'abc-112',
               title: 'Conversion Rate',
               numberType: 'percentage',
               type: 'bigNumber',
@@ -819,6 +834,7 @@ const EditableCustomizeStory = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-113',
           title: 'Total Revenue',
           numberType: 'currency',
           type: 'bigNumber',
@@ -850,6 +866,7 @@ const EditableCustomizeStory = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-114',
           title: 'ROAS',
           numberType: 'number',
           numberDecimalPlaces: 2,
