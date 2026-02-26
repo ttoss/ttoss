@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.5.1...@ttoss/react-dashboard@0.6.0) (2026-02-26)
+
+### Features
+
+- dashboard cards with id ([#877](https://github.com/ttoss/ttoss/issues/877)) ([1285246](https://github.com/ttoss/ttoss/commit/128524605d51b70d180f551d0b2f092297cf3c34))
+
 ## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.5.0...@ttoss/react-dashboard@0.5.1) (2026-02-23)
 
 **Note:** Version bump only for package @ttoss/react-dashboard
