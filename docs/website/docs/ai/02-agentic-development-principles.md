@@ -140,6 +140,22 @@ The effectiveness of an AI agent is directly proportional to the developer's abi
 
 **Failure Scenario:** A developer delegates a broad task: "Implement a full user authentication system with email/password login, OAuth providers, password reset flows, and session management." The agent produces a large, intertwined codebase that appears complete. However, upon integration, subtle inconsistencies emerge—race conditions in token refresh, incomplete error handling, and architectural assumptions conflicting with the existing backend. The monolithic output requires extensive manual refactoring, consuming more time than incremental implementation. Trust in the agent erodes as the team reverts to manual coding.
 
+### The Principle of Context Compressibility
+
+An AI agent can only collaborate effectively when the _relevant_ system state can be compressed into its context window without losing critical constraints. This is a direct consequence of [The Principle of Finite Context Window](#the-principle-of-finite-context-window) and why [The Corollary of Problem Decomposition](#the-corollary-of-problem-decomposition) is not optional.
+
+In practice, architecture is not just a human maintainability concern—it determines whether you can even _represent_ the problem to the model.
+
+Codebases with clear module boundaries, stable contracts, and consistent patterns are more compressible: you can hand the agent a small slice (one module, one interface, one failing test) and the slice is still meaningful. In tangled systems where behavior is implicit and cross-cutting, the minimal context required to be correct often exceeds the window, forcing the agent to guess.
+
+When the agent is forced to guess, it will regress to local pattern matching, compounding debt (see [The Principle of Pattern Inertia](#the-principle-of-pattern-inertia)). The mitigation is to move critical constraints out of implicit context and into structural artifacts (types, schemas, tests), following [The Principle of Structural Determinism](#the-principle-of-structural-determinism).
+
+**Failure Scenario:** A team asks an agent to modify a "simple" feature flag, but the behavior is scattered across five layers of indirection and side effects. The prompt only includes one file. The agent makes a locally consistent change that compiles, but it silently breaks another path because the missing constraints lived elsewhere in the dependency graph.
+
+#### The Corollary of Architectural Compression
+
+If a change cannot be described as a small, self-contained context packet (inputs, outputs, invariants, tests), treat this as a structural smell. Reduce coupling, make contracts explicit, and move invariants into types/schemas/tests so the agent can operate on smaller, verifiable slices.
+
 ### The Principle of Pattern Inertia
 
 AI models function as statistical pattern matchers that prioritize local consistency with the provided context over global correctness. Just as an object in motion stays in motion, an AI agent interacting with a codebase will inherently perpetuate the existing momentum of that codebase. The probability of an agent generating "clean" code is inversely proportional to the volume of technical debt present in its context window.
@@ -152,7 +168,7 @@ Because AI amplifies existing patterns, the cleanliness of the input context (th
 
 ### The Principle of Interpretive Competition
 
-Instructions (prompts) do not execute like traditional code; they compete for influence within an interpretive hierarchy. In a production environment, system prompts are often "outvoted" by stronger signals, such as the model’s base training (RLHF), few-shot patterns, or user intent. This explains the necessity of [The Principle of Structural Determinism](#the-principle-of-structural-determinism). It shifts the developer's mental model from "writing commands" to "managing a signal stack."
+Instructions (prompts) do not execute like traditional code; they compete for influence within an interpretive hierarchy. In a production environment, system prompts are often "outvoted" by stronger signals, such as the model's base training (RLHF), few-shot patterns, or user intent. This explains the necessity of [The Principle of Structural Determinism](#the-principle-of-structural-determinism). It shifts the developer's mental model from "writing commands" to "managing a signal stack."
 
 **Failure Scenario:** The "Low-Friction Zone" Trap. A developer builds a prompt that works perfectly in a simple demo. In production, as context grows and user inputs become more complex, the system prompt is "outvoted" by the noise, leading to failure. The developer blames the model rather than the signal hierarchy.
 
@@ -206,17 +222,21 @@ While AI agents allow for seemingly infinite retries, every prompt carries a mar
 
 Compute resources must be allocated where they yield the highest marginal return per unit of cost and latency. It is economically inefficient to utilize high-intelligence, high-latency models for low-entropy tasks (formatting, classification). To maximize the economic throughput of the system, the "intelligence cost" of the model must match the "complexity value" of the task.
 
+This is the economic counterpart of [The Principle of Problem Structure Allocation](#the-principle-of-problem-structure-allocation): as a task becomes more well-structured and repeatable, the economically optimal solution shifts toward cheaper, more deterministic execution.
+
 **Failure Scenario:** A system routes every user interaction—including simple "hello" messages—to a reasoning-heavy model (e.g., o1 or Opus). The system incurs massive latency and financial costs for interactions that required zero reasoning, depleting the budget for tasks that actually need high intelligence.
 
-### The Principle of Model Specialization
+#### The Corollary of Model Specialization
 
-General-purpose models incur a "generalization tax" in latency, compute, and precision. While valuable for broad reasoning and prototyping, they are often inefficient specialists in production. For critical, high-volume tasks—such as query formulation, entity extraction, or retrieval—domain-tuned Small Language Models (SLMs) provide infrastructure-grade performance that general models cannot match.
+General-purpose models pay a "generalization tax" in latency, cost, and output variance because they carry capability you are not using for a narrow task. For critical, high-volume, repeatable tasks (e.g., query formulation, entity extraction, classification), specialized models (or constrained decoding + fine-tuning) often provide more infrastructure-grade economics than a single large general model.
 
-**Failure Scenario:** A product relies on a massive, general-purpose LLM for real-time search query formulation. The system suffers from high latency (e.g., >1s) and excessive GPU costs, creating a bottleneck that degrades user retention. A fine-tuned SLM could reduce latency by ~50% and costs by ~45% while maintaining or improving quality.
+This corollary is strongest when the task is well-structured and stable over time (see [The Principle of Problem Structure Allocation](#the-principle-of-problem-structure-allocation)) and when the marginal savings exceed the ongoing maintenance cost (see [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)).
 
-#### The Corollary of The Generalization Tax
+**Failure Scenario:** A product relies on a single massive general-purpose LLM for a high-throughput, time-sensitive task (e.g., real-time query rewriting). Latency and compute cost become a system bottleneck. The team misses a simpler routing strategy (smaller model + deterministic constraints) that would have met the quality bar at lower marginal cost.
 
-Every parameter in a model that is not contributing to the specific task at hand is a tax on latency and cost. Minimizing this tax through specialization is key to scaling agentic workflows.
+#### The Corollary of the Generalization Tax
+
+Every unit of model capacity that does not contribute to the task is a recurring tax on latency and cost. Specialization reduces the tax, but it introduces its own fixed costs (data, evaluation, deployment, drift monitoring) that must be justified economically.
 
 _Read more about this principle in [NEMO-4-PAYPAL: Leveraging NVIDIA's Nemo Framework for empowering PayPal's Commerce Agent](https://arxiv.org/abs/2512.21578)._
 
@@ -287,13 +307,17 @@ Modular debt is better than monolithic perfection. It is better to have five imp
 
 ### The Principle of Flow Elasticity
 
-Information pathways should be determined by the path of least resistance or risk. We maintain "fast-and-dirty" routes for rapid experimentation and "slow-and-robust" routes for core transactions. Technical debt is an acceptable trade-off for speed in low-criticality paths, provided the routing logic remains sound.
+A single development pipeline cannot simultaneously optimize for speed of learning and safety of outcomes. If every change is forced through a maximum-rigor path, experimentation dies. If critical work is allowed to flow through low-rigor paths, failures become catastrophic. Therefore, sustainable velocity requires elastic flow: multiple lanes with different guarantees (fast feedback vs. strong assurance) and explicit routing between them.
+
+This is an economic constraint (optimize marginal cost vs. marginal value per path via [E16: The Principle of Marginal Economics](/docs/product/product-development/principles#e16-the-principle-of-marginal-economics-always-compare-marginal-cost-and-marginal-value)) and a risk constraint governed by [The Principle of Asymmetric Risk](#the-principle-of-asymmetric-risk) and [The Principle of Graduated Agency by Structure and Risk](#the-principle-of-graduated-agency-by-structure-and-risk). It operationalizes [The Principle of Economic Technical Debt](#the-principle-of-economic-technical-debt) by ensuring debt is taken only where the downside is bounded.
 
 **Failure Scenario:** A prototype feature is forced through the same rigorous compliance pipeline as the payment processing system, killing the experiment before it starts. Conversely, a critical financial transaction is routed through a "beta" pathway, leading to data loss.
 
 #### The Corollary of Criticality Routing
 
-Dynamic routing based on criticality. Not all code paths deserve the same level of engineering rigor. High-value, high-risk paths demand zero debt and maximum stability. Low-value, experimental paths should optimize for speed and disposability. The architecture must support routing traffic to the appropriate implementation based on risk profile.
+Dynamic routing based on criticality. Not all work deserves the same rigor, and not all tasks deserve the same agent autonomy. Use the same logic as [The Corollary of Risk-Structured Delegation](#the-corollary-of-risk-structured-delegation): low-risk / high-ambiguity work can move through fast lanes (high iteration, tight feedback), while high-risk / well-structured work must move through slow lanes with deterministic gates and strong guarantees.
+
+Fast lanes are only acceptable when coupled to [The Principle of Intrinsic Verification](#the-principle-of-intrinsic-verification) (fail loud, detect regressions early). Slow lanes should enforce stability with hard constraints (tests, types, policy checks), aligning with [The Principle of Structural Determinism](#the-principle-of-structural-determinism).
 
 ## The Architecture of Flow
 
@@ -345,13 +369,21 @@ Context must be managed across distinct tiers based on persistence and utility: 
 
 ### The Principle of Context Heterogeneity
 
-Context sources are inherently heterogeneous—databases, user uploads, API responses, tool outputs, and human messages all represent information in fundamentally different formats and structures. This heterogeneity is not a design flaw to be fixed but a physical property of information systems. Because agents require unified interfaces to reason effectively, the friction between heterogeneous sources and uniform consumption is an immutable cost that must be managed through abstraction.
+Context sources are inherently heterogeneous. Databases, user uploads, API responses, tool outputs, and human messages encode information in different formats, with different affordances, and with different failure modes. This heterogeneity is not a design flaw. It is a physical property of information systems.
 
-**Failure Scenario:** A developer writes custom integration code for every new data source (SQL, vector DB, API). The agent struggles to correlate information across these silos, leading to "context rot" where valid information becomes inaccessible or stale due to fragmented architecture.
+Because agents can only reason effectively over what fits into a coherent working representation, heterogeneity creates an unavoidable translation cost. If you do not pay it deliberately, you will pay it later as drift, duplication, and brittle integrations. This constraint is downstream of [The Principle of Finite Context Window](#the-principle-of-finite-context-window) and a primary cause of [The Principle of Context Compressibility](#the-principle-of-context-compressibility).
+
+The mitigation is not "better prompting." It is structural: define canonical representations, schemas, and interfaces that collapse heterogeneous inputs into a consistent form (see [The Principle of Structural Determinism](#the-principle-of-structural-determinism)).
+
+**Failure Scenario:** A team builds a RAG workflow that pulls "user status" from SQL, "entitlements" from an API, and "policy" from a document store. Each source uses different identifiers, timestamp semantics, and field names. Retrieval returns plausible but incompatible fragments, and the agent stitches them into a coherent-looking answer that is wrong (e.g., applies the wrong policy to the wrong user). The system is blamed for hallucination, but the root cause is unmanaged translation between heterogeneous context sources.
 
 #### The Corollary of Universal Abstraction
 
-By abstracting all context artifacts into a standardized, hierarchical namespace (similar to a file system), we decouple the reasoning logic from the storage mechanism. This enables agents to treat memory, tools, and human inputs uniformly, ensuring composability and reducing integration complexity.
+By abstracting all context artifacts into a standardized namespace (similar to a file system), we decouple reasoning logic from storage and transport. This enables agents to treat memory, tools, and human inputs uniformly, improving composability while keeping the cost of translation explicit.
+
+#### The Corollary of Canonicalization Contracts
+
+Standardization must be contractual. Define what "canonical" means via schemas (types, JSON Schema, validators) and enforce it at ingestion boundaries. This operationalizes [The Principle of Structural Determinism](#the-principle-of-structural-determinism) and prevents "format drift" from accumulating as hidden context debt.
 
 ### The Principle of Syntactic-Semantic Decoupling
 
@@ -411,11 +443,19 @@ Effective AI collaboration requires real-time adjustment of communication strate
 
 ### The Principle of Protocol Standardization
 
-In agentic systems, unstructured or ad-hoc communication introduces exponential integration friction and interoperability failures. Effective collaboration across agents (or between human and AI) requires standardized, schema-enforced protocols for message formats, intents, and context exchange—reducing ambiguity beyond mere entropy management and enabling composability in heterogeneous environments.
+In agentic systems, every handoff (human→agent, agent→agent, agent→tool) is an interface. Interface variance creates translation work, and translation work compounds as the number of participants grows. Therefore, scalable agentic workflows require a small set of standardized, machine-checkable protocols (schemas) for message envelopes, intents, and context payloads.
 
-This draws from emerging industry realities (e.g., protocols like MCP, A2A, or ACP for tool/agent interoperability), where lack of standards creates silos, much like how ttoss frames signal entropy as an unavoidable probabilistic constraint. It complements their focus on clarity and adaptation without overlapping directly.
+This is the communication-layer analogue of [The Principle of Structural Determinism](#the-principle-of-structural-determinism): do not rely on "good phrasing" to enforce correctness—encode the contract. It also directly mitigates [The Principle of Signal Entropy](#the-principle-of-signal-entropy) and aligns with [The Corollary of Tool-as-Contract](#the-corollary-of-tool-as-contract), [The Corollary of Modular Composability](#the-corollary-of-modular-composability), and [The Principle of Context Heterogeneity](#the-principle-of-context-heterogeneity).
 
 **Failure Scenario:** Two AI agents designed to collaborate on a multi-step workflow use different message formats and intent definitions. Without a shared protocol, they misinterpret each other's outputs, leading to failed tasks and increased human intervention to mediate communication.
+
+#### The Corollary of Canonical Message Envelopes
+
+Define a minimal message envelope that all agents must emit and accept (e.g., intent, inputs, constraints, outputs, next move, and provenance). This reduces per-handoff negotiation cost and makes validation possible without "reading the agent's mind."
+
+#### The Corollary of Protocol Versioning
+
+Protocols drift. Version schemas explicitly and treat breaking changes as migrations; silent format drift reintroduces the same translation cost and failure modes that standardization was meant to remove.
 
 ### The Principle of Instructional Shallowness
 
@@ -459,13 +499,23 @@ The economics of automation are governed by convexity: the cost of verification 
 
 ### The Principle of Contextual Authority
 
-An AI agent's effective capability is capped by the operator's ownership and mental model of the system. In systems where the operator possesses deep knowledge ("Ownership"), AI acts as an extension of will, amplifying intent. In systems where the operator lacks deep knowledge ("Contracting"), AI acts as a shield against complexity, hiding necessary implementation details. You cannot effectively delegate authority to an agent if you cannot predict the side effects of its output.
+An AI agent's effective capability is capped by the operator's ownership and mental model of the system. When the operator has deep knowledge (ownership), AI acts as an extension of will, amplifying intent. When the operator lacks deep knowledge (contracting), AI acts as a temporary shield against complexity, hiding implementation details the operator cannot evaluate.
+
+You cannot safely delegate authority to an agent when you cannot predict the side effects of its output. This bounds agency even when the model is capable, because the operator cannot supply reliable review, escalation, or rollback judgment. This constraint interacts with [The Principle of Delegated Agency Scaling](#the-principle-of-delegated-agency-scaling), [The Principle of Asymmetric Risk](#the-principle-of-asymmetric-risk), and [The Principle of Context Compressibility](#the-principle-of-context-compressibility).
 
 **Failure Scenario:** A contractor uses an AI agent to close a ticket in a legacy codebase they do not understand. The AI suggests a solution that works perfectly in isolation but relies on an internal API scheduled for deprecation. Because the operator lacks the Contextual Authority to know the API history, they accept the solution, solving the ticket today but creating a guaranteed failure for the next release.
 
+#### The Corollary of Ownership Declaration
+
+Before delegating meaningful agency, explicitly declare whether the operator is acting as an owner (has the mental model to predict side effects) or a contractor (does not). In contracting mode, restrict the agent to low-risk exploration and require an owner to review decisions with irreversible consequences.
+
+#### The Corollary of Side-Effect Predictability Gates
+
+Only allow an agent to execute irreversible actions (writes, merges, deployments) when the operator can articulate the likely side effects and the rollback path. If the operator cannot, force isolation (e.g., staging/sandbox, read-only tools), aligning with [The Principle of Execution Isolation](#the-principle-of-execution-isolation).
+
 ## The Symbiosis of Human-AI Agency
 
-AI scales volume and speed. Humans supply curation, contextual judgment, disruption and final "yes/no". The moment either side tries to do the other side’s job the whole system becomes slower, dumber and more expensive.
+AI scales volume and speed. Humans supply curation, contextual judgment, disruption and final "yes/no". The moment either side tries to do the other side's job the whole system becomes slower, dumber and more expensive.
 
 This group collects the principles that force clean, complementary division of labor so the hybrid becomes dramatically stronger than either human-alone or AI-alone.
 
@@ -485,13 +535,17 @@ Human-AI interaction thrives in a "jam session" model: AI provides versatile, ra
 
 ### The Principle of Emergent Insight Constraint
 
-AI systems, trained on historical data distributions, excel at interpolation and optimization within known bounds but are epistemically constrained from generating truly novel, discontinuous insights without human-mediated disruption. This principle enforces the immutable reality that machine intelligence is derivative, not originative—product development must hybridize AI's efficiency with human serendipity to avoid convergent stagnation.
+AI systems are bounded by their priors (training + fine-tuning) and by the evidence you provide in-context. Without genuinely new signal, they tend to recombine and optimize within an existing solution space rather than originate new ground truth or market-disrupting insight. Therefore, treat AI as an accelerator for exploration and iteration, while reserving discontinuous insight generation (new hypotheses, reframing, and reality contact) for humans operating with fresh evidence. This is an extension of [The Principle of Role Elevation in Human-AI Hybridization](#the-principle-of-role-elevation-in-human-ai-hybridization) and should be allocated as an ill-structured, high-leverage domain per [The Principle of Problem Structure Allocation](#the-principle-of-problem-structure-allocation).
 
-**Failure Scenarios:** Homogenized Innovation Cycles: agents iteratively refine features within a narrow solution space, yielding incremental tweaks (e.g., UI polish) that masquerade as progress but fail to disrupt markets, as seen in AI-generated apps that echo incumbents without differentiation.
+**Failure Scenario:** A team uses agents to generate a roadmap and "differentiation strategy" from internal docs and competitor pages, but does no user research and runs no experiments. The output is coherent and polished, yet converges on incremental, incumbent-shaped features; the team ships faster in the wrong direction.
+
+#### The Corollary of Exogenous Signal
+
+Discontinuous insight requires injecting exogenous information that is not already encoded in the model's priors or your existing artifacts (e.g., user interviews, behavioral analytics, experiment results, sales objections, incident reviews). Without new evidence, agent loops collapse into local optimization, not learning. This operationalizes fast feedback via [FF8: The Fast-Learning Principle](/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient) and smaller iterations via [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
 
 #### The Corollary of Catalyst Injection Protocol
 
-Embed mandatory human "disruption gates" at iteration milestones (e.g., every 10 cycles), injecting contrarian prompts derived from user ethnography, cross-domain analogies, or failure autopsies to prime emergent reasoning.
+Add explicit "reality contact" checkpoints to agentic iteration: at a defined cadence, inject contrarian evidence (fresh user quotes, surprising metrics, failed assumptions, failure autopsies) and force a reframe. If you cannot name the new signal introduced since the last cycle, you are not learning—you are polishing.
 
 ### The Principle of Verification Asymmetry
 

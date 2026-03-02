@@ -23,9 +23,11 @@
     "@docusaurus/preset-classic": "^3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
     "@mdx-js/react": "3.1.1",
+    "force-graph": "^1.51.1",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-force-graph-2d": "^1.29.1",
     "rehype-katex": "7",
     "remark-math": "6"
   },
