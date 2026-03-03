@@ -37,7 +37,7 @@ graph LR
     end
 ```
 
-### Tier 1: [Core Tokens](/docs/design/design-system/design-tokens/core-tokens)
+### Tier 1: [Core Tokens](/docs/design/design-system-v2/design-tokens-v2/model#core-tokens)
 
 **Purpose**: Store raw values with minimal abstraction
 
@@ -53,7 +53,7 @@ core.fonts.fontSize.lg: 18px
 core.spacing.md: 16px
 ```
 
-### Tier 2: [Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)
+### Tier 2: [Semantic Tokens](/docs/design/design-system-v2/design-tokens-v2/model#semantic-tokens)
 
 **Purpose**: Define contextual usage with high abstraction
 
@@ -163,8 +163,8 @@ const MyComponent = () => {
 
 ## Next Steps
 
-- **[Core Tokens](/docs/design/design-system/design-tokens/core-tokens)**: Explore foundation tokens
-- **[Semantic Tokens](/docs/design/design-system/design-tokens/semantic-tokens)**: Understand contextual usage
+- **[Core Tokens](/docs/design/design-system-v2/design-tokens-v2/model#core-tokens)**: Explore foundation tokens
+- **[Semantic Tokens](/docs/design/design-system-v2/design-tokens-v2/model#semantic-tokens)**: Understand contextual usage
 - **[Theme Definition](/docs/design/design-system/theme)**: Complete theme implementation
 - **[Components](/docs/design/design-system/components)**: How tokens are used in components
 - **[Implementation Guide](/docs/design/design-system/design-tokens/implementation)**: Technical details
