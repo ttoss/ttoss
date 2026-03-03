@@ -35,11 +35,11 @@ These values are examples. Choose durations and curves that align with your bran
 
 Semantic motion tokens map context and purpose to core durations and easings. For example:
 
-- `motion.feedback.fast` → `duration.xs` + `easing.standard`  
+- `motion.feedback.fast` → `motion.duration.xs` + `motion.easing.standard`  
   For quick micro‑interactions like button feedback.
-- `motion.navigation.standard` → `duration.md` + `easing.standard`  
+- `motion.navigation.standard` → `motion.duration.md` + `motion.easing.standard`  
   For navigation transitions such as opening a drawer.
-- `motion.decorative.slow` → `duration.lg` + `easing.decelerate`  
+- `motion.decorative.slow` → `motion.duration.lg` + `motion.easing.decelerate`  
   For decorative or background animations that draw attention gently.
 
 Instead of specifying durations inline, define semantic tokens for each category of motion in your product. This simplifies adjustments—if you need all navigation transitions to be faster, change the mapping in one place.
