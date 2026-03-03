@@ -2,7 +2,7 @@
 title: Design System v2
 ---
 
-# Design System
+# Design System v2
 
 The ttoss Design System provides a comprehensive foundation for building consistent, accessible, and scalable digital products.
 
