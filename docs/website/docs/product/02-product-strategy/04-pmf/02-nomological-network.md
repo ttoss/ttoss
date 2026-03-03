@@ -6,7 +6,7 @@ title: PMF - Nomological Network
 
 ## Scope
 
-This nomological network makes explicit the expected relationships between PMF constructs and their observable signals, generating falsifiable predictions to support construct validity and guide the interpretation of evidence — not metrics, thresholds, rituals, or governance. (Psych Classics)
+This nomological network makes explicit the expected relationships between PMF constructs and their observable signals, generating falsifiable predictions to support construct validity and guide the interpretation of evidence — not metrics, thresholds, rituals, or governance.
 
 ## System map
 
