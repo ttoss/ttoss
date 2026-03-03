@@ -51,7 +51,8 @@ Example tokens:
 ## Example usage
 
 ```tsx
-import { getToken } from '@your-design-system/react';
+// Pseudocode: replace `getToken` with your app's real token accessor.
+// For example, it might come from your design system or theme context.
 
 const palette = Array.from({ length: 6 }, (_, i) =>
   getToken(`dataviz.categorical.${i + 1}`)

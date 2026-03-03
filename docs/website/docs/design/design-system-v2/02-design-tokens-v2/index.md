@@ -4,7 +4,7 @@ title: Design Tokens
 
 # Design Tokens
 
-Design tokens are named entities that store visual design attributes – such as colors, typography, spacing and more – in a format that can be shared across platforms. They capture design decisions as data, allowing you to replace hard‑coded values like `#FF6B6B` or `16px` with meaningful names such as `colors.action.background.negative.default` or `core.spacing.md`. This abstraction enables consistency, maintainability and scalability across web, mobile and design tools.
+Design tokens are named entities that store visual design attributes – such as colors, typography, spacing and more – in a format that can be shared across platforms. They capture design decisions as data, allowing you to replace hard‑coded values like `#FF6B6B` or `16px` with meaningful names such as `action.negative.background.default` or `spacing.4`. This abstraction enables consistency, maintainability and scalability across web, mobile and design tools.
 
 Our system uses a two‑tier token architecture: **Core Tokens** store raw, brand‑defining values with minimal abstraction; **Semantic Tokens** define contextual usage by referencing core tokens. Components must **never** consume core tokens directly. By centralizing decisions in semantic tokens we can change a core value once and propagate it throughout every context and theme.
 
@@ -29,4 +29,4 @@ Each category provides both core and semantic tokens where appropriate. In some 
 
 ### Next Steps
 
-To begin using tokens, read How to Use Design Tokens(TO-DO). To understand the contract between core and semantic tokens, see [Token Model](./model.md). For naming conventions, see [Naming & Taxonomy](./naming.md). Each token family has its own page starting with [Colors](./Categories/colors/index.md).
+To begin using tokens, read [Token Model](./model.md) to understand the contract between core and semantic tokens, then review [Governance](./governance.md) for change management. Each token family has its own page starting with [Colors](./Categories/colors/index.md).

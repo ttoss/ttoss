@@ -49,10 +49,10 @@ The semantic layer also ensures accessibility. For instance, hover states darken
 
 Colour semantics are rich and deserve dedicated guidance:
 
-- [UX contexts](./ux.md) — defines _where_ a colour is used (navigation, input, content, action, feedback, dataviz).
-- [Roles](./role.md) — defines _why_ a colour is used (primary, secondary, neutral, positive, negative, warning, info).
-- [Dimensions](./dimension.md) — defines _which part_ of the element the colour applies to (background, text, border, icon, overlay).
-- [States](./state.md) — defines _when_ the colour applies (default, hover, active, focus, disabled, selected).
-- [Data visualization](./dataviz.md) — covers palettes for charts and analytics.
+- [UX contexts](./ux) — defines _where_ a colour is used (navigation, input, content, action, feedback, dataviz).
+- [Roles](./role) — defines _why_ a colour is used (primary, secondary, neutral, positive, negative, warning, info).
+- [Dimensions](./dimension) — defines _which part_ of the element the colour applies to (background, text, border, icon, overlay).
+- [States](./state) — defines _when_ the colour applies (default, hover, active, focus, disabled, selected).
+- [Data visualization](./dataviz) — covers palettes for charts and analytics.
 
 Read those pages to understand the vocabulary and how to choose the correct semantic name.
