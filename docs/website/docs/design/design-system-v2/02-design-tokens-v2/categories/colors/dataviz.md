@@ -4,7 +4,7 @@ title: Data Visualization Colours
 
 # Data Visualization Colours
 
-Data visualizations have unique colour requirements. Charts, graphs and infographics rely on colour to encode data categories, quantities and patterns. To avoid confusion with the rest of the UI, **data visualization colours live in their own namespace** under the `dataviz` context. These tokens are never used for navigation, inputs or actions.
+Data visualizations have unique color requirements. Charts, graphs and infographics rely on color to encode data categories, quantities and patterns. To avoid confusion with the rest of the UI, **data visualization colours live in their own namespace** under the `dataviz` context. These tokens are never used for navigation, inputs or actions.
 
 ## Palettes
 
@@ -12,7 +12,7 @@ We define three types of palettes for data viz:
 
 ### Categorical
 
-For bar charts, pie charts, and any visualization where discrete categories need distinct colours. Our categorical palette contains a set of colours with equal emphasis. Each colour should be easily distinguishable from the others and accessible to colour‑blind users.
+For bar charts, pie charts, and any visualization where discrete categories need distinct colours. Our categorical palette contains a set of colours with equal emphasis. Each color should be easily distinguishable from the others and accessible to colour‑blind users.
 
 Example tokens:
 
@@ -43,9 +43,9 @@ Example tokens:
 
 ## Guidelines
 
-- **Do not mix UI and data colours.** Semantic colour roles (primary, success, error) are not appropriate for data encoding. Reserve `dataviz.*` tokens for charts.
+- **Do not mix UI and data colours.** Semantic color roles (primary, success, error) are not appropriate for data encoding. Reserve `dataviz.*` tokens for charts.
 - **Limit palette size.** Too many categories become hard to distinguish. For categorical palettes, aim for 8 colours maximum; for sequential palettes, use steps meaningful to the data.
-- **Ensure accessibility.** Check colour palettes with tools like [ColorBrewer](https://colorbrewer2.org/) to ensure differentiable hues for colour‑blind users and adequate contrast against backgrounds.
+- **Ensure accessibility.** Check color palettes with tools like [ColorBrewer](https://colorbrewer2.org/) to ensure differentiable hues for colour‑blind users and adequate contrast against backgrounds.
 - **Use hierarchy thoughtfully.** Emphasize important data points with neutral backgrounds and reduce visual noise.
 
 ## Example usage

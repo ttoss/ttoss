@@ -41,7 +41,7 @@ Each semantic token returns a complete shadow recipe. Components do not combine 
 
 ## Interaction with colour
 
-Elevation may also influence background colour to simulate light on different planes. For example, a card might use `surface.elevated.background.default` for its background and `elevation.resting` for its shadow. Keep shadow colours subtle and aligned with the palette to avoid muddy effects.
+Elevation may also influence background color to simulate light on different planes. For example, a card might use `surface.elevated.background.default` for its background and `elevation.resting` for its shadow. Keep shadow colours subtle and aligned with the palette to avoid muddy effects.
 
 ## Usage guidelines
 

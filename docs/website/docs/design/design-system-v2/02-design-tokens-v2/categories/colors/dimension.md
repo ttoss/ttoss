@@ -1,10 +1,10 @@
 ---
-title: Colour Dimensions
+title: Color Dimensions
 ---
 
-# Colour Dimensions
+# Color Dimensions
 
-The **dimension** segment of a semantic colour token identifies _which part_ of a UI element the colour applies to. Dimensions ensure that colours are applied consistently across components and help maintain contrast and hierarchy. Valid dimensions are:
+The **dimension** segment of a semantic color token identifies _which part_ of a UI element the color applies to. Dimensions ensure that colours are applied consistently across components and help maintain contrast and hierarchy. Valid dimensions are:
 
 ## background
 
@@ -22,7 +22,7 @@ Colours applied to the edges of elements, including outlines, strokes and hairli
 
 ## icon
 
-Colours applied to glyphs, icons or vector shapes that accompany text. Icons often match the role of the surrounding content (e.g. a positive icon uses a positive colour).
+Colours applied to glyphs, icons or vector shapes that accompany text. Icons often match the role of the surrounding content (e.g. a positive icon uses a positive color).
 
 ## overlay
 

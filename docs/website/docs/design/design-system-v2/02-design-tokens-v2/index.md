@@ -29,4 +29,4 @@ Each category provides both core and semantic tokens where appropriate. In some 
 
 ### Next Steps
 
-To begin using tokens, read [Token Model](./model.md) to understand the contract between core and semantic tokens, then review [Governance](./governance.md) for change management. Each token family has its own page starting with [Colors](./Categories/colors/index.md).
+To begin using tokens, read [Token Model](./model.md) to understand the contract between core and semantic tokens, then review [Governance](./governance.md) for change management. Each token family has its own page starting with [Colors](./categories/colors/index.md).

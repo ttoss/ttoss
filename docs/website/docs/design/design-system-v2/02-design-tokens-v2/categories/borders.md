@@ -29,23 +29,23 @@ Supported styles include `solid`, `dashed`, `dotted`, `none`. For example: `bord
 
 Semantic borders map to core widths and styles for specific purposes:
 
-- `border.divider` – Thin lines separating content groups (maps to `borders.width.hairline` & `borders.style.solid` with a neutral colour).
+- `border.divider` – Thin lines separating content groups (maps to `borders.width.hairline` & `borders.style.solid` with a neutral color).
 - `border.outline` – Standard outlines for cards and components.
-- `border.focus` – Focus ring width and style (combine with a focus colour token).
+- `border.focus` – Focus ring width and style (combine with a focus color token).
 - `border.input` – Default border for input fields in various states.
 
 By using semantic names you can adjust borders globally for dark themes or accessibility modes.
 
 ## Combining with colours
 
-Border tokens only define width and style. To specify the colour, combine them with a colour dimension token. For example:
+Border tokens only define width and style. To specify the colour, combine them with a color dimension token. For example:
 
 ```css
 border: borders.width.sm borders.style.solid
   var(--token-input-primary-border-default);
 ```
 
-Here `var(--token-input-primary-border-default)` resolves to a semantic colour token.
+Here `var(--token-input-primary-border-default)` resolves to a semantic color token.
 
 ## Guidelines
 

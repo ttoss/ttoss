@@ -32,8 +32,8 @@ By using semantic names you can adjust transparency per theme. For instance, a d
 
 ## Usage guidelines
 
-1. **Do not apply opacity directly to text.** Instead of setting an element’s opacity, choose a semantically appropriate colour (e.g. `content.secondary.text.disabled`) and define its alpha in the core colour palette. Applying opacity to a whole element affects its children unintentionally.
+1. **Do not apply opacity directly to text.** Instead of setting an element’s opacity, choose a semantically appropriate color (e.g. `content.secondary.text.disabled`) and define its alpha in the core color palette. Applying opacity to a whole element affects its children unintentionally.
 2. **Avoid stacking opacities.** Multiple layers of opacity multiply, reducing contrast. Choose single overlay tokens for masks and scrims.
-3. **Use opacity for state, not emphasis.** If you need to de‑emphasize an element, consider using the neutral colour palette rather than simply reducing opacity.
+3. **Use opacity for state, not emphasis.** If you need to de‑emphasize an element, consider using the neutral color palette rather than simply reducing opacity.
 
-Opacity tokens complement elevation and colour tokens. They help to create depth and disabled states without breaking contrast guidelines.
+Opacity tokens complement elevation and color tokens. They help to create depth and disabled states without breaking contrast guidelines.

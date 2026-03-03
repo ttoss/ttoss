@@ -1,15 +1,15 @@
 ---
-title: Colour States
+title: Color States
 ---
 
-# Colour States
+# Color States
 
-The optional **state** segment of a semantic colour token describes _when_ the colour applies. States capture interactions (hover, active, focus) or persistent conditions (disabled, selected). Not every dimension needs state variations, but interactive elements often do. The base state is always `default`—the appearance when there is no interaction.
+The optional **state** segment of a semantic color token describes _when_ the color applies. States capture interactions (hover, active, focus) or persistent conditions (disabled, selected). Not every dimension needs state variations, but interactive elements often do. The base state is always `default`—the appearance when there is no interaction.
 
 ## Interaction states
 
 - **hover:** The element is under the pointer. Hover colours should be close to the default but provide a clear affordance. For example, a hover background may be slightly darker or lighter than the default.
-- **active:** The element is being pressed or activated (mouse down). Active colours often emphasize depth or contrast relative to hover. They may map to a lower elevation level in addition to a colour change.
+- **active:** The element is being pressed or activated (mouse down). Active colours often emphasize depth or contrast relative to hover. They may map to a lower elevation level in addition to a color change.
 - **focus:** The element has keyboard or accessibility focus (e.g. via tab). Focus colours are used for outlines or glows rather than backgrounds. They help keyboard users identify their current location.
 - **selected:** The element is in a toggled or selected state (e.g. a selected tab or radio button). Selected colours should be distinct from hover and active.
 

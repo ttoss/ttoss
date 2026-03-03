@@ -1,10 +1,10 @@
 ---
-title: Colour Roles
+title: Color Roles
 ---
 
-# Colour Roles
+# Color Roles
 
-The **role** segment of a semantic colour token captures _why_ a colour is used. Roles communicate either hierarchy (primary vs secondary vs tertiary vs neutral) or semantic meaning (positive, negative, warning, info). Using roles consistently helps users understand significance, reinforces brand identity and improves accessibility.
+The **role** segment of a semantic color token captures _why_ a color is used. Roles communicate either hierarchy (primary vs secondary vs tertiary vs neutral) or semantic meaning (positive, negative, warning, info). Using roles consistently helps users understand significance, reinforces brand identity and improves accessibility.
 
 ## Hierarchical roles
 
@@ -28,6 +28,6 @@ A semantic token must have _exactly one_ role. Do not combine roles (e.g. “pri
 
 1. **Determine the component’s purpose.** Is it a primary call to action, a secondary action, or supportive content?
 2. **Identify status.** Does the element convey success, error, warning or information? If so, prefer status roles over hierarchy.
-3. **Avoid using roles to fix contrast.** If a colour fails contrast requirements, adjust the core palette or theme rather than switching from primary to secondary.
+3. **Avoid using roles to fix contrast.** If a color fails contrast requirements, adjust the core palette or theme rather than switching from primary to secondary.
 
 Consistent roles make the UI predictable and accessible. When introducing a new role, follow the governance process to update documentation and themes.

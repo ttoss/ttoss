@@ -1,10 +1,10 @@
 ---
-title: Colour UX Contexts
+title: Color UX Contexts
 ---
 
-# Colour UX Contexts
+# Color UX Contexts
 
-Semantic colours begin with a **context** segment that describes _where_ in the user interface the colour is applied. Contexts help group tokens by UI areas and enforce consistency across components. The following contexts are defined in our system; avoid inventing new ones without consulting the design system team.
+Semantic colours begin with a **context** segment that describes _where_ in the user interface the color is applied. Contexts help group tokens by UI areas and enforce consistency across components. The following contexts are defined in our system; avoid inventing new ones without consulting the design system team.
 
 ## navigation
 

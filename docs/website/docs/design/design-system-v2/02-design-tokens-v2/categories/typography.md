@@ -44,4 +44,4 @@ Creating a new text style requires mapping to core tokens. Use semantic text sty
 3. **Adjust line height per language.** East Asian scripts may require different line heights; define locale-specific overrides at the theme level if necessary.
 4. **Consider accessibility.** Provide adequate size and contrast. Use relative units (rem) rather than fixed px values to allow scaling.
 
-Typography tokens are foundational for readability. They complement colour tokens to create clear hierarchies and accessible interfaces.
+Typography tokens are foundational for readability. They complement color tokens to create clear hierarchies and accessible interfaces.
