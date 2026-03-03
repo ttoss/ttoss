@@ -34,7 +34,3 @@ Our design system delivers value aligned with [product development principles](/
 - **Rapid Prototyping**: Quick testing and iteration enabled by [FF8: Fast-Learning Principle](https://ttoss.dev/docs/product/product-development/principles#ff8-the-fast-learning-principle-use-fast-feedback-to-make-learning-faster-and-more-efficient)
 - **Visual Consistency**: Unified experience across products
 - **Scalability**: Support for multiple products and brands
-
-## Getting Started
-
-> TO-DO
