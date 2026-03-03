@@ -29,4 +29,4 @@ Each category provides both core and semantic tokens where appropriate. In some 
 
 ### Next Steps
 
-To begin using tokens, read [How to Use Design Tokens](./01-how-to-use.md). To understand the contract between core and semantic tokens, see [Token Model](./model.md). For naming conventions, see [Naming & Taxonomy](./naming.md). Each token family has its own page starting with [Colors](./Categories/colors/index.md).
+To begin using tokens, read How to Use Design Tokens(TO-DO). To understand the contract between core and semantic tokens, see [Token Model](./model.md). For naming conventions, see [Naming & Taxonomy](./naming.md). Each token family has its own page starting with [Colors](./Categories/colors/index.md).
