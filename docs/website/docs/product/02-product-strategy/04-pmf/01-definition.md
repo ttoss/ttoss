@@ -1,5 +1,5 @@
 ---
-title: PMF - Canonical Definition
+title: Product-Market Fit (PMF)
 ---
 
 # Product-Market Fit (PMF)
