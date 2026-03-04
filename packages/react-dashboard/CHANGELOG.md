@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.0...@ttoss/react-dashboard@0.6.1) (2026-03-04)
+
+### Bug Fixes
+
+- dashboard styles ([#882](https://github.com/ttoss/ttoss/issues/882)) ([4c966e0](https://github.com/ttoss/ttoss/commit/4c966e02e4bba4b82032c35fba9f378f922146e4))
+
 # [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.5.1...@ttoss/react-dashboard@0.6.0) (2026-02-26)
 
 ### Features
