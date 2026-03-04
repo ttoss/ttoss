@@ -50,9 +50,7 @@ export const DashboardFilters = () => {
       sx={{
         gap: '2',
         flexDirection: 'row',
-        '@media (max-width: 768px)': {
-          flexWrap: 'wrap',
-        },
+        flexWrap: ['wrap', null, 'nowrap'],
       }}
     >
       {filters.map((filter) => {
