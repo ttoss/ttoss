@@ -1,6 +1,6 @@
 import { Drawer } from '@ttoss/components/Drawer';
 import { Search } from '@ttoss/components/Search';
-import { Box, Button, Flex, Input, Label, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
 import { BigNumber } from './Cards/BigNumber';
@@ -45,6 +45,7 @@ const GROUP_LABELS: Record<CardCatalogGroup, string> = {
 };
 
 export const DashboardEditToolbar = () => {
+  const { theme } = useTheme();
   const {
     editable,
     isEditMode,
@@ -63,6 +64,11 @@ export const DashboardEditToolbar = () => {
   const [addCardDrawerOpen, setAddCardDrawerOpen] = React.useState(false);
   const [addCardSearch, setAddCardSearch] = React.useState('');
   const [saveAsNewTitle, setSaveAsNewTitle] = React.useState('');
+
+  const drawerSizeXs =
+    (theme?.sizes as Partial<Record<'xs', string>> | undefined)?.xs ?? '20rem';
+  const drawerSizeSm =
+    (theme?.sizes as Partial<Record<'sm', string>> | undefined)?.sm ?? '24rem';
 
   React.useEffect(() => {
     if (saveAsNewModalOpen && selectedTemplate) {
@@ -129,7 +135,7 @@ export const DashboardEditToolbar = () => {
           setAddCardSearch('');
         }}
         direction="right"
-        size="320px"
+        size={drawerSizeXs}
         sx={{
           width: addCardDrawerOpen ? '100%' : '0',
           display: addCardDrawerOpen ? 'block' : 'none',
@@ -191,7 +197,7 @@ export const DashboardEditToolbar = () => {
                         fontWeight: 'bold',
                         color: 'input.text.muted.default',
                         textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
+                        letterSpacing: 'wider',
                       }}
                     >
                       {GROUP_LABELS[group]}
@@ -216,7 +222,7 @@ export const DashboardEditToolbar = () => {
                               cursor: 'pointer',
                               '&:hover': { opacity: 0.9 },
                               '&:focus-visible': {
-                                outline: '2px solid',
+                                outline: 'md',
                                 outlineColor: 'display.border.accent.default',
                                 outlineOffset: '2',
                               },
@@ -247,7 +253,7 @@ export const DashboardEditToolbar = () => {
         open={saveAsNewModalOpen}
         onClose={cancelSaveAsNew}
         direction="right"
-        size="360px"
+        size={drawerSizeSm}
         sx={{
           width: saveAsNewModalOpen ? '100%' : '0',
           display: saveAsNewModalOpen ? 'block' : 'none',
