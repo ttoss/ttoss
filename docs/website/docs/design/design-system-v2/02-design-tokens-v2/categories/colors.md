@@ -78,7 +78,7 @@ They do **not** express intent, hierarchy, or state.
 They exist to:
 
 - define the visual identity of the brand
-- provide stable primitives for theming (hue palletes)
+- provide stable primitives for theming (hue palettes)
 - serve as the source of truth for semantic tokens
 
 ### Core Color Groups
