@@ -35,7 +35,6 @@ export const DashboardSectionDivider = ({
             flex: 'none',
             fontSize: 'md',
             fontWeight: 'bold',
-            minWidth: '120px',
           }}
         />
       ) : (
