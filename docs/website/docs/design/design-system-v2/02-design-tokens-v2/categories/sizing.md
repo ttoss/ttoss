@@ -8,12 +8,10 @@ Sizing tokens define the **physical bounds** of UI: widths, heights, and min/max
 
 This system is built on two explicit layers:
 
-1. **Core Sizing** — intent-free primitives and the **responsive engine**
-2. **Semantic Sizing** — sizing contracts consumed by UI code
+1. **Core Tokens** — intent-free primitives and the **responsive engine**
+2. **Semantic Tokens** — sizing contracts consumed by UI code
 
-Components must always consume **semantic sizing**, never core sizing directly.
-
-> **Rule:** Core sizing is never referenced in components.
+> **Rule:** Core tokens are never referenced in components.
 
 ---
 
@@ -65,17 +63,17 @@ Ramps are the **engine**. They are bounded ranges expressed with `clamp(min, pre
 
 #### 2) Primitives (required)
 
-- `size.relative.em = 1em`
-- `size.relative.rem = 1rem`
-- `size.behavior.auto = auto`
-- `size.behavior.full = 100%`
-- `size.behavior.fit = fit-content`
-- `size.behavior.min = min-content`
-- `size.behavior.max = max-content`
-- `size.viewport.heightFull = 100dvh`
-- `size.viewport.widthFull = 100vw`
+- `core.size.relative.em = 1em`
+- `core.size.relative.rem = 1rem`
+- `core.size.behavior.auto = auto`
+- `core.size.behavior.full = 100%`
+- `core.size.behavior.fit = fit-content`
+- `core.size.behavior.min = min-content`
+- `core.size.behavior.max = max-content`
+- `core.size.viewport.heightFull = 100dvh`
+- `core.size.viewport.widthFull = 100vw`
 
-### Example (Core Sizing Definition)
+### Example
 
 ```js
 const coreSizing = {
@@ -117,14 +115,13 @@ const coreSizing = {
 ```
 
 **Expected consumption pattern:** semantic tokens reference core tokens by alias.
-Example: `icon.md → size.ramp.ui.3`, `surface.maxWidth → size.ramp.layout.5`.
+Example: `sizing.icon.md → core.size.ramp.ui.3`, `sizing.surface.maxWidth → core.size.ramp.layout.5`.
 
 ---
 
 ## Semantic Tokens
 
 Sizing semantics are anchored in **geometry and ergonomics**, not UX categories. This avoids ambiguity and prevents token-per-component drift.
-The semantic set is intentionally **small and physical**. Semantic tokens are the only sizing API for components.
 
 ### Token Structure
 
@@ -134,8 +131,8 @@ Sizing semantics use **physical families** plus a **step or property**.
 {family}.{stepOrProperty}
 ```
 
-**family**: what kind of physical sizing contract this is (hit, icon, identity, measure, surface, viewport)
-**stepOrProperty**: the specific step or property inside that family (e.g., `min/default/prominent`, `sm/md/lg`, `reading`, `maxWidth`, `height.full`)
+- **family**: what kind of physical sizing contract this is
+- **stepOrProperty**: the specific step or property inside that family
 
 #### Families
 
@@ -159,21 +156,21 @@ Sizing semantics use **physical families** plus a **step or property**.
 
 ### Semantic Tokens Summary Table
 
-| token                  | use when you are building…            | contract (must be true)                                            | default value                         |
-| :--------------------- | :------------------------------------ | :----------------------------------------------------------------- | :------------------------------------ |
-| `hit.min`              | small / secondary interactive targets | minimum interactive area; **not visual size**; **must not shrink** | `44px`                                |
-| `hit.default`          | standard buttons/inputs/toggles       | same as above                                                      | `48px`                                |
-| `hit.prominent`        | high-emphasis / low-density targets   | same as above                                                      | `56px`                                |
-| `icon.sm`              | small glyphs / dense UI               | visual only; bounded range (via core ramp)                         | `size.ramp.ui.2`                      |
-| `icon.md`              | standard icons                        | visual only; bounded range (via core ramp)                         | `size.ramp.ui.3`                      |
-| `icon.lg`              | prominent icons                       | visual only; bounded range (via core ramp)                         | `size.ramp.ui.4`                      |
-| `identity.sm`          | compact identity objects              | visual only; bounded range (via core ramp)                         | `size.ramp.ui.5`                      |
-| `identity.md`          | standard identity objects             | visual only; bounded range (via core ramp)                         | `size.ramp.ui.6`                      |
-| `identity.lg`          | prominent identity objects            | visual only; bounded range (via core ramp)                         | `size.ramp.ui.7`                      |
-| `identity.xl`          | hero identity / brand objects         | visual only; bounded range (via core ramp)                         | `size.ramp.ui.8`                      |
-| `measure.reading`      | long-form text containers             | single bounded readability contract                                | `clamp(45ch, 60ch, 75ch)`             |
-| `surface.maxWidth`     | cards/panels/dialog shells/surfaces   | bounded structural max width; container-first                      | `size.ramp.layout.5`                  |
-| `viewport.height.full` | full-height layouts                   | must use dynamic viewport units                                    | `size.viewport.heightFull` (`100dvh`) |
+| token                  | use when you are building…            | contract (must be true)                                            | default value                              |
+| :--------------------- | :------------------------------------ | :----------------------------------------------------------------- | :----------------------------------------- |
+| `hit.min`              | small / secondary interactive targets | minimum interactive area; **not visual size**; **must not shrink** | `44px`                                     |
+| `hit.default`          | standard buttons/inputs/toggles       | same as above                                                      | `48px`                                     |
+| `hit.prominent`        | high-emphasis / low-density targets   | same as above                                                      | `56px`                                     |
+| `icon.sm`              | small glyphs / dense UI               | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.2`                      |
+| `icon.md`              | standard icons                        | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.3`                      |
+| `icon.lg`              | prominent icons                       | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.4`                      |
+| `identity.sm`          | compact identity objects              | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.5`                      |
+| `identity.md`          | standard identity objects             | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.6`                      |
+| `identity.lg`          | prominent identity objects            | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.7`                      |
+| `identity.xl`          | hero identity / brand objects         | visual only; bounded range (via core ramp)                         | `core.size.ramp.ui.8`                      |
+| `measure.reading`      | long-form text containers             | single bounded readability contract                                | `clamp(45ch, 60ch, 75ch)`                  |
+| `surface.maxWidth`     | cards/panels/dialog shells/surfaces   | bounded structural max width; container-first                      | `core.size.ramp.layout.5`                  |
+| `viewport.height.full` | full-height layouts                   | must use dynamic viewport units                                    | `core.size.viewport.heightFull` (`100dvh`) |
 
 Accessibility note: WCAG 2.2 Target Size (Minimum) provides a lower baseline (24×24 CSS px, with exceptions), while ttoss uses stronger hit baselines (44/48) for product-grade ergonomics.
 
@@ -190,7 +187,7 @@ Accessibility note: WCAG 2.2 Target Size (Minimum) provides a lower baseline (24
 
 Themes may tune:
 
-- the **core ramps** (`size.ramp.ui.*`, `size.ramp.layout.*`)
+- the **core ramps** (`core.size.ramp.ui.*`, `core.size.ramp.layout.*`)
 - `surface.maxWidth` mapping to a different layout ramp step (if needed)
 - `measure.reading` (rare; validate with real content)
 
