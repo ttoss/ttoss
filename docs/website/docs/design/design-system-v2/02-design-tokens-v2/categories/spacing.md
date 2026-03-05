@@ -178,17 +178,17 @@ const spacing = {
 
 1. **Semantic-only consumption:** components use semantic spacing only.
 2. **Gap-first:** sibling spacing uses `gap` (Flex/Grid) by default.
-3. **Inset is for padding:** `sizing.inset.*` is only for internal padding.
-4. **Gutters are structural:** use `sizing.gutter.*` for page/section layout padding.
-5. **Separation is ergonomic:** `sizing.separation.interactive.min` is only for interactive targets.
+3. **Inset is for padding:** `spacing.inset.*` is only for internal padding.
+4. **Gutters are structural:** use `spacing.gutter.*` for page/section layout padding.
+5. **Separation is ergonomic:** `spacing.separation.interactive.min` is only for interactive targets.
 6. **No responsive logic in components:** responsiveness lives in Core (`core.space.unit`), not in UI code.
 
 ## Decision Matrix (pick fast)
 
-1. **Padding inside an element?** → `sizing.inset.control.*` / `sizing.inset.surface.*`
-2. **Spacing between siblings?** → `sizing.gap.stack.*` / `sizing.gap.inline.*`
-3. **Page/section structure?** → `sizing.gutter.page` / `sizing.gutter.section`
-4. **Dense cluster of interactive targets?** → `sizing.separation.interactive.min`
+1. **Padding inside an element?** → `spacing.inset.control.*` / `spacing.inset.surface.*`
+2. **Spacing between siblings?** → `spacing.gap.stack.*` / `spacing.gap.inline.*`
+3. **Page/section structure?** → `spacing.gutter.page` / `spacing.gutter.section`
+4. **Dense cluster of interactive targets?** → `spacing.separation.interactive.min`
 
 ---
 

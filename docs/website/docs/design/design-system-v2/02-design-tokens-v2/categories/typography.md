@@ -76,7 +76,7 @@ They exist to:
 }
 ```
 
-1. The core token set below (ramps + primitives).
+3. The core token set below (ramps + primitives).
 
 ### Core Token Set
 
@@ -87,14 +87,14 @@ Core typography is composed of **two groups**:
 
 #### Font Primitives
 
-| Category                          | Tokens                                                                                                                      | Notes                                                                                                            |
-| :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
-| **Font families**                 | `font.family.sans` <br> `font.family.serif` _(optional)_ <br> `font.family.mono`                                            | Defines the font stacks used across the system.                                                                  |
-| **Font weights**                  | `font.weight.regular` (400) <br> `font.weight.medium` (500) <br> `font.weight.semibold` (600) <br> `font.weight.bold` (700) | If using variable fonts, weights may be tuned at the theme level. Components still consume semantic styles only. |
-| **Leading (line-height)**         | `font.leading.tight` <br> `font.leading.snug` <br> `font.leading.normal` <br> `font.leading.relaxed`                        | Unitless multipliers for scalable line-height.                                                                   |
-| **Tracking (letter-spacing)**     | `font.tracking.tight` <br> `font.tracking.normal` <br> `font.tracking.wide`                                                 | `tight` may be used for large headings. `wide` is intended for short labels; avoid for body text.                |
-| **Optical sizing** _(optional)_   | `font.opticalSizing.auto` <br> `font.opticalSizing.none`                                                                    | Enables optical adjustments for variable fonts when supported.                                                   |
-| **Numeric features** _(optional)_ | `font.numeric.proportional` <br> `font.numeric.tabular`                                                                     | `tabular` is recommended for dashboards or frequently updating numeric values.                                   |
+| Category                          | Tokens                                                                                                          | Notes                                                                                                            |
+| :-------------------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| **Font families**                 | `font.family.sans`, `font.family.serif` _(optional)_, `font.family.mono`                                        | Defines the font stacks used across the system.                                                                  |
+| **Font weights**                  | `font.weight.regular` (400), `font.weight.medium` (500), `font.weight.semibold` (600), `font.weight.bold` (700) | If using variable fonts, weights may be tuned at the theme level. Components still consume semantic styles only. |
+| **Leading (line-height)**         | `font.leading.tight`, `font.leading.snug`, `font.leading.normal`, `font.leading.relaxed`                        | Unitless multipliers for scalable line-height.                                                                   |
+| **Tracking (letter-spacing)**     | `font.tracking.tight`, `font.tracking.normal`, `font.tracking.wide`                                             | `tight` may be used for large headings. `wide` is intended for short labels; avoid for body text.                |
+| **Optical sizing** _(optional)_   | `font.opticalSizing.auto`, `font.opticalSizing.none`                                                            | Enables optical adjustments for variable fonts when supported.                                                   |
+| **Numeric features** _(optional)_ | `font.numeric.proportional`, `font.numeric.tabular`                                                             | `tabular` is recommended for dashboards or frequently updating numeric values.                                   |
 
 #### Size Ramps (Responsive Engine)
 

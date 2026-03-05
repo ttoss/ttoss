@@ -11,7 +11,7 @@ This system is built on two explicit layers:
 1. **Core Tokens** — intent-free primitives and the **responsive engine**
 2. **Semantic Tokens** — sizing contracts consumed by UI code
 
-> **Rule:** Core tokens is never referenced in components.
+> **Rule:** Core tokens are never referenced in components.
 
 ---
 
@@ -136,14 +136,14 @@ Sizing semantics use **physical families** plus a **step or property**.
 
 #### Families
 
-| `{family}` | Description |
-| :---- | :-0-- |
-| `hit` | minimum **interactive target** sizing (accessibility contract). Never fluid. |
-| `icon` | **visual glyph** sizing only. May be fluid via core ramp. |
+| `{family}` | Description                                                                           |
+| :--------- | :------------------------------------------------------------------------------------ |
+| `hit`      | minimum **interactive target** sizing (accessibility contract). Never fluid.          |
+| `icon`     | **visual glyph** sizing only. May be fluid via core ramp.                             |
 | `identity` | **visual identity object** sizing (profile/brand/entity). May be fluid via core ramp. |
-| `measure` | **readability measure** (line-length contract, character-based). |
-| `surface` | **structural bounds** for UI surfaces (constraints, not components). |
-| `viewport` | viewport primitives for full-height layouts (modern mobile-safe). |
+| `measure`  | **readability measure** (line-length contract, character-based).                      |
+| `surface`  | **structural bounds** for UI surfaces (constraints, not components).                  |
+| `viewport` | viewport primitives for full-height layouts (modern mobile-safe).                     |
 
 #### Canonical shapes
 
