@@ -88,12 +88,14 @@ The semantic set is intentionally **small and unambiguous**. Semantic tokens are
 ### Token structure
 
 ```
-{pattern}.{context}.{step}
+{pattern}.{context}.{step?}
 ```
 
 - `pattern`: `inset` | `gap` | `gutter` | `separation`
 - `context`: `control` | `surface` | `stack` | `inline` | `page` | `section` | `interactive`
 - `step`: `xs` | `sm` | `md` | `lg` | `xl` | `min`
+
+`step` is only used in some cases.
 
 #### Patterns:
 
