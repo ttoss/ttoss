@@ -1,3 +1,7 @@
+---
+title: Colors
+---
+
 # Colors
 
 Colors are a foundational part of the design system, being one of the most expressive design elements. They express brand identity, communicate meaning, support hierarchy, and ensure accessibility across interfaces.
