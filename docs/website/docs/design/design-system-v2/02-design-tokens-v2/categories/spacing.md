@@ -227,12 +227,12 @@ const rowStyles = {
   display: 'flex',
   flexDirection: 'row',
   /* Preferred */
-  gap: 'semanticSpacing.gap.inline.sm',
+  gap: semanticSpacing.gap.inline.sm,
 
   /* Fallback */
   '@supports not (gap: 1rem)': {
     '& > * + *': {
-      marginLeft: 'semanticSpacing.gap.inline.sm',
+      marginLeft: semanticSpacing.gap.inline.sm,
     },
   },
 };
