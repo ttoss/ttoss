@@ -106,6 +106,31 @@ Assigning multiple agents to work simultaneously on the same critical path incre
 
 **Failure Scenario:** A developer asks an agent to fix a bug in a 2000-line legacy controller. The agent notices that the file relies on global variables and lacks type safety. To "fit in," the agent's fix also uses a global variable. The code works, but the debt is compounded.
 
+### Co-Located Specification
+
+**The Problem:** Requirements and business rules live in external tools (Confluence, Figma comments, Slack) or human memory. Agents see only the artifact — code, design file, doc, dashboard — which shows _what_ exists but not _why_ or _what constraints_ apply. This is domain-agnostic: it affects engineers, designers, PMs, and analysts equally.
+
+**The Underlying Principle:** Derived from [The Principle of Context Compressibility](/docs/ai/agentic-development-principles#the-principle-of-context-compressibility) and [The Corollary of Complementary Specification](/docs/ai/agentic-development-principles#the-corollary-of-complementary-specification).
+
+**The Strategy:** Embed specs _co-located with the artifacts they govern_, containing only what the artifact cannot express:
+
+- **Intent**: Why this exists and the problem it solves.
+- **Constraints**: Business rules, regulatory requirements, performance budgets, brand guidelines.
+- **Acceptance criteria**: Verifiable conditions that define "done."
+- **Boundaries**: What must not change, scope limits.
+- **Non-goals**: What the work should _not_ do.
+
+Exclude anything the agent can obtain by inspecting the artifact directly.
+
+| Domain       | Artifact                 | Spec contains                                           | Co-location                        |
+| ------------ | ------------------------ | ------------------------------------------------------- | ---------------------------------- |
+| Engineering  | Code, types, tests       | Business rules, acceptance criteria, boundaries         | `feature.spec.md` next to module   |
+| Design       | Figma components, tokens | Interaction constraints, accessibility, brand rationale | `component.spec.md` in design repo |
+| Product/Docs | Existing pages           | Audience, tone, strategic goals                         | `page.spec.md` next to the doc     |
+| Data         | Schema, queries          | Business definitions, alert thresholds, privacy rules   | `metric.spec.md` next to query     |
+
+**Failure Scenario:** Requirements in Confluence; agent extends a payment flow seeing only code. It violates an undocumented rule ("refunds over \$500 require approval"). Same pattern for design (interaction flow in PM's head → visually correct but logically wrong modal) and docs (tone goal communicated verbally → grammatically improved but strategically unchanged rewrite).
+
 ### Ownership-Preserving Delegation
 
 **The Problem:** When developers delegate implementation tasks to an AI agent in systems they do not fully master (operating in "Contracting" mode), the AI produces working code but obscures critical implementation details, side effects, and design rationales. Over time, this erodes the developer's mental model of the system, making it impossible to predict the side effects of future changes—directly violating the [Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority). The developer gradually becomes a mere approver of black-box patches, leading to progressive loss of ownership.
