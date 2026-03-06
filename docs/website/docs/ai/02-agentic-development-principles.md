@@ -156,6 +156,21 @@ When the agent is forced to guess, it will regress to local pattern matching, co
 
 If a change cannot be described as a small, self-contained context packet (inputs, outputs, invariants, tests), treat this as a structural smell. Reduce coupling, make contracts explicit, and move invariants into types/schemas/tests so the agent can operate on smaller, verifiable slices.
 
+#### The Corollary of Complementary Specification
+
+Specifications must contain only information _complementary_ to the artifacts an agent can already inspect — never redundant with them. A spec that re-describes what the source artifact already expresses wastes [The Principle of Finite Context Window](#the-principle-of-finite-context-window) tokens, and when the artifact evolves but the spec doesn't, redundancy becomes contradiction — a form of [The Corollary of Compounding Contextual Error](#the-corollary-of-compounding-contextual-error).
+
+The spec answers _why_ and _what constraints_; the artifact answers _what_ and _how_:
+
+- **Engineering**: State business rules and acceptance criteria, not schemas or API signatures readable from code.
+- **Design**: State user intent, interaction constraints, and accessibility requirements, not tokens or component specs extractable from Figma.
+- **Product/Docs**: State audience, tone, and strategic goals, not existing page structure readable from the repo.
+- **Data**: State business definitions and alert thresholds, not column types readable from the catalog.
+
+This operationalizes [The Corollary of Context Scarcity](#the-corollary-of-context-scarcity) at the specification level.
+
+**Failure Scenario:** A PRD re-describes the database schema already in typed code. The schema evolves; the PRD doesn't. The agent reconciles contradictory signals by mixing the outdated spec with current code, introducing data integrity bugs. The same pattern applies to design briefs that duplicate Figma tokens or doc tasks that paraphrase existing page content.
+
 ### The Principle of Pattern Inertia
 
 AI models function as statistical pattern matchers that prioritize local consistency with the provided context over global correctness. Just as an object in motion stays in motion, an AI agent interacting with a codebase will inherently perpetuate the existing momentum of that codebase. The probability of an agent generating "clean" code is inversely proportional to the volume of technical debt present in its context window.
@@ -586,6 +601,37 @@ Enforce layered specifications (micro-specs for priming, main specs as contracts
 #### The Corollary of Velocity Redefined
 
 True sustainable velocity is not measured by features shipped, but by features shipped while keeping MTTU flat—or ideally reducing it—ensuring that comprehension scales with the codebase rather than degrading.
+
+### The Principle of Competence Atrophy
+
+As developers increasingly delegate cognitive tasks to AI agents, the human skills that every other principle in this document assumes—verification, contextual authority, architectural judgment, problem decomposition—progressively erode through disuse. This is the meta-risk of agentic development: the system's governance model depends on competent human operators, but the system itself removes the routine practice that builds and maintains that competence.
+
+This is Bainbridge's classic "Ironies of Automation" (1983) applied to software engineering: automation removes the easy, repetitive tasks but leaves the hard ones (failure recovery, novel architecture decisions, production incidents) — which require _more_ competence than the routine work that was automated away.
+
+The existing principles structurally depend on human capability that is not self-sustaining under automation:
+
+- [The Principle of Verification Asymmetry](#the-principle-of-verification-asymmetry) assumes humans _can_ verify AI output.
+- [The Principle of Contextual Authority](#the-principle-of-contextual-authority) assumes operators _have_ a mental model of the system.
+- [The Principle of Role Elevation in Human-AI Hybridization](#the-principle-of-role-elevation-in-human-ai-hybridization) assumes humans _retain_ curation and judgment capability.
+- [The Principle of Architecture over Artifacts](#the-principle-of-architecture-over-artifacts) assumes humans _can_ evaluate structural impact.
+- [The Corollary of Problem Decomposition](#the-corollary-of-problem-decomposition) assumes humans _understand_ the domain deeply enough to decompose problems.
+- [The Principle of Emergent Insight Constraint](#the-principle-of-emergent-insight-constraint) assumes humans _still generate_ novel hypotheses from fresh evidence.
+
+If automation removes the routine work that develops and sustains these skills, the human half of the symbiosis atrophies, and the entire governance framework collapses from within.
+
+**Failure Scenario:** A junior developer uses AI agents for 18 months to write, debug, and architect code. They ship fast and receive praise. Then a production incident occurs in a system the agent built. The developer cannot diagnose the failure because they never built the mental model that manual debugging, reading stack traces, and tracing execution paths would have forced. Every governance principle in this document assumes this person exists as a competent operator—but the system itself eroded that competence. The team discovers that its "10x developer" cannot function without the agent, and the agent cannot function without the human judgment it was designed to complement.
+
+#### The Corollary of Deliberate Practice Preservation
+
+Organizations must intentionally preserve opportunities for developers to engage in skill-building work that AI could otherwise handle. This is not inefficiency—it is maintenance of the human capital that the entire agentic system depends on. Periodic "manual sprints," code review without AI assistance, incident response ownership, and architectural design exercises serve as deliberate practice that prevents skill decay. The cost of this practice is the insurance premium against governance collapse.
+
+#### The Corollary of Asymmetric Skill Dependency
+
+The skills most at risk of atrophy are precisely the skills most needed when automation fails. Debugging, root-cause analysis, architectural reasoning, and system-level thinking are exercised least in AI-assisted workflows but demanded most during incidents, novel problems, and strategic decisions. This asymmetry means that competence atrophy is invisible during normal operations and catastrophic during exceptional ones—the worst possible failure mode.
+
+#### The Corollary of Graduated Autonomy for Skill Development
+
+Scale AI autonomy not only by risk (per [The Principle of Graduated Agency by Structure and Risk](#the-principle-of-graduated-agency-by-structure-and-risk)) but also by the operator's developmental stage. Junior developers should operate agents at lower autonomy levels—not because the agent is less capable, but because the human needs the friction of direct engagement to build the mental models required for future governance. Autonomy is earned through demonstrated competence, not assumed from agent capability.
 
 ---
 
