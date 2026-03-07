@@ -1,4 +1,7 @@
-import { ThemeTokensTemplate, type ThemeTokensV2 } from './ThemeTokensTemplate';
+import { defaultTheme } from './themes/default';
+import type { ThemeTokensV2 } from './ThemeTokensTemplate';
+
+export { defaultTheme };
 
 // ---------------------------------------------------------------------------
 // DeepPartial — allows overriding any nested property of a theme
@@ -11,16 +14,6 @@ import { ThemeTokensTemplate, type ThemeTokensV2 } from './ThemeTokensTemplate';
 export type DeepPartial<T> = T extends object
   ? { [P in keyof T]?: DeepPartial<T[P]> }
   : T;
-
-// ---------------------------------------------------------------------------
-// Default Theme
-// ---------------------------------------------------------------------------
-
-/**
- * The default theme derived from the canonical ThemeTokensTemplate.
- * All themes extend this baseline unless a different base is provided.
- */
-export const defaultTheme: ThemeTokensV2 = ThemeTokensTemplate;
 
 // ---------------------------------------------------------------------------
 // Deep Merge

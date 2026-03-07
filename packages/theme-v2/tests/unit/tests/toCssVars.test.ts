@@ -109,6 +109,26 @@ describe('toCssVars', () => {
       expect(css).toContain('color-scheme: light dark;');
     });
 
+    test('infers color-scheme from mode when colorScheme is omitted', () => {
+      const css = toCssVars(defaultTheme, {
+        themeId: 'default',
+        mode: 'dark',
+      }).toCssString();
+
+      expect(css).toContain('color-scheme: dark;');
+    });
+
+    test('explicit colorScheme overrides inferred mode value', () => {
+      const css = toCssVars(defaultTheme, {
+        themeId: 'default',
+        mode: 'dark',
+        colorScheme: 'light dark',
+      }).toCssString();
+
+      expect(css).toContain('color-scheme: light dark;');
+      expect(css).not.toContain('color-scheme: dark;');
+    });
+
     test('does not include color-scheme when not specified', () => {
       const css = toCssVars(defaultTheme).toCssString();
       expect(css).not.toContain('color-scheme');

@@ -27,11 +27,11 @@ const ThemeContext = React.createContext<ThemeContextValue | null>(null);
  * Props for the `ThemeProvider` component.
  */
 export interface ThemeProviderProps {
-  /** Theme to use when no persisted value is found. @default 'default' */
+  /** Theme to use when no persisted value is found. Only read on initial mount. @default 'default' */
   defaultTheme?: string;
-  /** Mode to use when no persisted value is found. @default 'system' */
+  /** Mode to use when no persisted value is found. Only read on initial mount. @default 'system' */
   defaultMode?: ThemeMode;
-  /** localStorage key for persistence. @default 'tt-theme' */
+  /** localStorage key for persistence. Only read on initial mount. @default 'tt-theme' */
   storageKey?: string;
   children: React.ReactNode;
 }
@@ -93,7 +93,7 @@ export const ThemeProvider = ({
       runtime.destroy();
       runtimeRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // Intentionally initial-mount only — use setTheme/setMode to change at runtime. // eslint-disable-line react-hooks/exhaustive-deps
 
   const setTheme = React.useCallback((themeId: string) => {
     runtimeRef.current?.setTheme(themeId);

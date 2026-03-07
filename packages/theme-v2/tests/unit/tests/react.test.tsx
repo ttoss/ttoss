@@ -135,6 +135,33 @@ describe('ThemeProvider', () => {
     const stored = JSON.parse(localStorage.getItem(DEFAULT_STORAGE_KEY)!);
     expect(stored.themeId).toBe('terra');
   });
+
+  test('does not recreate runtime when props change after mount', () => {
+    const { result, rerender } = renderHook(
+      () => {
+        return useTheme();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider defaultTheme="bruttal" defaultMode="light">
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    // Change theme via setter
+    act(() => {
+      result.current.setTheme('neon');
+    });
+    expect(result.current.themeId).toBe('neon');
+
+    // Re-render with different defaultTheme prop — should NOT reset to aurora
+    rerender();
+    expect(result.current.themeId).toBe('neon');
+  });
 });
 
 // ---------------------------------------------------------------------------

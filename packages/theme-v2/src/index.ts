@@ -1,9 +1,17 @@
 export type { DeepPartial } from './createTheme';
-export { createTheme, defaultTheme } from './createTheme';
+export { createTheme } from './createTheme';
 export type { ThemeTokensV2 } from './ThemeTokensTemplate';
 
 // Themes
-export { aurora, bruttal, neon, oca, terra, themes } from './themes';
+export {
+  aurora,
+  bruttal,
+  defaultTheme,
+  neon,
+  oca,
+  terra,
+  themes,
+} from './themes';
 
 // Adapters
 export {
