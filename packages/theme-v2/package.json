@@ -1,0 +1,59 @@
+{
+  "name": "@ttoss/theme2",
+  "version": "1.0.0",
+  "description": "Theme v2 for packages.",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Ennio Politi Lopes <enniolopes@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/theme-v2"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react.tsx"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "jest": "^30.2.0",
+    "react": "^19.2.4",
+    "tsup": "^8.5.1"
+  },
+  "keywords": [],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "./react": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/esm/react.js"
+      }
+    },
+    "provenance": true
+  }
+}
