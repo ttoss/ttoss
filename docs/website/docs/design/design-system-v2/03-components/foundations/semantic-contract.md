@@ -106,19 +106,6 @@ Patterns remain above the component layer.
 A **component** is a reusable semantic UI contract.  
 A **pattern** is a composition of one or more components used to solve a user task.
 
-## Relationship to implementation
-
-This contract is intentionally independent from implementation.
-
-That means:
-
-- component meaning must survive backend changes
-- public semantics must not depend on framework naming
-- implementation may change as long as the contract remains true
-
-The semantic contract is the stable layer.  
-Engineering materializes it later.
-
 ## Final rule
 
 **ttoss owns the semantic contract.**
