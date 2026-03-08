@@ -184,3 +184,7 @@ const { themeId, mode, resolvedMode, setTheme, setMode } = useTheme();
 | `aurora`  | Cool-toned purples, rounded surfaces         |
 | `terra`   | Warm amber/olive, grounded feel              |
 | `neon`    | Vibrant accents, dark backgrounds            |
+
+## Related Packages
+
+- [Design System Documentation](https://ttoss.dev/docs/design/design-system-v2/): Complete design system guide
