@@ -2,72 +2,165 @@
 title: Components
 ---
 
-# Components
+# ttoss Components
 
-The **Components layer** defines the **reusable semantic UI contracts** of ttoss.
+**ttoss Components** is the semantic, token-native component framework of ttoss.
 
-If tokens define the visual language of the system, components define the reusable UI meaning that applications compose into interfaces.
-
-- **Tokens define the language.**
-- **Components define reusable semantic UI contracts.**
-- **Applications compose interfaces from both.**
-
-## Model
-
-The semantic model of ttoss is:
+It defines the **public UI layer** of the system.
 
 **Core Tokens → Semantic Tokens → Components → Patterns → Applications**
 
-- **Core Tokens** define raw values
-- **Semantic Tokens** define contextual usage
-- **Components** define reusable semantic UI contracts
-- **Patterns** compose components to solve user tasks
-- **Applications** compose real product interfaces
+That is the model.
 
-This extends the token architecture already established in ttoss, where semantic tokens form the API consumed by components and patterns, while core tokens remain the source of truth for themes.
+- **Core tokens** define raw values.
+- **Semantic tokens** define usage.
+- **Components** define reusable UI contracts.
+- **Patterns** compose components into task-level solutions.
+- **Applications** build products from that system.
 
-## What a component is
+## Position
 
-A **ttoss component** is a reusable semantic UI contract.
+ttoss Components exists to keep UI **stable, reusable, and scalable** across themes, products, and implementations.
 
-A component is **not**:
+It is a **semantic framework first**.  
+Official component libraries are **reference implementations** of that framework.
 
-- a visual preset
-- a styling recipe
-- a framework wrapper
-- a local implementation shortcut
+The role of ttoss Components is not to publish every possible widget.  
+Its role is to define a small, durable public layer of UI meaning.
 
-A component exists to bind:
+## What makes a ttoss component
 
-- semantic token usage
-- interaction meaning
-- accessibility semantics
-- structural expectations
-- stable behavioral states
+A ttoss component is a **reusable semantic contract** built on semantic tokens.
 
-into a reusable unit that product code can trust.
+A public component must be:
 
-## Scope
+- **semantic** — defined by purpose and interaction meaning
+- **token-native** — built from semantic tokens only
+- **accessible** — accessibility belongs to the component contract
+- **durable** — stable across themes, brands, and implementation changes
+- **reusable** — worth standardizing beyond a single product
 
-This documentation explains how components are **defined, structured, and governed** in ttoss.
+If it does not meet those conditions, it does not belong in the public ttoss surface.
 
-It covers:
+## Core rules
 
-- component principles
-- the semantic contract
-- the component model
-- variants, anatomy, and state
-- boundaries between components and patterns
-- accessibility, responsiveness, and density guidance
-- governance and the public component catalog
+### Components consume semantic tokens only
 
-## Principle
+Components never consume core tokens directly.
 
-The component layer exists to keep UI meaning **stable** while themes, products, and implementations evolve.
+Core tokens define values.  
+Semantic tokens define usage.  
+Components consume semantics.
+
+### Public meaning belongs to ttoss
+
+The meaning of a public component is defined by ttoss.
+
+Implementation packages may evolve.  
+The public contract must remain stable.
+
+### Semantics come before styling
+
+A component is defined by what it means and what it enables.
+
+Styling is an implementation of that meaning.  
+It is not the source of the contract.
+
+### Accessibility is part of the contract
+
+Accessibility is part of the component itself, not a later enhancement.
+
+A public component must preserve the accessibility expectations of its role and interaction.
+
+### The public surface stays small
+
+The public catalog is intentionally selective.
+
+A component becomes public only when it is clearly reusable, semantically stable, and worth the long-term cost of support.
+
+## Component model
+
+ttoss Components is organized by the [Component Model](./component-model):
+
+- **Responsibility** defines component identity.
+- **Host.Role** defines composition only when needed.
+
+This aims to keep the public model small, explicit, and durable.
+
+## Variants
+
+ttoss does not use a single global visual menu of variants.
+
+Variants are **small semantic axes defined per responsibility**, only when they represent a real reusable distinction.
 
 That means:
 
-- components consume **semantic tokens only**
-- component meaning does not depend on framework naming
-- implementation may change without redefining the system
-- the catalog documents only stable public contracts
+- variants are responsibility-specific
+- variants are semantic
+- variants are not a dumping ground for visual options
+- state is not variant
+
+The system starts by asking:
+
+- what responsibility does this belong to?
+- what type of component is it?
+- what semantic distinctions actually matter here?
+
+Not every component needs variants.  
+Not every difference deserves a public axis.
+
+## Patterns stay above components
+
+Components and patterns are different layers.
+
+A **component** is a reusable unit of UI meaning.  
+A **pattern** is a composition of components used to solve a broader interface problem.
+
+ttoss Components owns the component layer.  
+It does not collapse patterns into the base component catalog.
+
+## Reference implementations
+
+ttoss may provide official implementation packages, such as React and web packages.
+
+Those packages realize the system.  
+They do not define it.
+
+The system is defined by its semantic contracts.  
+Implementation technology is replaceable.
+
+## Local application layer
+
+Applications need flexibility.
+
+The official escape hatch of ttoss Components is the **local application layer**.
+
+Applications may create:
+
+- local patterns
+- local components
+- product-specific compositions
+
+These local solutions remain outside the public ttoss surface unless they later prove reusable, stable, and semantically mature enough to be promoted.
+
+This keeps ttoss flexible without weakening the public system.
+
+## Public catalog
+
+The public catalog is **small by design**.
+
+ttoss should publish **few components, built well**, instead of many components with uneven maturity.
+
+The goal is a public surface that is clear, reliable, and durable.
+
+## Definition
+
+**ttoss Components is a semantic, token-native, selective component framework.**
+
+It provides a stable public UI layer above tokens and below patterns.
+
+It standardizes reusable UI meaning.  
+It keeps the public surface small and durable.  
+It allows products to move fast through a local application layer without polluting the system.
+
+That is ttoss Components.
