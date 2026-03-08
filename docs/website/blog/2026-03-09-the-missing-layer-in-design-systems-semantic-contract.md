@@ -1,8 +1,20 @@
 ---
-title: The Missing Layer in Design Systems: Semantic Contract
+title: 'The Missing Layer in Design Systems: Semantic Contract'
 description: A semantic contract defines how design tokens, components, and applications share meaning across a design system. Discover why most systems fail without it, how to design a strong semantic model, and why it becomes essential for scalable UI architecture and AI-assisted implementation.
 authors: enniolopes
-tags: [design systems, design tokens, semantic design, ui architecture, frontend architecture, component systems, design system governance, semantic tokens, ui engineering, ai-assisted development]
+tags:
+  [
+    design systems,
+    design tokens,
+    semantic design,
+    ui architecture,
+    frontend architecture,
+    component systems,
+    design system governance,
+    semantic tokens,
+    ui engineering,
+    ai-assisted development,
+  ]
 ---
 
 Most design systems do not fail because they lack components.
