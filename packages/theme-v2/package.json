@@ -42,19 +42,5 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [],
-  "publishConfig": {
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "./react": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/esm/react.js"
-      }
-    },
-    "provenance": true
-  }
+  "keywords": []
 }
