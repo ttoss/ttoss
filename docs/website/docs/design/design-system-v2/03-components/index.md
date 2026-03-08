@@ -78,40 +78,31 @@ The public catalog is intentionally selective.
 
 A component becomes public only when it is clearly reusable, semantically stable, and worth the long-term cost of support.
 
-## Family-first system
+## Component model
 
-ttoss Components is organized by **semantic families**, not by a flat visual catalog.
+ttoss Components is organized by the [Component Model](./component-model):
 
-The system starts from recurring UI roles in applications, such as:
+- **Responsibility** defines component identity.
+- **Host.Role** defines composition only when needed.
 
-- **Action**
-- **Input**
-- **Selection**
-- **Navigation**
-- **Disclosure**
-- **Overlay**
-- **Feedback**
-- **Surface**
-
-Components belong to families.  
-Families give the system coherence because they group UI by semantic responsibility, not by visual similarity.
+This aims to keep the public model small, explicit, and durable.
 
 ## Variants
 
 ttoss does not use a single global visual menu of variants.
 
-Variants are **small semantic axes defined per family**, only when they represent a real reusable distinction.
+Variants are **small semantic axes defined per responsibility**, only when they represent a real reusable distinction.
 
 That means:
 
-- variants are family-specific
+- variants are responsibility-specific
 - variants are semantic
 - variants are not a dumping ground for visual options
 - state is not variant
 
 The system starts by asking:
 
-- what family does this belong to?
+- what responsibility does this belong to?
 - what type of component is it?
 - what semantic distinctions actually matter here?
 

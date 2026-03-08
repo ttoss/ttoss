@@ -73,7 +73,7 @@ A **Role** defines what an instance does inside a Host. It answers:
 - _What is this instance doing here?_
 
 > Use `Host.Role` only when structured composition matters.
-> When `Host.Role` is absent (i.e: standalone components), the component resolves tokens from its Responsibility default.
+> When `Host.Role` is absent (standalone components), the component resolves tokens from its Responsibility default.
 
 Composition refines that default through `Host.Role`.
 
