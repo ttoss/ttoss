@@ -203,6 +203,9 @@ describe('getPrNumber', () => {
       ok: false,
       status: 403,
       statusText: 'Forbidden',
+      json: async () => {
+        return { message: 'Resource not accessible by integration' };
+      },
     });
 
     await expect(getPrNumber({ branch, repo, token })).rejects.toThrow(
@@ -256,6 +259,9 @@ describe('findExistingComment', () => {
       ok: false,
       status: 404,
       statusText: 'Not Found',
+      json: async () => {
+        return { message: 'Not Found' };
+      },
     });
 
     await expect(
@@ -316,6 +322,9 @@ describe('createOrUpdateComment', () => {
       ok: false,
       status: 422,
       statusText: 'Unprocessable Entity',
+      json: async () => {
+        return { message: 'Validation Failed' };
+      },
     });
 
     await expect(

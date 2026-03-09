@@ -8,6 +8,18 @@ import { LATEST_DEPLOY_OUTPUTS_FILENAME } from './config';
 
 const logPrefix = 'report';
 
+const getGitHubErrorMessage = async (response: Response): Promise<string> => {
+  try {
+    const body = (await response.json()) as { message?: string };
+    if (body.message) {
+      return `${response.status} ${response.statusText} - ${body.message}`;
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return `${response.status} ${response.statusText}`;
+};
+
 export const GITHUB_PR_COMMENT_MARKER = '<!-- carlin-deploy-outputs -->';
 
 export interface DeployFileOutput {
@@ -100,7 +112,7 @@ export const getPrNumber = async ({
 
   if (!response.ok) {
     throw new Error(
-      `GitHub API error fetching PR: ${response.status} ${response.statusText}`
+      `GitHub API error fetching PR: ${await getGitHubErrorMessage(response)}`
     );
   }
 
@@ -135,7 +147,7 @@ export const findExistingComment = async ({
 
   if (!response.ok) {
     throw new Error(
-      `GitHub API error fetching comments: ${response.status} ${response.statusText}`
+      `GitHub API error fetching comments: ${await getGitHubErrorMessage(response)}`
     );
   }
 
@@ -181,7 +193,7 @@ export const createOrUpdateComment = async ({
 
   if (!response.ok) {
     throw new Error(
-      `GitHub API error ${method} comment: ${response.status} ${response.statusText}`
+      `GitHub API error ${method} comment: ${await getGitHubErrorMessage(response)}`
     );
   }
 };
