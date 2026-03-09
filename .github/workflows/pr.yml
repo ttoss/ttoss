@@ -13,6 +13,8 @@ concurrency:
 jobs:
   pr:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -34,5 +36,5 @@ jobs:
         run: sh -e ./.cicd/commands/pr.sh
         env:
           CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
