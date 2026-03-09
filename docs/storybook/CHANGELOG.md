@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.17.1...@docs/storybook@3.18.0) (2026-03-09)
+
+### Features
+
+- carlin deploy report ([#888](https://github.com/ttoss/ttoss/issues/888)) ([7f8df3a](https://github.com/ttoss/ttoss/commit/7f8df3abf5a5047848969c416df3e31ba8339caf))
+
 ## [3.17.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.17.0...@docs/storybook@3.17.1) (2026-03-04)
 
 **Note:** Version bump only for package @docs/storybook
