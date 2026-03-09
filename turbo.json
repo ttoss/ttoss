@@ -5,7 +5,9 @@
     "CARLIN_*",
     "ENVIRONMENT",
     "NODE_ENV",
-    "TTOSS_MONOREPO"
+    "TTOSS_MONOREPO",
+    "GH_TOKEN",
+    "GITHUB_*"
   ],
   "tasks": {
     "build-config": {

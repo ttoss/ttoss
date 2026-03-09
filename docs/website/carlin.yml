@@ -1,10 +1,8 @@
-skipDeploy: true
+appendIndexHtml: true
 
 environments:
   Production:
     aliases:
       - ttoss.dev
-    appendIndexHtml: true
     cloudfront: true
-    skipDeploy: false
     stackName: TtossWebsite

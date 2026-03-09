@@ -261,6 +261,8 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 <InnerHTML html={cloudFormationOutputsComment} />
 
+After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`. Use [`carlin deploy report`](/docs/carlin/commands/deploy-report) to print them to stdout or publish them to a channel (e.g. a GitHub PR comment).
+
 ## API
 
 ### Options
