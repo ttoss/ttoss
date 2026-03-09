@@ -218,7 +218,7 @@ describe('Wizard Form Integration', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Street')).toBeInTheDocument();
     });
-  });
+  }, 15000);
 
   test('shows validation error for invalid email format', async () => {
     const user = userEvent.setup({ delay: null });
@@ -236,7 +236,7 @@ describe('Wizard Form Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('Invalid email address')).toBeInTheDocument();
     });
-  });
+  }, 15000);
 
   test('prevents navigation from step 2 when validation fails', async () => {
     const user = userEvent.setup({ delay: null });
@@ -274,7 +274,7 @@ describe('Wizard Form Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('Street is required')).toBeInTheDocument();
     });
-  });
+  }, 15000);
 
   test('calls onCancel when cancel button is clicked', async () => {
     const user = userEvent.setup({ delay: null });

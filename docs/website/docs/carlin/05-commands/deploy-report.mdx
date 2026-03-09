@@ -1,0 +1,81 @@
+---
+title: deploy report
+---
+
+Print or publish CloudFormation stack outputs after deployment.
+
+## Overview
+
+```bash
+carlin deploy report [--channel <channel>]
+```
+
+Without `--channel`, outputs are printed to stdout. With `--channel=github-pr`, a single consolidated comment is posted (or updated) on the open pull request with all deploy outputs found in the workspace.
+
+## Channels
+
+### stdout (default)
+
+Prints the outputs of the current package's CloudFormation stack:
+
+```bash
+carlin deploy report
+```
+
+### github-pr
+
+Scans all `.carlin/*.json` files across the workspace, builds a markdown table, and posts or updates a single PR comment:
+
+```bash
+carlin deploy report --channel=github-pr
+```
+
+Run this once after all packages have deployed — typically as the last step in your CI workflow:
+
+```bash
+# .cicd/commands/pr.sh
+pnpm turbo run deploy --filter=[main]
+pnpm carlin deploy report --channel=github-pr
+```
+
+**Required environment variables:**
+
+| Variable            | Description                                                             |
+| ------------------- | ----------------------------------------------------------------------- |
+| `GH_TOKEN`          | GitHub personal access token with `repo` scope                          |
+| `GITHUB_REPOSITORY` | Repository in `owner/repo` format (set automatically by GitHub Actions) |
+| `CARLIN_BRANCH`     | The PR branch name (set automatically in `pr.yml`)                      |
+
+The comment is identified by a hidden marker so it is updated in place on every push — the PR never accumulates duplicate comments.
+
+**Example PR comment:**
+
+| Package   | Stack         | Output Key      | Output Value                 |
+| --------- | ------------- | --------------- | ---------------------------- |
+| `@my/api` | `MyApi-PR-42` | `ApiUrl`        | https://api.example.com      |
+| `@my/app` | `MyApp-PR-42` | `Alias0URL`     | https://app.example.com      |
+| `@my/app` | `MyApp-PR-42` | `CloudFrontURL` | https://d1234.cloudfront.net |
+
+## GitHub Actions Setup
+
+Add `GH_TOKEN` and `GITHUB_REPOSITORY` to your PR workflow step:
+
+```yaml title=".github/workflows/pr.yml"
+- name: Run pr command
+  run: sh -e ./.cicd/commands/pr.sh
+  env:
+    CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
+    GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    GITHUB_REPOSITORY: ${{ github.repository }}
+```
+
+## Options
+
+### --channel
+
+Where to publish the report.
+
+| Value       | Description                                                |
+| ----------- | ---------------------------------------------------------- |
+| _(none)_    | Print to stdout                                            |
+| `github-pr` | Post/update a PR comment with all workspace deploy outputs |

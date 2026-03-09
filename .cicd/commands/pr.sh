@@ -30,3 +30,7 @@ pnpm run lint -- --no-stash --allow-empty
 # we need to run them separately. If we run them together and deploy is faster,
 # `deploy` will run even if `test` fails.
 pnpm turbo run build test deploy --filter=[main]
+
+# After all packages are deployed, post or update a single PR comment with
+# the consolidated deploy outputs from all .carlin/*.json files in the workspace.
+pnpm carlin deploy report --channel=github-pr

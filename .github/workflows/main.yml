@@ -35,6 +35,4 @@ jobs:
         run: sh -e ./.cicd/commands/main.sh
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

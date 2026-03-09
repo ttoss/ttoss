@@ -148,6 +148,32 @@ function createUser({ name, email, age, isActive }: CreateUserParams) {
 - Simple utility functions with 1-2 obvious parameters (e.g., `Math.max(a, b)`)
 - Callbacks with standard signatures (e.g., `.map((item, index) => ...)`)
 
+### Jest Mocking
+
+**MANDATORY**: When mocking modules in tests, use `jest.mocked()` for type-safe mocking.
+
+**Examples**:
+
+```typescript
+// ✅ CORRECT: Use jest.mocked for type-safe mocks
+jest.mock('some-module', () => ({
+  someFunction: jest.fn(),
+}));
+
+// In test
+jest.mocked(someFunction).mockReturnValue('mocked value');
+
+// ❌ INCORRECT: Avoid type assertions
+(someFunction as jest.Mock).mockReturnValue('mocked value');
+```
+
+**Benefits of `jest.mocked()`**:
+
+- Type-safe access to mock functions
+- Better IDE support and autocomplete
+- Prevents runtime errors from incorrect mock usage
+- Maintains type information for mocked modules
+
 ## Reporting Enhancement Opportunities
 
 When working on tasks, if you identify potential improvements that are outside the scope of your current task, create a GitHub issue to track them. This includes:
