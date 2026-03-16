@@ -1,4 +1,5 @@
-import { Box, BoxProps, Flex, FlexProps, Text } from '@ttoss/ui';
+import type { BoxProps, FlexProps } from '@ttoss/ui';
+import { Box, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import { FormErrorMessage } from './FormErrorMessage';

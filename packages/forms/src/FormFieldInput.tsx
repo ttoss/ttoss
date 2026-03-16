@@ -27,6 +27,7 @@ export const FormFieldInput = <
     id,
     leadingIcon,
     trailingIcon,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onBlur,
     onChange,
@@ -45,6 +46,7 @@ export const FormFieldInput = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (

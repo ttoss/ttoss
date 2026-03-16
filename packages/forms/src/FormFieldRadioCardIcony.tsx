@@ -1,6 +1,7 @@
-import { Box, Flex, Tag, Text, ThemeUIStyleObject } from '@ttoss/ui';
-import * as React from 'react';
-import { FieldPath, FieldValues } from 'react-hook-form';
+import type { ThemeUIStyleObject } from '@ttoss/ui';
+import { Box, Flex, Tag, Text } from '@ttoss/ui';
+import type * as React from 'react';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';
 
@@ -50,6 +51,7 @@ export const FormFieldRadioCardIcony = <
     rules,
     id,
     defaultValue,
+    unsavedChangesGuard,
     options,
     direction = 'row',
     width = 'full',
@@ -67,6 +69,7 @@ export const FormFieldRadioCardIcony = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field }) => {
         const isDisabled = disabled ?? field.disabled;
         const handleOptionClick = (optionValue: string | number) => {

@@ -28,6 +28,7 @@ export const FormFieldCheckbox = <
     css,
     rules,
     id,
+    unsavedChangesGuard,
     onBlur,
     onChange,
     ...checkboxProps
@@ -45,6 +46,7 @@ export const FormFieldCheckbox = <
       defaultValue={defaultValue as FieldPathValue<TFieldValues, TName>}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field, fieldState }) => {
         const { value, ...fieldWithoutValue } = field;
         return (

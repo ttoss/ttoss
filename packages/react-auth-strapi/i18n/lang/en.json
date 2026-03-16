@@ -241,20 +241,45 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
+  "NiwMqM": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "You have unsaved changes. Are you sure you want to discard them?",
+    "description": "Message for unsaved changes confirmation modal"
+  },
+  "ROsowq": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Discard Changes",
+    "description": "Button label to discard unsaved changes"
+  },
   "UibUNJ": {
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {expected}",
     "description": "Invalid Value"
+  },
+  "YrM3u5": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Unsaved Changes",
+    "description": "Title for unsaved changes confirmation modal"
   },
   "ZhaPt0": {
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
   },
+  "hJ7lLg": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Keep Editing",
+    "description": "Button label to continue editing"
+  },
   "i6IsKy": {
     "module": "@ttoss/forms",
     "defaultMessage": ".",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "pB62qw": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "You have unsaved changes. Are you sure you want to leave?",
+    "description": "Browser native dialog message for unsaved changes"
   },
   "yktL1M": {
     "module": "@ttoss/forms",

@@ -31,6 +31,7 @@ export const FormFieldPatternFormat = <
     defaultValue,
     leadingIcon,
     trailingIcon,
+    unsavedChangesGuard,
     auxiliaryCheckbox,
     onBlur,
     onValueChange,
@@ -49,6 +50,7 @@ export const FormFieldPatternFormat = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
         return (

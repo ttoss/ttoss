@@ -22,6 +22,7 @@ import {
   type AuxiliaryCheckboxProps,
 } from './AuxiliaryCheckbox';
 import { FormErrorMessage } from './FormErrorMessage';
+import { useUnsavedChangesGuardContext } from './UnsavedChangesGuardContext';
 
 type Rules<
   TFieldValues extends FieldValues = FieldValues,
@@ -51,6 +52,11 @@ export type FormFieldProps<
     TFieldValues,
     FieldPath<TFieldValues>
   >;
+  /**
+   * When true, this field is tracked by useUnsavedChanges for navigation blocking.
+   * @default false
+   */
+  unsavedChangesGuard?: boolean;
 } & SxProp;
 
 type FormFieldCompleteProps<
@@ -78,12 +84,27 @@ export const FormField = <
   warning,
   rules,
   auxiliaryCheckbox,
+  unsavedChangesGuard = false,
 }: FormFieldCompleteProps<TFieldValues, TName>) => {
+  const { registerField, unregisterField } = useUnsavedChangesGuardContext();
+
   const controllerReturn = useController<TFieldValues, TName>({
     name,
     defaultValue,
     rules,
   });
+
+  React.useEffect(() => {
+    if (!unsavedChangesGuard) {
+      return;
+    }
+
+    registerField({ name });
+
+    return () => {
+      unregisterField({ name });
+    };
+  }, [unsavedChangesGuard, registerField, unregisterField, name]);
 
   const {
     formState: { errors },

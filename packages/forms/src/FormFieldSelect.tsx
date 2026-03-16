@@ -26,6 +26,7 @@ export const FormFieldSelect = <
     rules,
     id,
     defaultValue,
+    unsavedChangesGuard,
     onBlur,
     onChange,
     ...selectProps
@@ -43,6 +44,7 @@ export const FormFieldSelect = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field, fieldState }) => {
         return (
           <Select

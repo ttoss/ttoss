@@ -7,17 +7,37 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
+  "NiwMqM": {
+    "defaultMessage": "You have unsaved changes. Are you sure you want to discard them?",
+    "description": "Message for unsaved changes confirmation modal"
+  },
+  "ROsowq": {
+    "defaultMessage": "Discard Changes",
+    "description": "Button label to discard unsaved changes"
+  },
   "UibUNJ": {
     "defaultMessage": "Invalid Value for Field of type {expected}",
     "description": "Invalid Value"
+  },
+  "YrM3u5": {
+    "defaultMessage": "Unsaved Changes",
+    "description": "Title for unsaved changes confirmation modal"
   },
   "ZhaPt0": {
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
   },
+  "hJ7lLg": {
+    "defaultMessage": "Keep Editing",
+    "description": "Button label to continue editing"
+  },
   "i6IsKy": {
     "defaultMessage": ".",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "pB62qw": {
+    "defaultMessage": "You have unsaved changes. Are you sure you want to leave?",
+    "description": "Browser native dialog message for unsaved changes"
   },
   "yktL1M": {
     "defaultMessage": ",",

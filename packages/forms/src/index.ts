@@ -20,6 +20,17 @@ export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
+export {
+  UnsavedChangesModal,
+  type UnsavedChangesModalProps,
+} from './UnsavedChangesModal';
+export {
+  type CreateUnsavedNavigationHandlerOptions,
+  type UnsavedNavigationHandlerOptions,
+  useUnsavedChanges,
+  type UseUnsavedChangesOptions,
+  type UseUnsavedChangesReturn,
+} from './useUnsavedChanges';
 export { yup } from './yup/yup';
 export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';

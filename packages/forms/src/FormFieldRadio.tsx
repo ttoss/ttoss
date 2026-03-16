@@ -34,6 +34,7 @@ export const FormFieldRadio = <
     rules,
     id,
     defaultValue,
+    unsavedChangesGuard,
     onBlur,
     onChange,
     ...radioProps
@@ -51,6 +52,7 @@ export const FormFieldRadio = <
       defaultValue={defaultValue}
       rules={rules}
       disabled={disabled}
+      unsavedChangesGuard={unsavedChangesGuard}
       render={({ field }) => {
         return (
           <Flex
