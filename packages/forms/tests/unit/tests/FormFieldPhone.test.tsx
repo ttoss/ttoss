@@ -26,7 +26,7 @@ test('call onSubmit with correct data', async () => {
   await user.click(screen.getByText('Submit'));
 
   expect(onSubmit).toHaveBeenCalledWith({
-    input1: '11111111111',
+    input1: '+5511111111111',
   });
 });
 

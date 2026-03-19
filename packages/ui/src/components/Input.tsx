@@ -1,5 +1,6 @@
 import { type IconType } from '@ttoss/react-icons';
-import { Input as InputUI, InputProps as InputPropsUI } from 'theme-ui';
+import type { InputProps as InputPropsUI } from 'theme-ui';
+import { Input as InputUI } from 'theme-ui';
 
 import { Flex, TooltipIcon } from '..';
 import { type TooltipIconProps } from './TooltipIcon';

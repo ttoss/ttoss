@@ -3,7 +3,8 @@
  * More info about React Select: https://react-select.com/home
  * ttoss Figma: https://www.figma.com/file/VrB76VkH4hKCDUe9iYhpYu/_Component-%2F-Forms-%2F-Select?type=design&mode=design&t=ZBIeOpqcvQn3yq2t-0
  */
-import { Icon, IconType } from '@ttoss/react-icons';
+import type { IconType } from '@ttoss/react-icons';
+import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 import ReactSelect, {
   components,
@@ -86,7 +87,6 @@ const Control = (props: ControlProps<SelectOption, IsMulti>) => {
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DropdownIndicator = (
   props: DropdownIndicatorProps<SelectOption, IsMulti>
 ) => {
@@ -161,7 +161,6 @@ const SelectContainer = ({
 
 const ValueContainer = ({
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
 }: ValueContainerProps<SelectOption, IsMulti>) => {
   const { leadingIcon, trailingIcon, isSearchable } =

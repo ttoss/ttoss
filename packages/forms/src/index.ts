@@ -11,6 +11,8 @@ export { FormFieldInput } from './FormFieldInput';
 export { FormFieldNumericFormat } from './FormFieldNumericFormat';
 export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldPatternFormat } from './FormFieldPatternFormat';
+export type { CountryCodeOption, FormFieldPhoneProps } from './FormFieldPhone';
+export { FormFieldPhone } from './FormFieldPhone';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldRadioCard } from './FormFieldRadioCard';
 export type { FormRadioOption } from './FormFieldRadioCardIcony';
@@ -20,6 +22,10 @@ export { FormFieldSelect } from './FormFieldSelect';
 export { FormFieldSwitch } from './FormFieldSwitch';
 export { FormFieldTextarea } from './FormFieldTextarea';
 export { FormGroup, useFormGroup } from './FormGroup';
+export {
+  COMMON_PHONE_COUNTRY_CODES,
+  MANUAL_PHONE_COUNTRY_CODE,
+} from './phoneCountryCodes';
 export { yup } from './yup/yup';
 export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';
