@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.19.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.18.2...@docs/storybook@3.19.0) (2026-03-19)
+
+### Features
+
+- **forms:** generic FormFieldPhone with configurable and editable country code ([#892](https://github.com/ttoss/ttoss/issues/892)) ([0ef9c71](https://github.com/ttoss/ttoss/commit/0ef9c71efbf902ce94312068c5995dcfdb6df4e4))
+
 ## [3.18.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.18.1...@docs/storybook@3.18.2) (2026-03-19)
 
 ### Bug Fixes
