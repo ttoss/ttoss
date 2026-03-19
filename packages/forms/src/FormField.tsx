@@ -198,7 +198,6 @@ export const FormField = <
         flexDirection: 'column',
         width: '100%',
         gap: '1',
-        marginBottom: '6',
         ...sx,
       }}
       css={css}

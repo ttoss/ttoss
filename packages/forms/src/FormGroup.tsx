@@ -59,7 +59,7 @@ const FormGroupWrapper = ({
 
   const childrenContainerSx: FlexProps['sx'] = {
     flexDirection: direction || 'column',
-    gap: '1',
+    gap: '4',
     width: '100%',
   };
 
@@ -69,7 +69,6 @@ const FormGroupWrapper = ({
       {...boxProps}
       sx={{
         marginTop: level === 0 ? 'none' : '4',
-        marginBottom: '4',
         ...boxProps.sx,
       }}
     >
