@@ -7,7 +7,7 @@ import { PatternFormat } from 'react-number-format';
 import { FormField, type FormFieldProps } from './FormField';
 
 export type CountryCodeOption = {
-  /** Label displayed in the dropdown (e.g. '🇺🇸 +1'). */
+  /** Label displayed in the dropdown (e.g. 'US +1'). */
   label: string;
   /** The calling-code value (e.g. '+1'). */
   value: string;
@@ -20,20 +20,33 @@ export type CountryCodeOption = {
 };
 
 /**
- * Internal wrapper that renders the country-code `<select>` dropdown next to
- * the phone `<input>`.
+ * `Box` is typed as a `div` wrapper. To use it as a `<select>` element with
+ * full prop type-safety (including native `onChange`, `value`, `disabled`),
+ * we cast it to a component that accepts native select HTML attributes plus
+ * the Theme UI `sx` prop.
+ */
+const BoxSelect = Box as React.ComponentType<
+  React.SelectHTMLAttributes<HTMLSelectElement> & {
+    sx?: React.ComponentPropsWithoutRef<typeof Box>['sx'];
+    as?: string;
+  }
+>;
+
+/**
+ * Internal wrapper that renders the country-code select dropdown next to
+ * the phone input.
  *
  * Defined at module level so React keeps a stable component identity across
  * re-renders (avoids unmount/remount that would cause input focus loss).
  *
- * `FormField` injects the generated `id` via `React.cloneElement`, which this
- * component receives and forwards to the inner `PatternFormat` — ensuring the
- * `<label htmlFor={id}>` association remains valid for accessibility.
+ * FormField injects the generated id via React.cloneElement, which this
+ * component receives and forwards to the inner PatternFormat, ensuring the
+ * label htmlFor association remains valid for accessibility.
  */
 type PhoneDropdownWrapperProps = {
   /**
-   * The HTML `id` to forward to the inner `<input>` element, injected by
-   * `FormField` via `React.cloneElement`. This keeps the `<label htmlFor>`
+   * The HTML id to forward to the inner input element, injected by
+   * FormField via React.cloneElement. This keeps the label htmlFor
    * association valid for accessibility.
    */
   id?: string;
@@ -46,9 +59,9 @@ type PhoneDropdownWrapperProps = {
   /** Called with the new calling-code value when the user changes the selection. */
   onCountryCodeChange?: (code: string) => void;
   /**
-   * The `<PatternFormat>` React element to render as the phone input. The
-   * wrapper clones this element to inject the `id` prop, so it must not
-   * already have an explicit `id` set.
+   * The PatternFormat React element to render as the phone input. The
+   * wrapper clones this element to inject the id prop, so it must not
+   * already have an explicit id set.
    */
   patternNode: React.ReactElement;
 };
@@ -63,11 +76,11 @@ const PhoneDropdownWrapper = ({
 }: PhoneDropdownWrapperProps) => {
   return (
     <Flex sx={{ gap: '2', alignItems: 'stretch' }}>
-      <Box
+      <BoxSelect
         as="select"
         value={countryCode}
         disabled={isDisabled}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange={(e) => {
           onCountryCodeChange?.(e.target.value);
         }}
         sx={{
@@ -94,8 +107,13 @@ const PhoneDropdownWrapper = ({
             </option>
           );
         })}
+      </BoxSelect>
+      <Box sx={{ flex: 1 }}>
+        {React.cloneElement(
+          patternNode as React.ReactElement<{ id?: string }>,
+          { id }
+        )}
       </Box>
-      <Box sx={{ flex: 1 }}>{React.cloneElement(patternNode, { id })}</Box>
     </Flex>
   );
 };
@@ -116,23 +134,23 @@ export type FormFieldPhoneProps<
      * that receives the current raw value and returns the format string,
      * which is useful for dynamic formats (e.g., different lengths).
      *
-     * When the selected entry in `countryCodeOptions` includes its own
-     * `format`, that value takes precedence over this prop.
+     * When the selected entry in countryCodeOptions includes its own
+     * format, that value takes precedence over this prop.
      *
-     * Defaults to `'(###) ###-####'` when neither this prop nor the selected
+     * Defaults to '(###) ###-####' when neither this prop nor the selected
      * country option supplies a format.
      */
     format?: string | ((value: string) => string);
     /**
      * When provided, renders a select dropdown before the phone input so the
      * user can pick the country calling code. The currently selected code is
-     * controlled via the `countryCode` prop.
+     * controlled via the countryCode prop.
      */
     countryCodeOptions?: CountryCodeOption[];
     /**
      * Called with the newly selected country code value when the user changes
      * the country code via the dropdown. Only relevant when
-     * `countryCodeOptions` is provided.
+     * countryCodeOptions is provided.
      */
     onCountryCodeChange?: (countryCode: string) => void;
   };
@@ -140,17 +158,17 @@ export type FormFieldPhoneProps<
 /**
  * Generic phone number form field that supports an optional country code prefix.
  *
- * The `format` prop defines the pattern for the local phone number (using `#`
- * as digit placeholders). When a `countryCode` is provided it is prepended to
+ * The format prop defines the pattern for the local phone number (using #
+ * as digit placeholders). When a countryCode is provided it is prepended to
  * the format and rendered as a read-only literal inside the input.
  *
- * When `countryCodeOptions` is provided, a select dropdown is rendered before
+ * When countryCodeOptions is provided, a select dropdown is rendered before
  * the phone input, allowing the user to switch the country calling code. The
- * currently selected code is controlled via `countryCode`, and changes are
- * reported via `onCountryCodeChange`.
+ * currently selected code is controlled via countryCode, and changes are
+ * reported via onCountryCodeChange.
  *
  * The value stored in the form contains only the raw digits of the local
- * number (the country code is stripped by `react-number-format`).
+ * number (the country code is stripped by react-number-format).
  *
  * @example
  * ```tsx
@@ -250,9 +268,9 @@ export const FormFieldPhone = <
         const phoneFormat = getFormat(field.value ?? '');
 
         /**
-         * The `id` prop is intentionally omitted here. It will be injected by
-         * FormField's `cloneElement` call (no-dropdown path) or forwarded by
-         * `PhoneDropdownWrapper` (dropdown path) to ensure label association.
+         * The id prop is intentionally omitted here. It will be injected by
+         * FormField's cloneElement call (no-dropdown path) or forwarded by
+         * PhoneDropdownWrapper (dropdown path) to ensure label association.
          */
         const patternNode = (
           <PatternFormat
@@ -275,15 +293,15 @@ export const FormFieldPhone = <
         );
 
         if (!countryCodeOptions) {
-          // FormField injects `id` via cloneElement directly onto the input.
+          // FormField injects id via cloneElement directly onto the input.
           return patternNode;
         }
 
         /**
-         * FormField injects `id` via cloneElement onto `PhoneDropdownWrapper`.
-         * `PhoneDropdownWrapper` (module-level, stable identity) receives `id`
+         * FormField injects id via cloneElement onto PhoneDropdownWrapper.
+         * PhoneDropdownWrapper (module-level, stable identity) receives id
          * and forwards it to the inner PatternFormat so that
-         * `<label htmlFor={id}>` correctly points to the `<input>`.
+         * label htmlFor correctly points to the input.
          */
         return (
           <PhoneDropdownWrapper
