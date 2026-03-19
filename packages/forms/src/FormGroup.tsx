@@ -15,6 +15,11 @@ export const useFormGroup = () => {
 
   return {
     level: parentLevel,
+    /**
+     * @deprecated `levelsLength` has been removed from `FormGroup` internals.
+     * This field always returns `undefined`. Use `level` to determine nesting depth.
+     */
+    levelsLength: undefined as number | undefined,
   };
 };
 
@@ -60,7 +65,7 @@ const FormGroupWrapper = ({
 
   return (
     <Box
-      aria-level={level}
+      data-level={level}
       {...boxProps}
       sx={{
         marginTop: level === 0 ? 'none' : '4',
@@ -94,8 +99,8 @@ const FormGroupWrapper = ({
 /**
  * FormGroup is a layout container that organises form fields into labelled,
  * optionally nested sections. Each nested `FormGroup` increments an internal
- * `level` counter exposed via `useFormGroup`, which drives `aria-level` and
- * top-margin spacing so deeper groups are visually indented.
+ * `level` counter exposed via `useFormGroup`, which drives a `data-level`
+ * attribute and top-margin spacing so deeper groups are visually indented.
  *
  * @example
  * ```tsx

@@ -67,11 +67,11 @@ test('render FormGroups with their level groups correctly', () => {
   const NUMBER_OF_FORM_GROUPS_LEVEL_3 = 1;
   const NUMBER_OF_FORM_GROUPS_LEVEL_4 = 3;
 
-  const formGroupsLevel0 = container.querySelectorAll('div[aria-level="0"]');
-  const formGroupsLevel1 = container.querySelectorAll('div[aria-level="1"]');
-  const formGroupsLevel2 = container.querySelectorAll('div[aria-level="2"]');
-  const formGroupsLevel3 = container.querySelectorAll('div[aria-level="3"]');
-  const formGroupsLevel4 = container.querySelectorAll('div[aria-level="4"]');
+  const formGroupsLevel0 = container.querySelectorAll('div[data-level="0"]');
+  const formGroupsLevel1 = container.querySelectorAll('div[data-level="1"]');
+  const formGroupsLevel2 = container.querySelectorAll('div[data-level="2"]');
+  const formGroupsLevel3 = container.querySelectorAll('div[data-level="3"]');
+  const formGroupsLevel4 = container.querySelectorAll('div[data-level="4"]');
 
   expect(formGroupsLevel0).toHaveLength(NUMBER_OF_FORM_GROUPS_LEVEL_0);
   expect(formGroupsLevel1).toHaveLength(NUMBER_OF_FORM_GROUPS_LEVEL_1);
