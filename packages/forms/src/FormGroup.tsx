@@ -1,45 +1,8 @@
-import { Box, BoxProps, Flex, FlexProps, Text } from '@ttoss/ui';
+import type { BoxProps, FlexProps } from '@ttoss/ui';
+import { Box, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import { FormErrorMessage } from './FormErrorMessage';
-
-type FormGroupLevelsManagerContextType = {
-  levelsLength: number;
-  registerChild: (level: number) => void;
-};
-
-const FormGroupLevelsManagerContext =
-  React.createContext<FormGroupLevelsManagerContextType>({
-    levelsLength: 1,
-    registerChild: () => {
-      return null;
-    },
-  });
-
-const FormGroupLevelsManager = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const [levelsLength, setLevelsLength] = React.useState(0);
-
-  const registerChild = React.useCallback(
-    (level: number) => {
-      if (level + 1 > levelsLength) {
-        setLevelsLength(level + 1);
-      }
-    },
-    [levelsLength]
-  );
-
-  return (
-    <FormGroupLevelsManagerContext.Provider
-      value={{ levelsLength, registerChild }}
-    >
-      {children}
-    </FormGroupLevelsManagerContext.Provider>
-  );
-};
 
 type FormGroupContextType = {
   parentLevel?: number;
@@ -49,40 +12,45 @@ const FormGroupContext = React.createContext<FormGroupContextType>({});
 
 export const useFormGroup = () => {
   const { parentLevel } = React.useContext(FormGroupContext);
-  const { levelsLength } = React.useContext(FormGroupLevelsManagerContext);
 
   return {
     level: parentLevel,
-    levelsLength,
   };
 };
 
-type FormGroupProps = {
+/**
+ * Props for the FormGroup component.
+ */
+export type FormGroupProps = {
+  /**
+   * The field name used to display a validation error message below the group.
+   * Useful when the group maps to an array or object field in the form schema.
+   */
   name?: string;
+  /**
+   * Optional heading displayed above the group's children.
+   */
   title?: string;
+  /**
+   * Optional description displayed below the title.
+   */
+  description?: string;
+  /**
+   * Layout direction for the group's children.
+   * @default 'column'
+   */
   direction?: 'column' | 'row';
 } & BoxProps;
 
 const FormGroupWrapper = ({
   title,
+  description,
   direction,
   children,
   name,
   ...boxProps
 }: FormGroupProps) => {
   const { level } = useFormGroup();
-
-  const { registerChild } = React.useContext(FormGroupLevelsManagerContext);
-
-  React.useEffect(() => {
-    /**
-     * We can't use if(level) because level can be 0 and we want to register
-     * it anyway.
-     */
-    if (typeof level === 'number') {
-      registerChild(level);
-    }
-  }, [level, registerChild]);
 
   const childrenContainerSx: FlexProps['sx'] = {
     flexDirection: direction || 'column',
@@ -100,16 +68,21 @@ const FormGroupWrapper = ({
         ...boxProps.sx,
       }}
     >
-      {title && (
+      {(title || description) && (
         <Box sx={{ marginBottom: '2' }}>
-          <Text
-            sx={{
-              fontSize: '2xl',
-              fontWeight: 'bold',
-            }}
-          >
-            {title}
-          </Text>
+          {title && (
+            <Text
+              sx={{
+                fontSize: '2xl',
+                fontWeight: 'bold',
+              }}
+            >
+              {title}
+            </Text>
+          )}
+          {description && (
+            <Text sx={{ color: 'text.secondary' }}>{description}</Text>
+          )}
         </Box>
       )}
       <Flex sx={childrenContainerSx}>{children}</Flex>
@@ -118,6 +91,35 @@ const FormGroupWrapper = ({
   );
 };
 
+/**
+ * FormGroup is a layout container that organises form fields into labelled,
+ * optionally nested sections. Each nested `FormGroup` increments an internal
+ * `level` counter exposed via `useFormGroup`, which drives `aria-level` and
+ * top-margin spacing so deeper groups are visually indented.
+ *
+ * @example
+ * ```tsx
+ * <FormGroup title="Personal details">
+ *   <FormFieldInput name="firstName" label="First name" />
+ *   <FormFieldInput name="lastName" label="Last name" />
+ *
+ *   <FormGroup title="Address" direction="row">
+ *     <FormFieldInput name="city" label="City" />
+ *     <FormFieldInput name="zip" label="ZIP" />
+ *   </FormGroup>
+ * </FormGroup>
+ * ```
+ *
+ * @example
+ * // Show a group-level validation error (e.g. for an array field)
+ * ```tsx
+ * <FormGroup name="items" title="Items">
+ *   {fields.map((field, i) => (
+ *     <FormFieldInput key={field.id} name={`items[${i}].value`} label="Value" />
+ *   ))}
+ * </FormGroup>
+ * ```
+ */
 export const FormGroup = (props: FormGroupProps) => {
   const { level } = useFormGroup();
 
@@ -125,13 +127,7 @@ export const FormGroup = (props: FormGroupProps) => {
 
   return (
     <FormGroupContext.Provider value={{ parentLevel: currentLevel }}>
-      {currentLevel === 0 ? (
-        <FormGroupLevelsManager>
-          <FormGroupWrapper {...props} />
-        </FormGroupLevelsManager>
-      ) : (
-        <FormGroupWrapper {...props} />
-      )}
+      <FormGroupWrapper {...props} />
     </FormGroupContext.Provider>
   );
 };

@@ -5,7 +5,6 @@ import {
   FormFieldInput,
   FormGroup,
   useForm,
-  useFormGroup,
   yup,
   yupResolver,
 } from 'src/index';
@@ -81,131 +80,6 @@ test('render FormGroups with their level groups correctly', () => {
   expect(formGroupsLevel4).toHaveLength(NUMBER_OF_FORM_GROUPS_LEVEL_4);
 });
 
-const FormGroupItem = ({ name }: { name: string }) => {
-  const { level, levelsLength } = useFormGroup();
-
-  const text = [name, 'level', level, 'levelsLength', levelsLength].join('-');
-
-  return <Text>{text}</Text>;
-};
-
-test('render form groups with their correct level and levelsLength = 1', () => {
-  const Form = () => {
-    return (
-      <FormGroup>
-        <FormGroupItem name="group1" />
-        <FormGroupItem name="group2" />
-        <FormGroupItem name="group3" />
-      </FormGroup>
-    );
-  };
-
-  render(<Form />);
-
-  expect(screen.getByText('group1-level-0-levelsLength-1')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-0-levelsLength-1')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-0-levelsLength-1')).toBeInTheDocument();
-});
-
-test('render form groups with their correct level and levelsLength = 2', () => {
-  const Form = () => {
-    return (
-      <FormGroup>
-        <FormGroupItem name="group1" />
-        <FormGroup>
-          <FormGroupItem name="group2" />
-        </FormGroup>
-        <FormGroup>
-          <FormGroupItem name="group3" />
-        </FormGroup>
-        <FormGroup>
-          <FormGroupItem name="group4" />
-        </FormGroup>
-      </FormGroup>
-    );
-  };
-
-  render(<Form />);
-
-  expect(screen.getByText('group1-level-0-levelsLength-2')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-1-levelsLength-2')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-1-levelsLength-2')).toBeInTheDocument();
-  expect(screen.getByText('group4-level-1-levelsLength-2')).toBeInTheDocument();
-});
-
-test('render form groups with their correct level and levelsLength = 3', () => {
-  const Form = () => {
-    return (
-      <FormGroup>
-        <FormGroupItem name="group1" />
-        <FormGroup>
-          <FormGroupItem name="group2" />
-        </FormGroup>
-        <FormGroup>
-          <FormGroupItem name="group3" />
-        </FormGroup>
-        <FormGroup>
-          <FormGroupItem name="group4" />
-          <FormGroup>
-            <FormGroupItem name="group5" />
-            <FormGroupItem name="group6" />
-          </FormGroup>
-        </FormGroup>
-      </FormGroup>
-    );
-  };
-
-  render(<Form />);
-
-  expect(screen.getByText('group1-level-0-levelsLength-3')).toBeInTheDocument();
-  expect(screen.getByText('group2-level-1-levelsLength-3')).toBeInTheDocument();
-  expect(screen.getByText('group3-level-1-levelsLength-3')).toBeInTheDocument();
-  expect(screen.getByText('group4-level-1-levelsLength-3')).toBeInTheDocument();
-  expect(screen.getByText('group5-level-2-levelsLength-3')).toBeInTheDocument();
-  expect(screen.getByText('group6-level-2-levelsLength-3')).toBeInTheDocument();
-});
-
-test.each(
-  Array.from({ length: 10 }, (_, i) => {
-    return i + 1;
-  })
-)(
-  'render form groups with their correct level and levelsLength n = %i',
-  (levelsLength) => {
-    /**
-     * This function will create a form group that nest levelsLength of FormGroup.
-     * For example, if levelsLength = 3, the form group will be:
-     * <FormGroup>
-     *  <FormGroup>
-     *   <FormGroup>
-     *    <FormGroupItem name="singleGroup" />
-     *   </FormGroup>
-     *  </FormGroup>
-     * </FormGroup>
-     */
-    const FormGroups = () => {
-      return Array.from({ length: levelsLength }, (_, i) => {
-        return i;
-      }).reduce(
-        (acc) => {
-          return <FormGroup>{acc}</FormGroup>;
-        },
-        <>
-          <FormGroupItem name="singleGroup" />
-        </>
-      );
-    };
-
-    render(<FormGroups />);
-
-    expect(
-      screen.getByText(
-        `singleGroup-level-${levelsLength - 1}-levelsLength-${levelsLength}`
-      )
-    ).toBeInTheDocument();
-  }
-);
-
 test('should render group title', () => {
   render(
     <FormGroup title="title">
@@ -214,6 +88,17 @@ test('should render group title', () => {
   );
 
   expect(screen.getByText('title')).toBeInTheDocument();
+});
+
+test('should render group description', () => {
+  render(
+    <FormGroup title="title" description="description text">
+      <Text>some text</Text>
+    </FormGroup>
+  );
+
+  expect(screen.getByText('title')).toBeInTheDocument();
+  expect(screen.getByText('description text')).toBeInTheDocument();
 });
 
 test('should render group error message', async () => {

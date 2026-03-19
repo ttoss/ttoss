@@ -174,6 +174,38 @@ jest.mocked(someFunction).mockReturnValue('mocked value');
 - Prevents runtime errors from incorrect mock usage
 - Maintains type information for mocked modules
 
+## JSDoc on React Components
+
+**MANDATORY**: All exported React components must have a JSDoc comment. Storybook's `autodocs` feature reads JSDoc to generate component documentation automatically — without it, stories have no description.
+
+**Rules:**
+
+- Add a JSDoc block above every exported component describing what it does.
+- Document each prop with `@param` on the props type/interface, or use `/** ... */` inline on individual interface properties.
+- Keep descriptions concise and focused on behaviour, not implementation.
+
+**Examples:**
+
+```typescript
+// ✅ Component-level JSDoc
+/**
+ * Displays a pricing plan card with title, subtitle, price, and a CTA button.
+ */
+export const PlanCard = ({ title, price, onSubscribe }: PlanCardProps) => { ... };
+
+// ✅ Props documented on the interface
+interface PlanCardProps {
+  /** The plan name shown as the card heading. */
+  title: string;
+  /** Monthly price in cents. */
+  price: number;
+  /** Called when the user clicks the subscribe button. */
+  onSubscribe: () => void;
+}
+```
+
+**When to skip:** Internal helper components (not exported from the package's public API) do not need JSDoc.
+
 ## Reporting Enhancement Opportunities
 
 When working on tasks, if you identify potential improvements that are outside the scope of your current task, create a GitHub issue to track them. This includes:
