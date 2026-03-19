@@ -43,16 +43,20 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
-    - name: Install Playwright browsers (for Storybook llms.txt generation)
+
+    - name: Cache Playwright browsers
+      uses: actions/cache@v4
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+    - name: Install Playwright browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       shell: bash
-      run: |
-        if pnpm list @fluentui/storybook-llms-extractor --depth -1 > /dev/null 2>&1; then
-          echo "Installing Playwright Chromium for llms.txt generation..."
-          if pnpm exec playwright --version > /dev/null 2>&1; then
-            pnpm exec playwright install --with-deps chromium
-          else
-            echo "Playwright CLI not found in dependencies, skipping Playwright installation"
-          fi
-        else
-          echo "Storybook llms extractor not found, skipping Playwright installation"
-        fi
+      run: pnpm exec playwright install --with-deps chromium
+
+    - name: Install Playwright OS dependencies
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: pnpm exec playwright install-deps chromium
