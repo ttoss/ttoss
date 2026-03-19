@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.3.0 (2026-03-19)
+
+### Features
+
+- carlin deploy report ([#888](https://github.com/ttoss/ttoss/issues/888)) ([7f8df3a](https://github.com/ttoss/ttoss/commit/7f8df3abf5a5047848969c416df3e31ba8339caf))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.2.0...@ttoss/react-wizard@0.2.1) (2026-02-23)
 
 ### Bug Fixes
