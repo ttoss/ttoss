@@ -1,7 +1,15 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
+import * as React from 'react';
 
-import { Form, FormFieldPhone, useForm, z, zodResolver } from '../../../src';
+import {
+  type CountryCodeOption,
+  Form,
+  FormFieldPhone,
+  useForm,
+  z,
+  zodResolver,
+} from '../../../src';
 
 test('call onSubmit with correct data using a static format and country code', async () => {
   const user = userEvent.setup({ delay: null });
@@ -126,4 +134,43 @@ test('should display error messages', async () => {
   render(<RenderForm />);
   await user.click(screen.getByText('Submit'));
   expect(await screen.findByText('Field is required')).toBeInTheDocument();
+});
+
+test('calls onCountryCodeChange when the user selects a different country code', async () => {
+  const user = userEvent.setup({ delay: null });
+
+  const onCountryCodeChange = jest.fn();
+
+  const countryCodeOptions: CountryCodeOption[] = [
+    { label: '🇺🇸 +1', value: '+1' },
+    { label: '🇧🇷 +55', value: '+55' },
+  ];
+
+  const RenderForm = () => {
+    const [countryCode, setCountryCode] = React.useState('+1');
+    const formMethods = useForm();
+
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldPhone
+          name="input1"
+          label="input 1"
+          countryCode={countryCode}
+          format="(###) ###-####"
+          countryCodeOptions={countryCodeOptions}
+          onCountryCodeChange={(code) => {
+            setCountryCode(code);
+            onCountryCodeChange(code);
+          }}
+        />
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const select = screen.getByRole('combobox');
+  await user.selectOptions(select, '+55');
+
+  expect(onCountryCodeChange).toHaveBeenCalledWith('+55');
 });

@@ -1,5 +1,12 @@
 import type { Meta, Story } from '@storybook/react-webpack5';
-import { Form, FormFieldPhone, useForm, z, zodResolver } from '@ttoss/forms';
+import {
+  type CountryCodeOption,
+  Form,
+  FormFieldPhone,
+  useForm,
+  z,
+  zodResolver,
+} from '@ttoss/forms';
 import { FormFieldPhone as BrazilFormFieldPhone } from '@ttoss/forms/brazil';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
@@ -130,3 +137,43 @@ const NoCountryCodeTemplate: Story = () => {
 
 export const NoCountryCode = NoCountryCodeTemplate.bind({});
 NoCountryCode.storyName = 'No Country Code';
+
+const COUNTRY_CODE_OPTIONS: CountryCodeOption[] = [
+  { label: '🇺🇸 +1', value: '+1' },
+  { label: '🇬🇧 +44', value: '+44' },
+  { label: '🇧🇷 +55', value: '+55' },
+  { label: '🇩🇪 +49', value: '+49' },
+];
+
+/**
+ * Selectable country code — the user can change the calling code via a
+ * dropdown rendered alongside the phone input.
+ */
+const EditableCountryCodeTemplate: Story = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  });
+
+  const [countryCode, setCountryCode] = React.useState('+1');
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        countryCode={countryCode}
+        onCountryCodeChange={setCountryCode}
+        countryCodeOptions={COUNTRY_CODE_OPTIONS}
+        format="(###) ###-####"
+        placeholder="(555) 555-5555"
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const EditableCountryCode = EditableCountryCodeTemplate.bind({});
+EditableCountryCode.storyName = 'Editable Country Code';

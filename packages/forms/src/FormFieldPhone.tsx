@@ -1,9 +1,17 @@
-import { Input } from '@ttoss/ui';
+import { Box, Flex, Input } from '@ttoss/ui';
+import type * as React from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import type { PatternFormatProps } from 'react-number-format';
 import { PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from './FormField';
+
+export type CountryCodeOption = {
+  /** Label displayed in the dropdown (e.g. '🇺🇸 +1'). */
+  label: string;
+  /** The calling-code value (e.g. '+1'). */
+  value: string;
+};
 
 export type FormFieldPhoneProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -22,6 +30,18 @@ export type FormFieldPhoneProps<
      * which is useful for dynamic formats (e.g., different lengths).
      */
     format: string | ((value: string) => string);
+    /**
+     * When provided, renders a select dropdown before the phone input so the
+     * user can pick the country calling code. The currently selected code is
+     * controlled via the `countryCode` prop.
+     */
+    countryCodeOptions?: CountryCodeOption[];
+    /**
+     * Called with the newly selected country code value when the user changes
+     * the country code via the dropdown. Only relevant when
+     * `countryCodeOptions` is provided.
+     */
+    onCountryCodeChange?: (countryCode: string) => void;
   };
 
 /**
@@ -31,18 +51,40 @@ export type FormFieldPhoneProps<
  * as digit placeholders). When a `countryCode` is provided it is prepended to
  * the format and rendered as a read-only literal inside the input.
  *
+ * When `countryCodeOptions` is provided, a select dropdown is rendered before
+ * the phone input, allowing the user to switch the country calling code. The
+ * currently selected code is controlled via `countryCode`, and changes are
+ * reported via `onCountryCodeChange`.
+ *
  * The value stored in the form contains only the raw digits of the local
  * number (the country code is stripped by `react-number-format`).
  *
  * @example
  * ```tsx
- * // US phone number
+ * // US phone number (static country code)
  * <FormFieldPhone
  *   name="phone"
  *   label="Phone"
  *   countryCode="+1"
  *   format="(###) ###-####"
  *   placeholder="(555) 555-5555"
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Selectable country code
+ * const [countryCode, setCountryCode] = React.useState('+1');
+ * <FormFieldPhone
+ *   name="phone"
+ *   label="Phone"
+ *   countryCode={countryCode}
+ *   onCountryCodeChange={setCountryCode}
+ *   format="(###) ###-####"
+ *   countryCodeOptions={[
+ *     { label: '🇺🇸 +1', value: '+1' },
+ *     { label: '🇧🇷 +55', value: '+55' },
+ *   ]}
  * />
  * ```
  *
@@ -66,6 +108,8 @@ export const FormFieldPhone = <
   disabled,
   countryCode,
   format,
+  countryCodeOptions,
+  onCountryCodeChange,
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
   const {
@@ -105,7 +149,7 @@ export const FormFieldPhone = <
       render={({ field, fieldState }) => {
         const phoneFormat = getFormat(field.value ?? '');
 
-        return (
+        const patternInput = (
           <PatternFormat
             {...patternFormatProps}
             name={field.name}
@@ -123,6 +167,48 @@ export const FormFieldPhone = <
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
+        );
+
+        if (!countryCodeOptions) {
+          return patternInput;
+        }
+
+        return (
+          <Flex sx={{ gap: '2', alignItems: 'stretch' }}>
+            <Box
+              as="select"
+              value={countryCode}
+              disabled={disabled ?? field.disabled}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                onCountryCodeChange?.(e.target.value);
+              }}
+              sx={{
+                fontFamily: 'body',
+                fontSize: 'md',
+                paddingX: '3',
+                paddingY: '3',
+                border: '1px solid',
+                borderColor: 'display.border.muted.default',
+                borderRadius: 'sm',
+                backgroundColor: 'display.background.secondary.default',
+                color: 'display.text.primary.default',
+                cursor: 'pointer',
+                ':disabled': {
+                  backgroundColor: 'display.background.muted.default',
+                  cursor: 'not-allowed',
+                },
+              }}
+            >
+              {countryCodeOptions.map((opt) => {
+                return (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                );
+              })}
+            </Box>
+            <Box sx={{ flex: 1 }}>{patternInput}</Box>
+          </Flex>
         );
       }}
     />

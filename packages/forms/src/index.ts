@@ -11,7 +11,7 @@ export { FormFieldInput } from './FormFieldInput';
 export { FormFieldNumericFormat } from './FormFieldNumericFormat';
 export { FormFieldPassword } from './FormFieldPassword';
 export { FormFieldPatternFormat } from './FormFieldPatternFormat';
-export type { FormFieldPhoneProps } from './FormFieldPhone';
+export type { CountryCodeOption, FormFieldPhoneProps } from './FormFieldPhone';
 export { FormFieldPhone } from './FormFieldPhone';
 export { FormFieldRadio } from './FormFieldRadio';
 export { FormFieldRadioCard } from './FormFieldRadioCard';
