@@ -213,6 +213,7 @@ export const BruttalTheme: Theme = {
       '.react-select__control': {
         border: 'md',
         borderRadius: 'sm',
+        lineHeight: 'normal',
       },
       /**
        * HTML elements

@@ -46,10 +46,11 @@ export const MANUAL_PHONE_COUNTRY_CODE = 'manual';
 
 /**
  * Common country calling codes sorted by numeric dial-code order.
- * A "Manual" option is appended at the end, allowing users to type the full
+ * The "Manual" option is listed first, allowing users to type the full
  * international number freely without any mask.
  */
 export const COMMON_PHONE_COUNTRY_CODES: CountryCodeOption[] = [
+  { label: 'Manual', value: MANUAL_PHONE_COUNTRY_CODE },
   { label: '🇺🇸 +1 (US/Canada)', value: '+1', format: '(###) ###-####' },
   { label: '🇿🇦 +27 (South Africa)', value: '+27', format: '## ### ####' },
   { label: '🇫🇷 +33 (France)', value: '+33', format: '# ## ## ## ##' },
@@ -65,5 +66,4 @@ export const COMMON_PHONE_COUNTRY_CODES: CountryCodeOption[] = [
   { label: '🇨🇳 +86 (China)', value: '+86', format: '###-####-####' },
   { label: '🇮🇳 +91 (India)', value: '+91', format: '#####-#####' },
   { label: '🇵🇹 +351 (Portugal)', value: '+351', format: '### ### ###' },
-  { label: 'Manual', value: MANUAL_PHONE_COUNTRY_CODE },
 ];

@@ -2,7 +2,7 @@ import { Box, Flex, Input, Select } from '@ttoss/ui';
 import * as React from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import type { PatternFormatProps } from 'react-number-format';
-import { PatternFormat } from 'react-number-format';
+import { NumericFormat, PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from './FormField';
 import {
@@ -37,9 +37,11 @@ type PhoneDropdownWrapperProps = {
   /** List of selectable country calling code options. */
   countryCodeOptions: CountryCodeOption[];
   /** Whether the select and input should be disabled. */
-  isDisabled?: boolean;
+  disabled?: boolean;
   /** Called with the new calling-code value when the user changes the selection. */
   onCountryCodeChange?: (code: string) => void;
+  /** Called when the user changes the country code, so the phone value can be reset. */
+  onPhoneReset?: () => void;
   /**
    * The React element to render as the phone input. The wrapper clones this
    * element to inject the id prop, so it must not already have an explicit
@@ -52,8 +54,9 @@ const PhoneDropdownWrapper = ({
   id,
   countryCode,
   countryCodeOptions,
-  isDisabled,
+  disabled,
   onCountryCodeChange,
+  onPhoneReset,
   inputNode,
 }: PhoneDropdownWrapperProps) => {
   return (
@@ -62,9 +65,10 @@ const PhoneDropdownWrapper = ({
         <Select
           options={countryCodeOptions}
           value={countryCode}
-          isDisabled={isDisabled}
+          disabled={disabled}
           onChange={(value) => {
             if (value !== undefined) {
+              onPhoneReset?.();
               onCountryCodeChange?.(String(value));
             }
           }}
@@ -134,8 +138,10 @@ export type FormFieldPhoneProps<
  * the pattern mask is disabled and a plain text input is shown so the user
  * can type the full international number freely.
  *
- * The value stored in the form contains only the raw digits of the local
- * number (the country code is stripped by react-number-format).
+ * When a country code is provided, the stored value is the country code
+ * concatenated directly with the raw local digits (e.g., `"+15555555555"`
+ * for country code `"+1"` and local digits `"5555555555"`). When no country
+ * code is set, only the raw local digits are stored.
  *
  * @example
  * ```tsx
@@ -249,17 +255,29 @@ export const FormFieldPhone = <
          * FormField's cloneElement call (no-dropdown path) or forwarded by
          * PhoneDropdownWrapper (dropdown path) to ensure label association.
          */
+        const localPhoneValue =
+          !isManual && countryCode && field.value?.startsWith(countryCode)
+            ? field.value.slice(countryCode.length)
+            : field.value;
+
         const inputNode = isManual ? (
-          <Input
+          <NumericFormat
             name={field.name}
             value={field.value ?? ''}
             placeholder={placeholder}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              field.onChange(e.target.value);
-            }}
-            onBlur={() => {
+            prefix="+"
+            allowLeadingZeros
+            decimalScale={0}
+            thousandSeparator={false}
+            onBlur={(e) => {
               field.onBlur();
+              onBlur?.(e);
             }}
+            onValueChange={(values, sourceInfo) => {
+              field.onChange(values.formattedValue);
+              onValueChange?.(values, sourceInfo);
+            }}
+            customInput={Input}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
@@ -267,17 +285,21 @@ export const FormFieldPhone = <
           <PatternFormat
             {...patternFormatProps}
             name={field.name}
-            value={field.value}
+            value={localPhoneValue}
             placeholder={placeholder}
             onBlur={(e) => {
               field.onBlur();
               onBlur?.(e);
             }}
             onValueChange={(values, sourceInfo) => {
-              field.onChange(values.value);
+              const fullValue =
+                countryCode && values.value
+                  ? countryCode + values.value
+                  : values.value;
+              field.onChange(fullValue);
               onValueChange?.(values, sourceInfo);
             }}
-            format={getFormat(field.value ?? '')}
+            format={getFormat(localPhoneValue ?? '')}
             customInput={Input}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
@@ -299,8 +321,11 @@ export const FormFieldPhone = <
           <PhoneDropdownWrapper
             countryCode={countryCode}
             countryCodeOptions={countryCodeOptions}
-            isDisabled={disabled ?? field.disabled}
+            disabled={disabled ?? field.disabled}
             onCountryCodeChange={onCountryCodeChange}
+            onPhoneReset={() => {
+              return field.onChange('');
+            }}
             inputNode={inputNode}
           />
         );
