@@ -23,7 +23,9 @@ const schema = z.object({
 
 /**
  * Default usage — country-code dropdown is pre-populated with
- * `COMMON_PHONE_COUNTRY_CODES` (US is selected by default).
+ * `COMMON_PHONE_COUNTRY_CODES`. US (+1) is selected by default.
+ * On submit the form value includes the country code prefix
+ * (e.g. `{ phone: '+15555555555' }`).
  */
 const DefaultTemplate: Story = () => {
   const formMethods = useForm({
@@ -32,7 +34,7 @@ const DefaultTemplate: Story = () => {
   });
 
   const [countryCode, setCountryCode] = React.useState(
-    COMMON_PHONE_COUNTRY_CODES[0].value
+    COMMON_PHONE_COUNTRY_CODES[1].value
   );
 
   return (
@@ -146,8 +148,10 @@ Brazil.storyName = 'Brazil (+55)';
 
 /**
  * Selectable country code using COMMON_PHONE_COUNTRY_CODES — the user can
- * pick from the built-in list of 16 common countries (+ Manual). The phone
- * number format updates automatically when the country changes.
+ * pick from the built-in list of 15 common countries (+ Manual). The phone
+ * number format updates automatically when the country changes, and the phone
+ * field is cleared on each country switch. On submit the value includes the
+ * country code prefix (e.g. `{ phone: '+15555555555' }`).
  */
 const EditableCountryCodeTemplate: Story = () => {
   const formMethods = useForm({
@@ -156,7 +160,7 @@ const EditableCountryCodeTemplate: Story = () => {
   });
 
   const [countryCode, setCountryCode] = React.useState(
-    COMMON_PHONE_COUNTRY_CODES[0].value
+    COMMON_PHONE_COUNTRY_CODES[1].value
   );
 
   return (

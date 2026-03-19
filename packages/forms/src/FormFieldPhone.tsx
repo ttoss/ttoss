@@ -127,8 +127,8 @@ export type FormFieldPhoneProps<
  * Generic phone number form field that supports an optional country code prefix.
  *
  * By default, a country-code dropdown is rendered using `COMMON_PHONE_COUNTRY_CODES`
- * (15 common countries + a Manual entry). Pass `countryCodeOptions={[]}` to
- * disable the dropdown and show a plain phone input.
+ * (15 common countries + a Manual entry; Manual is the first entry at index 0).
+ * Pass `countryCodeOptions={[]}` to disable the dropdown and show a plain phone input.
  *
  * The format prop defines the pattern for the local phone number (using #
  * as digit placeholders). When a countryCode is provided it is prepended to
@@ -143,15 +143,20 @@ export type FormFieldPhoneProps<
  * for country code `"+1"` and local digits `"5555555555"`). When no country
  * code is set, only the raw local digits are stored.
  *
+ * Changing the country code via the dropdown automatically resets the phone
+ * number field to an empty string, so a new number can be entered in the
+ * correct format for the selected country.
+ *
  * @example
  * ```tsx
- * // Default: dropdown with COMMON_PHONE_COUNTRY_CODES
- * <FormFieldPhone name="phone" label="Phone" />
+ * // Default: dropdown with COMMON_PHONE_COUNTRY_CODES, US (+1) pre-selected
+ * <FormFieldPhone name="phone" label="Phone" countryCode="+1" />
  * ```
  *
  * @example
  * ```tsx
- * // Controlled country code with default list
+ * // Controlled country code — submitted value includes the prefix
+ * // e.g. { phone: '+15555555555' }
  * const [countryCode, setCountryCode] = React.useState('+1');
  * <FormFieldPhone
  *   name="phone"
@@ -163,7 +168,8 @@ export type FormFieldPhoneProps<
  *
  * @example
  * ```tsx
- * // No dropdown — plain phone input
+ * // No dropdown — plain phone input; value includes the prefix
+ * // e.g. { phone: '+15555555555' }
  * <FormFieldPhone
  *   name="phone"
  *   label="Phone"

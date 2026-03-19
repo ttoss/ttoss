@@ -10,9 +10,10 @@
  * ```tsx
  * import { FormFieldPhone } from '@ttoss/forms';
  *
- * // COMMON_PHONE_COUNTRY_CODES is the default — no need to pass it explicitly
+ * // COMMON_PHONE_COUNTRY_CODES is the default — no need to pass it explicitly.
+ * // Index 0 is the "Manual" entry; index 1 is US (+1).
  * const [countryCode, setCountryCode] = React.useState(
- *   COMMON_PHONE_COUNTRY_CODES[0].value
+ *   COMMON_PHONE_COUNTRY_CODES[1].value // '+1'
  * );
  *
  * <FormFieldPhone
