@@ -1,7 +1,7 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 
-import { Form, FormFieldPhone, useForm, yup, yupResolver } from '../../../src';
+import { Form, FormFieldPhone, useForm, z, zodResolver } from '../../../src';
 
 test('call onSubmit with correct data using a static format and country code', async () => {
   const user = userEvent.setup({ delay: null });
@@ -100,14 +100,14 @@ test('should display error messages', async () => {
 
   const onSubmit = jest.fn();
 
-  const schema = yup.object({
-    input1: yup.string().required('Value is required'),
+  const schema = z.object({
+    input1: z.string().min(1),
   });
 
   const RenderForm = () => {
     const formMethods = useForm({
       mode: 'all',
-      resolver: yupResolver(schema),
+      resolver: zodResolver(schema),
     });
 
     return (
@@ -125,5 +125,5 @@ test('should display error messages', async () => {
 
   render(<RenderForm />);
   await user.click(screen.getByText('Submit'));
-  expect(await screen.findByText('Value is required')).toBeInTheDocument();
+  expect(await screen.findByText('Field is required')).toBeInTheDocument();
 });

@@ -79,6 +79,8 @@ export const FormFieldPhone = <
     id,
     defaultValue,
     auxiliaryCheckbox,
+    onBlur,
+    onValueChange,
     ...patternFormatProps
   } = props;
 
@@ -100,7 +102,7 @@ export const FormFieldPhone = <
       rules={rules}
       disabled={disabled}
       auxiliaryCheckbox={auxiliaryCheckbox}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         const phoneFormat = getFormat(field.value ?? '');
 
         return (
@@ -108,13 +110,18 @@ export const FormFieldPhone = <
             {...patternFormatProps}
             name={field.name}
             value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onValueChange={(values, sourceInfo) => {
               field.onChange(values.value);
+              onValueChange?.(values, sourceInfo);
             }}
             format={phoneFormat}
             customInput={Input}
             disabled={disabled ?? field.disabled}
+            aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );
       }}

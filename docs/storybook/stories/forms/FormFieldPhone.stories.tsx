@@ -1,5 +1,5 @@
 import type { Meta, Story } from '@storybook/react-webpack5';
-import { Form, FormFieldPhone, useForm, yup, yupResolver } from '@ttoss/forms';
+import { Form, FormFieldPhone, useForm, z, zodResolver } from '@ttoss/forms';
 import { FormFieldPhone as BrazilFormFieldPhone } from '@ttoss/forms/brazil';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
@@ -10,8 +10,8 @@ export default {
   component: FormFieldPhone,
 } as Meta;
 
-const schema = yup.object({
-  phone: yup.string().required('Value is required'),
+const schema = z.object({
+  phone: z.string().min(1, 'Value is required'),
 });
 
 /**
@@ -20,7 +20,7 @@ const schema = yup.object({
 const GenericTemplate: Story = () => {
   const formMethods = useForm({
     mode: 'all',
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   React.useEffect(() => {
@@ -70,7 +70,7 @@ GenericWithCountryCode.storyName = 'Generic (US +1)';
 const BrazilTemplate: Story = () => {
   const formMethods = useForm({
     mode: 'all',
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   React.useEffect(() => {
@@ -80,15 +80,15 @@ const BrazilTemplate: Story = () => {
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-        <BrazilFormFieldPhone name="phone" label="Telefone:" />
+        <BrazilFormFieldPhone name="phone" label="Phone:" />
         <BrazilFormFieldPhone
           name="phoneDisabled"
-          label="Telefone (desabilitado):"
+          label="Phone (disabled):"
           disabled
         />
         <BrazilFormFieldPhone
           name="phoneWarning"
-          label="Telefone (aviso):"
+          label="Phone (warning):"
           warning="WARNING"
         />
       </Flex>
@@ -108,7 +108,7 @@ Brazil.storyName = 'Brazil (+55)';
 const NoCountryCodeTemplate: Story = () => {
   const formMethods = useForm({
     mode: 'all',
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   return (

@@ -27,7 +27,7 @@ const getBrazilPhoneFormat = (value: string) => {
  *
  * @example
  * ```tsx
- * <FormFieldPhone name="phone" label="Telefone" />
+ * <FormFieldPhone name="phone" label="Phone" />
  * ```
  */
 export const FormFieldPhone = <
