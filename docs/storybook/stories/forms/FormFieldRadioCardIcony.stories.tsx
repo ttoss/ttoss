@@ -239,11 +239,11 @@ const TagsTemplate: StoryFn = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldRadioCardIcony
         name="strategy"
-        label="Escolha uma estratégia"
+        label="Choose a strategy"
         options={TagsOptions}
       />
       <Form.Actions>
-        <Button type="submit">Confirmar</Button>
+        <Button type="submit">Confirm</Button>
       </Form.Actions>
     </Form>
   );
@@ -321,11 +321,11 @@ const OCATemplate: StoryFn = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldRadioCardIcony
         name="strategy"
-        label="Escolha uma estratégia"
+        label="Choose a strategy"
         options={OCAOptions}
       />
       <Form.Actions>
-        <Button type="submit">Confirmar</Button>
+        <Button type="submit">Confirm</Button>
       </Form.Actions>
     </Form>
   );
