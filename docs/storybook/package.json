@@ -4,7 +4,7 @@
   "version": "3.18.1",
   "author": "ttoss",
   "scripts": {
-    "build": "storybook build --quiet",
+    "build": "storybook build --quiet && pnpm run generate-llms",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
     "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
