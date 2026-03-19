@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.18.1...@docs/storybook@3.18.2) (2026-03-19)
+
+### Bug Fixes
+
+- build storybook llm ([767cdfb](https://github.com/ttoss/ttoss/commit/767cdfbfad3e43c6bee0604c63184f242a7fbd6b))
+
 ## [3.18.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.18.0...@docs/storybook@3.18.1) (2026-03-19)
 
 **Note:** Version bump only for package @docs/storybook
