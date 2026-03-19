@@ -619,25 +619,50 @@ Brazilian phone number input with formatting.
 
 ## FormGroup
 
-Groups related fields with optional label and layout direction.
+Groups related fields with an optional title, description, and layout direction.
 
 ```tsx
-<FormGroup label="Personal Information" direction="row">
+<FormGroup title="Personal Information" direction="row">
   <FormFieldInput name="firstName" label="First Name" />
   <FormFieldInput name="lastName" label="Last Name" />
 </FormGroup>
 
-<FormGroup label="Address">
+<FormGroup title="Address" description="Where we'll send your order">
   <FormFieldInput name="street" label="Street" />
   <FormFieldInput name="city" label="City" />
 </FormGroup>
 ```
 
+Nest `FormGroup` components to create hierarchical sections:
+
+```tsx
+<FormGroup title="Personal details">
+  <FormFieldInput name="firstName" label="First name" />
+  <FormFieldInput name="lastName" label="Last name" />
+
+  <FormGroup title="Address" direction="row">
+    <FormFieldInput name="city" label="City" />
+    <FormFieldInput name="zip" label="ZIP" />
+  </FormGroup>
+</FormGroup>
+```
+
+To display a group-level validation error (e.g. for an array field), pass the `name` prop:
+
+```tsx
+<FormGroup name="items" title="Items">
+  {fields.map((field, i) => (
+    <FormFieldInput key={field.id} name={`items[${i}].value`} label="Value" />
+  ))}
+</FormGroup>
+```
+
 **Props:**
 
-- `label`: Group label
-- `direction`: Layout direction (`'row'` | `'column'`)
-- `name`: Group name for error messages
+- `title`: Optional heading displayed above the group's children
+- `description`: Optional description displayed below the title
+- `direction`: Layout direction (`'row'` | `'column'`, default: `'column'`)
+- `name`: Field name used to display a group-level validation error message
 
 ## Multistep Forms
 
