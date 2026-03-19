@@ -1,71 +1,48 @@
-import { Input } from '@ttoss/ui';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import type { PatternFormatProps } from 'react-number-format';
-import { PatternFormat } from 'react-number-format';
 
-import { FormField, type FormFieldProps } from '../FormField';
+import {
+  FormFieldPhone as GenericFormFieldPhone,
+  type FormFieldPhoneProps as GenericFormFieldPhoneProps,
+} from '../FormFieldPhone';
 
 export type FormFieldPhoneProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = FormFieldProps<TFieldValues, TName> &
-  Omit<PatternFormatProps, 'name' | 'format'>;
+> = Omit<
+  GenericFormFieldPhoneProps<TFieldValues, TName>,
+  'countryCode' | 'format'
+>;
 
+const BRAZIL_COUNTRY_CODE = '+55';
+
+const getBrazilPhoneFormat = (value: string) => {
+  return value.length > 10 ? '(##) #####-####' : '(##) ####-#####';
+};
+
+/**
+ * Brazilian phone number form field.
+ *
+ * Wraps the generic `FormFieldPhone` with the Brazil country code (`+55`)
+ * and the appropriate local number format pre-configured.
+ *
+ * @example
+ * ```tsx
+ * <FormFieldPhone name="phone" label="Telefone" />
+ * ```
+ */
 export const FormFieldPhone = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  disabled,
+  placeholder = '(11) 91234-1234',
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
-  const {
-    label,
-    name,
-    labelTooltip,
-    warning,
-    sx,
-    css,
-    rules,
-    id,
-    defaultValue,
-    placeholder = '(11) 91234-1234',
-    auxiliaryCheckbox,
-    ...patternFormatProps
-  } = props;
-
   return (
-    <FormField
-      id={id}
-      label={label}
-      name={name}
-      labelTooltip={labelTooltip}
-      warning={warning}
-      sx={sx}
-      css={css}
-      defaultValue={defaultValue}
-      rules={rules}
-      disabled={disabled}
-      auxiliaryCheckbox={auxiliaryCheckbox}
-      render={({ field }) => {
-        const format =
-          field.value?.length > 10 ? '(##) #####-####' : '(##) ####-#####';
-
-        return (
-          <PatternFormat
-            {...patternFormatProps}
-            name={field.name}
-            value={field.value}
-            onBlur={field.onBlur}
-            onValueChange={(values) => {
-              field.onChange(values.value);
-            }}
-            format={format}
-            customInput={Input}
-            placeholder={placeholder}
-            disabled={disabled ?? field.disabled}
-          />
-        );
-      }}
+    <GenericFormFieldPhone
+      {...props}
+      countryCode={BRAZIL_COUNTRY_CODE}
+      format={getBrazilPhoneFormat}
+      placeholder={placeholder}
     />
   );
 };
