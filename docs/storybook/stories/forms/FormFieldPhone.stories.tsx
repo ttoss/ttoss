@@ -22,7 +22,39 @@ const schema = z.object({
 });
 
 /**
- * Generic phone field with a US country code (+1).
+ * Default usage — country-code dropdown is pre-populated with
+ * `COMMON_PHONE_COUNTRY_CODES` (US is selected by default).
+ */
+const DefaultTemplate: Story = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  });
+
+  const [countryCode, setCountryCode] = React.useState(
+    COMMON_PHONE_COUNTRY_CODES[0].value
+  );
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        countryCode={countryCode}
+        onCountryCodeChange={setCountryCode}
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const Default = DefaultTemplate.bind({});
+Default.storyName = 'Default (with country dropdown)';
+
+/**
+ * Generic phone field with a fixed US country code (+1) and no dropdown.
  */
 const GenericTemplate: Story = () => {
   const formMethods = useForm({
@@ -43,6 +75,7 @@ const GenericTemplate: Story = () => {
           countryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
+          countryCodeOptions={[]}
         />
         <FormFieldPhone
           name="phoneDisabled"
@@ -50,6 +83,7 @@ const GenericTemplate: Story = () => {
           countryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
+          countryCodeOptions={[]}
           disabled
         />
         <FormFieldPhone
@@ -58,6 +92,7 @@ const GenericTemplate: Story = () => {
           countryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
+          countryCodeOptions={[]}
           warning="WARNING"
         />
       </Flex>
@@ -69,7 +104,7 @@ const GenericTemplate: Story = () => {
 };
 
 export const GenericWithCountryCode = GenericTemplate.bind({});
-GenericWithCountryCode.storyName = 'Generic (US +1)';
+GenericWithCountryCode.storyName = 'Generic (US +1, no dropdown)';
 
 /**
  * Brazilian phone field that uses the generic component with +55 fixed.
@@ -110,38 +145,9 @@ export const Brazil = BrazilTemplate.bind({});
 Brazil.storyName = 'Brazil (+55)';
 
 /**
- * Generic phone field without a country code.
- */
-const NoCountryCodeTemplate: Story = () => {
-  const formMethods = useForm({
-    mode: 'all',
-    resolver: zodResolver(schema),
-  });
-
-  return (
-    <Form {...formMethods} onSubmit={action('onSubmit')}>
-      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-        <FormFieldPhone
-          name="phone"
-          label="Phone (no country code):"
-          format="(###) ###-####"
-          placeholder="(555) 555-5555"
-        />
-      </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
-    </Form>
-  );
-};
-
-export const NoCountryCode = NoCountryCodeTemplate.bind({});
-NoCountryCode.storyName = 'No Country Code';
-
-/**
  * Selectable country code using COMMON_PHONE_COUNTRY_CODES — the user can
- * pick from the built-in list of 16 common countries. The phone number format
- * updates automatically when the country changes.
+ * pick from the built-in list of 16 common countries (+ Manual). The phone
+ * number format updates automatically when the country changes.
  */
 const EditableCountryCodeTemplate: Story = () => {
   const formMethods = useForm({

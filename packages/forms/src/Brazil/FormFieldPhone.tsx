@@ -35,6 +35,7 @@ export const FormFieldPhone = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   placeholder = '(11) 91234-1234',
+  countryCodeOptions = [],
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
   return (
@@ -43,6 +44,7 @@ export const FormFieldPhone = <
       countryCode={BRAZIL_COUNTRY_CODE}
       format={getBrazilPhoneFormat}
       placeholder={placeholder}
+      countryCodeOptions={countryCodeOptions}
     />
   );
 };

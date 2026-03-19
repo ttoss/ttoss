@@ -1,46 +1,28 @@
-import { Box, Flex, Input } from '@ttoss/ui';
+import { Box, Flex, Input, Select } from '@ttoss/ui';
 import * as React from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import type { PatternFormatProps } from 'react-number-format';
 import { PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from './FormField';
+import {
+  COMMON_PHONE_COUNTRY_CODES,
+  type CountryCodeOption,
+  MANUAL_PHONE_COUNTRY_CODE,
+} from './phoneCountryCodes';
 
-export type CountryCodeOption = {
-  /** Label displayed in the dropdown (e.g. 'US +1'). */
-  label: string;
-  /** The calling-code value (e.g. '+1'). */
-  value: string;
-  /**
-   * Optional phone number format for the local part specific to this country
-   * (e.g. '(###) ###-####'). When the user selects this option the format
-   * is used automatically, overriding the `format` prop of `FormFieldPhone`.
-   */
-  format?: string | ((value: string) => string);
-};
+export type { CountryCodeOption };
+export { MANUAL_PHONE_COUNTRY_CODE };
 
 /**
- * `Box` is typed as a `div` wrapper. To use it as a `<select>` element with
- * full prop type-safety (including native `onChange`, `value`, `disabled`),
- * we cast it to a component that accepts native select HTML attributes plus
- * the Theme UI `sx` prop.
- */
-const BoxSelect = Box as React.ComponentType<
-  React.SelectHTMLAttributes<HTMLSelectElement> & {
-    sx?: React.ComponentPropsWithoutRef<typeof Box>['sx'];
-    as?: string;
-  }
->;
-
-/**
- * Internal wrapper that renders the country-code select dropdown next to
+ * Internal wrapper that renders the country-code Select dropdown next to
  * the phone input.
  *
  * Defined at module level so React keeps a stable component identity across
  * re-renders (avoids unmount/remount that would cause input focus loss).
  *
  * FormField injects the generated id via React.cloneElement, which this
- * component receives and forwards to the inner PatternFormat, ensuring the
+ * component receives and forwards to the inner input node, ensuring the
  * label htmlFor association remains valid for accessibility.
  */
 type PhoneDropdownWrapperProps = {
@@ -59,11 +41,11 @@ type PhoneDropdownWrapperProps = {
   /** Called with the new calling-code value when the user changes the selection. */
   onCountryCodeChange?: (code: string) => void;
   /**
-   * The PatternFormat React element to render as the phone input. The
-   * wrapper clones this element to inject the id prop, so it must not
-   * already have an explicit id set.
+   * The React element to render as the phone input. The wrapper clones this
+   * element to inject the id prop, so it must not already have an explicit
+   * id set.
    */
-  patternNode: React.ReactElement;
+  inputNode: React.ReactElement;
 };
 
 const PhoneDropdownWrapper = ({
@@ -72,47 +54,26 @@ const PhoneDropdownWrapper = ({
   countryCodeOptions,
   isDisabled,
   onCountryCodeChange,
-  patternNode,
+  inputNode,
 }: PhoneDropdownWrapperProps) => {
   return (
     <Flex sx={{ gap: '2', alignItems: 'stretch' }}>
-      <BoxSelect
-        as="select"
-        value={countryCode}
-        disabled={isDisabled}
-        onChange={(e) => {
-          onCountryCodeChange?.(e.target.value);
-        }}
-        sx={{
-          fontFamily: 'body',
-          fontSize: 'md',
-          paddingX: '3',
-          paddingY: '3',
-          border: '1px solid',
-          borderColor: 'display.border.muted.default',
-          borderRadius: 'sm',
-          backgroundColor: 'display.background.secondary.default',
-          color: 'display.text.primary.default',
-          cursor: 'pointer',
-          ':disabled': {
-            backgroundColor: 'display.background.muted.default',
-            cursor: 'not-allowed',
-          },
-        }}
-      >
-        {countryCodeOptions.map((opt) => {
-          return (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          );
-        })}
-      </BoxSelect>
+      <Box sx={{ minWidth: '180px' }}>
+        <Select
+          options={countryCodeOptions}
+          value={countryCode}
+          isDisabled={isDisabled}
+          onChange={(value) => {
+            if (value !== undefined) {
+              onCountryCodeChange?.(String(value));
+            }
+          }}
+        />
+      </Box>
       <Box sx={{ flex: 1 }}>
-        {React.cloneElement(
-          patternNode as React.ReactElement<{ id?: string }>,
-          { id }
-        )}
+        {React.cloneElement(inputNode as React.ReactElement<{ id?: string }>, {
+          id,
+        })}
       </Box>
     </Flex>
   );
@@ -126,6 +87,7 @@ export type FormFieldPhoneProps<
     /**
      * The country calling code to display as a literal prefix in the input.
      * For example, '+55' for Brazil or '+1' for the United States.
+     * Defaults to the first entry in `countryCodeOptions` when not provided.
      */
     countryCode?: string;
     /**
@@ -139,18 +101,20 @@ export type FormFieldPhoneProps<
      *
      * Defaults to '(###) ###-####' when neither this prop nor the selected
      * country option supplies a format.
+     *
+     * Ignored when `countryCode` is `MANUAL_PHONE_COUNTRY_CODE`.
      */
     format?: string | ((value: string) => string);
     /**
-     * When provided, renders a select dropdown before the phone input so the
-     * user can pick the country calling code. The currently selected code is
-     * controlled via the countryCode prop.
+     * List of country calling code options to display in the dropdown.
+     * Defaults to `COMMON_PHONE_COUNTRY_CODES` (15 common countries + Manual).
+     * Pass an empty array to hide the dropdown and show a plain phone input.
      */
     countryCodeOptions?: CountryCodeOption[];
     /**
      * Called with the newly selected country code value when the user changes
      * the country code via the dropdown. Only relevant when
-     * countryCodeOptions is provided.
+     * countryCodeOptions is non-empty.
      */
     onCountryCodeChange?: (countryCode: string) => void;
   };
@@ -158,44 +122,48 @@ export type FormFieldPhoneProps<
 /**
  * Generic phone number form field that supports an optional country code prefix.
  *
+ * By default, a country-code dropdown is rendered using `COMMON_PHONE_COUNTRY_CODES`
+ * (15 common countries + a Manual entry). Pass `countryCodeOptions={[]}` to
+ * disable the dropdown and show a plain phone input.
+ *
  * The format prop defines the pattern for the local phone number (using #
  * as digit placeholders). When a countryCode is provided it is prepended to
  * the format and rendered as a read-only literal inside the input.
  *
- * When countryCodeOptions is provided, a select dropdown is rendered before
- * the phone input, allowing the user to switch the country calling code. The
- * currently selected code is controlled via countryCode, and changes are
- * reported via onCountryCodeChange.
+ * When the user selects the "Manual" option (`MANUAL_PHONE_COUNTRY_CODE`),
+ * the pattern mask is disabled and a plain text input is shown so the user
+ * can type the full international number freely.
  *
  * The value stored in the form contains only the raw digits of the local
  * number (the country code is stripped by react-number-format).
  *
  * @example
  * ```tsx
- * // US phone number (static country code)
- * <FormFieldPhone
- *   name="phone"
- *   label="Phone"
- *   countryCode="+1"
- *   format="(###) ###-####"
- *   placeholder="(555) 555-5555"
- * />
+ * // Default: dropdown with COMMON_PHONE_COUNTRY_CODES
+ * <FormFieldPhone name="phone" label="Phone" />
  * ```
  *
  * @example
  * ```tsx
- * // Selectable country code with per-country formats (use COMMON_PHONE_COUNTRY_CODES)
- * import { COMMON_PHONE_COUNTRY_CODES } from '@ttoss/forms';
- *
- * const [countryCode, setCountryCode] = React.useState(
- *   COMMON_PHONE_COUNTRY_CODES[0].value
- * );
+ * // Controlled country code with default list
+ * const [countryCode, setCountryCode] = React.useState('+1');
  * <FormFieldPhone
  *   name="phone"
  *   label="Phone"
  *   countryCode={countryCode}
  *   onCountryCodeChange={setCountryCode}
- *   countryCodeOptions={COMMON_PHONE_COUNTRY_CODES}
+ * />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // No dropdown — plain phone input
+ * <FormFieldPhone
+ *   name="phone"
+ *   label="Phone"
+ *   countryCode="+1"
+ *   format="(###) ###-####"
+ *   countryCodeOptions={[]}
  * />
  * ```
  *
@@ -209,6 +177,7 @@ export type FormFieldPhoneProps<
  *   format={(value) =>
  *     value.length > 10 ? '(##) #####-####' : '(##) ####-#####'
  *   }
+ *   countryCodeOptions={[]}
  * />
  * ```
  */
@@ -217,9 +186,9 @@ export const FormFieldPhone = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   disabled,
-  countryCode,
+  countryCode: countryCodeProp,
   format,
-  countryCodeOptions,
+  countryCodeOptions = COMMON_PHONE_COUNTRY_CODES,
   onCountryCodeChange,
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
@@ -236,11 +205,17 @@ export const FormFieldPhone = <
     auxiliaryCheckbox,
     onBlur,
     onValueChange,
+    placeholder,
     ...patternFormatProps
   } = props;
 
+  const countryCode =
+    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined;
+
+  const isManual = countryCode === MANUAL_PHONE_COUNTRY_CODE;
+
   const getFormat = (value: string) => {
-    const selectedOption = countryCodeOptions?.find((opt) => {
+    const selectedOption = countryCodeOptions.find((opt) => {
       return opt.value === countryCode;
     });
     const resolvedFormat = selectedOption?.format ?? format ?? '(###) ###-####';
@@ -248,8 +223,12 @@ export const FormFieldPhone = <
       typeof resolvedFormat === 'function'
         ? resolvedFormat(value)
         : resolvedFormat;
-    return countryCode ? `${countryCode} ${baseFormat}` : baseFormat;
+    return countryCode && !isManual
+      ? `${countryCode} ${baseFormat}`
+      : baseFormat;
   };
+
+  const showDropdown = countryCodeOptions.length > 0;
 
   return (
     <FormField
@@ -265,18 +244,31 @@ export const FormFieldPhone = <
       disabled={disabled}
       auxiliaryCheckbox={auxiliaryCheckbox}
       render={({ field, fieldState }) => {
-        const phoneFormat = getFormat(field.value ?? '');
-
         /**
          * The id prop is intentionally omitted here. It will be injected by
          * FormField's cloneElement call (no-dropdown path) or forwarded by
          * PhoneDropdownWrapper (dropdown path) to ensure label association.
          */
-        const patternNode = (
+        const inputNode = isManual ? (
+          <Input
+            name={field.name}
+            value={field.value ?? ''}
+            placeholder={placeholder}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              field.onChange(e.target.value);
+            }}
+            onBlur={() => {
+              field.onBlur();
+            }}
+            disabled={disabled ?? field.disabled}
+            aria-invalid={fieldState.error ? 'true' : undefined}
+          />
+        ) : (
           <PatternFormat
             {...patternFormatProps}
             name={field.name}
             value={field.value}
+            placeholder={placeholder}
             onBlur={(e) => {
               field.onBlur();
               onBlur?.(e);
@@ -285,23 +277,23 @@ export const FormFieldPhone = <
               field.onChange(values.value);
               onValueChange?.(values, sourceInfo);
             }}
-            format={phoneFormat}
+            format={getFormat(field.value ?? '')}
             customInput={Input}
             disabled={disabled ?? field.disabled}
             aria-invalid={fieldState.error ? 'true' : undefined}
           />
         );
 
-        if (!countryCodeOptions) {
+        if (!showDropdown) {
           // FormField injects id via cloneElement directly onto the input.
-          return patternNode;
+          return inputNode;
         }
 
         /**
          * FormField injects id via cloneElement onto PhoneDropdownWrapper.
          * PhoneDropdownWrapper (module-level, stable identity) receives id
-         * and forwards it to the inner PatternFormat so that
-         * label htmlFor correctly points to the input.
+         * and forwards it to the inner input so that label htmlFor correctly
+         * points to the input.
          */
         return (
           <PhoneDropdownWrapper
@@ -309,7 +301,7 @@ export const FormFieldPhone = <
             countryCodeOptions={countryCodeOptions}
             isDisabled={disabled ?? field.disabled}
             onCountryCodeChange={onCountryCodeChange}
-            patternNode={patternNode}
+            inputNode={inputNode}
           />
         );
       }}
