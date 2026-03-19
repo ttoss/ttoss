@@ -30,7 +30,7 @@ const FormBase = <
         onSubmit={formMethods.handleSubmit((data) => {
           return onSubmit?.(data);
         })}
-        sx={sx}
+        sx={{ display: 'flex', flexDirection: 'column', gap: '4', ...sx }}
       >
         {children}
       </Box>

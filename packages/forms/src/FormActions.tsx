@@ -57,7 +57,6 @@ export const FormActions = ({
         flexDirection: 'row',
         gap: '2',
         justifyContent: alignMap[align],
-        marginTop: '4',
         ...(sticky && {
           position: 'sticky',
           bottom: 0,
