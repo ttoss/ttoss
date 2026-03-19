@@ -36,7 +36,9 @@ export const Simple = () => {
         <FormFieldInput name="input2" placeholder="input2" label="input2" />
       </FormGroup>
 
-      <Button type="submit">Submit</Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -103,7 +105,9 @@ export const Nested = () => {
         </FormGroup>
       </FormGroup>
 
-      <Button type="submit">Submit</Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -134,7 +138,9 @@ export const FlexGrow = () => {
         </FormGroup>
       </FormGroup>
 
-      <Button type="submit">Submit</Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -197,7 +203,9 @@ export const ErrorMessageOnGroup = () => {
           Add
         </Button>
       </FormGroup>
-      <Button type="submit">Submit</Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

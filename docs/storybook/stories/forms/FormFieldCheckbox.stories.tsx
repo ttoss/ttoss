@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldCheckbox,
@@ -34,9 +34,9 @@ const OptimizationCard = () => {
     <Form {...formMethods} onSubmit={onSubmit}>
       <FormFieldInput name="name" label="Name" />
       <FormFieldCheckbox name="isActivated" label="Is activated?" />
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

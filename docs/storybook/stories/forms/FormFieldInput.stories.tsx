@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, Story } from '@storybook/react-webpack5';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
@@ -60,9 +60,9 @@ const Template: Story = () => {
           leadingIcon="ant-design:search-outlined"
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

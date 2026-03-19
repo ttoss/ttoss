@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldCurrencyInput,
@@ -86,9 +86,9 @@ const Template: StoryFn = () => {
           disabled
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -119,9 +119,9 @@ const WithWarning1: StoryFn = () => {
         />
       </Flex>
 
-      <Button sx={{ marginTop: 'lg' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

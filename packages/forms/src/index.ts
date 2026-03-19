@@ -1,4 +1,6 @@
 export { Form } from './Form';
+export type { FormActionsProps } from './FormActions';
+export { FormActions } from './FormActions';
 export { FormErrorMessage } from './FormErrorMessage';
 export type { FormFieldProps } from './FormField';
 export { FormField } from './FormField';
