@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldRadioCardIcony,
@@ -78,9 +78,9 @@ const Template: StoryFn = () => {
         label="Choose an icon"
         options={iconOptions}
       />
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -101,9 +101,9 @@ const VerticalTemplate: StoryFn = () => {
         direction="column"
         options={iconOptions}
       />
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -239,12 +239,12 @@ const TagsTemplate: StoryFn = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldRadioCardIcony
         name="strategy"
-        label="Escolha uma estratégia"
+        label="Choose a strategy"
         options={TagsOptions}
       />
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Confirmar
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Confirm</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -321,12 +321,12 @@ const OCATemplate: StoryFn = () => {
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldRadioCardIcony
         name="strategy"
-        label="Escolha uma estratégia"
+        label="Choose a strategy"
         options={OCAOptions}
       />
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Confirmar
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Confirm</Button>
+      </Form.Actions>
     </Form>
   );
 };

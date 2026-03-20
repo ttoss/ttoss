@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCEP } from '@ttoss/forms/brazil';
 import { Box, Button, Flex, Link } from '@ttoss/ui';
@@ -55,8 +55,8 @@ const Template: StoryFn = () => {
           name="cepWarning"
           label="CEP:"
           warning={'WARNING'}
-          inputTooltip={{
-            render: (
+          labelTooltip={{
+            children: (
               <Box sx={{ fontSize: 'sm' }}>
                 {`Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
@@ -78,9 +78,9 @@ const Template: StoryFn = () => {
           }}
         />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

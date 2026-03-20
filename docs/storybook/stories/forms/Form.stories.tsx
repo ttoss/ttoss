@@ -1,5 +1,5 @@
 import alertIcon from '@iconify-icons/mdi-light/alert';
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldCheckbox,
@@ -174,9 +174,9 @@ const Template: StoryFn<StoryArguments> = (properties: StoryArguments) => {
           labelTooltip={tooltip}
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -318,9 +318,9 @@ const TemplateWithInternationalization: StoryFn = () => {
           <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
           <FormFieldInput name="version" label="Version (disabled)" disabled />
         </Flex>
-        <Button sx={{ marginTop: '4' }} type="submit">
-          Submit
-        </Button>
+        <Form.Actions>
+          <Button type="submit">Submit</Button>
+        </Form.Actions>
       </Form>
     </I18nProvider>
   );
@@ -390,10 +390,10 @@ export const VerticalAlignment: StoryFn = () => {
             width: '100px',
           }}
         />
-        <Button sx={{ marginTop: '4' }} type="submit">
-          Submit
-        </Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

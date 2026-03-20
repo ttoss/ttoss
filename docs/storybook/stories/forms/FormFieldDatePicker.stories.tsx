@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldDatePicker,
@@ -39,7 +39,7 @@ const schema = yup.object({
     .nullable(),
 });
 
-const Template: Story = () => {
+const Template: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
@@ -116,23 +116,26 @@ const Template: Story = () => {
           label="Date Range Without Presets"
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
 
 export const Example = Template.bind({});
 
-export const WithDefaultValue: Story = () => {
+const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+const today = new Date();
+
+export const WithDefaultValue: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
     defaultValues: {
       dateRange: {
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        to: new Date(),
+        from: thirtyDaysAgo,
+        to: today,
       },
     },
   });
@@ -165,9 +168,9 @@ export const WithDefaultValue: Story = () => {
           ]}
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -181,7 +184,7 @@ WithDefaultValue.parameters = {
   },
 };
 
-export const WithValidation: Story = () => {
+export const WithValidation: StoryFn = () => {
   const validationSchema = yup.object({
     dateRange: yup
       .object({
@@ -238,9 +241,9 @@ export const WithValidation: Story = () => {
           ]}
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -254,15 +257,19 @@ WithValidation.parameters = {
   },
 };
 
-export const Disabled: Story = () => {
+export const Disabled: StoryFn = () => {
+  const defaultDateRange = React.useMemo(() => {
+    return {
+      from: thirtyDaysAgo,
+      to: today,
+    };
+  }, []);
+
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
     defaultValues: {
-      dateRange: {
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        to: new Date(),
-      },
+      dateRange: defaultDateRange,
     },
   });
 
@@ -286,9 +293,9 @@ export const Disabled: Story = () => {
           ]}
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -302,15 +309,19 @@ Disabled.parameters = {
   },
 };
 
-export const WithWarning: Story = () => {
+export const WithWarning: StoryFn = () => {
+  const defaultDateRange = React.useMemo(() => {
+    return {
+      from: thirtyDaysAgo,
+      to: today,
+    };
+  }, []);
+
   const formMethods = useForm({
     mode: 'all',
     resolver: yupResolver(schema),
     defaultValues: {
-      dateRange: {
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        to: new Date(),
-      },
+      dateRange: defaultDateRange,
     },
   });
 
@@ -343,9 +354,9 @@ export const WithWarning: Story = () => {
           ]}
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

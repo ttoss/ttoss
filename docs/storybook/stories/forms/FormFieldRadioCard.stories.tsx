@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldRadioCard,
@@ -69,9 +69,9 @@ const Template: StoryFn = () => {
         options={planOptions}
       />
 
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -93,9 +93,9 @@ const HorizontalTemplate: StoryFn = () => {
         options={subscriptionOptions}
       />
 
-      <Button sx={{ marginTop: '8' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

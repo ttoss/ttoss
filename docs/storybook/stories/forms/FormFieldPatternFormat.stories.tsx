@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, Story } from '@storybook/react-webpack5';
 import {
   Form,
   FormFieldPatternFormat,
@@ -81,9 +81,9 @@ const Template: Story = () => {
           warning="WARNING"
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

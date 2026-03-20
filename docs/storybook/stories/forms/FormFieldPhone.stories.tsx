@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   COMMON_PHONE_COUNTRY_CODES,
   Form,
@@ -27,7 +27,7 @@ const schema = z.object({
  * On submit the form value includes the country code prefix
  * (e.g. `{ phone: '+15555555555' }`).
  */
-const DefaultTemplate: Story = () => {
+const DefaultTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: zodResolver(schema),
@@ -58,7 +58,7 @@ Default.storyName = 'Default (with country dropdown)';
 /**
  * Generic phone field with a fixed US country code (+1) and no dropdown.
  */
-const GenericTemplate: Story = () => {
+const GenericTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: zodResolver(schema),
@@ -98,9 +98,10 @@ const GenericTemplate: Story = () => {
           warning="WARNING"
         />
       </Flex>
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -111,7 +112,7 @@ GenericWithCountryCode.storyName = 'Generic (US +1, no dropdown)';
 /**
  * Brazilian phone field that uses the generic component with +55 fixed.
  */
-const BrazilTemplate: Story = () => {
+const BrazilTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: zodResolver(schema),
@@ -153,7 +154,7 @@ Brazil.storyName = 'Brazil (+55)';
  * field is cleared on each country switch. On submit the value includes the
  * country code prefix (e.g. `{ phone: '+15555555555' }`).
  */
-const EditableCountryCodeTemplate: Story = () => {
+const EditableCountryCodeTemplate: StoryFn = () => {
   const formMethods = useForm({
     mode: 'all',
     resolver: zodResolver(schema),

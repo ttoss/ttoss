@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Form, FormFieldRadio, useForm, yup, yupResolver } from '@ttoss/forms';
 import { Button } from '@ttoss/ui';
 import { action } from 'storybook/actions';
@@ -30,9 +30,9 @@ const Template: StoryFn = () => {
         ]}
       />
 
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

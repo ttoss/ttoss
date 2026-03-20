@@ -80,9 +80,9 @@ const TemplateComponent: React.FC = () => {
         />
       </Flex>
 
-      <Button sx={{ marginTop: '4' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
