@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.43.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.42.0...@ttoss/forms@0.43.0) (2026-03-20)
+
+### Features
+
+- create form actions ([#895](https://github.com/ttoss/ttoss/issues/895)) ([5537ba4](https://github.com/ttoss/ttoss/commit/5537ba40cb44f47804a6b03a8b5e4db561fa059c)), closes [#896](https://github.com/ttoss/ttoss/issues/896)
+
 # [0.42.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.41.2...@ttoss/forms@0.42.0) (2026-03-19)
 
 ### Features
