@@ -19,11 +19,11 @@ const template = createApiTemplate({
 });
 
 test('should not add enum resolvers to template', () => {
-  Object.values(template.Resources).forEach((resource) => {
+  for (const resource of Object.values(template.Resources)) {
     if (resource.Type !== 'AWS::AppSync::Resolver') {
-      return;
+      continue;
     }
 
-    expect(resource.Properties.TypeName).not.toMatch(/enum/i);
-  });
+    expect(resource.Properties?.TypeName).not.toMatch(/enum/i);
+  }
 });

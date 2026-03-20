@@ -69,6 +69,59 @@ The `createAppSyncResolverHandler` function adds the `context` object to the res
 - `request` - AppSync request object (see [Request section](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html)).
 - `identity` - AppSync identity object (see [Identity section](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html)).
 
+### createContext
+
+Use `createContext` to enrich the resolver context once per request. Its return value is shallow-merged into the base context, making it available to every resolver. This is the recommended way to resolve per-request values like a `userId` from Cognito:
+
+```ts
+import { createAppSyncResolverHandler } from '@ttoss/appsync-api';
+import { schemaComposer } from './schemaComposer';
+import { getUserIdFromCognitoSub } from './auth';
+
+export const handler = createAppSyncResolverHandler({
+  schemaComposer,
+  createContext: async ({ identity }) => ({
+    userId: await getUserIdFromCognitoSub(identity?.sub),
+  }),
+});
+```
+
+Every resolver then receives `context.userId` without having to derive it individually.
+
+### Middlewares
+
+You can use [`graphql-middleware`](https://github.com/dimatill/graphql-middleware)-compatible middlewares via the `middlewares` option. Each middleware wraps the resolver — code before `resolve()` runs **before** the resolver, code after runs **after**.
+
+In AppSync, each Lambda invocation handles a single field, so a middleware runs exactly once per request.
+
+Use `middlewares` for authorization rules or cross-cutting logic (logging, tracing). Combine with `createContext` for per-request context enrichment:
+
+|                     | `createContext`                | `middlewares`                           |
+| ------------------- | ------------------------------ | --------------------------------------- |
+| Runs                | Once per request               | Once per resolver call                  |
+| Purpose             | Enrich context (e.g. `userId`) | Auth rules, logging, before/after logic |
+| Can block execution | No                             | Yes (by not calling `resolve`)          |
+
+#### Authorization with GraphQL Shield
+
+Use [GraphQL Shield](https://the-guild.dev/graphql/shield) to add authorization rules:
+
+```ts
+import { allow, deny, shield } from '@ttoss/graphql-api/shield';
+
+const permissions = shield(
+  {
+    Query: { '*': deny, me: allow },
+  },
+  { fallbackRule: deny }
+);
+
+export const handler = createAppSyncResolverHandler({
+  schemaComposer,
+  middlewares: [permissions],
+});
+```
+
 ### Custom domain name
 
 You can add a custom domain name to your API using the `customDomain` option.

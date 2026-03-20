@@ -1,6 +1,7 @@
 export { createApiTemplate } from './createApiTemplate';
 export {
   type AppSyncResolverHandler,
+  type BaseAppSyncContext,
   createAppSyncResolverHandler,
 } from './createAppSyncResolverHandler';
 export {

@@ -1,11 +1,12 @@
+import { schemaComposer } from '@ttoss/graphql-api';
+
+import { createApiTemplate } from '../../src';
 import {
   AppSyncGraphQLApiKeyLogicalId,
   AppSyncGraphQLApiLogicalId,
   AppSyncGraphQLSchemaLogicalId,
   AppSyncLambdaFunctionLogicalId,
 } from '../../src/createApiTemplate';
-import { createApiTemplate } from '../../src';
-import { schemaComposer } from '@ttoss/graphql-api';
 
 const createApiTemplateInput = {
   schemaComposer,
@@ -32,13 +33,13 @@ describe('tests with default template', () => {
    */
   test('schema should not contain """ comments', () => {
     expect(
-      template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
+      template.Resources[AppSyncGraphQLSchemaLogicalId].Properties?.Definition
     ).not.toContain('"""');
   });
 
   test('should contain UserPoolConfig', () => {
     expect(
-      template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+      template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
         'UserPoolConfig'
       ]
     ).toEqual({
@@ -79,7 +80,7 @@ test('add environment variables to lambda function', () => {
   });
 
   expect(
-    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Environment
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Environment
       .Variables
   ).toEqual(variables);
 });
@@ -94,13 +95,13 @@ test('create api key', () => {
    * Default AuthenticationType to AMAZON_COGNITO_USER_POOLS.
    */
   expect(
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
       'AuthenticationType'
     ]
   ).toEqual('AMAZON_COGNITO_USER_POOLS');
 
   expect(
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
       'AdditionalAuthenticationProviders'
     ]
   ).toContainEqual({
@@ -130,7 +131,7 @@ test('should import @ttoss/appsync-api lambda layer', () => {
   });
 
   const layers =
-    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Layers;
 
   expect(layers).toMatchObject([
     {
@@ -188,16 +189,16 @@ test('should add resolvers to template', () => {
 
   const resources = Object.values(template.Resources);
 
-  typeAndFieldNames.forEach(([typeName, fieldName]) => {
+  for (const [typeName, fieldName] of typeAndFieldNames) {
     const resource = resources.find((r) => {
       return (
-        r.Properties.TypeName === typeName &&
-        r.Properties.FieldName === fieldName
+        r.Properties?.TypeName === typeName &&
+        r.Properties?.FieldName === fieldName
       );
     });
 
     expect(resource).toBeDefined();
-  });
+  }
 });
 
 describe('custom domain name', () => {
