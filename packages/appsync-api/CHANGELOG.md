@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.22.15...@ttoss/appsync-api@0.23.0) (2026-03-20)
+
+### Features
+
+- appsync create context ([#899](https://github.com/ttoss/ttoss/issues/899)) ([7ebb5b2](https://github.com/ttoss/ttoss/commit/7ebb5b278d3604f8348b97c0d5d57abfe21b1d31))
+
 ## 0.22.15 (2026-03-20)
 
 **Note:** Version bump only for package @ttoss/appsync-api
