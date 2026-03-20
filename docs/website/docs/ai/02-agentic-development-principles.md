@@ -281,6 +281,28 @@ In manual development, the cognitive effort (friction) required to write complex
 
 **Failure Scenario:** A developer needs to handle a new edge case. Manually, writing the necessary boilerplate would take 30 minutes, prompting them to refactor the architecture. With AI, generating a "good enough" patch takes 10 seconds. The developer applies the patch. Repeated 50 times, this leads to a system that is functional but unmaintainable, created without the developer ever feeling the "pain" of the debt they accrued.
 
+### The Principle of Cheap Generation, Expensive Commitment
+
+AI collapses the marginal cost of producing candidate code, drafts, and partial implementations to near zero. But the cost of commitment—validation, integration, review, ownership, and long-term maintenance inside a real system—remains strictly human-bound and expensive. This asymmetry is new: before AI, generation cost and commitment cost were roughly proportional, creating a natural governor on how much work entered the system. With AI, that governor is removed. Organizations can now start far more work than they can responsibly finish, because the visible cost (generation) no longer signals the invisible cost (commitment). Therefore, the cheaper generation becomes, the stronger governance must be around what is allowed to enter execution. This principle extends [The Principle of Zero-Cost Erosion](#the-principle-of-zero-cost-erosion) from code quality to workflow economics, and interacts with [Q3: The Principle of Queueing Capacity Utilization](/docs/product/product-development/principles#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially) by increasing hidden WIP.
+
+**Failure Scenario:** A CTO assigns a developer to a sensitive billing migration. During the sprint, the commercial team asks for three "quick" customer-facing adjustments. Because AI can generate each change in minutes, the developer accepts all three. The generation was cheap, but now the developer carries four open contexts requiring validation, testing, and integration. The billing migration—the highest-value task—slips, accumulates errors from fragmented attention, and loses coherence. The organization confused fast initiation with fast completion.
+
+#### The Corollary of Cognitive Re-entry Cost
+
+AI does not reduce the cost of resuming interrupted knowledge work. Every context switch destroys the developer's active mental model—the accumulated understanding of constraints, partial decisions, and risks required to guide and verify AI output correctly. The dominant cost of an interruption is not the time spent on the interrupting task; it is the non-linear cost of reconstructing the mental state for the original task. Because AI increases the frequency of "cheap" interruptions (via [The Principle of Cheap Generation, Expensive Commitment](#the-principle-of-cheap-generation-expensive-commitment)), it amplifies the total re-entry tax the developer pays across a workday.
+
+**Failure Scenario:** A developer deep in a complex state machine refactor uses AI to handle a "quick" unrelated bug fix from another team. The fix takes 5 minutes. Returning to the state machine takes 40 minutes of re-reading code and reconstructing the reasoning chain. The net cost of the interruption was 45 minutes for a 5-minute task—a 9:1 ratio invisible to management.
+
+#### The Corollary of Priority Contention
+
+When multiple authorities can independently inject work into the same execution channel, the system stops optimizing for completion and starts optimizing for interruption response. AI worsens this because it makes every request _look_ cheap to start, lowering the social barrier for injection. The result is that more tasks begin, fewer tasks finish cleanly, and effective priority is determined by recency and social pressure rather than system economics. This directly increases hidden WIP, destabilizing throughput as predicted by [Q3: The Principle of Queueing Capacity Utilization](/docs/product/product-development/principles#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially).
+
+**Failure Scenario:** The CTO sets a backend migration as the sprint goal. Sales, support, and product each inject one "small" request during the week. Each looks trivial in isolation. By Friday, the developer has five open branches, three pending reviews, and the migration is 40% complete instead of 90%—not because the developer was slow, but because the system allowed four uncoordinated priority signals to fragment execution.
+
+#### The Corollary of Admission Control
+
+The question is not "Can AI generate this quickly?" but "Should this enter execution now?" Every candidate task must justify not just its own value, but the commitment cost it imposes on the system: validation effort, context-switch tax on the current priority, review queue load, and maintenance tail. Without explicit admission control, cheap generation floods the execution channel with work that individually looks free but collectively bankrupts the team's capacity to finish anything well.
+
 ## The Governance of Technical Debt
 
 These principles guide the trade-off between execution speed and code quality, ensuring that technical debt is a conscious leverage rather than an uncontrolled entropy.
