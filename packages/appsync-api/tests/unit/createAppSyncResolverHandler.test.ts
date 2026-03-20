@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AUTHORS, schemaComposer } from '../schemaComposer';
-import { allow, deny, shield } from 'graphql-shield';
-import { createAppSyncResolverHandler } from '../../src';
 import { toGlobalId } from '@ttoss/ids';
+import { allow, deny, shield } from 'graphql-shield';
+
+import { createAppSyncResolverHandler } from '../../src';
+import { AUTHORS, schemaComposer } from '../schemaComposer';
 
 test.each([
   {
@@ -132,8 +133,8 @@ describe('testing middlewares', () => {
 
     try {
       await handler(event, context, callback);
-    } catch (err) {
-      error = err;
+    } catch (error_) {
+      error = error_;
     } finally {
       expect(error).toEqual(permissionError);
     }
@@ -296,6 +297,71 @@ describe('testing headers', () => {
       expect.objectContaining({
         context: expect.objectContaining({
           headers: expect.objectContaining(headers),
+        }),
+      })
+    );
+  });
+});
+
+describe('testing context enrichment via createContext', () => {
+  const enrichedSchemaComposer = schemaComposer.clone();
+
+  const enrichedResolver = jest.fn();
+
+  const resolver = enrichedSchemaComposer.createResolver({
+    name: 'enrichedAuthor',
+    type: `type EnrichedAuthor { id: ID! name: String! }`,
+    resolve: enrichedResolver,
+  });
+
+  enrichedSchemaComposer.Query.addFields({ enrichedAuthor: resolver });
+
+  const MOCK_USER_ID = 'user-123';
+
+  const handler = createAppSyncResolverHandler({
+    schemaComposer: enrichedSchemaComposer,
+    createContext: async ({ identity }) => {
+      const hasSub =
+        identity && typeof (identity as { sub?: string }).sub === 'string';
+      return {
+        userId: hasSub ? await Promise.resolve(MOCK_USER_ID) : undefined,
+      };
+    },
+  });
+
+  const event = {
+    info: {
+      parentTypeName: 'Query',
+      fieldName: 'enrichedAuthor',
+    },
+    arguments: {},
+    source: {},
+    identity: { sub: 'cognito-sub-abc' },
+  } as any;
+
+  const context = {} as any;
+
+  const callback = jest.fn();
+
+  test('should add userId to context before the resolver runs', async () => {
+    await handler(event, context, callback);
+
+    expect(enrichedResolver).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          userId: MOCK_USER_ID,
+        }),
+      })
+    );
+  });
+
+  test('should still have original identity in context', async () => {
+    await handler(event, context, callback);
+
+    expect(enrichedResolver).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          identity: event.identity,
         }),
       })
     );

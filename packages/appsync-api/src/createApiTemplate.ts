@@ -158,12 +158,15 @@ export const createApiTemplate = ({
           Layers: lambdaFunction.layers,
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
-          Runtime: 'nodejs22.x',
+          /**
+           * https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtimes-supported
+           */
+          Runtime: 'nodejs24.x',
           /**
            * https://docs.aws.amazon.com/general/latest/gr/appsync.html
            * Request execution time for mutations, queries, and subscriptions: 30 seconds
            */
-          Timeout: 29,
+          Timeout: 30,
         },
       },
       [AppSyncLambdaFunctionAppSyncDataSourceLogicalId]: {

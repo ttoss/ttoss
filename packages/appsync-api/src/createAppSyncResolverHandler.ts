@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BuildSchemaInput, buildSchema } from '@ttoss/graphql-api';
+import type { BuildSchemaInput } from '@ttoss/graphql-api';
+import { buildSchema } from '@ttoss/graphql-api';
+import type {
+  AppSyncIdentity,
+  AppSyncResolverHandler as AwsAppSyncResolverHandler,
+  Context,
+} from 'aws-lambda';
 import { type GraphQLObjectType } from 'graphql';
-import type { AppSyncResolverHandler as AwsAppSyncResolverHandler } from 'aws-lambda';
 
 export type AppSyncResolverHandler<
   TArguments,
@@ -9,9 +14,44 @@ export type AppSyncResolverHandler<
   TSource = Record<string, any> | null,
 > = AwsAppSyncResolverHandler<TArguments, TResult, TSource>;
 
+/**
+ * The base context object passed to all AppSync resolvers.
+ */
+export type BaseAppSyncContext = {
+  /** The raw Lambda invocation context. */
+  handler: Context;
+  /** The AppSync request object (includes headers). */
+  request: any;
+  /** The caller's identity (Cognito, IAM, Lambda, or OIDC). Null when using API key auth. */
+  identity: AppSyncIdentity | null | undefined;
+};
+
 export const createAppSyncResolverHandler = ({
+  createContext,
   ...buildSchemaInput
-}: BuildSchemaInput): AppSyncResolverHandler<any, any, any> => {
+}: BuildSchemaInput & {
+  /**
+   * Optional async function called once per request to enrich the resolver
+   * context. The returned object is shallow-merged into the base context and
+   * made available to every resolver.
+   *
+   * Use this for per-request setup such as resolving a `userId` from Cognito.
+   * For authorization rules or before/after resolver logic, prefer `middlewares`.
+   *
+   * @example
+   * ```ts
+   * createAppSyncResolverHandler({
+   *   schemaComposer,
+   *   createContext: async ({ identity }) => ({
+   *     userId: await getUserIdFromCognitoSub(identity?.sub),
+   *   }),
+   * });
+   * ```
+   */
+  createContext?: (
+    baseContext: BaseAppSyncContext
+  ) => Promise<Record<string, any>> | Record<string, any>;
+}): AppSyncResolverHandler<any, any, any> => {
   return async (event, appSyncHandlerContext) => {
     const { schemaComposer } = buildSchemaInput;
 
@@ -22,11 +62,15 @@ export const createAppSyncResolverHandler = ({
 
     const { parentTypeName, fieldName } = info;
 
-    const context = {
+    const baseContext: BaseAppSyncContext = {
       handler: appSyncHandlerContext,
       request,
       identity: event.identity,
     };
+
+    const context = createContext
+      ? { ...baseContext, ...(await createContext(baseContext)) }
+      : baseContext;
 
     const schema = buildSchema(buildSchemaInput);
 
