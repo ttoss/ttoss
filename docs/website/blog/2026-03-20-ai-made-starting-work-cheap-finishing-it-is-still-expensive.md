@@ -28,9 +28,9 @@ AI removes that governor.
 
 Now organizations can start far more work than they can responsibly finish. The visible cost is low, so the hidden cost is ignored.
 
-## The New Bottleneck Is Not Generation
+## The New Bottleneck Is Commitment Capacity
 
-Most teams still manage engineering as if typing code were the scarce resource. It no longer is.
+Most teams still manage engineering as if typing code were the scarce resource. Commitment capacity is now the scarce resource.
 
 The new bottleneck is commitment capacity:
 
@@ -44,7 +44,7 @@ The new bottleneck is commitment capacity:
 
 This changes how teams should think about velocity.
 
-If AI generates four "small" tasks in the time a developer used to complete one, that does not mean the team became 4x faster. It often means the team created 4x more unfinished obligations. This is not acceleration. It is invisible queue growth.
+If AI generates four "small" tasks in the time a developer used to complete one, the team creates 4x more unfinished obligations. The system accumulates invisible queue growth.
 
 That is why this principle connects directly to [Q3: The Principle of Queueing Capacity Utilization](/docs/product/product-development/principles#q3-the-principle-of-queueing-capacity-utilization-capacity-utilization-increases-queues-exponentially). When cheap generation floods the system with new work, queues expand silently until throughput collapses.
 
@@ -56,7 +56,7 @@ A developer is working on a critical migration. Then sales asks for "one quick c
 
 So the team says yes.
 
-The problem is not the generation time. The problem is that each accepted task creates a commitment tail:
+Each accepted task creates a commitment tail:
 
 - new context to keep active
 - new test scenarios
@@ -70,9 +70,7 @@ This is exactly how teams become busy while delivering less.
 
 ## Admission Control Is Now a Core Management Discipline
 
-The right question is no longer, "Can AI generate this quickly?"
-
-The right question is, "Should this enter execution now?"
+The decisive question is, "Should this enter execution now?"
 
 That is an admission control problem.
 
@@ -90,21 +88,21 @@ This is also why [The Principle of Zero-Cost Erosion](/docs/ai/agentic-developme
 
 ## What Good Teams Do Instead
 
-High-performing teams do not treat AI as a license to start more work. They treat it as a way to complete the right work with less waste.
+High-performing teams treat AI as a way to complete the right work with less waste.
 
 That means:
 
 - limiting concurrent work even when generation is cheap
 - protecting the highest-value task from interruption
-- rejecting requests that cannot justify commitment cost
+- accepting only requests that justify commitment cost
 - using automation to reduce validation cost
 - keeping architecture modular so ownership stays bounded
 
-AI should reduce cycle time, not increase hidden WIP.
+AI should reduce cycle time and keep hidden WIP bounded.
 
 ## Conclusion
 
-AI changed the economics of software creation, but it did not change the economics of responsibility.
+AI changed the economics of software creation. Responsibility still carries the same economics.
 
 Generating work is cheap. Finishing work is still expensive.
 
