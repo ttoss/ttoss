@@ -93,14 +93,13 @@ Every resolver then receives `context.userId` without having to derive it indivi
 You can use [`graphql-middleware`](https://github.com/dimatill/graphql-middleware)-compatible middlewares via the `middlewares` option. Each middleware wraps the resolver — code before `resolve()` runs **before** the resolver, code after runs **after**.
 
 In AppSync, each Lambda invocation handles a single field, so a middleware runs exactly once per request.
-
 Use `middlewares` for authorization rules or cross-cutting logic (logging, tracing). Combine with `createContext` for per-request context enrichment:
 
-|                     | `createContext`                | `middlewares`                           |
-| ------------------- | ------------------------------ | --------------------------------------- |
-| Runs                | Once per request               | Once per resolver call                  |
-| Purpose             | Enrich context (e.g. `userId`) | Auth rules, logging, before/after logic |
-| Can block execution | No                             | Yes (by not calling `resolve`)          |
+|                     | `createContext`                                            | `middlewares`                                                      |
+| ------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| Runs                | Once per request                                           | Once per resolver call                                             |
+| Purpose             | Enrich context (e.g. `userId`)                             | Auth rules, logging, before/after logic                            |
+| Can block execution | On error (request fails if `createContext` rejects/throws) | Yes (can conditionally block by not calling `resolve` or throwing) |
 
 #### Authorization with GraphQL Shield
 
