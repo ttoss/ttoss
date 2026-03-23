@@ -199,3 +199,35 @@ const MinimalTemplate: StoryFn = () => {
 
 export const Minimal = MinimalTemplate.bind({});
 Minimal.storyName = 'Minimal (name + label only)';
+
+/**
+ * When `countryCodeName` is set the selected calling code is stored as a
+ * separate form field. The submitted data will contain both:
+ * `{ phone: '+15555555555', countryCode: '+1' }`.
+ * This is useful when you want to persist the country code independently
+ * in your database alongside the phone number.
+ */
+const WithCountryCodeNameTemplate: StoryFn = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        defaultCountryCode={COMMON_PHONE_COUNTRY_CODES[1].value}
+        countryCodeName="countryCode"
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const WithCountryCodeName = WithCountryCodeNameTemplate.bind({});
+WithCountryCodeName.storyName =
+  'Country Code as Separate Field (countryCodeName)';

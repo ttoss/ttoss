@@ -1,6 +1,7 @@
 import { Box, Flex, Input, Select } from '@ttoss/ui';
 import * as React from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import type { PatternFormatProps } from 'react-number-format';
 import { NumericFormat, PatternFormat } from 'react-number-format';
 
@@ -123,6 +124,19 @@ export type FormFieldPhoneProps<
      * caller wants to react to country-code changes.
      */
     onCountryCodeChange?: (countryCode: string) => void;
+    /**
+     * When provided, the selected country code is stored as a separate field
+     * in the form under this name (e.g. `'countryCode'`). This allows the
+     * submitted form data to include both the full phone value and the
+     * selected calling code independently.
+     *
+     * @example
+     * ```tsx
+     * // Form data: { phone: '+15555555555', countryCode: '+1' }
+     * <FormFieldPhone name="phone" label="Phone" countryCodeName="countryCode" />
+     * ```
+     */
+    countryCodeName?: string;
   };
 
 /**
@@ -198,6 +212,17 @@ export type FormFieldPhoneProps<
  *   countryCodeOptions={[]}
  * />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Store the selected country code as a separate form field.
+ * // Submitted data: { phone: '+15555555555', countryCode: '+1' }
+ * <FormFieldPhone
+ *   name="phone"
+ *   label="Phone"
+ *   countryCodeName="countryCode"
+ * />
+ * ```
  */
 
 export const FormFieldPhone = <
@@ -209,6 +234,7 @@ export const FormFieldPhone = <
   format,
   countryCodeOptions = COMMON_PHONE_COUNTRY_CODES,
   onCountryCodeChange,
+  countryCodeName,
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
   const {
@@ -228,13 +254,28 @@ export const FormFieldPhone = <
     ...patternFormatProps
   } = props;
 
+  const { setValue, getValues } = useFormContext();
+
   const [countryCode, setCountryCode] = React.useState(
-    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined
+    countryCodeProp ??
+      (countryCodeName ? (getValues(countryCodeName) as string) : undefined) ??
+      countryCodeOptions[0]?.value ??
+      undefined
   );
+
+  React.useEffect(() => {
+    if (countryCodeName && countryCode && !getValues(countryCodeName)) {
+      setValue(countryCodeName, countryCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCountryCodeChange = (code: string) => {
     setCountryCode(code);
     onCountryCodeChange?.(code);
+    if (countryCodeName) {
+      setValue(countryCodeName, code);
+    }
   };
 
   const isManual = countryCode === MANUAL_PHONE_COUNTRY_CODE;
