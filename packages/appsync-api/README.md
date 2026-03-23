@@ -14,22 +14,25 @@ You can create and deploy an AppSync API in four steps:
 
 1. Create a `schemaComposer` object using [`graphql-compose`](https://graphql-compose.github.io/docs/intro/quick-start.html), that the next steps will use to create the API.
 
-2. Create a `cloudformation.ts` file that exports a CloudFormation template using `createApiTemplate`:
+2. Create a `cloudformation.ts` file that exports a CloudFormation template using `createApiTemplate`. Use `importValueFromParameter` from `@ttoss/cloudformation` to import cross-stack values whose export names come from template parameters:
 
 ```typescript
+import { importValueFromParameter } from '@ttoss/cloudformation';
 import { createApiTemplate } from '@ttoss/appsync-api';
 import { schemaComposer } from './schemaComposer';
 
 const template = createApiTemplate({
   schemaComposer,
   dataSource: {
-    roleArn: {
-      'Fn::ImportValue': 'AppSyncLambdaDataSourceIAMRoleArn',
-    },
+    roleArn: importValueFromParameter('AppSyncLambdaDataSourceIAMRoleArn'),
   },
   lambdaFunction: {
-    roleArn: {
-      'Fn::ImportValue': 'AppSyncLambdaFunctionIAMRoleArn',
+    roleArn: importValueFromParameter('AppSyncLambdaFunctionIAMRoleArn'),
+    environment: {
+      variables: {
+        TABLE_NAME: { Ref: 'DynamoTableName' },
+        SHARED_SECRET: importValueFromParameter('SharedSecretExportedName'),
+      },
     },
   },
 });

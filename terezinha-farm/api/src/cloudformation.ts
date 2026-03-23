@@ -1,4 +1,5 @@
 import { createApiTemplate } from '@ttoss/appsync-api';
+
 import { schemaComposer } from './schemaComposer';
 
 const template = createApiTemplate({
@@ -40,5 +41,4 @@ const template = createApiTemplate({
   },
 });
 
-// eslint-disable-next-line import/no-default-export
 export default template;

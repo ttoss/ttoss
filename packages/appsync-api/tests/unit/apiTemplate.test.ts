@@ -85,6 +85,29 @@ test('add environment variables to lambda function', () => {
   ).toEqual(variables);
 });
 
+test('add CloudFormation intrinsic environment variables to lambda function', () => {
+  const variables = {
+    PLAIN_VALUE: 'literal',
+    REF_VALUE: { Ref: 'SomeParameter' },
+    IMPORT_VALUE: {
+      'Fn::ImportValue': { 'Fn::Sub': '${SomeExportedParam}' },
+    },
+  };
+
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    lambdaFunction: {
+      ...createApiTemplateInput.lambdaFunction,
+      environment: { variables },
+    },
+  });
+
+  expect(
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Environment
+      .Variables
+  ).toEqual(variables);
+});
+
 test('create api key', () => {
   const template = createApiTemplate({
     ...createApiTemplateInput,
@@ -202,6 +225,79 @@ test('should add resolvers to template', () => {
 });
 
 describe('custom domain name', () => {
+  test('should add conditional resources when domainName is a Ref', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: { Ref: 'DomainName' },
+        certificateArn: { Ref: 'CertificateArn' },
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Parameters?.DomainName).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    expect(template.Parameters?.CertificateArn).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    expect(template.Conditions?.HasCustomDomain).toEqual({
+      'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'DomainName' }, ''] }],
+    });
+
+    expect(template.Resources.AppSyncDomainName.Condition).toBe(
+      'HasCustomDomain'
+    );
+    expect(template.Resources.AppSyncDomainNameApiAssociation.Condition).toBe(
+      'HasCustomDomain'
+    );
+    expect(template.Outputs?.DomainName?.Condition).toBe('HasCustomDomain');
+    expect(template.Outputs?.CloudFrontDomainName?.Condition).toBe(
+      'HasCustomDomain'
+    );
+  });
+
+  test('should NOT add conditions when domainName is a plain string', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Conditions?.HasCustomDomain).toBeUndefined();
+    expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+  });
+
+  test('should add certificateArn parameter when it is a Ref and domainName is a plain string', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: { Ref: 'CertificateArn' },
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Parameters?.CertificateArn).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    // No condition should be added since domainName is a plain string
+    expect(template.Conditions?.HasCustomDomain).toBeUndefined();
+    expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+  });
+
   test('should add custom domain name resources to template', () => {
     const input = {
       ...createApiTemplateInput,
