@@ -67,7 +67,7 @@ import { z, passwordSchema } from '@ttoss/forms';
 
 const schema = z.object({
   cpf: z.string().cpf(), // "Invalid CPF"
-  cnpj: z.string().cnpj('CNPJ inválido'), // custom message
+  cnpj: z.string().cnpj('Invalid CNPJ'), // custom message
   password: passwordSchema({ required: true }), // min 8 chars
   optionalPassword: passwordSchema(), // empty or min 8 chars
 });

@@ -267,14 +267,17 @@ export const FormFieldPhone = <
     if (countryCodeName && countryCode && !getValues(countryCodeName)) {
       setValue(countryCodeName, countryCode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [countryCodeName, countryCode, getValues, setValue]);
 
   const handleCountryCodeChange = (code: string) => {
     setCountryCode(code);
     onCountryCodeChange?.(code);
     if (countryCodeName) {
-      setValue(countryCodeName, code);
+      setValue(countryCodeName, code, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
     }
   };
 
