@@ -23,7 +23,8 @@ const schema = z.object({
 
 /**
  * Default usage — country-code dropdown is pre-populated with
- * `COMMON_PHONE_COUNTRY_CODES`. US (+1) is selected by default.
+ * `COMMON_PHONE_COUNTRY_CODES`. The component manages the selected country
+ * code internally; no external state is needed.
  * On submit the form value includes the country code prefix
  * (e.g. `{ phone: '+15555555555' }`).
  */
@@ -33,17 +34,12 @@ const DefaultTemplate: StoryFn = () => {
     resolver: zodResolver(schema),
   });
 
-  const [countryCode, setCountryCode] = React.useState(
-    COMMON_PHONE_COUNTRY_CODES[1].value
-  );
-
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldPhone
         name="phone"
         label="Phone:"
-        countryCode={countryCode}
-        onCountryCodeChange={setCountryCode}
+        defaultCountryCode={COMMON_PHONE_COUNTRY_CODES[1].value}
       />
       <Button sx={{ marginTop: '4' }} type="submit">
         Submit
@@ -74,7 +70,7 @@ const GenericTemplate: StoryFn = () => {
         <FormFieldPhone
           name="phone"
           label="Phone (US):"
-          countryCode="+1"
+          defaultCountryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
           countryCodeOptions={[]}
@@ -82,7 +78,7 @@ const GenericTemplate: StoryFn = () => {
         <FormFieldPhone
           name="phoneDisabled"
           label="Phone (disabled):"
-          countryCode="+1"
+          defaultCountryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
           countryCodeOptions={[]}
@@ -91,7 +87,7 @@ const GenericTemplate: StoryFn = () => {
         <FormFieldPhone
           name="phoneWarning"
           label="Phone (warning):"
-          countryCode="+1"
+          defaultCountryCode="+1"
           format="(###) ###-####"
           placeholder="(555) 555-5555"
           countryCodeOptions={[]}
@@ -151,7 +147,8 @@ Brazil.storyName = 'Brazil (+55)';
  * Selectable country code using COMMON_PHONE_COUNTRY_CODES — the user can
  * pick from the built-in list of 15 common countries (+ Manual). The phone
  * number format updates automatically when the country changes, and the phone
- * field is cleared on each country switch. On submit the value includes the
+ * field is cleared on each country switch. The component manages the selected
+ * code internally. On submit the value includes the
  * country code prefix (e.g. `{ phone: '+15555555555' }`).
  */
 const EditableCountryCodeTemplate: StoryFn = () => {
@@ -160,17 +157,12 @@ const EditableCountryCodeTemplate: StoryFn = () => {
     resolver: zodResolver(schema),
   });
 
-  const [countryCode, setCountryCode] = React.useState(
-    COMMON_PHONE_COUNTRY_CODES[1].value
-  );
-
   return (
     <Form {...formMethods} onSubmit={action('onSubmit')}>
       <FormFieldPhone
         name="phone"
         label="Phone:"
-        countryCode={countryCode}
-        onCountryCodeChange={setCountryCode}
+        defaultCountryCode={COMMON_PHONE_COUNTRY_CODES[1].value}
         countryCodeOptions={COMMON_PHONE_COUNTRY_CODES}
       />
       <Button sx={{ marginTop: '4' }} type="submit">
@@ -182,3 +174,28 @@ const EditableCountryCodeTemplate: StoryFn = () => {
 
 export const EditableCountryCode = EditableCountryCodeTemplate.bind({});
 EditableCountryCode.storyName = 'Editable Country Code (Common List)';
+
+/**
+ * Minimal usage — only `name` and `label` are provided.
+ * The component defaults to `COMMON_PHONE_COUNTRY_CODES` and starts in
+ * Manual mode (the first entry), so the user can type any international
+ * number freely without a pattern mask.
+ */
+const MinimalTemplate: StoryFn = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone name="phone" label="Phone:" />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const Minimal = MinimalTemplate.bind({});
+Minimal.storyName = 'Minimal (name + label only)';
