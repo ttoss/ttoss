@@ -38,7 +38,8 @@ export type CloudFormationIntrinsic =
   | CloudFormationJoin
   | CloudFormationSub
   | CloudFormationSelect
-  | CloudFormationSplit;
+  | CloudFormationSplit
+  | CloudFormationImportValue;
 
 export type CloudFormationValue<T = any> = T | CloudFormationIntrinsic;
 
