@@ -571,6 +571,46 @@ Input with custom format patterns.
 />
 ```
 
+### FormFieldPhone
+
+Generic phone number field with an optional country-code dropdown. By default it renders a dropdown populated with `COMMON_PHONE_COUNTRY_CODES` (15 common countries + a Manual entry). The component manages the selected country code internally — no external state is needed.
+
+```tsx
+import { FormFieldPhone, COMMON_PHONE_COUNTRY_CODES } from '@ttoss/forms';
+
+// Minimal — dropdown defaults to COMMON_PHONE_COUNTRY_CODES, starts in Manual mode
+<FormFieldPhone name="phone" label="Phone" />
+
+// Set an initial country code (US +1)
+<FormFieldPhone name="phone" label="Phone" defaultCountryCode="+1" />
+
+// React to country-code changes without managing state
+<FormFieldPhone
+  name="phone"
+  label="Phone"
+  defaultCountryCode="+1"
+  onCountryCodeChange={(code) => console.log('selected', code)}
+/>
+
+// No dropdown — plain masked input with a fixed country code
+<FormFieldPhone
+  name="phone"
+  label="Phone"
+  defaultCountryCode="+1"
+  format="(###) ###-####"
+  countryCodeOptions={[]}
+/>
+```
+
+The submitted value always includes the country code prefix (e.g. `{ phone: '+15555555555' }`). When the user selects the **Manual** entry, the mask is removed and the user can type any international number freely (the value is stored with a `+` prefix).
+
+**Key props:**
+
+- `defaultCountryCode`: Initial calling code (e.g. `'+1'`). Defaults to the first entry in `countryCodeOptions`.
+- `format`: Pattern string or function for the local number part (e.g. `'(###) ###-####'`).
+- `countryCodeOptions`: List of `CountryCodeOption` objects. Defaults to `COMMON_PHONE_COUNTRY_CODES`. Pass `[]` to hide the dropdown.
+- `onCountryCodeChange`: Optional callback fired when the user picks a different country code.
+
 ### FormFieldCreditCardNumber
 
 Credit card input with automatic formatting.
@@ -611,7 +651,7 @@ The package also exports `isCnpjValid(cnpj: string)` for standalone validation.
 
 #### FormFieldPhone
 
-Brazilian phone number input with formatting.
+Brazilian phone number input with automatic formatting and the `+55` country code pre-set.
 
 ```tsx
 <FormFieldPhone name="phone" label="Phone" />

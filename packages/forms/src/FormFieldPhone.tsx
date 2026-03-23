@@ -89,11 +89,12 @@ export type FormFieldPhoneProps<
 > = FormFieldProps<TFieldValues, TName> &
   Omit<PatternFormatProps, 'name' | 'format'> & {
     /**
-     * The country calling code to display as a literal prefix in the input.
+     * The initial country calling code to display as a literal prefix in the input.
      * For example, '+55' for Brazil or '+1' for the United States.
      * Defaults to the first entry in `countryCodeOptions` when not provided.
+     * The component manages the selected code internally — no external state needed.
      */
-    countryCode?: string;
+    defaultCountryCode?: string;
     /**
      * The pattern format for the local part of the phone number.
      * Accepts either a static string (e.g., '(##) #####-####') or a function
@@ -116,9 +117,10 @@ export type FormFieldPhoneProps<
      */
     countryCodeOptions?: CountryCodeOption[];
     /**
-     * Called with the newly selected country code value when the user changes
-     * the country code via the dropdown. Only relevant when
-     * countryCodeOptions is non-empty.
+     * Optional callback fired with the newly selected country code value when
+     * the user changes the country code via the dropdown. The component
+     * manages the selected code internally, so this is only needed when the
+     * caller wants to react to country-code changes.
      */
     onCountryCodeChange?: (countryCode: string) => void;
   };
@@ -149,26 +151,30 @@ export type FormFieldPhoneProps<
  *
  * @example
  * ```tsx
- * // Default: dropdown with COMMON_PHONE_COUNTRY_CODES, US (+1) pre-selected
- * <FormFieldPhone name="phone" label="Phone" countryCode="+1" />
+ * // Default: dropdown with COMMON_PHONE_COUNTRY_CODES, country code managed internally.
+ * // The submitted value includes the country code prefix (e.g. '+15555555555').
+ * <FormFieldPhone name="phone" label="Phone" />
  * ```
  *
  * @example
  * ```tsx
- * // Controlled country code — submitted value includes the prefix
- * // e.g. { phone: '+15555555555' }
- * const [countryCode, setCountryCode] = React.useState('+1');
+ * // Set a custom initial country code; the component manages further changes.
+ * <FormFieldPhone name="phone" label="Phone" defaultCountryCode="+55" />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Listen for country-code changes without managing state externally.
  * <FormFieldPhone
  *   name="phone"
  *   label="Phone"
- *   countryCode={countryCode}
- *   onCountryCodeChange={setCountryCode}
+ *   onCountryCodeChange={(code) => console.log('selected', code)}
  * />
  * ```
  *
  * @example
  * ```tsx
- * // No dropdown — plain phone input; value includes the prefix
+ * // No dropdown — plain phone input; value includes the prefix.
  * // e.g. { phone: '+15555555555' }
  * <FormFieldPhone
  *   name="phone"
@@ -193,12 +199,13 @@ export type FormFieldPhoneProps<
  * />
  * ```
  */
+
 export const FormFieldPhone = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   disabled,
-  countryCode: countryCodeProp,
+  defaultCountryCode: countryCodeProp,
   format,
   countryCodeOptions = COMMON_PHONE_COUNTRY_CODES,
   onCountryCodeChange,
@@ -221,8 +228,14 @@ export const FormFieldPhone = <
     ...patternFormatProps
   } = props;
 
-  const countryCode =
-    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined;
+  const [countryCode, setCountryCode] = React.useState(
+    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined
+  );
+
+  const handleCountryCodeChange = (code: string) => {
+    setCountryCode(code);
+    onCountryCodeChange?.(code);
+  };
 
   const isManual = countryCode === MANUAL_PHONE_COUNTRY_CODE;
 
@@ -328,7 +341,7 @@ export const FormFieldPhone = <
             countryCode={countryCode}
             countryCodeOptions={countryCodeOptions}
             disabled={disabled ?? field.disabled}
-            onCountryCodeChange={onCountryCodeChange}
+            onCountryCodeChange={handleCountryCodeChange}
             onPhoneReset={() => {
               return field.onChange('');
             }}

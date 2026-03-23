@@ -1,6 +1,5 @@
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
-import * as React from 'react';
 
 import {
   COMMON_PHONE_COUNTRY_CODES,
@@ -27,7 +26,7 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode="+1"
+            defaultCountryCode="+1"
             format="(###) ###-####"
             countryCodeOptions={[]}
           />
@@ -63,7 +62,7 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode="+55"
+            defaultCountryCode="+55"
             format={dynamicFormat}
             countryCodeOptions={[]}
           />
@@ -133,7 +132,7 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode="+1"
+            defaultCountryCode="+1"
             format="(###) ###-####"
             countryCodeOptions={[]}
           />
@@ -158,7 +157,6 @@ describe('FormFieldPhoneGeneric', () => {
     ];
 
     const RenderForm = () => {
-      const [countryCode, setCountryCode] = React.useState('+1');
       const formMethods = useForm();
 
       return (
@@ -166,12 +164,9 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode={countryCode}
+            defaultCountryCode="+1"
             countryCodeOptions={countryCodeOptions}
-            onCountryCodeChange={(code) => {
-              setCountryCode(code);
-              onCountryCodeChange(code);
-            }}
+            onCountryCodeChange={onCountryCodeChange}
           />
         </Form>
       );
@@ -195,7 +190,6 @@ describe('FormFieldPhoneGeneric', () => {
     ];
 
     const RenderForm = () => {
-      const [countryCode, setCountryCode] = React.useState('+91');
       const formMethods = useForm();
 
       return (
@@ -203,9 +197,8 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode={countryCode}
+            defaultCountryCode="+91"
             countryCodeOptions={countryCodeOptions}
-            onCountryCodeChange={setCountryCode}
           />
           <Button type="submit">Submit</Button>
         </Form>
@@ -234,7 +227,7 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode="+1"
+            defaultCountryCode="+1"
             countryCodeOptions={[]}
           />
           <Button type="submit">Submit</Button>
@@ -276,9 +269,6 @@ describe('FormFieldPhoneGeneric', () => {
     const onCountryCodeChange = jest.fn();
 
     const RenderForm = () => {
-      const [countryCode, setCountryCode] = React.useState(
-        COMMON_PHONE_COUNTRY_CODES[0].value
-      );
       const formMethods = useForm();
 
       return (
@@ -286,11 +276,8 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode={countryCode}
-            onCountryCodeChange={(code) => {
-              setCountryCode(code);
-              onCountryCodeChange(code);
-            }}
+            defaultCountryCode={COMMON_PHONE_COUNTRY_CODES[0].value}
+            onCountryCodeChange={onCountryCodeChange}
           />
         </Form>
       );
@@ -309,9 +296,6 @@ describe('FormFieldPhoneGeneric', () => {
     const onSubmit = jest.fn();
 
     const RenderForm = () => {
-      const [countryCode, setCountryCode] = React.useState(
-        MANUAL_PHONE_COUNTRY_CODE
-      );
       const formMethods = useForm();
 
       return (
@@ -319,8 +303,7 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode={countryCode}
-            onCountryCodeChange={setCountryCode}
+            defaultCountryCode={MANUAL_PHONE_COUNTRY_CODE}
             countryCodeOptions={[
               { label: 'US +1', value: '+1', format: '(###) ###-####' },
               { label: 'Manual', value: MANUAL_PHONE_COUNTRY_CODE },
@@ -351,7 +334,6 @@ describe('FormFieldPhoneGeneric', () => {
     ];
 
     const RenderForm = () => {
-      const [countryCode, setCountryCode] = React.useState('+1');
       const formMethods = useForm();
 
       return (
@@ -359,9 +341,8 @@ describe('FormFieldPhoneGeneric', () => {
           <FormFieldPhone
             name="input1"
             label="input 1"
-            countryCode={countryCode}
+            defaultCountryCode="+1"
             countryCodeOptions={countryCodeOptions}
-            onCountryCodeChange={setCountryCode}
           />
           <Button type="submit">Submit</Button>
         </Form>
@@ -380,5 +361,36 @@ describe('FormFieldPhoneGeneric', () => {
     // Submit without typing anything — phone must be empty
     await user.click(screen.getByText('Submit'));
     expect(onSubmit).toHaveBeenCalledWith({ input1: '' });
+  });
+
+  test('renders and submits with only name and label props', async () => {
+    const user = userEvent.setup({ delay: null });
+    const onSubmit = jest.fn();
+
+    const RenderForm = () => {
+      const formMethods = useForm();
+
+      return (
+        <Form {...formMethods} onSubmit={onSubmit}>
+          <FormFieldPhone name="phone" label="Phone:" />
+          <Button type="submit">Submit</Button>
+        </Form>
+      );
+    };
+
+    render(<RenderForm />);
+
+    // The label must be accessible
+    const input = screen.getByLabelText('Phone:');
+    expect(input).toBeInTheDocument();
+
+    // The dropdown with COMMON_PHONE_COUNTRY_CODES must be rendered
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+
+    // Default is Manual mode — free-form input with + prefix
+    await user.type(input, '15551234567');
+    await user.click(screen.getByText('Submit'));
+
+    expect(onSubmit).toHaveBeenCalledWith({ phone: '+15551234567' });
   });
 });

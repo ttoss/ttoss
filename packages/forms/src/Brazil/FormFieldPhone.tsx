@@ -10,7 +10,7 @@ export type FormFieldPhoneProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Omit<
   GenericFormFieldPhoneProps<TFieldValues, TName>,
-  'countryCode' | 'format'
+  'defaultCountryCode' | 'format'
 >;
 
 const BRAZIL_COUNTRY_CODE = '+55';
@@ -41,7 +41,7 @@ export const FormFieldPhone = <
   return (
     <GenericFormFieldPhone
       {...props}
-      countryCode={BRAZIL_COUNTRY_CODE}
+      defaultCountryCode={BRAZIL_COUNTRY_CODE}
       format={getBrazilPhoneFormat}
       placeholder={placeholder}
       countryCodeOptions={countryCodeOptions}
