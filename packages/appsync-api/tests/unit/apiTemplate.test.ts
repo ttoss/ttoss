@@ -267,4 +267,105 @@ describe('custom domain name', () => {
       },
     });
   });
+
+  describe('optional custom domain', () => {
+    const optionalInput = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: { Ref: 'DomainName' } as const,
+        certificateArn: { Ref: 'CertificateArn' } as const,
+        optional: true,
+      },
+    };
+
+    test('should add CertificateArn and DomainName parameters with empty defaults', () => {
+      const template = createApiTemplate(optionalInput);
+
+      expect(template.Parameters?.CertificateArn).toEqual({
+        Type: 'String',
+        Default: '',
+      });
+
+      expect(template.Parameters?.DomainName).toEqual({
+        Type: 'String',
+        Default: '',
+      });
+    });
+
+    test('should add HasCustomDomain condition', () => {
+      const template = createApiTemplate(optionalInput);
+
+      expect(template.Conditions?.HasCustomDomain).toEqual({
+        'Fn::And': [
+          { 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'CertificateArn' }, ''] }] },
+          { 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'DomainName' }, ''] }] },
+        ],
+      });
+    });
+
+    test('should apply HasCustomDomain condition to domain-related resources', () => {
+      const template = createApiTemplate(optionalInput);
+
+      expect(template.Resources.AppSyncDomainName.Condition).toBe(
+        'HasCustomDomain'
+      );
+      expect(template.Resources.AppSyncDomainNameApiAssociation.Condition).toBe(
+        'HasCustomDomain'
+      );
+    });
+
+    test('should use Ref intrinsics for domainName and certificateArn when optional', () => {
+      const template = createApiTemplate(optionalInput);
+
+      expect(
+        template.Resources.AppSyncDomainName.Properties?.DomainName
+      ).toEqual({ Ref: 'DomainName' });
+      expect(
+        template.Resources.AppSyncDomainName.Properties?.CertificateArn
+      ).toEqual({ Ref: 'CertificateArn' });
+    });
+
+    test('should apply HasCustomDomain condition to outputs', () => {
+      const template = createApiTemplate(optionalInput);
+
+      expect(template.Outputs?.DomainName?.Condition).toBe('HasCustomDomain');
+      expect(template.Outputs?.CloudFrontDomainName?.Condition).toBe(
+        'HasCustomDomain'
+      );
+    });
+
+    test('should apply HasCustomDomain condition to Route53 record set when hostedZoneName is provided', () => {
+      const templateWithHostedZone = createApiTemplate({
+        ...optionalInput,
+        customDomain: {
+          ...optionalInput.customDomain,
+          hostedZoneName: 'example.com',
+        },
+      });
+
+      expect(
+        templateWithHostedZone.Resources.AppSyncDomainNameRoute53RecordSet
+          .Condition
+      ).toBe('HasCustomDomain');
+    });
+
+    test('should not apply Condition to domain resources when optional is false', () => {
+      const template = createApiTemplate({
+        ...createApiTemplateInput,
+        customDomain: {
+          domainName: 'example.com',
+          certificateArn:
+            'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+          optional: false,
+        },
+      });
+
+      expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+      expect(
+        template.Resources.AppSyncDomainNameApiAssociation.Condition
+      ).toBeUndefined();
+      expect(template.Parameters?.CertificateArn).toBeUndefined();
+      expect(template.Conditions).toBeUndefined();
+    });
+  });
 });

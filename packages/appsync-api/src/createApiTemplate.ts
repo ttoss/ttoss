@@ -19,11 +19,52 @@ const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
 
 export const AppSyncGraphQLApiKeyLogicalId = 'AppSyncGraphQLApiKey';
 
-type StringOrImport =
+/**
+ * A CloudFormation value that can be a plain string or any standard CF
+ * intrinsic function. Use this type when declaring values that may reference
+ * parameters, imports, or other resources.
+ *
+ * - `string` – a literal string value.
+ * - `{ Ref }` – references a parameter or resource by logical ID.
+ * - `{ 'Fn::ImportValue' }` – imports a cross-stack export by name.
+ * - `{ 'Fn::Sub' }` – substitutes variables (e.g. `${Param}`) in a string.
+ * - `{ 'Fn::GetAtt' }` – retrieves an attribute from another resource.
+ * - `{ 'Fn::If' }` – conditionally returns one of two values.
+ * - `{ 'Fn::Join' }` – joins a list of values with a delimiter.
+ * - `{ 'Fn::Select' }` – selects a value from a list by index.
+ */
+export type CfIntrinsic =
   | string
-  | {
-      'Fn::ImportValue': string;
-    };
+  | { Ref: string }
+  | { 'Fn::ImportValue': string | { 'Fn::Sub': string } }
+  | { 'Fn::Sub': string | [string, Record<string, CfIntrinsic>] }
+  | { 'Fn::GetAtt': [string, string] }
+  | { 'Fn::If': [string, CfIntrinsic, CfIntrinsic] }
+  | { 'Fn::Join': [string, CfIntrinsic[]] }
+  | { 'Fn::Select': [number, CfIntrinsic[]] };
+
+/**
+ * Helper to build an `Fn::ImportValue` + `Fn::Sub` reference for a
+ * CloudFormation parameter. Useful for referencing cross-stack exports whose
+ * names are parameterised.
+ *
+ * @example
+ * ```ts
+ * const value = importValueFromParameter('MyStackExportParam');
+ * // { 'Fn::ImportValue': { 'Fn::Sub': '${MyStackExportParam}' } }
+ * ```
+ */
+export const importValueFromParameter = (
+  parameterName: string
+): CfIntrinsic => {
+  return {
+    'Fn::ImportValue': {
+      'Fn::Sub': `\${${parameterName}}`,
+    },
+  };
+};
+
+type StringOrImport = CfIntrinsic;
 
 /**
  * https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html
@@ -47,9 +88,22 @@ export const createApiTemplate = ({
   additionalAuthenticationProviders?: AuthenticationType[];
   authenticationType?: AuthenticationType;
   customDomain?: {
-    domainName: string;
-    certificateArn: string;
+    domainName: CfIntrinsic;
+    certificateArn: CfIntrinsic;
     hostedZoneName?: string;
+    /**
+     * When `true`, `createApiTemplate` will:
+     * 1. Add `CertificateArn` (Default: '') and `DomainName` (Default: '')
+     *    to the template Parameters.
+     * 2. Add a `HasCustomDomain` Condition that is true only when both
+     *    parameters are non-empty.
+     * 3. Apply `Condition: HasCustomDomain` to all domain-related resources
+     *    (AppSyncDomainName, AppSyncDomainNameApiAssociation,
+     *     AppSyncDomainNameRoute53RecordSet).
+     *
+     * This allows the stack to be deployed without providing a custom domain.
+     */
+    optional?: boolean;
   };
   dataSource: {
     roleArn: StringOrImport;
@@ -298,16 +352,58 @@ export const createApiTemplate = ({
 
   if (customDomain) {
     const AppSyncDomainNameLogicalId = 'AppSyncDomainName';
+    const hasCustomDomainCondition = 'HasCustomDomain';
+
+    let domainName: CfIntrinsic = customDomain.domainName;
+    let certificateArn: CfIntrinsic = customDomain.certificateArn;
+
+    if (customDomain.optional) {
+      /**
+       * Add CertificateArn and DomainName as Parameters with empty defaults so
+       * the stack can be deployed without providing a custom domain.
+       */
+      if (!template.Parameters) {
+        template.Parameters = {};
+      }
+
+      template.Parameters.CertificateArn = {
+        Type: 'String',
+        Default: '',
+      };
+
+      template.Parameters.DomainName = {
+        Type: 'String',
+        Default: '',
+      };
+
+      /**
+       * Condition that is true only when both parameters are non-empty.
+       */
+      if (!template.Conditions) {
+        template.Conditions = {};
+      }
+
+      template.Conditions[hasCustomDomainCondition] = {
+        'Fn::And': [
+          { 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'CertificateArn' }, ''] }] },
+          { 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'DomainName' }, ''] }] },
+        ],
+      };
+
+      domainName = { Ref: 'DomainName' };
+      certificateArn = { Ref: 'CertificateArn' };
+    }
 
     /**
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-domainname.html
      */
     template.Resources[AppSyncDomainNameLogicalId] = {
       Type: 'AWS::AppSync::DomainName',
+      ...(customDomain.optional && { Condition: hasCustomDomainCondition }),
       Properties: {
-        CertificateArn: customDomain.certificateArn,
+        CertificateArn: certificateArn,
         Description: 'Custom domain for AppSync API',
-        DomainName: customDomain.domainName,
+        DomainName: domainName,
       },
     };
 
@@ -321,9 +417,10 @@ export const createApiTemplate = ({
        */
       template.Resources.AppSyncDomainNameRoute53RecordSet = {
         Type: 'AWS::Route53::RecordSet',
+        ...(customDomain.optional && { Condition: hasCustomDomainCondition }),
         Properties: {
           HostedZoneName: hostedZoneName,
-          Name: customDomain.domainName,
+          Name: domainName,
           ResourceRecords: [
             {
               'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'AppSyncDomainName'],
@@ -337,6 +434,7 @@ export const createApiTemplate = ({
 
     template.Resources.AppSyncDomainNameApiAssociation = {
       Type: 'AWS::AppSync::DomainNameApiAssociation',
+      ...(customDomain.optional && { Condition: hasCustomDomainCondition }),
       Properties: {
         ApiId: {
           'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'],
@@ -353,6 +451,7 @@ export const createApiTemplate = ({
 
     template.Outputs.DomainName = {
       Description: 'Custom domain name for AppSync API',
+      ...(customDomain.optional && { Condition: hasCustomDomainCondition }),
       Value: {
         'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'DomainName'],
       },
@@ -360,6 +459,7 @@ export const createApiTemplate = ({
 
     template.Outputs.CloudFrontDomainName = {
       Description: 'CloudFront domain name for AppSync API',
+      ...(customDomain.optional && { Condition: hasCustomDomainCondition }),
       Value: {
         'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'AppSyncDomainName'],
       },

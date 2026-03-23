@@ -1,4 +1,8 @@
-export { createApiTemplate } from './createApiTemplate';
+export {
+  type CfIntrinsic,
+  createApiTemplate,
+  importValueFromParameter,
+} from './createApiTemplate';
 export {
   type AppSyncResolverHandler,
   type BaseAppSyncContext,
