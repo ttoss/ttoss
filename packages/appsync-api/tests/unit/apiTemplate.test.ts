@@ -277,6 +277,27 @@ describe('custom domain name', () => {
     expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
   });
 
+  test('should add certificateArn parameter when it is a Ref and domainName is a plain string', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: { Ref: 'CertificateArn' },
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Parameters?.CertificateArn).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    // No condition should be added since domainName is a plain string
+    expect(template.Conditions?.HasCustomDomain).toBeUndefined();
+    expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+  });
+
   test('should add custom domain name resources to template', () => {
     const input = {
       ...createApiTemplateInput,
