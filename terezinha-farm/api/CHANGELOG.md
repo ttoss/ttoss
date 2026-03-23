@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.37](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.36...@terezinha-farm/api@0.19.37) (2026-03-23)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+
 ## [0.19.36](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.35...@terezinha-farm/api@0.19.36) (2026-03-20)
 
 **Note:** Version bump only for package @terezinha-farm/api
