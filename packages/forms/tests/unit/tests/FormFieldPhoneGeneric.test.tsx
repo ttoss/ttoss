@@ -521,8 +521,8 @@ describe('FormFieldPhoneGeneric', () => {
 
       render(<RenderForm />);
 
-      const combobox = screen.getByRole('combobox');
-      expect(combobox).toHaveValue('+55');
+      // react-select shows the selected option's label in the control, not in the input value
+      expect(screen.getByText('BR +55')).toBeInTheDocument();
     });
   });
 });
