@@ -1,10 +1,12 @@
-import { Box, Flex, Input, Select } from '@ttoss/ui';
+import { Box, Flex, Input } from '@ttoss/ui';
 import * as React from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import type { PatternFormatProps } from 'react-number-format';
 import { NumericFormat, PatternFormat } from 'react-number-format';
 
 import { FormField, type FormFieldProps } from './FormField';
+import { FormFieldSelect } from './FormFieldSelect';
 import {
   COMMON_PHONE_COUNTRY_CODES,
   type CountryCodeOption,
@@ -32,8 +34,10 @@ type PhoneDropdownWrapperProps = {
    * association valid for accessibility.
    */
   id?: string;
-  /** The currently selected calling code (e.g. '+1'). Controlled externally. */
-  countryCode?: string;
+  /** The RHF field name used to register the country-code select in the form. */
+  countryCodeFieldName: string;
+  /** Initial value for the country-code select (passed as defaultValue to FormFieldSelect). */
+  defaultCountryCode?: string;
   /** List of selectable country calling code options. */
   countryCodeOptions: CountryCodeOption[];
   /** Whether the select and input should be disabled. */
@@ -52,7 +56,8 @@ type PhoneDropdownWrapperProps = {
 
 const PhoneDropdownWrapper = ({
   id,
-  countryCode,
+  countryCodeFieldName,
+  defaultCountryCode,
   countryCodeOptions,
   disabled,
   onCountryCodeChange,
@@ -62,9 +67,10 @@ const PhoneDropdownWrapper = ({
   return (
     <Flex sx={{ gap: '2', alignItems: 'stretch' }}>
       <Box sx={{ minWidth: '180px' }}>
-        <Select
+        <FormFieldSelect
+          name={countryCodeFieldName}
+          defaultValue={defaultCountryCode}
           options={countryCodeOptions}
-          value={countryCode}
           disabled={disabled}
           onChange={(value) => {
             if (value !== undefined) {
@@ -123,6 +129,19 @@ export type FormFieldPhoneProps<
      * caller wants to react to country-code changes.
      */
     onCountryCodeChange?: (countryCode: string) => void;
+    /**
+     * When provided, the selected country code is stored as a separate field
+     * in the form under this name (e.g. `'countryCode'`). This allows the
+     * submitted form data to include both the full phone value and the
+     * selected calling code independently.
+     *
+     * @example
+     * ```tsx
+     * // Form data: { phone: '+15555555555', countryCode: '+1' }
+     * <FormFieldPhone name="phone" label="Phone" countryCodeName="countryCode" />
+     * ```
+     */
+    countryCodeName?: string;
   };
 
 /**
@@ -198,6 +217,17 @@ export type FormFieldPhoneProps<
  *   countryCodeOptions={[]}
  * />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Store the selected country code as a separate form field.
+ * // Submitted data: { phone: '+15555555555', countryCode: '+1' }
+ * <FormFieldPhone
+ *   name="phone"
+ *   label="Phone"
+ *   countryCodeName="countryCode"
+ * />
+ * ```
  */
 
 export const FormFieldPhone = <
@@ -209,6 +239,7 @@ export const FormFieldPhone = <
   format,
   countryCodeOptions = COMMON_PHONE_COUNTRY_CODES,
   onCountryCodeChange,
+  countryCodeName,
   ...props
 }: FormFieldPhoneProps<TFieldValues, TName>) => {
   const {
@@ -228,12 +259,20 @@ export const FormFieldPhone = <
     ...patternFormatProps
   } = props;
 
-  const [countryCode, setCountryCode] = React.useState(
-    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined
-  );
+  const { watch } = useFormContext();
+
+  // Derive the internal RHF field name for the country code.
+  const countryCodeFieldName = countryCodeName ?? `${String(name)}CountryCode`;
+
+  // Compute the default country code (used as FormFieldSelect's defaultValue).
+  const defaultCountryCode =
+    countryCodeProp ?? countryCodeOptions[0]?.value ?? undefined;
+
+  // Read the current country code from the form (updated by FormFieldSelect).
+  const countryCode =
+    (watch(countryCodeFieldName) as string | undefined) ?? defaultCountryCode;
 
   const handleCountryCodeChange = (code: string) => {
-    setCountryCode(code);
     onCountryCodeChange?.(code);
   };
 
@@ -255,100 +294,120 @@ export const FormFieldPhone = <
 
   const showDropdown = countryCodeOptions.length > 0;
 
+  /**
+   * When there is no dropdown but the caller wants the country code stored as
+   * a separate form field (via countryCodeName), render a visually-hidden
+   * FormFieldSelect to register the value in the form.
+   */
+  const hiddenCountryCodeSelect =
+    !showDropdown && countryCodeName ? (
+      <Box sx={{ display: 'none' }}>
+        <FormFieldSelect
+          name={countryCodeName}
+          defaultValue={defaultCountryCode}
+          options={[]}
+        />
+      </Box>
+    ) : null;
+
   return (
-    <FormField
-      id={id}
-      label={label}
-      name={name}
-      labelTooltip={labelTooltip}
-      warning={warning}
-      sx={sx}
-      css={css}
-      defaultValue={defaultValue}
-      rules={rules}
-      disabled={disabled}
-      auxiliaryCheckbox={auxiliaryCheckbox}
-      render={({ field, fieldState }) => {
-        /**
-         * The id prop is intentionally omitted here. It will be injected by
-         * FormField's cloneElement call (no-dropdown path) or forwarded by
-         * PhoneDropdownWrapper (dropdown path) to ensure label association.
-         */
-        const localPhoneValue =
-          !isManual && countryCode && field.value?.startsWith(countryCode)
-            ? field.value.slice(countryCode.length)
-            : field.value;
+    <>
+      {hiddenCountryCodeSelect}
+      <FormField
+        id={id}
+        label={label}
+        name={name}
+        labelTooltip={labelTooltip}
+        warning={warning}
+        sx={sx}
+        css={css}
+        defaultValue={defaultValue}
+        rules={rules}
+        disabled={disabled}
+        auxiliaryCheckbox={auxiliaryCheckbox}
+        render={({ field, fieldState }) => {
+          /**
+           * The id prop is intentionally omitted here. It will be injected by
+           * FormField's cloneElement call (no-dropdown path) or forwarded by
+           * PhoneDropdownWrapper (dropdown path) to ensure label association.
+           */
+          const localPhoneValue =
+            !isManual && countryCode && field.value?.startsWith(countryCode)
+              ? field.value.slice(countryCode.length)
+              : field.value;
 
-        const inputNode = isManual ? (
-          <NumericFormat
-            name={field.name}
-            value={field.value ?? ''}
-            placeholder={placeholder}
-            prefix="+"
-            allowLeadingZeros
-            decimalScale={0}
-            thousandSeparator={false}
-            onBlur={(e) => {
-              field.onBlur();
-              onBlur?.(e);
-            }}
-            onValueChange={(values, sourceInfo) => {
-              field.onChange(values.formattedValue);
-              onValueChange?.(values, sourceInfo);
-            }}
-            customInput={Input}
-            disabled={disabled ?? field.disabled}
-            aria-invalid={fieldState.error ? 'true' : undefined}
-          />
-        ) : (
-          <PatternFormat
-            {...patternFormatProps}
-            name={field.name}
-            value={localPhoneValue}
-            placeholder={placeholder}
-            onBlur={(e) => {
-              field.onBlur();
-              onBlur?.(e);
-            }}
-            onValueChange={(values, sourceInfo) => {
-              const fullValue =
-                countryCode && values.value
-                  ? countryCode + values.value
-                  : values.value;
-              field.onChange(fullValue);
-              onValueChange?.(values, sourceInfo);
-            }}
-            format={getFormat(localPhoneValue ?? '')}
-            customInput={Input}
-            disabled={disabled ?? field.disabled}
-            aria-invalid={fieldState.error ? 'true' : undefined}
-          />
-        );
+          const inputNode = isManual ? (
+            <NumericFormat
+              name={field.name}
+              value={field.value ?? ''}
+              placeholder={placeholder}
+              prefix="+"
+              allowLeadingZeros
+              decimalScale={0}
+              thousandSeparator={false}
+              onBlur={(e) => {
+                field.onBlur();
+                onBlur?.(e);
+              }}
+              onValueChange={(values, sourceInfo) => {
+                field.onChange(values.formattedValue);
+                onValueChange?.(values, sourceInfo);
+              }}
+              customInput={Input}
+              disabled={disabled ?? field.disabled}
+              aria-invalid={fieldState.error ? 'true' : undefined}
+            />
+          ) : (
+            <PatternFormat
+              {...patternFormatProps}
+              name={field.name}
+              value={localPhoneValue}
+              placeholder={placeholder}
+              onBlur={(e) => {
+                field.onBlur();
+                onBlur?.(e);
+              }}
+              onValueChange={(values, sourceInfo) => {
+                const fullValue =
+                  countryCode && values.value
+                    ? countryCode + values.value
+                    : values.value;
+                field.onChange(fullValue);
+                onValueChange?.(values, sourceInfo);
+              }}
+              format={getFormat(localPhoneValue ?? '')}
+              customInput={Input}
+              disabled={disabled ?? field.disabled}
+              aria-invalid={fieldState.error ? 'true' : undefined}
+            />
+          );
 
-        if (!showDropdown) {
-          // FormField injects id via cloneElement directly onto the input.
-          return inputNode;
-        }
+          if (!showDropdown) {
+            // FormField injects id via cloneElement directly onto the input.
+            return inputNode;
+          }
 
-        /**
-         * FormField injects id via cloneElement onto PhoneDropdownWrapper.
-         * PhoneDropdownWrapper (module-level, stable identity) receives id
-         * and forwards it to the inner input so that label htmlFor correctly
-         * points to the input.
-         */
-        return (
-          <PhoneDropdownWrapper
-            countryCode={countryCode}
-            countryCodeOptions={countryCodeOptions}
-            disabled={disabled ?? field.disabled}
-            onCountryCodeChange={handleCountryCodeChange}
-            onPhoneReset={() => {
-              return field.onChange('');
-            }}
-            inputNode={inputNode}
-          />
-        );
-      }}
-    />
+          /**
+           * FormField injects id via cloneElement onto PhoneDropdownWrapper.
+           * PhoneDropdownWrapper (module-level, stable identity) receives id
+           * and forwards it to the inner input so that label htmlFor correctly
+           * points to the input.
+           */
+          return (
+            <PhoneDropdownWrapper
+              countryCodeFieldName={countryCodeFieldName}
+              defaultCountryCode={defaultCountryCode}
+              countryCodeOptions={countryCodeOptions}
+              disabled={disabled ?? field.disabled}
+              onCountryCodeChange={handleCountryCodeChange}
+              onPhoneReset={() => {
+                return field.onChange('');
+              }}
+              inputNode={inputNode}
+            />
+          );
+        }}
+      />
+    </>
   );
 };

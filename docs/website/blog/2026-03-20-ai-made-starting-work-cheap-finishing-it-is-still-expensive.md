@@ -30,17 +30,7 @@ Now organizations can start far more work than they can responsibly finish. The 
 
 ## The New Bottleneck Is Commitment Capacity
 
-Most teams still manage engineering as if typing code were the scarce resource. Commitment capacity is now the scarce resource.
-
-The new bottleneck is commitment capacity:
-
-- validation
-- review
-- integration
-- testing
-- deployment
-- monitoring
-- future maintenance
+Most teams still manage engineering as if typing code were the scarce resource. Commitment capacity is now the scarce resource. That means validation, review, integration, testing, deployment, monitoring, and future maintenance — all the work that happens after generation.
 
 This changes how teams should think about velocity.
 
@@ -56,13 +46,7 @@ A developer is working on a critical migration. Then sales asks for "one quick c
 
 So the team says yes.
 
-Each accepted task creates a commitment tail:
-
-- new context to keep active
-- new test scenarios
-- new review surface
-- new integration risk
-- new maintenance burden
+Each accepted task creates a commitment tail: new context to keep active, new test scenarios to write, new review surface to cover, new integration risk to manage, and new maintenance burden to carry forward.
 
 The organization mistakes fast initiation for fast completion.
 
@@ -74,13 +58,7 @@ The decisive question is, "Should this enter execution now?"
 
 That is an admission control problem.
 
-Every task must justify more than its own local value. It must justify:
-
-- the validation effort it imposes
-- the interruption cost it creates
-- the review capacity it consumes
-- the maintenance tail it adds
-- the opportunity cost it imposes on current priorities
+Every task must justify more than its own local value. It must justify the validation effort it imposes, the interruption cost it creates, the review capacity it consumes, the maintenance tail it adds, and the opportunity cost it imposes on current priorities.
 
 Without admission control, AI becomes a queue amplifier.
 
@@ -90,13 +68,7 @@ This is also why [The Principle of Zero-Cost Erosion](/docs/ai/agentic-developme
 
 High-performing teams treat AI as a way to complete the right work with less waste.
 
-That means:
-
-- limiting concurrent work even when generation is cheap
-- protecting the highest-value task from interruption
-- accepting only requests that justify commitment cost
-- using automation to reduce validation cost
-- keeping architecture modular so ownership stays bounded
+That means limiting concurrent work even when generation is cheap, protecting the highest-value task from interruption, accepting only requests that justify commitment cost, using automation to reduce validation cost, and keeping architecture modular so ownership stays bounded.
 
 AI should reduce cycle time and keep hidden WIP bounded.
 

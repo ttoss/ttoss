@@ -199,3 +199,76 @@ const MinimalTemplate: StoryFn = () => {
 
 export const Minimal = MinimalTemplate.bind({});
 Minimal.storyName = 'Minimal (name + label only)';
+
+/**
+ * When `countryCodeName` is set the selected calling code is stored as a
+ * separate form field. The submitted data will contain both:
+ * `{ phone: '+15555555555', countryCode: '+1' }`.
+ * This is useful when you want to persist the country code independently
+ * in your database alongside the phone number.
+ */
+const WithCountryCodeNameTemplate: StoryFn = () => {
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        defaultCountryCode={COMMON_PHONE_COUNTRY_CODES[1].value}
+        countryCodeName="countryCode"
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const WithCountryCodeName = WithCountryCodeNameTemplate.bind({});
+WithCountryCodeName.storyName =
+  'Country Code as Separate Field (countryCodeName)';
+
+/**
+ * Pre-populating both the phone number and the country code via
+ * `useForm`'s `defaultValues`. The `countryCodeName` prop tells the
+ * component which form field stores the country code, so both values
+ * are read from the form on mount.
+ *
+ * Submitted data: `{ phone: '+5511999887766', countryCode: '+55' }`
+ */
+const WithInitialValuesTemplate: StoryFn = () => {
+  const schemaWithCountryCode = z.object({
+    phone: z.string().min(1, 'Value is required'),
+    countryCode: z.string(),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schemaWithCountryCode),
+    defaultValues: {
+      phone: '+5511999887766',
+      countryCode: '+55',
+    },
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        countryCodeName="countryCode"
+        countryCodeOptions={COMMON_PHONE_COUNTRY_CODES}
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const WithInitialValues = WithInitialValuesTemplate.bind({});
+WithInitialValues.storyName = 'Pre-populated (phone + country code)';

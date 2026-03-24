@@ -1,12 +1,13 @@
-name: closed-pr
+name: closed-branch
 'on':
   pull_request:
     branches:
       - main
     types:
       - closed
+  delete:
 jobs:
-  closed-pr:
+  closed-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +20,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Setup ttoss environment
         uses: ./.github/actions/setup
-      - name: Run closed-pr command
-        run: sh -e ./.cicd/commands/closed-pr.sh
+      - name: Run closed-branch command
+        run: sh -e ./.cicd/commands/closed-branch.sh
         env:
-          CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
+          CARLIN_BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref }}

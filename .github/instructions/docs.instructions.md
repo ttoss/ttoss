@@ -25,18 +25,9 @@ Modern readers have limited attention spans and want direct, actionable informat
 
 **When in doubt, cut it out.** Clear, concise documentation is more valuable than comprehensive but overwhelming content.
 
-## Before Making Any Changes - Required Analysis
+## Before Making Any Changes
 
-**CRITICAL**: Before creating or editing any documentation, you MUST:
-
-1. **Scan Related Documentation**: Search and read related content across ALL sections (blog, product, engineering, design)
-2. **Identify Cross-References**: Find existing internal links and connections affected by your changes
-3. **Check for Redundancy**: Ensure you're not duplicating content - reference or expand existing documentation
-4. **Understand Context**: Read 2-3 related documents for broader context and messaging consistency
-5. **Plan Holistically**: Consider how changes affect or enhance other documentation
-6. **Suggest Cross-References**: Propose relevant internal links to strengthen the documentation ecosystem
-
-This project's documentation is **highly interconnected** - blog posts reference product/engineering docs, engineering processes tie to product workflows, and design decisions impact all areas. Always work with this interconnected ecosystem in mind.
+Before editing documentation: check for related content to avoid duplication, identify existing internal links affected by your changes, and verify you're not reproducing content that lives elsewhere. Link to it instead.
 
 ## Project Structure Overview
 
@@ -81,8 +72,17 @@ tags:
 
 1. **Start with Context**: Begin documentation with a brief explanation of what the reader will learn or accomplish
 2. **Use Clear Headings**: Structure content with descriptive headings following markdown hierarchy (##, ###, ####)
-3. **Include Practical Examples**: Provide code examples, configurations, or real-world scenarios when applicable
+3. **Include Practical Examples**: Provide code examples, configurations, or real-world scenarios when applicable — but for UI components, defer to Storybook (see below)
 4. **Cross-Reference Related Content**: Link to related documentation using relative paths
+
+### UI Component Documentation
+
+For React/UI components, [Storybook](https://storybook.ttoss.dev/) at `storybook.ttoss.dev` is the primary source of interactive examples. READMEs should **not** duplicate per-component code snippets that are already shown in stories. Instead:
+
+- Add a callout linking to Storybook at the top of the components section
+- Keep only non-obvious configuration (e.g., i18n setup, key props with non-obvious behaviour)
+- Use a summary table to list available components with one-line descriptions
+- Link individual Storybook stories when a specific example is needed (e.g., `https://storybook.ttoss.dev/?path=/story/forms-multistepform`)
 
 ### ttoss Principles Integration
 
@@ -195,13 +195,6 @@ xychart-beta
     line [1, 1.5, 2.3, 4, 9, 19]
 ```
 
-### Content Organization
-
-- **Logical Flow**: Organize content from general to specific
-- **Scannable Content**: Use bullet points, numbered lists, and subheadings for easy scanning
-- **Progressive Disclosure**: Start with high-level concepts before diving into details
-- **Call-to-Action**: End sections with clear next steps when appropriate
-
 ### Reducing Visual Fragmentation
 
 **CRITICAL**: Minimize excessive structural breaks that fragment reader attention and interrupt content flow.
@@ -241,22 +234,12 @@ WIP limits unlock faster delivery, better quality, improved morale, and economic
 
 Before publishing documentation:
 
-- [ ] **Content Optimization Complete**: Removed all non-essential information and optimized for brevity
-- [ ] **Essential Information Only**: Every sentence provides clear value to the reader
-- [ ] **Cross-Documentation Analysis Complete**: Searched for related content across all sections
-- [ ] **No Redundancy**: Confirmed content doesn't duplicate existing documentation
-- [ ] **Internal Links Added**: Included relevant cross-references to strengthen documentation web
-- [ ] **Principles Integration**: Connected content to relevant ttoss principles with proper links and reasoning
-- [ ] **Consistency Check**: Ensured terminology and messaging aligns with existing content
-- [ ] **Impact Assessment**: Identified other documents that might need updates
-- [ ] **Scannable Format**: Used bullet points, short paragraphs, and clear headers
-- [ ] **Reduced Fragmentation**: Minimized excessive subheadings and consolidated lists into flowing content where appropriate
+- [ ] No redundancy — existing docs are linked, not duplicated
+- [ ] UI components reference Storybook instead of embedding code examples
 - [ ] Front matter is complete and accurate
 - [ ] All internal links work correctly
-- [ ] Code examples are tested and functional
-- [ ] Content follows the established writing style
-- [ ] Spelling and grammar are correct
-- [ ] Content is logically organized and flows well
+- [ ] Principles are linked where relevant
+- [ ] No excessive subheadings or bullet lists — flowing prose where appropriate
 
 ### Content Optimization Guidelines
 
@@ -267,13 +250,7 @@ Before publishing documentation:
 3. **Could-have information**: Interesting but not essential - usually remove
 4. **Won't-have information**: Tangential or obvious - always remove
 
-**Optimization Techniques**:
-
-- Replace paragraphs with bullet points when possible
-- Use tables instead of long explanations for structured information
-- Link to external resources instead of explaining everything inline
-- Use examples that teach multiple concepts simultaneously
-- Remove redundant explanations and cross-references
+**Optimization Techniques**: Use tables for structured comparisons. Link to external resources instead of explaining inline. Use examples that teach multiple concepts simultaneously. Remove redundant explanations.
 
 **Red Flags for Removal**:
 
@@ -282,22 +259,3 @@ Before publishing documentation:
 - Multiple ways to do the same thing (pick the best one)
 - Detailed explanations of obvious concepts
 - Historical information that doesn't affect current practice
-
-### Documentation as a Living System
-
-Think of ttoss documentation as an **interconnected ecosystem** where:
-
-- Each piece of content strengthens and references others
-- Changes in one area often necessitate updates in related areas
-- The goal is to create a comprehensive, non-redundant knowledge base
-- Readers should be able to follow natural paths between related concepts
-
-**Key Principle**: Never work in isolation. Every documentation change should consider and enhance the broader documentation ecosystem.
-
-This instructions file must evolve alongside the documentation it governs. After completing documentation work, evaluate whether these instructions need updates based on:
-
-- **New systematic patterns** that should be standardized across documentation
-- **Process gaps** that would improve efficiency or prevent quality issues
-- **Project evolution** that affects documentation structure or methodology
-
-When updating these instructions, keep changes focused on broadly applicable guidance that genuinely improves future work. Avoid one-off solutions or overly detailed formatting rules.

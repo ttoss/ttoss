@@ -211,7 +211,9 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(screen.getByLabelText('input 1'), '9876543210');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '+919876543210' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '+919876543210' })
+    );
   });
 
   test('uses the default format fallback when no format is provided and no option format matches', async () => {
@@ -321,7 +323,9 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(input, '+15551234567');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '+15551234567' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '+15551234567' })
+    );
   });
 
   test('resets phone number when user changes country code', async () => {
@@ -360,7 +364,9 @@ describe('FormFieldPhoneGeneric', () => {
 
     // Submit without typing anything — phone must be empty
     await user.click(screen.getByText('Submit'));
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '' })
+    );
   });
 
   test('renders and submits with only name and label props', async () => {
@@ -391,6 +397,140 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(input, '15551234567');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ phone: '+15551234567' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ phone: '+15551234567' })
+    );
+  });
+
+  describe('countryCodeName', () => {
+    test('stores the initial country code in the form under countryCodeName', async () => {
+      const user = userEvent.setup({ delay: null });
+      const onSubmit = jest.fn();
+
+      const RenderForm = () => {
+        const formMethods = useForm();
+
+        return (
+          <Form {...formMethods} onSubmit={onSubmit}>
+            <FormFieldPhone
+              name="phone"
+              label="Phone"
+              defaultCountryCode="+55"
+              countryCodeName="countryCode"
+            />
+            <Button type="submit">Submit</Button>
+          </Form>
+        );
+      };
+
+      render(<RenderForm />);
+
+      await user.click(screen.getByText('Submit'));
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ countryCode: '+55' })
+      );
+    });
+
+    test('updates countryCode field when user changes the dropdown', async () => {
+      const user = userEvent.setup({ delay: null });
+      const onSubmit = jest.fn();
+
+      const countryCodeOptions: CountryCodeOption[] = [
+        { label: 'US +1', value: '+1', format: '(###) ###-####' },
+        { label: 'BR +55', value: '+55', format: '(##) #####-####' },
+      ];
+
+      const RenderForm = () => {
+        const formMethods = useForm();
+
+        return (
+          <Form {...formMethods} onSubmit={onSubmit}>
+            <FormFieldPhone
+              name="phone"
+              label="Phone"
+              defaultCountryCode="+1"
+              countryCodeName="countryCode"
+              countryCodeOptions={countryCodeOptions}
+            />
+            <Button type="submit">Submit</Button>
+          </Form>
+        );
+      };
+
+      render(<RenderForm />);
+
+      await user.click(screen.getByRole('combobox'));
+      await user.click(screen.getByText('BR +55'));
+      await user.click(screen.getByText('Submit'));
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ countryCode: '+55' })
+      );
+    });
+
+    test('includes both phone and countryCode in submitted data', async () => {
+      const user = userEvent.setup({ delay: null });
+      const onSubmit = jest.fn();
+
+      const RenderForm = () => {
+        const formMethods = useForm();
+
+        return (
+          <Form {...formMethods} onSubmit={onSubmit}>
+            <FormFieldPhone
+              name="phone"
+              label="Phone"
+              defaultCountryCode="+1"
+              format="(###) ###-####"
+              countryCodeOptions={[]}
+              countryCodeName="countryCode"
+            />
+            <Button type="submit">Submit</Button>
+          </Form>
+        );
+      };
+
+      render(<RenderForm />);
+
+      await user.type(screen.getByLabelText('Phone'), '5555555555');
+      await user.click(screen.getByText('Submit'));
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        phone: '+15555555555',
+        countryCode: '+1',
+      });
+    });
+
+    test('prefers countryCodeName stored value over first option when pre-populated', async () => {
+      const onSubmit = jest.fn();
+
+      const countryCodeOptions: CountryCodeOption[] = [
+        { label: 'US +1', value: '+1', format: '(###) ###-####' },
+        { label: 'BR +55', value: '+55', format: '(##) #####-####' },
+      ];
+
+      const RenderForm = () => {
+        const formMethods = useForm({
+          defaultValues: { phone: '+5511999999999', countryCode: '+55' },
+        });
+
+        return (
+          <Form {...formMethods} onSubmit={onSubmit}>
+            <FormFieldPhone
+              name="phone"
+              label="Phone"
+              countryCodeName="countryCode"
+              countryCodeOptions={countryCodeOptions}
+            />
+            <Button type="submit">Submit</Button>
+          </Form>
+        );
+      };
+
+      render(<RenderForm />);
+
+      // react-select shows the selected option's label in the control, not in the input value
+      expect(screen.getByText('BR +55')).toBeInTheDocument();
+    });
   });
 });

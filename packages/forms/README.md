@@ -39,13 +39,9 @@ export const FormComponent = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
-
   return (
     <I18nProvider>
-      <Form {...formMethods} onSubmit={onSubmit}>
+      <Form {...formMethods} onSubmit={(data) => console.log(data)}>
         <FormFieldInput name="firstName" label="First Name" />
         <FormFieldInput name="age" label="Age" type="number" />
         <FormFieldCheckbox name="receiveEmails" label="Receive Emails" />
@@ -56,169 +52,40 @@ export const FormComponent = () => {
 };
 ```
 
-## React Hook Form Integration
-
-All React Hook Form APIs are re-exported from `@ttoss/forms`, including hooks like `useForm`, `useController`, `useFieldArray`, and `useFormContext`. See the [React Hook Form documentation](https://react-hook-form.com/docs) for complete API details.
+All React Hook Form APIs (`useForm`, `useController`, `useFieldArray`, `useFormContext`, etc.) are re-exported from `@ttoss/forms`. See the [React Hook Form documentation](https://react-hook-form.com/docs) for details.
 
 ## Zod Validation (Recommended)
 
-Import `z` and `zodResolver` directly from `@ttoss/forms` for schema validation using [Zod](https://zod.dev/):
-
-```tsx
-import { Form, FormFieldInput, useForm, z, zodResolver } from '@ttoss/forms';
-
-const schema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-});
-
-const MyForm = () => {
-  const formMethods = useForm({
-    resolver: zodResolver(schema),
-  });
-
-  return (
-    <Form {...formMethods} onSubmit={(data) => console.log(data)}>
-      <FormFieldInput name="firstName" label="First Name" defaultValue="" />
-      <Button type="submit">Submit</Button>
-    </Form>
-  );
-};
-```
-
-### Validation Messages
-
-Invalid fields display default error messages like "Field is required". These messages are defined using i18n and can be customized for each locale.
-
-#### Default Zod Messages
-
-The package provides internationalized default messages for common Zod validation errors. These are automatically extracted when you run `pnpm run i18n`:
-
-- **Required field**: `"Field is required"`
-- **Type mismatch**: `"Invalid Value for Field of type {expected}"`
-- **Minimum length**: `"Field must be at least {min} characters"`
-
-To customize these messages for your locale, extract the i18n messages and translate them in your application's i18n files (e.g., `i18n/compiled/pt-BR.json`). See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for more details.
+Import `z` and `zodResolver` directly from `@ttoss/forms`. Invalid fields display i18n-backed default messages (`"Field is required"`, `"Invalid Value for Field of type {expected}"`, `"Field must be at least {min} characters"`). Run `pnpm run i18n` to extract them and translate per locale in your app's i18n files. See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for details.
 
 ### Custom Validations
 
-The package extends Zod with custom validation methods for Brazilian documents:
-
-#### CPF Validation
+The package extends Zod with custom validation methods:
 
 ```tsx
-import { z } from '@ttoss/forms';
+import { z, passwordSchema } from '@ttoss/forms';
 
 const schema = z.object({
-  cpf: z.string().cpf(), // Uses default message: "Invalid CPF"
-  // Or with custom message:
-  cpfCustom: z.string().cpf('CPF inválido'),
+  cpf: z.string().cpf(), // "Invalid CPF"
+  cnpj: z.string().cnpj('Invalid CNPJ'), // custom message
+  password: passwordSchema({ required: true }), // min 8 chars
+  optionalPassword: passwordSchema(), // empty or min 8 chars
 });
 ```
 
-#### CNPJ Validation
-
-````
-
-```tsx
-import { z } from '@ttoss/forms';
-
-const schema = z.object({
-  cnpj: z.string().cnpj(), // Uses default message: "Invalid CNPJ"
-  // Or with custom message:
-  cnpjCustom: z.string().cnpj('CNPJ inválido'),
-});
-````
-
-#### Password Validation
-
-```tsx
-import { passwordSchema } from '@ttoss/forms';
-import { z } from '@ttoss/forms';
-
-const schema = z.object({
-  // Required password (minimum 8 characters)
-  password: passwordSchema({ required: true }),
-
-  // Optional password (accepts empty string or minimum 8 characters)
-  optionalPassword: passwordSchema(),
-});
-```
+Also exports `isCnpjValid(cnpj: string)` for standalone validation.
 
 ## Yup Validation (Deprecated)
 
-> **DEPRECATION WARNING:** Yup support is deprecated and will be removed in a future major version. Please migrate to Zod for new projects. Existing Yup schemas will continue to work, but we recommend planning your migration to Zod.
-
-For legacy projects still using Yup, you can import `yup` and `yupResolver` from `@ttoss/forms`:
-
-```tsx
-import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
-
-const schema = yup.object({
-  firstName: yup.string().required(),
-});
-
-const MyForm = () => {
-  const formMethods = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  return (
-    <Form {...formMethods} onSubmit={(data) => console.log(data)}>
-      <FormFieldInput name="firstName" label="First Name" />
-      <Button type="submit">Submit</Button>
-    </Form>
-  );
-};
-```
+> **DEPRECATION WARNING:** Yup support will be removed in a future major version. `yup` and `yupResolver` are still exported from `@ttoss/forms` for legacy projects, but new projects should use Zod.
 
 ## Validation Approaches
 
-There are two ways to validate form fields in `@ttoss/forms`: schema-based validation using Zod schemas with `zodResolver`, and field-level validation using the `rules` prop on individual form fields.
+There are two ways to validate form fields — choose one per field, they cannot be mixed.
 
-**IMPORTANT:** You cannot mix both validation methods for the same field—choose either schema-based or field-level validation per field.
+**Schema-based validation** (`zodResolver`) is recommended for cross-field validation, complex business logic, and reusable/type-safe schemas.
 
-**When to use schema validation:**
-
-- Cross-field validation
-- Complex business logic
-- Reusable validation patterns
-- Type-safe validation with TypeScript
-
-**When to use `rules`:**
-
-- Simple, field-specific validations
-- Dynamic validation based on component state
-- Quick prototyping
-- Single-field conditional logic
-
-### 1. Schema-based Validation (Recommended)
-
-Use Zod schemas with `zodResolver` for complex validation logic:
-
-```tsx
-import { z, zodResolver } from '@ttoss/forms';
-
-const schema = z.object({
-  email: z.string().email(),
-  age: z.number().min(18).max(100),
-});
-
-const formMethods = useForm({
-  resolver: zodResolver(schema),
-});
-```
-
-**Advantages:**
-
-- Centralized validation logic
-- Type-safe with TypeScript
-- Reusable schemas
-- Complex validation patterns
-- Schema composition
-
-### 2. Field-level Validation
-
-Use the `rules` prop on individual form fields for simpler validations:
+**Field-level validation** (`rules` prop) suits simple, field-specific cases:
 
 ```tsx
 <FormFieldInput
@@ -226,398 +93,78 @@ Use the `rules` prop on individual form fields for simpler validations:
   label="Username"
   rules={{
     required: 'Username is required',
-    minLength: {
-      value: 3,
-      message: 'Username must be at least 3 characters',
-    },
+    minLength: { value: 3, message: 'Min 3 characters' },
     pattern: {
       value: /^[a-zA-Z0-9_]+$/,
-      message: 'Only letters, numbers, and underscores allowed',
-    },
-  }}
-/>
-
-<FormFieldInput
-  name="email"
-  label="Email"
-  rules={{
-    required: 'Email is required',
-    validate: (value) => {
-      return value.includes('@') || 'Invalid email format';
+      message: 'Letters, numbers, underscores only',
     },
   }}
 />
 ```
 
-**Available validation rules:**
-
-- `required`: Field is required (string message or boolean)
-- `min`: Minimum value (for numbers)
-- `max`: Maximum value (for numbers)
-- `minLength`: Minimum string length
-- `maxLength`: Maximum string length
-- `pattern`: RegExp pattern
-- `validate`: Custom validation function or object of functions
+Available `rules` keys: `required`, `min`, `max`, `minLength`, `maxLength`, `pattern`, `validate`.
 
 ## Form Field Components
 
-All form field components share common props:
+> **Interactive examples for every component are available at [storybook.ttoss.dev](https://storybook.ttoss.dev/) under the Forms section.**
+
+All form field components share these common props:
 
 - `name` (required): Field name in the form
 - `label`: Field label text
-- `disabled`: Disables the field
+- `disabled`: Disables the field (field-level overrides form-level `disabled`)
 - `defaultValue`: Initial field value
 - `tooltip`: Label tooltip configuration
 - `warning`: Warning message displayed below the field
-- `auxiliaryCheckbox`: Optional auxiliary checkbox configuration
+- `auxiliaryCheckbox`: Optional checkbox rendered between the field and error message — useful for confirmation or terms acceptance. Props: `name`, `label`, `disabled`, `defaultValue`.
 - `sx`: Theme-UI styling object
 
-### Disabling Form Fields
-
-You can disable form fields in two ways:
-
-**1. Disable the entire form:**
-
-Set `disabled: true` in `useForm` to disable all fields at once:
+To disable all fields at once, pass `disabled` to `useForm`:
 
 ```tsx
-const formMethods = useForm({
-  disabled: true, // Disables all fields
-});
+const formMethods = useForm({ disabled: isSubmitting });
 ```
 
-This is particularly useful for preventing user interaction during asynchronous operations:
-
-```tsx
-const [isSubmitting, setIsSubmitting] = useState(false);
-
-const formMethods = useForm({
-  disabled: isSubmitting, // Disable form during submission
-});
-
-const onSubmit = async (data) => {
-  setIsSubmitting(true);
-  await saveData(data);
-  setIsSubmitting(false);
-};
-```
-
-**2. Disable individual fields:**
-
-Use the `disabled` prop on specific form field components:
-
-```tsx
-<FormFieldInput name="email" label="Email" disabled />
-```
-
-Field-level `disabled` props override the form-level setting:
-
-```tsx
-const formMethods = useForm({
-  disabled: false,
-});
-
-// This field will be disabled even though the form is enabled
-<FormFieldInput name="id" label="ID" disabled />;
-```
-
-### Auxiliary Checkbox
-
-Form fields can include an optional auxiliary checkbox rendered between the field and error message. This is useful for input confirmation, terms acceptance, or conditional display of other fields.
-
-```tsx
-<FormFieldInput
-  name="email"
-  label="Email"
-  auxiliaryCheckbox={{
-    name: 'confirmEmail',
-    label: 'Send me promotional emails',
-  }}
-/>
-```
-
-The auxiliary checkbox can be disabled independently of the main field:
-
-```tsx
-<FormFieldInput
-  name="email"
-  label="Email"
-  auxiliaryCheckbox={{
-    name: 'confirmEmail',
-    label: 'Send me promotional emails',
-    disabled: true, // Checkbox is disabled, but email field is enabled
-  }}
-/>
-```
-
-**Props for `auxiliaryCheckbox`:**
-
-- `name` (required): Field name for the checkbox
-- `label` (required): Checkbox label text
-- `disabled`: Disables the checkbox (independent of field disabled state)
-- `defaultValue`: Initial checkbox value
-
-The auxiliary checkbox's disabled state is the logical OR of its own `disabled` prop and the field's disabled state.
-
-### FormFieldInput
-
-Text input field supporting all HTML input types.
-
-```tsx
-<FormFieldInput
-  name="email"
-  label="Email"
-  type="email"
-  placeholder="Enter your email"
-/>
-```
-
-### FormFieldPassword
-
-Password input with show/hide toggle.
-
-```tsx
-<FormFieldPassword name="password" label="Password" />
-```
-
-### FormFieldTextarea
-
-Multi-line text input.
-
-```tsx
-<FormFieldTextarea name="description" label="Description" rows={4} />
-```
-
-### FormFieldCheckbox
-
-Single checkbox or checkbox group.
-
-```tsx
-<FormFieldCheckbox name="terms" label="I accept the terms" />
-```
-
-### FormFieldSwitch
-
-Toggle switch component.
-
-```tsx
-<FormFieldSwitch name="notifications" label="Enable notifications" />
-```
-
-### FormFieldRadio
-
-Radio button group.
-
-```tsx
-const options = [
-  { value: 'option1', label: 'Option 1' },
-  { value: 'option2', label: 'Option 2' },
-];
-
-<FormFieldRadio name="choice" label="Choose one" options={options} />;
-```
-
-### FormFieldRadioCard
-
-Radio buttons styled as cards.
-
-```tsx
-<FormFieldRadioCard name="plan" label="Select Plan" options={options} />
-```
-
-### FormFieldRadioCardIcony
-
-Radio cards with icon support.
-
-```tsx
-const options = [
-  { value: 'card', label: 'Credit Card', icon: 'credit-card' },
-  { value: 'bank', label: 'Bank Transfer', icon: 'bank' },
-];
-
-<FormFieldRadioCardIcony
-  name="payment"
-  label="Payment Method"
-  options={options}
-/>;
-```
-
-### FormFieldSelect
-
-Dropdown select field.
-
-```tsx
-const options = [
-  { value: 'ferrari', label: 'Ferrari' },
-  { value: 'mercedes', label: 'Mercedes' },
-  { value: 'bmw', label: 'BMW' },
-];
-
-<FormFieldSelect name="car" label="Choose a car" options={options} />;
-```
-
-#### FormFieldSelect Default Values
-
-`FormFieldSelect` defaults to the first option or a specified `defaultValue`:
-
-```tsx
-// Defaults to "Ferrari"
-<FormFieldSelect name="car" label="Cars" options={options} />
-
-// Defaults to "Mercedes"
-<FormFieldSelect
-  name="car"
-  label="Cars"
-  options={options}
-  defaultValue="Mercedes"
-/>
-```
-
-### FormFieldSegmentedControl
-
-Segmented control field wrapping the `SegmentedControl` from `@ttoss/ui`. Use this field when you want a compact set of mutually-exclusive options presented as segmented buttons.
-
-Props are the common form field props plus any `SegmentedControl` props (except `value` and `className`). Notably, the `variant` prop is supported and defaults to `"secondary"` if not provided.
-
-```tsx
-<FormFieldSegmentedControl
-  name="viewMode"
-  label="View"
-  options={[
-    { value: 'list', label: 'List' },
-    { value: 'grid', label: 'Grid' },
-  ]}
-  variant="primary" // optional, defaults to "secondary"
-  defaultValue="list"
-/>
-```
-
-When using a `placeholder`, an empty option is automatically added if not present:
-
-```tsx
-<FormFieldSelect
-  name="car"
-  label="Cars"
-  options={options}
-  placeholder="Select a car"
-/>
-```
-
-**Note:** `placeholder` and `defaultValue` cannot be used together.
-
-For dynamic options from async data, reset the field after loading:
-
-```tsx
-const { resetField } = useForm();
-const [options, setOptions] = useState([]);
-
-useEffect(() => {
-  // Fetch options
-  const fetchedOptions = await fetchData();
-  setOptions(fetchedOptions);
-  resetField('car', { defaultValue: 'Ferrari' });
-}, []);
-```
-
-### FormFieldNumericFormat
-
-Numeric input with formatting support (decimals, thousands separators).
-
-```tsx
-<FormFieldNumericFormat
-  name="price"
-  label="Price"
-  thousandSeparator=","
-  decimalScale={2}
-/>
-```
-
-### FormFieldCurrencyInput
-
-Currency input with locale-based formatting. The decimal and thousand separators are automatically determined by the locale set in the `I18nProvider`.
-
-```tsx
-<FormFieldCurrencyInput name="amount" label="Amount" prefix="$" />
-```
-
-#### Customizing Separators per Locale
-
-The component uses i18n messages to determine the decimal and thousand separators based on the current locale. You can customize these for each locale in your application:
-
-1. First, extract the i18n messages by running `pnpm run i18n` in your package
-2. In your application's i18n files (e.g., `i18n/compiled/pt-BR.json`), add the custom separators:
+### Available Components
+
+| Component                   | Description                                                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------------------- |
+| `FormFieldInput`            | Text input — supports all HTML input types                                                          |
+| `FormFieldPassword`         | Password input with show/hide toggle                                                                |
+| `FormFieldTextarea`         | Multi-line text input                                                                               |
+| `FormFieldCheckbox`         | Single checkbox                                                                                     |
+| `FormFieldSwitch`           | Toggle switch                                                                                       |
+| `FormFieldRadio`            | Radio button group                                                                                  |
+| `FormFieldRadioCard`        | Radio buttons styled as cards                                                                       |
+| `FormFieldRadioCardIcony`   | Radio cards with icon support                                                                       |
+| `FormFieldSelect`           | Dropdown — defaults to first option; `placeholder` and `defaultValue` cannot be used together       |
+| `FormFieldSegmentedControl` | Segmented buttons wrapping `SegmentedControl` from `@ttoss/ui`; `variant` defaults to `"secondary"` |
+| `FormFieldNumericFormat`    | Numeric input with decimals/thousands formatting                                                    |
+| `FormFieldCurrencyInput`    | Currency input with locale-based separators (see below)                                             |
+| `FormFieldPatternFormat`    | Input with custom format patterns                                                                   |
+| `FormFieldPhone`            | Phone input with optional country-code dropdown (see below)                                         |
+| `FormFieldCreditCardNumber` | Credit card input with automatic formatting                                                         |
+
+### FormFieldCurrencyInput — Locale Separators
+
+The decimal and thousand separators are driven by i18n. To customize per locale, add to your app's i18n file (e.g., `i18n/compiled/pt-BR.json`):
 
 ```json
 {
-  "JnCaDG": ",", // Decimal separator (default: ".")
-  "0+4wTp": "." // Thousand separator (default: ",")
+  "JnCaDG": ",",
+  "0+4wTp": "."
 }
 ```
 
-This approach allows each locale to define its own number formatting rules, which will be automatically applied to all currency inputs.
+### FormFieldPhone — Key Props
 
-For more information about the i18n workflow, see the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/).
-
-### FormFieldPatternFormat
-
-Input with custom format patterns.
-
-```tsx
-<FormFieldPatternFormat
-  name="phone"
-  label="Phone"
-  format="+1 (###) ###-####"
-  mask="_"
-/>
-```
-
-### FormFieldPhone
-
-Generic phone number field with an optional country-code dropdown. By default it renders a dropdown populated with `COMMON_PHONE_COUNTRY_CODES` (15 common countries + a Manual entry). The component manages the selected country code internally — no external state is needed.
-
-```tsx
-import { FormFieldPhone, COMMON_PHONE_COUNTRY_CODES } from '@ttoss/forms';
-
-// Minimal — dropdown defaults to COMMON_PHONE_COUNTRY_CODES, starts in Manual mode
-<FormFieldPhone name="phone" label="Phone" />
-
-// Set an initial country code (US +1)
-<FormFieldPhone name="phone" label="Phone" defaultCountryCode="+1" />
-
-// React to country-code changes without managing state
-<FormFieldPhone
-  name="phone"
-  label="Phone"
-  defaultCountryCode="+1"
-  onCountryCodeChange={(code) => console.log('selected', code)}
-/>
-
-// No dropdown — plain masked input with a fixed country code
-<FormFieldPhone
-  name="phone"
-  label="Phone"
-  defaultCountryCode="+1"
-  format="(###) ###-####"
-  countryCodeOptions={[]}
-/>
-```
-
-The submitted value always includes the country code prefix (e.g. `{ phone: '+15555555555' }`). When the user selects the **Manual** entry, the mask is removed and the user can type any international number freely (the value is stored with a `+` prefix).
-
-**Key props:**
+The submitted value always includes the country code prefix (e.g. `{ phone: '+15555555555' }`). When the user selects the **Manual** entry, the mask is removed and any international number can be typed freely.
 
 - `defaultCountryCode`: Initial calling code (e.g. `'+1'`). Defaults to the first entry in `countryCodeOptions`.
-- `format`: Pattern string or function for the local number part (e.g. `'(###) ###-####'`).
-- `countryCodeOptions`: List of `CountryCodeOption` objects. Defaults to `COMMON_PHONE_COUNTRY_CODES`. Pass `[]` to hide the dropdown.
-- `onCountryCodeChange`: Optional callback fired when the user picks a different country code.
-
-### FormFieldCreditCardNumber
-
-Credit card input with automatic formatting.
-
-```tsx
-<FormFieldCreditCardNumber name="cardNumber" label="Card Number" />
-```
+- `format`: Pattern string for the local number part (e.g. `'(###) ###-####'`).
+- `countryCodeOptions`: Defaults to `COMMON_PHONE_COUNTRY_CODES`. Pass `[]` to hide the dropdown.
+- `onCountryCodeChange`: Callback fired when the user picks a different country code.
+- `countryCodeName`: Stores the selected country code as a separate form field (e.g. `{ phone: '+15555555555', countryCode: '+1' }`).
 
 ### Brazil-Specific Fields
 
@@ -631,161 +178,30 @@ import {
 } from '@ttoss/forms/brazil';
 ```
 
-#### FormFieldCEP
-
-Brazilian postal code (CEP) input with automatic formatting.
-
-```tsx
-<FormFieldCEP name="cep" label="CEP" />
-```
-
-#### FormFieldCNPJ
-
-Brazilian tax ID (CNPJ) input with validation and formatting.
-
-```tsx
-<FormFieldCNPJ name="cnpj" label="CNPJ" />
-```
-
-The package also exports `isCnpjValid(cnpj: string)` for standalone validation.
-
-#### FormFieldPhone
-
-Brazilian phone number input with automatic formatting and the `+55` country code pre-set.
-
-```tsx
-<FormFieldPhone name="phone" label="Phone" />
-```
+- `FormFieldCEP` — postal code with automatic formatting
+- `FormFieldCNPJ` — tax ID with validation and formatting
+- `FormFieldPhone` — phone with `+55` country code pre-set
 
 ## FormGroup
 
-Groups related fields with an optional title, description, and layout direction.
+Groups related fields with an optional title, description, and layout direction. Pass `name` to display a group-level validation error (e.g. for array fields).
 
-```tsx
-<FormGroup title="Personal Information" direction="row">
-  <FormFieldInput name="firstName" label="First Name" />
-  <FormFieldInput name="lastName" label="Last Name" />
-</FormGroup>
+**Props:** `title`, `description`, `direction` (`'row'` | `'column'`, default `'column'`), `name`.
 
-<FormGroup title="Address" description="Where we'll send your order">
-  <FormFieldInput name="street" label="Street" />
-  <FormFieldInput name="city" label="City" />
-</FormGroup>
-```
-
-Nest `FormGroup` components to create hierarchical sections:
-
-```tsx
-<FormGroup title="Personal details">
-  <FormFieldInput name="firstName" label="First name" />
-  <FormFieldInput name="lastName" label="Last name" />
-
-  <FormGroup title="Address" direction="row">
-    <FormFieldInput name="city" label="City" />
-    <FormFieldInput name="zip" label="ZIP" />
-  </FormGroup>
-</FormGroup>
-```
-
-To display a group-level validation error (e.g. for an array field), pass the `name` prop:
-
-```tsx
-<FormGroup name="items" title="Items">
-  {fields.map((field, i) => (
-    <FormFieldInput key={field.id} name={`items[${i}].value`} label="Value" />
-  ))}
-</FormGroup>
-```
-
-**Props:**
-
-- `title`: Optional heading displayed above the group's children
-- `description`: Optional description displayed below the title
-- `direction`: Layout direction (`'row'` | `'column'`, default: `'column'`)
-- `name`: Field name used to display a group-level validation error message
+See [Storybook](https://storybook.ttoss.dev/?path=/story/forms-formgroup) for nested group examples.
 
 ## Multistep Forms
 
-Import from `@ttoss/forms/multistep-form`:
+Import from `@ttoss/forms/multistep-form`. Each step provides its own `schema` (Zod) and `fields` (React elements); data is accumulated and passed to `onSubmit` on the final step.
 
 ```tsx
 import { MultistepForm } from '@ttoss/forms/multistep-form';
-import { FormFieldInput, z } from '@ttoss/forms';
-
-const steps = [
-  {
-    label: 'Step 1',
-    question: 'What is your name?',
-    fields: <FormFieldInput name="name" label="Name" />,
-    schema: z.object({
-      name: z.string().min(1, 'Name is required'),
-    }),
-  },
-  {
-    label: 'Step 2',
-    question: 'How old are you?',
-    fields: <FormFieldInput type="number" name="age" label="Age" />,
-    defaultValues: { age: 18 },
-    schema: z.object({
-      age: z.number().min(18, 'Must be at least 18'),
-    }),
-  },
-];
-
-const MyForm = () => {
-  return (
-    <MultistepForm
-      steps={steps}
-      onSubmit={(data) => console.log(data)}
-      footer="© 2024 Company"
-      header={{
-        variant: 'logo',
-        src: '/logo.png',
-        onClose: () => console.log('closed'),
-      }}
-    />
-  );
-};
 ```
 
-### MultistepForm Props
+**`MultistepForm` props:** `steps`, `onSubmit`, `footer`, `header`.
 
-- `steps`: Array of step configurations
-- `onSubmit`: Handler called with complete form data
-- `footer`: Footer text
-- `header`: Header configuration (see below)
+**Step object:** `label`, `question`, `fields`, `schema`, `defaultValues`.
 
-### Step Configuration
+**`header` variants:** `{ variant: 'logo', src, onClose }` or `{ variant: 'titled', title, leftIcon, rightIcon, onLeftIconClick, onRightIconClick }`.
 
-Each step object contains:
-
-- `label`: Step label for navigation
-- `question`: Question or instruction text
-- `fields`: React element(s) containing form fields
-- `schema`: Zod validation schema
-- `defaultValues`: Optional default values for step fields
-
-### Header Types
-
-**Logo Header:**
-
-```tsx
-{
-  variant: 'logo',
-  src: '/path/to/logo.png',
-  onClose: () => console.log('Close clicked')
-}
-```
-
-**Titled Header:**
-
-```tsx
-{
-  variant: 'titled',
-  title: 'Form Title',
-  leftIcon: 'arrow-left',
-  rightIcon: 'close',
-  onLeftIconClick: () => console.log('Back'),
-  onRightIconClick: () => console.log('Close')
-}
-```
+See [Storybook](https://storybook.ttoss.dev/?path=/story/forms-multistepform) for an interactive example.
