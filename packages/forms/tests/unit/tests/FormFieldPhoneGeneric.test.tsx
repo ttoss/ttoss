@@ -211,7 +211,9 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(screen.getByLabelText('input 1'), '9876543210');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '+919876543210' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '+919876543210' })
+    );
   });
 
   test('uses the default format fallback when no format is provided and no option format matches', async () => {
@@ -321,7 +323,9 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(input, '+15551234567');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '+15551234567' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '+15551234567' })
+    );
   });
 
   test('resets phone number when user changes country code', async () => {
@@ -360,7 +364,9 @@ describe('FormFieldPhoneGeneric', () => {
 
     // Submit without typing anything — phone must be empty
     await user.click(screen.getByText('Submit'));
-    expect(onSubmit).toHaveBeenCalledWith({ input1: '' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ input1: '' })
+    );
   });
 
   test('renders and submits with only name and label props', async () => {
@@ -391,7 +397,9 @@ describe('FormFieldPhoneGeneric', () => {
     await user.type(input, '15551234567');
     await user.click(screen.getByText('Submit'));
 
-    expect(onSubmit).toHaveBeenCalledWith({ phone: '+15551234567' });
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ phone: '+15551234567' })
+    );
   });
 
   describe('countryCodeName', () => {

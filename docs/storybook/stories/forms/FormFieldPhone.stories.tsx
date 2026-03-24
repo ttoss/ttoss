@@ -231,3 +231,44 @@ const WithCountryCodeNameTemplate: StoryFn = () => {
 export const WithCountryCodeName = WithCountryCodeNameTemplate.bind({});
 WithCountryCodeName.storyName =
   'Country Code as Separate Field (countryCodeName)';
+
+/**
+ * Pre-populating both the phone number and the country code via
+ * `useForm`'s `defaultValues`. The `countryCodeName` prop tells the
+ * component which form field stores the country code, so both values
+ * are read from the form on mount.
+ *
+ * Submitted data: `{ phone: '+5511999887766', countryCode: '+55' }`
+ */
+const WithInitialValuesTemplate: StoryFn = () => {
+  const schemaWithCountryCode = z.object({
+    phone: z.string().min(1, 'Value is required'),
+    countryCode: z.string(),
+  });
+
+  const formMethods = useForm({
+    mode: 'all',
+    resolver: zodResolver(schemaWithCountryCode),
+    defaultValues: {
+      phone: '+5511999887766',
+      countryCode: '+55',
+    },
+  });
+
+  return (
+    <Form {...formMethods} onSubmit={action('onSubmit')}>
+      <FormFieldPhone
+        name="phone"
+        label="Phone:"
+        countryCodeName="countryCode"
+        countryCodeOptions={COMMON_PHONE_COUNTRY_CODES}
+      />
+      <Button sx={{ marginTop: '4' }} type="submit">
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
+export const WithInitialValues = WithInitialValuesTemplate.bind({});
+WithInitialValues.storyName = 'Pre-populated (phone + country code)';
