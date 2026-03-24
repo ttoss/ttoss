@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.3...@docs/website@2.6.4) (2026-03-24)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
 ## [2.6.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.2...@docs/website@2.6.3) (2026-03-23)
 
 **Note:** Version bump only for package @docs/website
