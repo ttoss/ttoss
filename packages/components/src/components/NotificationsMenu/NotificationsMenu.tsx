@@ -1,7 +1,15 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Button, Card, Flex, IconButton, Text } from '@ttoss/ui';
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Text,
+  useResponsiveValue,
+} from '@ttoss/ui';
 import * as React from 'react';
 
+import { Drawer } from '../Drawer';
 import {
   NotificationCard,
   NotificationCardProps,
@@ -17,7 +25,6 @@ type Props = {
   defaultOpen?: boolean;
   hasMore?: boolean;
   count: number;
-  onLoadMore?: () => void;
   onOpenChange?: (isOpen: boolean) => void;
   onClose?: () => void;
   onClearAll?: () => void;
@@ -27,19 +34,17 @@ export const NotificationsMenu = ({
   notifications,
   defaultOpen = false,
   hasMore = false,
-  onLoadMore,
   onOpenChange,
   count,
   onClose,
   onClearAll,
 }: Props) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
-  const [openToLeft, setOpenToLeft] = React.useState(false);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const menuWidth = useResponsiveValue(['100%', '600px']);
   const loadMoreRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [showCount, setShowCount] = React.useState(true);
+  const [showCount] = React.useState(true);
 
   const togglePanel = () => {
     setIsOpen((prev) => {
@@ -49,69 +54,16 @@ export const NotificationsMenu = ({
     });
   };
 
-  React.useEffect(() => {
-    if (!isOpen || !buttonRef.current) return;
-
-    const rect = buttonRef.current.getBoundingClientRect();
-    const spaceRight = window.innerWidth - rect.right;
-    const spaceLeft = rect.left;
-
-    setShowCount(false);
-    setOpenToLeft(spaceRight < 500 && spaceLeft > spaceRight);
-  }, [isOpen]);
-
-  React.useEffect(() => {
-    if (!hasMore || !onLoadMore || !loadMoreRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onLoadMore();
-        }
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 1.0,
-      }
-    );
-
-    observer.observe(loadMoreRef.current);
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasMore, onLoadMore, notifications.length]);
-
-  React.useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-        onOpenChange?.(false);
-        onClose?.();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onOpenChange, onClose]);
-
   return (
-    <Flex sx={{ position: 'relative', justifyContent: 'flex-start' }}>
+    <Flex
+      sx={{
+        position: 'relative',
+        justifyContent: 'flex-start',
+        zIndex: 'modal',
+      }}
+    >
       <Box sx={{ position: 'relative' }}>
         <IconButton
-          ref={buttonRef}
           variant="ghost"
           sx={{
             position: 'relative',
@@ -153,44 +105,63 @@ export const NotificationsMenu = ({
         </IconButton>
 
         {isOpen && (
-          <div ref={containerRef}>
-            <Card
+          <>
+            <Drawer
+              size={menuWidth}
+              direction="right"
+              open={isOpen}
+              overlayOpacity={0}
+              onClose={() => {
+                setIsOpen(false);
+                onOpenChange?.(false);
+                onClose?.();
+              }}
               sx={{
-                position: 'absolute',
-                top: 'calc(100% + 8px)',
-                left: openToLeft ? 'auto' : 0,
-                right: openToLeft ? 0 : 'auto',
-                width:
-                  notifications.length === 0
-                    ? ['60vw', '300px']
-                    : ['90vw', '600px'],
-                maxHeight: '550px',
-                overflowY: 'auto',
-                zIndex: 'modal',
-                padding: 0,
-                boxShadow: 'xl',
-                borderRadius: '2xl',
-                backgroundColor: 'display.background.secondary.default',
+                '.EZDrawer__container': {
+                  position: 'fixed',
+                  height: 'full',
+                  backgroundColor: 'display.background.secondary.default',
+                  width: 'full',
+                  maxWidth: '2',
+                  boxShadow: '4',
+                  borderLeft: '1px solid',
+                  borderColor: 'display.border.primary.default',
+                  paddingX: '5',
+                  paddingTop: '4',
+                  paddingBottom: '4',
+                  transformOrigin: 'top right',
+                },
               }}
             >
-              <Box sx={{ width: '100%' }}>
-                <Flex sx={{ flexDirection: 'column', gap: 4 }}>
-                  {notifications.length > 0 && onClearAll && (
-                    <Flex
-                      sx={{
-                        justifyContent: 'flex-end',
-                        p: 2,
-                        marginBottom: -2,
-                      }}
-                    >
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Flex
+                  sx={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 4,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Text sx={{ fontSize: 'lg', fontWeight: 'bold' }}>
+                    Notificações
+                  </Text>
+                  <Flex sx={{ alignItems: 'center', gap: 2 }}>
+                    {notifications.length > 0 && onClearAll && (
                       <Button
                         variant="ghost"
                         sx={{
                           borderRadius: 'md',
                           padding: 1,
-                          paddingLeft: 10,
-                          paddingRight: 10,
-                          fontSize: 'md',
+                          paddingLeft: 3,
+                          paddingRight: 3,
+                          fontSize: 'sm',
                           color: 'display.text.muted.default',
                           border: '1px solid',
                           borderColor: 'display.border.default',
@@ -208,16 +179,41 @@ export const NotificationsMenu = ({
                         <Icon icon="delete" width={16} height={16} />
                         <Text
                           sx={{
-                            ml: -1,
-                            marginTop: -0.4,
+                            ml: 1,
                             fontSize: 'sm',
                           }}
                         >
                           Limpar Tudo
                         </Text>
                       </Button>
-                    </Flex>
-                  )}
+                    )}
+                    <IconButton
+                      variant="ghost"
+                      sx={{
+                        borderRadius: 'full',
+                        padding: 1,
+                        '&:hover': {
+                          backgroundColor: 'display.background.muted.default',
+                        },
+                      }}
+                      onClick={() => {
+                        setIsOpen(false);
+                        onOpenChange?.(false);
+                        onClose?.();
+                      }}
+                    >
+                      <Icon icon="close" width={20} height={20} />
+                    </IconButton>
+                  </Flex>
+                </Flex>
+                <Flex
+                  sx={{
+                    flexDirection: 'column',
+                    gap: 4,
+                    flex: 1,
+                    overflowY: 'auto',
+                  }}
+                >
                   {notifications.length === 0 ? (
                     <Text
                       sx={{
@@ -245,8 +241,8 @@ export const NotificationsMenu = ({
                   {hasMore && <div ref={loadMoreRef} style={{ height: 1 }} />}
                 </Flex>
               </Box>
-            </Card>
-          </div>
+            </Drawer>
+          </>
         )}
       </Box>
     </Flex>
