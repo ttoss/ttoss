@@ -1,0 +1,60 @@
+/* ---------------------------------------------------------------------------
+ * Switch — Responsibility: Selection
+ * Token resolution: resolveTokens({ responsibility: 'Selection' })
+ *   → color: input.muted (off) / action.primary (on)
+ *   → spacing: inset.control
+ * ------------------------------------------------------------------------- */
+
+.ui2-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tt-spacing-gap-inline-sm);
+  cursor: pointer;
+  user-select: none;
+}
+.ui2-switch[data-disabled] {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.ui2-switch__control {
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+  border-radius: var(--tt-radii-full, 9999px);
+  background-color: var(--tt-input-muted-background-default);
+  border: 1px solid var(--tt-input-muted-border-default);
+  transition: background-color var(--tt-duration-md, 200ms) var(--tt-easing-standard, ease);
+  flex-shrink: 0;
+}
+.ui2-switch__control[data-state='checked'] {
+  background-color: var(--tt-action-primary-background-default);
+  border-color: var(--tt-action-primary-border-default);
+}
+.ui2-switch__control[data-focus-visible] {
+  outline: 2px solid var(--tt-action-primary-background-default);
+  outline-offset: 2px;
+}
+
+.ui2-switch__thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--tt-radii-full, 9999px);
+  background-color: var(--tt-content-inverse-background-default);
+  transition: transform var(--tt-duration-md, 200ms) var(--tt-easing-standard, ease);
+  box-shadow: var(--tt-elevation-sm);
+}
+.ui2-switch__thumb[data-state='checked'] {
+  transform: translateX(20px);
+}
+
+.ui2-switch__label {
+  font-family: var(--tt-text-label-md-fontFamily);
+  font-size: var(--tt-text-label-md-fontSize);
+  font-weight: var(--tt-text-label-md-fontWeight);
+  line-height: var(--tt-text-label-md-lineHeight);
+  letter-spacing: var(--tt-text-label-md-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+}

@@ -1,4 +1,4 @@
-import type { ThemeTokensV2 } from '../ThemeTokensTemplate';
+import type { SemanticModeOverride, ThemeTokensV2 } from '../Types';
 
 /**
  * **Default** — Neutral baseline theme.
@@ -12,35 +12,50 @@ export const defaultTheme: ThemeTokensV2 = {
   // ==========================================================================
   core: {
     // -- Colors -------------------------------------------------------------
+    // Core colors are intent-free primitives. Scale positions only.
     colors: {
       brand: {
-        main: '#292C2a',
-        complimentary: '#f4f3f3',
-        accent: '#0469E3',
-        darkNeutral: '#325C82',
-        lightNeutral: '#F8F8F8',
+        100: '#DBEAFE',
+        300: '#60A5FA',
+        500: '#0469E3',
+        700: '#034DA6',
+        900: '#022E63',
       },
 
       neutral: {
-        white: '#ffffff',
-        gray50: '#f8fafc',
-        gray100: '#f1f5f9',
-        gray200: '#e2e8f0',
-        gray300: '#cbd5e1',
-        gray500: '#64748b',
-        gray700: '#334155',
-        gray900: '#0f172a',
-        black: '#000000',
+        0: '#ffffff',
+        50: '#f8fafc',
+        100: '#f1f5f9',
+        200: '#e2e8f0',
+        300: '#cbd5e1',
+        500: '#64748b',
+        700: '#334155',
+        900: '#0f172a',
+        1000: '#000000',
       },
 
       red: {
-        100: '#ffebeb',
-        200: '#fdbfbf',
-        300: '#f99595',
-        400: '#f56c6c',
+        100: '#fee2e2',
+        300: '#fca5a5',
         500: '#ef4444',
-        600: '#e42828',
-        700: '#c62121',
+        700: '#b91c1c',
+        900: '#7f1d1d',
+      },
+
+      green: {
+        100: '#dcfce7',
+        300: '#86efac',
+        500: '#22c55e',
+        700: '#15803d',
+        900: '#14532d',
+      },
+
+      yellow: {
+        100: '#fef9c3',
+        300: '#fde047',
+        500: '#eab308',
+        700: '#a16207',
+        900: '#713f12',
       },
     },
 
@@ -48,11 +63,18 @@ export const defaultTheme: ThemeTokensV2 = {
     elevation: {
       level: {
         0: 'none',
-        1: '0 1px 2px rgba(0,0,0,0.05), 0 1px 1px rgba(0,0,0,0.03)',
-        2: '0 3px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04)',
-        3: '0 6px 12px rgba(0,0,0,0.07), 0 3px 6px rgba(0,0,0,0.05)',
-        4: '0 12px 24px rgba(0,0,0,0.08), 0 6px 12px rgba(0,0,0,0.06)',
-        5: '0 24px 48px rgba(0,0,0,0.1), 0 12px 24px rgba(0,0,0,0.08)',
+        1: '0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04)',
+        2: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
+        3: '0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.08)',
+        4: '0 16px 32px rgba(0,0,0,0.14), 0 8px 16px rgba(0,0,0,0.10)',
+      },
+      // Dark-optimized recipes — higher opacity shadows for dark surfaces
+      dark: {
+        0: 'none',
+        1: '0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.14)',
+        2: '0 4px 8px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.18)',
+        3: '0 8px 16px rgba(0,0,0,0.28), 0 4px 8px rgba(0,0,0,0.22)',
+        4: '0 16px 32px rgba(0,0,0,0.34), 0 8px 16px rgba(0,0,0,0.28)',
       },
     },
 
@@ -60,6 +82,7 @@ export const defaultTheme: ThemeTokensV2 = {
     font: {
       family: {
         sans: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
+        serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
 
@@ -167,27 +190,31 @@ export const defaultTheme: ThemeTokensV2 = {
 
       viewport: {
         heightFull: '100dvh',
-        widthFull: '100vw',
+      },
+
+      hit: {
+        fine: { min: '28px', default: '40px', prominent: '48px' },
+        coarse: { min: '44px', default: '48px', prominent: '56px' },
       },
     },
 
     // -- Radii --------------------------------------------------------------
     radii: {
       none: '0px',
-      xs: '2px',
       sm: '4px',
       md: '8px',
       lg: '12px',
+      xl: '16px',
       full: '9999px',
     },
 
     // -- Borders ------------------------------------------------------------
-    borders: {
+    border: {
       width: {
-        0: '0',
-        hairline: '1px',
-        sm: '2px',
-        md: '4px',
+        none: '0px',
+        default: '1px',
+        selected: '2px',
+        focused: '2px',
       },
       style: {
         solid: 'solid',
@@ -209,6 +236,7 @@ export const defaultTheme: ThemeTokensV2 = {
     // -- Motion -------------------------------------------------------------
     motion: {
       duration: {
+        none: '0ms',
         xs: '50ms',
         sm: '100ms',
         md: '200ms',
@@ -216,32 +244,31 @@ export const defaultTheme: ThemeTokensV2 = {
         xl: '500ms',
       },
       easing: {
-        standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
-        decelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
-        accelerate: 'cubic-bezier(0.4, 0.0, 1, 1)',
-        linear: 'cubic-bezier(0.0, 0.0, 1.0, 1.0)',
+        standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        enter: 'cubic-bezier(0, 0, 0.2, 1)',
+        exit: 'cubic-bezier(0.4, 0, 1, 1)',
+        linear: 'linear',
       },
     },
 
     // -- Z-Index ------------------------------------------------------------
     zIndex: {
-      base: 0,
-      dropdown: 10,
-      sticky: 20,
-      overlay: 30,
-      modal: 40,
-      toast: 50,
-      tooltip: 60,
+      level: {
+        0: 0,
+        1: 100,
+        2: 200,
+        3: 300,
+        4: 400,
+      },
     },
 
     // -- Breakpoints --------------------------------------------------------
-    breakpoints: {
-      xs: '320px',
-      sm: '480px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-      '2xl': '1536px',
+    breakpoint: {
+      sm: '30rem',
+      md: '48rem',
+      lg: '64rem',
+      xl: '80rem',
+      '2xl': '96rem',
     },
   },
 
@@ -254,109 +281,184 @@ export const defaultTheme: ThemeTokensV2 = {
   semantic: {
     // -- Colors -------------------------------------------------------------
     // Grammar: {ux}.{role}.{dimension}.{state?}
+    // Components consume semantic colors only. Core colors are never referenced directly.
     colors: {
       action: {
         primary: {
-          background: { default: '{core.colors.brand.accent}' },
-          border: { default: '{core.colors.brand.accent}' },
-          text: { default: '{core.colors.neutral.white}' },
+          background: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.700}',
+            active: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          border: {
+            default: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
         },
         secondary: {
-          background: { default: '{core.colors.neutral.gray100}' },
-          border: { default: '{core.colors.neutral.gray300}' },
-          text: { default: '{core.colors.brand.darkNeutral}' },
+          background: {
+            default: '{core.colors.neutral.100}',
+            hover: '{core.colors.neutral.200}',
+            active: '{core.colors.neutral.300}',
+            disabled: '{core.colors.neutral.100}',
+          },
+          border: {
+            default: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
         },
         negative: {
-          background: { default: '{core.colors.red.500}' },
-          border: { default: '{core.colors.red.600}' },
-          text: { default: '{core.colors.neutral.white}' },
+          background: {
+            default: '{core.colors.red.500}',
+            hover: '{core.colors.red.700}',
+            active: '{core.colors.red.900}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          border: {
+            default: '{core.colors.red.500}',
+            focused: '{core.colors.red.700}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
         },
-        positive: {
-          background: { default: '{core.colors.brand.accent}' },
-          border: { default: '{core.colors.brand.accent}' },
-          text: { default: '{core.colors.neutral.white}' },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.500}',
+          },
         },
       },
 
       input: {
         primary: {
-          background: { default: '{core.colors.neutral.white}' },
-          border: {
-            default: '{core.colors.neutral.gray300}',
-            focused: '{core.colors.brand.accent}',
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.100}',
           },
-          text: { default: '{core.colors.neutral.gray900}' },
+          border: {
+            default: '{core.colors.neutral.300}',
+            hover: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
         },
         negative: {
           background: { default: '{core.colors.red.100}' },
-          border: { default: '{core.colors.red.500}' },
+          border: {
+            default: '{core.colors.red.500}',
+            focused: '{core.colors.red.700}',
+          },
           text: { default: '{core.colors.red.700}' },
         },
+        positive: {
+          background: { default: '{core.colors.green.100}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.700}' },
+        },
+        caution: {
+          background: { default: '{core.colors.yellow.100}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.900}' },
+        },
         muted: {
-          background: { default: '{core.colors.neutral.gray100}' },
-          border: { default: '{core.colors.neutral.gray200}' },
-          text: { default: '{core.colors.neutral.gray500}' },
+          background: { default: '{core.colors.neutral.100}' },
+          border: { default: '{core.colors.neutral.200}' },
+          text: { default: '{core.colors.neutral.700}' },
         },
       },
 
       content: {
         primary: {
-          background: { default: '{core.colors.neutral.white}' },
-          border: { default: '{core.colors.neutral.gray200}' },
-          text: { default: '{core.colors.neutral.gray900}' },
+          background: { default: '{core.colors.neutral.0}' },
+          border: { default: '{core.colors.neutral.200}' },
+          text: { default: '{core.colors.neutral.900}' },
         },
         secondary: {
-          background: { default: '{core.colors.neutral.gray50}' },
-          border: { default: '{core.colors.neutral.gray200}' },
-          text: { default: '{core.colors.neutral.gray700}' },
+          background: { default: '{core.colors.neutral.50}' },
+          border: { default: '{core.colors.neutral.200}' },
+          text: { default: '{core.colors.neutral.700}' },
         },
         muted: {
-          background: { default: '{core.colors.neutral.gray100}' },
-          border: { default: '{core.colors.neutral.gray200}' },
-          text: { default: '{core.colors.neutral.gray500}' },
+          background: { default: '{core.colors.neutral.100}' },
+          border: { default: '{core.colors.neutral.200}' },
+          text: { default: '{core.colors.neutral.500}' },
         },
       },
 
       feedback: {
+        primary: {
+          background: { default: '{core.colors.neutral.50}' },
+          border: { default: '{core.colors.neutral.300}' },
+          text: { default: '{core.colors.neutral.900}' },
+        },
+        positive: {
+          background: { default: '{core.colors.green.100}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.900}' },
+        },
+        caution: {
+          background: { default: '{core.colors.yellow.100}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.900}' },
+        },
         negative: {
           background: { default: '{core.colors.red.100}' },
           border: { default: '{core.colors.red.500}' },
-          text: { default: '{core.colors.red.700}' },
-        },
-        positive: {
-          background: { default: '{core.colors.brand.lightNeutral}' },
-          border: { default: '{core.colors.brand.accent}' },
-          text: { default: '{core.colors.brand.darkNeutral}' },
-        },
-        caution: {
-          background: { default: '{core.colors.neutral.gray100}' },
-          border: { default: '{core.colors.neutral.gray500}' },
-          text: { default: '{core.colors.neutral.gray900}' },
+          text: { default: '{core.colors.red.900}' },
         },
       },
 
       navigation: {
         primary: {
-          background: { default: '{core.colors.brand.main}' },
-          border: { default: '{core.colors.brand.main}' },
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.neutral.700}' },
           text: {
-            default: '{core.colors.brand.complimentary}',
-            current: '{core.colors.brand.accent}',
+            default: '{core.colors.neutral.0}',
+            current: '{core.colors.brand.300}',
           },
         },
       },
     },
 
     // -- Elevation ----------------------------------------------------------
-    // Grammar: elevation.{context}
+    // Grammar: elevation.surface.{stratum}
     elevation: {
-      flat: '{core.elevation.level.0}',
-      resting: '{core.elevation.level.2}',
-      raised: '{core.elevation.level.3}',
-      overlay: '{core.elevation.level.3}',
-      modal: '{core.elevation.level.4}',
-      top: '{core.elevation.level.5}',
-      dragged: '{core.elevation.level.5}',
+      surface: {
+        flat: '{core.elevation.level.0}',
+        raised: '{core.elevation.level.2}',
+        overlay: '{core.elevation.level.3}',
+        modal: '{core.elevation.level.4}',
+      },
     },
 
     // -- Typography ---------------------------------------------------------
@@ -550,13 +652,13 @@ export const defaultTheme: ThemeTokensV2 = {
       },
 
       gutter: {
-        page: '{core.space.6}',
-        section: '{core.space.4}',
+        page: 'clamp({core.space.4}, {core.space.6}, {core.space.12})',
+        section: 'clamp({core.space.3}, {core.space.4}, {core.space.12})',
       },
 
       separation: {
         interactive: {
-          min: '{core.space.2}',
+          min: 'clamp(8px, {core.space.2}, 12px)',
         },
       },
     },
@@ -565,9 +667,9 @@ export const defaultTheme: ThemeTokensV2 = {
     // Grammar: {family}.{stepOrProperty}
     sizing: {
       hit: {
-        min: '44px',
-        default: '48px',
-        prominent: '56px',
+        min: '{core.size.hit.fine.min}',
+        default: '{core.size.hit.fine.default}',
+        prominent: '{core.size.hit.fine.prominent}',
       },
       icon: {
         sm: '{core.size.ramp.ui.2}',
@@ -595,75 +697,254 @@ export const defaultTheme: ThemeTokensV2 = {
 
     // -- Radii --------------------------------------------------------------
     radii: {
-      surface: '{core.radii.md}',
-      control: '{core.radii.sm}',
-      pill: '{core.radii.full}',
-      avatar: '{core.radii.full}',
-      toast: '{core.radii.md}',
+      control: '{core.radii.md}',
+      surface: '{core.radii.lg}',
+      round: '{core.radii.full}',
     },
 
     // -- Borders ------------------------------------------------------------
     border: {
       divider: {
-        width: '{core.borders.width.hairline}',
-        style: '{core.borders.style.solid}',
+        width: '{core.border.width.default}',
+        style: '{core.border.style.solid}',
       },
       outline: {
-        width: '{core.borders.width.sm}',
-        style: '{core.borders.style.solid}',
+        surface: {
+          width: '{core.border.width.default}',
+          style: '{core.border.style.solid}',
+        },
+        control: {
+          width: '{core.border.width.default}',
+          style: '{core.border.style.solid}',
+        },
       },
-      focus: {
-        width: '{core.borders.width.md}',
-        style: '{core.borders.style.solid}',
+      selected: {
+        width: '{core.border.width.selected}',
+        style: '{core.border.style.solid}',
       },
-      input: {
-        width: '{core.borders.width.hairline}',
-        style: '{core.borders.style.solid}',
+    },
+
+    // -- Focus --------------------------------------------------------------
+    focus: {
+      ring: {
+        width: '{core.border.width.focused}',
+        style: '{core.border.style.solid}',
       },
     },
 
     // -- Opacity ------------------------------------------------------------
     opacity: {
-      overlay: {
-        backdrop: { opacity: '{core.opacity.50}' },
-        spinner: { opacity: '{core.opacity.75}' },
-      },
-      feedback: {
-        disabled: {
-          text: { opacity: '{core.opacity.50}' },
-        },
-      },
+      scrim: '{core.opacity.50}',
+      loading: '{core.opacity.50}',
+      disabledMedia: '{core.opacity.50}',
     },
 
     // -- Motion -------------------------------------------------------------
     motion: {
       feedback: {
-        fast: {
-          duration: '{core.motion.duration.xs}',
-          easing: '{core.motion.easing.standard}',
+        duration: '{core.motion.duration.sm}',
+        easing: '{core.motion.easing.standard}',
+      },
+      transition: {
+        enter: {
+          duration: '{core.motion.duration.md}',
+          easing: '{core.motion.easing.enter}',
+        },
+        exit: {
+          duration: '{core.motion.duration.sm}',
+          easing: '{core.motion.easing.exit}',
         },
       },
-      navigation: {
-        standard: {
-          duration: '{core.motion.duration.md}',
-          easing: '{core.motion.easing.standard}',
-        },
+      emphasis: {
+        duration: '{core.motion.duration.lg}',
+        easing: '{core.motion.easing.standard}',
       },
       decorative: {
-        slow: {
-          duration: '{core.motion.duration.lg}',
-          easing: '{core.motion.easing.decelerate}',
-        },
+        duration: '{core.motion.duration.xl}',
+        easing: '{core.motion.easing.linear}',
       },
     },
 
     // -- Z-Index ------------------------------------------------------------
     zIndex: {
-      navigation: '{core.zIndex.sticky}',
-      dropdownMenu: '{core.zIndex.dropdown}',
-      modalOverlay: '{core.zIndex.modal}',
-      modal: '{core.zIndex.modal}',
-      toast: '{core.zIndex.toast}',
+      layer: {
+        base: '{core.zIndex.level.0}',
+        sticky: '{core.zIndex.level.1}',
+        overlay: '{core.zIndex.level.2}',
+        modal: '{core.zIndex.level.3}',
+        transient: '{core.zIndex.level.4}',
+      },
     },
   },
 } satisfies ThemeTokensV2;
+
+// ---------------------------------------------------------------------------
+// Shared semantic dark alternate
+//
+// Remaps semantic token references to their dark-mode counterparts.
+// Core tokens are immutable — only the references change.
+// This alternate is shared by all light-first themes since the remapping
+// logic is expressed as token paths, not raw values.
+// ---------------------------------------------------------------------------
+
+export const semanticDarkAlternate: SemanticModeOverride = {
+  semantic: {
+    colors: {
+      action: {
+        primary: {
+          background: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.300}',
+            active: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.300}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+      },
+      input: {
+        primary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            disabled: '{core.colors.neutral.900}',
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        negative: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
+        positive: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.500}' },
+          text: { default: '{core.colors.neutral.300}' },
+        },
+      },
+      content: {
+        primary: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.neutral.700}' },
+          text: { default: '{core.colors.neutral.0}' },
+        },
+        secondary: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.700}' },
+          text: { default: '{core.colors.neutral.50}' },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.500}' },
+          border: { default: '{core.colors.neutral.700}' },
+          text: { default: '{core.colors.neutral.300}' },
+        },
+      },
+      feedback: {
+        primary: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.500}' },
+          text: { default: '{core.colors.neutral.0}' },
+        },
+        positive: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        negative: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
+      },
+      navigation: {
+        primary: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.neutral.700}' },
+          text: {
+            default: '{core.colors.neutral.0}',
+            current: '{core.colors.brand.300}',
+          },
+        },
+      },
+    },
+    elevation: {
+      surface: {
+        flat: '{core.elevation.dark.0}',
+        raised: '{core.elevation.dark.2}',
+        overlay: '{core.elevation.dark.3}',
+        modal: '{core.elevation.dark.4}',
+      },
+    },
+  },
+};
+
+/**
+ * @deprecated Use `semanticDarkAlternate` instead.
+ * Kept for backward-compat during migration.
+ */
+export { semanticDarkAlternate as defaultDark };

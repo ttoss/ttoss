@@ -1,0 +1,63 @@
+{
+  "Action": {
+    "color": "action.primary",
+    "textStyle": "label.md",
+    "spacing": "inset.control",
+    "sizing": "hit.default",
+    "radii": "control",
+    "motion": "feedback.fast"
+  },
+  "Input": {
+    "color": "input.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.control",
+    "sizing": "hit.default",
+    "radii": "control",
+    "motion": "feedback.fast"
+  },
+  "Selection": {
+    "color": "input.primary",
+    "textStyle": "label.md",
+    "spacing": "inset.control",
+    "motion": "feedback.fast"
+  },
+  "Collection": {
+    "color": "content.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.surface"
+  },
+  "Navigation": {
+    "color": "navigation.primary",
+    "textStyle": "label.md",
+    "spacing": "inset.control",
+    "zIndex": "navigation",
+    "motion": "navigation.standard"
+  },
+  "Disclosure": {
+    "color": "content.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.control",
+    "motion": "navigation.standard"
+  },
+  "Overlay": {
+    "color": "content.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.surface",
+    "elevation": "modal",
+    "radii": "surface",
+    "zIndex": "modal",
+    "motion": "navigation.standard"
+  },
+  "Feedback": {
+    "color": "feedback.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.surface",
+    "radii": "surface",
+    "motion": "feedback.fast"
+  },
+  "Structure": {
+    "color": "content.primary",
+    "textStyle": "body.md",
+    "spacing": "inset.surface"
+  }
+}

@@ -24,11 +24,11 @@ describe('defaultTheme', () => {
     expect(core.space).toBeDefined();
     expect(core.size).toBeDefined();
     expect(core.radii).toBeDefined();
-    expect(core.borders).toBeDefined();
+    expect(core.border).toBeDefined();
     expect(core.opacity).toBeDefined();
     expect(core.motion).toBeDefined();
     expect(core.zIndex).toBeDefined();
-    expect(core.breakpoints).toBeDefined();
+    expect(core.breakpoint).toBeDefined();
   });
 
   test('semantic contains all token categories', () => {
@@ -40,6 +40,7 @@ describe('defaultTheme', () => {
     expect(semantic.sizing).toBeDefined();
     expect(semantic.radii).toBeDefined();
     expect(semantic.border).toBeDefined();
+    expect(semantic.focus).toBeDefined();
     expect(semantic.opacity).toBeDefined();
     expect(semantic.motion).toBeDefined();
     expect(semantic.zIndex).toBeDefined();
@@ -66,18 +67,18 @@ describe('createTheme', () => {
       overrides: {
         core: {
           colors: {
-            brand: { main: '#FF0000' },
+            brand: { 500: '#FF0000' },
           },
         },
       },
     });
 
-    expect(theme.core.colors.brand.main).toBe('#FF0000');
-    expect(theme.core.colors.brand.accent).toBe(
-      defaultTheme.core.colors.brand.accent
+    expect(theme.core.colors.brand[500]).toBe('#FF0000');
+    expect(theme.core.colors.brand[100]).toBe(
+      defaultTheme.core.colors.brand[100]
     );
-    expect(theme.core.colors.brand.complimentary).toBe(
-      defaultTheme.core.colors.brand.complimentary
+    expect(theme.core.colors.brand[700]).toBe(
+      defaultTheme.core.colors.brand[700]
     );
   });
 
@@ -86,18 +87,22 @@ describe('createTheme', () => {
       overrides: {
         semantic: {
           elevation: {
-            resting: '{core.elevation.level.3}',
+            surface: {
+              raised: '{core.elevation.level.3}',
+            },
           },
         },
       },
     });
 
-    expect(theme.semantic.elevation.resting).toBe('{core.elevation.level.3}');
-    expect(theme.semantic.elevation.flat).toBe(
-      defaultTheme.semantic.elevation.flat
+    expect(theme.semantic.elevation.surface.raised).toBe(
+      '{core.elevation.level.3}'
     );
-    expect(theme.semantic.elevation.modal).toBe(
-      defaultTheme.semantic.elevation.modal
+    expect(theme.semantic.elevation.surface.flat).toBe(
+      defaultTheme.semantic.elevation.surface.flat
+    );
+    expect(theme.semantic.elevation.surface.modal).toBe(
+      defaultTheme.semantic.elevation.surface.modal
     );
   });
 
@@ -118,36 +123,36 @@ describe('createTheme', () => {
   test('supports theme inheritance with a custom base', () => {
     const parentTheme = createTheme({
       overrides: {
-        core: { colors: { brand: { main: '#111111' } } },
+        core: { colors: { brand: { 500: '#111111' } } },
       },
     });
 
     const childTheme = createTheme({
       base: parentTheme,
       overrides: {
-        core: { colors: { brand: { accent: '#00FF00' } } },
+        core: { colors: { brand: { 300: '#00FF00' } } },
       },
     });
 
-    expect(childTheme.core.colors.brand.main).toBe('#111111');
-    expect(childTheme.core.colors.brand.accent).toBe('#00FF00');
-    expect(childTheme.core.colors.brand.complimentary).toBe(
-      defaultTheme.core.colors.brand.complimentary
+    expect(childTheme.core.colors.brand[500]).toBe('#111111');
+    expect(childTheme.core.colors.brand[300]).toBe('#00FF00');
+    expect(childTheme.core.colors.brand[100]).toBe(
+      defaultTheme.core.colors.brand[100]
     );
   });
 
   test('returns a new object without mutating the base', () => {
-    const originalMain = defaultTheme.core.colors.brand.main;
+    const originalBrand500 = defaultTheme.core.colors.brand[500];
 
     const theme = createTheme({
       overrides: {
-        core: { colors: { brand: { main: '#AABBCC' } } },
+        core: { colors: { brand: { 500: '#AABBCC' } } },
       },
     });
 
     expect(theme).not.toBe(defaultTheme);
-    expect(theme.core.colors.brand.main).toBe('#AABBCC');
-    expect(defaultTheme.core.colors.brand.main).toBe(originalMain);
+    expect(theme.core.colors.brand[500]).toBe('#AABBCC');
+    expect(defaultTheme.core.colors.brand[500]).toBe(originalBrand500);
   });
 
   test('overrides multiple categories in a single call', () => {
@@ -155,7 +160,7 @@ describe('createTheme', () => {
       overrides: {
         core: {
           radii: { sm: '6px', lg: '16px' },
-          breakpoints: { sm: '500px' },
+          breakpoint: { sm: '36rem' },
         },
         semantic: {
           radii: { control: '{core.radii.md}' },
@@ -166,8 +171,8 @@ describe('createTheme', () => {
     expect(theme.core.radii.sm).toBe('6px');
     expect(theme.core.radii.lg).toBe('16px');
     expect(theme.core.radii.md).toBe(defaultTheme.core.radii.md);
-    expect(theme.core.breakpoints.sm).toBe('500px');
-    expect(theme.core.breakpoints.md).toBe(defaultTheme.core.breakpoints.md);
+    expect(theme.core.breakpoint.sm).toBe('36rem');
+    expect(theme.core.breakpoint.md).toBe(defaultTheme.core.breakpoint.md);
     expect(theme.semantic.radii.control).toBe('{core.radii.md}');
     expect(theme.semantic.radii.surface).toBe(
       defaultTheme.semantic.radii.surface
@@ -179,15 +184,15 @@ describe('createTheme', () => {
       overrides: {
         core: {
           opacity: { 75: 0.8 },
-          zIndex: { modal: 100 },
+          zIndex: { level: { 3: 500 } },
         },
       },
     });
 
     expect(theme.core.opacity[75]).toBe(0.8);
     expect(theme.core.opacity[50]).toBe(defaultTheme.core.opacity[50]);
-    expect(theme.core.zIndex.modal).toBe(100);
-    expect(theme.core.zIndex.toast).toBe(defaultTheme.core.zIndex.toast);
+    expect(theme.core.zIndex.level[3]).toBe(500);
+    expect(theme.core.zIndex.level[4]).toBe(defaultTheme.core.zIndex.level[4]);
   });
 });
 
@@ -198,7 +203,7 @@ describe('createTheme', () => {
 describe('immutability (deep-clone)', () => {
   test('mutation in child theme does not affect the base theme', () => {
     const base = createTheme({
-      overrides: { core: { colors: { brand: { main: '#111' } } } },
+      overrides: { core: { colors: { brand: { 500: '#111' } } } },
     });
     const child = createTheme({
       base,
@@ -206,18 +211,18 @@ describe('immutability (deep-clone)', () => {
     });
 
     // Mutate child
-    child.core.colors.brand.main = '#MUTATED';
+    child.core.colors.brand[500] = '#MUTATED';
 
-    expect(base.core.colors.brand.main).toBe('#111');
+    expect(base.core.colors.brand[500]).toBe('#111');
   });
 
   test('mutation in built-in theme does not affect defaultTheme', () => {
     const theme = createTheme();
-    const originalMain = defaultTheme.core.colors.brand.main;
+    const originalBrand500 = defaultTheme.core.colors.brand[500];
 
-    theme.core.colors.brand.main = '#MUTATED';
+    theme.core.colors.brand[500] = '#MUTATED';
 
-    expect(defaultTheme.core.colors.brand.main).toBe(originalMain);
+    expect(defaultTheme.core.colors.brand[500]).toBe(originalBrand500);
   });
 
   test('non-overridden branch is not the same reference as base', () => {
@@ -236,7 +241,7 @@ describe('type safety', () => {
     const partial: DeepPartial<ThemeTokensV2> = {
       core: {
         colors: {
-          brand: { main: '#000' },
+          brand: { 500: '#000' },
         },
       },
     };

@@ -164,10 +164,6 @@ export const createThemeRuntime = (
     root.style.colorScheme = resolvedMode;
   };
 
-  const persist = (): void => {
-    writeStorage(storageKey, { themeId, mode });
-  };
-
   const getState = (): ThemeState => {
     return {
       themeId,
@@ -176,14 +172,31 @@ export const createThemeRuntime = (
     };
   };
 
-  const notify = (): void => {
+  // --- Centralized state transition ----------------------------------------
+
+  let prevSnapshot = `${themeId}\0${mode}\0${resolvedMode}`;
+
+  const applyState = ({ persist }: { persist: boolean }): void => {
+    const snapshot = `${themeId}\0${mode}\0${resolvedMode}`;
+
+    if (snapshot === prevSnapshot) {
+      return;
+    }
+
+    prevSnapshot = snapshot;
+    apply();
+
+    if (persist) {
+      writeStorage(storageKey, { themeId, mode });
+    }
+
     const state = getState();
     for (const listener of listeners) {
       listener(state);
     }
   };
 
-  // --- System mode listener ------------------------------------------------
+  // --- Lazy system mode listener -------------------------------------------
 
   const mediaQuery =
     typeof window !== 'undefined'
@@ -191,30 +204,44 @@ export const createThemeRuntime = (
       : null;
 
   const onSystemChange = (): void => {
-    if (mode === 'system') {
-      resolvedMode = getSystemMode();
-      apply();
-      notify();
+    resolvedMode = getSystemMode();
+    applyState({ persist: false });
+  };
+
+  const syncMediaListener = (active: boolean): void => {
+    if (!mediaQuery) {
+      return;
+    }
+    mediaQuery.removeEventListener('change', onSystemChange);
+    if (active) {
+      mediaQuery.addEventListener('change', onSystemChange);
     }
   };
 
-  mediaQuery?.addEventListener('change', onSystemChange);
+  syncMediaListener(mode === 'system');
 
   // --- Public API ----------------------------------------------------------
 
   const setTheme = (newThemeId: string): void => {
+    if (
+      typeof newThemeId !== 'string' ||
+      !newThemeId ||
+      !/^[a-zA-Z0-9_-]+$/.test(newThemeId)
+    ) {
+      return;
+    }
     themeId = newThemeId;
-    apply();
-    persist();
-    notify();
+    applyState({ persist: true });
   };
 
   const setMode = (newMode: ThemeMode): void => {
+    if (!VALID_MODES.includes(newMode)) {
+      return;
+    }
     mode = newMode;
     resolvedMode = resolveMode(mode);
-    apply();
-    persist();
-    notify();
+    syncMediaListener(mode === 'system');
+    applyState({ persist: true });
   };
 
   const subscribe = (listener: (state: ThemeState) => void): (() => void) => {
@@ -225,7 +252,7 @@ export const createThemeRuntime = (
   };
 
   const destroy = (): void => {
-    mediaQuery?.removeEventListener('change', onSystemChange);
+    syncMediaListener(false);
     listeners.clear();
   };
 

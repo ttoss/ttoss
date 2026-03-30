@@ -1,0 +1,119 @@
+/* ---------------------------------------------------------------------------
+ * Dialog — Responsibility: Overlay | Host: SurfaceFrame
+ * Token resolution: resolveTokens({ responsibility: 'Overlay' })
+ *   → color: content.primary, elevation: modal, radii: surface
+ *
+ * Composition scopes (SurfaceFrame roles):
+ *   __title       → SurfaceFrame.heading:  color: content.primary, text: title.md
+ *   __description → SurfaceFrame.body:     color: content.muted, text: body.md
+ *   __body        → SurfaceFrame.body:     color: content.primary, text: body.md
+ *   __footer      → ActionSet host:        spacing: separation.interactive
+ *     Button[solid]   → ActionSet.primary:   color: action.primary
+ *     Button[outline] → ActionSet.secondary: color: action.secondary
+ *     Button[ghost]   → ActionSet.dismiss:   color: action.muted
+ *   __close-trigger → ActionSet.dismiss:    color: action.muted
+ * ------------------------------------------------------------------------- */
+
+.ui2-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--tt-overlay-backdrop-background-default);
+  z-index: var(--tt-z-index-modal, 40);
+}
+.ui2-dialog__backdrop[data-state='open'] {
+  animation: ui2-fade-in var(--tt-duration-md, 200ms) var(--tt-easing-decelerate, ease);
+}
+.ui2-dialog__backdrop[data-state='closed'] {
+  animation: ui2-fade-out var(--tt-duration-md, 200ms) var(--tt-easing-accelerate, ease);
+}
+
+.ui2-dialog__positioner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--tt-z-index-modal, 40);
+}
+
+.ui2-dialog__content {
+  background-color: var(--tt-content-primary-background-default);
+  border: 1px solid var(--tt-content-primary-border-default);
+  border-radius: var(--tt-radii-semantic-surface, var(--tt-radii-md, 8px));
+  box-shadow: var(--tt-elevation-modal);
+  padding: var(--tt-spacing-inset-surface-lg);
+  width: 90vw;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+.ui2-dialog__content[data-state='open'] {
+  animation: ui2-scale-in var(--tt-duration-md, 200ms) var(--tt-easing-decelerate, ease);
+}
+.ui2-dialog__content[data-state='closed'] {
+  animation: ui2-scale-out var(--tt-duration-md, 200ms) var(--tt-easing-accelerate, ease);
+}
+
+.ui2-dialog__title {
+  font-family: var(--tt-text-title-md-fontFamily);
+  font-size: var(--tt-text-title-md-fontSize);
+  font-weight: var(--tt-text-title-md-fontWeight);
+  line-height: var(--tt-text-title-md-lineHeight);
+  letter-spacing: var(--tt-text-title-md-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+  margin: 0 0 var(--tt-spacing-gap-stack-xs) 0;
+}
+
+.ui2-dialog__description {
+  font-family: var(--tt-text-body-md-fontFamily);
+  font-size: var(--tt-text-body-md-fontSize);
+  font-weight: var(--tt-text-body-md-fontWeight);
+  line-height: var(--tt-text-body-md-lineHeight);
+  letter-spacing: var(--tt-text-body-md-letterSpacing);
+  color: var(--tt-content-muted-text-default);
+  margin: 0 0 var(--tt-spacing-gap-stack-md) 0;
+}
+
+.ui2-dialog__close-trigger {
+  position: absolute;
+  top: var(--tt-spacing-inset-surface-sm);
+  right: var(--tt-spacing-inset-surface-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--tt-radii-sm, 4px);
+  cursor: pointer;
+  color: var(--tt-content-muted-text-default);
+  font-size: 18px;
+}
+.ui2-dialog__close-trigger:hover {
+  background-color: var(--tt-content-muted-background-default);
+}
+.ui2-dialog__close-trigger:focus-visible {
+  outline: 2px solid var(--tt-action-primary-background-default);
+  outline-offset: 2px;
+}
+
+/* SurfaceFrame.body — main content area */
+.ui2-dialog__body {
+  font-family: var(--tt-text-body-md-fontFamily);
+  font-size: var(--tt-text-body-md-fontSize);
+  font-weight: var(--tt-text-body-md-fontWeight);
+  line-height: var(--tt-text-body-md-lineHeight);
+  letter-spacing: var(--tt-text-body-md-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+}
+
+/* ActionSet host — action button container */
+.ui2-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tt-spacing-gap-inline-sm);
+  margin-top: var(--tt-spacing-gap-stack-md, var(--tt-space-4, 16px));
+}

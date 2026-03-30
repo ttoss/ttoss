@@ -1,0 +1,45 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# ttoss Storybook — ui2 + theme2
+
+Welcome to **storybook2**, the system Storybook for `@ttoss/ui2` and `@ttoss/theme2`.
+
+## What this Storybook covers
+
+- **Foundations** — Semantic tokens (colors, typography, spacing, sizing, radii, elevation)
+- **Components** — Action, Selection, Overlay primitives
+- **Composites** — Multi-part compound components (Dialog, Field, Tabs, Accordion)
+- **Sandbox** — Experiments and edge cases
+
+## Toolbar controls
+
+Use the toolbar at the top to switch:
+
+| Control       | Options                                                  |
+| ------------- | -------------------------------------------------------- |
+| **Theme**     | default, bruttal, aurora, terra, oca, neon               |
+| **Mode**      | light, dark                                              |
+| **Container** | xs (320), sm (480), md (768), lg (1024), xl (1280), auto |
+
+## Architecture
+
+```
+@ttoss/theme2  →  CSS custom properties (--tt-*)
+@ttoss/ui2     →  Semantic components consuming those tokens
+storybook2     →  Integration hub — validates real runtime
+```
+
+Components never consume core tokens directly. They use semantic tokens
+resolved by `toCssVars()` from theme2.
+
+## Token grammar
+
+```
+Semantic colors:   --tt-{ux}-{role}-{dimension}-{state}
+Spacing:           --tt-spacing-{pattern}-{context}-{step}
+Typography:        --tt-text-{key}-{property}
+Radii:             --tt-radii-semantic-{alias}
+Elevation:         --tt-elevation-{alias}
+```

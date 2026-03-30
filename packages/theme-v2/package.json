@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@ttoss/theme2",
   "version": "1.0.2",
   "description": "Theme v2 for packages.",
@@ -16,7 +15,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./react": "./src/react.tsx"
+    "./react": "./src/react.tsx",
+    "./dataviz": "./src/dataviz/index.ts"
   },
   "files": [
     "dist"

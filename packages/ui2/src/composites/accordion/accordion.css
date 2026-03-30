@@ -1,0 +1,77 @@
+/* ---------------------------------------------------------------------------
+ * Accordion — Responsibility: Disclosure
+ * Token resolution: resolveTokens({ responsibility: 'Disclosure' })
+ *   → color: content.primary, spacing: inset.control
+ *
+ * BEM scopes:
+ *   __item      — section container
+ *   __trigger   — section header (click to expand/collapse)
+ *   __content   — revealed panel content
+ * ------------------------------------------------------------------------- */
+
+.ui2-accordion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ui2-accordion__item {
+  border-bottom: 1px solid var(--tt-content-primary-border-default);
+}
+
+.ui2-accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--tt-spacing-inset-control-md);
+  font-family: var(--tt-text-body-lg-fontFamily);
+  font-size: var(--tt-text-body-lg-fontSize);
+  font-weight: var(--tt-text-body-lg-fontWeight);
+  line-height: var(--tt-text-body-lg-lineHeight);
+  letter-spacing: var(--tt-text-body-lg-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease);
+}
+.ui2-accordion__trigger:hover:not([data-disabled]) {
+  background-color: var(--tt-content-secondary-background-default);
+}
+.ui2-accordion__trigger[data-disabled] {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+.ui2-accordion__trigger:focus-visible {
+  outline: 2px solid var(--tt-action-primary-background-default);
+  outline-offset: -2px;
+}
+
+.ui2-accordion__indicator {
+  transition: transform var(--tt-duration-md, 200ms) var(--tt-easing-standard, ease);
+}
+.ui2-accordion__indicator[data-state='open'] {
+  transform: rotate(180deg);
+}
+
+.ui2-accordion__content {
+  overflow: hidden;
+}
+.ui2-accordion__content[data-state='open'] {
+  animation: ui2-slide-down var(--tt-duration-md, 200ms) var(--tt-easing-decelerate, ease);
+}
+.ui2-accordion__content[data-state='closed'] {
+  animation: ui2-slide-up var(--tt-duration-md, 200ms) var(--tt-easing-accelerate, ease);
+}
+
+.ui2-accordion__content-inner {
+  padding: var(--tt-spacing-inset-surface-md);
+  font-family: var(--tt-text-body-md-fontFamily);
+  font-size: var(--tt-text-body-md-fontSize);
+  font-weight: var(--tt-text-body-md-fontWeight);
+  line-height: var(--tt-text-body-md-lineHeight);
+  letter-spacing: var(--tt-text-body-md-letterSpacing);
+  color: var(--tt-content-secondary-text-default);
+}

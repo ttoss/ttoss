@@ -1,32 +1,48 @@
-export type { DeepPartial } from './createTheme';
-export { createTheme } from './createTheme';
-export type { ThemeTokensV2 } from './ThemeTokensTemplate';
+export { createTheme, createThemeBundle } from './createTheme';
+export type {
+  DeepPartial,
+  SemanticModeOverride,
+  ThemeBundle,
+  ThemeTokensV2,
+} from './Types';
+
+// React — re-export SemanticTokens type for consumers who don't import from react entry
+// The full React API (ThemeProvider, useTokens, useTheme) lives in the '/react' entry point.
+export type { SemanticTokens } from './react';
 
 // Themes
 export {
   aurora,
+  auroraBundle,
   bruttal,
+  bruttalBundle,
+  bundles,
+  defaultBundle,
   defaultTheme,
   neon,
+  neonBundle,
   oca,
+  ocaBundle,
   terra,
+  terraBundle,
   themes,
 } from './themes';
 
-// Adapters
+// Roots
+export { type FlatTokenMap, toFlatTokens } from './roots/helpers';
 export {
-  type ChakraThemeConfig,
-  toChakraTheme,
-} from './adapters/toChakraTheme';
-export {
+  type BundleCssVarsOptions,
+  type BundleCssVarsResult,
+  bundleToCssVars,
   type CssVarsOptions,
   type CssVarsResult,
   toCssVars,
-} from './adapters/toCssVars';
+} from './roots/toCssVars';
+export { type DTCGToken, type DTCGTokenTree, toDTCG } from './roots/toDTCG';
 export {
-  type TailwindThemeConfig,
-  toTailwindTheme,
-} from './adapters/toTailwindTheme';
+  type DeprecationValidationResult,
+  validateDeprecations,
+} from './roots/validateDeprecations';
 
 // Runtime
 export {
@@ -39,6 +55,7 @@ export {
   type ThemeRuntime,
   type ThemeRuntimeConfig,
   type ThemeState,
+  VALID_MODES,
 } from './runtime';
 
 // SSR

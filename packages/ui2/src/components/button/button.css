@@ -1,0 +1,102 @@
+/* ---------------------------------------------------------------------------
+ * Button — Responsibility: Action
+ * Token resolution: resolveTokens({ responsibility: 'Action' })
+ *   → color: action.primary | action.secondary | action.negative
+ *   → spacing: inset.control, radii: control
+ *
+ * Composition: ActionSet.primary (solid), ActionSet.secondary (outline),
+ *              ActionSet.dismiss (ghost)
+ * ------------------------------------------------------------------------- */
+
+.ui2-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tt-spacing-gap-inline-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: var(--tt-text-label-md-fontFamily);
+  font-weight: var(--tt-text-label-md-fontWeight);
+  line-height: var(--tt-text-label-md-lineHeight);
+  letter-spacing: var(--tt-text-label-md-letterSpacing);
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: var(--tt-duration-md, 200ms);
+  transition-timing-function: var(--tt-easing-standard, ease);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Sizes */
+.ui2-button[data-size='sm'] {
+  padding: var(--tt-spacing-inset-control-sm);
+  font-size: var(--tt-text-label-sm-fontSize);
+  min-height: 32px;
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+}
+.ui2-button[data-size='md'],
+.ui2-button:not([data-size]) {
+  padding: var(--tt-spacing-inset-control-md);
+  font-size: var(--tt-text-label-md-fontSize);
+  min-height: 40px;
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+}
+.ui2-button[data-size='lg'] {
+  padding: var(--tt-spacing-inset-control-lg);
+  font-size: var(--tt-text-label-lg-fontSize);
+  min-height: 48px;
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+}
+
+/* Variant: solid (default) */
+.ui2-button[data-variant='solid'],
+.ui2-button:not([data-variant]) {
+  background-color: var(--tt-action-primary-background-default);
+  color: var(--tt-action-primary-text-default);
+  border-color: var(--tt-action-primary-border-default);
+}
+.ui2-button[data-variant='solid']:hover:not(:disabled),
+.ui2-button:not([data-variant]):hover:not(:disabled) {
+  opacity: var(--tt-opacity-hover);
+}
+
+/* Variant: outline */
+.ui2-button[data-variant='outline'] {
+  background-color: transparent;
+  color: var(--tt-action-secondary-text-default);
+  border-color: var(--tt-action-secondary-border-default);
+}
+.ui2-button[data-variant='outline']:hover:not(:disabled) {
+  background-color: var(--tt-action-secondary-background-default);
+}
+
+/* Variant: ghost */
+.ui2-button[data-variant='ghost'] {
+  background-color: transparent;
+  color: var(--tt-action-secondary-text-default);
+  border-color: transparent;
+}
+.ui2-button[data-variant='ghost']:hover:not(:disabled) {
+  background-color: var(--tt-action-secondary-background-default);
+}
+
+/* Variant: danger */
+.ui2-button[data-variant='danger'] {
+  background-color: var(--tt-action-negative-background-default);
+  color: var(--tt-action-negative-text-default);
+  border-color: var(--tt-action-negative-border-default);
+}
+.ui2-button[data-variant='danger']:hover:not(:disabled) {
+  opacity: var(--tt-opacity-hover);
+}
+
+/* Disabled */
+.ui2-button:disabled {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* Focus */
+.ui2-button:focus-visible {
+  outline: 2px solid var(--tt-action-primary-background-default);
+  outline-offset: 2px;
+}

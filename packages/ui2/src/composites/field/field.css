@@ -1,0 +1,104 @@
+/* ---------------------------------------------------------------------------
+ * Field — Responsibility: Structure | Host: FieldFrame
+ * Token resolution: resolveTokens({ responsibility: 'Structure' })
+ *
+ * Composition scopes (FieldFrame roles):
+ *   __label            → FieldFrame.label:             color: content.primary, text: label.md
+ *   __input / __textarea → FieldFrame.control:          color: input.primary, text: body.md
+ *   __helper-text       → FieldFrame.description:       color: content.muted, text: body.sm
+ *   __error-text        → FieldFrame.validationMessage: color: feedback.negative, text: body.sm
+ * ------------------------------------------------------------------------- */
+
+.ui2-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-gap-stack-xs);
+  width: 100%;
+}
+
+.ui2-field__label {
+  font-family: var(--tt-text-label-md-fontFamily);
+  font-size: var(--tt-text-label-md-fontSize);
+  font-weight: var(--tt-text-label-md-fontWeight);
+  line-height: var(--tt-text-label-md-lineHeight);
+  letter-spacing: var(--tt-text-label-md-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+}
+
+.ui2-field__required-indicator {
+  color: var(--tt-feedback-negative-text-default);
+  margin-left: 2px;
+}
+
+.ui2-field__input {
+  width: 100%;
+  padding: var(--tt-spacing-inset-control-md);
+  font-family: var(--tt-text-body-lg-fontFamily);
+  font-size: var(--tt-text-body-lg-fontSize);
+  font-weight: var(--tt-text-body-lg-fontWeight);
+  line-height: var(--tt-text-body-lg-lineHeight);
+  letter-spacing: var(--tt-text-body-lg-letterSpacing);
+  color: var(--tt-input-primary-text-default);
+  background-color: var(--tt-input-primary-background-default);
+  border: 1px solid var(--tt-input-primary-border-default);
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+  transition: border-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease);
+}
+.ui2-field__input:focus {
+  outline: none;
+  border-color: var(--tt-input-primary-border-focused, var(--tt-action-primary-background-default));
+  box-shadow: 0 0 0 1px var(--tt-input-primary-border-focused, var(--tt-action-primary-background-default));
+}
+.ui2-field__input[data-invalid] {
+  border-color: var(--tt-input-negative-border-default);
+}
+.ui2-field__input:disabled {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+.ui2-field__input::placeholder {
+  color: var(--tt-input-muted-text-default);
+}
+
+.ui2-field__textarea {
+  width: 100%;
+  padding: var(--tt-spacing-inset-control-md);
+  font-family: var(--tt-text-body-lg-fontFamily);
+  font-size: var(--tt-text-body-lg-fontSize);
+  font-weight: var(--tt-text-body-lg-fontWeight);
+  line-height: var(--tt-text-body-lg-lineHeight);
+  letter-spacing: var(--tt-text-body-lg-letterSpacing);
+  color: var(--tt-input-primary-text-default);
+  background-color: var(--tt-input-primary-background-default);
+  border: 1px solid var(--tt-input-primary-border-default);
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+  transition: border-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease);
+  resize: vertical;
+  min-height: 80px;
+}
+.ui2-field__textarea:focus {
+  outline: none;
+  border-color: var(--tt-input-primary-border-focused, var(--tt-action-primary-background-default));
+  box-shadow: 0 0 0 1px var(--tt-input-primary-border-focused, var(--tt-action-primary-background-default));
+}
+.ui2-field__textarea[data-invalid] {
+  border-color: var(--tt-input-negative-border-default);
+}
+
+.ui2-field__helper-text {
+  font-family: var(--tt-text-body-sm-fontFamily);
+  font-size: var(--tt-text-body-sm-fontSize);
+  font-weight: var(--tt-text-body-sm-fontWeight);
+  line-height: var(--tt-text-body-sm-lineHeight);
+  letter-spacing: var(--tt-text-body-sm-letterSpacing);
+  color: var(--tt-content-muted-text-default);
+}
+
+.ui2-field__error-text {
+  font-family: var(--tt-text-body-sm-fontFamily);
+  font-size: var(--tt-text-body-sm-fontSize);
+  font-weight: var(--tt-text-body-sm-fontWeight);
+  line-height: var(--tt-text-body-sm-lineHeight);
+  letter-spacing: var(--tt-text-body-sm-letterSpacing);
+  color: var(--tt-feedback-negative-text-default);
+}

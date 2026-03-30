@@ -1,0 +1,31 @@
+/* ==========================================================================
+ * @ttoss/ui2 — Semantic stylesheet aggregator
+ *
+ * Imports all per-component CSS files and shared animations.
+ * Consumers include this single file: `import '@ttoss/ui2/styles.css'`
+ *
+ * Token grammar (from @ttoss/theme2):
+ *   --tt-{ux}-{role}-{dimension}-{state}   (semantic colors)
+ *   --tt-spacing-{pattern}-{context}-{step} (semantic spacing)
+ *   --tt-radii-semantic-{alias}             (semantic radii)
+ *   --tt-elevation-{alias}                  (semantic elevation)
+ *   --tt-font-{family}                      (font families)
+ *   --tt-font-size-text-{step}              (font sizes)
+ *   --tt-duration-{step}                    (durations)
+ *   --tt-easing-{name}                      (easings)
+ * ========================================================================== */
+
+/* Shared */
+@import './styles/animations.css';
+
+/* Components (primitives) */
+@import './components/button/button.css';
+@import './components/checkbox/checkbox.css';
+@import './components/switch/switch.css';
+@import './components/tooltip/tooltip.css';
+
+/* Composites (multi-part) */
+@import './composites/accordion/accordion.css';
+@import './composites/dialog/dialog.css';
+@import './composites/field/field.css';
+@import './composites/tabs/tabs.css';

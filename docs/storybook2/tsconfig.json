@@ -1,0 +1,17 @@
+{
+  "extends": "@ttoss/config/tsconfig.json",
+  "compilerOptions": {
+    /**
+     *https://stackoverflow.com/a/69085526/8786986
+     */
+    "declaration": false
+  },
+  "include": [
+    "stories/**/*.tsx",
+    "stories/**/*.ts",
+    ".storybook/**/*.tsx",
+    ".storybook/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.ts"
+  ]
+}

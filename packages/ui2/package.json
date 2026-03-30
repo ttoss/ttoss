@@ -1,0 +1,59 @@
+{
+  "name": "@ttoss/ui2",
+  "version": "0.1.0",
+  "description": "Semantic, token-native component library for the ttoss ecosystem. Built on Ark UI primitives with @ttoss/theme2 tokens.",
+  "license": "MIT",
+  "author": "ttoss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/ui2"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./model": "./src/model.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "new-component": "node scripts/new-component.mjs",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@ark-ui/react": "^5.31.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@ttoss/theme2": "workspace:^",
+    "jest": "^30.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tsup": "^8.5.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "./model": {
+        "types": "./dist/model.d.ts",
+        "default": "./dist/esm/model.js"
+      },
+      "./styles.css": "./dist/styles.css"
+    },
+    "provenance": true
+  }
+}

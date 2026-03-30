@@ -1,0 +1,28 @@
+/* ---------------------------------------------------------------------------
+ * Shared keyframe animations for @ttoss/ui2 components.
+ * ------------------------------------------------------------------------- */
+
+@keyframes ui2-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ui2-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes ui2-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes ui2-scale-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}
+@keyframes ui2-slide-down {
+  from { opacity: 0; height: 0; }
+  to { opacity: 1; height: var(--height); }
+}
+@keyframes ui2-slide-up {
+  from { opacity: 1; height: var(--height); }
+  to { opacity: 0; height: 0; }
+}

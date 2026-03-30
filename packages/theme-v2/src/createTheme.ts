@@ -1,57 +1,11 @@
+import { deepMerge } from './roots/helpers';
 import { defaultTheme } from './themes/default';
-import type { ThemeTokensV2 } from './ThemeTokensTemplate';
-
-export { defaultTheme };
-
-// ---------------------------------------------------------------------------
-// DeepPartial — allows overriding any nested property of a theme
-// ---------------------------------------------------------------------------
-
-/**
- * Recursive partial type. Every nested property becomes optional,
- * enabling selective overrides at any depth.
- */
-export type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T;
-
-// ---------------------------------------------------------------------------
-// Deep Merge
-// ---------------------------------------------------------------------------
-
-const isPlainObject = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-/**
- * Recursively merges `overrides` into `base`.
- * - Plain objects are merged recursively.
- * - All other values (primitives, arrays) are replaced.
- */
-const deepMerge = <T>(base: T, overrides: DeepPartial<T>): T => {
-  if (!isPlainObject(base) || !isPlainObject(overrides)) {
-    return (overrides ?? base) as T;
-  }
-
-  const result = { ...base } as Record<string, unknown>;
-
-  for (const key of Object.keys(overrides)) {
-    const baseVal = result[key];
-    const overVal = (overrides as Record<string, unknown>)[key];
-
-    if (overVal === undefined) {
-      continue;
-    }
-
-    if (isPlainObject(baseVal) && isPlainObject(overVal)) {
-      result[key] = deepMerge(baseVal, overVal);
-    } else {
-      result[key] = overVal;
-    }
-  }
-
-  return result as T;
-};
+import type {
+  DeepPartial,
+  SemanticModeOverride,
+  ThemeBundle,
+  ThemeTokensV2,
+} from './Types';
 
 // ---------------------------------------------------------------------------
 // createTheme
@@ -96,4 +50,51 @@ export const createTheme = ({
   // Deep-clone to break shared references between base and result.
   // Tokens are primitives (strings, numbers) — JSON round-trip is safe.
   return JSON.parse(JSON.stringify(merged));
+};
+
+// ---------------------------------------------------------------------------
+// createThemeBundle
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a theme bundle with an optional alternate color mode.
+ *
+ * @param params.baseMode - Which mode the base represents. Defaults to `'light'`.
+ * @param params.base - Base theme to extend. Defaults to `defaultTheme`.
+ * @param params.overrides - Brand overrides applied to the base theme.
+ * @param params.alternate - Semantic remapping overrides for the opposite color mode.
+ *   Core tokens are immutable — only semantic references change between modes.
+ *
+ * @example
+ * ```ts
+ * const myBundle = createThemeBundle({
+ *   overrides: { core: { colors: { brand: { main: '#FF0000' } } } },
+ *   alternate: {
+ *     semantic: {
+ *       colors: { content: { primary: { background: { default: '{core.colors.neutral.900}' } } } },
+ *     },
+ *   },
+ * });
+ * ```
+ */
+export const createThemeBundle = ({
+  baseMode = 'light',
+  base,
+  overrides,
+  alternate,
+}: {
+  /** Which mode the base represents. @default 'light' */
+  baseMode?: 'light' | 'dark';
+  /** Base theme to extend. Defaults to `defaultTheme`. */
+  base?: ThemeTokensV2;
+  /** Brand overrides applied to the base theme. */
+  overrides?: DeepPartial<ThemeTokensV2>;
+  /** Semantic remapping overrides for the opposite mode. Only changed semantic refs. */
+  alternate?: SemanticModeOverride;
+} = {}): ThemeBundle => {
+  return {
+    baseMode,
+    base: createTheme({ base, overrides }),
+    alternate,
+  };
 };

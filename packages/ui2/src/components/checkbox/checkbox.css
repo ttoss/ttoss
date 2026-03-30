@@ -1,0 +1,60 @@
+/* ---------------------------------------------------------------------------
+ * Checkbox — Responsibility: Selection
+ * Token resolution: resolveTokens({ responsibility: 'Selection' })
+ *   → color: input.primary (unchecked) / action.primary (checked)
+ *   → spacing: inset.control
+ * ------------------------------------------------------------------------- */
+
+.ui2-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tt-spacing-gap-inline-sm);
+  cursor: pointer;
+  user-select: none;
+}
+.ui2-checkbox[data-disabled] {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.ui2-checkbox__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--tt-input-primary-border-default);
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+  background-color: var(--tt-input-primary-background-default);
+  transition: background-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease),
+              border-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease);
+  flex-shrink: 0;
+}
+.ui2-checkbox__control[data-state='checked'],
+.ui2-checkbox__control[data-state='indeterminate'] {
+  background-color: var(--tt-action-primary-background-default);
+  border-color: var(--tt-action-primary-border-default);
+}
+.ui2-checkbox__control[data-focus-visible] {
+  outline: 2px solid var(--tt-action-primary-background-default);
+  outline-offset: 2px;
+}
+.ui2-checkbox__control[data-invalid] {
+  border-color: var(--tt-input-negative-border-default);
+}
+
+.ui2-checkbox__indicator {
+  color: var(--tt-action-primary-text-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui2-checkbox__label {
+  font-family: var(--tt-text-label-md-fontFamily);
+  font-size: var(--tt-text-label-md-fontSize);
+  font-weight: var(--tt-text-label-md-fontWeight);
+  line-height: var(--tt-text-label-md-lineHeight);
+  letter-spacing: var(--tt-text-label-md-letterSpacing);
+  color: var(--tt-content-primary-text-default);
+}

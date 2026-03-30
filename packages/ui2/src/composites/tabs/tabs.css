@@ -1,0 +1,66 @@
+/* ---------------------------------------------------------------------------
+ * Tabs — Responsibility: Navigation
+ * Token resolution: resolveTokens({ responsibility: 'Navigation' })
+ *   → color: navigation.primary, spacing: inset.control
+ *
+ * BEM scopes:
+ *   __list      — tab bar container
+ *   __trigger   — individual tab (active: navigation.primary indicator)
+ *   __content   — panel content area
+ * ------------------------------------------------------------------------- */
+
+.ui2-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ui2-tabs__list {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--tt-navigation-primary-border-default);
+}
+.ui2-tabs__list[data-orientation='vertical'] {
+  flex-direction: column;
+  border-bottom: none;
+  border-right: 1px solid var(--tt-navigation-primary-border-default);
+}
+
+.ui2-tabs__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tt-spacing-inset-control-md);
+  font-family: var(--tt-text-label-md-fontFamily);
+  font-size: var(--tt-text-label-md-fontSize);
+  font-weight: var(--tt-text-label-md-fontWeight);
+  line-height: var(--tt-text-label-md-lineHeight);
+  letter-spacing: var(--tt-text-label-md-letterSpacing);
+  color: var(--tt-navigation-muted-text-default);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease),
+              border-color var(--tt-duration-sm, 100ms) var(--tt-easing-standard, ease);
+  white-space: nowrap;
+}
+.ui2-tabs__trigger[data-selected] {
+  color: var(--tt-navigation-primary-text-default);
+  border-bottom-color: var(--tt-navigation-primary-border-selected, var(--tt-navigation-primary-text-default));
+}
+.ui2-tabs__trigger:hover:not([data-disabled]) {
+  color: var(--tt-navigation-primary-text-hover, var(--tt-navigation-primary-text-default));
+}
+.ui2-tabs__trigger[data-disabled] {
+  opacity: var(--tt-opacity-disabled);
+  cursor: not-allowed;
+}
+.ui2-tabs__trigger:focus-visible {
+  outline: 2px solid var(--tt-navigation-primary-border-focused, var(--tt-navigation-primary-text-default));
+  outline-offset: -2px;
+}
+
+.ui2-tabs__content {
+  padding: var(--tt-spacing-inset-surface-md);
+}

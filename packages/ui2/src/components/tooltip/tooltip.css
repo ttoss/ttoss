@@ -1,0 +1,41 @@
+/* ---------------------------------------------------------------------------
+ * Tooltip — Responsibility: Overlay
+ * Token resolution: resolveTokens({ responsibility: 'Overlay' })
+ *   → color: content.primary (inverted for contrast)
+ *   → spacing: inset.control (compact padding via control spacing)
+ *   → elevation: overlay (not modal — tooltip is a lightweight surface)
+ *   → radii: control (not surface — tooltip is a small element)
+ * ------------------------------------------------------------------------- */
+
+.ui2-tooltip__positioner {
+  z-index: var(--tt-z-index-tooltip, 60);
+}
+
+.ui2-tooltip__content {
+  background-color: var(--tt-content-primary-text-default);
+  color: var(--tt-content-primary-background-default);
+  font-family: var(--tt-text-body-sm-fontFamily);
+  font-size: var(--tt-text-body-sm-fontSize);
+  font-weight: var(--tt-text-body-sm-fontWeight);
+  line-height: var(--tt-text-body-sm-lineHeight);
+  letter-spacing: var(--tt-text-body-sm-letterSpacing);
+  padding: var(--tt-spacing-inset-control-sm);
+  border-radius: var(--tt-radii-semantic-control, var(--tt-radii-sm, 4px));
+  box-shadow: var(--tt-elevation-overlay);
+  max-width: 240px;
+}
+.ui2-tooltip__content[data-state='open'] {
+  animation: ui2-fade-in var(--tt-duration-sm, 100ms) var(--tt-easing-decelerate, ease);
+}
+.ui2-tooltip__content[data-state='closed'] {
+  animation: ui2-fade-out var(--tt-duration-sm, 100ms) var(--tt-easing-accelerate, ease);
+}
+
+.ui2-tooltip__arrow {
+  --arrow-size: 8px;
+  --arrow-background: var(--tt-content-primary-text-default);
+}
+.ui2-tooltip__arrow-tip {
+  border-top: 1px solid var(--tt-content-primary-text-default);
+  border-left: 1px solid var(--tt-content-primary-text-default);
+}
