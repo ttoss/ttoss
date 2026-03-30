@@ -576,6 +576,24 @@ AI scales volume and speed. Humans supply curation, contextual judgment, disrupt
 
 This group collects the principles that force clean, complementary division of labor so the hybrid becomes dramatically stronger than either human-alone or AI-alone.
 
+### The Principle of Compressed Delegation
+
+The leverage of AI is determined by how much human judgment is encoded into executable constraints before execution begins.
+
+AI does not create leverage by itself. Leverage appears when a human compresses intent into a form that can govern downstream decisions without repeated intervention. If the operator must specify each step, the interaction remains linear: one human decision produces one AI task. If the operator can encode goals, boundaries, interfaces, and acceptance checks once, the same input can govern many tasks, producing exponential leverage. This makes leverage a property of delegated judgment density, not of model size or prompt length.
+
+Its usable scale is limited by [The Principle of Verification Asymmetry](#the-principle-of-verification-asymmetry): humans can delegate more work than they can safely verify. It becomes reliable only when [The Principle of Automated Closed Loops](#the-principle-of-automated-closed-loops) provides fast corrective feedback through tests, types, linters, and CI.
+
+**Failure Scenario:** A developer wants an agent to implement a feature across UI, API, tests, and documentation, but delegates the work as a long sequence of file-by-file instructions. The agent produces useful outputs, but only as a faster typist. Because the governing intent was never compressed into reusable constraints, the system never escapes linear execution.
+
+#### The Corollary of Linear Delegation
+
+When human judgment is delegated one decision at a time, AI acts as a linear executor. Throughput is capped by the operator's rate of intervention.
+
+#### The Corollary of Exponential Delegation
+
+When human judgment is compressed into reusable constraints, AI can apply the same governing logic across many downstream tasks. Throughput scales with the scope of the delegated structure rather than the number of prompts.
+
 ### The Principle of Role Elevation in Human-AI Hybridization
 
 AI agents excel at high-volume generation of commodity outputs and automatable tasks, while humans retain irreplaceable advantages in contextual judgment, curation, and directional decision-making. Effective agentic systems require deliberate elevation of human roles to these higher-order functions, treating AI as an amplifier that handles routine execution and allows humans to focus on refinement, integration, and novelty introduction. This elevation is necessary to manage [The Principle of Verification Asymmetry](#the-principle-of-verification-asymmetry) and [The Principle of Cognitive Bandwidth Conservation](#the-principle-of-cognitive-bandwidth-conservation).
