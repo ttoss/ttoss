@@ -38,7 +38,12 @@ pnpm run syncpack:list
 # HEAD^1 will diff from origin/main.
 if pnpm lerna changed; then
   echo "Changes detected on packages, publishing them..."
-  
+
+  # Remove locally fetched tags so that lerna version can create them without
+  # hitting "fatal: tag already exists". The tags remain on the remote and will
+  # be pushed again (or skipped if unchanged) by git push --follow-tags below.
+  git tag -l | xargs -r git tag -d
+
   # Version before publish to rebuild all packages that Lerna will publish.
   pnpm lerna version --yes --no-push
 
