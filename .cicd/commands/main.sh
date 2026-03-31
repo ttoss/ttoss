@@ -1,22 +1,21 @@
 export ENVIRONMENT=Production
 
-# Fetch tags.
-git fetch --tags --quiet
+# Check if the current HEAD is already tagged on the remote.
+# Uses git ls-remote to avoid the cost of fetching all tags locally.
+HEAD_SHA=$(git rev-parse HEAD)
+if git ls-remote --tags origin | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
+  echo "There are tags in the current commit, exiting main workflow"
+  exit 0
+fi
 
-# 1. `git tag --points-at HEAD`: This command lists all tags that point to the
-# current commit, which is specified as HEAD.
-# 2. `grep -q .`: This command searches for any character in the output of the
-# git tag command. If there are no tags, the output will be empty and grep will
-# return a non-zero exit code, which indicates failure. If there are tags, grep
-# will find at least one character in the output and return a zero exit code,
-# which indicates success.
-git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
-
-# Retrieve the latest tag and its commit SHA.
-# The SHA is captured now so turbo --filter can still resolve it after local
-# tags are deleted further below.
-export LATEST_TAG=$(git describe --tags --abbrev=0)
-export LATEST_TAG_SHA=$(git rev-list -n 1 "$LATEST_TAG")
+# Retrieve the latest tag name and its commit SHA directly from the remote,
+# avoiding the cost of fetching all tags locally.
+export LATEST_TAG=$(git ls-remote --tags --sort=-version:refname origin | grep -v '\^{}' | head -1 | sed 's|.*refs/tags/||')
+# Dereference annotated tags (^{}) to get the commit SHA; fall back to the
+# tag ref itself for lightweight tags.
+_TAG_SHA=$(git ls-remote --tags origin "refs/tags/$LATEST_TAG^{}" | awk '{print $1}')
+export LATEST_TAG_SHA=${_TAG_SHA:-$(git ls-remote --tags origin "refs/tags/$LATEST_TAG" | awk '{print $1}')}
+unset _TAG_SHA
 
 # Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
