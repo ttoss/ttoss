@@ -286,13 +286,23 @@ describe('testing template update', () => {
       },
       {
         Outputs: {
-          AppSyncGraphQLApi: {
+          AppSyncApiArn: {
             Description: expect.any(String),
-            Value: { 'Fn::GetAtt': ['AppSyncGraphQLApi', 'GraphQLUrl'] },
-            Export: {
-              Name: {
-                'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'GraphQLApiUrl']],
-              },
+            Value: { 'Fn::GetAtt': ['AppSyncGraphQLApi', 'Arn'] },
+          },
+          AppSyncConsoleUrl: {
+            Description: expect.any(String),
+            Value: {
+              'Fn::Join': [
+                '',
+                [
+                  'https://console.aws.amazon.com/appsync/home?region=',
+                  { Ref: 'AWS::Region' },
+                  '#/',
+                  { 'Fn::GetAtt': ['AppSyncGraphQLApi', 'ApiId'] },
+                  '/v1/home',
+                ],
+              ],
             },
           },
         },
