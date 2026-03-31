@@ -192,6 +192,13 @@ const addRetainToCriticalResources: TemplateModifier = async (template) => {
   }
 };
 
+/**
+ * Base URL for the AWS AppSync Console page.
+ * Format: https://console.aws.amazon.com/appsync/home?region=<region>#/<apiId>/v1/home
+ */
+const AWS_APPSYNC_CONSOLE_BASE_URL =
+  'https://console.aws.amazon.com/appsync/home?region=';
+
 const addAppSyncApiOutputs: TemplateModifier = async (template) => {
   for (const [key, resource] of Object.entries(template.Resources)) {
     if (resource.Type === 'AWS::AppSync::GraphQLApi') {
@@ -206,7 +213,7 @@ const addAppSyncApiOutputs: TemplateModifier = async (template) => {
             'Fn::Join': [
               '',
               [
-                'https://console.aws.amazon.com/appsync/home?region=',
+                AWS_APPSYNC_CONSOLE_BASE_URL,
                 { Ref: 'AWS::Region' },
                 '#/',
                 { 'Fn::GetAtt': [key, 'ApiId'] },
