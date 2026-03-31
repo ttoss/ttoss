@@ -8,14 +8,15 @@ if git ls-remote --tags origin | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
   exit 0
 fi
 
-# Retrieve the latest tag name and its commit SHA directly from the remote,
-# avoiding the cost of fetching all tags locally.
-export LATEST_TAG=$(git ls-remote --tags --sort=-version:refname origin | grep -v '\^{}' | head -1 | sed 's|.*refs/tags/||')
-# Dereference annotated tags (^{}) to get the commit SHA; fall back to the
-# tag ref itself for lightweight tags.
-_TAG_SHA=$(git ls-remote --tags origin "refs/tags/$LATEST_TAG^{}" | awk '{print $1}')
-export LATEST_TAG_SHA=${_TAG_SHA:-$(git ls-remote --tags origin "refs/tags/$LATEST_TAG" | awk '{print $1}')}
-unset _TAG_SHA
+# Find the latest tag name without fetching all tags locally.
+export LATEST_TAG=$(git ls-remote --tags origin | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||' | sort -V | tail -1)
+
+# Fetch only that one tag so its commit object exists in the local repo.
+# This avoids downloading all tags while still letting turbo resolve the SHA.
+git fetch origin "refs/tags/$LATEST_TAG:refs/tags/$LATEST_TAG"
+
+# Now resolve the SHA locally (works for both lightweight and annotated tags).
+export LATEST_TAG_SHA=$(git rev-list -n 1 "$LATEST_TAG")
 
 # Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
