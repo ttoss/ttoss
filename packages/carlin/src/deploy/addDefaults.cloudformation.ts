@@ -1,4 +1,4 @@
-import {
+import type {
   CreateStackCommandInput,
   UpdateStackCommandInput,
 } from '@aws-sdk/client-cloudformation';
@@ -192,17 +192,34 @@ const addRetainToCriticalResources: TemplateModifier = async (template) => {
   }
 };
 
+/**
+ * Base URL for the AWS AppSync Console page.
+ * Format: https://console.aws.amazon.com/appsync/home?region=<region>#/<apiId>/v1/home
+ */
+const AWS_APPSYNC_CONSOLE_BASE_URL =
+  'https://console.aws.amazon.com/appsync/home?region=';
+
 const addAppSyncApiOutputs: TemplateModifier = async (template) => {
   for (const [key, resource] of Object.entries(template.Resources)) {
     if (resource.Type === 'AWS::AppSync::GraphQLApi') {
       template.Outputs = {
-        [key]: {
+        AppSyncApiArn: {
           Description: `Automatically added by ${NAME}`,
-          Value: { 'Fn::GetAtt': [key, 'GraphQLUrl'] },
-          Export: {
-            Name: {
-              'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'GraphQLApiUrl']],
-            },
+          Value: { 'Fn::GetAtt': [key, 'Arn'] },
+        },
+        AppSyncConsoleUrl: {
+          Description: `Automatically added by ${NAME}`,
+          Value: {
+            'Fn::Join': [
+              '',
+              [
+                AWS_APPSYNC_CONSOLE_BASE_URL,
+                { Ref: 'AWS::Region' },
+                '#/',
+                { 'Fn::GetAtt': [key, 'ApiId'] },
+                '/v1/home',
+              ],
+            ],
           },
         },
         ...template.Outputs,
