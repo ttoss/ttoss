@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.5.2 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
 ## 0.5.1 (2026-03-31)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

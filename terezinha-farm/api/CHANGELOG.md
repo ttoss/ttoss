@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.40 (2026-03-31)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
 ## 0.19.39 (2026-03-31)
 
 ### Bug Fixes
