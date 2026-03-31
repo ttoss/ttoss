@@ -12,8 +12,11 @@ git fetch --tags --quiet
 # which indicates success.
 git tag --points-at HEAD | grep -q . && { echo "There are tags in the current commit, exiting main workflow" && exit 0; }
 
-# Retrieve the latest tag.
+# Retrieve the latest tag and its commit SHA.
+# The SHA is captured now so turbo --filter can still resolve it after local
+# tags are deleted further below.
 export LATEST_TAG=$(git describe --tags --abbrev=0)
+export LATEST_TAG_SHA=$(git rev-list -n 1 "$LATEST_TAG")
 
 # Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
@@ -50,7 +53,7 @@ if pnpm lerna changed; then
   # Test and build all packages since $LATEST_TAG
   # and all the workspaces that depends on them.
   # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-  pnpm turbo run i18n build test --filter=[$LATEST_TAG]
+  pnpm turbo run i18n build test --filter=[$LATEST_TAG_SHA]
 
   # Undo all files that were changed by the build command—this happens because
   # the build can change files with different linting rules and `pnpm run lint`
@@ -97,4 +100,4 @@ fi
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
-pnpm turbo run build test deploy --filter=[$LATEST_TAG] --filter=@docs/website
+pnpm turbo run build test deploy --filter=[$LATEST_TAG_SHA] --filter=@docs/website
