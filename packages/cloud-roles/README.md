@@ -48,12 +48,13 @@ Generates a CloudFormation template containing one or more `AWS::IAM::Role` reso
 #### Parameters
 
 - `resources: { [key: string]: IAMRoleResource }` — map of logical resource IDs to `AWS::IAM::Role` resource definitions.
-- `path?: string` — IAM path applied to every role that does not already define `Properties.Path`. Defaults to `IAM_PATH` (`'/custom-iam/'`). IAM paths must begin and end with a `/` (e.g. `'/my-app/'`).
+- `path?: string` — IAM path applied to every role that does not already define `Properties.Path`. Defaults to `IAM_PATH` (`'/custom-iam/'`). IAM (and thus CloudFormation) requires paths to begin and end with `/` (e.g. `'/my-app/'`); `createRolesTemplate` does not validate this, so an invalid path will cause a deploy-time error.
 
 #### Behavior
 
 - Any role in `resources` that has no `Properties.Path` set will have its `Path` automatically set to the resolved `path` value.
 - For every role, a stack output named `<LogicalId>Arn` is added, exporting the role ARN under the key `<StackName>:<LogicalId>Arn`.
+- `createRolesTemplate` mutates the provided `resources` objects by setting `resource.Properties.Path` when it is missing. If you need to reuse the same resource definitions elsewhere, clone them before passing them to this function.
 
 #### Overriding the default path
 
