@@ -23,8 +23,9 @@ export LATEST_TAG_SHA=$(git rev-list -n 1 "$LATEST_TAG")
 # the token to .npmrc will cause git uncommitted changes error.
 echo //registry.npmjs.org/:\_authToken=$NPM_TOKEN > ~/.npmrc
 
-# Print "NPM whoami" to check if the token is valid.
-echo NPM whoami: $(npm whoami)
+# Print "NPM whoami" to check if the token is valid. Exit if it fails.
+NPM_WHOAMI=$(npm whoami) || { echo "Error: npm whoami failed. Check NPM_TOKEN."; exit 1; }
+echo "NPM whoami: $NPM_WHOAMI"
 
 # Build @ttoss/config package to lerna version command works properly
 # when commiting changes. If we don't build this package, commit will fail
