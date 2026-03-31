@@ -60,13 +60,7 @@
      * are injected by build tools (e.g., tsup injects `baseUrl`).
      * These deprecations will stop functioning in TypeScript 7.0.
      */
-    "ignoreDeprecations": "6.0",
-    /**
-     * Allow importing files with arbitrary extensions (e.g. CSS, SVG) when
-     * bundlers handle them. Required by TypeScript 6's stricter side-effect
-     * import checking (TS2882).
-     */
-    "allowArbitraryExtensions": true
+    "ignoreDeprecations": "6.0"
   },
   "exclude": ["tests"]
 }
