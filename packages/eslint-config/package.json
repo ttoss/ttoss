@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/eslint-config",
-  "version": "1.26.9",
+  "version": "1.26.10",
   "description": "ESLint config.",
   "license": "MIT",
   "author": "ttoss",

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.47.0 (2026-04-01)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
 # 1.46.0 (2026-04-01)
 
 ### Features
