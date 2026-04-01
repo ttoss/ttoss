@@ -1,11 +1,11 @@
 # Retrieve the latest tag.
 export LATEST_TAG=$(git describe --tags --abbrev=0)
 
-# Build configs to syncpack:list works properly.
+# Build configs to syncpack:lint works properly.
 pnpm turbo run build-config
 
 # Check dependencies versions.
-pnpm run syncpack:list
+pnpm run syncpack:lint
 
 # Test and build all packages since main
 # and all the workspaces that depends on them.

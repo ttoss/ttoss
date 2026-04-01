@@ -29,12 +29,12 @@ echo "NPM whoami: $NPM_WHOAMI"
 
 # Build @ttoss/config package to lerna version command works properly
 # when commiting changes. If we don't build this package, commit will fail
-# because pre-commit hook will run syncpack:list with default config, that
+# because pre-commit hook will run syncpack:lint with default config, that
 # not works because of package version and "workspace:^" mismatch.
 pnpm turbo run build-config
 
 # Check dependencies versions.
-pnpm run syncpack:list
+pnpm run syncpack:lint
 
 # Publish packages only if `pnpm lerna changed` is success. This happens when
 # exists an update on root and no packages changes. This way, `version` won't
