@@ -4,9 +4,7 @@ import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 const config = jestUnitConfig({
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
-  transformIgnorePatterns: getTransformIgnorePatterns({
-    esmModules: ['react-intl', '@formatjs', 'intl-messageformat'],
-  }),
+  transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 
 export default config;
