@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/read-config-file",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "Read a configuration file",
   "license": "MIT",
   "author": "ttoss",

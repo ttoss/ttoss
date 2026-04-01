@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.14.6 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## 2.14.5 (2026-04-01)
 
 **Note:** Version bump only for package @ttoss/components

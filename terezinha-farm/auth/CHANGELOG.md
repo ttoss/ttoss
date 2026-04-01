@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.21 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
 ## 0.4.20 (2026-04-01)
 
 **Note:** Version bump only for package @terezinha-farm/auth
