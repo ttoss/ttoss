@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-wizard",
-  "version": "0.3.5",
+  "version": "0.3.10",
   "description": "A React wizard component for guiding users through multi-step flows with configurable step list layouts.",
   "license": "MIT",
   "author": "ttoss",
@@ -41,7 +41,7 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },

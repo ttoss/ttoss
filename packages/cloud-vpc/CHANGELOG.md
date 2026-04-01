@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.37 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## 0.1.36 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## 0.1.35 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## 0.1.34 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.1.33 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
 ## [0.1.32](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.31...@ttoss/cloud-vpc@0.1.32) (2026-03-31)
 
 **Note:** Version bump only for package @ttoss/cloud-vpc

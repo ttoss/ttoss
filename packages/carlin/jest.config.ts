@@ -1,8 +1,6 @@
 import { jestConfig } from '@ttoss/config';
 import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
-const esmModules = ['@faker-js/faker', 'change-case'];
-
 const config = jestConfig({
   collectCoverage: true,
   coveragePathIgnorePatterns: ['<rootDir>/tests/'],
@@ -20,9 +18,7 @@ const config = jestConfig({
   },
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
   silent: true,
-  transformIgnorePatterns: getTransformIgnorePatterns({
-    esmModules,
-  }),
+  transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 
 export default config;

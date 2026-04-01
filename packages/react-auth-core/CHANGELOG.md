@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.13 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## 0.4.12 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## 0.4.11 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## 0.4.10 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.4.9 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
 ## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.7...@ttoss/react-auth-core@0.4.8) (2026-03-31)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

@@ -13,9 +13,7 @@ const config = jestUnitConfig({
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
-  transformIgnorePatterns: getTransformIgnorePatterns({
-    esmModules: ['react-error-boundary'],
-  }),
+  transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 
 export default config;
