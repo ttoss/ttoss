@@ -93,10 +93,10 @@ if pnpm lerna changed; then
   git push --follow-tags
 
   # Publish packages with retry logic.
-  # `from-package` reads versions from package.json and skips packages already
+  # `pnpm -r publish` reads versions from package.json and skips packages already
   # on the registry, so retries never re-publish already-published packages.
   for attempt in 1 2 3; do
-    pnpm lerna publish from-package --yes && break
+    pnpm -r publish --no-git-checks && break
     if [ "$attempt" -lt 3 ]; then
       echo "Publish attempt $attempt failed, retrying in 30 seconds..."
       sleep 30

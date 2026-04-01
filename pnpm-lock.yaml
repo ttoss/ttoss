@@ -17,19 +17,16 @@ importers:
         version: 20.5.0(@types/node@24.12.0)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@6.0.2)
       '@lerna-lite/changed':
         specifier: ^4.11.5
-        version: 4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+        version: 4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/cli':
         specifier: ^4.11.5
-        version: 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+        version: 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/list':
         specifier: ^4.11.5
-        version: 4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/publish':
-        specifier: ^4.11.5
-        version: 4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+        version: 4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/version':
         specifier: ^4.11.5
-        version: 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+        version: 4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@ttoss/config':
         specifier: workspace:^
         version: link:packages/config
@@ -4940,9 +4937,6 @@ packages:
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
 
-  '@isaacs/string-locale-compare@1.1.0':
-    resolution: {integrity: sha512-SQ7Kzhh9+D+ZW9MA0zkYv3VXhIDNx+LzM6EJ+/65I3QY+enU6Itte7E5XX7EWrqLW2FN4n06GWzBnPoC3th2aQ==}
-
   '@istanbuljs/load-nyc-config@1.1.0':
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
     engines: {node: '>=8'}
@@ -5233,10 +5227,6 @@ packages:
     resolution: {integrity: sha512-f03zVtCx3JWD2uEh8hMERa5SaaFSFwzez0GhoYzq84FGB0OkZom776rcP9qAqziCaZm4v7BrUKsphiwQL0q2CA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/publish@4.11.5':
-    resolution: {integrity: sha512-vEJoz0YnB3pQyUOU7d5yxoRhqwH0aFLlLZ1yIC2/G0nJ9ufYENU/0O4m7wQb1CRANSe46f51VBRu04ERI9CD2g==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   '@lerna-lite/version@4.11.5':
     resolution: {integrity: sha512-HlPDQ2cluAKYbIzJGIPaFmQKEEdARr+sW64lShVgJqBUQgVegEiRtrNsR8dql4LBj0l78fKi4cFFknNHcyXMPQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -5294,34 +5284,12 @@ packages:
     resolution: {integrity: sha512-kAQTcEN9E8ERLVg5AsGwLNoFb+oEG6engbqAU2P43gD4JEIkNGMHdVQ096FsOAAYpZPB0RSt0zgInKIAS1l5QA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@npmcli/arborist@9.4.2':
-    resolution: {integrity: sha512-omJgPyzt11cEGrxzgrECoOyxAunmPMgBFTcAB/FbaB+9iOYhGmRdsQqySV8o0LWQ/l2kTeASUIMR4xJufVwmtw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-    hasBin: true
-
   '@npmcli/fs@5.0.0':
     resolution: {integrity: sha512-7OsC1gNORBEawOa5+j2pXN9vsicaIOH5cPXxoR6fJOmH6/EXpJB2CajXOu1fPRFun2m1lktEFX11+P89hqO/og==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@npmcli/git@7.0.1':
     resolution: {integrity: sha512-+XTFxK2jJF/EJJ5SoAzXk3qwIDfvFc5/g+bD274LZ7uY7LE8sTfG6Z8rOanPl2ZEvZWqNvmEdtXC25cE54VcoA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/installed-package-contents@4.0.0':
-    resolution: {integrity: sha512-yNyAdkBxB72gtZ4GrwXCM0ZUedo9nIbOMKfGjt6Cu6DXf0p8y1PViZAKDC8q8kv/fufx0WTjRBdSlyrvnP7hmA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-    hasBin: true
-
-  '@npmcli/map-workspaces@5.0.3':
-    resolution: {integrity: sha512-o2grssXo1e774E5OtEwwrgoszYRh0lqkJH+Pb9r78UcqdGJRDRfhpM8DvZPjzNLLNYeD/rNbjOKM3Ss5UABROw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/metavuln-calculator@9.0.3':
-    resolution: {integrity: sha512-94GLSYhLXF2t2LAC7pDwLaM4uCARzxShyAQKsirmlNcpidH89VA4/+K1LbJmRMgz5gy65E/QBBWQdUvGLe2Frg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/name-from-folder@4.0.0':
-    resolution: {integrity: sha512-qfrhVlOSqmKM8i6rkNdZzABj8MKEITGFAY+4teqBziksCQAOLutiAxM1wY2BKEd8KjUSpWmWCYxvXr0y4VTlPg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@npmcli/node-gyp@5.0.0':
@@ -5334,10 +5302,6 @@ packages:
 
   '@npmcli/promise-spawn@9.0.1':
     resolution: {integrity: sha512-OLUaoqBuyxeTqUvjA3FZFiXUfYC1alp3Sa99gW3EUDz3tZ3CbXDdcZ7qWKBzicrJleIgucoWamWH1saAmH/l2Q==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/query@5.0.0':
-    resolution: {integrity: sha512-8TZWfTQOsODpLqo9SVhVjHovmKXNpevHU0gO9e+y4V4fRIOneiXy0u0sMP9LmS71XivrEWfZWg50ReH4WRT4aQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@npmcli/redact@4.0.0':
@@ -5645,30 +5609,6 @@ packages:
 
   '@sideway/pinpoint@2.0.0':
     resolution: {integrity: sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==}
-
-  '@sigstore/bundle@4.0.0':
-    resolution: {integrity: sha512-NwCl5Y0V6Di0NexvkTqdoVfmjTaQwoLM236r89KEojGmq/jMls8S+zb7yOwAPdXvbwfKDlP+lmXgAL4vKSQT+A==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@sigstore/core@3.2.0':
-    resolution: {integrity: sha512-kxHrDQ9YgfrWUSXU0cjsQGv8JykOFZQ9ErNKbFPWzk3Hgpwu8x2hHrQ9IdA8yl+j9RTLTC3sAF3Tdq1IQCP4oA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@sigstore/protobuf-specs@0.5.0':
-    resolution: {integrity: sha512-MM8XIwUjN2bwvCg1QvrMtbBmpcSHrkhFSCu1D11NyPvDQ25HEc4oG5/OcQfd/Tlf/OxmKWERDj0zGE23jQaMwA==}
-    engines: {node: ^18.17.0 || >=20.5.0}
-
-  '@sigstore/sign@4.1.1':
-    resolution: {integrity: sha512-Hf4xglukg0XXQ2RiD5vSoLjdPe8OBUPA8XeVjUObheuDcWdYWrnH/BNmxZCzkAy68MzmNCxXLeurJvs6hcP2OQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@sigstore/tuf@4.0.2':
-    resolution: {integrity: sha512-TCAzTy0xzdP79EnxSjq9KQ3eaR7+FmudLC6eRKknVKZbV7ZNlGLClAAQb/HMNJ5n2OBNk2GT1tEmU0xuPr+SLQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@sigstore/verify@3.1.0':
-    resolution: {integrity: sha512-mNe0Iigql08YupSOGv197YdHpPPr+EzDZmfCgMc7RPNaZTw5aLN01nBl6CHJOh3BGtnMIj83EeN4butBchc8Ag==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   '@simple-libs/child-process-utils@1.0.1':
     resolution: {integrity: sha512-3nWd8irxvDI6v856wpPCHZ+08iQR0oHTZfzAZmnbsLzf+Sf1odraP6uKOHDZToXq3RPRV/LbqGVlSCogm9cJjg==}
@@ -6605,14 +6545,6 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
-
-  '@tufjs/canonical-json@2.0.0':
-    resolution: {integrity: sha512-yVtV8zsdo8qFHe+/3kw81dSLyF7D576A5cCFCi4X7B39tWT7SekaEFUnvnWJHz+9qO7qJTah1JbrDjWKqFtdWA==}
-    engines: {node: ^16.14.0 || >=18.0.0}
-
-  '@tufjs/models@4.1.0':
-    resolution: {integrity: sha512-Y8cK9aggNRsqJVaKUlEYs4s7CvQ1b1ta2DVPyAimb0I2qhzjNk+A+mxvll/klL0RlfuIUei8BF7YWiua4kQqww==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   '@turbo/darwin-64@2.9.3':
     resolution: {integrity: sha512-P8foouaP+y/p+hhEGBoZpzMbpVvUMwPjDpcy6wN7EYfvvyISD1USuV27qWkczecihwuPJzQ1lDBuL8ERcavTyg==}
@@ -8212,10 +8144,6 @@ packages:
   big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
 
-  bin-links@6.0.0:
-    resolution: {integrity: sha512-X4CiKlcV2GjnCMwnKAfbVWpHa++65th9TuzAEYtZoATiOE2DQKhSp4CJlyLoTqdhBKlXjpXjCTYPNNFS33Fi6w==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
@@ -8331,15 +8259,6 @@ packages:
   byline@5.0.0:
     resolution: {integrity: sha512-s6webAy+R4SR8XVuJWt2V2rGvhnrhxN+9S15GNuTK3wKPOXFF6RNc+8ug2XhH+2s4f+uudG4kUVYmYOQWL2g0Q==}
     engines: {node: '>=0.10.0'}
-
-  byte-size@9.0.1:
-    resolution: {integrity: sha512-YLe9x3rabBrcI0cueCdLS2l5ONUKywcRpTs02B8KP9/Cimhj7o3ZccGrPnRvcbyHMbb7W79/3MUJl7iGgTXKEw==}
-    engines: {node: '>=12.17'}
-    peerDependencies:
-      '@75lb/nature': latest
-    peerDependenciesMeta:
-      '@75lb/nature':
-        optional: true
 
   bytes@3.0.0:
     resolution: {integrity: sha512-pMhOfFDPiv9t5jjIXkHosWmkSyQbvsgEVNkz0ERHbuLh2T/7j4Mqqpz523Fe8MVY89KC6Sh/QfS2sM+SjgFDcw==}
@@ -8612,10 +8531,6 @@ packages:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
 
-  cmd-shim@8.0.0:
-    resolution: {integrity: sha512-Jk/BK6NCapZ58BKUxlSI+ouKRbjH1NLZCgJkYoab+vEHUY3f6OzpNBN9u7HFSv9J6TRDGs4PLOHezoKGaFRSCA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   co-body@6.2.0:
     resolution: {integrity: sha512-Kbpv2Yd1NdL1V/V4cwLVxraHDV6K8ayohr2rmH0J87Er8+zJjcTa6dAn9QMPC9CRgU8+aNajKbSf1TzDB1yKPA==}
     engines: {node: '>=8.0.0'}
@@ -8691,10 +8606,6 @@ packages:
   commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
-
-  common-ancestor-path@2.0.0:
-    resolution: {integrity: sha512-dnN3ibLeoRf2HNC+OlCiNc5d2zxbLJXOtiZUudNFSXZrNSydxcCsSpRzXwfu7BBWCIfHPw+xTayeBvJCP/D8Ng==}
-    engines: {node: '>= 18'}
 
   common-path-prefix@3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}
@@ -11059,10 +10970,6 @@ packages:
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
-  ignore-walk@8.0.0:
-    resolution: {integrity: sha512-FCeMZT4NiRQGh+YkeKMtWrOmBgWjHjMJ26WQWrRQyoyzqevdaGSakUaJW5xQYmjLlUVk2qUnCjYVBax9EKKg8A==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -11829,9 +11736,6 @@ packages:
     resolution: {integrity: sha512-qtYiSSFlwot9XHtF9bD9c7rwKjr+RecWT//ZnPvSmEjpV5mmPOCN4j8UjY5hbjNkOwZ/jQv3J6R1/pL7RwgMsg==}
     engines: {node: '>= 0.4'}
 
-  json-stringify-nice@1.1.4:
-    resolution: {integrity: sha512-5Z5RFW63yxReJ7vANgW6eZFGWaQvnPE3WNmZoOJrSkGju2etKA2L5rrOa1sm877TVTFt57A80BH1bArcmlLfPw==}
-
   json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
@@ -11850,19 +11754,9 @@ packages:
   jsonify@0.0.1:
     resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
 
-  jsonparse@1.3.1:
-    resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
-    engines: {'0': node >= 0.2.0}
-
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
-
-  just-diff-apply@5.5.0:
-    resolution: {integrity: sha512-OYTthRfSh55WOItVqwpefPtNt2VdKsq5AnAK6apdtR6yCH8pr0CmSr710J0Mf+WdQy7K/OzMy7K2MgAfdQURDw==}
-
-  just-diff@6.0.2:
-    resolution: {integrity: sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==}
 
   just-extend@6.2.0:
     resolution: {integrity: sha512-cYofQu2Xpom82S6qD778jBDpwvvy39s1l/hrYij2u9AMdQcGRpaBu6kY4mVhuno5kJVi1DAz4aiphA2WI1/OAw==}
@@ -11949,14 +11843,6 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
-
-  libnpmaccess@10.0.3:
-    resolution: {integrity: sha512-JPHTfWJxIK+NVPdNMNGnkz4XGX56iijPbe0qFWbdt68HL+kIvSzh+euBL8npLZvl2fpaxo+1eZSdoG15f5YdIQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  libnpmpublish@11.1.3:
-    resolution: {integrity: sha512-NVPTth/71cfbdYHqypcO9Lt5WFGTzFEcx81lWd7GDJIgZ95ERdYHGUfCtFejHCyqodKsQkNEx2JCkMpreDty/A==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   lilconfig@3.1.3:
     resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
@@ -12726,10 +12612,6 @@ packages:
     resolution: {integrity: sha512-Ee/R3SyN4BuynXcnTaekmaVdbDAEiNrHqjQIA37mHU8G9pf7aaAD4ZX3XjBLo6rsdcxA/gtkcNYZLt30ACgynw==}
     engines: {node: '>=14.16'}
 
-  npm-bundled@5.0.0:
-    resolution: {integrity: sha512-JLSpbzh6UUXIEoqPsYBvVNVmyrjVZ1fzEFbqxKkTJQkWBO3xFzFT+KDnSKQWwOQNbuWRwt5LSD6HOTLGIWzfrw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   npm-install-checks@8.0.0:
     resolution: {integrity: sha512-ScAUdMpyzkbpxoNekQ3tNRdFI8SJ86wgKZSQZdUxT+bj0wVFpsEMWnkXP0twVe1gJyNF5apBWDJhhIbgrIViRA==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -12742,16 +12624,8 @@ packages:
     resolution: {integrity: sha512-IciCE3SY3uE84Ld8WZU23gAPPV9rIYod4F+rc+vJ7h7cwAJt9Vk6TVsK60ry7Uj3SRS3bqRRIGuTp9YVlk6WNA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  npm-packlist@10.0.4:
-    resolution: {integrity: sha512-uMW73iajD8hiH4ZBxEV3HC+eTnppIqwakjOYuvgddnalIw2lJguKviK1pcUJDlIWm1wSJkchpDZDSVVsZEYRng==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   npm-pick-manifest@11.0.3:
     resolution: {integrity: sha512-buzyCfeoGY/PxKqmBqn1IUJrZnUi1VVJTdSSRPGI60tJdUhUoSQFhs0zycJokDdOznQentgrpf8LayEHyyYlqQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  npm-registry-fetch@19.1.1:
-    resolution: {integrity: sha512-TakBap6OM1w0H73VZVDf44iFXsOS3h+L4wVMXmbWOQroZgFhMch0juN6XSzBNlD965yIKvWg2dfu7NSiaYLxtw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   npm-run-path@4.0.1:
@@ -12976,11 +12850,6 @@ packages:
   package-manager-detector@1.3.0:
     resolution: {integrity: sha512-ZsEbbZORsyHuO00lY1kV3/t72yp6Ysay6Pd17ZAlNGuGwmWDLCJxFpRs0IzfXfj1o4icJOkUEioexFHzyPurSQ==}
 
-  pacote@21.5.0:
-    resolution: {integrity: sha512-VtZ0SB8mb5Tzw3dXDfVAIjhyVKUHZkS/ZH9/5mpKenwC9sFOXNI0JI7kEF7IMkwOnsWMFrvAZHzx1T5fmrp9FQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-    hasBin: true
-
   param-case@3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
 
@@ -12991,10 +12860,6 @@ packages:
   parse-author@2.0.0:
     resolution: {integrity: sha512-yx5DfvkN8JsHL2xk2Os9oTia467qnvRgey4ahSm2X8epehBLx/gWLcy5KI+Y36ful5DzGbCS6RazqZGgy1gHNw==}
     engines: {node: '>=0.10.0'}
-
-  parse-conflict-json@5.0.1:
-    resolution: {integrity: sha512-ZHEmNKMq1wyJXNwLxyHnluPfRAFSIliBvbK/UiOceROt4Xh9Pz0fq49NytIaeaCUf5VR86hwQ/34FCcNU5/LKQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   parse-entities@4.0.2:
     resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
@@ -13732,16 +13597,6 @@ packages:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
 
-  proggy@4.0.0:
-    resolution: {integrity: sha512-MbA4R+WQT76ZBm/5JUpV9yqcJt92175+Y0Bodg3HgiXzrmKu7Ggq+bpn6y6wHH+gN9NcyKn3yg1+d47VaKwNAQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  promise-all-reject-late@1.0.1:
-    resolution: {integrity: sha512-vuf0Lf0lOxyQREH7GDIOUMLS7kz+gs8i6B+Yi8dC68a2sychGrHTJYghMBD6k7eUcH0H5P73EckCA48xijWqXw==}
-
-  promise-call-limit@3.0.2:
-    resolution: {integrity: sha512-mRPQO2T1QQVw11E7+UdCJu7S61eJVWknzml9sC1heAdj1jxl0fWMBypIt9ZOcLFf8FkG995ZD7RnVk7HH72fZw==}
-
   promise-retry@2.0.1:
     resolution: {integrity: sha512-y+WKFlBR8BGXnsNlIHFGPZmyDf3DFMoLhaflAnyZgV6rG6xu+JwesTo2Q9R6XwYmtmwAFCkAk3e35jEdoeh/3g==}
     engines: {node: '>=10'}
@@ -14088,10 +13943,6 @@ packages:
   react@19.2.4:
     resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
-
-  read-cmd-shim@6.0.0:
-    resolution: {integrity: sha512-1zM5HuOfagXCBWMN83fuFI/x+T/UhZ7k+KIzhrHXcQoeX5+7gmaDYjELQHmmzIodumBHeByBJT4QYS7ufAgs7A==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
@@ -14631,10 +14482,6 @@ packages:
 
   signedsource@1.0.0:
     resolution: {integrity: sha512-6+eerH9fEnNmi/hyM1DXcRK3pWdoMQtlkQ+ns0ntzunjKqp5i3sKCc80ym8Fib3iaYhdJUOPdhlJWj1tvge2Ww==}
-
-  sigstore@4.1.0:
-    resolution: {integrity: sha512-/fUgUhYghuLzVT/gaJoeVehLCgZiUxPCPMcyVNY0lIf/cTCz58K/WTI7PefDarXxp9nUKpEwg1yyz3eSBMTtgA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   simple-git@3.28.0:
     resolution: {integrity: sha512-Rs/vQRwsn1ILH1oBUy8NucJlXmnnLeLCfcvbSehkPzbv3wwoFWIdtfd6Ndo6ZPhlPsCZ60CPI4rxurnwAa+a2w==}
@@ -15246,10 +15093,6 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
-  treeverse@3.0.0:
-    resolution: {integrity: sha512-gcANaAnd2QDZFmHFEOF4k7uc1J/6a6z3DJMd/QwEyxLoKGiptJRwid582r7QIsFlFMIZ3SnxfS52S4hm2DHkuQ==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-
   trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
 
@@ -15373,10 +15216,6 @@ packages:
     resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
-
-  tuf-js@4.1.0:
-    resolution: {integrity: sha512-50QV99kCKH5P/Vs4E2Gzp7BopNV+KzTXqWeaxrfu5IQJBOULRsTIS9seSsOVT8ZnGXzCyx55nYWAi4qJzpZKEQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   turbo@2.9.3:
     resolution: {integrity: sha512-J/VUvsGRykPb9R8Kh8dHVBOqioDexLk9BhLCU/ZybRR+HN9UR3cURdazFvNgMDt9zPP8TF6K73Z+tplfmi0PqQ==}
@@ -20894,8 +20733,6 @@ snapshots:
     dependencies:
       minipass: 7.1.2
 
-  '@isaacs/string-locale-compare@1.1.0': {}
-
   '@istanbuljs/load-nyc-config@1.1.0':
     dependencies:
       camelcase: 5.3.1
@@ -21297,11 +21134,11 @@ snapshots:
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
-  '@lerna-lite/changed@4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/changed@4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/list': 4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/list': 4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/listable': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - '@lerna-lite/exec'
@@ -21313,7 +21150,7 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/cli@4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/cli@4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
     dependencies:
       '@lerna-lite/core': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/init': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
@@ -21324,9 +21161,8 @@ snapshots:
       load-json-file: 7.0.1
       yargs: 18.0.0
     optionalDependencies:
-      '@lerna-lite/list': 4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/publish': 4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
-      '@lerna-lite/version': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/list': 4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/version': 4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -21373,9 +21209,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/list@4.11.5(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/list@4.11.5(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/listable': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
@@ -21407,47 +21243,10 @@ snapshots:
       tinyrainbow: 3.0.3
       wide-align: 1.1.5
 
-  '@lerna-lite/publish@4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
-    dependencies:
-      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.11.5
-      '@lerna-lite/version': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
-      '@npmcli/arborist': 9.4.2
-      '@npmcli/package-json': 7.0.5
-      byte-size: 9.0.1
-      ci-info: 4.4.0
-      columnify: 1.6.0
-      fs-extra: 11.3.4
-      has-unicode: 2.0.1
-      libnpmaccess: 10.0.3
-      libnpmpublish: 11.1.3
-      normalize-path: 3.0.0
-      npm-package-arg: 13.0.2
-      npm-packlist: 10.0.4
-      npm-registry-fetch: 19.1.1
-      p-map: 7.0.4
-      pacote: 21.5.0
-      semver: 7.7.4
-      ssri: 13.0.1
-      tar: 7.5.13
-      tinyglobby: 0.2.15
-      tinyrainbow: 3.0.3
-    transitivePeerDependencies:
-      - '@75lb/nature'
-      - '@lerna-lite/exec'
-      - '@lerna-lite/list'
-      - '@lerna-lite/run'
-      - '@lerna-lite/watch'
-      - '@types/node'
-      - babel-plugin-macros
-      - conventional-commits-filter
-      - supports-color
-
-  '@lerna-lite/version@4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/version@4.11.5(@lerna-lite/list@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
       '@conventional-changelog/git-client': 2.6.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
-      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/publish@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.5(@lerna-lite/list@4.11.5)(@lerna-lite/version@4.11.5)(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.5(@types/node@24.12.0)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.11.5
       '@octokit/plugin-enterprise-rest': 6.0.1
@@ -21588,45 +21387,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@npmcli/arborist@9.4.2':
-    dependencies:
-      '@gar/promise-retry': 1.0.3
-      '@isaacs/string-locale-compare': 1.1.0
-      '@npmcli/fs': 5.0.0
-      '@npmcli/installed-package-contents': 4.0.0
-      '@npmcli/map-workspaces': 5.0.3
-      '@npmcli/metavuln-calculator': 9.0.3
-      '@npmcli/name-from-folder': 4.0.0
-      '@npmcli/node-gyp': 5.0.0
-      '@npmcli/package-json': 7.0.5
-      '@npmcli/query': 5.0.0
-      '@npmcli/redact': 4.0.0
-      '@npmcli/run-script': 10.0.4
-      bin-links: 6.0.0
-      cacache: 20.0.3
-      common-ancestor-path: 2.0.0
-      hosted-git-info: 9.0.0
-      json-stringify-nice: 1.1.4
-      lru-cache: 11.2.4
-      minimatch: 10.2.5
-      nopt: 9.0.0
-      npm-install-checks: 8.0.0
-      npm-package-arg: 13.0.2
-      npm-pick-manifest: 11.0.3
-      npm-registry-fetch: 19.1.1
-      pacote: 21.5.0
-      parse-conflict-json: 5.0.1
-      proc-log: 6.1.0
-      proggy: 4.0.0
-      promise-all-reject-late: 1.0.1
-      promise-call-limit: 3.0.2
-      semver: 7.7.4
-      ssri: 13.0.1
-      treeverse: 3.0.0
-      walk-up-path: 4.0.0
-    transitivePeerDependencies:
-      - supports-color
-
   '@npmcli/fs@5.0.0':
     dependencies:
       semver: 7.7.4
@@ -21641,30 +21401,6 @@ snapshots:
       promise-retry: 2.0.1
       semver: 7.7.4
       which: 6.0.0
-
-  '@npmcli/installed-package-contents@4.0.0':
-    dependencies:
-      npm-bundled: 5.0.0
-      npm-normalize-package-bin: 5.0.0
-
-  '@npmcli/map-workspaces@5.0.3':
-    dependencies:
-      '@npmcli/name-from-folder': 4.0.0
-      '@npmcli/package-json': 7.0.5
-      glob: 13.0.0
-      minimatch: 10.2.5
-
-  '@npmcli/metavuln-calculator@9.0.3':
-    dependencies:
-      cacache: 20.0.3
-      json-parse-even-better-errors: 5.0.0
-      pacote: 21.5.0
-      proc-log: 6.1.0
-      semver: 7.7.4
-    transitivePeerDependencies:
-      - supports-color
-
-  '@npmcli/name-from-folder@4.0.0': {}
 
   '@npmcli/node-gyp@5.0.0': {}
 
@@ -21681,10 +21417,6 @@ snapshots:
   '@npmcli/promise-spawn@9.0.1':
     dependencies:
       which: 6.0.0
-
-  '@npmcli/query@5.0.0':
-    dependencies:
-      postcss-selector-parser: 7.1.0
 
   '@npmcli/redact@4.0.0': {}
 
@@ -21940,38 +21672,6 @@ snapshots:
   '@sideway/formula@3.0.1': {}
 
   '@sideway/pinpoint@2.0.0': {}
-
-  '@sigstore/bundle@4.0.0':
-    dependencies:
-      '@sigstore/protobuf-specs': 0.5.0
-
-  '@sigstore/core@3.2.0': {}
-
-  '@sigstore/protobuf-specs@0.5.0': {}
-
-  '@sigstore/sign@4.1.1':
-    dependencies:
-      '@gar/promise-retry': 1.0.3
-      '@sigstore/bundle': 4.0.0
-      '@sigstore/core': 3.2.0
-      '@sigstore/protobuf-specs': 0.5.0
-      make-fetch-happen: 15.0.5
-      proc-log: 6.1.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@sigstore/tuf@4.0.2':
-    dependencies:
-      '@sigstore/protobuf-specs': 0.5.0
-      tuf-js: 4.1.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@sigstore/verify@3.1.0':
-    dependencies:
-      '@sigstore/bundle': 4.0.0
-      '@sigstore/core': 3.2.0
-      '@sigstore/protobuf-specs': 0.5.0
 
   '@simple-libs/child-process-utils@1.0.1':
     dependencies:
@@ -23235,13 +22935,6 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
-
-  '@tufjs/canonical-json@2.0.0': {}
-
-  '@tufjs/models@4.1.0':
-    dependencies:
-      '@tufjs/canonical-json': 2.0.0
-      minimatch: 10.2.5
 
   '@turbo/darwin-64@2.9.3':
     optional: true
@@ -25472,14 +25165,6 @@ snapshots:
 
   big.js@5.2.2: {}
 
-  bin-links@6.0.0:
-    dependencies:
-      cmd-shim: 8.0.0
-      npm-normalize-package-bin: 5.0.0
-      proc-log: 6.1.0
-      read-cmd-shim: 6.0.0
-      write-file-atomic: 7.0.1
-
   binary-extensions@2.3.0: {}
 
   bindings@1.5.0:
@@ -25647,8 +25332,6 @@ snapshots:
       streamsearch: 1.1.0
 
   byline@5.0.0: {}
-
-  byte-size@9.0.1: {}
 
   bytes@3.0.0: {}
 
@@ -25953,8 +25636,6 @@ snapshots:
 
   clsx@2.1.1: {}
 
-  cmd-shim@8.0.0: {}
-
   co-body@6.2.0:
     dependencies:
       '@hapi/bourne': 3.0.0
@@ -26009,8 +25690,6 @@ snapshots:
   commander@7.2.0: {}
 
   commander@8.3.0: {}
-
-  common-ancestor-path@2.0.0: {}
 
   common-path-prefix@3.0.0: {}
 
@@ -28901,10 +28580,6 @@ snapshots:
 
   ieee754@1.2.1: {}
 
-  ignore-walk@8.0.0:
-    dependencies:
-      minimatch: 10.2.5
-
   ignore@5.3.2: {}
 
   ignore@7.0.5: {}
@@ -29894,8 +29569,6 @@ snapshots:
       jsonify: 0.0.1
       object-keys: 1.1.1
 
-  json-stringify-nice@1.1.4: {}
-
   json5@1.0.2:
     dependencies:
       minimist: 1.2.8
@@ -29914,18 +29587,12 @@ snapshots:
 
   jsonify@0.0.1: {}
 
-  jsonparse@1.3.1: {}
-
   jsx-ast-utils@3.3.5:
     dependencies:
       array-includes: 3.1.9
       array.prototype.flat: 1.3.3
       object.assign: 4.1.7
       object.values: 1.2.1
-
-  just-diff-apply@5.5.0: {}
-
-  just-diff@6.0.2: {}
 
   just-extend@6.2.0: {}
 
@@ -30032,26 +29699,6 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
-
-  libnpmaccess@10.0.3:
-    dependencies:
-      npm-package-arg: 13.0.2
-      npm-registry-fetch: 19.1.1
-    transitivePeerDependencies:
-      - supports-color
-
-  libnpmpublish@11.1.3:
-    dependencies:
-      '@npmcli/package-json': 7.0.5
-      ci-info: 4.4.0
-      npm-package-arg: 13.0.2
-      npm-registry-fetch: 19.1.1
-      proc-log: 6.1.0
-      semver: 7.7.4
-      sigstore: 4.1.0
-      ssri: 13.0.1
-    transitivePeerDependencies:
-      - supports-color
 
   lilconfig@3.1.3: {}
 
@@ -31102,10 +30749,6 @@ snapshots:
 
   normalize-url@8.0.2: {}
 
-  npm-bundled@5.0.0:
-    dependencies:
-      npm-normalize-package-bin: 5.0.0
-
   npm-install-checks@8.0.0:
     dependencies:
       semver: 7.7.4
@@ -31119,30 +30762,12 @@ snapshots:
       semver: 7.7.4
       validate-npm-package-name: 7.0.0
 
-  npm-packlist@10.0.4:
-    dependencies:
-      ignore-walk: 8.0.0
-      proc-log: 6.1.0
-
   npm-pick-manifest@11.0.3:
     dependencies:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
       semver: 7.7.4
-
-  npm-registry-fetch@19.1.1:
-    dependencies:
-      '@npmcli/redact': 4.0.0
-      jsonparse: 1.3.1
-      make-fetch-happen: 15.0.5
-      minipass: 7.1.2
-      minipass-fetch: 5.0.0
-      minizlib: 3.1.0
-      npm-package-arg: 13.0.2
-      proc-log: 6.1.0
-    transitivePeerDependencies:
-      - supports-color
 
   npm-run-path@4.0.1:
     dependencies:
@@ -31368,28 +30993,6 @@ snapshots:
 
   package-manager-detector@1.3.0: {}
 
-  pacote@21.5.0:
-    dependencies:
-      '@gar/promise-retry': 1.0.3
-      '@npmcli/git': 7.0.1
-      '@npmcli/installed-package-contents': 4.0.0
-      '@npmcli/package-json': 7.0.5
-      '@npmcli/promise-spawn': 9.0.1
-      '@npmcli/run-script': 10.0.4
-      cacache: 20.0.3
-      fs-minipass: 3.0.3
-      minipass: 7.1.2
-      npm-package-arg: 13.0.2
-      npm-packlist: 10.0.4
-      npm-pick-manifest: 11.0.3
-      npm-registry-fetch: 19.1.1
-      proc-log: 6.1.0
-      sigstore: 4.1.0
-      ssri: 13.0.1
-      tar: 7.5.13
-    transitivePeerDependencies:
-      - supports-color
-
   param-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
@@ -31402,12 +31005,6 @@ snapshots:
   parse-author@2.0.0:
     dependencies:
       author-regex: 1.0.0
-
-  parse-conflict-json@5.0.1:
-    dependencies:
-      json-parse-even-better-errors: 5.0.0
-      just-diff: 6.0.2
-      just-diff-apply: 5.5.0
 
   parse-entities@4.0.2:
     dependencies:
@@ -32156,12 +31753,6 @@ snapshots:
 
   process@0.11.10: {}
 
-  proggy@4.0.0: {}
-
-  promise-all-reject-late@1.0.1: {}
-
-  promise-call-limit@3.0.2: {}
-
   promise-retry@2.0.1:
     dependencies:
       err-code: 2.0.3
@@ -32591,8 +32182,6 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   react@19.2.4: {}
-
-  read-cmd-shim@6.0.0: {}
 
   readable-stream@2.3.8:
     dependencies:
@@ -33327,17 +32916,6 @@ snapshots:
 
   signedsource@1.0.0: {}
 
-  sigstore@4.1.0:
-    dependencies:
-      '@sigstore/bundle': 4.0.0
-      '@sigstore/core': 3.2.0
-      '@sigstore/protobuf-specs': 0.5.0
-      '@sigstore/sign': 4.1.1
-      '@sigstore/tuf': 4.0.2
-      '@sigstore/verify': 3.1.0
-    transitivePeerDependencies:
-      - supports-color
-
   simple-git@3.28.0:
     dependencies:
       '@kwsites/file-exists': 1.1.1
@@ -34065,8 +33643,6 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  treeverse@3.0.0: {}
-
   trim-lines@3.0.1: {}
 
   trough@2.2.0: {}
@@ -34204,14 +33780,6 @@ snapshots:
       get-tsconfig: 4.10.1
     optionalDependencies:
       fsevents: 2.3.3
-
-  tuf-js@4.1.0:
-    dependencies:
-      '@tufjs/models': 4.1.0
-      debug: 4.4.3
-      make-fetch-happen: 15.0.5
-    transitivePeerDependencies:
-      - supports-color
 
   turbo@2.9.3:
     optionalDependencies:
