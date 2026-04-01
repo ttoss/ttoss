@@ -2,6 +2,7 @@
   "extends": "@ttoss/config/tsconfig.json",
   "compilerOptions": {
     "outDir": "build",
+    "rootDir": "src",
     "noEmit": false,
     "declaration": false,
     "downlevelIteration": true,

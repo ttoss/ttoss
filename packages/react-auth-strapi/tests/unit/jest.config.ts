@@ -12,9 +12,7 @@ const config = jestUnitConfig({
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
-  transformIgnorePatterns: getTransformIgnorePatterns({
-    esmModules: ['rehype-raw', 'react-error-boundary'],
-  }),
+  transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 
 export default config;

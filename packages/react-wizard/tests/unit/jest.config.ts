@@ -1,8 +1,10 @@
 import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 export default jestUnitConfig({
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
+  transformIgnorePatterns: getTransformIgnorePatterns(),
   coverageThreshold: {
     global: {
       statements: 95.67,

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/website",
-  "version": "2.6.6",
+  "version": "2.6.13",
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
     "build-dev": "NODE_ENV=development docusaurus build",
@@ -23,7 +23,7 @@
     "@docusaurus/preset-classic": "^3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
     "@mdx-js/react": "3.1.1",
-    "force-graph": "^1.51.1",
+    "force-graph": "^1.51.2",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -36,14 +36,14 @@
     "@docusaurus/tsconfig": "^3.9.2",
     "@docusaurus/types": "^3.9.2",
     "carlin": "workspace:^",
-    "docusaurus-plugin-llms": "^0.2.2",
+    "docusaurus-plugin-llms": "^0.3.0",
     "docusaurus-plugin-typedoc": "^1.4.2",
     "jsdoc-api": "^9.3.5",
-    "markdown-to-jsx": "^9.3.0",
+    "markdown-to-jsx": "^9.7.13",
     "minimist": "^1.2.8",
-    "typedoc": "^0.28.15",
-    "typedoc-plugin-markdown": "^4.9.0",
-    "typescript": "~5.9.3"
+    "typedoc": "^0.28.18",
+    "typedoc-plugin-markdown": "^4.11.0",
+    "typescript": "~6.0.2"
   },
   "browserslist": {
     "production": [

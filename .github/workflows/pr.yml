@@ -30,7 +30,7 @@ jobs:
       - name: Fetch and merge most recent main
         run: |-
           git fetch origin main:main
-          git merge main --ff-only --no-edit
+          git merge main --no-edit
       - name: Setup ttoss environment
         uses: ./.github/actions/setup
       - name: Run pr command

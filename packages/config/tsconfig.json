@@ -17,10 +17,15 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     /**
-     * `target` to `es2023` because Node.js 20 supports ES2023 features.
-     * https://node.green/#ES2023
+     * Explicitly include `node` types because TypeScript 6 changed the default
+     * `types` to `[]`, no longer auto-including installed `@types/*` packages.
      */
-    "target": "es2023",
+    "types": ["node"],
+    /**
+     * `target` to `es2024` because Node.js 24 supports ES2024 features.
+     * https://node.green/#ES2024
+     */
+    "target": "es2024",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
@@ -49,7 +54,13 @@
      * property initializer.
      * https://chatgpt.com/share/66f55e86-c3ec-8002-bf29-ba18c3af3d0e
      */
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    /**
+     * Set `ignoreDeprecations` to suppress errors for deprecated options that
+     * are injected by build tools (e.g., tsup injects `baseUrl`).
+     * These deprecations will stop functioning in TypeScript 7.0.
+     */
+    "ignoreDeprecations": "6.0"
   },
   "exclude": ["tests"]
 }

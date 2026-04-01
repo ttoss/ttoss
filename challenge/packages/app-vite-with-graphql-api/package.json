@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss-challenge/app-vite-with-graphql-api",
-  "version": "0.3.2",
+  "version": "0.4.5",
   "type": "module",
   "scripts": {
     "prebuild": "pnpm relay",
@@ -27,7 +27,7 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
     "relay-compiler": "^18.2.0",
-    "typescript": "~5.9.3",
+    "typescript": "~6.0.2",
     "vite": "^6.0.6"
   }
 }

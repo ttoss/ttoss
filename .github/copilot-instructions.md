@@ -190,7 +190,7 @@ pnpm run i18n      # Extract i18n messages
 
 - Workspace packages use `workspace:^` protocol in package.json
 - Use `pnpm install` to add dependencies (not npm or yarn)
-- Run syncpack to check for version mismatches: `pnpm syncpack:list`
+- Run syncpack to check for version mismatches: `pnpm syncpack:lint`
 
 ### Turbo Cache
 

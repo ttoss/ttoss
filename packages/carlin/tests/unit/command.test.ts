@@ -214,12 +214,16 @@ describe('handlers', () => {
     );
   });
 
-  test('should pass default lambda-runtime to deployCloudFormation', async () => {
-    await parse('deploy', {});
+  test('should pass envExport to deployCloudFormation', async () => {
+    const envExport = {
+      AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
+      AppSyncApiArn: 'APPSYNC_API_ARN',
+    };
+
+    await parse('deploy', { envExport });
+
     expect(deployCloudFormation).toHaveBeenCalledWith(
-      expect.objectContaining({
-        lambdaRuntime: 'nodejs24.x',
-      })
+      expect.objectContaining({ envExport })
     );
   });
 });

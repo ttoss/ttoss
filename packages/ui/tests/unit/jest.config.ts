@@ -1,8 +1,6 @@
 import { jestUnitConfig } from '@ttoss/config';
 import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
-const esmModules = ['@iconify-icons'];
-
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
@@ -14,9 +12,7 @@ const config = jestUnitConfig({
   },
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
-  transformIgnorePatterns: getTransformIgnorePatterns({
-    esmModules,
-  }),
+  transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 
 export default config;

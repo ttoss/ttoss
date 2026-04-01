@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.4.0",
+  "version": "0.5.5",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "license": "MIT",
   "author": "ttoss",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.1",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "supertest": "^7.1.4",
     "tsup": "^8.5.1"
   },
