@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.17.13 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## 0.17.12 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## 0.17.11 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## 0.17.10 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.17.9 (2026-03-31)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.17.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.17.7...@terezinha-farm/vite-app@0.17.8) (2026-03-31)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
 ## [0.17.7](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.17.6...@terezinha-farm/vite-app@0.17.7) (2026-03-24)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app

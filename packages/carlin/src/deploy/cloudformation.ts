@@ -2,7 +2,7 @@ import {
   type CloudFormationTemplate,
   findAndReadCloudFormationTemplate,
 } from '@ttoss/cloudformation';
-import AWS from 'aws-sdk';
+import type AWS from 'aws-sdk';
 import log from 'npmlog';
 
 import { getEnvironment, getPackageName, getProjectName } from '../utils';
@@ -84,6 +84,7 @@ export const deployCloudFormation = async (cliOptions: {
   }[];
   templatePath?: string;
   template?: CloudFormationTemplate;
+  envExport?: Record<string, string>;
 }) => {
   try {
     const {
@@ -97,6 +98,7 @@ export const deployCloudFormation = async (cliOptions: {
       parameters,
       template,
       templatePath,
+      envExport,
     } = cliOptions;
 
     const { stackName } = await handleDeployInitialization({ logPrefix });
@@ -271,6 +273,7 @@ export const deployCloudFormation = async (cliOptions: {
     const output = await deploy({
       params,
       template: cloudFormationTemplate,
+      envExport,
     });
 
     return output;

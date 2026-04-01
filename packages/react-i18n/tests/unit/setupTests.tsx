@@ -1,6 +1,7 @@
 import { setOptions } from '@ttoss/test-utils/react';
-import * as React from 'react';
-import { I18nProvider, LoadLocaleData } from 'src/index';
+import type * as React from 'react';
+import type { LoadLocaleData } from 'src/index';
+import { I18nProvider } from 'src/index';
 
 const delay = (ms: number) => {
   return new Promise((resolve) => {

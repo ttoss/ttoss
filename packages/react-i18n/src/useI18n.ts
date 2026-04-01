@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { I18nConfigContext } from './i18Provider';
 import { useIntl } from 'react-intl';
+
+import { I18nConfigContext } from './i18Provider';
 
 export const useI18n = () => {
   const intl = useIntl();

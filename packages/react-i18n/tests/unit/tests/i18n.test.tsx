@@ -1,5 +1,5 @@
 import { act, render, renderHook, screen } from '@ttoss/test-utils/react';
-import * as React from 'react';
+import type * as React from 'react';
 import {
   DEFAULT_LOCALE,
   defineMessage,
@@ -96,7 +96,7 @@ test('formatMessage - change en -> pt-BR -> en', async () => {
     'Other message'
   );
 
-  act(() => {
+  await act(async () => {
     result.current.setLocale('pt-BR');
   });
 
@@ -109,7 +109,7 @@ test('formatMessage - change en -> pt-BR -> en', async () => {
     'Outra mensagem'
   );
 
-  act(() => {
+  await act(async () => {
     result.current.setLocale('en');
   });
 
@@ -133,11 +133,10 @@ test('FormattedMessage component', async () => {
   render(<Component />);
 
   await act(async () => {
-    /**
-     * https://testing-library.com/docs/dom-testing-library/api-async/#findby-queries
-     */
-    expect(await screen.findByText('My name is Pedro.')).toBeInTheDocument();
+    await jest.runAllTimersAsync();
   });
+
+  expect(screen.getByText('My name is Pedro.')).toBeInTheDocument();
 });
 
 test('log error when message is not translated', async () => {
@@ -145,14 +144,15 @@ test('log error when message is not translated', async () => {
     return useI18n();
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const mock = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  act(() => {
+  await act(async () => {
     result.current.setLocale('pt-BR');
   });
 
-  await jest.runAllTimersAsync();
+  await act(async () => {
+    await jest.runAllTimersAsync();
+  });
 
   result.current.intl.formatMessage({
     defaultMessage: 'Untranslated Message',
@@ -174,7 +174,6 @@ test('should not log error when onError is handled', () => {
     { wrapper: ProviderWithErrorHandler }
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const mock = jest.spyOn(console, 'error').mockImplementation(() => {});
 
   result.current.setLocale('pt-BR');

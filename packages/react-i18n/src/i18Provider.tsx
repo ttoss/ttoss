@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { IntlProvider, MessageFormatElement } from 'react-intl';
+import type { MessageFormatElement } from 'react-intl';
+import { IntlProvider } from 'react-intl';
 
 export type Messages =
   | Record<string, string>

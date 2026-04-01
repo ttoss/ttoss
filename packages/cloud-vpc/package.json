@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-vpc",
-  "version": "0.1.31",
+  "version": "0.1.37",
   "description": "Deploy a VPC with public and private subnets",
   "license": "MIT",
   "author": "ttoss",
@@ -29,7 +29,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
   "keywords": [
