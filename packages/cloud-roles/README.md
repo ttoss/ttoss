@@ -63,7 +63,9 @@ import { createRolesTemplate } from '@ttoss/cloud-roles';
 
 const template = createRolesTemplate({
   path: '/my-app/',
-  resources: { /* ... */ },
+  resources: {
+    /* ... */
+  },
 });
 ```
 
