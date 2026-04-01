@@ -32,7 +32,7 @@
     "@ttoss/ui": "workspace:^"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.4",
+    "@babel/core": "^7.29.0",
     "@fluentui/storybook-llms-extractor": "^0.0.3",
     "@storybook/addon-a11y": "^10.2.8",
     "@storybook/addon-docs": "^10.2.8",

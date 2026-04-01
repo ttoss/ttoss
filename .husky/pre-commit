@@ -1,2 +1,2 @@
 pnpm lint-staged
-pnpm syncpack:list
+pnpm syncpack:lint
