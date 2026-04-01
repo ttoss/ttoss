@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@terezinha-farm/api",
-  "version": "0.19.42",
+  "version": "0.19.43",
   "type": "module",
   "scripts": {
     "build-schema": "ttoss-graphql-api build-schema",
