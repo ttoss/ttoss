@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.2.3 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## 2.2.2 (2026-03-31)
 
 ### Bug Fixes

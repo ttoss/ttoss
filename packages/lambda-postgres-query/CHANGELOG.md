@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.25 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
 ## 0.3.24 (2026-03-31)
 
 ### Bug Fixes
