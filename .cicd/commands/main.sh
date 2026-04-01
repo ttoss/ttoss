@@ -84,7 +84,7 @@ if pnpm lerna changed; then
   # 2. Compare the local and remote main branches using `git diff`.
   # 3. Check if there are any changes and stop the workflow if there are any.
   # 4. Exit and wait to the next main workflow starts because of the changes.
-  git fetch
+  git fetch origin main
 
   # HEAD^1 because lerna version created a commit.
   git diff HEAD^1 origin/main --quiet || { echo "Changes found before publishing. Workflow stopped." && exit 1; }
@@ -92,8 +92,19 @@ if pnpm lerna changed; then
   # Push changes.
   git push --follow-tags
 
-  # Publish packages.
-  pnpm -r publish
+  # Publish packages with retry logic.
+  # `from-package` reads versions from package.json and skips packages already
+  # on the registry, so retries never re-publish already-published packages.
+  for attempt in 1 2 3; do
+    pnpm lerna publish from-package --yes && break
+    if [ "$attempt" -lt 3 ]; then
+      echo "Publish attempt $attempt failed, retrying in 30 seconds..."
+      sleep 30
+    else
+      echo "Publish failed after 3 attempts."
+      exit 1
+    fi
+  done
 else
   echo "No changes detected on packages, skipping publish..."
 fi
