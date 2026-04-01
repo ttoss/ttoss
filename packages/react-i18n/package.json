@@ -28,13 +28,13 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "react-intl": "^7.0.4"
+    "react-intl": "^10.1.1"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@formatjs/cli": "^6.3.14",
+    "@formatjs/cli": "^6.14.1",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",

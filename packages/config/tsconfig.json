@@ -54,13 +54,7 @@
      * property initializer.
      * https://chatgpt.com/share/66f55e86-c3ec-8002-bf29-ba18c3af3d0e
      */
-    "strictPropertyInitialization": true,
-    /**
-     * Set `ignoreDeprecations` to suppress errors for deprecated options that
-     * are injected by build tools (e.g., tsup injects `baseUrl`).
-     * These deprecations will stop functioning in TypeScript 7.0.
-     */
-    "ignoreDeprecations": "6.0"
+    "strictPropertyInitialization": true
   },
   "exclude": ["tests"]
 }

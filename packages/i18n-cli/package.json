@@ -23,8 +23,8 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^6.3.3",
-    "fast-glob": "^3.3.2",
+    "@formatjs/cli-lib": "^8.5.1",
+    "fast-glob": "^3.3.3",
     "minimist": "^1.2.8"
   },
   "devDependencies": {
