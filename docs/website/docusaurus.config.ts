@@ -70,7 +70,9 @@ const config: Config = {
                 return [`../../packages/${pkg}/src/index.ts`];
               }
 
-              const entryPoints = Object.values(packageJsonObj.exports)
+              const entryPoints = (
+                Object.values(packageJsonObj.exports) as string[]
+              )
                 .filter((filepath: string) => {
                   return filepath.endsWith('.ts');
                 })
@@ -102,6 +104,7 @@ const config: Config = {
                 excludeNotDocumented: true,
                 excludeNotDocumentedKinds: ['Namespace'],
                 skipErrorChecking: true,
+                parametersFormat: 'table',
               },
             ];
           })),
@@ -133,7 +136,7 @@ const config: Config = {
                 return `https://github.com/ttoss/ttoss/tree/main/packages/${packageName}/README.md`;
               } else {
                 // Disable edit for auto-generated API docs
-                return null;
+                return undefined;
               }
             }
             return `https://github.com/ttoss/ttoss/tree/main/docs/website/${docPath}`;

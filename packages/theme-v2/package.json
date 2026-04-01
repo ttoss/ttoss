@@ -38,7 +38,7 @@
     "@testing-library/react": "^16.3.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },

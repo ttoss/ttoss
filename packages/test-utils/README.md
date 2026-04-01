@@ -79,7 +79,9 @@ const testUser = {
 
 ## ESM Transform Helper (Jest)
 
-Use `getTransformIgnorePatterns` to ensure ESM packages like `@faker-js/faker` are transformed under pnpm layout:
+Use `getTransformIgnorePatterns` to ensure ESM packages are transformed under pnpm layout.
+
+The following modules are included by default (`TTOSS_ESM_MODULES`): see the [source](https://github.com/ttoss/ttoss/blob/main/packages/test-utils/src/index.ts) for the full list.
 
 ```ts title="jest.config.ts"
 import { getTransformIgnorePatterns } from '@ttoss/test-utils';
@@ -116,7 +118,7 @@ Q: Do I need to import jest-dom manually?
 A: Not when using `@ttoss/test-utils/react` (it auto-registers).
 
 Q: How do I add another ESM library?  
-A: Include it in `esmModules`: `getTransformIgnorePatterns({ esmModules: ['@faker-js/faker','some-lib'] })`.
+A: Include it in `esmModules`: `getTransformIgnorePatterns({ esmModules: ['@faker-js/faker','some-lib'] })`. The built-in [`TTOSS_ESM_MODULES`](https://github.com/ttoss/ttoss/blob/main/packages/test-utils/src/index.ts) are always included.
 
 ## Minimal Config Only (No side effects)
 

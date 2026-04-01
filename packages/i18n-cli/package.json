@@ -23,15 +23,15 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@formatjs/cli-lib": "^6.3.3",
-    "fast-glob": "^3.3.2",
+    "@formatjs/cli-lib": "^8.5.1",
+    "fast-glob": "^3.3.3",
     "minimist": "^1.2.8"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/minimist": "^1.2.5",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1"
   },
