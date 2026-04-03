@@ -1,92 +1,27 @@
-import { defaultTheme } from './themes/default';
-import type { ThemeTokensV2 } from './ThemeTokensTemplate';
-
-export { defaultTheme };
-
-// ---------------------------------------------------------------------------
-// DeepPartial — allows overriding any nested property of a theme
-// ---------------------------------------------------------------------------
-
-/**
- * Recursive partial type. Every nested property becomes optional,
- * enabling selective overrides at any depth.
- */
-export type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T;
+import { baseTheme, darkAlternate } from './baseTheme';
+import { deepMerge } from './roots/helpers';
+import type {
+  DeepPartial,
+  ModeOverride,
+  ThemeBundle,
+  ThemeTokensV2,
+} from './Types';
 
 // ---------------------------------------------------------------------------
-// Deep Merge
-// ---------------------------------------------------------------------------
-
-const isPlainObject = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-/**
- * Recursively merges `overrides` into `base`.
- * - Plain objects are merged recursively.
- * - All other values (primitives, arrays) are replaced.
- */
-const deepMerge = <T>(base: T, overrides: DeepPartial<T>): T => {
-  if (!isPlainObject(base) || !isPlainObject(overrides)) {
-    return (overrides ?? base) as T;
-  }
-
-  const result = { ...base } as Record<string, unknown>;
-
-  for (const key of Object.keys(overrides)) {
-    const baseVal = result[key];
-    const overVal = (overrides as Record<string, unknown>)[key];
-
-    if (overVal === undefined) {
-      continue;
-    }
-
-    if (isPlainObject(baseVal) && isPlainObject(overVal)) {
-      result[key] = deepMerge(baseVal, overVal);
-    } else {
-      result[key] = overVal;
-    }
-  }
-
-  return result as T;
-};
-
-// ---------------------------------------------------------------------------
-// createTheme
+// buildTheme (internal)
 // ---------------------------------------------------------------------------
 
 /**
- * Creates a fully resolved theme by merging partial overrides into a base theme.
+ * Creates a fully resolved `ThemeTokensV2` by merging partial overrides into a base.
+ * Internal engine — consumers should use `createTheme` which returns `ThemeBundle`.
  *
- * @param params.overrides - Partial token overrides to apply on top of the base.
- * @param params.base - Base theme to extend. Defaults to `defaultTheme`.
- * @returns A complete `ThemeTokensV2` with all tokens resolved.
- *
- * @example
- * ```ts
- * // Extend the default theme with brand colors
- * const myTheme = createTheme({
- *   overrides: {
- *     core: { colors: { brand: { main: '#FF0000' } } },
- *   },
- * });
- *
- * // Extend another theme (theme inheritance)
- * const childTheme = createTheme({
- *   base: parentTheme,
- *   overrides: {
- *     core: { radii: { sm: '8px' } },
- *   },
- * });
- * ```
+ * @internal
  */
-export const createTheme = ({
-  base = defaultTheme,
+export const buildTheme = ({
+  base = baseTheme,
   overrides = {},
 }: {
-  /** Base theme to extend. Defaults to `defaultTheme`. */
+  /** Base theme to extend. Defaults to `baseTheme`. */
   base?: ThemeTokensV2;
   /** Partial overrides applied on top of the base theme. */
   overrides?: DeepPartial<ThemeTokensV2>;
@@ -94,6 +29,96 @@ export const createTheme = ({
   const merged = deepMerge(base, overrides);
 
   // Deep-clone to break shared references between base and result.
-  // Tokens are primitives (strings, numbers) — JSON round-trip is safe.
-  return JSON.parse(JSON.stringify(merged));
+  // Tokens are primitives (strings, numbers) — structuredClone is safe and
+  // more correct than JSON round-trip (preserves undefined, NaN, etc.).
+  return structuredClone(merged);
+};
+
+// ---------------------------------------------------------------------------
+// createTheme
+// ---------------------------------------------------------------------------
+
+/**
+ * Creates a theme bundle with an optional alternate color mode.
+ *
+ * The `extends` param is the idiomatic way to build on a built-in theme:
+ * it inherits the base tokens **and** the dark-mode alternate automatically.
+ *
+ * @param params.extends - Parent bundle to inherit from. `base`, `baseMode`, and
+ *   `alternate` default to the parent's values when this is provided.
+ * @param params.baseMode - Which mode the base represents. Defaults to `'light'`.
+ * @param params.base - Base theme to extend. Defaults to `extends.base` or `baseTheme`.
+ * @param params.overrides - Brand overrides applied to the base theme.
+ * @param params.alternate - Semantic remapping overrides for the opposite color mode.
+ *   Defaults to `darkAlternate` (built-in dark mode) when neither `alternate` nor
+ *   `extends` is provided. Inherits from `extends.alternate` when `extends` is given.
+ *   Pass `null` to explicitly opt out of any alternate (single-mode theme).
+ *   Core tokens are immutable — only semantic references change between modes.
+ *
+ * @example
+ * ```ts
+ * // Path A — default foundation (light base + dark alternate included)
+ * const myTheme = createTheme();
+ * <ThemeProvider theme={myTheme} />
+ *
+ * // Path B — custom brand overrides (dark mode still included)
+ * const myTheme = createTheme({
+ *   overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
+ * });
+ *
+ * // Path C — custom semantic dark alternate
+ * const myTheme = createTheme({
+ *   overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
+ *   alternate: {
+ *     semantic: {
+ *       colors: { content: { primary: { background: { default: '{core.colors.neutral.900}' } } } },
+ *     },
+ *   },
+ * });
+ *
+ * // Path D — single-mode theme (no dark alternate)
+ * const myTheme = createTheme({ alternate: null });
+ * ```
+ */
+export const createTheme = ({
+  extends: parentBundle,
+  baseMode,
+  base,
+  overrides,
+  alternate,
+}: {
+  /**
+   * Parent bundle to inherit from. `base`, `baseMode`, and `alternate` all
+   * default to the parent's values — including dark-mode inheritance.
+   *
+   * `extends` is a reserved word in JS — destructured as `parentBundle`
+   * in the implementation.
+   */
+  extends?: ThemeBundle;
+  /** Which mode the base represents. Defaults to `extends.baseMode` or `'light'`. */
+  baseMode?: 'light' | 'dark';
+  /** Base theme to extend. Defaults to `extends.base` or `baseTheme`. */
+  base?: ThemeTokensV2;
+  /** Brand overrides applied to the base theme. */
+  overrides?: DeepPartial<ThemeTokensV2>;
+  /**
+   * Semantic remapping overrides for the opposite mode.
+   * Defaults to `darkAlternate` when not provided (and no `extends`).
+   * Pass `null` to opt out of any alternate (single-mode theme).
+   */
+  alternate?: ModeOverride | null;
+} = {}): ThemeBundle => {
+  const resolvedBase = base ?? parentBundle?.base;
+  const resolvedBaseMode = baseMode ?? parentBundle?.baseMode ?? 'light';
+  const resolvedAlternate =
+    alternate === null
+      ? undefined
+      : alternate !== undefined
+        ? alternate
+        : (parentBundle?.alternate ?? darkAlternate);
+  return {
+    baseMode: resolvedBaseMode,
+    base: buildTheme({ base: resolvedBase, overrides }),
+    alternate: resolvedAlternate,
+  };
 };
