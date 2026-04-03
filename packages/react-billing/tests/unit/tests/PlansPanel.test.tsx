@@ -6,19 +6,19 @@ import { PlansPanel } from '../../../src';
 const filters: PlansPanelFilter[] = [
   {
     id: 'userType',
-    label: 'Para quem?',
+    label: 'User type',
     options: [
-      { label: 'Pessoa física', value: 'individual' },
-      { label: 'Empresa', value: 'business' },
+      { label: 'Individual', value: 'individual' },
+      { label: 'Business', value: 'business' },
     ],
     defaultValue: 'individual',
   },
   {
     id: 'interval',
-    label: 'Frequência',
+    label: 'Billing frequency',
     options: [
-      { label: 'Mensal', value: 'monthly' },
-      { label: 'Anual', value: 'yearly' },
+      { label: 'Monthly', value: 'monthly' },
+      { label: 'Yearly', value: 'yearly' },
     ],
     defaultValue: 'monthly',
   },
@@ -29,36 +29,36 @@ const plans: PlansPanelPlan[] = [
     id: 'plan_basic_individual_monthly',
     filterValues: { userType: 'individual', interval: 'monthly' },
     title: 'Basic',
-    subtitle: 'Para pessoas físicas',
+    subtitle: 'For individuals',
     price: {
       value: 'R$ 29',
-      interval: '/mês',
-      description: 'Cobrado mensalmente',
+      interval: '/month',
+      description: 'Billed monthly',
     },
-    features: ['10 propostas/mês'],
-    buttonProps: { label: 'Assine agora' },
+    features: ['10 proposals/month'],
+    buttonProps: { label: 'Subscribe' },
   },
   {
     id: 'plan_basic_individual_yearly',
     filterValues: { userType: 'individual', interval: 'yearly' },
-    title: 'Basic Anual',
-    subtitle: 'Para pessoas físicas',
+    title: 'Basic Annual',
+    subtitle: 'For individuals',
     price: {
       value: 'R$ 24',
-      interval: '/mês',
-      description: 'Cobrado anualmente',
+      interval: '/month',
+      description: 'Billed annually',
     },
-    features: ['10 propostas/mês'],
-    buttonProps: { label: 'Assine agora' },
+    features: ['10 proposals/month'],
+    buttonProps: { label: 'Subscribe' },
   },
   {
     id: 'plan_pro_business_monthly',
     filterValues: { userType: 'business', interval: 'monthly' },
     title: 'Pro',
-    subtitle: 'Para empresas',
-    price: { value: 'R$ 99', interval: '/mês' },
-    features: ['Ilimitado'],
-    buttonProps: { label: 'Assine agora' },
+    subtitle: 'For businesses',
+    price: { value: 'R$ 99', interval: '/month' },
+    features: ['Unlimited'],
+    buttonProps: { label: 'Subscribe' },
   },
 ];
 
@@ -67,29 +67,29 @@ test('renders plans matching the default filter values', () => {
 
   // With default values individual + monthly, only plan_basic_individual_monthly should show
   expect(screen.getByText('Basic')).toBeInTheDocument();
-  expect(screen.queryByText('Basic Anual')).toBeNull();
+  expect(screen.queryByText('Basic Annual')).toBeNull();
   expect(screen.queryByText('Pro')).toBeNull();
 });
 
 test('renders filter labels and options', () => {
   render(<PlansPanel filters={filters} plans={plans} />);
 
-  expect(screen.getByText('Para quem?')).toBeInTheDocument();
-  expect(screen.getByText('Frequência')).toBeInTheDocument();
-  expect(screen.getByText('Pessoa física')).toBeInTheDocument();
-  expect(screen.getByText('Empresa')).toBeInTheDocument();
-  expect(screen.getByText('Mensal')).toBeInTheDocument();
-  expect(screen.getByText('Anual')).toBeInTheDocument();
+  expect(screen.getByText('User type')).toBeInTheDocument();
+  expect(screen.getByText('Billing frequency')).toBeInTheDocument();
+  expect(screen.getByText('Individual')).toBeInTheDocument();
+  expect(screen.getByText('Business')).toBeInTheDocument();
+  expect(screen.getByText('Monthly')).toBeInTheDocument();
+  expect(screen.getByText('Yearly')).toBeInTheDocument();
 });
 
 test('filters plans when filter value changes', () => {
   render(<PlansPanel filters={filters} plans={plans} />);
 
-  // Click "Anual" option
-  fireEvent.click(screen.getByText('Anual'));
+  // Click "Yearly" option
+  fireEvent.click(screen.getByText('Yearly'));
 
-  // Now individual + yearly should show Basic Anual
-  expect(screen.getByText('Basic Anual')).toBeInTheDocument();
+  // Now individual + yearly should show Basic Annual
+  expect(screen.getByText('Basic Annual')).toBeInTheDocument();
   expect(screen.queryByText('Basic')).toBeNull();
   expect(screen.queryByText('Pro')).toBeNull();
 });
@@ -103,10 +103,9 @@ test('highlights active plan with secondary variant', () => {
     />
   );
 
-  // The active plan card gets data-variant attribute for secondary variant
-  // We just verify the active plan renders
+  // The active plan renders (variant is applied internally)
   expect(screen.getByText('Basic')).toBeInTheDocument();
-  expect(container.querySelector('[data-plancard-active]')).toBeNull(); // no special attribute
+  expect(container.querySelector('[data-plancard-active]')).toBeNull();
 });
 
 test('calls onSelectPlan with plan id when CTA is clicked', () => {
@@ -116,7 +115,7 @@ test('calls onSelectPlan with plan id when CTA is clicked', () => {
     <PlansPanel filters={filters} plans={plans} onSelectPlan={onSelectPlan} />
   );
 
-  const buttons = screen.getAllByRole('button', { name: 'Assine agora' });
+  const buttons = screen.getAllByRole('button', { name: 'Subscribe' });
   fireEvent.click(buttons[0]);
 
   expect(onSelectPlan).toHaveBeenCalledTimes(1);
@@ -139,21 +138,17 @@ test('supports controlled filter mode', () => {
   expect(screen.getByText('Pro')).toBeInTheDocument();
   expect(screen.queryByText('Basic')).toBeNull();
 
-  // Click "Anual" triggers onFilterChange
-  fireEvent.click(screen.getByText('Anual'));
+  // Click "Yearly" triggers onFilterChange
+  fireEvent.click(screen.getByText('Yearly'));
   expect(onFilterChange).toHaveBeenCalledWith('interval', 'yearly');
 });
 
 test('renders all plans when no filters are provided', () => {
   render(<PlansPanel plans={plans} />);
 
-  // All plans have no filter match required when no filters exist
-  // But since filterValues is empty object, all plans whose filterValues entries
-  // don't match anything are shown.
-  // Plans with filterValues are only filtered when there are active filter values.
-  // With no filters, activeFilterValues = {}, so Object.entries([]) = [], every() = true
+  // With no filters, activeFilterValues = {}, so every() over empty entries = true
   expect(screen.getByText('Basic')).toBeInTheDocument();
-  expect(screen.getByText('Basic Anual')).toBeInTheDocument();
+  expect(screen.getByText('Basic Annual')).toBeInTheDocument();
   expect(screen.getByText('Pro')).toBeInTheDocument();
 });
 
@@ -162,8 +157,8 @@ test('renders plans without filterValues always', () => {
     {
       id: 'plan_universal',
       title: 'Universal',
-      price: { value: 'R$ 0', interval: '/mês' },
-      buttonProps: { label: 'Comece grátis' },
+      price: { value: 'R$ 0', interval: '/month' },
+      buttonProps: { label: 'Start free' },
     },
   ];
 
@@ -180,7 +175,7 @@ test('merges plan buttonProps onClick with onSelectPlan', () => {
     {
       id: 'plan_test',
       title: 'Test Plan',
-      price: { value: 'R$ 10', interval: '/mês' },
+      price: { value: 'R$ 10', interval: '/month' },
       buttonProps: { label: 'Click me', onClick: planOnClick },
     },
   ];
