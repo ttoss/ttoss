@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.7 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
 ## 0.8.6 (2026-04-01)
 
 **Note:** Version bump only for package @ttoss/logger

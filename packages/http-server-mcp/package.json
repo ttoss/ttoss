@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "license": "MIT",
   "author": "ttoss",
