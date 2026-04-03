@@ -42,6 +42,74 @@ export const Example = () => (
 );
 ```
 
+### PlansPanel
+
+A higher-level component that renders a grid of `PlanCard` components with optional multi-dimensional `SegmentedControl` filters. Plans are shown only when they match all active filter values.
+
+```tsx
+import { PlansPanel } from '@ttoss/react-billing';
+
+export const PricingPage = () => (
+  <PlansPanel
+    filters={[
+      {
+        id: 'interval',
+        label: 'Frequência',
+        options: [
+          { label: 'Mensal', value: 'monthly' },
+          { label: 'Anual', value: 'yearly' },
+        ],
+        defaultValue: 'monthly',
+      },
+    ]}
+    plans={[
+      {
+        id: 'plan_basic_monthly',
+        filterValues: { interval: 'monthly' },
+        title: 'Basic',
+        price: {
+          value: 'R$ 29',
+          interval: '/mês',
+          description: 'Cobrado mensalmente',
+        },
+        features: ['10 propostas/mês'],
+        buttonProps: { label: 'Assine agora' },
+      },
+      {
+        id: 'plan_basic_yearly',
+        filterValues: { interval: 'yearly' },
+        title: 'Basic',
+        price: {
+          value: 'R$ 24',
+          interval: '/mês',
+          description: 'Cobrado anualmente',
+        },
+        features: ['10 propostas/mês'],
+        buttonProps: { label: 'Assine agora' },
+      },
+    ]}
+    activePlanId="plan_basic_monthly"
+    onSelectPlan={(planId) => console.log('Selected:', planId)}
+  />
+);
+```
+
+Controlled mode (parent owns filter state):
+
+```tsx
+const [filterValues, setFilterValues] = React.useState({ interval: 'monthly' });
+
+<PlansPanel
+  filters={filters}
+  plans={plans}
+  filterValues={filterValues}
+  onFilterChange={(id, value) =>
+    setFilterValues((prev) => ({ ...prev, [id]: value }))
+  }
+  onSelectPlan={(planId) => checkout(planId)}
+/>;
+```
+
 ### SubscriptionCard
 
 ```tsx
@@ -76,5 +144,6 @@ export const Example = () => (
 ## Exports
 
 - `PlanCard`
-- `SubscriptionCard`
-- Types: `PlanCardProps`, `PlanCardVariant`, `PlanCardPrice`, `PlanCardMetadata`, `PlanCardButtonProps`, `PlanCardMetadataSlotService` (and related slot types)
+- `PlansPanel`
+- `SubscriptionPanel`
+- Types: `PlanCardProps`, `PlanCardVariant`, `PlanCardPrice`, `PlanCardMetadata`, `PlanCardButtonProps`, `PlanCardMetadataSlotService` (and related slot types), `PlansPanelProps`, `PlansPanelPlan`, `PlansPanelFilter`, `PlansPanelFilterOption`
