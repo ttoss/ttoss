@@ -3,6 +3,34 @@ import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 import type { PlansPanelFilter, PlansPanelPlan } from '../../../src';
 import { PlansPanel } from '../../../src';
 
+// Mock PlanCard with a lightweight stub that exposes variant and title as data attributes
+// so tests can assert which visual variant is applied.
+jest.mock('../../../src/components/planCard/PlanCard', () => {
+  return {
+    PlanCard: ({
+      variant,
+      title,
+      buttonProps,
+    }: {
+      variant?: string;
+      title: string;
+      buttonProps?: { label?: string; onClick?: (e: unknown) => void };
+    }) => {
+      return (
+        <div
+          data-testid={`plan-card-${title}`}
+          data-variant={variant ?? 'primary'}
+        >
+          <span>{title}</span>
+          {buttonProps?.label && (
+            <button onClick={buttonProps.onClick}>{buttonProps.label}</button>
+          )}
+        </div>
+      );
+    },
+  };
+});
+
 const filters: PlansPanelFilter[] = [
   {
     id: 'userType',
@@ -94,8 +122,8 @@ test('filters plans when filter value changes', () => {
   expect(screen.queryByText('Pro')).toBeNull();
 });
 
-test('highlights active plan with secondary variant', () => {
-  const { container } = render(
+test('applies secondary variant to the active plan card', () => {
+  render(
     <PlansPanel
       filters={filters}
       plans={plans}
@@ -103,9 +131,9 @@ test('highlights active plan with secondary variant', () => {
     />
   );
 
-  // The active plan renders (variant is applied internally)
-  expect(screen.getByText('Basic')).toBeInTheDocument();
-  expect(container.querySelector('[data-plancard-active]')).toBeNull();
+  // Active plan card receives variant="secondary"
+  const activeCard = screen.getByTestId('plan-card-Basic');
+  expect(activeCard).toHaveAttribute('data-variant', 'secondary');
 });
 
 test('calls onSelectPlan with plan id when CTA is clicked', () => {

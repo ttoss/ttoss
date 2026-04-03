@@ -54,10 +54,10 @@ export const PricingPage = () => (
     filters={[
       {
         id: 'interval',
-        label: 'Frequência',
+        label: 'Billing frequency',
         options: [
-          { label: 'Mensal', value: 'monthly' },
-          { label: 'Anual', value: 'yearly' },
+          { label: 'Monthly', value: 'monthly' },
+          { label: 'Yearly', value: 'yearly' },
         ],
         defaultValue: 'monthly',
       },
@@ -68,24 +68,24 @@ export const PricingPage = () => (
         filterValues: { interval: 'monthly' },
         title: 'Basic',
         price: {
-          value: 'R$ 29',
-          interval: '/mês',
-          description: 'Cobrado mensalmente',
+          value: '$29',
+          interval: '/month',
+          description: 'Billed monthly',
         },
-        features: ['10 propostas/mês'],
-        buttonProps: { label: 'Assine agora' },
+        features: ['10 proposals/month'],
+        buttonProps: { label: 'Subscribe' },
       },
       {
         id: 'plan_basic_yearly',
         filterValues: { interval: 'yearly' },
         title: 'Basic',
         price: {
-          value: 'R$ 24',
-          interval: '/mês',
-          description: 'Cobrado anualmente',
+          value: '$24',
+          interval: '/month',
+          description: 'Billed annually',
         },
-        features: ['10 propostas/mês'],
-        buttonProps: { label: 'Assine agora' },
+        features: ['10 proposals/month'],
+        buttonProps: { label: 'Subscribe' },
       },
     ]}
     activePlanId="plan_basic_monthly"
@@ -110,13 +110,13 @@ const [filterValues, setFilterValues] = React.useState({ interval: 'monthly' });
 />;
 ```
 
-### SubscriptionCard
+### SubscriptionPanel
 
 ```tsx
-import { SubscriptionCard } from '@ttoss/react-billing';
+import { SubscriptionPanel } from '@ttoss/react-billing';
 
 export const Example = () => (
-  <SubscriptionCard
+  <SubscriptionPanel
     planName="Pro"
     price={{ value: 'R$ 99,00', interval: 'month' }}
     status={{ status: 'active', interval: 'Monthly' }}

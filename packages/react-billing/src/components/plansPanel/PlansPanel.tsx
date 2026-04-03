@@ -116,8 +116,13 @@ export const PlansPanel = ({
                 )}
                 <SegmentedControl
                   options={filter.options}
-                  value={activeFilterValues[filter.id]}
-                  defaultValue={filter.defaultValue}
+                  value={
+                    isControlled
+                      ? (controlledFilterValues![filter.id] ??
+                        filter.defaultValue)
+                      : activeFilterValues[filter.id]
+                  }
+                  defaultValue={isControlled ? undefined : filter.defaultValue}
                   onChange={(value) => {
                     return handleFilterChange(filter.id, value);
                   }}
