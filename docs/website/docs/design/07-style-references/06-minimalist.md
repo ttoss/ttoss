@@ -1,1 +1,5 @@
+---
+title: Minimalism
+---
+
 > under construction

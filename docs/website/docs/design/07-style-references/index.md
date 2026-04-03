@@ -1,3 +1,7 @@
+---
+title: Style References
+---
+
 # Style References
 
 Style references document **visual languages**, not semantic meaning.
