@@ -1,24 +1,5 @@
 ---
-
-title: Flat 2.0
-status: stable
-category: visual-language-reference
-maturity: strong-reference
-recommended-for-foundation: yes
-recommended-for-built-in-themes: yes
-influences:
-
-* Flat
-* Swiss Style / International Typographic Style
-* Modernism
-* Microsoft Metro / authentically digital design
-* Material-style layered interfaces
-  related-archetypes:
-* Enterprise Neutral
-* Soft Product
-* Technical Precision
-* Expressive Premium
-
+title: Flat2
 ---
 
 # Flat 2.0
