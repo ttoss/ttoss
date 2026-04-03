@@ -100,10 +100,10 @@ export const PlansPanel = ({
   return (
     <Stack sx={{ gap: '6', width: 'full' }}>
       {filters.length > 0 && (
-        <Stack sx={{ gap: '4' }}>
+        <Stack sx={{ gap: '4', alignItems: 'center' }}>
           {filters.map((filter) => {
             return (
-              <Stack key={filter.id} sx={{ gap: '2' }}>
+              <Stack key={filter.id} sx={{ gap: '2', alignItems: 'center' }}>
                 {filter.label && (
                   <Text
                     sx={{
