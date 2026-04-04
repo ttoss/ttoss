@@ -43,7 +43,7 @@ A well-structured system makes the flow explicit:
 
 **Core values → Semantic tokens → Components → Patterns → Applications**
 
-When this chain is clear, the [system scales](https://ttoss.dev/docs/design/design-system-v2/). When it is not, every implementation becomes a local interpretation.
+When this chain is clear, the [system scales](https://ttoss.dev/docs/design/design-system/). When it is not, every implementation becomes a local interpretation.
 
 ## Why systems break without it
 

@@ -13,7 +13,6 @@
 export const DATA_THEME_ATTR = 'data-tt-theme';
 export const DATA_MODE_ATTR = 'data-tt-mode';
 export const DEFAULT_STORAGE_KEY = 'tt-theme';
-const DEFAULT_THEME_ID = 'default';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,7 +24,11 @@ const DEFAULT_THEME_ID = 'default';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 /** Valid values for the `mode` field. Used to sanitize localStorage input. */
-export const VALID_MODES: ThemeMode[] = ['light', 'dark', 'system'];
+export const VALID_MODES = [
+  'light',
+  'dark',
+  'system',
+] as const satisfies ThemeMode[];
 
 /**
  * Resolved mode — always `'light'` or `'dark'` (never `'system'`).
@@ -36,7 +39,6 @@ export type ResolvedMode = 'light' | 'dark';
  * Snapshot of the current theme state.
  */
 export interface ThemeState {
-  themeId: string;
   mode: ThemeMode;
   resolvedMode: ResolvedMode;
 }
@@ -45,7 +47,7 @@ export interface ThemeState {
  * Configuration for `createThemeRuntime()`.
  */
 export interface ThemeRuntimeConfig {
-  /** Theme to use when no persisted value is found. @default 'default' */
+  /** Theme identifier written to `data-tt-theme`. Provide only for MFE / multi-theme CSS scoping. When omitted, `data-tt-theme` is not written to the DOM. */
   defaultTheme?: string;
   /** Mode to use when no persisted value is found. @default 'system' */
   defaultMode?: ThemeMode;
@@ -60,7 +62,6 @@ export interface ThemeRuntimeConfig {
  */
 export interface ThemeRuntime {
   getState: () => ThemeState;
-  setTheme: (themeId: string) => void;
   setMode: (mode: ThemeMode) => void;
   subscribe: (listener: (state: ThemeState) => void) => () => void;
   destroy: () => void;
@@ -70,24 +71,19 @@ export interface ThemeRuntime {
 // Helpers (module-private)
 // ---------------------------------------------------------------------------
 
-const readStorage = (
-  key: string
-): { themeId?: string; mode?: ThemeMode } | null => {
+const readStorage = (key: string): { mode?: ThemeMode } | null => {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) {
       return null;
     }
-    return JSON.parse(raw) as { themeId?: string; mode?: ThemeMode };
+    return JSON.parse(raw) as { mode?: ThemeMode };
   } catch {
     return null;
   }
 };
 
-const writeStorage = (
-  key: string,
-  data: { themeId: string; mode: ThemeMode }
-): void => {
+const writeStorage = (key: string, data: { mode: ThemeMode }): void => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch {
@@ -119,16 +115,15 @@ const resolveMode = (mode: ThemeMode): ResolvedMode => {
 /**
  * Creates a framework-agnostic runtime that manages theme switching.
  *
- * - Sets `data-tt-theme` and `data-tt-mode` attributes on the root element.
+ * - Sets `data-tt-mode` (and `data-tt-theme` when `defaultTheme` is provided) attributes on the root element.
  * - Updates `style.colorScheme` for native dark/light UI.
- * - Persists `{ themeId, mode }` to localStorage.
+ * - Persists `{ mode }` to localStorage.
  * - Listens to `prefers-color-scheme` media query when mode is `'system'`.
  * - Pub/sub pattern for state changes.
  *
  * @example
  * ```ts
- * const runtime = createThemeRuntime({ defaultTheme: 'bruttal', defaultMode: 'dark' });
- * runtime.setTheme('oca');
+ * const runtime = createThemeRuntime({ defaultMode: 'dark' });
  * runtime.setMode('system');
  * const unsub = runtime.subscribe(console.log);
  * runtime.destroy();
@@ -138,18 +133,19 @@ export const createThemeRuntime = (
   config: ThemeRuntimeConfig = {}
 ): ThemeRuntime => {
   const {
-    defaultTheme = DEFAULT_THEME_ID,
+    defaultTheme,
     defaultMode = 'system',
     storageKey = DEFAULT_STORAGE_KEY,
     root = document.documentElement,
   } = config;
 
   const listeners = new Set<(state: ThemeState) => void>();
+  let destroyed = false;
 
   // --- Read persisted state ------------------------------------------------
 
   const stored = readStorage(storageKey);
-  let themeId = stored?.themeId ?? defaultTheme;
+  const themeId = defaultTheme;
 
   const storedMode = stored?.mode;
   let mode: ThemeMode =
@@ -159,31 +155,47 @@ export const createThemeRuntime = (
   // --- DOM helpers ---------------------------------------------------------
 
   const apply = (): void => {
-    root.setAttribute(DATA_THEME_ATTR, themeId);
+    if (themeId) {
+      root.setAttribute(DATA_THEME_ATTR, themeId);
+    } else {
+      root.removeAttribute(DATA_THEME_ATTR);
+    }
     root.setAttribute(DATA_MODE_ATTR, resolvedMode);
     root.style.colorScheme = resolvedMode;
   };
 
-  const persist = (): void => {
-    writeStorage(storageKey, { themeId, mode });
-  };
-
   const getState = (): ThemeState => {
     return {
-      themeId,
       mode,
       resolvedMode,
     };
   };
 
-  const notify = (): void => {
+  // --- Centralized state transition ----------------------------------------
+
+  let prevSnapshot = `${mode}\0${resolvedMode}`;
+
+  const applyState = ({ persist }: { persist: boolean }): void => {
+    const snapshot = `${mode}\0${resolvedMode}`;
+
+    if (snapshot === prevSnapshot) {
+      return;
+    }
+
+    prevSnapshot = snapshot;
+    apply();
+
+    if (persist) {
+      writeStorage(storageKey, { mode });
+    }
+
     const state = getState();
     for (const listener of listeners) {
       listener(state);
     }
   };
 
-  // --- System mode listener ------------------------------------------------
+  // --- Lazy system mode listener -------------------------------------------
 
   const mediaQuery =
     typeof window !== 'undefined'
@@ -191,30 +203,33 @@ export const createThemeRuntime = (
       : null;
 
   const onSystemChange = (): void => {
-    if (mode === 'system') {
-      resolvedMode = getSystemMode();
-      apply();
-      notify();
+    if (destroyed || mode !== 'system') return;
+    resolvedMode = getSystemMode();
+    applyState({ persist: false });
+  };
+
+  const syncMediaListener = (active: boolean): void => {
+    if (!mediaQuery) {
+      return;
+    }
+    mediaQuery.removeEventListener('change', onSystemChange);
+    if (active) {
+      mediaQuery.addEventListener('change', onSystemChange);
     }
   };
 
-  mediaQuery?.addEventListener('change', onSystemChange);
+  syncMediaListener(mode === 'system');
 
   // --- Public API ----------------------------------------------------------
 
-  const setTheme = (newThemeId: string): void => {
-    themeId = newThemeId;
-    apply();
-    persist();
-    notify();
-  };
-
   const setMode = (newMode: ThemeMode): void => {
+    if (destroyed || !VALID_MODES.includes(newMode)) {
+      return;
+    }
     mode = newMode;
     resolvedMode = resolveMode(mode);
-    apply();
-    persist();
-    notify();
+    syncMediaListener(mode === 'system');
+    applyState({ persist: true });
   };
 
   const subscribe = (listener: (state: ThemeState) => void): (() => void) => {
@@ -225,7 +240,8 @@ export const createThemeRuntime = (
   };
 
   const destroy = (): void => {
-    mediaQuery?.removeEventListener('change', onSystemChange);
+    destroyed = true;
+    syncMediaListener(false);
     listeners.clear();
   };
 
@@ -233,5 +249,5 @@ export const createThemeRuntime = (
 
   apply();
 
-  return { getState, setTheme, setMode, subscribe, destroy };
+  return { getState, setMode, subscribe, destroy };
 };
