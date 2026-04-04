@@ -36,20 +36,26 @@ export { handler, readOnlyHandler } from '@ttoss/lambda-postgres-query';
 
 ### Environment Variables
 
-Configure the following environment variables:
+Configure the following environment variables for the general-purpose Lambda:
 
 ```env
 DATABASE_NAME=your_database_name
 DATABASE_USERNAME=your_username
 DATABASE_PASSWORD=your_password
 DATABASE_HOST=your_database_host
-DATABASE_HOST_READ_ONLY=your_read_only_host
 DATABASE_PORT=5432
 SECURITY_GROUP_IDS=sg-xxxxx,sg-yyyyy
 SUBNET_IDS=subnet-xxxxx,subnet-yyyyy
 ```
 
-For the dedicated read-only Lambda (`readOnlyHandler`), configure these additional variables:
+For the dedicated read-only Lambda (`readOnlyHandler`), define at least one `*_READ_ONLY` variable. Any read-only variable that is not set falls back to the corresponding main variable. For example, to point only the host to a read replica:
+
+```env
+DATABASE_HOST_READ_ONLY=your_read_only_host
+# DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD are reused automatically
+```
+
+To use a fully isolated read-only database user:
 
 ```env
 DATABASE_NAME_READ_ONLY=your_read_only_database_name
@@ -58,6 +64,8 @@ DATABASE_PASSWORD_READ_ONLY=your_read_only_password
 DATABASE_HOST_READ_ONLY=your_read_only_host
 DATABASE_PORT=5432
 ```
+
+> **Security note:** If none of the `*_READ_ONLY` variables are set, the read-only Lambda throws an error at invocation time.
 
 ### Deployment
 
@@ -106,12 +114,6 @@ const result = await query({
   values: [userId],
 });
 
-// Use read-only connection
-const result = await query({
-  text: 'SELECT * FROM users',
-  readOnly: true, // Defaults to true
-});
-
 // Disable automatic camelCase conversion
 const result = await query({
   text: 'SELECT * FROM users',
@@ -124,6 +126,12 @@ const result = await query({
   lambdaPostgresQueryFunction: 'custom-function-name',
 });
 ```
+
+## Security: Isolating Read-Only Access
+
+Deploying a dedicated `readOnlyHandler` Lambda lets you enforce the principle of least privilege at the AWS IAM level. Services that only need to read data (dashboards, reports, public APIs) receive IAM permissions to invoke **only** the read-only Lambda — they have no way to invoke the general-purpose Lambda and cannot perform write operations, regardless of the SQL they send.
+
+This means a compromised or misconfigured service can never corrupt or delete data; it is limited to SELECT queries enforced both by the database (`BEGIN READ ONLY` transaction) and by the IAM boundary.
 
 ## API Reference
 
@@ -151,7 +159,6 @@ Accepts either a SQL string or an options object extending [`QueryConfig`](https
 
 - `text` (string): SQL query text
 - `values` (array, optional): Query parameter values
-- `readOnly` (boolean, optional): Use read-only database host if available. Default: `true`
 - `lambdaPostgresQueryFunction` (string, optional): Name of the query Lambda function. Default: `LAMBDA_POSTGRES_QUERY_FUNCTION` environment variable
 - `camelCaseKeys` (boolean, optional): Convert snake_case column names to camelCase. Default: `true`
 
@@ -161,8 +168,8 @@ A [`QueryResult`](https://node-postgres.com/apis/result) object with transformed
 
 ### `handler`
 
-AWS Lambda handler function for processing database queries within the VPC. Uses `DATABASE_NAME`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `DATABASE_HOST`, and optionally `DATABASE_HOST_READ_ONLY` when `readOnly: true`.
+AWS Lambda handler function for processing database queries within the VPC. Uses `DATABASE_NAME`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `DATABASE_HOST`, and `DATABASE_PORT`.
 
 ### `readOnlyHandler`
 
-AWS Lambda handler function for processing **read-only** (SELECT-only) database queries within the VPC. Uses exclusively the dedicated read-only environment variables: `DATABASE_NAME_READ_ONLY`, `DATABASE_USERNAME_READ_ONLY`, `DATABASE_PASSWORD_READ_ONLY`, and `DATABASE_HOST_READ_ONLY`. Throws an error if a non-SELECT query is attempted.
+AWS Lambda handler function for processing **read-only** database queries within the VPC. Enforces read-only access via a PostgreSQL `BEGIN READ ONLY` transaction. Uses dedicated `*_READ_ONLY` environment variables where defined, falling back to the main variables for any that are not set. Throws an error at invocation time if none of the `*_READ_ONLY` variables are defined.

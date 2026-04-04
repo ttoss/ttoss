@@ -122,7 +122,6 @@ export const createLambdaPostgresQueryTemplate = ({
           Environment: {
             Variables: {
               DATABASE_HOST: { Ref: 'DatabaseHost' },
-              DATABASE_HOST_READ_ONLY: { Ref: 'DatabaseHostReadOnly' },
               DATABASE_NAME: { Ref: 'DatabaseName' },
               DATABASE_USERNAME: { Ref: 'DatabaseUsername' },
               DATABASE_PASSWORD: { Ref: 'DatabasePassword' },
@@ -160,6 +159,10 @@ export const createLambdaPostgresQueryTemplate = ({
           Runtime: 'nodejs22.x',
           Environment: {
             Variables: {
+              DATABASE_HOST: { Ref: 'DatabaseHost' },
+              DATABASE_NAME: { Ref: 'DatabaseName' },
+              DATABASE_USERNAME: { Ref: 'DatabaseUsername' },
+              DATABASE_PASSWORD: { Ref: 'DatabasePassword' },
               DATABASE_HOST_READ_ONLY: { Ref: 'DatabaseHostReadOnly' },
               DATABASE_NAME_READ_ONLY: { Ref: 'DatabaseNameReadOnly' },
               DATABASE_USERNAME_READ_ONLY: {

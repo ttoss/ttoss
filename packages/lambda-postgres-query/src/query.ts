@@ -11,7 +11,6 @@ const lambdaClient = new LambdaClient();
 const textDecoder = new TextDecoder('utf-8');
 
 export type QueryParams = {
-  readOnly?: boolean;
   lambdaPostgresQueryFunction?: string;
   camelCaseKeys?: boolean;
 } & QueryConfig;
@@ -28,7 +27,6 @@ export const query = async <Rows extends QueryResultRow = any>(
 ) => {
   try {
     const {
-      readOnly = true,
       // eslint-disable-next-line turbo/no-undeclared-env-vars
       lambdaPostgresQueryFunction = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
       camelCaseKeys = true,
@@ -41,7 +39,7 @@ export const query = async <Rows extends QueryResultRow = any>(
 
     const input: InvokeCommandInput = {
       FunctionName: lambdaPostgresQueryFunction,
-      Payload: JSON.stringify({ readOnly, ...pgParams }),
+      Payload: JSON.stringify({ ...pgParams }),
     };
 
     const { Payload } = await lambdaClient.send(new InvokeCommand(input));

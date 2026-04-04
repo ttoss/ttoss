@@ -4,18 +4,28 @@ import { Client } from 'pg';
 
 import type { QueryParams } from '../query';
 
-const database = process.env.DATABASE_NAME_READ_ONLY;
-const username = process.env.DATABASE_USERNAME_READ_ONLY;
-const password = process.env.DATABASE_PASSWORD_READ_ONLY;
-const host = process.env.DATABASE_HOST_READ_ONLY;
+const databaseReadOnly = process.env.DATABASE_NAME_READ_ONLY;
+const usernameReadOnly = process.env.DATABASE_USERNAME_READ_ONLY;
+const passwordReadOnly = process.env.DATABASE_PASSWORD_READ_ONLY;
+const hostReadOnly = process.env.DATABASE_HOST_READ_ONLY;
 const port = process.env.DATABASE_PORT;
 
 export const readOnlyHandler: Handler<QueryParams> = async (event) => {
-  if (!database || !username || !password || !host) {
+  if (
+    !databaseReadOnly &&
+    !usernameReadOnly &&
+    !passwordReadOnly &&
+    !hostReadOnly
+  ) {
     throw new Error(
-      'Missing required read-only environment variables: DATABASE_NAME_READ_ONLY, DATABASE_USERNAME_READ_ONLY, DATABASE_PASSWORD_READ_ONLY, DATABASE_HOST_READ_ONLY'
+      'At least one read-only environment variable must be defined: DATABASE_NAME_READ_ONLY, DATABASE_USERNAME_READ_ONLY, DATABASE_PASSWORD_READ_ONLY, DATABASE_HOST_READ_ONLY'
     );
   }
+
+  const database = databaseReadOnly || process.env.DATABASE_NAME;
+  const username = usernameReadOnly || process.env.DATABASE_USERNAME;
+  const password = passwordReadOnly || process.env.DATABASE_PASSWORD;
+  const host = hostReadOnly || process.env.DATABASE_HOST;
 
   try {
     const client = new Client({
