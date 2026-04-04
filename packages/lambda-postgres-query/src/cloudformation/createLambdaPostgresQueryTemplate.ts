@@ -61,6 +61,7 @@ export const createLambdaPostgresQueryTemplate = ({
       DatabasePasswordReadOnly: {
         Type: 'String',
         Description: 'Database password for read-only access.',
+        NoEcho: true,
       },
       LambdaS3Bucket: {
         Type: 'String',

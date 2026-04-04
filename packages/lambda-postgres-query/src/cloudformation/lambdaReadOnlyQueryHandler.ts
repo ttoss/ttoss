@@ -11,10 +11,10 @@ const host = process.env.DATABASE_HOST_READ_ONLY;
 const port = process.env.DATABASE_PORT;
 
 export const readOnlyHandler: Handler<QueryParams> = async (event) => {
-  const queryText = typeof event === 'string' ? event : event.text;
-
-  if (queryText && !/^\s*SELECT\s/i.test(queryText)) {
-    throw new Error('Read-only Lambda only supports SELECT queries.');
+  if (!database || !username || !password || !host) {
+    throw new Error(
+      'Missing required read-only environment variables: DATABASE_NAME_READ_ONLY, DATABASE_USERNAME_READ_ONLY, DATABASE_PASSWORD_READ_ONLY, DATABASE_HOST_READ_ONLY'
+    );
   }
 
   try {
@@ -29,8 +29,16 @@ export const readOnlyHandler: Handler<QueryParams> = async (event) => {
     await client.connect();
 
     try {
-      const res = await client.query(event);
-      return res;
+      await client.query('BEGIN READ ONLY');
+
+      try {
+        const res = await client.query(event);
+        await client.query('COMMIT');
+        return res;
+      } catch (queryError) {
+        await client.query('ROLLBACK');
+        throw queryError;
+      }
     } finally {
       await client.end();
     }
