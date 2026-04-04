@@ -203,7 +203,7 @@ export const createThemeRuntime = (
       : null;
 
   const onSystemChange = (): void => {
-    if (destroyed) return;
+    if (destroyed || mode !== 'system') return;
     resolvedMode = getSystemMode();
     applyState({ persist: false });
   };

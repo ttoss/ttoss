@@ -148,7 +148,7 @@ describe('createThemeRuntime', () => {
       (window.matchMedia as jest.Mock).mockImplementation(matchMediaMockImpl());
     });
 
-    test('does not update when mode is explicit (not system)', () => {
+    test('does not update when mode switches away from system before handler fires', () => {
       let changeHandler: (() => void) | undefined;
       const captureListener = jest.fn((_event: string, handler: () => void) => {
         changeHandler = handler;
@@ -157,15 +157,29 @@ describe('createThemeRuntime', () => {
         matchMediaMockImpl({ addEventListener: captureListener })
       );
 
-      runtime = createThemeRuntime({ defaultMode: 'light' });
+      // Start in system mode so the listener IS attached
+      runtime = createThemeRuntime({ defaultMode: 'system' });
       const states: ThemeState[] = [];
       runtime.subscribe((s: ThemeState) => {
         return states.push(s);
       });
 
-      // Fire the change handler — should be ignored since mode is 'light'
+      expect(changeHandler).toBeDefined();
+
+      // Switch away from system (simulates user picking 'light' before queued event fires)
+      runtime.setMode('light');
+      states.length = 0; // clear the notification from setMode
+
+      // Simulate system switching to dark
+      (window.matchMedia as jest.Mock).mockImplementation(
+        matchMediaMockImpl({ dark: true })
+      );
+
+      // Fire the stale queued change handler — should be a no-op
       changeHandler?.();
       expect(states).toHaveLength(0);
+      expect(runtime.getState().mode).toBe('light');
+      expect(runtime.getState().resolvedMode).toBe('light');
 
       // Restore default mock
       (window.matchMedia as jest.Mock).mockImplementation(matchMediaMockImpl());
