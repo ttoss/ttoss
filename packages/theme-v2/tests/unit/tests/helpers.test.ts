@@ -1,13 +1,15 @@
+import { baseBundle } from '../../../src/baseBundle';
+import { baseTheme as defaultTheme } from '../../../src/baseTheme';
+import { buildTheme } from '../../../src/createTheme';
 import {
+  deepMerge,
   extractRefPath,
+  flattenAndResolve,
   flattenObject,
+  isPlainObject,
   isTokenRef,
-  toChakraRef,
-  toCssVarName,
-  toCssVarRef,
-  wrapAndTransformRefs,
-  wrapValues,
-} from '../../../src/adapters/helpers';
+} from '../../../src/roots/helpers';
+import type { ThemeTokensV2 } from '../../../src/Types';
 
 // ---------------------------------------------------------------------------
 // Token reference detection
@@ -15,7 +17,7 @@ import {
 
 describe('isTokenRef', () => {
   test('recognizes valid token refs', () => {
-    expect(isTokenRef('{core.colors.brand.main}')).toBe(true);
+    expect(isTokenRef('{core.colors.brand.500}')).toBe(true);
     expect(isTokenRef('{semantic.spacing.gap.stack.xs}')).toBe(true);
   });
 
@@ -32,164 +34,33 @@ describe('isTokenRef', () => {
 
 describe('extractRefPath', () => {
   test('strips braces from ref', () => {
-    expect(extractRefPath('{core.colors.brand.main}')).toBe(
-      'core.colors.brand.main'
+    expect(extractRefPath('{core.colors.brand.500}')).toBe(
+      'core.colors.brand.500'
     );
   });
 });
 
 // ---------------------------------------------------------------------------
-// Chakra reference transformation
+// isPlainObject
 // ---------------------------------------------------------------------------
 
-describe('toChakraRef', () => {
-  test('transforms core.colors ref', () => {
-    expect(toChakraRef('{core.colors.brand.accent}')).toBe(
-      '{colors.brand.accent}'
-    );
+describe('isPlainObject', () => {
+  test('returns true for plain objects', () => {
+    expect(isPlainObject({})).toBe(true);
+    expect(isPlainObject({ a: 1 })).toBe(true);
   });
 
-  test('transforms core.font.family ref', () => {
-    expect(toChakraRef('{core.font.family.sans}')).toBe('{fonts.sans}');
-  });
-
-  test('transforms core.font.weight ref', () => {
-    expect(toChakraRef('{core.font.weight.bold}')).toBe('{fontWeights.bold}');
-  });
-
-  test('transforms core.font.leading ref', () => {
-    expect(toChakraRef('{core.font.leading.tight}')).toBe(
-      '{lineHeights.tight}'
-    );
-  });
-
-  test('transforms core.font.tracking ref', () => {
-    expect(toChakraRef('{core.font.tracking.normal}')).toBe(
-      '{letterSpacings.normal}'
-    );
-  });
-
-  test('transforms core.elevation.level ref', () => {
-    expect(toChakraRef('{core.elevation.level.3}')).toBe('{shadows.3}');
-  });
-
-  test('transforms core.type.ramp ref', () => {
-    expect(toChakraRef('{core.type.ramp.display.5}')).toBe(
-      '{fontSizes.display.5}'
-    );
-  });
-
-  test('transforms core.space ref', () => {
-    expect(toChakraRef('{core.space.2}')).toBe('{spacing.2}');
-  });
-
-  test('transforms core.radii ref', () => {
-    expect(toChakraRef('{core.radii.md}')).toBe('{radii.md}');
-  });
-
-  test('transforms core.borders.width ref', () => {
-    expect(toChakraRef('{core.borders.width.hairline}')).toBe(
-      '{borderWidths.hairline}'
-    );
-  });
-
-  test('transforms core.borders.style ref', () => {
-    expect(toChakraRef('{core.borders.style.solid}')).toBe(
-      '{borderStyles.solid}'
-    );
-  });
-
-  test('transforms core.motion.duration ref', () => {
-    expect(toChakraRef('{core.motion.duration.xs}')).toBe('{durations.xs}');
-  });
-
-  test('transforms core.motion.easing ref', () => {
-    expect(toChakraRef('{core.motion.easing.standard}')).toBe(
-      '{easings.standard}'
-    );
-  });
-
-  test('transforms core.opacity ref', () => {
-    expect(toChakraRef('{core.opacity.50}')).toBe('{opacity.50}');
-  });
-
-  test('transforms core.zIndex ref', () => {
-    expect(toChakraRef('{core.zIndex.modal}')).toBe('{zIndex.modal}');
-  });
-
-  test('transforms semantic self-references', () => {
-    expect(toChakraRef('{semantic.spacing.gap.stack.xs}')).toBe(
-      '{spacing.gap.stack.xs}'
-    );
-  });
-
-  test('returns ref as-is when no prefix matches', () => {
-    expect(toChakraRef('{unknown.path}')).toBe('{unknown.path}');
+  test('returns false for non-plain-object values', () => {
+    expect(isPlainObject(null)).toBe(false);
+    expect(isPlainObject([])).toBe(false);
+    expect(isPlainObject('string')).toBe(false);
+    expect(isPlainObject(42)).toBe(false);
+    expect(isPlainObject(undefined)).toBe(false);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Tailwind CSS variable names
-// ---------------------------------------------------------------------------
-
-describe('toCssVarName', () => {
-  test('converts core color paths', () => {
-    expect(toCssVarName('core.colors.brand.main')).toBe(
-      '--tt-color-brand-main'
-    );
-  });
-
-  test('converts core space paths', () => {
-    expect(toCssVarName('core.space.2')).toBe('--tt-space-2');
-  });
-
-  test('converts core radii paths', () => {
-    expect(toCssVarName('core.radii.md')).toBe('--tt-radii-md');
-  });
-
-  test('converts core shadow paths', () => {
-    expect(toCssVarName('core.elevation.level.3')).toBe('--tt-shadow-3');
-  });
-
-  test('converts core font paths', () => {
-    expect(toCssVarName('core.font.family.sans')).toBe('--tt-font-sans');
-  });
-
-  test('converts semantic color paths', () => {
-    expect(
-      toCssVarName('semantic.colors.action.primary.background.default')
-    ).toBe('--tt-action-primary-background-default');
-  });
-
-  test('converts semantic elevation paths', () => {
-    expect(toCssVarName('semantic.elevation.flat')).toBe('--tt-elevation-flat');
-  });
-
-  test('converts semantic radii paths (scoped to avoid collision)', () => {
-    expect(toCssVarName('semantic.radii.surface')).toBe(
-      '--tt-radii-semantic-surface'
-    );
-  });
-
-  test('falls back to full path for unknown prefixes', () => {
-    expect(toCssVarName('unknown.foo.bar')).toBe('--tt-unknown-foo-bar');
-  });
-});
-
-describe('toCssVarRef', () => {
-  test('converts token ref to var() reference', () => {
-    expect(toCssVarRef('{core.colors.brand.accent}')).toBe(
-      'var(--tt-color-brand-accent)'
-    );
-  });
-
-  test('converts semantic ref to var() reference', () => {
-    expect(toCssVarRef('{core.radii.md}')).toBe('var(--tt-radii-md)');
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Object utilities
+// flattenObject
 // ---------------------------------------------------------------------------
 
 describe('flattenObject', () => {
@@ -214,43 +85,166 @@ describe('flattenObject', () => {
   });
 });
 
-describe('wrapValues', () => {
-  test('wraps leaf values with { value }', () => {
-    const input = { a: 'x', b: { c: 42 } };
-    expect(wrapValues(input)).toEqual({
-      a: { value: 'x' },
-      b: { c: { value: 42 } },
-    });
+// ---------------------------------------------------------------------------
+// deepMerge
+// ---------------------------------------------------------------------------
+
+describe('deepMerge', () => {
+  test('returns base unchanged when overrides is empty', () => {
+    const base = { a: 1, b: { c: 2 } };
+    expect(deepMerge(base, {})).toEqual(base);
+  });
+
+  test('recursively merges nested objects', () => {
+    const base = { a: { b: 1, c: 2 } };
+    expect(deepMerge(base, { a: { b: 99 } })).toEqual({ a: { b: 99, c: 2 } });
+  });
+
+  test('replaces primitive values', () => {
+    expect(deepMerge({ a: 1 }, { a: 99 })).toEqual({ a: 99 });
+  });
+
+  test('replaces arrays without merging', () => {
+    const base = { tags: ['a', 'b'] };
+    expect(deepMerge(base, { tags: ['c'] })).toEqual({ tags: ['c'] });
+  });
+
+  test('skips undefined override values', () => {
+    const base = { a: 1, b: 2 };
+    expect(deepMerge(base, { a: undefined })).toEqual(base);
   });
 });
 
-describe('wrapAndTransformRefs', () => {
-  test('wraps non-ref values normally', () => {
-    const input = { a: '8px' };
-    expect(wrapAndTransformRefs(input)).toEqual({
-      a: { value: '8px' },
-    });
+// ---------------------------------------------------------------------------
+// flattenAndResolve
+// ---------------------------------------------------------------------------
+
+describe('flattenAndResolve', () => {
+  test('resolves semantic refs to core raw values', () => {
+    const flat = flattenAndResolve(defaultTheme);
+
+    const coreBrand500 = flat['core.colors.brand.500'];
+    const semanticAction =
+      flat['semantic.colors.action.primary.background.default'];
+
+    expect(typeof coreBrand500).toBe('string');
+    expect(semanticAction).toBe(coreBrand500);
   });
 
-  test('transforms token refs and wraps', () => {
-    const input = { x: '{core.colors.brand.main}' };
-    expect(wrapAndTransformRefs(input)).toEqual({
-      x: { value: '{colors.brand.main}' },
+  test('resolves all refs — no {path} strings remain', () => {
+    const flat = flattenAndResolve(defaultTheme);
+
+    const unresolvedRefs = Object.entries(flat).filter(([, value]) => {
+      return isTokenRef(value);
     });
+
+    expect(unresolvedRefs).toEqual([]);
   });
 
-  test('handles nested objects with mixed values', () => {
-    const input = {
-      level1: {
-        ref: '{core.radii.md}',
-        raw: '10px',
-      },
-    };
-    expect(wrapAndTransformRefs(input)).toEqual({
-      level1: {
-        ref: { value: '{radii.md}' },
-        raw: { value: '10px' },
+  test('preserves raw numeric values', () => {
+    const flat = flattenAndResolve(defaultTheme);
+    expect(flat['core.opacity.100']).toBe(1);
+    expect(flat['core.zIndex.level.3']).toBe(300);
+    expect(flat['core.font.weight.bold']).toBe(700);
+  });
+
+  test('handles chained refs (A → B → raw)', () => {
+    const flat = flattenAndResolve(defaultTheme);
+    // semantic.elevation.surface.flat → {core.elevation.level.0} → "none"
+    expect(flat['semantic.elevation.surface.flat']).toBe('none');
+  });
+
+  test('works with custom themes', () => {
+    const theme = buildTheme({
+      overrides: {
+        core: { colors: { brand: { 500: '#FF4500' } } },
       },
     });
+
+    const flat = flattenAndResolve(theme);
+    expect(flat['core.colors.brand.500']).toBe('#FF4500');
+  });
+
+  test('resolves compound expressions with embedded refs', () => {
+    const theme = buildTheme({
+      overrides: {
+        semantic: {
+          elevation: {
+            surface: {
+              // compound expression: not a pure {ref}, but contains embedded refs
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              flat: 'inset 0 0 {core.border.width.selected} {core.colors.brand.500}' as any,
+            },
+          },
+        },
+      },
+    });
+
+    const flat = flattenAndResolve(theme);
+    // core.border.width.selected = '2px', core.colors.brand.500 = '#0469e3'
+    expect(flat['semantic.elevation.surface.flat']).toBe(
+      'inset 0 0 2px #0469e3'
+    );
+  });
+
+  test('breaks circular references — returns ref as-is without throwing', () => {
+    const theme = buildTheme({
+      overrides: {
+        semantic: {
+          elevation: {
+            surface: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              flat: '{semantic.elevation.surface.raised}' as any,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              raised: '{semantic.elevation.surface.flat}' as any,
+            },
+          },
+        },
+      },
+    });
+
+    expect(() => {
+      return flattenAndResolve(theme);
+    }).not.toThrow();
+    const flat = flattenAndResolve(theme);
+    // cycle guard breaks the loop — the ref is returned as-is (still a token ref)
+    expect(isTokenRef(flat['semantic.elevation.surface.flat'])).toBe(true);
+  });
+
+  test('preserves unresolvable refs as-is', () => {
+    const theme = buildTheme({
+      overrides: {
+        semantic: {
+          elevation: {
+            surface: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              flat: '{core.nonexistent.token}' as any,
+            },
+          },
+        },
+      },
+    });
+
+    const flat = flattenAndResolve(theme);
+    expect(flat['semantic.elevation.surface.flat']).toBe(
+      '{core.nonexistent.token}'
+    );
+  });
+
+  test('all built-in themes resolve completely', () => {
+    const themes: ThemeTokensV2[] = [baseBundle.base];
+    if (baseBundle.alternate) {
+      themes.push(
+        buildTheme({ overrides: { semantic: baseBundle.alternate.semantic } })
+      );
+    }
+
+    for (const theme of themes) {
+      const flat = flattenAndResolve(theme);
+      const unresolvedRefs = Object.entries(flat).filter(([, value]) => {
+        return isTokenRef(value);
+      });
+      expect(unresolvedRefs).toEqual([]);
+    }
   });
 });

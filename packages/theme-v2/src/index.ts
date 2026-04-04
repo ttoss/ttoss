@@ -1,45 +1,25 @@
-export type { DeepPartial } from './createTheme';
+// ---------------------------------------------------------------------------
+// @ttoss/theme2 — Root Entry Point
+//
+// Core concern: theme definition (creation + types).
+//
+// Imports for specific concerns:
+//   CSS generation  → '@ttoss/theme2/css'
+//   runtime + SSR   → '@ttoss/theme2/runtime'
+//   React           → '@ttoss/theme2/react'
+//   vars            → '@ttoss/theme2/vars'
+//   DTCG            → '@ttoss/theme2/dtcg'
+//   dataviz         → '@ttoss/theme2/dataviz'
+// ---------------------------------------------------------------------------
+
+export { darkAlternate } from './baseBundle';
 export { createTheme } from './createTheme';
-export type { ThemeTokensV2 } from './ThemeTokensTemplate';
-
-// Themes
-export {
-  aurora,
-  bruttal,
-  defaultTheme,
-  neon,
-  oca,
-  terra,
-  themes,
-} from './themes';
-
-// Adapters
-export {
-  type ChakraThemeConfig,
-  toChakraTheme,
-} from './adapters/toChakraTheme';
-export {
-  type CssVarsOptions,
-  type CssVarsResult,
-  toCssVars,
-} from './adapters/toCssVars';
-export {
-  type TailwindThemeConfig,
-  toTailwindTheme,
-} from './adapters/toTailwindTheme';
-
-// Runtime
-export {
-  createThemeRuntime,
-  DATA_MODE_ATTR,
-  DATA_THEME_ATTR,
-  DEFAULT_STORAGE_KEY,
-  type ResolvedMode,
-  type ThemeMode,
-  type ThemeRuntime,
-  type ThemeRuntimeConfig,
-  type ThemeState,
-} from './runtime';
-
-// SSR
-export { getThemeScriptContent, type ThemeScriptConfig } from './ssrScript';
+export type { ThemeHeadProps, ThemeStylesProps } from './react';
+export type { ThemeMode } from './runtime';
+export type { SemanticTokens } from './Types';
+export type {
+  DeepPartial,
+  ModeOverride,
+  ThemeBundle,
+  ThemeTokensV2,
+} from './Types';

@@ -16,7 +16,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./react": "./src/react.tsx"
+    "./css": "./src/css.ts",
+    "./runtime": "./src/runtime-entry.ts",
+    "./react": "./src/react.tsx",
+    "./vars": "./src/vars.ts",
+    "./dtcg": "./src/dtcg.ts",
+    "./dataviz": "./src/dataviz/index.ts"
   },
   "files": [
     "dist"
@@ -42,5 +47,48 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": []
+  "keywords": [
+    "css-variables",
+    "dark-mode",
+    "design-tokens",
+    "dtcg",
+    "react",
+    "ssr",
+    "theming",
+    "ttoss"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "./css": {
+        "types": "./dist/css.d.ts",
+        "default": "./dist/esm/css.js"
+      },
+      "./runtime": {
+        "types": "./dist/runtime-entry.d.ts",
+        "default": "./dist/esm/runtime-entry.js"
+      },
+      "./react": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/esm/react.js"
+      },
+      "./vars": {
+        "types": "./dist/vars.d.ts",
+        "default": "./dist/esm/vars.js"
+      },
+      "./dtcg": {
+        "types": "./dist/dtcg.d.ts",
+        "default": "./dist/esm/dtcg.js"
+      },
+      "./dataviz": {
+        "types": "./dist/dataviz/index.d.ts",
+        "default": "./dist/esm/dataviz/index.js"
+      }
+    },
+    "provenance": true
+  }
 }

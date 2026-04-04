@@ -1,6 +1,6 @@
 # @ttoss/theme2
 
-Type-safe design tokens engine for the ttoss ecosystem. Two-layer token architecture (core → semantic), built-in themes, adapters for Chakra UI v3 / Tailwind CSS / CSS custom properties, and a framework-agnostic runtime for theme/mode switching with SSR support.
+Type-safe design tokens for the ttoss ecosystem. Two-layer architecture (core → semantic), light/dark mode, React 19 style hoisting, SSR support.
 
 ## Installation
 
@@ -8,183 +8,222 @@ Type-safe design tokens engine for the ttoss ecosystem. Two-layer token architec
 pnpm add @ttoss/theme2
 ```
 
-## Quick Start
+## Entry points
 
-### Chakra UI v3
+| Import                  | Exports                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `@ttoss/theme2`         | `createTheme`, `darkAlternate`, types                                                                        |
+| `@ttoss/theme2/react`   | `ThemeProvider`, `ThemeHead`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens` |
+| `@ttoss/theme2/dataviz` | `withDataviz`, `useDatavizTokens`                                                                            |
+| `@ttoss/theme2/css`     | `getThemeStylesContent`, `toCssVars`, `toFlatTokens`                                                         |
+| `@ttoss/theme2/vars`    | Static typed `vars.*` CSS variable references                                                                |
+| `@ttoss/theme2/dtcg`    | `toDTCG` (W3C Design Tokens format)                                                                          |
+| `@ttoss/theme2/runtime` | `createThemeRuntime`, `getThemeScriptContent`                                                                |
 
-```ts
-import { themes, toChakraTheme } from '@ttoss/theme2';
-import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react';
-
-const system = createSystem(defaultConfig, toChakraTheme(themes.bruttal));
-
-export const App = ({ children }) => (
-  <ChakraProvider value={system}>{children}</ChakraProvider>
-);
-```
-
-### CSS Custom Properties + Runtime
-
-```ts
-import { themes, toCssVars, createThemeRuntime } from '@ttoss/theme2';
-
-// Generate CSS for each theme
-const defaultCss = toCssVars(themes.default).toCssString();
-const bruttalCss = toCssVars(themes.bruttal, {
-  themeId: 'bruttal',
-}).toCssString();
-
-// Switch themes at runtime (client-only)
-const runtime = createThemeRuntime({
-  defaultTheme: 'bruttal',
-  defaultMode: 'system',
-});
-runtime.setTheme('oca');
-runtime.setMode('dark');
-```
-
-## Token Architecture
+## Token architecture
 
 ```
 ThemeTokensV2
-├── core    — raw primitives (colors, fonts, spacing, radii, motion, etc.)
-└── semantic — stable aliases via {core.*} references (the only layer components consume)
+├── core     — raw primitives (immutable across modes)
+└── semantic — usage aliases, always {core.*} refs (remapped per mode)
 ```
 
-Components must **never** consume core tokens directly. Semantic tokens must **only** contain `{core.*}` references, not raw values.
+Components consume only semantic tokens. Core tokens never change between light and dark — only semantic references remap.
 
-## Creating Themes
+## createTheme
 
 ```ts
-import { createTheme, defaultTheme } from '@ttoss/theme2';
+import { createTheme } from '@ttoss/theme2';
 
+// Default — light base + built-in dark alternate included
+const myTheme = createTheme();
+
+// With brand overrides (dark mode still included)
 const myTheme = createTheme({
-  overrides: {
-    core: {
-      colors: { brand: { main: '#FF4500', accent: '#D4A017' } },
+  overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
+});
+
+// Custom semantic dark alternate
+const myTheme = createTheme({
+  overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
+  alternate: {
+    semantic: {
+      colors: {
+        content: {
+          primary: { background: { default: '{core.colors.neutral.900}' } },
+        },
+      },
     },
   },
 });
 
-// Theme inheritance
-const child = createTheme({
-  base: myTheme,
-  overrides: { core: { radii: { md: '16px' } } },
-});
+// Single-mode theme (opt out of dark alternate)
+const myTheme = createTheme({ alternate: null });
+
+// Inherit from an existing bundle (inherits base + alternate)
+const childTheme = createTheme({ extends: myTheme });
 ```
 
-`createTheme` deep-merges overrides into the base and returns a fully independent clone — mutations never propagate between themes.
+**`alternate`** is typed `ModeOverride = { semantic: DeepPartial<ThemeTokensV2['semantic']> }`. Core tokens are immutable across modes — only semantic references remap.
 
-## Adapters
+**Default**: `createTheme()` includes the built-in `darkAlternate`. Pass `alternate: null` to opt out (single-mode).
 
-### `toChakraTheme(theme)` → Chakra UI v3
+**`darkAlternate`** is also exported from `@ttoss/theme2` for direct composition.
 
-```ts
-import { createSystem, defaultConfig } from '@chakra-ui/react';
-const system = createSystem(defaultConfig, toChakraTheme(themes.bruttal));
-```
-
-Returns `{ theme: { tokens, semanticTokens, textStyles }, breakpoints }`.
-
-### `toTailwindTheme(theme)` → Tailwind CSS
-
-```ts
-const tw = toTailwindTheme(themes.default);
-const css = tw.toCssString(); // :root { --tt-color-brand-main: #292C2a; ... }
-// tw.config — Tailwind theme config referencing CSS vars
-```
-
-### `toCssVars(theme, options?)` → CSS Custom Properties
-
-```ts
-// :root baseline
-toCssVars(themes.default).toCssString();
-
-// Scoped by theme
-toCssVars(themes.bruttal, { themeId: 'bruttal' }).toCssString();
-// → [data-tt-theme="bruttal"] { --tt-color-brand-main: #0A0A0A; ... }
-
-// Scoped by theme + mode
-toCssVars(darkTheme, {
-  themeId: 'bruttal',
-  mode: 'dark',
-  colorScheme: 'dark',
-}).toCssString();
-// → [data-tt-theme="bruttal"][data-tt-mode="dark"] { color-scheme: dark; ... }
-```
-
-## Runtime
-
-### `createThemeRuntime(config?)`
-
-Framework-agnostic, client-only. Manages `data-tt-theme` / `data-tt-mode` attributes, `color-scheme` style, localStorage persistence, and `prefers-color-scheme` listener.
-
-```ts
-const runtime = createThemeRuntime({
-  defaultTheme: 'bruttal',
-  defaultMode: 'system',
-});
-
-runtime.getState(); // { themeId, mode, resolvedMode }
-runtime.setTheme('oca');
-runtime.setMode('dark');
-runtime.subscribe(console.log);
-runtime.destroy();
-```
-
-### SSR — Preventing Theme Flash
+## React (Vite / CRA)
 
 ```tsx
-// Next.js app/layout.tsx
-import { getThemeScriptContent } from '@ttoss/theme2';
+// main.tsx
+import { ThemeProvider } from '@ttoss/theme2/react';
+import { myTheme } from './theme';
 
-export default function RootLayout({ children }) {
+export const App = () => (
+  <ThemeProvider theme={myTheme} defaultMode="system">
+    <YourApp />
+  </ThemeProvider>
+);
+```
+
+`ThemeProvider` injects CSS Custom Properties via React 19 style hoisting and persists mode to localStorage.
+
+### Hooks
+
+```tsx
+import { useColorMode } from '@ttoss/theme2/react';
+
+const DarkToggle = () => {
+  const { resolvedMode, setMode } = useColorMode();
   return (
-    <html lang="en">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: getThemeScriptContent() }} />
-      </head>
-      <body>{children}</body>
-    </html>
+    <button onClick={() => setMode(resolvedMode === 'dark' ? 'light' : 'dark')}>
+      {resolvedMode === 'dark' ? '☀️' : '🌙'}
+    </button>
   );
+};
+```
+
+```tsx
+import { useResolvedTokens } from '@ttoss/theme2/react';
+
+// Non-CSS environments (React Native, canvas) — resolved raw values
+const resolved = useResolvedTokens();
+// resolved['semantic.colors.action.primary.background.default'] → '#0469E3'
+```
+
+### Consuming tokens
+
+```css
+/* CSS — no JS overhead, no re-renders */
+.button {
+  background: var(--tt-action-primary-background-default);
 }
 ```
 
-## React Integration
+```tsx
+import { vars } from '@ttoss/theme2/vars';
 
-Import from `@ttoss/theme2/react` (React is an optional peer dependency):
+// Typed CSS variable references
+<div style={{ color: vars.colors.content.primary.default }} />;
+```
+
+## Next.js (SSR)
+
+### React 19 App Router (recommended)
+
+`ThemeProvider` with a `theme` prop uses React 19 style hoisting to inject CSS into `<head>` automatically. Only add `ThemeScript` for flash-prevention:
 
 ```tsx
-import { ThemeProvider, ThemeScript, useTheme } from '@ttoss/theme2/react';
+// app/layout.tsx
+import { ThemeScript, ThemeProvider } from '@ttoss/theme2/react';
+import { myTheme } from './theme';
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <head>
-        <ThemeScript defaultTheme="bruttal" />
+        {/* Flash-prevention only — ThemeProvider handles CSS via React 19 hoisting */}
+        <ThemeScript defaultMode="system" />
       </head>
       <body>
-        <ThemeProvider defaultTheme="bruttal">{children}</ThemeProvider>
+        <ThemeProvider theme={myTheme} defaultMode="system">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
-// In any component inside ThemeProvider
-const { themeId, mode, resolvedMode, setTheme, setMode } = useTheme();
 ```
 
-## Built-in Themes
+### Non-React-19 SSR / no style hoisting
 
-| Theme     | Palette                                      |
-| --------- | -------------------------------------------- |
-| `default` | Neutral baseline, system fonts, gray palette |
-| `bruttal` | Bold contrasts, dark neutrals, zero radii    |
-| `oca`     | Natural greens, organic warmth               |
-| `aurora`  | Cool-toned purples, rounded surfaces         |
-| `terra`   | Warm amber/olive, grounded feel              |
-| `neon`    | Vibrant accents, dark backgrounds            |
+Use `ThemeHead` (script + CSS) **without** a `theme` prop on `ThemeProvider` — or use `ThemeHead` standalone when
+React style hoisting is unavailable:
 
-## Related Packages
+```tsx
+// app/layout.tsx — for frameworks without React 19 style hoisting
+import { ThemeHead, ThemeProvider } from '@ttoss/theme2/react';
+import { myTheme } from './theme';
 
-- [Design System Documentation](https://ttoss.dev/docs/design/design-system-v2/): Complete design system guide
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        {/* Injects flash-prevention script + CSS vars */}
+        <ThemeHead theme={myTheme} defaultMode="system" />
+      </head>
+      <body>
+        {/* No theme prop — CSS is already in <head> via ThemeHead */}
+        <ThemeProvider defaultMode="system">{children}</ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+> **Warning:** Do not combine `<ThemeHead theme={...}>` with `<ThemeProvider theme={...}>`. Both inject CSS — `ThemeHead` via a plain `<style>` tag and `ThemeProvider` via React 19 style hoisting — resulting in duplicate CSS in the document. Use one or the other.
+
+## Dataviz extension
+
+```ts
+// theme.ts
+import { createTheme } from '@ttoss/theme2';
+import { withDataviz } from '@ttoss/theme2/dataviz';
+
+export const myTheme = withDataviz(createTheme());
+```
+
+```tsx
+// Consume via CSS vars — no JS overhead
+<span style={{ color: `var(--tt-dataviz-color-series-${i + 1})` }}>
+  {category}
+</span>
+```
+
+## CSS generation (server / build-time)
+
+```ts
+import { getThemeStylesContent } from '@ttoss/theme2/css';
+
+const css = getThemeStylesContent(myTheme);
+// → :root { --tt-* } + :root[data-tt-mode="dark"] { --tt-* (overrides) }
+```
+
+## Storybook / micro-frontends
+
+Anchor theme attributes to a specific element instead of `<html>`:
+
+```tsx
+const rootRef = React.useRef<HTMLDivElement>(null);
+<div ref={rootRef}>
+  <ThemeProvider theme={myTheme} root={rootRef.current ?? undefined}>
+    <Story />
+  </ThemeProvider>
+</div>;
+```
