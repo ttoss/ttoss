@@ -32,7 +32,7 @@
   },
   "sideEffects": false,
   "peerDependencies": {
-    "react": ">=19"
+    "react": ">=18"
   },
   "peerDependenciesMeta": {
     "react": {

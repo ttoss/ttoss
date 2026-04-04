@@ -6,7 +6,7 @@ title: Style References
 
 Style references document **visual languages**, not semantic meaning.
 
-Their purpose is to give ttoss a disciplined way to study recurring interface styles, understand what formally defines them, identify the tradeoffs they introduce, and translate them into theme constraints **without breaking the semantic contract of the design system**. Material describes styles as the visual aspects that give a UI a distinct look and feel, while Carbon treats themes as collections of visual attributes applied to stable token roles. That distinction is central here: visual language may vary, but semantic roles must remain stable. ([m3.material.io](https://m3.material.io/styles?utm_source=chatgpt.com))
+Their purpose is to give ttoss a disciplined way to study recurring interface styles, understand what formally defines them, identify the tradeoffs they introduce, and translate them into theme constraints **without breaking the semantic contract of the design system**. Material describes styles as the visual aspects that give a UI a distinct look and feel, while Carbon treats themes as collections of visual attributes applied to stable token roles. That distinction is central here: visual language may vary, but semantic roles must remain stable. ([m3.material.io](https://m3.material.io/styles))
 
 In ttoss, semantic tokens remain the public API of meaning-bearing families. Themes may change core values and semantic mappings, but they must not change semantic meaning or create a parallel vocabulary. Style references therefore sit **below** the semantic contract and **above** concrete theme implementations: they inform visual direction, but they do not redefine meaning.
 
@@ -50,7 +50,7 @@ A style reference is **not** a theme archetype. Archetypes are product-oriented 
 
 A style reference is **not** a built-in theme. Built-in themes are concrete implementations of tokens, mappings, modes, and optional recipes.
 
-A style reference is **not** a component recipe library. Some styles require materials, rendering behavior, component composition, or interaction rules that cannot be expressed through tokens alone. Apple’s HIG and current materials guidance are good examples of this: material behavior is a system-level visual effect, not just a color or shadow choice. ([developer.apple.com](https://developer.apple.com/design/human-interface-guidelines/?utm_source=chatgpt.com))
+A style reference is **not** a component recipe library. Some styles require materials, rendering behavior, component composition, or interaction rules that cannot be expressed through tokens alone. Apple’s HIG and current materials guidance are good examples of this: material behavior is a system-level visual effect, not just a color or shadow choice. ([developer.apple.com](https://developer.apple.com/design/human-interface-guidelines/))
 
 A style reference is **not** an interaction philosophy. Interaction posture governs guidance, interruption, escalation, and steerability. That is a different layer from visual language.
 
@@ -62,7 +62,7 @@ First, it creates a **shared technical vocabulary** for discussing styles withou
 
 Second, it makes visual languages **comparable**. A good style reference helps clarify what a style really is, what it borrows from, and where it breaks down.
 
-Third, it makes style **operationalizable**. A style becomes useful to a design system only when it can influence bounded decisions across token families such as color, depth, borders, curvature, spacing, typography, opacity, and motion. IBM’s design language is a strong precedent here: its iconography is not defined by taste alone, but by grid, stroke consistency, proportion, corners, and perspective rules. ([ibm.com](https://www.ibm.com/design/language/iconography/ui-icons/design/?utm_source=chatgpt.com))
+Third, it makes style **operationalizable**. A style becomes useful to a design system only when it can influence bounded decisions across token families such as color, depth, borders, curvature, spacing, typography, opacity, and motion. IBM’s design language is a strong precedent here: its iconography is not defined by taste alone, but by grid, stroke consistency, proportion, corners, and perspective rules. ([ibm.com](https://www.ibm.com/design/language/iconography/ui-icons/design/))
 
 Fourth, it makes style more useful for **AI-assisted theme creation**. AI systems perform better when the system provides explicit boundaries, known failure modes, and structured distinctions instead of aesthetic prompts alone. That is consistent with ttoss’s broader emphasis on semantic contracts and closed-loop, structurally constrained systems.
 
@@ -94,7 +94,7 @@ Instead, a style reference may influence:
 - mode tuning
 - component or pattern recipes when token control is insufficient
 
-This keeps the system themeable and expressive without compromising semantic stability. Carbon’s theme model is an important precedent: tokens remain universal, roles remain stable, and only values vary to produce a different aesthetic. ([carbondesignsystem.com](https://carbondesignsystem.com/elements/themes/overview/?utm_source=chatgpt.com))
+This keeps the system themeable and expressive without compromising semantic stability. Carbon’s theme model is an important precedent: tokens remain universal, roles remain stable, and only values vary to produce a different aesthetic. ([carbondesignsystem.com](https://carbondesignsystem.com/elements/themes/overview/))
 
 ## Relationship to archetypes and themes
 

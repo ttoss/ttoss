@@ -157,6 +157,8 @@ export const createThemeRuntime = (
   const apply = (): void => {
     if (themeId) {
       root.setAttribute(DATA_THEME_ATTR, themeId);
+    } else {
+      root.removeAttribute(DATA_THEME_ATTR);
     }
     root.setAttribute(DATA_MODE_ATTR, resolvedMode);
     root.style.colorScheme = resolvedMode;

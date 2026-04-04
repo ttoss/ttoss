@@ -62,5 +62,5 @@ export const getThemeScriptContent = (
 
   // The script must be self-contained — no external imports.
   // We inline the constants and logic.
-  return `(function(){try{var d=document.documentElement;var k=${JSON.stringify(storageKey)};var dt=${JSON.stringify(defaultTheme)};var dm=${JSON.stringify(defaultMode)};var vm=${JSON.stringify(VALID_MODES)};var s=null;try{var r=localStorage.getItem(k);if(r)s=JSON.parse(r)}catch(e){}var m=(s&&s.mode&&vm.indexOf(s.mode)!==-1)?s.mode:dm;var rm=m;if(m==='system'){rm=window.matchMedia?.('(prefers-color-scheme: dark)')?.matches?'dark':'light'}if(dt){d.setAttribute('data-tt-theme',dt)}d.setAttribute('data-tt-mode',rm);d.style.colorScheme=rm}catch(e){}})()`;
+  return `(function(){try{var d=document.documentElement;var k=${JSON.stringify(storageKey)};var dt=${JSON.stringify(defaultTheme)};var dm=${JSON.stringify(defaultMode)};var vm=${JSON.stringify(VALID_MODES)};var s=null;try{var r=localStorage.getItem(k);if(r)s=JSON.parse(r)}catch(e){}var m=(s&&s.mode&&vm.indexOf(s.mode)!==-1)?s.mode:dm;var rm=m;if(m==='system'){rm=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}if(dt){d.setAttribute('data-tt-theme',dt)}else{d.removeAttribute('data-tt-theme')}d.setAttribute('data-tt-mode',rm);d.style.colorScheme=rm}catch(e){}})()`;
 };

@@ -22,6 +22,11 @@ export interface DTCGToken {
  */
 export type DTCGTokenTree = DTCGToken | { [key: string]: DTCGTokenTree };
 
+/** Mutable intermediate type used while building the DTCG tree. */
+interface MutableTree {
+  [key: string]: MutableTree | DTCGToken;
+}
+
 // ---------------------------------------------------------------------------
 // $type inference — derived from shared TOKEN_PATH_REGISTRY
 // ---------------------------------------------------------------------------
@@ -44,20 +49,19 @@ const inferType = (path: string): string => {
  * objects as needed.
  */
 const setNestedValue = (
-  root: Record<string, unknown>,
+  root: MutableTree,
   path: string,
   value: DTCGToken
 ): void => {
   const segments = path.split('.');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let current: any = root;
+  let current: MutableTree = root;
 
   for (let i = 0; i < segments.length - 1; i++) {
     const seg = segments[i];
     if (!(seg in current) || typeof current[seg] !== 'object') {
       current[seg] = {};
     }
-    current = current[seg];
+    current = current[seg] as MutableTree;
   }
 
   current[segments[segments.length - 1]] = value;
@@ -92,7 +96,7 @@ const setNestedValue = (
  */
 export const toDTCG = (theme: ThemeTokensV2): DTCGTokenTree => {
   const flat = flattenAndResolve(theme);
-  const tree: Record<string, unknown> = {};
+  const tree: MutableTree = {};
 
   for (const [path, value] of Object.entries(flat)) {
     setNestedValue(tree, path, {
@@ -101,5 +105,5 @@ export const toDTCG = (theme: ThemeTokensV2): DTCGTokenTree => {
     });
   }
 
-  return tree as DTCGTokenTree;
+  return tree;
 };
