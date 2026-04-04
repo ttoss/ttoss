@@ -116,6 +116,9 @@ describe('getThemeScriptContent', () => {
         setAttribute(k: string, v: string) {
           this.attributes[k] = v;
         },
+        removeAttribute(k: string) {
+          delete this.attributes[k];
+        },
         style: {} as Record<string, string>,
       },
     };
