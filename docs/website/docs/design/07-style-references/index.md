@@ -126,17 +126,17 @@ The initial set in this library covers styles that are historically significant,
 
 **Structural references:**
 
-- [Skeuomorphic](./skeuomorphic.md)
-- [Flat 2.0](./flat2.md)
-- [Minimalist](./minimalist.md)
+- [Skeuomorphic](./03-skeuomorphic.md)
+- [Flat 2.0](./05-flat2.md)
+- [Minimalist](./06-minimalist.md)
 
 **Specialized references:**
 
-- [Material](./material.md)
-- [Glass](./glass.md)
-- [Neobrutalism](./neobrutalism.md)
-- [Neumorphism](./neumorphism.md)
-- [90s](./90s.md)
+- [Material](./07-material.md)
+- [Glass](./08-glass.md)
+- [Neobrutalism](./09-neobrutalism.md)
+- [Neumorphism](./10-neumorphism.md)
+- [90s](./11-90s.md)
 
 These references are not expected to be symmetrical in recommendation level. Some are strong sources for production archetypes. Others are valuable because they clarify limits, tradeoffs, or cautionary boundaries.
 
