@@ -6,29 +6,52 @@ import { Router } from '@ttoss/http-server';
 import type { Context } from 'koa';
 
 interface RequestContext {
-  authToken: string;
-  apiBaseUrl: string;
+  apiBaseUrl?: string;
+  apiHeaders: Record<string, string>;
 }
 
 const requestContextStore = new AsyncLocalStorage<RequestContext>();
 
 /**
- * Makes an authenticated REST API call using the current MCP request's auth token.
+ * Options for a single `apiCall` request.
+ */
+export interface ApiCallOptions {
+  /**
+   * JSON-serialisable request body. Automatically serialised and sent with
+   * `Content-Type: application/json`.
+   */
+  body?: unknown;
+
+  /**
+   * Additional or override headers for this specific request.
+   * These are merged on top of any headers injected from the MCP request
+   * context via `getApiHeaders`, allowing per-call overrides.
+   */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Generic HTTP helper for use inside MCP tool handlers.
  *
- * This function must be called within an active MCP request context, i.e. from
- * inside a tool handler when `apiBaseUrl` was configured in `createMcpRouter`.
- * The `Authorization: Bearer <token>` header is forwarded automatically from
- * the incoming MCP request.
+ * Accepts any full URL (third-party APIs, public APIs, etc.) or a path
+ * relative to the `apiBaseUrl` configured in `createMcpRouter`.
+ *
+ * Headers configured via `getApiHeaders` in `createMcpRouter` are injected
+ * automatically into every request, allowing transparent forwarding of auth
+ * tokens, API keys, or any other header — without coupling this helper to a
+ * specific authentication scheme. Per-call `options.headers` take precedence
+ * over context-injected headers.
  *
  * @param method - HTTP method (e.g. `'GET'`, `'POST'`, `'PUT'`, `'DELETE'`)
- * @param path - Path to append to the configured `apiBaseUrl` (e.g. `'/portfolios'`)
- * @param body - Optional request body (serialised as JSON)
+ * @param url - Full URL **or** a path starting with `/` (appended to `apiBaseUrl`)
+ * @param options - Optional body and per-call header overrides
  * @returns Parsed JSON response body
  *
- * @example
+ * @example Bearer token forwarding (configured once in `createMcpRouter`)
  * ```typescript
  * import { apiCall, createMcpRouter, Server as McpServer } from '@ttoss/http-server-mcp';
  *
+ * // Tool handler – no manual auth wiring needed
  * mcpServer.registerTool('list-portfolios', { description: '...', inputSchema: {} }, async () => {
  *   const data = await apiCall('GET', '/portfolios');
  *   return { content: [{ type: 'text', text: JSON.stringify(data) }] };
@@ -36,34 +59,61 @@ const requestContextStore = new AsyncLocalStorage<RequestContext>();
  *
  * const mcpRouter = createMcpRouter(mcpServer, {
  *   apiBaseUrl: `http://localhost:${process.env.PORT}/api/v1`,
+ *   // Forward the caller's Bearer token to every apiCall
+ *   getApiHeaders: (ctx) => ({ Authorization: ctx.headers.authorization ?? '' }),
+ * });
+ * ```
+ *
+ * @example x-api-key forwarding
+ * ```typescript
+ * const mcpRouter = createMcpRouter(mcpServer, {
+ *   apiBaseUrl: 'https://internal-service/api',
+ *   getApiHeaders: (ctx) => ({
+ *     'x-api-key': ctx.headers['x-api-key'] as string,
+ *   }),
+ * });
+ * ```
+ *
+ * @example Third-party or public API (full URL, no context required)
+ * ```typescript
+ * const weather = await apiCall('GET', 'https://api.weather.com/current?city=Berlin');
+ * const created = await apiCall('POST', 'https://api.example.com/items', {
+ *   body: { name: 'widget' },
+ *   headers: { Authorization: 'Bearer fixed-service-token' },
  * });
  * ```
  */
 export const apiCall = async (
   method: string,
-  path: string,
-  body?: unknown
+  url: string,
+  options?: ApiCallOptions
 ): Promise<unknown> => {
   const context = requestContextStore.getStore();
 
-  if (!context) {
-    throw new Error(
-      'apiCall must be called within an MCP request context. ' +
-        'Ensure apiBaseUrl is configured in createMcpRouter.'
-    );
+  // Resolve the URL: if it starts with '/', prepend the apiBaseUrl from context
+  let resolvedUrl = url;
+  if (url.startsWith('/')) {
+    if (!context?.apiBaseUrl) {
+      throw new Error(
+        `apiCall received a relative path ("${url}") but no apiBaseUrl is configured. ` +
+          'Either pass a full URL or set apiBaseUrl in createMcpRouter options.'
+      );
+    }
+    resolvedUrl = `${context.apiBaseUrl}${url}`;
   }
 
-  const url = `${context.apiBaseUrl}${path}`;
+  // Merge: context-injected headers < Content-Type default < per-call overrides
+  const headers: Record<string, string> = {
+    ...(context !== undefined ? context.apiHeaders : {}),
+    'Content-Type': 'application/json',
+    ...(options?.headers ?? {}),
+  };
 
-  const response = await fetch(url, {
+  const response = await fetch(resolvedUrl, {
     method,
-    headers: {
-      ...(context.authToken
-        ? { Authorization: `Bearer ${context.authToken}` }
-        : {}),
-      'Content-Type': 'application/json',
-    },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    headers,
+    body:
+      options?.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
   if (!response.ok) {
@@ -98,16 +148,39 @@ export interface McpRouterOptions {
   sessionIdGenerator?: () => string;
 
   /**
-   * Base URL for authenticated internal REST API calls made via `apiCall`.
-   *
-   * When set, `createMcpRouter` extracts the `Authorization` header from each
-   * incoming MCP request and makes it available to the `apiCall` helper through
-   * an `AsyncLocalStorage` context. Tool handlers can then call
-   * `apiCall(method, path, body?)` without any additional setup.
+   * Base URL prepended to relative paths passed to `apiCall` (paths starting
+   * with `/`). Tool handlers can then call `apiCall('GET', '/resource')` without
+   * specifying a host.
    *
    * @example 'http://localhost:3000/api/v1'
    */
   apiBaseUrl?: string;
+
+  /**
+   * Called once per incoming MCP HTTP request. Return a plain object whose
+   * key-value pairs will be merged into the headers of every `apiCall` made
+   * within that request's tool handlers.
+   *
+   * Use this to forward any header from the MCP request — Bearer tokens, API
+   * keys, tenant IDs, trace headers, etc. — without coupling tool handlers to
+   * a specific authentication scheme.
+   *
+   * @example Forward a Bearer token
+   * ```typescript
+   * getApiHeaders: (ctx) => ({ Authorization: ctx.headers.authorization ?? '' })
+   * ```
+   *
+   * @example Forward an x-api-key header
+   * ```typescript
+   * getApiHeaders: (ctx) => ({ 'x-api-key': ctx.headers['x-api-key'] as string })
+   * ```
+   *
+   * @example Inject a static service-to-service key
+   * ```typescript
+   * getApiHeaders: () => ({ 'x-internal-key': process.env.INTERNAL_API_KEY! })
+   * ```
+   */
+  getApiHeaders?: (ctx: Context) => Record<string, string>;
 }
 
 /**
@@ -151,8 +224,14 @@ export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
 ) => {
-  const { path = '/mcp', sessionIdGenerator, apiBaseUrl } = options;
+  const {
+    path = '/mcp',
+    sessionIdGenerator,
+    apiBaseUrl,
+    getApiHeaders,
+  } = options;
   const isStateful = sessionIdGenerator !== undefined;
+  const needsContext = apiBaseUrl !== undefined || getApiHeaders !== undefined;
 
   // Stateful mode: single shared transport connected once at startup
   let sharedTransport: StreamableHTTPServerTransport | undefined;
@@ -185,8 +264,7 @@ export const createMcpRouter = (
     ctx: Context,
     body?: unknown
   ): Promise<void> => {
-    const authHeader = ctx.headers.authorization ?? '';
-    const authToken = authHeader.replace(/^Bearer\s+/i, '');
+    const apiHeaders = getApiHeaders ? getApiHeaders(ctx) : {};
 
     const runRequest = async (
       transport: StreamableHTTPServerTransport
@@ -199,8 +277,8 @@ export const createMcpRouter = (
 
     if (isStateful && sharedTransport) {
       // Stateful mode: reuse the shared transport
-      if (apiBaseUrl) {
-        await requestContextStore.run({ authToken, apiBaseUrl }, () => {
+      if (needsContext) {
+        await requestContextStore.run({ apiBaseUrl, apiHeaders }, () => {
           return runRequest(sharedTransport!);
         });
       } else {
@@ -217,8 +295,8 @@ export const createMcpRouter = (
         // Connect the server to this per-request transport
         await server.connect(transport);
         try {
-          if (apiBaseUrl) {
-            await requestContextStore.run({ authToken, apiBaseUrl }, () => {
+          if (needsContext) {
+            await requestContextStore.run({ apiBaseUrl, apiHeaders }, () => {
               return runRequest(transport);
             });
           } else {

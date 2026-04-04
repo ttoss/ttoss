@@ -57,11 +57,13 @@ app.listen(3000, () => {
 });
 ```
 
-## Authenticated REST API Calls
+## `apiCall` — Generic HTTP Helper
 
-When your MCP server needs to call the host application's own REST API on behalf of the authenticated caller, configure `apiBaseUrl` and use the `apiCall` helper inside tool handlers.
+`apiCall` is a generic HTTP helper for use inside MCP tool handlers. It works with any URL — your own REST API, third-party APIs, public APIs, or services using `x-api-key` or any other header scheme.
 
-`createMcpRouter` extracts the `Authorization: Bearer <token>` header from each incoming MCP request and makes it available to `apiCall` via an `AsyncLocalStorage` context — no manual wiring required.
+Use `getApiHeaders` in `createMcpRouter` to configure which headers from the incoming MCP request are automatically forwarded to every `apiCall`. Tool handlers stay clean and auth-agnostic.
+
+### Bearer token forwarding
 
 ```typescript
 import {
@@ -76,31 +78,62 @@ mcpServer.registerTool(
   'list-portfolios',
   { description: 'List all portfolios', inputSchema: {} },
   async () => {
-    // apiCall automatically forwards the caller's Bearer token
+    // Bearer token is forwarded automatically — no manual wiring
     const data = await apiCall('GET', '/portfolios');
     return { content: [{ type: 'text', text: JSON.stringify(data) }] };
   }
 );
 
-mcpServer.registerTool(
-  'create-portfolio',
-  {
-    description: 'Create a portfolio',
-    inputSchema: { name: z.string() },
-  },
-  async ({ name }) => {
-    const result = await apiCall('POST', '/portfolios', { name });
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
-  }
-);
-
 const mcpRouter = createMcpRouter(mcpServer, {
-  // apiCall will prepend this base URL to all paths
   apiBaseUrl: `http://localhost:${process.env.PORT}/api/v1`,
+  // Extract the caller's Bearer token and inject it into every apiCall
+  getApiHeaders: (ctx) => ({ Authorization: ctx.headers.authorization ?? '' }),
 });
 ```
 
-`apiCall` throws if called outside an active MCP request context (i.e., without `apiBaseUrl` configured).
+### x-api-key forwarding
+
+```typescript
+const mcpRouter = createMcpRouter(mcpServer, {
+  apiBaseUrl: 'https://internal-service/api',
+  getApiHeaders: (ctx) => ({
+    'x-api-key': ctx.headers['x-api-key'] as string,
+  }),
+});
+```
+
+### Third-party or public APIs (full URL, no context required)
+
+```typescript
+mcpServer.registerTool(
+  'get-rates',
+  { description: 'Currency rates', inputSchema: {} },
+  async () => {
+    // Full URL — works entirely outside any context
+    const rates = await apiCall('GET', 'https://api.exchangerate.host/latest');
+    return { content: [{ type: 'text', text: JSON.stringify(rates) }] };
+  }
+);
+```
+
+### POST with a body
+
+```typescript
+const result = await apiCall('POST', '/portfolios', {
+  body: { name: 'Growth Fund' },
+});
+```
+
+### Per-call header override
+
+```typescript
+// Context-injected headers are merged; per-call headers take precedence
+const data = await apiCall('GET', 'https://partner.api.com/data', {
+  headers: { Authorization: 'Bearer fixed-service-token' },
+});
+```
+
+`apiCall` throws with a clear message when called with a relative path and no `apiBaseUrl` is configured in the context.
 
 ## API Reference
 
@@ -114,19 +147,21 @@ Creates a Koa router configured to handle MCP protocol requests.
 - `options` (`McpRouterOptions`) - Optional configuration
   - `path` (`string`) - HTTP path for MCP endpoint (default: `'/mcp'`)
   - `sessionIdGenerator` (`() => string`) - Session ID generator for stateful servers (default: `undefined` for stateless)
-  - `apiBaseUrl` (`string`) - Base URL for authenticated internal REST API calls via `apiCall`
+  - `apiBaseUrl` (`string`) - Base URL prepended to relative paths in `apiCall`
+  - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) - Return headers to inject into every `apiCall` for this request (auth tokens, API keys, trace headers, etc.)
 
 **Returns:** `Router` - Koa router instance
 
-### `apiCall(method, path, body?)`
+### `apiCall(method, url, options?)`
 
-Makes an authenticated REST API call using the current MCP request's auth token. Must be called within a tool handler when `apiBaseUrl` is configured.
+Generic HTTP helper for use inside MCP tool handlers.
 
 **Parameters:**
 
 - `method` (`string`) - HTTP method (`'GET'`, `'POST'`, `'PUT'`, `'DELETE'`, …)
-- `path` (`string`) - Path appended to `apiBaseUrl` (e.g. `'/portfolios'`)
-- `body` (`unknown`, optional) - Request body, serialised as JSON
+- `url` (`string`) - Full URL **or** a path starting with `/` (prepended with `apiBaseUrl`)
+- `options.body` (`unknown`, optional) - Request body, serialised as JSON
+- `options.headers` (`Record<string, string>`, optional) - Per-call header overrides; merged on top of context-injected headers
 
 **Returns:** `Promise<unknown>` - Parsed JSON response body
 
