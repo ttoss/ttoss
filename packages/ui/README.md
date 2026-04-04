@@ -331,7 +331,7 @@ export const CustomComponent = () => {
 ## Integration
 
 - **Design System**: Part of the [ttoss Design System](https://ttoss.dev/docs/design/design-system)
-- **Theme Integration**: Uses [semantic tokens](https://ttoss.dev/docs/design/design-system/design-tokens/semantic-tokens)
+- **Theme Integration**: Uses [semantic tokens](https://ttoss.dev/docs/design/design-system/design-tokens/model)
 - **Accessibility**: Built-in WCAG compliance
 - **TypeScript**: Full type safety with Theme UI integration
 

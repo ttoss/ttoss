@@ -4,14 +4,17 @@
 // createThemeRuntime(config?)
 //   Manages theme/mode via data-tt-theme / data-tt-mode attributes on the root
 //   element. Persists to localStorage and reacts to prefers-color-scheme.
-//   Use alongside <ThemeProvider theme={...}> from '@ttoss/theme2/react'.
+//   Use directly in framework-agnostic code (vanilla JS, Vue, Svelte, etc.).
+//   In React apps, prefer <ThemeProvider> from '@ttoss/theme2/react' — it
+//   wraps the runtime internally and exposes mode via context hooks.
 //
 //   @example
 //   import { createThemeRuntime } from '@ttoss/theme2/runtime';
-//   const rt = createThemeRuntime({ defaultTheme: 'bruttal', defaultMode: 'system' });
-//   rt.setMode('dark');
-//   const off = rt.subscribe((state) => console.log(state.mode, state.resolvedMode));
-//   rt.destroy(); // clean up listeners on unmount
+//   const runtime = createThemeRuntime({ defaultMode: 'system' });
+//   runtime.setMode('dark');
+//   const unsub = runtime.subscribe((state) => console.log(state.mode, state.resolvedMode));
+//   unsub();          // stop listening
+//   runtime.destroy(); // remove event listeners and media query subscriptions
 //
 // getThemeScriptContent(config?)
 //   Returns an inline <script> string that reads localStorage before the first

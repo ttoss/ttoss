@@ -58,7 +58,7 @@ It adds a controlled semantic layer for:
 
 This extension exists because analytical visualization introduces meaning that is not equivalent to standard UI semantics.
 
-For the Data Visualization model, see [Data Visualization](./dataviz-index.md) and [Model](./dataviz-model.md).
+For the Data Visualization model, see [Data Visualization](./03-data-visualization/index.md) and [Model](./03-data-visualization/dataviz-model.md).
 
 ## Themes and Modes
 

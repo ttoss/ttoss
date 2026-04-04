@@ -142,7 +142,7 @@ What must remain constant is the architecture:
 - semantic = meaning
 - semantic = public API
 
-**Infrastructure-only families.** Some families do not express durable UI meaning and therefore do not define a semantic layer. They export values directly as adaptation infrastructure — for example, [breakpoints](./02-categories/breakpoints.md) define viewport thresholds consumed by layout systems, not semantic intent consumed by components. This is architecturally valid when the family serves as operational infrastructure rather than design meaning.
+**Infrastructure-only families.** Some families do not express durable UI meaning and therefore do not define a semantic layer. They export values directly as adaptation infrastructure — for example, [breakpoints](./02-families/breakpoints.md) define viewport thresholds consumed by layout systems, not semantic intent consumed by components. This is architecturally valid when the family serves as operational infrastructure rather than design meaning.
 
 ### 8. Tokens define meaning, not implementation
 
