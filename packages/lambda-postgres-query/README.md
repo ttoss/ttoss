@@ -28,10 +28,10 @@ export default template;
 
 ### Lambda Handler
 
-Create a handler file that exports the Lambda function:
+Create a handler file that exports both Lambda functions:
 
 ```typescript
-export { handler } from '@ttoss/lambda-postgres-query';
+export { handler, readOnlyHandler } from '@ttoss/lambda-postgres-query';
 ```
 
 ### Environment Variables
@@ -43,10 +43,20 @@ DATABASE_NAME=your_database_name
 DATABASE_USERNAME=your_username
 DATABASE_PASSWORD=your_password
 DATABASE_HOST=your_database_host
-DATABASE_HOST_READ_ONLY=your_read_only_host  # Optional
+DATABASE_HOST_READ_ONLY=your_read_only_host
 DATABASE_PORT=5432
 SECURITY_GROUP_IDS=sg-xxxxx,sg-yyyyy
 SUBNET_IDS=subnet-xxxxx,subnet-yyyyy
+```
+
+For the dedicated read-only Lambda (`readOnlyHandler`), configure these additional variables:
+
+```env
+DATABASE_NAME_READ_ONLY=your_read_only_database_name
+DATABASE_USERNAME_READ_ONLY=your_read_only_username
+DATABASE_PASSWORD_READ_ONLY=your_read_only_password
+DATABASE_HOST_READ_ONLY=your_read_only_host
+DATABASE_PORT=5432
 ```
 
 ### Deployment
@@ -151,4 +161,8 @@ A [`QueryResult`](https://node-postgres.com/apis/result) object with transformed
 
 ### `handler`
 
-AWS Lambda handler function for processing database queries within the VPC.
+AWS Lambda handler function for processing database queries within the VPC. Uses `DATABASE_NAME`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `DATABASE_HOST`, and optionally `DATABASE_HOST_READ_ONLY` when `readOnly: true`.
+
+### `readOnlyHandler`
+
+AWS Lambda handler function for processing **read-only** (SELECT-only) database queries within the VPC. Uses exclusively the dedicated read-only environment variables: `DATABASE_NAME_READ_ONLY`, `DATABASE_USERNAME_READ_ONLY`, `DATABASE_PASSWORD_READ_ONLY`, and `DATABASE_HOST_READ_ONLY`. Throws an error if a non-SELECT query is attempted.
