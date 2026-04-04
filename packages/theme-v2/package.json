@@ -1,8 +1,8 @@
 {
   "private": true,
   "name": "@ttoss/theme2",
-  "version": "1.0.2",
-  "description": "Design token system with CSS variables, React integration, SSR support, and DTCG export for the ttoss ecosystem.",
+  "version": "1.1.8",
+  "description": "Theme v2 for packages.",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
