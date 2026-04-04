@@ -23,7 +23,7 @@ export interface TokenPathEntry {
  * Longer (more specific) prefixes come first so that consumers using
  * first-match lookup get the correct result.
  */
-export const TOKEN_PATH_REGISTRY: TokenPathEntry[] = [
+export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   // -- Core dataviz (longer/more-specific entries first) --------------------
   {
     path: 'core.dataviz.color.',

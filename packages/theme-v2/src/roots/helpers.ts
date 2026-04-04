@@ -94,7 +94,11 @@ export const flattenObject = (
 
 /**
  * Flatten a `ThemeTokensV2` into a `Record<string, string | number>` with
- * every `{ref}` recursively resolved to its final raw value.
+ * every `{ref}` recursively resolved to its final raw value where possible.
+ *
+ * Unresolvable references (missing target or circular dependency) are
+ * preserved as-is in the output rather than throwing. Use the dedicated
+ * token validators if you need strict failure on bad references.
  *
  * This is the universal primitive — every root is derived from this.
  */
@@ -188,9 +192,10 @@ export const flattenAndResolve = (
 // ---------------------------------------------------------------------------
 
 /**
- * A flat map of dot-path token keys to fully resolved raw values.
+ * A flat map of dot-path token keys to resolved raw values.
  *
- * Every `{ref}` is recursively resolved — no indirections remain.
+ * Most `{ref}` values are recursively resolved. Unresolvable or circular
+ * references are preserved as their original `{path}` string.
  */
 export type FlatTokenMap = Record<string, string | number>;
 
