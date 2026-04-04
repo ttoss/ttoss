@@ -57,6 +57,51 @@ app.listen(3000, () => {
 });
 ```
 
+## Authenticated REST API Calls
+
+When your MCP server needs to call the host application's own REST API on behalf of the authenticated caller, configure `apiBaseUrl` and use the `apiCall` helper inside tool handlers.
+
+`createMcpRouter` extracts the `Authorization: Bearer <token>` header from each incoming MCP request and makes it available to `apiCall` via an `AsyncLocalStorage` context — no manual wiring required.
+
+```typescript
+import {
+  apiCall,
+  createMcpRouter,
+  Server as McpServer,
+} from '@ttoss/http-server-mcp';
+
+const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
+
+mcpServer.registerTool(
+  'list-portfolios',
+  { description: 'List all portfolios', inputSchema: {} },
+  async () => {
+    // apiCall automatically forwards the caller's Bearer token
+    const data = await apiCall('GET', '/portfolios');
+    return { content: [{ type: 'text', text: JSON.stringify(data) }] };
+  }
+);
+
+mcpServer.registerTool(
+  'create-portfolio',
+  {
+    description: 'Create a portfolio',
+    inputSchema: { name: z.string() },
+  },
+  async ({ name }) => {
+    const result = await apiCall('POST', '/portfolios', { name });
+    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+  }
+);
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  // apiCall will prepend this base URL to all paths
+  apiBaseUrl: `http://localhost:${process.env.PORT}/api/v1`,
+});
+```
+
+`apiCall` throws if called outside an active MCP request context (i.e., without `apiBaseUrl` configured).
+
 ## API Reference
 
 ### `createMcpRouter(server, options?)`
@@ -69,8 +114,21 @@ Creates a Koa router configured to handle MCP protocol requests.
 - `options` (`McpRouterOptions`) - Optional configuration
   - `path` (`string`) - HTTP path for MCP endpoint (default: `'/mcp'`)
   - `sessionIdGenerator` (`() => string`) - Session ID generator for stateful servers (default: `undefined` for stateless)
+  - `apiBaseUrl` (`string`) - Base URL for authenticated internal REST API calls via `apiCall`
 
 **Returns:** `Router` - Koa router instance
+
+### `apiCall(method, path, body?)`
+
+Makes an authenticated REST API call using the current MCP request's auth token. Must be called within a tool handler when `apiBaseUrl` is configured.
+
+**Parameters:**
+
+- `method` (`string`) - HTTP method (`'GET'`, `'POST'`, `'PUT'`, `'DELETE'`, …)
+- `path` (`string`) - Path appended to `apiBaseUrl` (e.g. `'/portfolios'`)
+- `body` (`unknown`, optional) - Request body, serialised as JSON
+
+**Returns:** `Promise<unknown>` - Parsed JSON response body
 
 ## Examples
 
@@ -201,6 +259,16 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 
 - `POST /mcp` - Send JSON-RPC requests/notifications
 - `DELETE /mcp` - Terminate session (optional)
+
+**Client requirements (per MCP spec):**
+
+- `Content-Type: application/json`
+- `Accept: application/json, text/event-stream`
+
+**Stateless vs stateful mode:**
+
+- **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
+- **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
 
 ## Related Packages
 
