@@ -1,0 +1,16 @@
+This project uses the ttoss ecosystem — a library for product teams. Use the resources below to understand available packages and patterns.
+
+## Resources
+
+- Documentation: https://ttoss.dev/llms.txt
+- Storybook: https://storybook.ttoss.dev/llms.txt
+- GitHub: https://github.com/ttoss/ttoss
+
+
+## Package Reuse
+
+Always check the available ttoss packages before building anything from scratch. If a package already covers the use case, use it. If nothing exists but the solution is generic and reusable, open a GitHub issue on ttoss/ttoss proposing the new package — include the problem it solves, the expected API, and any relevant examples.
+
+## Reporting Issues
+
+If you find a bug, documentation issue, or have a suggestion, open an issue on ttoss/ttoss.
