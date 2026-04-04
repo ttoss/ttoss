@@ -90,7 +90,9 @@ export const apiCall = async (
 ): Promise<unknown> => {
   const context = requestContextStore.getStore();
 
-  // Resolve the URL: if it starts with '/', prepend the apiBaseUrl from context
+  // Resolve the URL: if it starts with '/', prepend the apiBaseUrl from context.
+  // Trim a trailing slash from apiBaseUrl so that joining with a leading-slash
+  // path never produces a double slash (e.g. "https://host/api//items").
   let resolvedUrl = url;
   if (url.startsWith('/')) {
     if (!context?.apiBaseUrl) {
@@ -99,21 +101,29 @@ export const apiCall = async (
           'Either pass a full URL or set apiBaseUrl in createMcpRouter options.'
       );
     }
-    resolvedUrl = `${context.apiBaseUrl}${url}`;
+    resolvedUrl = `${context.apiBaseUrl.replace(/\/$/, '')}${url}`;
   }
 
-  // Merge: context-injected headers < Content-Type default < per-call overrides
+  const hasBody = options?.body !== undefined;
+
+  // Merge context-injected headers with per-call overrides.
   const headers: Record<string, string> = {
     ...(context !== undefined ? context.apiHeaders : {}),
-    'Content-Type': 'application/json',
     ...(options?.headers ?? {}),
   };
+
+  // Only add Content-Type when sending a body and the caller hasn't set one.
+  const hasExplicitContentType = Object.keys(headers).some((headerName) => {
+    return headerName.toLowerCase() === 'content-type';
+  });
+  if (hasBody && !hasExplicitContentType) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const response = await fetch(resolvedUrl, {
     method,
     headers,
-    body:
-      options?.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body: hasBody ? JSON.stringify(options!.body) : undefined,
   });
 
   if (!response.ok) {
@@ -126,7 +136,17 @@ export const apiCall = async (
     );
   }
 
-  return response.json();
+  // 204/205 responses have no body.
+  if (response.status === 204 || response.status === 205) {
+    return undefined;
+  }
+
+  const contentType = response.headers.get('content-type');
+  if (contentType?.includes('application/json')) {
+    return response.json();
+  }
+
+  return response.text();
 };
 
 /**
@@ -292,9 +312,10 @@ export const createMcpRouter = (
           sessionIdGenerator: undefined,
           enableJsonResponse: true,
         });
-        // Connect the server to this per-request transport
-        await server.connect(transport);
+        // Connect and run inside try/finally so the transport is always closed,
+        // even if connect() throws — preventing server state corruption.
         try {
+          await server.connect(transport);
           if (needsContext) {
             await requestContextStore.run({ apiBaseUrl, apiHeaders }, () => {
               return runRequest(transport);

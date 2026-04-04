@@ -55,6 +55,243 @@ describe('apiCall', () => {
     }
   });
 
+  test('normalizes double slash when apiBaseUrl ends with a slash', async () => {
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.get('/v1/data', (ctx) => {
+        ctx.body = { ok: true };
+      });
+    });
+
+    try {
+      const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+      mcpServer.registerTool(
+        'get-data',
+        { description: 'Get data', inputSchema: {} },
+        async () => {
+          // apiBaseUrl has a trailing slash, path has a leading slash — should not double
+          const result = await apiCall('GET', '/data');
+          return {
+            content: [{ type: 'text', text: JSON.stringify(result) }],
+          };
+        }
+      );
+
+      const mcpApp = new App();
+      mcpApp.use(bodyParser());
+      const mcpRouter = createMcpRouter(mcpServer, {
+        apiBaseUrl: `${baseUrl}/v1/`, // trailing slash intentional
+      });
+      mcpApp.use(mcpRouter.routes());
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      const toolRes = await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'get-data', arguments: {} },
+          id: 2,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      expect(toolRes.status).toBe(200);
+    } finally {
+      await close();
+    }
+  });
+
+  test('does not send Content-Type header for bodyless GET requests', async () => {
+    let capturedContentType: string | undefined;
+
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.get('/v1/check', (ctx) => {
+        capturedContentType = ctx.headers['content-type'];
+        ctx.body = {};
+      });
+    });
+
+    try {
+      const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+      mcpServer.registerTool(
+        'check',
+        { description: 'Check headers', inputSchema: {} },
+        async () => {
+          await apiCall('GET', '/check');
+          return { content: [{ type: 'text', text: '{}' }] };
+        }
+      );
+
+      const mcpApp = new App();
+      mcpApp.use(bodyParser());
+      const mcpRouter = createMcpRouter(mcpServer, {
+        apiBaseUrl: `${baseUrl}/v1`,
+      });
+      mcpApp.use(mcpRouter.routes());
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'check', arguments: {} },
+          id: 2,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      expect(capturedContentType).toBeUndefined();
+    } finally {
+      await close();
+    }
+  });
+
+  test('returns undefined for 204 No Content responses', async () => {
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.delete('/v1/item', (ctx) => {
+        ctx.status = 204;
+      });
+    });
+
+    try {
+      const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+      let deleteResult: unknown = 'not-set';
+      mcpServer.registerTool(
+        'delete-item',
+        { description: 'Delete item', inputSchema: {} },
+        async () => {
+          deleteResult = await apiCall('DELETE', '/item');
+          return { content: [{ type: 'text', text: 'done' }] };
+        }
+      );
+
+      const mcpApp = new App();
+      mcpApp.use(bodyParser());
+      const mcpRouter = createMcpRouter(mcpServer, {
+        apiBaseUrl: `${baseUrl}/v1`,
+      });
+      mcpApp.use(mcpRouter.routes());
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'delete-item', arguments: {} },
+          id: 2,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      expect(deleteResult).toBeUndefined();
+    } finally {
+      await close();
+    }
+  });
+
+  test('returns plain text for non-JSON responses', async () => {
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.get('/v1/text', (ctx) => {
+        ctx.type = 'text/plain';
+        ctx.body = 'hello world';
+      });
+    });
+
+    try {
+      const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+      let textResult: unknown;
+      mcpServer.registerTool(
+        'get-text',
+        { description: 'Get text', inputSchema: {} },
+        async () => {
+          textResult = await apiCall('GET', '/text');
+          return { content: [{ type: 'text', text: String(textResult) }] };
+        }
+      );
+
+      const mcpApp = new App();
+      mcpApp.use(bodyParser());
+      const mcpRouter = createMcpRouter(mcpServer, {
+        apiBaseUrl: `${baseUrl}/v1`,
+      });
+      mcpApp.use(mcpRouter.routes());
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'get-text', arguments: {} },
+          id: 2,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      expect(textResult).toBe('hello world');
+    } finally {
+      await close();
+    }
+  });
+
   test('per-call headers override context-injected headers', async () => {
     let capturedAuthorization = '';
     let capturedXApiKey = '';
