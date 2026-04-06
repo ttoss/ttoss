@@ -60,8 +60,8 @@ describe('hit targets: no fluid or intrinsic values', () => {
       test.each(['fine', 'coarse'])(
         '%s hit targets are fixed px',
         (profile) => {
-          for (const step of ['min', 'default', 'prominent']) {
-            expect(isFixedPx(base[`core.size.hit.${profile}.${step}`])).toBe(
+          for (const step of ['min', 'base', 'prominent']) {
+            expect(isFixedPx(base[`core.sizing.hit.${profile}.${step}`])).toBe(
               true
             );
           }
@@ -79,21 +79,18 @@ describe('hit targets: ordering within pointer profile', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
       // Error #2: hit targets do not preserve order inside a pointer profile
-      test.each(['fine', 'coarse'])(
-        '%s: min < default < prominent',
-        (profile) => {
-          const min = parsePx(base[`core.size.hit.${profile}.min`]);
-          const def = parsePx(base[`core.size.hit.${profile}.default`]);
-          const prominent = parsePx(base[`core.size.hit.${profile}.prominent`]);
+      test.each(['fine', 'coarse'])('%s: min < base < prominent', (profile) => {
+        const min = parsePx(base[`core.sizing.hit.${profile}.min`]);
+        const def = parsePx(base[`core.sizing.hit.${profile}.base`]);
+        const prominent = parsePx(base[`core.sizing.hit.${profile}.prominent`]);
 
-          expect(min).not.toBeNaN();
-          expect(def).not.toBeNaN();
-          expect(prominent).not.toBeNaN();
+        expect(min).not.toBeNaN();
+        expect(def).not.toBeNaN();
+        expect(prominent).not.toBeNaN();
 
-          expect(min).toBeLessThan(def);
-          expect(def).toBeLessThan(prominent);
-        }
-      );
+        expect(min).toBeLessThan(def);
+        expect(def).toBeLessThan(prominent);
+      });
     });
   }
 });
@@ -106,17 +103,14 @@ describe('hit targets: coarse ≥ fine at each step', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
       // Error #3: any coarse-pointer hit token is smaller than its fine-pointer counterpart
-      test.each(['min', 'default', 'prominent'])(
-        'coarse.%s ≥ fine.%s',
-        (step) => {
-          const coarse = parsePx(base[`core.size.hit.coarse.${step}`]);
-          const fine = parsePx(base[`core.size.hit.fine.${step}`]);
+      test.each(['min', 'base', 'prominent'])('coarse.%s ≥ fine.%s', (step) => {
+        const coarse = parsePx(base[`core.sizing.hit.coarse.${step}`]);
+        const fine = parsePx(base[`core.sizing.hit.fine.${step}`]);
 
-          expect(coarse).not.toBeNaN();
-          expect(fine).not.toBeNaN();
-          expect(coarse).toBeGreaterThanOrEqual(fine);
-        }
-      );
+        expect(coarse).not.toBeNaN();
+        expect(fine).not.toBeNaN();
+        expect(coarse).toBeGreaterThanOrEqual(fine);
+      });
     });
   }
 });
@@ -153,6 +147,18 @@ describe('viewport.height.full: dynamic viewport units', () => {
   }
 });
 
+describe('viewport.width.full: dynamic viewport units', () => {
+  for (const { label, base } of bundleEntries) {
+    describe(label, () => {
+      test('viewport.width.full uses dvw (not vw)', () => {
+        const value = String(base['semantic.sizing.viewport.width.full']);
+        expect(value).toContain('dvw');
+        expect(value).not.toMatch(/(?<![d])vw/);
+      });
+    });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Semantic families must anchor to core ramps, not define ad-hoc values
 // ---------------------------------------------------------------------------
@@ -160,11 +166,11 @@ describe('viewport.height.full: dynamic viewport units', () => {
 describe('semantic sizing: core ramp anchoring', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Warning #1: any icon.* token resolves outside core.size.ramp.ui.*
-      test('icon tokens resolve within core.size.ramp.ui', () => {
+      // Warning #1: any icon.* token resolves outside core.sizing.ramp.ui.*
+      test('icon tokens resolve within core.sizing.ramp.ui', () => {
         const rampUi = new Set(
           [1, 2, 3, 4, 5, 6, 7, 8].map((n) => {
-            return base[`core.size.ramp.ui.${n}`];
+            return base[`core.sizing.ramp.ui.${n}`];
           })
         );
         for (const step of ['sm', 'md', 'lg']) {
@@ -172,11 +178,11 @@ describe('semantic sizing: core ramp anchoring', () => {
         }
       });
 
-      // Warning #2: any identity.* token resolves outside core.size.ramp.ui.*
-      test('identity tokens resolve within core.size.ramp.ui', () => {
+      // Warning #2: any identity.* token resolves outside core.sizing.ramp.ui.*
+      test('identity tokens resolve within core.sizing.ramp.ui', () => {
         const rampUi = new Set(
           [1, 2, 3, 4, 5, 6, 7, 8].map((n) => {
-            return base[`core.size.ramp.ui.${n}`];
+            return base[`core.sizing.ramp.ui.${n}`];
           })
         );
         for (const step of ['sm', 'md', 'lg', 'xl']) {
@@ -186,11 +192,11 @@ describe('semantic sizing: core ramp anchoring', () => {
         }
       });
 
-      // Warning #3: surface.maxWidth resolves outside core.size.ramp.layout.*
-      test('surface.maxWidth resolves within core.size.ramp.layout', () => {
+      // Warning #3: surface.maxWidth resolves outside core.sizing.ramp.layout.*
+      test('surface.maxWidth resolves within core.sizing.ramp.layout', () => {
         const rampLayout = new Set(
           [1, 2, 3, 4, 5, 6].map((n) => {
-            return base[`core.size.ramp.layout.${n}`];
+            return base[`core.sizing.ramp.layout.${n}`];
           })
         );
         expect(rampLayout.has(base['semantic.sizing.surface.maxWidth'])).toBe(
@@ -208,10 +214,16 @@ describe('semantic sizing: core ramp anchoring', () => {
 describe('semantic sizing: viewport.height.full alias', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Warning #4: viewport.height.full does not resolve to core.size.viewport.heightFull
-      test('viewport.height.full equals core.size.viewport.heightFull', () => {
+      // Warning #4: viewport.height.full does not resolve to core.sizing.viewport.height.full
+      test('viewport.height.full equals core.sizing.viewport.height.full', () => {
         expect(base['semantic.sizing.viewport.height.full']).toBe(
-          base['core.size.viewport.heightFull']
+          base['core.sizing.viewport.height.full']
+        );
+      });
+
+      test('viewport.width.full equals core.sizing.viewport.width.full', () => {
+        expect(base['semantic.sizing.viewport.width.full']).toBe(
+          base['core.sizing.viewport.width.full']
         );
       });
     });
@@ -228,9 +240,9 @@ describe('hit targets: minimum 24px threshold', () => {
       // Warning #5: any resolved hit.* value is below 24px
       test('no hit target below 24px', () => {
         for (const profile of ['fine', 'coarse']) {
-          for (const step of ['min', 'default', 'prominent']) {
+          for (const step of ['min', 'base', 'prominent']) {
             expect(
-              parsePx(base[`core.size.hit.${profile}.${step}`])
+              parsePx(base[`core.sizing.hit.${profile}.${step}`])
             ).toBeGreaterThanOrEqual(24);
           }
         }
@@ -281,11 +293,11 @@ describe('hit targets: fine and coarse profiles must differ', () => {
     describe(label, () => {
       // Warning #8: all fine-pointer and coarse-pointer hit tokens resolve to the same values
       test('fine and coarse profiles are not all identical', () => {
-        const steps = ['min', 'default', 'prominent'];
+        const steps = ['min', 'base', 'prominent'];
         const allSame = steps.every((step) => {
           return (
-            base[`core.size.hit.fine.${step}`] ===
-            base[`core.size.hit.coarse.${step}`]
+            base[`core.sizing.hit.fine.${step}`] ===
+            base[`core.sizing.hit.coarse.${step}`]
           );
         });
         expect(allSame).toBe(false);

@@ -175,19 +175,19 @@ Tokens then express that meaning through each foundation.
 - button save → `Action` + `ActionSet.primary`
   - color: `action.primary.background.default`, `action.primary.text.default`
   - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
+  - spacing/sizing: `spacing.inset.control.md`, `hit.base`
   - radius: `radii.control`
 
 - button back to editing → `Action` + `ActionSet.secondary`
   - color: `action.secondary.background.default`, `action.secondary.text.default`
   - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
+  - spacing/sizing: `spacing.inset.control.md`, `hit.base`
   - radius: `radii.control`
 
 - button cancel → `Action` + `ActionSet.dismiss`
   - color: `action.muted.text.default`
   - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
+  - spacing/sizing: `spacing.inset.control.md`, `hit.base`
   - radius: `radii.control`
 
 #### Search field
@@ -195,7 +195,7 @@ Tokens then express that meaning through each foundation.
 - main field control → `Input` + `FieldFrame.control`
   - color: `input.primary.border.default`, `input.primary.background.default`, `input.primary.text.default`
   - typography: `text.body.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
+  - spacing/sizing: `spacing.inset.control.md`, `hit.base`
   - radius: `radii.control`
 
 - field label text → `Structure` + `FieldFrame.label`

@@ -51,7 +51,7 @@ describe('toDTCG', () => {
 
   test('infers correct $type for dimension tokens', () => {
     const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.space.2';
+      return l.path === 'core.spacing.2';
     })?.token;
     expect(token?.$type).toBe('dimension');
   });
@@ -78,6 +78,37 @@ describe('toDTCG', () => {
     expect(token?.$type).toBe('string');
   });
 
+  test('infers correct $type for core motion duration (duration, not string)', () => {
+    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
+      return l.path === 'core.motion.duration.md';
+    })?.token;
+    expect(token?.$type).toBe('duration');
+  });
+
+  test('infers correct $type for semantic motion duration (duration, not string)', () => {
+    const SEMANTIC_DURATION_PATHS = [
+      'semantic.motion.feedback.duration',
+      'semantic.motion.transition.enter.duration',
+      'semantic.motion.transition.exit.duration',
+      'semantic.motion.emphasis.duration',
+      'semantic.motion.decorative.duration',
+    ];
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    for (const expectedPath of SEMANTIC_DURATION_PATHS) {
+      const token = allLeaves.find((l) => {
+        return l.path === expectedPath;
+      })?.token;
+      expect(token?.$type).toBe('duration');
+    }
+  });
+
+  test('semantic motion easing retains $type string', () => {
+    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
+      return l.path === 'semantic.motion.feedback.easing';
+    })?.token;
+    expect(token?.$type).toBe('string');
+  });
+
   test('values are fully resolved — no {ref} strings in $value', () => {
     for (const { token } of leaves) {
       if (typeof token.$value === 'string') {
@@ -94,6 +125,77 @@ describe('toDTCG', () => {
     expect(node).toBeDefined();
     expect(node?.token.$value).toBeDefined();
     expect(node?.token.$type).toBe('color');
+  });
+
+  test('infers correct $type for semantic text fontFamily (fontFamily, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const token = allLeaves.find((l) => {
+      return l.path === 'semantic.text.body.md.fontFamily';
+    })?.token;
+    expect(token?.$type).toBe('fontFamily');
+  });
+
+  test('infers correct $type for semantic text fontSize (dimension, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    for (const family of [
+      'display',
+      'headline',
+      'title',
+      'body',
+      'label',
+      'code',
+    ]) {
+      const step = family === 'code' ? 'md' : 'lg';
+      const token = allLeaves.find((l) => {
+        return l.path === `semantic.text.${family}.${step}.fontSize`;
+      })?.token;
+      expect(token?.$type).toBe('dimension');
+    }
+  });
+
+  test('infers correct $type for semantic text fontWeight (fontWeight, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const token = allLeaves.find((l) => {
+      return l.path === 'semantic.text.body.md.fontWeight';
+    })?.token;
+    expect(token?.$type).toBe('fontWeight');
+  });
+
+  test('infers correct $type for semantic text lineHeight (number, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const token = allLeaves.find((l) => {
+      return l.path === 'semantic.text.body.md.lineHeight';
+    })?.token;
+    expect(token?.$type).toBe('number');
+  });
+
+  test('infers correct $type for semantic text letterSpacing (dimension, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const token = allLeaves.find((l) => {
+      return l.path === 'semantic.text.label.sm.letterSpacing';
+    })?.token;
+    expect(token?.$type).toBe('dimension');
+  });
+
+  test('suffix overrides do not affect core font primitive tokens', () => {
+    // Core font weight primitives must retain 'fontWeight' (from registry prefix, not suffix)
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const weightToken = allLeaves.find((l) => {
+      return l.path === 'core.font.weight.bold';
+    })?.token;
+    expect(weightToken?.$type).toBe('fontWeight');
+
+    // Core font leading primitives must retain 'number'
+    const leadingToken = allLeaves.find((l) => {
+      return l.path === 'core.font.leading.normal';
+    })?.token;
+    expect(leadingToken?.$type).toBe('number');
+
+    // Core font tracking primitives must retain 'dimension'
+    const trackingToken = allLeaves.find((l) => {
+      return l.path === 'core.font.tracking.tight';
+    })?.token;
+    expect(trackingToken?.$type).toBe('dimension');
   });
 
   test('all built-in themes produce valid DTCG trees', () => {

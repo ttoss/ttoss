@@ -20,7 +20,7 @@ const bundleEntries: ReadonlyArray<{
 // Helpers — semantic opacity token extraction
 // ---------------------------------------------------------------------------
 
-const SEMANTIC_OPACITY_ROLES = ['scrim', 'loading', 'disabledMedia'] as const;
+const SEMANTIC_OPACITY_ROLES = ['scrim', 'loading', 'disabled'] as const;
 
 const getSemanticOpacityEntries = (
   tokens: Record<string, string | number>
@@ -96,7 +96,7 @@ describe.each(bundleEntries)(
         }
       });
 
-      // Error #3: scrim, loading, disabledMedia must not resolve to 0, 1, or equivalent non-translucent value
+      // Error #3: scrim, loading, disabled must not resolve to 0, 1, or equivalent non-translucent value
       test.each(SEMANTIC_OPACITY_ROLES)(
         'opacity.%s must not be fully transparent or fully opaque',
         (role) => {

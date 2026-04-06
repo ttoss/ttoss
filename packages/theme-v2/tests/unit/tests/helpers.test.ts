@@ -9,7 +9,7 @@ import {
   isPlainObject,
   isTokenRef,
 } from '../../../src/roots/helpers';
-import type { ThemeTokensV2 } from '../../../src/Types';
+import type { ThemeTokens } from '../../../src/Types';
 
 // ---------------------------------------------------------------------------
 // Token reference detection
@@ -232,7 +232,7 @@ describe('flattenAndResolve', () => {
   });
 
   test('all built-in themes resolve completely', () => {
-    const themes: ThemeTokensV2[] = [baseBundle.base];
+    const themes: ThemeTokens[] = [baseBundle.base];
     if (baseBundle.alternate) {
       themes.push(
         buildTheme({ overrides: { semantic: baseBundle.alternate.semantic } })
