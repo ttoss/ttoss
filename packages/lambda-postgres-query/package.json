@@ -25,16 +25,16 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.731.1",
+    "@aws-sdk/client-lambda": "^3.1025.0",
     "@ttoss/cloudformation": "workspace:^",
     "camelcase-keys": "^7.0.2",
-    "pg": "^8.16.3"
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
-    "@types/pg": "^8.11.10",
+    "@types/pg": "^8.20.0",
     "aws-sdk-client-mock": "^4.1.0",
     "jest": "^30.3.0",
     "tsup": "^8.5.1"

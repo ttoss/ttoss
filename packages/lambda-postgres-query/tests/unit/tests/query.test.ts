@@ -20,7 +20,7 @@ test('should accept string or object as parameters', async () => {
 
   lambdaMock
     .on(InvokeCommand, {
-      Payload: JSON.stringify({ readOnly: true, text }),
+      Payload: JSON.stringify({ text }),
     })
     .resolves({
       Payload: new TextEncoder().encode(
@@ -115,7 +115,7 @@ test('should throw error.message', async () => {
 
   lambdaMock
     .on(InvokeCommand, {
-      Payload: JSON.stringify({ readOnly: true, text }),
+      Payload: JSON.stringify({ text }),
     })
     .resolves({
       Payload: new TextEncoder().encode(

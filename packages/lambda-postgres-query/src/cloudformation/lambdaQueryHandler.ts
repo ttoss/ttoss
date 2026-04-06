@@ -8,7 +8,6 @@ const database = process.env.DATABASE_NAME;
 const username = process.env.DATABASE_USERNAME;
 const password = process.env.DATABASE_PASSWORD;
 const host = process.env.DATABASE_HOST;
-const hostReadOnly = process.env.DATABASE_HOST_READ_ONLY;
 const port = process.env.DATABASE_PORT;
 
 export const handler: Handler<QueryParams> = async (event) => {
@@ -17,7 +16,7 @@ export const handler: Handler<QueryParams> = async (event) => {
       database,
       user: username,
       password,
-      host: event.readOnly && hostReadOnly ? hostReadOnly : host,
+      host,
       port: Number(port),
     });
 
