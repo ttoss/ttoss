@@ -52,7 +52,7 @@ For the dedicated read-only Lambda (`readOnlyHandler`), define at least one `*_R
 
 ```env
 DATABASE_HOST_READ_ONLY=your_read_only_host
-# DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD are reused automatically
+# DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_PORT are reused automatically
 ```
 
 To use a fully isolated read-only database user:
@@ -62,7 +62,7 @@ DATABASE_NAME_READ_ONLY=your_read_only_database_name
 DATABASE_USERNAME_READ_ONLY=your_read_only_username
 DATABASE_PASSWORD_READ_ONLY=your_read_only_password
 DATABASE_HOST_READ_ONLY=your_read_only_host
-DATABASE_PORT=5432
+DATABASE_PORT_READ_ONLY=5432
 ```
 
 > **Security note:** If none of the `*_READ_ONLY` variables are set, the read-only Lambda throws an error at invocation time.

@@ -44,6 +44,7 @@ export const createLambdaPostgresQueryTemplate = ({
       DatabasePassword: {
         Type: 'String',
         Description: 'Database password.',
+        NoEcho: true,
       },
       DatabasePort: {
         Type: 'String',
@@ -62,6 +63,11 @@ export const createLambdaPostgresQueryTemplate = ({
         Type: 'String',
         Description: 'Database password for read-only access.',
         NoEcho: true,
+      },
+      DatabasePortReadOnly: {
+        Type: 'String',
+        Default: '5432',
+        Description: 'Database port for read-only access.',
       },
       LambdaS3Bucket: {
         Type: 'String',
@@ -118,7 +124,7 @@ export const createLambdaPostgresQueryTemplate = ({
           Timeout: timeout,
           Handler: handler,
           Role: { 'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'] },
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           Environment: {
             Variables: {
               DATABASE_HOST: { Ref: 'DatabaseHost' },
@@ -141,7 +147,7 @@ export const createLambdaPostgresQueryTemplate = ({
           LogGroupName: {
             'Fn::Join': ['', ['/aws/lambda/', { Ref: 'LambdaQueryFunction' }]],
           },
-          RetentionInDays: 7,
+          RetentionInDays: 3,
         },
       },
       LambdaReadOnlyQueryFunction: {
@@ -156,13 +162,14 @@ export const createLambdaPostgresQueryTemplate = ({
           Timeout: timeout,
           Handler: readOnlyHandler,
           Role: { 'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'] },
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           Environment: {
             Variables: {
               DATABASE_HOST: { Ref: 'DatabaseHost' },
               DATABASE_NAME: { Ref: 'DatabaseName' },
               DATABASE_USERNAME: { Ref: 'DatabaseUsername' },
               DATABASE_PASSWORD: { Ref: 'DatabasePassword' },
+              DATABASE_PORT: { Ref: 'DatabasePort' },
               DATABASE_HOST_READ_ONLY: { Ref: 'DatabaseHostReadOnly' },
               DATABASE_NAME_READ_ONLY: { Ref: 'DatabaseNameReadOnly' },
               DATABASE_USERNAME_READ_ONLY: {
@@ -171,7 +178,7 @@ export const createLambdaPostgresQueryTemplate = ({
               DATABASE_PASSWORD_READ_ONLY: {
                 Ref: 'DatabasePasswordReadOnly',
               },
-              DATABASE_PORT: { Ref: 'DatabasePort' },
+              DATABASE_PORT_READ_ONLY: { Ref: 'DatabasePortReadOnly' },
             },
           },
           VpcConfig: {
@@ -190,7 +197,7 @@ export const createLambdaPostgresQueryTemplate = ({
               ['/aws/lambda/', { Ref: 'LambdaReadOnlyQueryFunction' }],
             ],
           },
-          RetentionInDays: 7,
+          RetentionInDays: 3,
         },
       },
     },

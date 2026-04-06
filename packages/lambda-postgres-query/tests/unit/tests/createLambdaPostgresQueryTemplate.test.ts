@@ -25,6 +25,7 @@ test('should create lambda query template', () => {
       DatabasePassword: {
         Type: 'String',
         Description: 'Database password.',
+        NoEcho: true,
       },
       DatabasePort: {
         Type: 'String',
@@ -43,6 +44,11 @@ test('should create lambda query template', () => {
         Type: 'String',
         Description: 'Database password for read-only access.',
         NoEcho: true,
+      },
+      DatabasePortReadOnly: {
+        Type: 'String',
+        Default: '5432',
+        Description: 'Database port for read-only access.',
       },
       LambdaS3Bucket: {
         Type: 'String',
@@ -107,7 +113,7 @@ test('should create lambda query template', () => {
           Role: {
             'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'],
           },
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           Environment: {
             Variables: {
               DATABASE_HOST: {
@@ -144,7 +150,7 @@ test('should create lambda query template', () => {
           LogGroupName: {
             'Fn::Join': ['', ['/aws/lambda/', { Ref: 'LambdaQueryFunction' }]],
           },
-          RetentionInDays: 7,
+          RetentionInDays: 3,
         },
       },
       LambdaReadOnlyQueryFunction: {
@@ -167,7 +173,7 @@ test('should create lambda query template', () => {
           Role: {
             'Fn::GetAtt': ['LambdaQueryExecutionRole', 'Arn'],
           },
-          Runtime: 'nodejs22.x',
+          Runtime: 'nodejs24.x',
           Environment: {
             Variables: {
               DATABASE_HOST: {
@@ -182,6 +188,9 @@ test('should create lambda query template', () => {
               DATABASE_PASSWORD: {
                 Ref: 'DatabasePassword',
               },
+              DATABASE_PORT: {
+                Ref: 'DatabasePort',
+              },
               DATABASE_HOST_READ_ONLY: {
                 Ref: 'DatabaseHostReadOnly',
               },
@@ -194,8 +203,8 @@ test('should create lambda query template', () => {
               DATABASE_PASSWORD_READ_ONLY: {
                 Ref: 'DatabasePasswordReadOnly',
               },
-              DATABASE_PORT: {
-                Ref: 'DatabasePort',
+              DATABASE_PORT_READ_ONLY: {
+                Ref: 'DatabasePortReadOnly',
               },
             },
           },
@@ -219,7 +228,7 @@ test('should create lambda query template', () => {
               ['/aws/lambda/', { Ref: 'LambdaReadOnlyQueryFunction' }],
             ],
           },
-          RetentionInDays: 7,
+          RetentionInDays: 3,
         },
       },
     },
