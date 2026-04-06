@@ -1,4 +1,4 @@
-import type { ModeOverride, ThemeTokensV2 } from './Types';
+import type { ModeOverride, ThemeTokens } from './Types';
 
 /**
  * **Foundation** — Neutral baseline theme.
@@ -6,7 +6,7 @@ import type { ModeOverride, ThemeTokensV2 } from './Types';
  * System fonts, gray palette, and balanced proportions. Serves as the
  * canonical base that all other themes extend via `createTheme`.
  */
-export const baseTheme: ThemeTokensV2 = {
+export const baseTheme: ThemeTokens = {
   // ==========================================================================
   // CORE TOKENS — raw primitives and responsive engines
   // ==========================================================================
@@ -102,8 +102,8 @@ export const baseTheme: ThemeTokensV2 = {
         3: '0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.08)',
         4: '0 16px 32px rgba(0,0,0,0.14), 0 8px 16px rgba(0,0,0,0.10)',
       },
-      // Dark-optimized recipes — higher opacity shadows for dark surfaces
-      dark: {
+      // High-opacity recipes — stronger depth contrast for dark or heavily-colored surfaces
+      emphatic: {
         0: 'none',
         1: '0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.14)',
         2: '0 4px 8px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.18)',
@@ -140,7 +140,7 @@ export const baseTheme: ThemeTokensV2 = {
         wide: '0.04em',
       },
 
-      opticalSizing: {
+      optical: {
         auto: 'auto',
         none: 'none',
       },
@@ -149,11 +149,9 @@ export const baseTheme: ThemeTokensV2 = {
         proportional: 'proportional-nums',
         tabular: 'tabular-nums',
       },
-    },
 
-    // -- Typography Size Ramps (Responsive Engine) --------------------------
-    type: {
-      ramp: {
+      // -- Font Size Scale (Responsive Engine) --------------------------------
+      scale: {
         text: {
           1: 'clamp(12px, calc(0.6cqi + 10px), 14px)',
           2: 'clamp(14px, calc(0.7cqi + 11px), 16px)',
@@ -175,22 +173,24 @@ export const baseTheme: ThemeTokensV2 = {
     },
 
     // -- Spacing (Responsive Engine) ----------------------------------------
-    space: {
-      unit: 'clamp(4px, 0.5cqi + 2px, 8px)',
+    spacing: {
+      engine: {
+        unit: 'clamp(4px, 0.5cqi + 2px, 8px)',
+      },
 
       0: '0px',
-      1: 'calc(1 * var(--tt-space-unit))',
-      2: 'calc(2 * var(--tt-space-unit))',
-      3: 'calc(3 * var(--tt-space-unit))',
-      4: 'calc(4 * var(--tt-space-unit))',
-      6: 'calc(6 * var(--tt-space-unit))',
-      8: 'calc(8 * var(--tt-space-unit))',
-      12: 'calc(12 * var(--tt-space-unit))',
-      16: 'calc(16 * var(--tt-space-unit))',
+      1: 'calc(1 * var(--tt-core-spacing-engine-unit))',
+      2: 'calc(2 * var(--tt-core-spacing-engine-unit))',
+      3: 'calc(3 * var(--tt-core-spacing-engine-unit))',
+      4: 'calc(4 * var(--tt-core-spacing-engine-unit))',
+      6: 'calc(6 * var(--tt-core-spacing-engine-unit))',
+      8: 'calc(8 * var(--tt-core-spacing-engine-unit))',
+      12: 'calc(12 * var(--tt-core-spacing-engine-unit))',
+      16: 'calc(16 * var(--tt-core-spacing-engine-unit))',
     },
 
     // -- Sizing (Responsive Engine) -----------------------------------------
-    size: {
+    sizing: {
       ramp: {
         ui: {
           1: 'clamp(12px, 0.6cqi + 10px, 16px)',
@@ -223,12 +223,17 @@ export const baseTheme: ThemeTokensV2 = {
       },
 
       viewport: {
-        heightFull: '100dvh',
+        height: {
+          full: '100dvh',
+        },
+        width: {
+          full: '100dvw',
+        },
       },
 
       hit: {
-        fine: { min: '28px', default: '40px', prominent: '48px' },
-        coarse: { min: '44px', default: '48px', prominent: '56px' },
+        fine: { min: '28px', base: '40px', prominent: '48px' },
+        coarse: { min: '44px', base: '48px', prominent: '56px' },
       },
     },
 
@@ -297,7 +302,7 @@ export const baseTheme: ThemeTokensV2 = {
     },
 
     // -- Breakpoints --------------------------------------------------------
-    breakpoint: {
+    breakpoints: {
       sm: '30rem',
       md: '48rem',
       lg: '64rem',
@@ -447,6 +452,21 @@ export const baseTheme: ThemeTokensV2 = {
           border: { default: '{core.colors.neutral.200}' },
           text: { default: '{core.colors.neutral.500}' },
         },
+        positive: {
+          background: { default: '{core.colors.green.100}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.900}' },
+        },
+        caution: {
+          background: { default: '{core.colors.yellow.100}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.900}' },
+        },
+        negative: {
+          background: { default: '{core.colors.red.100}' },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.900}' },
+        },
       },
 
       feedback: {
@@ -454,6 +474,11 @@ export const baseTheme: ThemeTokensV2 = {
           background: { default: '{core.colors.neutral.50}' },
           border: { default: '{core.colors.neutral.300}' },
           text: { default: '{core.colors.neutral.900}' },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.100}' },
+          border: { default: '{core.colors.neutral.300}' },
+          text: { default: '{core.colors.neutral.700}' },
         },
         positive: {
           background: { default: '{core.colors.green.100}' },
@@ -501,142 +526,142 @@ export const baseTheme: ThemeTokensV2 = {
       display: {
         lg: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.5}',
+          fontSize: '{core.font.scale.display.5}',
           fontWeight: '{core.font.weight.bold}',
           lineHeight: '{core.font.leading.tight}',
           letterSpacing: '{core.font.tracking.tight}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         md: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.4}',
+          fontSize: '{core.font.scale.display.4}',
           fontWeight: '{core.font.weight.bold}',
           lineHeight: '{core.font.leading.tight}',
           letterSpacing: '{core.font.tracking.tight}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         sm: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.3}',
+          fontSize: '{core.font.scale.display.3}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.tight}',
           letterSpacing: '{core.font.tracking.tight}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
 
       headline: {
         lg: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.3}',
+          fontSize: '{core.font.scale.display.3}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         md: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.2}',
+          fontSize: '{core.font.scale.display.2}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         sm: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.display.1}',
+          fontSize: '{core.font.scale.display.1}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
 
       title: {
         lg: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.6}',
+          fontSize: '{core.font.scale.text.6}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         md: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.5}',
+          fontSize: '{core.font.scale.text.5}',
           fontWeight: '{core.font.weight.semibold}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         sm: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.4}',
+          fontSize: '{core.font.scale.text.4}',
           fontWeight: '{core.font.weight.medium}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
 
       body: {
         lg: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.4}',
+          fontSize: '{core.font.scale.text.4}',
           fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.normal}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         md: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.3}',
+          fontSize: '{core.font.scale.text.3}',
           fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.normal}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         sm: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.2}',
+          fontSize: '{core.font.scale.text.2}',
           fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.normal}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
 
       label: {
         lg: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.3}',
+          fontSize: '{core.font.scale.text.3}',
           fontWeight: '{core.font.weight.medium}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         md: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.2}',
+          fontSize: '{core.font.scale.text.2}',
           fontWeight: '{core.font.weight.medium}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
         sm: {
           fontFamily: '{core.font.family.sans}',
-          fontSize: '{core.type.ramp.text.1}',
+          fontSize: '{core.font.scale.text.1}',
           fontWeight: '{core.font.weight.medium}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.wide}',
-          fontOpticalSizing: '{core.font.opticalSizing.auto}',
+          fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
 
       code: {
         md: {
           fontFamily: '{core.font.family.mono}',
-          fontSize: '{core.type.ramp.text.2}',
+          fontSize: '{core.font.scale.text.2}',
           fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.normal}',
           letterSpacing: '{core.font.tracking.normal}',
@@ -644,7 +669,7 @@ export const baseTheme: ThemeTokensV2 = {
         },
         sm: {
           fontFamily: '{core.font.family.mono}',
-          fontSize: '{core.type.ramp.text.1}',
+          fontSize: '{core.font.scale.text.1}',
           fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.normal}',
           letterSpacing: '{core.font.tracking.normal}',
@@ -658,41 +683,42 @@ export const baseTheme: ThemeTokensV2 = {
     spacing: {
       inset: {
         control: {
-          sm: '{core.space.2}',
-          md: '{core.space.3}',
-          lg: '{core.space.4}',
+          sm: '{core.spacing.2}',
+          md: '{core.spacing.3}',
+          lg: '{core.spacing.4}',
         },
         surface: {
-          sm: '{core.space.3}',
-          md: '{core.space.4}',
-          lg: '{core.space.6}',
+          sm: '{core.spacing.3}',
+          md: '{core.spacing.4}',
+          lg: '{core.spacing.6}',
         },
       },
 
       gap: {
         stack: {
-          xs: '{core.space.2}',
-          sm: '{core.space.3}',
-          md: '{core.space.4}',
-          lg: '{core.space.6}',
-          xl: '{core.space.8}',
+          xs: '{core.spacing.2}',
+          sm: '{core.spacing.3}',
+          md: '{core.spacing.4}',
+          lg: '{core.spacing.6}',
+          xl: '{core.spacing.8}',
         },
         inline: {
-          xs: '{core.space.1}',
-          sm: '{core.space.2}',
-          md: '{core.space.3}',
-          lg: '{core.space.4}',
+          xs: '{core.spacing.1}',
+          sm: '{core.spacing.2}',
+          md: '{core.spacing.3}',
+          lg: '{core.spacing.4}',
+          xl: '{core.spacing.6}',
         },
       },
 
       gutter: {
-        page: 'clamp({core.space.4}, {core.space.6}, {core.space.12})',
-        section: 'clamp({core.space.3}, {core.space.4}, {core.space.12})',
+        page: 'clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})',
+        section: 'clamp({core.spacing.3}, {core.spacing.4}, {core.spacing.12})',
       },
 
       separation: {
         interactive: {
-          min: 'clamp(8px, {core.space.2}, 12px)',
+          min: 'clamp(8px, {core.spacing.2}, 12px)',
         },
       },
     },
@@ -701,30 +727,33 @@ export const baseTheme: ThemeTokensV2 = {
     // Grammar: {family}.{stepOrProperty}
     sizing: {
       hit: {
-        min: '{core.size.hit.fine.min}',
-        default: '{core.size.hit.fine.default}',
-        prominent: '{core.size.hit.fine.prominent}',
+        min: '{core.sizing.hit.fine.min}',
+        base: '{core.sizing.hit.fine.base}',
+        prominent: '{core.sizing.hit.fine.prominent}',
       },
       icon: {
-        sm: '{core.size.ramp.ui.2}',
-        md: '{core.size.ramp.ui.3}',
-        lg: '{core.size.ramp.ui.4}',
+        sm: '{core.sizing.ramp.ui.2}',
+        md: '{core.sizing.ramp.ui.3}',
+        lg: '{core.sizing.ramp.ui.4}',
       },
       identity: {
-        sm: '{core.size.ramp.ui.5}',
-        md: '{core.size.ramp.ui.6}',
-        lg: '{core.size.ramp.ui.7}',
-        xl: '{core.size.ramp.ui.8}',
+        sm: '{core.sizing.ramp.ui.5}',
+        md: '{core.sizing.ramp.ui.6}',
+        lg: '{core.sizing.ramp.ui.7}',
+        xl: '{core.sizing.ramp.ui.8}',
       },
       measure: {
         reading: 'clamp(45ch, 60ch, 75ch)',
       },
       surface: {
-        maxWidth: '{core.size.ramp.layout.5}',
+        maxWidth: '{core.sizing.ramp.layout.5}',
       },
       viewport: {
         height: {
-          full: '{core.size.viewport.heightFull}',
+          full: '{core.sizing.viewport.height.full}',
+        },
+        width: {
+          full: '{core.sizing.viewport.width.full}',
         },
       },
     },
@@ -770,7 +799,7 @@ export const baseTheme: ThemeTokensV2 = {
     opacity: {
       scrim: '{core.opacity.50}',
       loading: '{core.opacity.50}',
-      disabledMedia: '{core.opacity.50}',
+      disabled: '{core.opacity.50}',
     },
 
     // -- Motion -------------------------------------------------------------
@@ -810,7 +839,7 @@ export const baseTheme: ThemeTokensV2 = {
       },
     },
   },
-} satisfies ThemeTokensV2;
+} satisfies ThemeTokens;
 
 // ---------------------------------------------------------------------------
 // Shared semantic dark alternate
@@ -940,12 +969,32 @@ export const darkAlternate: ModeOverride = {
           border: { default: '{core.colors.neutral.700}' },
           text: { default: '{core.colors.neutral.300}' },
         },
+        positive: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        negative: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
       },
       feedback: {
         primary: {
           background: { default: '{core.colors.neutral.700}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.0}' },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.500}' },
+          text: { default: '{core.colors.neutral.300}' },
         },
         positive: {
           background: { default: '{core.colors.neutral.900}' },
@@ -963,23 +1012,13 @@ export const darkAlternate: ModeOverride = {
           text: { default: '{core.colors.red.300}' },
         },
       },
-      navigation: {
-        primary: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.neutral.700}' },
-          text: {
-            default: '{core.colors.neutral.0}',
-            current: '{core.colors.brand.300}',
-          },
-        },
-      },
     },
     elevation: {
       surface: {
-        flat: '{core.elevation.dark.0}',
-        raised: '{core.elevation.dark.2}',
-        overlay: '{core.elevation.dark.3}',
-        blocking: '{core.elevation.dark.4}',
+        flat: '{core.elevation.emphatic.0}',
+        raised: '{core.elevation.emphatic.2}',
+        overlay: '{core.elevation.emphatic.3}',
+        blocking: '{core.elevation.emphatic.4}',
       },
     },
   },

@@ -153,11 +153,39 @@ describe.each(bundleEntries)('Elevation warnings — $label', ({ base, alt }) =>
     });
   });
 
-  // Warning #2: adjacent core elevation levels resolve to the same effective shadow recipe
+  // Warning #2: adjacent core elevation levels resolve to the same effective shadow recipe.
   // Tested against base tokens only — alternate mode does not override core tokens.
+  // Keys are sorted numerically so the adjacency check is order-stable regardless
+  // of how many levels the theme defines.
   test('Warning #2 — adjacent core levels must not share equal depth', () => {
-    const depths = [0, 1, 2, 3, 4].map((level) => {
-      return parseShadowDepth(base[`core.elevation.level.${level}`]);
+    const levelKeys = Object.keys(base)
+      .filter((k) => {
+        return k.startsWith('core.elevation.level.');
+      })
+      .sort((a, b) => {
+        return Number(a.split('.').pop()) - Number(b.split('.').pop());
+      });
+    const depths = levelKeys.map((k) => {
+      return parseShadowDepth(base[k]);
+    });
+    for (let i = 0; i < depths.length - 1; i++) {
+      expect(depths[i]).not.toBe(depths[i + 1]);
+    }
+  });
+
+  // Warning #3: adjacent emphatic ramp levels resolve to the same effective shadow recipe.
+  // The emphatic ramp is optional — skip if the theme does not define it.
+  test('Warning #3 — adjacent emphatic levels must not share equal depth', () => {
+    const emphaticKeys = Object.keys(base)
+      .filter((k) => {
+        return k.startsWith('core.elevation.emphatic.');
+      })
+      .sort((a, b) => {
+        return Number(a.split('.').pop()) - Number(b.split('.').pop());
+      });
+    if (emphaticKeys.length < 2) return;
+    const depths = emphaticKeys.map((k) => {
+      return parseShadowDepth(base[k]);
     });
     for (let i = 0; i < depths.length - 1; i++) {
       expect(depths[i]).not.toBe(depths[i + 1]);

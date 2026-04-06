@@ -1,5 +1,5 @@
 import type { DeepPartial } from '../Types';
-import type { ThemeBundle, ThemeTokensV2 } from '../Types';
+import type { ThemeBundle, ThemeTokens } from '../Types';
 import { deepMerge, flattenObject } from './helpers';
 import { CSS_PATH_PREFIXES } from './tokenRegistry';
 
@@ -10,8 +10,8 @@ import { CSS_PATH_PREFIXES } from './tokenRegistry';
 /**
  * Convert a full token path to a CSS custom property name.
  *
- * `core.colors.brand.500` → `--tt-color-brand-500`
- * `semantic.colors.action.primary.background.default` → `--tt-action-primary-background-default`
+ * `core.colors.brand.500` → `--tt-core-colors-brand-500`
+ * `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`
  */
 export const toCssVarName = (tokenPath: string): string => {
   for (const [prefix, cssPrefix] of CSS_PATH_PREFIXES) {
@@ -27,8 +27,8 @@ export const toCssVarName = (tokenPath: string): string => {
  * Replace all embedded `{token.path}` refs inside a raw string with `var(--tt-...)` references.
  *
  * Handles compound semantic values like:
- *   `clamp({core.space.4}, {core.space.6}, {core.space.12})`
- *   → `clamp(var(--tt-space-4), var(--tt-space-6), var(--tt-space-12))`
+ *   `clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`
+ *   → `clamp(var(--tt-core-spacing-4), var(--tt-core-spacing-6), var(--tt-core-spacing-12))`
  */
 const inlineRefsToVars = (value: string): string => {
   return value.replace(/\{([^}]+)\}/g, (_match, path) => {
@@ -41,14 +41,12 @@ const inlineRefsToVars = (value: string): string => {
 // ---------------------------------------------------------------------------
 
 /**
- * Build a flat CSS custom properties record from a ThemeTokensV2.
+ * Build a flat CSS custom properties record from a ThemeTokens.
  *
  * Core tokens get raw values. Semantic tokens get `var()` references
  * to preserve the cascade relationship at runtime.
  */
-const buildCssVars = (
-  theme: ThemeTokensV2
-): Record<string, string | number> => {
+const buildCssVars = (theme: ThemeTokens): Record<string, string | number> => {
   const vars: Record<string, string | number> = {};
 
   const coreFlat = flattenObject(
@@ -120,7 +118,7 @@ export interface CssVarsResult {
   coarseHitVars: Record<string, string>;
   /**
    * Overrides for semantic motion duration tokens under reduced-motion.
-   * All durations are set to `var(--tt-duration-none)` (0ms).
+   * All durations are set to `var(--tt-core-motion-duration-none)` (0ms).
    * Apply these inside `@media (prefers-reduced-motion: reduce) { :root { ... } }`.
    * Emitted automatically by `toCssString()`.
    */
@@ -230,12 +228,10 @@ const extractContainerQueryVars = (
  * so adding a new motion role never silently omits it from the
  * `@media (prefers-reduced-motion: reduce)` block.
  *
- * Sets all semantic motion duration vars to `var(--tt-duration-none)` (0ms).
+ * Sets all semantic motion duration vars to `var(--tt-core-motion-duration-none)` (0ms).
  * Emitted inside `@media (prefers-reduced-motion: reduce)`.
  */
-const buildReducedMotionVars = (
-  theme: ThemeTokensV2
-): Record<string, string> => {
+const buildReducedMotionVars = (theme: ThemeTokens): Record<string, string> => {
   const noneVar = `var(${toCssVarName('core.motion.duration.none')})`;
   const flat = flattenObject(
     theme.semantic.motion as unknown as Record<string, unknown>,
@@ -261,11 +257,11 @@ const buildReducedMotionVars = (
  * contains the coarse overrides, to be emitted inside
  * `@media (any-pointer: coarse)`.
  */
-const buildCoarseHitVars = (theme: ThemeTokensV2): Record<string, string> => {
-  const { hit } = theme.core.size;
+const buildCoarseHitVars = (theme: ThemeTokens): Record<string, string> => {
+  const { hit } = theme.core.sizing;
   return {
     [toCssVarName('semantic.sizing.hit.min')]: hit.coarse.min,
-    [toCssVarName('semantic.sizing.hit.default')]: hit.coarse.default,
+    [toCssVarName('semantic.sizing.hit.base')]: hit.coarse.base,
     [toCssVarName('semantic.sizing.hit.prominent')]: hit.coarse.prominent,
   };
 };
@@ -342,11 +338,11 @@ const buildCssBlock = ({
 // ---------------------------------------------------------------------------
 
 /**
- * Internal: convert a single `ThemeTokensV2` into CSS custom properties.
+ * Internal: convert a single `ThemeTokens` into CSS custom properties.
  * Use the public overloaded `toCssVars()` instead.
  */
 const toCssVarsBase = (
-  theme: ThemeTokensV2,
+  theme: ThemeTokens,
   options: CssVarsOptions = {}
 ): CssVarsResult => {
   const cssVars = buildCssVars(theme);
@@ -381,7 +377,7 @@ const toCssVarsBase = (
 
 /** Type guard: checks if the input is a ThemeBundle. */
 export const isThemeBundle = (
-  input: ThemeTokensV2 | ThemeBundle
+  input: ThemeTokens | ThemeBundle
 ): input is ThemeBundle => {
   return 'baseMode' in input && 'base' in input;
 };
@@ -444,7 +440,7 @@ const diffCssVars = ({
  * // → base block (all vars) + dark block (only changed vars) + coarse block
  * ```
  */
-const bundleToCssVarsImpl = (
+const bundleToCssVars = (
   bundle: ThemeBundle,
   options: BundleCssVarsOptions
 ): BundleCssVarsResult => {
@@ -471,8 +467,8 @@ const bundleToCssVarsImpl = (
   // Alternate: resolve full theme by merging semantic overrides into base
   const alternateTheme = deepMerge(
     baseTheme,
-    alternate as DeepPartial<ThemeTokensV2>
-  ) as ThemeTokensV2;
+    alternate as DeepPartial<ThemeTokens>
+  ) as ThemeTokens;
   const fullAlternateVars = buildCssVars(alternateTheme);
   const diffVars = diffCssVars({
     base: baseResult.cssVars,
@@ -525,7 +521,7 @@ const bundleToCssVarsImpl = (
 /**
  * Convert a theme (tokens or bundle) into CSS custom properties.
  *
- * **Overload 1 — ThemeTokensV2**: returns a single `CssVarsResult`.
+ * **Overload 1 — ThemeTokens**: returns a single `CssVarsResult`.
  * **Overload 2 — ThemeBundle**: returns a `BundleCssVarsResult` with
  * base + alternate blocks and optimized diff output.
  *
@@ -544,7 +540,7 @@ const bundleToCssVarsImpl = (
  * ```
  */
 export function toCssVars(
-  theme: ThemeTokensV2,
+  theme: ThemeTokens,
   options?: CssVarsOptions
 ): CssVarsResult;
 export function toCssVars(
@@ -552,11 +548,11 @@ export function toCssVars(
   options?: BundleCssVarsOptions
 ): BundleCssVarsResult;
 export function toCssVars(
-  input: ThemeTokensV2 | ThemeBundle,
+  input: ThemeTokens | ThemeBundle,
   options?: CssVarsOptions | BundleCssVarsOptions
 ): CssVarsResult | BundleCssVarsResult {
   if (isThemeBundle(input)) {
-    return bundleToCssVarsImpl(input, (options ?? {}) as BundleCssVarsOptions);
+    return bundleToCssVars(input, (options ?? {}) as BundleCssVarsOptions);
   }
   return toCssVarsBase(input, options as CssVarsOptions);
 }

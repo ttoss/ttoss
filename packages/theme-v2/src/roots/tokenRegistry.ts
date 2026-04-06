@@ -11,7 +11,7 @@
 export interface TokenPathEntry {
   /** Token path prefix (e.g. `'core.colors.'`). */
   path: string;
-  /** CSS custom property prefix (e.g. `'--tt-color-'`). */
+  /** CSS custom property prefix (e.g. `'--tt-core-colors-'`). */
   cssPrefix: string;
   /** W3C DTCG `$type` value (e.g. `'color'`). */
   dtcgType: string;
@@ -20,6 +20,10 @@ export interface TokenPathEntry {
 /**
  * Ordered registry of token path prefixes → CSS var prefix + DTCG type.
  *
+ * Convention:
+ *   - Core tokens:     `--tt-core-<family>-<subpath>`
+ *   - Semantic tokens: `--tt-<family>-<subpath>`
+ *
  * Longer (more specific) prefixes come first so that consumers using
  * first-match lookup get the correct result.
  */
@@ -27,15 +31,19 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   // -- Core dataviz (longer/more-specific entries first) --------------------
   {
     path: 'core.dataviz.color.',
-    cssPrefix: '--tt-dataviz-color-raw-',
+    cssPrefix: '--tt-core-dataviz-color-',
     dtcgType: 'color',
   },
   {
     path: 'core.dataviz.opacity.',
-    cssPrefix: '--tt-dataviz-raw-',
+    cssPrefix: '--tt-core-dataviz-opacity-',
     dtcgType: 'number',
   },
-  { path: 'core.dataviz.', cssPrefix: '--tt-dataviz-raw-', dtcgType: 'string' },
+  {
+    path: 'core.dataviz.',
+    cssPrefix: '--tt-core-dataviz-',
+    dtcgType: 'string',
+  },
 
   // -- Semantic dataviz (longer/more-specific entries first) ----------------
   {
@@ -61,89 +69,115 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   { path: 'semantic.dataviz.', cssPrefix: '--tt-dataviz-', dtcgType: 'string' },
 
   // -- Core paths -----------------------------------------------------------
-  { path: 'core.colors.', cssPrefix: '--tt-color-', dtcgType: 'color' },
+  { path: 'core.colors.', cssPrefix: '--tt-core-colors-', dtcgType: 'color' },
   {
-    path: 'core.elevation.dark.',
-    cssPrefix: '--tt-shadow-dark-',
+    path: 'core.elevation.emphatic.',
+    cssPrefix: '--tt-core-elevation-emphatic-',
     dtcgType: 'shadow',
   },
   {
     path: 'core.elevation.level.',
-    cssPrefix: '--tt-shadow-',
+    cssPrefix: '--tt-core-elevation-',
     dtcgType: 'shadow',
   },
   {
     path: 'core.font.family.',
-    cssPrefix: '--tt-font-',
+    cssPrefix: '--tt-core-font-family-',
     dtcgType: 'fontFamily',
   },
   {
     path: 'core.font.weight.',
-    cssPrefix: '--tt-font-weight-',
+    cssPrefix: '--tt-core-font-weight-',
     dtcgType: 'fontWeight',
   },
   {
     path: 'core.font.leading.',
-    cssPrefix: '--tt-line-height-',
+    cssPrefix: '--tt-core-font-leading-',
     dtcgType: 'number',
   },
   {
     path: 'core.font.tracking.',
-    cssPrefix: '--tt-letter-spacing-',
+    cssPrefix: '--tt-core-font-tracking-',
     dtcgType: 'dimension',
   },
   {
-    path: 'core.font.opticalSizing.',
-    cssPrefix: '--tt-font-optical-sizing-',
+    path: 'core.font.optical.',
+    cssPrefix: '--tt-core-font-optical-',
     dtcgType: 'string',
   },
   {
     path: 'core.font.numeric.',
-    cssPrefix: '--tt-font-variant-numeric-',
+    cssPrefix: '--tt-core-font-numeric-',
     dtcgType: 'string',
   },
   {
-    path: 'core.type.ramp.',
-    cssPrefix: '--tt-font-size-',
+    path: 'core.font.scale.',
+    cssPrefix: '--tt-core-font-scale-',
     dtcgType: 'dimension',
   },
-  { path: 'core.space.', cssPrefix: '--tt-space-', dtcgType: 'dimension' },
-  { path: 'core.size.', cssPrefix: '--tt-size-', dtcgType: 'dimension' },
-  { path: 'core.radii.', cssPrefix: '--tt-radii-', dtcgType: 'dimension' },
+  {
+    path: 'core.spacing.',
+    cssPrefix: '--tt-core-spacing-',
+    dtcgType: 'dimension',
+  },
+  // CSS keywords (auto, fit-content, etc.) are not DTCG dimensions — more-specific entry first.
+  {
+    path: 'core.sizing.behavior.',
+    cssPrefix: '--tt-core-sizing-behavior-',
+    dtcgType: 'string',
+  },
+  {
+    path: 'core.sizing.',
+    cssPrefix: '--tt-core-sizing-',
+    dtcgType: 'dimension',
+  },
+  {
+    path: 'core.radii.',
+    cssPrefix: '--tt-core-radii-',
+    dtcgType: 'dimension',
+  },
   {
     path: 'core.border.width.',
-    cssPrefix: '--tt-border-width-',
+    cssPrefix: '--tt-core-border-width-',
     dtcgType: 'dimension',
   },
   {
     path: 'core.border.style.',
-    cssPrefix: '--tt-border-style-',
+    cssPrefix: '--tt-core-border-style-',
     dtcgType: 'string',
   },
-  { path: 'core.opacity.', cssPrefix: '--tt-opacity-', dtcgType: 'number' },
+  {
+    path: 'core.opacity.',
+    cssPrefix: '--tt-core-opacity-',
+    dtcgType: 'number',
+  },
   {
     path: 'core.motion.duration.',
-    cssPrefix: '--tt-duration-',
+    cssPrefix: '--tt-core-motion-duration-',
     dtcgType: 'duration',
   },
   {
     path: 'core.motion.easing.',
-    cssPrefix: '--tt-easing-',
+    cssPrefix: '--tt-core-motion-easing-',
     dtcgType: 'string',
   },
   {
     path: 'core.zIndex.level.',
-    cssPrefix: '--tt-z-index-level-',
+    cssPrefix: '--tt-core-z-index-',
     dtcgType: 'number',
   },
   {
-    path: 'core.breakpoint.',
-    cssPrefix: '--tt-breakpoint-',
+    path: 'core.breakpoints.',
+    cssPrefix: '--tt-core-breakpoints-',
     dtcgType: 'dimension',
   },
 
   // -- Semantic paths -------------------------------------------------------
-  { path: 'semantic.colors.', cssPrefix: '--tt-', dtcgType: 'color' },
+  {
+    path: 'semantic.colors.',
+    cssPrefix: '--tt-colors-',
+    dtcgType: 'color',
+  },
   {
     path: 'semantic.elevation.',
     cssPrefix: '--tt-elevation-',
@@ -162,14 +196,14 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   },
   {
     path: 'semantic.radii.',
-    cssPrefix: '--tt-radii-semantic-',
+    cssPrefix: '--tt-radii-',
     dtcgType: 'dimension',
   },
   { path: 'semantic.focus.', cssPrefix: '--tt-focus-', dtcgType: 'string' },
   { path: 'semantic.border.', cssPrefix: '--tt-border-', dtcgType: 'string' },
   {
     path: 'semantic.opacity.',
-    cssPrefix: '--tt-opacity-semantic-',
+    cssPrefix: '--tt-opacity-',
     dtcgType: 'number',
   },
   { path: 'semantic.motion.', cssPrefix: '--tt-motion-', dtcgType: 'string' },

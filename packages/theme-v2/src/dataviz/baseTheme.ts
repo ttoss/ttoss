@@ -9,7 +9,7 @@ import type { CoreDataviz, SemanticDataviz } from './Types';
  *
  * Analytical color comes from `core.colors.*` — see `semanticDataviz` below.
  */
-export const coreDatavizDefault: CoreDataviz = {
+export const coreDataviz: CoreDataviz = {
   shape: {
     1: 'circle',
     2: 'square',
@@ -90,7 +90,7 @@ export const semanticDataviz: SemanticDataviz = {
     status: {
       missing: '{core.colors.neutral.200}',
       suppressed: '{core.colors.neutral.700}',
-      'not-applicable': '{core.colors.neutral.500}',
+      na: '{core.colors.neutral.500}',
     },
   },
   encoding: {

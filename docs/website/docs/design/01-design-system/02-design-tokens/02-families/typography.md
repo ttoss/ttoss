@@ -66,14 +66,14 @@ The following is specific to CSS/web output and does not affect the semantic con
 
 ```css
 :root {
-  --tt-type-ramp-text-3: clamp(16px, calc(0.8vi + 12px), 18px);
-  --tt-type-ramp-display-3: clamp(28px, calc(1.6vi + 20px), 40px);
+  --tt-core-font-scale-text-3: clamp(16px, calc(0.8vi + 12px), 18px);
+  --tt-core-font-scale-display-3: clamp(28px, calc(1.6vi + 20px), 40px);
 }
 
 @supports (width: 1cqi) {
   :root {
-    --tt-type-ramp-text-3: clamp(16px, calc(0.8cqi + 12px), 18px);
-    --tt-type-ramp-display-3: clamp(28px, calc(1.6cqi + 20px), 40px);
+    --tt-core-font-scale-text-3: clamp(16px, calc(0.8cqi + 12px), 18px);
+    --tt-core-font-scale-display-3: clamp(28px, calc(1.6cqi + 20px), 40px);
   }
 }
 ```
@@ -95,7 +95,7 @@ Core typography is composed of **two groups**:
 | **Font weights**                  | `core.font.weight.regular` (400), `core.font.weight.medium` (500), `core.font.weight.semibold` (600), `core.font.weight.bold` (700) | If using variable fonts, weights may be tuned at the theme level. Components still consume semantic styles only. |
 | **Leading (line-height)**         | `core.font.leading.tight`, `core.font.leading.snug`, `core.font.leading.normal`, `core.font.leading.relaxed`                        | Unitless multipliers for scalable line-height.                                                                   |
 | **Tracking (letter-spacing)**     | `core.font.tracking.tight`, `core.font.tracking.normal`, `core.font.tracking.wide`                                                  | `tight` may be used for large headings. `wide` is intended for short labels; avoid for body text.                |
-| **Optical sizing** _(optional)_   | `core.font.opticalSizing.auto`, `core.font.opticalSizing.none`                                                                      | Enables optical adjustments for variable fonts when supported.                                                   |
+| **Optical sizing** _(optional)_   | `core.font.optical.auto`, `core.font.optical.none`                                                                                  | Enables optical adjustments for variable fonts when supported.                                                   |
 | **Numeric features** _(optional)_ | `core.font.numeric.proportional`, `core.font.numeric.tabular`                                                                       | `tabular` is recommended for dashboards or frequently updating numeric values.                                   |
 
 #### Size Ramps (Responsive Engine)
@@ -103,10 +103,10 @@ Core typography is composed of **two groups**:
 Ramps define the **responsive typographic scale**.  
 Each ramp is expressed using `clamp(min, preferred, max)`.
 
-| Ramp              | Tokens                        | Purpose                                            |
-| :---------------- | :---------------------------- | :------------------------------------------------- |
-| **Text scale**    | `core.type.ramp.text.1..6`    | Body text, labels, and dense UI typography.        |
-| **Display scale** | `core.type.ramp.display.1..6` | Headings, titles, and high-hierarchy display text. |
+| Ramp              | Tokens                         | Purpose                                            |
+| :---------------- | :----------------------------- | :------------------------------------------------- |
+| **Text scale**    | `core.font.scale.text.1..6`    | Body text, labels, and dense UI typography.        |
+| **Display scale** | `core.font.scale.display.1..6` | Headings, titles, and high-hierarchy display text. |
 
 > **Rule:** Semantic typography styles must map to ramp steps.  
 > Semantic tokens never define new `clamp()` formulas.
@@ -141,7 +141,7 @@ const coreTypography = {
       wide: '0.04em',
     },
 
-    opticalSizing: {
+    optical: {
       auto: 'auto',
       none: 'none',
     },
@@ -150,14 +150,12 @@ const coreTypography = {
       proportional: 'proportional-nums',
       tabular: 'tabular-nums',
     },
-  },
 
-  type: {
     /**
-     * Responsive engine (container-first), theme must emit a viewport-safe fallback first,
+     * Responsive size scale (container-first). Theme must emit a viewport-safe fallback first,
      * then override these when supported via @supports (width: 1cqi).
      */
-    ramp: {
+    scale: {
       text: {
         1: 'clamp(12px, calc(0.6cqi + 10px), 14px)',
         2: 'clamp(14px, calc(0.7cqi + 11px), 16px)',
@@ -181,7 +179,7 @@ const coreTypography = {
 ```
 
 **Expected consumption pattern:** semantic styles reference core tokens by alias
-(e.g., `text.body.md → core.type.ramp.text.3`, `text.display.lg → core.type.ramp.display.5`).
+(e.g., `text.body.md → core.font.scale.text.3`, `text.display.lg → core.font.scale.display.5`).
 
 ---
 
@@ -224,25 +222,25 @@ Each text family represents a distinct typographic role in the interface.
 
 ### Semantic Tokens Summary Table
 
-| token              | use when you are building…    | contract (must be true)            | default mapping                                                                    |
-| :----------------- | :---------------------------- | :--------------------------------- | :--------------------------------------------------------------------------------- |
-| `text.display.lg`  | hero display / landing hero   | strongest hierarchy; avoid overuse | `core.type.ramp.display.5`, `core.font.weight.bold`, `core.font.leading.tight`     |
-| `text.display.md`  | large display headings        | high hierarchy                     | `core.type.ramp.display.4`, `core.font.weight.bold`, `core.font.leading.tight`     |
-| `text.display.sm`  | smaller display headings      | high hierarchy                     | `core.type.ramp.display.3`, `core.font.weight.semibold`, `core.font.leading.tight` |
-| `text.headline.lg` | page/section headline         | clear hierarchy                    | `core.type.ramp.display.3`, `core.font.weight.semibold`, `core.font.leading.snug`  |
-| `text.headline.md` | section headline              | clear hierarchy                    | `core.type.ramp.display.2`, `core.font.weight.semibold`, `core.font.leading.snug`  |
-| `text.headline.sm` | small headline                | compact hierarchy                  | `core.type.ramp.display.1`, `core.font.weight.semibold`, `core.font.leading.snug`  |
-| `text.title.lg`    | surface titles (cards/modals) | title-like, not shouting           | `core.type.ramp.text.6`, `core.font.weight.semibold`, `core.font.leading.snug`     |
-| `text.title.md`    | default surface title         | title-like                         | `core.type.ramp.text.5`, `core.font.weight.semibold`, `core.font.leading.snug`     |
-| `text.title.sm`    | compact titles                | title-like                         | `core.type.ramp.text.4`, `core.font.weight.medium`, `core.font.leading.snug`       |
-| `text.body.lg`     | long-form body (comfortable)  | readable; avoid tight leading      | `core.type.ramp.text.4`, `core.font.weight.regular`, `core.font.leading.normal`    |
-| `text.body.md`     | default body                  | readable default                   | `core.type.ramp.text.3`, `core.font.weight.regular`, `core.font.leading.normal`    |
-| `text.body.sm`     | dense body / secondary text   | still readable                     | `core.type.ramp.text.2`, `core.font.weight.regular`, `core.font.leading.normal`    |
-| `text.label.lg`    | strong labels                 | short text; supports tracking      | `core.type.ramp.text.3`, `core.font.weight.medium`, `core.font.leading.snug`       |
-| `text.label.md`    | default labels                | short text                         | `core.type.ramp.text.2`, `core.font.weight.medium`, `core.font.leading.snug`       |
-| `text.label.sm`    | small labels / captions       | short text                         | `core.type.ramp.text.1`, `core.font.weight.medium`, `core.font.leading.snug`       |
-| `text.code.md`     | code/monospace blocks         | mono; stable glyph width helpful   | `core.type.ramp.text.2`, `core.font.family.mono`, `core.font.leading.normal`       |
-| `text.code.sm`     | inline code / dense logs      | mono; compact                      | `core.type.ramp.text.1`, `core.font.family.mono`, `core.font.leading.normal`       |
+| token              | use when you are building…    | contract (must be true)            | default mapping                                                                     |
+| :----------------- | :---------------------------- | :--------------------------------- | :---------------------------------------------------------------------------------- |
+| `text.display.lg`  | hero display / landing hero   | strongest hierarchy; avoid overuse | `core.font.scale.display.5`, `core.font.weight.bold`, `core.font.leading.tight`     |
+| `text.display.md`  | large display headings        | high hierarchy                     | `core.font.scale.display.4`, `core.font.weight.bold`, `core.font.leading.tight`     |
+| `text.display.sm`  | smaller display headings      | high hierarchy                     | `core.font.scale.display.3`, `core.font.weight.semibold`, `core.font.leading.tight` |
+| `text.headline.lg` | page/section headline         | clear hierarchy                    | `core.font.scale.display.3`, `core.font.weight.semibold`, `core.font.leading.snug`  |
+| `text.headline.md` | section headline              | clear hierarchy                    | `core.font.scale.display.2`, `core.font.weight.semibold`, `core.font.leading.snug`  |
+| `text.headline.sm` | small headline                | compact hierarchy                  | `core.font.scale.display.1`, `core.font.weight.semibold`, `core.font.leading.snug`  |
+| `text.title.lg`    | surface titles (cards/modals) | title-like, not shouting           | `core.font.scale.text.6`, `core.font.weight.semibold`, `core.font.leading.snug`     |
+| `text.title.md`    | default surface title         | title-like                         | `core.font.scale.text.5`, `core.font.weight.semibold`, `core.font.leading.snug`     |
+| `text.title.sm`    | compact titles                | title-like                         | `core.font.scale.text.4`, `core.font.weight.medium`, `core.font.leading.snug`       |
+| `text.body.lg`     | long-form body (comfortable)  | readable; avoid tight leading      | `core.font.scale.text.4`, `core.font.weight.regular`, `core.font.leading.normal`    |
+| `text.body.md`     | default body                  | readable default                   | `core.font.scale.text.3`, `core.font.weight.regular`, `core.font.leading.normal`    |
+| `text.body.sm`     | dense body / secondary text   | still readable                     | `core.font.scale.text.2`, `core.font.weight.regular`, `core.font.leading.normal`    |
+| `text.label.lg`    | strong labels                 | short text; supports tracking      | `core.font.scale.text.3`, `core.font.weight.medium`, `core.font.leading.snug`       |
+| `text.label.md`    | default labels                | short text                         | `core.font.scale.text.2`, `core.font.weight.medium`, `core.font.leading.snug`       |
+| `text.label.sm`    | small labels / captions       | short text                         | `core.font.scale.text.1`, `core.font.weight.medium`, `core.font.leading.snug`       |
+| `text.code.md`     | code/monospace blocks         | mono; stable glyph width helpful   | `core.font.scale.text.2`, `core.font.family.mono`, `core.font.leading.normal`       |
+| `text.code.sm`     | inline code / dense logs      | mono; compact                      | `core.font.scale.text.1`, `core.font.family.mono`, `core.font.leading.normal`       |
 
 ---
 
@@ -254,142 +252,142 @@ const semanticTypography = {
     display: {
       lg: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.5}',
+        fontSize: '{core.font.scale.display.5}',
         fontWeight: '{core.font.weight.bold}',
         lineHeight: '{core.font.leading.tight}',
         letterSpacing: '{core.font.tracking.tight}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       md: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.4}',
+        fontSize: '{core.font.scale.display.4}',
         fontWeight: '{core.font.weight.bold}',
         lineHeight: '{core.font.leading.tight}',
         letterSpacing: '{core.font.tracking.tight}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       sm: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.3}',
+        fontSize: '{core.font.scale.display.3}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.tight}',
         letterSpacing: '{core.font.tracking.tight}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
     },
 
     headline: {
       lg: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.3}',
+        fontSize: '{core.font.scale.display.3}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       md: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.2}',
+        fontSize: '{core.font.scale.display.2}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       sm: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.display.1}',
+        fontSize: '{core.font.scale.display.1}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
     },
 
     title: {
       lg: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.6}',
+        fontSize: '{core.font.scale.text.6}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       md: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.5}',
+        fontSize: '{core.font.scale.text.5}',
         fontWeight: '{core.font.weight.semibold}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       sm: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.4}',
+        fontSize: '{core.font.scale.text.4}',
         fontWeight: '{core.font.weight.medium}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
     },
 
     body: {
       lg: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.4}',
+        fontSize: '{core.font.scale.text.4}',
         fontWeight: '{core.font.weight.regular}',
         lineHeight: '{core.font.leading.normal}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       md: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.3}',
+        fontSize: '{core.font.scale.text.3}',
         fontWeight: '{core.font.weight.regular}',
         lineHeight: '{core.font.leading.normal}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       sm: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.2}',
+        fontSize: '{core.font.scale.text.2}',
         fontWeight: '{core.font.weight.regular}',
         lineHeight: '{core.font.leading.normal}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
     },
 
     label: {
       lg: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.3}',
+        fontSize: '{core.font.scale.text.3}',
         fontWeight: '{core.font.weight.medium}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       md: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.2}',
+        fontSize: '{core.font.scale.text.2}',
         fontWeight: '{core.font.weight.medium}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.normal}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
       sm: {
         fontFamily: '{core.font.family.sans}',
-        fontSize: '{core.type.ramp.text.1}',
+        fontSize: '{core.font.scale.text.1}',
         fontWeight: '{core.font.weight.medium}',
         lineHeight: '{core.font.leading.snug}',
         letterSpacing: '{core.font.tracking.wide}',
-        fontOpticalSizing: '{core.font.opticalSizing.auto}',
+        fontOpticalSizing: '{core.font.optical.auto}',
       },
     },
 
     code: {
       md: {
         fontFamily: '{core.font.family.mono}',
-        fontSize: '{core.type.ramp.text.2}',
+        fontSize: '{core.font.scale.text.2}',
         fontWeight: '{core.font.weight.regular}',
         lineHeight: '{core.font.leading.normal}',
         letterSpacing: '{core.font.tracking.normal}',
@@ -397,7 +395,7 @@ const semanticTypography = {
       },
       sm: {
         fontFamily: '{core.font.family.mono}',
-        fontSize: '{core.type.ramp.text.1}',
+        fontSize: '{core.font.scale.text.1}',
         fontWeight: '{core.font.weight.regular}',
         lineHeight: '{core.font.leading.normal}',
         letterSpacing: '{core.font.tracking.normal}',
@@ -425,11 +423,11 @@ const semanticTypography = {
 
 Themes may tune:
 
-- core ramps (`core.type.ramp.*`) — the responsive engine
+- font size scale (`core.font.scale.*`) — the responsive engine
 - font stacks (`core.font.family.*`)
 - weights (`core.font.weight.*`)
 - leading/tracking defaults (`core.font.leading.*`, `core.font.tracking.*`)
-- optional features (`core.font.opticalSizing.*`, `core.font.numeric.*`)
+- optional features (`core.font.optical.*`, `core.font.numeric.*`)
 
 Semantic token names **never change across themes**.
 

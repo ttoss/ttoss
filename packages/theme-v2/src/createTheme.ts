@@ -4,7 +4,7 @@ import type {
   DeepPartial,
   ModeOverride,
   ThemeBundle,
-  ThemeTokensV2,
+  ThemeTokens,
 } from './Types';
 
 // ---------------------------------------------------------------------------
@@ -12,7 +12,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 /**
- * Creates a fully resolved `ThemeTokensV2` by merging partial overrides into a base.
+ * Creates a fully resolved `ThemeTokens` by merging partial overrides into a base.
  * Internal engine — consumers should use `createTheme` which returns `ThemeBundle`.
  *
  * @internal
@@ -22,10 +22,10 @@ export const buildTheme = ({
   overrides = {},
 }: {
   /** Base theme to extend. Defaults to `baseTheme`. */
-  base?: ThemeTokensV2;
+  base?: ThemeTokens;
   /** Partial overrides applied on top of the base theme. */
-  overrides?: DeepPartial<ThemeTokensV2>;
-} = {}): ThemeTokensV2 => {
+  overrides?: DeepPartial<ThemeTokens>;
+} = {}): ThemeTokens => {
   const merged = deepMerge(base, overrides);
 
   // Deep-clone to break shared references between base and result.
@@ -98,9 +98,9 @@ export const createTheme = ({
   /** Which mode the base represents. Defaults to `extends.baseMode` or `'light'`. */
   baseMode?: 'light' | 'dark';
   /** Base theme to extend. Defaults to `extends.base` or `baseTheme`. */
-  base?: ThemeTokensV2;
+  base?: ThemeTokens;
   /** Brand overrides applied to the base theme. */
-  overrides?: DeepPartial<ThemeTokensV2>;
+  overrides?: DeepPartial<ThemeTokens>;
   /**
    * Semantic remapping overrides for the opposite mode.
    * Defaults to `darkAlternate` when not provided (and no `extends`).

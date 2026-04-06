@@ -1,6 +1,6 @@
 import { buildTheme } from '../createTheme';
 import type { ThemeBundle } from '../Types';
-import { coreDatavizDefault, semanticDataviz } from './baseTheme';
+import { coreDataviz, semanticDataviz } from './baseTheme';
 
 // -- Composer ---------------------------------------------------------------
 
@@ -31,7 +31,7 @@ export const withDataviz = (bundle: ThemeBundle): ThemeBundle => {
     base: buildTheme({
       base: bundle.base,
       overrides: {
-        core: { dataviz: coreDatavizDefault },
+        core: { dataviz: coreDataviz },
         semantic: { dataviz: semanticDataviz },
       },
     }),

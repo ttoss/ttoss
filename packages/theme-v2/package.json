@@ -2,7 +2,7 @@
   "private": true,
   "name": "@ttoss/theme2",
   "version": "1.1.10",
-  "description": "Theme v2 for packages.",
+  "description": "ttoss theme provider for UI.",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [

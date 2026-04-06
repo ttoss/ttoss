@@ -1,6 +1,6 @@
 # @ttoss/theme2
 
-Type-safe design tokens for the ttoss ecosystem. Two-layer architecture (core → semantic), light/dark mode, React 19 style hoisting, SSR support.
+Design token system for the ttoss ecosystem. Separates raw values (`core`) from stable design meaning (`semantic`) so components never break when themes change or modes switch. The semantic layer is the public contract — type-safe, mode-agnostic, and consumed directly as CSS custom properties with zero runtime overhead.
 
 ## Installation
 
@@ -23,7 +23,7 @@ pnpm add @ttoss/theme2
 ## Token architecture
 
 ```
-ThemeTokensV2
+ThemeTokens
 ├── core     — raw primitives (immutable across modes)
 └── semantic — usage aliases, always {core.*} refs (remapped per mode)
 ```
@@ -114,7 +114,7 @@ const resolved = useResolvedTokens();
 ```css
 /* CSS — no JS overhead, no re-renders */
 .button {
-  background: var(--tt-action-primary-background-default);
+  background: var(--tt-colors-action-primary-background-default);
 }
 ```
 

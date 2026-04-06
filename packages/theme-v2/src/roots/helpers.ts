@@ -1,5 +1,5 @@
 import type { DeepPartial } from '../Types';
-import type { ThemeTokensV2 } from '../Types';
+import type { ThemeTokens } from '../Types';
 
 // ---------------------------------------------------------------------------
 // Token reference utilities
@@ -93,7 +93,7 @@ export const flattenObject = (
 // ---------------------------------------------------------------------------
 
 /**
- * Flatten a `ThemeTokensV2` into a `Record<string, string | number>` with
+ * Flatten a `ThemeTokens` into a `Record<string, string | number>` with
  * every `{ref}` recursively resolved to its final raw value where possible.
  *
  * Unresolvable references (missing target or circular dependency) are
@@ -103,7 +103,7 @@ export const flattenObject = (
  * This is the universal primitive — every root is derived from this.
  */
 export const flattenAndResolve = (
-  theme: ThemeTokensV2
+  theme: ThemeTokens
 ): Record<string, string | number> => {
   // 1. Flatten both layers (refs still as `{path}` strings)
   const coreFlat = flattenObject(
@@ -202,10 +202,10 @@ export type FlatTokenMap = Record<string, string | number>;
 /**
  * Root 2 — Flat Token Map.
  *
- * Convert a `ThemeTokensV2` into a flat `Record<string, string | number>`
+ * Convert a `ThemeTokens` into a flat `Record<string, string | number>`
  * with dot-separated keys and all `{ref}` values recursively resolved
  * to their final raw value.
  */
-export const toFlatTokens = (theme: ThemeTokensV2): FlatTokenMap => {
+export const toFlatTokens = (theme: ThemeTokens): FlatTokenMap => {
   return flattenAndResolve(theme);
 };

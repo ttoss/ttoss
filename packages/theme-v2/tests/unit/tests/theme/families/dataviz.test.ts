@@ -45,7 +45,7 @@ const statusValues = (): (string | number)[] => {
   return [
     flat['semantic.dataviz.color.status.missing'],
     flat['semantic.dataviz.color.status.suppressed'],
-    flat['semantic.dataviz.color.status.not-applicable'],
+    flat['semantic.dataviz.color.status.na'],
   ];
 };
 
@@ -73,11 +73,11 @@ describe('Colors — Errors', () => {
 
   test('all three status tokens resolve to distinct effective values', () => {
     // Error #2 (dataviz-colors.md): any two status tokens resolve to the same effective value
-    const [missing, suppressed, notApplicable] = statusValues();
+    const [missing, suppressed, na] = statusValues();
 
     expect(missing).not.toEqual(suppressed);
-    expect(missing).not.toEqual(notApplicable);
-    expect(suppressed).not.toEqual(notApplicable);
+    expect(missing).not.toEqual(na);
+    expect(suppressed).not.toEqual(na);
   });
 
   test('no status token resolves to the same value as any scale step or state.muted', () => {

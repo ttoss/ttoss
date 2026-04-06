@@ -1,9 +1,9 @@
-import type { ThemeTokensV2 } from '../Types';
+import type { ThemeTokens } from '../Types';
 import { isPlainObject } from './helpers';
 import { toCssVarName } from './toCssVars';
 
 // ---------------------------------------------------------------------------
-// CssVarMap — recursive type that mirrors a token shape with string leaves
+// CssVarsMap — recursive type that mirrors a token shape with string leaves
 // ---------------------------------------------------------------------------
 
 /**
@@ -14,25 +14,25 @@ import { toCssVarName } from './toCssVars';
  * metadata, not consumable tokens.
  *
  * Optional keys in the source type remain optional in the mapped type, so
- * theme extensions such as `dataviz?` are typed as `CssVarMap<...> | undefined`
+ * theme extensions such as `dataviz?` are typed as `CssVarsMap<...> | undefined`
  * and TypeScript will require callers to guard against `undefined` before
  * accessing their members.
  *
  * @example
  * ```ts
  * type Colors = { action: { primary: { background: { default: TokenRef } } } };
- * type ColorVars = CssVarMap<Colors>;
+ * type ColorVars = CssVarsMap<Colors>;
  * // → { action: { primary: { background: { default: string } } } }
  * ```
  */
-export type CssVarMap<T> = {
+export type CssVarsMap<T> = {
   [K in keyof T as K extends `$${string}` ? never : K]: NonNullable<
     T[K]
   > extends string | number
     ? string
     : undefined extends T[K]
-      ? CssVarMap<NonNullable<T[K]>> | undefined
-      : CssVarMap<NonNullable<T[K]>>;
+      ? CssVarsMap<NonNullable<T[K]>> | undefined
+      : CssVarsMap<NonNullable<T[K]>>;
 };
 
 // ---------------------------------------------------------------------------
@@ -59,8 +59,8 @@ export type CssVarMap<T> = {
  * ```
  */
 export const buildVarsMap = (
-  theme: ThemeTokensV2
-): CssVarMap<ThemeTokensV2['semantic']> => {
+  theme: ThemeTokens
+): CssVarsMap<ThemeTokens['semantic']> => {
   const walk = (
     obj: Record<string, unknown>,
     prefix: string
@@ -86,5 +86,5 @@ export const buildVarsMap = (
   return walk(
     theme.semantic as unknown as Record<string, unknown>,
     'semantic'
-  ) as CssVarMap<ThemeTokensV2['semantic']>;
+  ) as CssVarsMap<ThemeTokens['semantic']>;
 };

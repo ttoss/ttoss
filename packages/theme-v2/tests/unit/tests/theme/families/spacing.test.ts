@@ -57,10 +57,13 @@ const parseClampArgs = (str: string): [string, string, string] | null => {
   return [parts[0], parts[1], parts[2]];
 };
 
-/** Returns true when the value is a valid core.space.* step alias: `0px` or `calc(N * var(--tt-space-unit))`. */
+/** Returns true when the value is a valid core.spacing.* step alias: `0px` or `calc(N * var(--tt-core-spacing-engine-unit))`. */
 const isCoreSpaceAlias = (value: string | number): boolean => {
   const str = String(value).trim();
-  return str === '0px' || /^calc\(\d+ \* var\(--tt-space-unit\)\)$/.test(str);
+  return (
+    str === '0px' ||
+    /^calc\(\d+ \* var\(--tt-core-spacing-engine-unit\)\)$/.test(str)
+  );
 };
 
 /** Returns true when the value embeds a direct responsive unit rather than composing from core.space.*. */
@@ -156,9 +159,9 @@ for (const { label, tokens } of bundleEntries) {
 for (const { label, tokens } of bundleEntries) {
   describe(`Semantic spacing — gap ordering (${label})`, () => {
     test.each(['xs', 'sm', 'md', 'lg', 'xl'] as const)(
-      'gap.stack.%s is a core.space.* alias',
+      'gap.stack.%s is a core.spacing.* alias',
       (step) => {
-        // Error #6: any gap.stack.* token resolves to anything other than a core.space.* step alias
+        // Error #6: any gap.stack.* token resolves to anything other than a core.spacing.* step alias
         const value = tokens[`semantic.spacing.gap.stack.${step}`];
 
         expect(value).toBeDefined();
@@ -180,14 +183,18 @@ for (const { label, tokens } of bundleEntries) {
       }
     });
 
-    test('gap.inline.xs < gap.inline.sm', () => {
-      // Error #8: gap.inline.xs > gap.inline.sm
-      const xs = parseSpaceValue(tokens['semantic.spacing.gap.inline.xs']!);
-      const sm = parseSpaceValue(tokens['semantic.spacing.gap.inline.sm']!);
+    test('gap.inline: xs < sm < md < lg < xl', () => {
+      // Error #8: gap.inline steps do not preserve order
+      const steps = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+      const values = steps.map((s) => {
+        return parseSpaceValue(tokens[`semantic.spacing.gap.inline.${s}`]!);
+      });
 
-      expect(xs).not.toBeNaN();
-      expect(sm).not.toBeNaN();
-      expect(xs).toBeLessThan(sm);
+      for (const v of values) expect(v).not.toBeNaN();
+
+      for (let i = 0; i < values.length - 1; i++) {
+        expect(values[i]).toBeLessThan(values[i + 1]);
+      }
     });
 
     test('adjacent gap.stack steps have distinct values', () => {
@@ -202,12 +209,16 @@ for (const { label, tokens } of bundleEntries) {
       }
     });
 
-    test('gap.inline.xs has a distinct value from gap.inline.sm', () => {
-      // Warning #4: gap.inline.xs resolves to the same effective value as gap.inline.sm
-      const xs = parseSpaceValue(tokens['semantic.spacing.gap.inline.xs']!);
-      const sm = parseSpaceValue(tokens['semantic.spacing.gap.inline.sm']!);
+    test('adjacent gap.inline steps have distinct values', () => {
+      // Warning #4: adjacent gap.inline.* steps resolve to the same effective value
+      const steps = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+      const values = steps.map((s) => {
+        return parseSpaceValue(tokens[`semantic.spacing.gap.inline.${s}`]!);
+      });
 
-      expect(xs).not.toBe(sm);
+      for (let i = 0; i < values.length - 1; i++) {
+        expect(values[i]).not.toBe(values[i + 1]);
+      }
     });
   });
 }
@@ -237,7 +248,7 @@ const MUST_ALIAS_KEYS = [
 
 for (const { label, tokens } of bundleEntries) {
   describe(`Semantic spacing — aliasing contract (${label})`, () => {
-    test.each(MUST_ALIAS_KEYS)('%s is a core.space.* alias', (key) => {
+    test.each(MUST_ALIAS_KEYS)('%s is a core.spacing.* alias', (key) => {
       // Error #16: any semantic spacing token other than gutter.* or separation.interactive.min
       //            defines its own raw formula instead of aliasing core spacing steps
       const value = tokens[key];
@@ -361,15 +372,14 @@ for (const { label, tokens } of bundleEntries) {
 }
 
 // ---------------------------------------------------------------------------
-// Not tested: CSS output structure (Error #17, Error #18)
+// CSS output structure (Error #17, Error #18)
 //
 // Error #17: generated output does not emit a viewport-safe fallback before
 //            container-based overrides.
 // Error #18: generated output does not gate container-based overrides behind
 //            @supports (width: 1cqi).
 //
-// Both constraints require inspecting the CSS string produced by
-// toCssVars() / getThemeStylesContent() — not observable from resolved flat
-// token values alone. Add to a dedicated CSS-output integration test that
-// calls getThemeStylesContent() and asserts on the resulting CSS string.
+// Both constraints are covered by the dedicated CSS-output integration tests in:
+//   tests/unit/tests/engine/output/toCssVars.test.ts
+//   → describe('spacing responsive engine — CSS output (Error #17 / Error #18)')
 // ---------------------------------------------------------------------------
