@@ -31,6 +31,11 @@ pnpm run lint -- --no-stash --allow-empty
 # `deploy` will run even if `test` fails.
 pnpm turbo run build test deploy --filter=[main]
 
+# Build carlin CLI explicitly so it is available even when no packages changed
+# since main (e.g. PRs that only touch workflow/config files), because the
+# deploy task dependency on carlin#build only runs when packages are deployed.
+pnpm turbo run build --filter=carlin
+
 # After all packages are deployed, post or update a single PR comment with
 # the consolidated deploy outputs from all .carlin/*.json files in the workspace.
 pnpm carlin deploy report --channel=github-pr
