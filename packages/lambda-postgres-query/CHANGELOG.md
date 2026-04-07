@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.3.30...@ttoss/lambda-postgres-query@0.4.0) (2026-04-07)
+
+### Features
+
+- **lambda-postgres-query:** add dedicated read-only Lambda and env vars ([#925](https://github.com/ttoss/ttoss/issues/925)) ([793ad2f](https://github.com/ttoss/ttoss/commit/793ad2f0ae40e7515b9d2c1d13e763f818e3147f))
+
 ## 0.3.30 (2026-04-04)
 
 ### Bug Fixes

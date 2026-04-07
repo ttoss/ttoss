@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.9](https://github.com/ttoss/ttoss/compare/@terezinha-farm/postgresdb@1.3.8...@terezinha-farm/postgresdb@1.3.9) (2026-04-07)
+
+**Note:** Version bump only for package @terezinha-farm/postgresdb
+
 ## 1.3.8 (2026-04-04)
 
 ### Bug Fixes
