@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.9](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.5.8...@ttoss/http-server@0.5.9) (2026-04-07)
+
+### Bug Fixes
+
+- **@ttoss/http-server:** RouterContext now exports with full generic signature ([#929](https://github.com/ttoss/ttoss/issues/929)) ([75b6adb](https://github.com/ttoss/ttoss/commit/75b6adb00d6fecd60b4697b46eae46a0c4847709))
+
 ## 0.5.8 (2026-04-04)
 
 ### Bug Fixes
