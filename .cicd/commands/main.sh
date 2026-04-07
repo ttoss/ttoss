@@ -44,11 +44,12 @@ if pnpm lerna changed; then
   echo "Changes detected on packages, publishing them..."
 
   # Version before publish to rebuild all packages that Lerna will publish.
-  # Delete local tags only after lerna version runs so it can use them as a
-  # baseline to determine which packages changed. Tags are re-pushed via
+  # Capture existing tags before versioning so we can delete only them afterward,
+  # preserving the new tags created by lerna version. Tags are re-pushed via
   # git push --follow-tags below.
+  OLD_TAGS=$(git tag -l)
   pnpm lerna version --yes --no-push
-  git tag -l | xargs -r git tag -d
+  echo "$OLD_TAGS" | xargs -r git tag -d
 
   # Test and build all packages since $LATEST_TAG
   # and all the workspaces that depends on them.
