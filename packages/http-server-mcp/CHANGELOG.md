@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.5.8...@ttoss/http-server-mcp@0.11.0) (2026-04-07)
+
+### Bug Fixes
+
+- mcp server export name ([0d203a1](https://github.com/ttoss/ttoss/commit/0d203a1331b326c63fee2c35084a26b8d376e1ee))
+
+### Features
+
+- **http-server-mcp:** generic apiCall HTTP helper + getApiHeaders hook + MCP SDK 1.29.0 ([#922](https://github.com/ttoss/ttoss/issues/922)) ([5ec55f7](https://github.com/ttoss/ttoss/commit/5ec55f72f37ad014c20251bfd0981b377a272796))
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.5.8...@ttoss/http-server-mcp@0.10.0) (2026-04-07)
 
 ### Bug Fixes
