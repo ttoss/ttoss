@@ -1,6 +1,6 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
-  "concurrency": 4,
+  "$schema": "./node_modules/turbo/schema.json",
+  "concurrency": "4",
   "globalEnv": ["NODE_ENV", "TTOSS_MONOREPO"],
   "tasks": {
     "build-config": {
