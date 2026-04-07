@@ -163,3 +163,4 @@ All exports are re-exported from established Koa ecosystem packages:
 - **`serve`** - [Koa static](https://github.com/koajs/static) for serving static files
 - **`addHealthCheck({ app, path? })`** - Adds a health endpoint (defaults to `/health`) returning `{ status: 'ok' }`
 - **`MulterFile`** (type) - File type for uploaded files
+- **`RouterContext<StateT, ContextT>`** (type) - Generic Koa router context for type-safe route handlers
