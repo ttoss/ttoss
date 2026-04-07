@@ -12,11 +12,7 @@ pnpm add @ttoss/http-server-mcp
 
 ```typescript
 import { App, bodyParser, cors } from '@ttoss/http-server';
-import {
-  createMcpRouter,
-  Server as McpServer,
-  z,
-} from '@ttoss/http-server-mcp';
+import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
 
 // Create MCP server
 const mcpServer = new McpServer({
@@ -66,11 +62,7 @@ Use `getApiHeaders` in `createMcpRouter` to configure which headers from the inc
 ### Bearer token forwarding
 
 ```typescript
-import {
-  apiCall,
-  createMcpRouter,
-  Server as McpServer,
-} from '@ttoss/http-server-mcp';
+import { apiCall, createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
 
 const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
 
@@ -170,7 +162,7 @@ Generic HTTP helper for use inside MCP tool handlers.
 ### Basic Tool
 
 ```typescript
-import { Server as McpServer, z } from '@ttoss/http-server-mcp';
+import { McpServer, z } from '@ttoss/http-server-mcp';
 
 const server = new McpServer({
   name: 'calculator',

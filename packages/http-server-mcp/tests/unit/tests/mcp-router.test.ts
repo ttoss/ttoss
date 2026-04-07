@@ -1,6 +1,5 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpRouter, z } from 'src/index';
+import { createMcpRouter, McpServer, z } from 'src/index';
 import request from 'supertest';
 
 describe('createMcpRouter', () => {

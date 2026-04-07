@@ -49,7 +49,7 @@ export interface ApiCallOptions {
  *
  * @example Bearer token forwarding (configured once in `createMcpRouter`)
  * ```typescript
- * import { apiCall, createMcpRouter, Server as McpServer } from '@ttoss/http-server-mcp';
+ * import { apiCall, createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
  *
  * // Tool handler – no manual auth wiring needed
  * mcpServer.registerTool('list-portfolios', { description: '...', inputSchema: {} }, async () => {
@@ -213,7 +213,7 @@ export interface McpRouterOptions {
  * @example
  * ```typescript
  * import { App, bodyParser } from '@ttoss/http-server';
- * import { createMcpRouter, Server as McpServer, z } from '@ttoss/http-server-mcp';
+ * import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
  *
  * const mcpServer = new McpServer({
  *   name: 'my-server',
@@ -368,8 +368,7 @@ export const createMcpRouter = (
 /**
  * Re-export MCP SDK types and classes for convenience
  */
-export type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-export { McpServer as Server } from '@modelcontextprotocol/sdk/server/mcp.js';
+export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 /**
  * Re-export Zod for request/response schema definitions

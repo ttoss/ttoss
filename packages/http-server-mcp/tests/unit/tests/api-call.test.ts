@@ -1,6 +1,5 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { App, bodyParser, Router } from '@ttoss/http-server';
-import { apiCall, createMcpRouter, z } from 'src/index';
+import { apiCall, createMcpRouter, McpServer, z } from 'src/index';
 import request from 'supertest';
 
 // MCP SDK 1.x requires both application/json and text/event-stream in the Accept header
@@ -12,7 +11,8 @@ const startRestServer = (
 ): Promise<{ baseUrl: string; close: () => Promise<void> }> => {
   return new Promise((resolve) => {
     const restApp = new App();
-    const restRouter = new Router();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const restRouter = new Router<any, any>();
     restApp.use(bodyParser());
     setup(restRouter);
     restApp.use(restRouter.routes());
