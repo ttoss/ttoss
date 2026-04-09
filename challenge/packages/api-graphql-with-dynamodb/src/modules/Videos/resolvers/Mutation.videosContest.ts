@@ -1,6 +1,7 @@
-import { type MutationvideosContestArgs } from '../../../schema/types';
 import { type ResolverResolveParams, schemaComposer } from '@ttoss/graphql-api';
-import { VideoTC } from './VideoTC';
+import { type MutationvideosContestArgs } from 'src/schema/types';
+
+import { VideoTC } from '../VideoTC';
 
 const VideosContestTC = schemaComposer.createObjectTC({
   name: 'VideosContest',
