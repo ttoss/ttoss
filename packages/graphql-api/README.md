@@ -90,6 +90,141 @@ import './modules/User/composer';
 export { schemaComposer };
 ```
 
+## Recommended Module Structure
+
+As your GraphQL API grows, you'll encounter three recurring problems: circular imports between modules, relational fields hidden in resolver files (making TC files incomplete), and monolith resolver files with hundreds of lines. The structure below solves all three.
+
+### Directory Structure
+
+Each module has **TC files** at the root and a `resolvers/` folder with one file per GraphQL field:
+
+```
+src/modules/
+├── Meta/
+│   ├── index.ts                              # side-effect imports of all resolver files
+│   ├── MetaAdAccountTC.ts                    # pure shape — scalars + string type refs
+│   ├── MetaCampaignTC.ts
+│   └── resolvers/
+│       ├── Query.metaAdAccount.ts            # root query
+│       ├── Mutation.addMetaAdAccounts.ts     # root mutation
+│       ├── MetaAdAccount.optimizations.ts    # cross-module relational field
+│       └── MetaCampaign.optimization.ts
+├── Optimizations/
+│   ├── index.ts
+│   ├── OptimizationTC.ts
+│   └── resolvers/
+│       ├── Query.optimization.ts
+│       ├── Mutation.createOptimization.ts
+│       ├── Optimization.metaCampaign.ts      # cross-module relational field
+│       └── Optimization.algorithm.ts
+└── User/
+    ├── index.ts
+    ├── UserTC.ts
+    └── resolvers/
+        └── Query.me.ts
+```
+
+### Rule 1: TC Files — All Fields Declared with String Type References
+
+TC files declare **all** fields (scalars and relational) but use **string type names** for cross-module types instead of importing other TCs. `schemaComposer` resolves string type names lazily when building the schema, eliminating circular imports and keeping the full type shape visible in one file.
+
+```typescript
+// MetaAdAccountTC.ts — no imports from other modules
+import { schemaComposer } from '@ttoss/graphql-api';
+
+export const MetaAdAccountTC = schemaComposer.createObjectTC({
+  name: 'MetaAdAccount',
+  fields: {
+    id: 'ID!',
+    name: 'String!',
+    // String type ref — resolved lazily by schemaComposer at build time
+    optimizations: '[Optimization!]!',
+    tracking: 'MetaAdAccountTracking',
+  },
+});
+```
+
+### Rule 2: Resolver Files — One Field Per File with `extendField`
+
+Each resolver file attaches the `resolve` function to a single field using `extendField`. Root queries and mutations use `schemaComposer.Query.addFields()` / `schemaComposer.Mutation.addFields()`.
+
+```typescript
+// resolvers/MetaAdAccount.optimizations.ts
+import { schemaComposer } from '@ttoss/graphql-api';
+import { MetaAdAccountTC } from '../MetaAdAccountTC';
+
+MetaAdAccountTC.extendField('optimizations', {
+  args: { isActive: 'Boolean' },
+  resolve: async (source, args) => {
+    return findManyOptimizations({
+      metaAdAccountId: source.id,
+      isActive: args.isActive,
+    });
+  },
+});
+```
+
+```typescript
+// resolvers/Query.metaAdAccount.ts
+import { schemaComposer } from '@ttoss/graphql-api';
+
+schemaComposer.Query.addFields({
+  metaAdAccount: {
+    type: 'MetaAdAccount',
+    args: { id: 'ID!' },
+    resolve: async (_source, args) => {
+      return findMetaAdAccount({ id: args.id });
+    },
+  },
+});
+```
+
+### Rule 3: Dot Notation File Naming
+
+Resolver files use `Parent.field.ts` naming that maps 1:1 to the GraphQL schema path:
+
+| File name                        | GraphQL path                             |
+| -------------------------------- | ---------------------------------------- |
+| `Query.metaAdAccount.ts`         | `metaAdAccount` field on `Query`         |
+| `Mutation.createOptimization.ts` | `createOptimization` field on `Mutation` |
+| `MetaAdAccount.optimizations.ts` | `optimizations` field on `MetaAdAccount` |
+
+### Rule 4: Index Files — Side-Effect Imports
+
+Each module's `index.ts` imports all TC and resolver files as side effects, guaranteeing registration order:
+
+```typescript
+// Meta/index.ts
+import './MetaAdAccountTC';
+import './MetaCampaignTC';
+import './resolvers/Query.metaAdAccount';
+import './resolvers/Mutation.addMetaAdAccounts';
+import './resolvers/MetaAdAccount.optimizations';
+import './resolvers/MetaCampaign.optimization';
+```
+
+The top-level `schemaComposer.ts` then imports each module index:
+
+```typescript
+// src/schemaComposer.ts
+import { schemaComposer } from '@ttoss/graphql-api';
+import './modules/Meta';
+import './modules/Optimizations';
+import './modules/User';
+
+export { schemaComposer };
+```
+
+### Why This Works
+
+| Concern                         | Solution                                                                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **No circular imports**         | TC files never import other module TCs. Only resolver files (leaf nodes) do cross-module imports, and nothing imports from them. |
+| **Full shape visibility**       | The TC file shows every field on the type — scalars and relational — in one place.                                               |
+| **Import order independence**   | String type refs are resolved lazily at `buildSchema()` time.                                                                    |
+| **Easy to locate**              | `Parent.field.ts` maps 1:1 to the GraphQL schema path.                                                                           |
+| **One responsibility per file** | Each resolver file handles exactly one field, keeping files small and focused.                                                   |
+
 ## Relay Server Specification
 
 As ttoss uses Relay as the main GraphQL client, this library implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/).
