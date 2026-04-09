@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -38,7 +38,7 @@
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
     "react": "^19.2.4",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "Google",
@@ -49,8 +49,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true

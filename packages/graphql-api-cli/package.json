@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node"
+    "build-config": "tsdown"
   },
   "sideEffects": false,
   "dependencies": {
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "api",

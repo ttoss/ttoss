@@ -19,7 +19,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node",
+    "build-config": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -33,7 +33,7 @@
     "@types/minimist": "^1.2.5",
     "jest": "^30.3.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "publishConfig": {
     "access": "public",

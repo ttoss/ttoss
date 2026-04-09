@@ -23,7 +23,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest"
   },
   "dependencies": {
@@ -52,7 +52,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "Jest",
@@ -64,24 +64,44 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "require": {
+          "default": "./dist/index.cjs",
+          "types": "./dist/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/index.mjs",
+          "types": "./dist/index.d.mts"
+        }
       },
       "./faker": {
-        "import": "./dist/esm/faker.js",
-        "require": "./dist/faker.js",
-        "types": "./dist/faker.d.ts"
+        "require": {
+          "default": "./dist/faker.cjs",
+          "types": "./dist/faker.d.cts"
+        },
+        "import": {
+          "default": "./dist/faker.mjs",
+          "types": "./dist/faker.d.mts"
+        }
       },
       "./react": {
-        "import": "./dist/esm/react.js",
-        "require": "./dist/react.js",
-        "types": "./dist/react.d.ts"
+        "require": {
+          "default": "./dist/react.cjs",
+          "types": "./dist/react.d.cts"
+        },
+        "import": {
+          "default": "./dist/react.mjs",
+          "types": "./dist/react.d.mts"
+        }
       },
       "./relay": {
-        "import": "./dist/esm/relay.js",
-        "require": "./dist/relay.js",
-        "types": "./dist/relay.d.ts"
+        "require": {
+          "default": "./dist/relay.cjs",
+          "types": "./dist/relay.d.cts"
+        },
+        "import": {
+          "default": "./dist/relay.mjs",
+          "types": "./dist/relay.d.mts"
+        }
       }
     },
     "provenance": true

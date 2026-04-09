@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
@@ -41,7 +41,7 @@
     "@types/koa-static": "^4.0.4",
     "jest": "^30.3.0",
     "supertest": "^7.1.4",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "koa",
@@ -51,9 +51,14 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "require": {
+          "default": "./dist/index.cjs",
+          "types": "./dist/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/index.mjs",
+          "types": "./dist/index.d.mts"
+        }
       }
     },
     "provenance": true

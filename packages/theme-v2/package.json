@@ -27,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
@@ -45,7 +45,7 @@
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.3.0",
     "react": "^19.2.4",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "css-variables",
@@ -61,32 +61,32 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "./css": {
-        "types": "./dist/css.d.ts",
-        "default": "./dist/esm/css.js"
+        "types": "./dist/css.d.mts",
+        "default": "./dist/css.mjs"
       },
       "./runtime": {
-        "types": "./dist/runtime-entry.d.ts",
-        "default": "./dist/esm/runtime-entry.js"
+        "types": "./dist/runtime-entry.d.mts",
+        "default": "./dist/runtime-entry.mjs"
       },
       "./react": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/esm/react.js"
+        "types": "./dist/react.d.mts",
+        "default": "./dist/react.mjs"
       },
       "./vars": {
-        "types": "./dist/vars.d.ts",
-        "default": "./dist/esm/vars.js"
+        "types": "./dist/vars.d.mts",
+        "default": "./dist/vars.mjs"
       },
       "./dtcg": {
-        "types": "./dist/dtcg.d.ts",
-        "default": "./dist/esm/dtcg.js"
+        "types": "./dist/dtcg.d.mts",
+        "default": "./dist/dtcg.mjs"
       },
       "./dataviz": {
-        "types": "./dist/dataviz/index.d.ts",
-        "default": "./dist/esm/dataviz/index.js"
+        "types": "./dist/dataviz/index.d.mts",
+        "default": "./dist/dataviz/index.mjs"
       }
     },
     "provenance": true

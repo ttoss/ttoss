@@ -21,7 +21,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -37,7 +37,7 @@
     "@types/pg": "^8.20.0",
     "aws-sdk-client-mock": "^4.1.0",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "aws",
@@ -48,14 +48,24 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "require": {
+          "default": "./dist/index.cjs",
+          "types": "./dist/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/index.mjs",
+          "types": "./dist/index.d.mts"
+        }
       },
       "./cloudformation": {
-        "import": "./dist/esm/cloudformation/index.js",
-        "require": "./dist/cloudformation/index.js",
-        "types": "./dist/cloudformation/index.d.ts"
+        "require": {
+          "default": "./dist/cloudformation/index.cjs",
+          "types": "./dist/cloudformation/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/cloudformation/index.mjs",
+          "types": "./dist/cloudformation/index.d.mts"
+        }
       }
     },
     "provenance": true

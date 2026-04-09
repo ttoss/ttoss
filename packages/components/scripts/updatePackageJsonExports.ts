@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import pkg from '../package.json';
-import { components } from '../tsup.config';
+import { components } from '../tsdown.config';
 
 // eslint-disable-next-line no-console
 console.log('Updating package.json exports...');
