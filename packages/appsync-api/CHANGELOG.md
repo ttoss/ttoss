@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.23.11 (2026-04-09)
+
+### Bug Fixes
+
+- main.sh ([3e8f3f8](https://github.com/ttoss/ttoss/commit/3e8f3f892187bce9f16a21193c9cb2f98bfd448e))
+
 ## 0.23.10 (2026-04-04)
 
 ### Bug Fixes
