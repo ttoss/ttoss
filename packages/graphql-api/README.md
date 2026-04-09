@@ -225,6 +225,79 @@ export { schemaComposer };
 | **Easy to locate**              | `Parent.field.ts` maps 1:1 to the GraphQL schema path.                                                                           |
 | **One responsibility per file** | Each resolver file handles exactly one field, keeping files small and focused.                                                   |
 
+## Recommended Test Structure
+
+Test files mirror the source layout using the same dot notation — one test file per resolver.
+
+### Test Directory Structure
+
+```
+tests/unit/
+├── Meta/
+│   ├── Query.metaAdAccount.test.ts
+│   ├── Query.metaAdAccounts.test.ts
+│   ├── Mutation.addMetaAdAccounts.test.ts
+│   ├── MetaAdAccount.optimizations.test.ts
+│   └── MetaCampaign.optimization.test.ts
+├── Optimizations/
+│   ├── Query.optimization.test.ts
+│   ├── Mutation.createOptimization.test.ts
+│   └── Optimization.metaCampaign.test.ts
+└── User/
+    └── Query.me.test.ts
+```
+
+### Test Structure Rules
+
+1. **Same dot notation** as resolver files — `Parent.field.test.ts`
+2. **Module subfolder** — `tests/unit/{Module}/` mirrors `src/modules/{Module}/resolvers/`
+3. **No `resolvers/` subfolder in tests** — unnecessary nesting since test files are already leaf nodes
+4. **One test file per resolver** — keeps tests focused and easy to find
+
+### Testing Style
+
+Prefer schema-level testing using `graphql()` against `schemaComposer.buildSchema()` — this validates the full wiring (TC shape → resolver → response):
+
+```typescript
+import { graphql } from 'graphql';
+import { schemaComposer } from 'src/schemaComposer';
+
+test('should return optimizations for a MetaAdAccount', async () => {
+  const response = await graphql({
+    schema: schemaComposer.buildSchema(),
+    source: /* GraphQL */ `
+      query ($id: ID!) {
+        node(id: $id) {
+          ... on MetaAdAccount {
+            optimizations {
+              id
+              isActive
+            }
+          }
+        }
+      }
+    `,
+    contextValue: mockContext,
+    variableValues: { id: globalId },
+  });
+
+  expect(response.errors).toBeUndefined();
+  expect(response.data).toEqual({
+    /* expected */
+  });
+});
+```
+
+### Source-to-Test Mapping
+
+| Source file                                                          | Test file                                                      |
+| -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `src/modules/Meta/resolvers/Query.metaAdAccount.ts`                  | `tests/unit/Meta/Query.metaAdAccount.test.ts`                  |
+| `src/modules/Meta/resolvers/MetaAdAccount.optimizations.ts`          | `tests/unit/Meta/MetaAdAccount.optimizations.test.ts`          |
+| `src/modules/Optimizations/resolvers/Mutation.createOptimization.ts` | `tests/unit/Optimizations/Mutation.createOptimization.test.ts` |
+
+This 1:1 mapping makes it trivial to find the test for any resolver and vice versa.
+
 ## Relay Server Specification
 
 As ttoss uses Relay as the main GraphQL client, this library implements the [Relay Server Specification](https://relay.dev/docs/guides/graphql-server-specification/).
