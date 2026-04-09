@@ -1,5 +1,6 @@
-import { VideoTC } from './VideoTC';
 import { schemaComposer } from '@ttoss/graphql-api';
+
+import { VideoTC } from '../VideoTC';
 
 const VideosToCompareTC = schemaComposer.createObjectTC({
   name: 'VideosToCompare',

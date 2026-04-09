@@ -1,10 +1,12 @@
+import type { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { schemaComposer } from '@ttoss/graphql-api';
 import {
   DYNAMODB_TABLE_NAME,
   dynamoDBDocumentClient,
 } from 'src/modules/DynamoDB/dynamodb';
-import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
-import { VideoTC } from './VideoTC';
-import { schemaComposer } from '@ttoss/graphql-api';
+
+import { VideoTC } from '../VideoTC';
 
 VideoTC.addResolver({
   name: 'videosByRanking',
