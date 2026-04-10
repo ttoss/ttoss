@@ -216,6 +216,51 @@ Semantic colors answer:
 
 ---
 
+## FSL Entity Kind Mapping
+
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This table is the normative mapping that the resolver uses to translate a `ComponentExpression.responsibility` → token UX context:
+
+| FSL Entity Kind | Token `ux` context | Notes                                                                                                             |
+| :-------------- | :----------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `Action`        | `action`           | explicit 1:1 mapping                                                                                              |
+| `Input`         | `input`            | explicit 1:1 mapping                                                                                              |
+| `Selection`     | `input`            | Selection components (checkbox, radio, picker) consume `input.*` tokens; no separate `selection` UX context       |
+| `Navigation`    | `navigation`       | explicit 1:1 mapping                                                                                              |
+| `Feedback`      | `feedback`         | explicit 1:1 mapping                                                                                              |
+| `Collection`    | `content`          | Collection surfaces (menu, list, table) consume `content.*` tokens for their structural coloring                  |
+| `Overlay`       | `content`          | Overlay surfaces (dialog, popover) consume `content.*` tokens for their surface coloring                          |
+| `Disclosure`    | `navigation`       | Disclosure triggers (accordion, details) are typically coloured as `navigation.*` when acting as location anchors |
+| `Structure`     | `content`          | Structural surfaces (panel, shell, frame) consume `content.*` tokens                                              |
+
+`guidance` and `discovery` have no FSL Entity Kind backing — they are projection-stratum token contexts that group components by interaction pattern (preventive/instructional vs. search/filter). See the note in §Canonical Registry below.
+
+---
+
+## Role Coverage
+
+Not every FSL Evaluation value is available in every UX context. The table below is the complete normative coverage matrix. Each absence is a deliberate design decision.
+
+| Evaluation value | `action` | `input` | `navigation` | `feedback` | `guidance` | `discovery` | `content` |
+| :--------------- | :------: | :-----: | :----------: | :--------: | :--------: | :---------: | :-------: |
+| `primary`        |    ✓     |    ✓    |      ✓       |     ✓      |     ✓      |      ✓      |     ✓     |
+| `secondary`      |    ✓     |    ✓    |      ✓       |     —      |     ✓      |      ✓      |     ✓     |
+| `accent`         |    ✓     |    —    |      ✓       |     —      |     ✓      |      ✓      |     ✓     |
+| `muted`          |    ✓     |    ✓    |      ✓       |     ✓      |     ✓      |      ✓      |     ✓     |
+| `positive`       |    —     |    ✓    |      —       |     ✓      |     —      |      —      |     ✓     |
+| `caution`        |    —     |    ✓    |      —       |     ✓      |     ✓      |      —      |     ✓     |
+| `negative`       |    ✓     |    ✓    |      —       |     ✓      |     —      |      —      |     ✓     |
+
+**Rationale for notable absences:**
+
+- `action.positive / action.caution` — Actions express risk through `negative` (destructive) and through `feedback.*` for outcomes. Positive/caution actions are communicated by adjacent feedback rather than the action's own color.
+- `navigation.positive / caution / negative` — Navigation items communicate location (`current`, `visited`), not health state. Status over a nav item is a pattern concern, not a foundation semantic.
+- `feedback.secondary / accent` — Feedback is direct: `primary` and `muted` cover the emphasis range. `positive`, `caution`, and `negative` cover the semantic range. `secondary` and `accent` have no stable meaning in a reactive status context.
+- `input.accent` — Form inputs use `primary` for the brand-influenced active state. `accent` creates ambiguity in the input hierarchy.
+- `guidance.positive / negative` — Guidance is preventive and instructional; outcome meaning (`positive`, `negative`) belongs to `feedback`.
+- `discovery.positive / caution / negative / accent` — Exploration patterns do not carry outcome semantics; feedback over search results is a pattern-layer concern.
+
+---
+
 ## Canonical Registry
 
 The foundation color system keeps a **small canonical registry**.
@@ -235,6 +280,8 @@ The foundation color system keeps a **small canonical registry**.
 > Keep this set stable.
 > Domain-specific semantics such as `social`, `commerce`, or `gamification` do **not** belong to the foundation by default.
 > Model those at the pattern/application layer unless they are promoted through governance.
+
+> **Projection-stratum contexts:** `guidance` and `discovery` are not FSL Entity Kinds. They are projection-stratum token contexts that group components by interaction pattern — `guidance` for preventive/instructional patterns, `discovery` for search/filter/exploration. They are architecturally valid per FSL §4.2 (controlled extensions) but do not map directly to the FSL Entity Kind taxonomy. The normative Entity Kind → UX context mapping is in the [FSL Entity Kind Mapping](#fsl-entity-kind-mapping) section above.
 
 ### Role level
 
@@ -290,15 +337,15 @@ The semantic grammar is stable, but not every combination is valid. The tables b
 
 | `ux`         | Allowed roles                                                                | Context-specific states                           |
 | :----------- | :--------------------------------------------------------------------------- | :------------------------------------------------ |
-| `action`     | `primary`, `secondary`, `accent`, `muted`, `negative`                        | `pressed`                                         |
+| `action`     | `primary`, `secondary`, `accent`, `muted`, `negative`                        | `pressed`, `expanded`                             |
 | `input`      | `primary`, `secondary`, `muted`, `positive`, `caution`, `negative`           | `checked`, `indeterminate`, `pressed`, `expanded` |
 | `navigation` | `primary`, `secondary`, `accent`, `muted`                                    | `current`, `visited`, `expanded`                  |
 | `feedback`   | `primary`, `muted`, `positive`, `caution`, `negative`                        | —                                                 |
 | `guidance`   | `primary`, `secondary`, `accent`, `muted`, `caution`                         | —                                                 |
-| `discovery`  | `primary`, `secondary`, `accent`, `muted`                                    | `expanded`, `droptarget`                          |
+| `discovery`  | `primary`, `secondary`, `accent`, `muted`                                    | `expanded`                                        |
 | `content`    | `primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative` | `visited`                                         |
 
-> Context-specific states extend the base set available in every context: `default`, `hover`, `active`, `focused`, `disabled`, `selected`.
+> Context-specific states extend the base set available in every context: `default`, `hover`, `active`, `focused`, `disabled`, `selected`, `droptarget`. The `droptarget` base state applies wherever drag-and-drop drop targets are semantically valid (FSL Lexicon §7) — it is not restricted to a single UX context.
 
 ### Dimension expectations
 

@@ -1,20 +1,28 @@
 /* ==========================================================================
- * ttoss Design Tokens v2 — Data Visualization Extension Types
+ * ttoss Design Tokens — Data Visualization Extension Types
+ * FSL Layer 4 Extension: Semantic Token Projection — Dataviz Domain
  *
- * Extends the Design Tokens v2 model with a controlled semantic layer for
- * analytical visualization: charts, dashboards, and geospatial overlays.
+ * Controlled domain extension of the Semantic Token Projection (layer 4).
+ * Governed by the same core/semantic separation contract as the foundation:
+ *   - Components consume only semantic.dataviz.* tokens
+ *   - core.dataviz.* is never consumed directly by UI code
+ *   - This extension follows FSL Structural Language §4.2 (controlled extensions)
+ *     and §3.6 (projections must not define incompatible vocabulary)
+ *
+ * FSL architectural grounding:
+ *   - dataviz does not map to a single FSL Entity Kind
+ *   - it is a domain-specific projection for analytical visualization patterns
+ *   - core.colors feeds semantic.dataviz.color.* (no separate dataviz palette)
+ *   - core.dataviz contains only non-color encoding primitives
  *
  * Architecture:
- *
  *   core.colors     → semantic.dataviz.color.*
  *   core.dataviz    → semantic.dataviz.encoding.* / geo.*
  *   semantic.dataviz → components / patterns
  *
- * Color tokens in semantic.dataviz reference core.colors.* directly.
- * core.dataviz contains only non-color encoding primitives.
- *
- * Token path reference:
- * @see dataviz-model.md, dataviz-colors.md, dataviz-encodings.md
+ * @see /docs/design/design-system/fsl/fls-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fls-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/design-tokens/model — Token Model (layer 4 foundation)
  * ========================================================================== */
 
 import type { NumericValue, RawValue, TokenRef } from '../Types';

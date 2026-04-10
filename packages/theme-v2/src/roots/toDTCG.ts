@@ -60,6 +60,9 @@ const SUFFIX_TYPE_OVERRIDES: ReadonlyArray<[suffix: string, dtcgType: string]> =
     ['.fontWeight', 'fontWeight'],
     ['.lineHeight', 'number'],
     ['.letterSpacing', 'dimension'],
+    // focus.ring.color is a color token — must not fall through to the 'string'
+    // default from the semantic.focus. prefix entry.
+    ['.ring.color', 'color'],
   ];
 
 const inferType = (path: string): string => {

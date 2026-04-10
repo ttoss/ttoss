@@ -1,0 +1,355 @@
+/*
+ * @ttoss/ui2 — Global Styles
+ *
+ * Token-native component styles for the @ttoss/ui2 library.
+ *
+ * Architecture:
+ *   @layer ui2.behavioral  — Universal cross-component rules (focus ring,
+ *                            disabled cursor). Applied to any element carrying
+ *                            [data-scope] — the ui2 component marker.
+ *
+ *   @layer ui2.components  — Per-component identity rules (color, sizing,
+ *                            typography). Applied via [data-scope][data-part]
+ *                            + [data-variant] + [data-size] selectors.
+ *
+ * Usage:
+ *   import '@ttoss/ui2/styles.css';
+ *
+ * Token namespaces used:
+ *   --_bg, --_bg-hover, --_bg-active, --_bg-disabled     Scoped background vars (per-instance)
+ *   --_text, --_text-disabled                             Scoped text vars (per-instance)
+ *   --_border, --_border-focused, --_border-disabled      Scoped border vars (per-instance)
+ *   --tt-sizing-hit-*            Semantic hit-target sizing
+ *   --tt-spacing-inset-control-* Semantic control inset spacing
+ *   --tt-spacing-gap-inline-*    Semantic inline gap spacing
+ *   --tt-radii-*                 Semantic border radius
+ *   --tt-border-outline-*        Semantic border width / style
+ *   --tt-focus-ring-*            Semantic focus ring tokens
+ *   --tt-opacity-*               Semantic opacity tokens
+ *   --tt-motion-*                Semantic motion tokens
+ *   --tt-text-label-*            Semantic label text tokens
+ *
+ * Color tokens are NOT referenced directly in this file. Each component injects
+ * per-instance scoped vars (--_*) via its inline style prop, populated by
+ * resolveTokens(). CSS rules only reference the scoped vars, so this file never
+ * changes when new evaluations (roles) are added.
+ *
+ * All CSS vars defined above are semantic (never core --tt-core-*).
+ * @see @ttoss/theme2 — Token values and CSS var generation
+ */
+
+/* Declare layer order. Lower layers have lower specificity than later ones. */
+@layer ui2.behavioral, ui2.components;
+
+/* ==========================================================================
+ * Layer: ui2.behavioral
+ *
+ * Universal rules applied to all [data-scope] elements (ui2 component roots).
+ * These rules do NOT vary by component identity — they are cross-cutting.
+ *
+ * Rules in this layer:
+ *   1. Focus ring — visible keyboard focus indicator for all interactive ui2 elements
+ *   2. Disabled cursor — communicates non-interactivity
+ * ========================================================================== */
+
+@layer ui2.behavioral {
+  /* Focus ring — keyboard-accessible, scoped to ui2 components */
+  [data-scope]:focus-visible {
+    outline: var(--tt-focus-ring-width) var(--tt-focus-ring-style)
+      var(--tt-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  /* Disabled cursor — shown for any ui2 component in disabled state */
+  [data-scope]:disabled,
+  [data-scope][data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+/* ==========================================================================
+ * Layer: ui2.components
+ *
+ * Per-component identity rules. Each component section is self-contained and
+ * targets its own [data-scope] + [data-part] namespace.
+ * ========================================================================== */
+
+@layer ui2.components {
+  /* =========================================================================
+   * Button
+   *
+   * Selectors:
+   *   [data-scope="button"][data-part="root"]          — base layout + color
+   *   [...][data-size="sm|md|lg"]                      — size variant
+   *   [...]:hover:not(:disabled)                       — hover state
+   *   [...]:active:not(:disabled)                      — active/pressed state
+   *   [...]:focus-visible                              — focus state (border)
+   *   [...]:disabled                                   — disabled state
+   *
+   * Color is resolved via scoped CSS vars (--_bg, --_text, --_border, etc.)
+   * injected per-instance by Button.tsx. No variant-specific selectors exist.
+   * ComponentExpression: { responsibility: 'Action', evaluation: variant }
+   * ========================================================================= */
+
+  /* ── Layout (all variants and sizes) ── */
+  [data-scope='button'][data-part='root'] {
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--tt-spacing-gap-inline-sm);
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    /* Sizing — overridden per size variant below */
+    min-height: var(--tt-sizing-hit-base);
+    padding-block: var(--tt-spacing-inset-control-sm);
+    padding-inline: var(--tt-spacing-inset-control-md);
+
+    /* Structure */
+    border-radius: var(--tt-radii-control);
+    border-width: var(--tt-border-outline-control-width);
+    border-style: var(--tt-border-outline-control-style);
+
+    /* Typography — label.md (default) */
+    font-family: var(--tt-text-label-md-fontFamily);
+    font-size: var(--tt-text-label-md-fontSize);
+    font-weight: var(--tt-text-label-md-fontWeight);
+    line-height: var(--tt-text-label-md-lineHeight);
+    letter-spacing: var(--tt-text-label-md-letterSpacing);
+    font-optical-sizing: var(--tt-text-label-md-fontOpticalSizing);
+
+    /* Color — scoped CSS vars injected per-instance by Button.tsx via resolveTokens().
+     * The CSS never changes for new evaluations; only the var values change. */
+    background-color: var(--_bg);
+    border-color: var(--_border);
+    color: var(--_text);
+
+    /* Interaction */
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    appearance: none;
+
+    /* Motion — feedback-speed transitions for visual state changes */
+    transition-property: background-color, border-color, color, opacity;
+    transition-duration: var(--tt-motion-feedback-duration);
+    transition-timing-function: var(--tt-motion-feedback-easing);
+  }
+
+  /* ── Size: sm ── */
+  [data-scope='button'][data-part='root'][data-size='sm'] {
+    min-height: var(--tt-sizing-hit-min);
+    padding-block: var(--tt-spacing-inset-control-sm);
+    padding-inline: var(--tt-spacing-inset-control-sm);
+    font-size: var(--tt-text-label-sm-fontSize);
+    font-weight: var(--tt-text-label-sm-fontWeight);
+    line-height: var(--tt-text-label-sm-lineHeight);
+    letter-spacing: var(--tt-text-label-sm-letterSpacing);
+    font-optical-sizing: var(--tt-text-label-sm-fontOpticalSizing);
+  }
+
+  /* ── Size: lg ── */
+  [data-scope='button'][data-part='root'][data-size='lg'] {
+    min-height: var(--tt-sizing-hit-prominent);
+    padding-block: var(--tt-spacing-inset-control-md);
+    padding-inline: var(--tt-spacing-inset-control-lg);
+    font-size: var(--tt-text-label-lg-fontSize);
+    font-weight: var(--tt-text-label-lg-fontWeight);
+    line-height: var(--tt-text-label-lg-lineHeight);
+    letter-spacing: var(--tt-text-label-lg-letterSpacing);
+    font-optical-sizing: var(--tt-text-label-lg-fontOpticalSizing);
+  }
+
+  /* ── Color states (structural — all evaluations handled by --_* scoped vars) ── */
+  /* Adding a new evaluation requires zero changes here; only Button.tsx resolves new vars. */
+
+  [data-scope='button'][data-part='root']:hover:not(:disabled) {
+    background-color: var(--_bg-hover);
+  }
+
+  [data-scope='button'][data-part='root']:active:not(:disabled) {
+    background-color: var(--_bg-active);
+  }
+
+  [data-scope='button'][data-part='root']:focus-visible {
+    border-color: var(--_border-focused);
+  }
+
+  [data-scope='button'][data-part='root']:disabled {
+    background-color: var(--_bg-disabled);
+    border-color: var(--_border-disabled);
+    color: var(--_text-disabled);
+  }
+
+  /* =========================================================================
+   * Input
+   *
+   * Semantic text input. Wraps Ark UI Field.Input — receives [data-invalid],
+   * [data-disabled], [data-readonly] from Field.Root context automatically.
+   *
+   * Color is driven by --_* scoped vars (primary role, injected by Input.tsx).
+   * Invalid-state color is driven by --_*-invalid vars (negative role, also
+   * injected by Input.tsx). CSS selects the correct set via [data-invalid].
+   * No variant-specific selectors — adding new evaluations = zero CSS changes.
+   * ========================================================================= */
+
+  /* ── Layout (all sizes) ── */
+  [data-scope='input'][data-part='root'] {
+    display: block;
+    width: 100%;
+    min-height: var(--tt-sizing-hit-base);
+    padding-block: var(--tt-spacing-inset-control-sm);
+    padding-inline: var(--tt-spacing-inset-control-md);
+
+    border-radius: var(--tt-radii-control);
+    border-width: var(--tt-border-outline-control-width);
+    border-style: var(--tt-border-outline-control-style);
+
+    font-family: var(--tt-text-label-md-fontFamily);
+    font-size: var(--tt-text-label-md-fontSize);
+    font-weight: var(--tt-text-label-md-fontWeight);
+    line-height: var(--tt-text-label-md-lineHeight);
+    letter-spacing: var(--tt-text-label-md-letterSpacing);
+
+    background-color: var(--_bg);
+    border-color: var(--_border);
+    color: var(--_text);
+
+    appearance: none;
+    outline: none;
+    transition-property: background-color, border-color, color;
+    transition-duration: var(--tt-motion-feedback-duration);
+    transition-timing-function: var(--tt-motion-feedback-easing);
+  }
+
+  /* ── Size: sm ── */
+  [data-scope='input'][data-part='root'][data-size='sm'] {
+    min-height: var(--tt-sizing-hit-min);
+    padding-block: var(--tt-spacing-inset-control-sm);
+    padding-inline: var(--tt-spacing-inset-control-sm);
+    font-size: var(--tt-text-label-sm-fontSize);
+    font-weight: var(--tt-text-label-sm-fontWeight);
+    line-height: var(--tt-text-label-sm-lineHeight);
+    letter-spacing: var(--tt-text-label-sm-letterSpacing);
+  }
+
+  /* ── Size: lg ── */
+  [data-scope='input'][data-part='root'][data-size='lg'] {
+    min-height: var(--tt-sizing-hit-prominent);
+    padding-block: var(--tt-spacing-inset-control-md);
+    padding-inline: var(--tt-spacing-inset-control-lg);
+    font-size: var(--tt-text-label-lg-fontSize);
+    font-weight: var(--tt-text-label-lg-fontWeight);
+    line-height: var(--tt-text-label-lg-lineHeight);
+    letter-spacing: var(--tt-text-label-lg-letterSpacing);
+  }
+
+  /* ── States (valid) ── */
+  [data-scope='input'][data-part='root']:hover:not(:disabled):not([data-disabled]):not([data-invalid]) {
+    background-color: var(--_bg-hover);
+    border-color: var(--_border-hover);
+  }
+
+  [data-scope='input'][data-part='root']:focus-visible {
+    border-color: var(--_border-focused);
+    outline: var(--tt-focus-ring-width) var(--tt-focus-ring-style)
+      var(--tt-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  [data-scope='input'][data-part='root']:disabled,
+  [data-scope='input'][data-part='root'][data-disabled] {
+    background-color: var(--_bg-disabled);
+    border-color: var(--_border-disabled);
+    color: var(--_text-disabled);
+  }
+
+  /* ── Invalid state (driven by Ark [data-invalid] from Field.Root) ── */
+  [data-scope='input'][data-part='root'][data-invalid] {
+    background-color: var(--_bg-invalid);
+    border-color: var(--_border-invalid);
+    color: var(--_text-invalid);
+  }
+
+  /* Invalid + focus: keep invalid border, not focused border */
+  [data-scope='input'][data-part='root'][data-invalid]:focus-visible {
+    border-color: var(--_border-invalid-focused);
+  }
+
+  /* =========================================================================
+   * Label
+   *
+   * Form field label. Wraps Ark UI Field.Label — receives [data-disabled],
+   * [data-required], [data-invalid] from Field.Root context automatically.
+   * Uses --_text (secondary content color) for intentional visual subordination.
+   * ========================================================================= */
+
+  [data-scope='label'][data-part='root'] {
+    display: block;
+    font-family: var(--tt-text-label-sm-fontFamily);
+    font-size: var(--tt-text-label-sm-fontSize);
+    font-weight: var(--tt-text-label-sm-fontWeight);
+    line-height: var(--tt-text-label-sm-lineHeight);
+    letter-spacing: var(--tt-text-label-sm-letterSpacing);
+    color: var(--_text);
+    margin-bottom: var(--tt-spacing-gap-inline-sm);
+  }
+
+  [data-scope='label'][data-part='root'][data-disabled] {
+    color: var(--_text-disabled);
+  }
+
+  /* =========================================================================
+   * HelperText
+   *
+   * Supporting helper text. Wraps Ark UI Field.HelperText. Always uses muted
+   * feedback tokens — visual de-emphasis is part of the semantic contract.
+   * ========================================================================= */
+
+  [data-scope='helper-text'][data-part='root'] {
+    display: block;
+    font-family: var(--tt-text-label-sm-fontFamily);
+    font-size: var(--tt-text-label-sm-fontSize);
+    font-weight: var(--tt-text-label-sm-fontWeight);
+    line-height: var(--tt-text-label-sm-lineHeight);
+    color: var(--_text);
+    margin-top: var(--tt-spacing-gap-inline-sm);
+  }
+
+  [data-scope='helper-text'][data-part='root'][data-disabled] {
+    color: var(--_text-disabled);
+  }
+
+  /* =========================================================================
+   * ValidationMessage
+   *
+   * Validation / error feedback text. Wraps Ark UI Field.ErrorText.
+   * Ark only renders children when Field.Root has invalid=true.
+   * Always uses negative feedback tokens — errors are always negative.
+   * ========================================================================= */
+
+  [data-scope='validation-message'][data-part='root'] {
+    display: block;
+    font-family: var(--tt-text-label-sm-fontFamily);
+    font-size: var(--tt-text-label-sm-fontSize);
+    font-weight: var(--tt-text-label-sm-fontWeight);
+    line-height: var(--tt-text-label-sm-lineHeight);
+    color: var(--_text);
+    margin-top: var(--tt-spacing-gap-inline-sm);
+  }
+
+  /* =========================================================================
+   * TextField
+   *
+   * Composite: Field.Root + Label + Input + HelperText + ValidationMessage.
+   * Layout-only — no color tokens. Field.Root propagates invalid/disabled/
+   * required/readOnly to all children via Ark context.
+   * ========================================================================= */
+
+  [data-scope='text-field'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+  }
+}
+

@@ -1,19 +1,37 @@
 /* ==========================================================================
  * ttoss Design Tokens — Type Definitions
+ * FSL Layer 4: Semantic Token Projection
  *
- * This file defines the type contract for the ttoss Design System.
- * It is divided into two layers:
+ * This file is the formal TypeScript type contract for the Semantic Token
+ * Projection. It is derived from the FSL foundation (layers 1–2) and consumes
+ * the Component Semantics Projection (layer 3). It must not define vocabulary
+ * that contradicts the FSL Lexicon or FSL Structural Language.
  *
- *   1. Core Tokens  — raw primitives and responsiveness engines.
- *   2. Semantic Tokens — stable aliases consumed by components.
+ * FSL dimension mapping (token grammar axis → FSL dimension):
+ *
+ *   Token axis  │ FSL dimension   │ Notes
+ *   ────────────┼─────────────────┼───────────────────────────────────────────
+ *   ux          │ Entity Kind     │ projection-scoped subset + renaming (§17.1)
+ *   role        │ Evaluation      │ projection-scoped name for FSL Evaluation
+ *   dimension   │ Structural Role │ subset: background | border | text
+ *   state       │ State           │ values identical, no renaming
+ *
+ * Token naming grammar: {ux}.{role}.{dimension}.{state}
+ *
+ * Two token layers:
+ *   1. Core Tokens   — raw primitives and responsiveness engines (immutable across modes)
+ *   2. Semantic Tokens — stable aliases consumed by components (remapped per mode)
  *
  * Components must NEVER consume core tokens directly.
  * Semantic tokens should normally be references to core tokens, avoiding raw values.
- * Any semantic tokens that use raw values must be rare, intentional, and documented exceptions.
+ * Any semantic tokens that use raw values must be rare, intentional, and documented
+ * exceptions — see model.md §RawValue Exceptions for the governing rule and audit inventory.
  *
- * Token naming follows the grammar defined in the Design Tokens documentation.
- * @see /docs/website/docs/design/02-design-tokens/
- *
+ * @see /docs/design/design-system/fsl/fls-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fls-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/component-model — Component Semantics Projection (layer 3)
+ * @see /docs/design/design-system/design-tokens/model — Token Model (this layer)
+ * @see /docs/design/design-system/design-tokens/colors — Semantic Color Grammar
  * For the default theme values, see `./baseTheme.ts`.
  * ========================================================================== */
 
@@ -121,11 +139,18 @@ interface BaseColorStates {
   focused?: TokenRef;
   disabled?: TokenRef;
   selected?: TokenRef;
+  /**
+   * Valid drag-and-drop destination state (FSL Lexicon §7).
+   * Applies wherever drop-target semantics are valid: file inputs, collection rows,
+   * content surfaces, and any other entity that accepts dropped items.
+   */
+  droptarget?: TokenRef;
 }
 
-/** `action` context: adds `pressed` for toggle controls. */
+/** `action` context: adds `pressed` for toggle controls and `expanded` for disclosure triggers and open menus. */
 interface ActionColorStates extends BaseColorStates {
   pressed?: TokenRef;
+  expanded?: TokenRef;
 }
 
 /** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded` for form controls. */
@@ -148,10 +173,9 @@ interface ContentColorStates extends BaseColorStates {
   visited?: TokenRef;
 }
 
-/** `discovery` context: adds `expanded` (disclosure) and `droptarget` (drag-and-drop). */
+/** `discovery` context: adds `expanded` (disclosure). `droptarget` is a base state available everywhere. */
 interface DiscoveryColorStates extends BaseColorStates {
   expanded?: TokenRef;
-  droptarget?: TokenRef;
 }
 
 /**
@@ -701,18 +725,31 @@ interface SemanticBorder {
  * to avoid layout shift and produce clearer accessible focus indicators.
  * Must resolve to a width ≥ `border.outline.*`.
  *
+ * The focus ring color is defined at the semantic level via `focus.ring.color`,
+ * providing a cross-cutting focus color contract any component can consume.
+ * For per-context differentiation, a component may additionally reference
+ * its own `{ux}.primary.border.focused` token alongside this geometry contract.
+ *
  * @example
  * ```css
  * :focus-visible {
  *   outline-width: var(--tt-focus-ring-width);
  *   outline-style: var(--tt-focus-ring-style);
- *   outline-color: var(--tt-colors-input-primary-border-focused);
+ *   outline-color: var(--tt-focus-ring-color);
  *   outline-offset: 2px;
  * }
  * ```
  */
 interface SemanticFocus {
-  ring: SemanticBorderOutline;
+  ring: SemanticBorderOutline & {
+    /**
+     * Semantic focus ring color — cross-cutting accessibility contract.
+     * Provides a single, theme-consistent focus color for any component.
+     * Resolves to a semantic color token — typically the brand accent at
+     * sufficient contrast against expected surrounding backgrounds.
+     */
+    color: TokenRef;
+  };
 }
 
 /**

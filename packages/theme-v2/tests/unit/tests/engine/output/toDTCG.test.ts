@@ -177,6 +177,20 @@ describe('toDTCG', () => {
     expect(token?.$type).toBe('dimension');
   });
 
+  // focus.ring.color is a color token inside the 'semantic.focus.' subtree which
+  // defaults to dtcgType 'string'. The suffix override '.ring.color' → 'color'
+  // must take precedence over the prefix-level fallback.
+  test('infers correct $type for semantic focus.ring.color (color, not string)', () => {
+    const allLeaves = collectLeaves(toDTCG(defaultTheme));
+    const token = allLeaves.find((l) => {
+      return l.path === 'semantic.focus.ring.color';
+    })?.token;
+    expect(token?.$type).toBe('color');
+    // Also assert the value is a resolved hex color (not a {ref} string).
+    expect(typeof token?.$value).toBe('string');
+    expect(String(token?.$value)).toMatch(/^#[0-9A-Fa-f]{3,8}$/);
+  });
+
   test('suffix overrides do not affect core font primitive tokens', () => {
     // Core font weight primitives must retain 'fontWeight' (from registry prefix, not suffix)
     const allLeaves = collectLeaves(toDTCG(defaultTheme));

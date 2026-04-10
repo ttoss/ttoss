@@ -22,6 +22,7 @@
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
     "storybook": "pnpm --filter @docs/storybook run storybook",
+    "storybook2": "pnpm --filter @docs/storybook2 run storybook",
     "syncpack:fix": "syncpack fix",
     "syncpack:lint": "syncpack lint"
   },

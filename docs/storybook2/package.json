@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "@docs/storybook2",
+  "version": "0.1.0",
+  "author": "ttoss",
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6007",
+    "build": "storybook build",
+    "dev": "pnpm run storybook",
+    "start": "pnpm run storybook"
+  },
+  "dependencies": {
+    "@ttoss/theme2": "workspace:^",
+    "@ttoss/ui2": "workspace:^"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/react-vite": "^10.3.5",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint-plugin-storybook": "^10.3.5",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "storybook": "^10.3.5",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  }
+}
