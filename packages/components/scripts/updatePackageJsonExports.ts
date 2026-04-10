@@ -21,8 +21,8 @@ const newPkg = {
         return [
           `./${component}`,
           {
-            types: `./dist/${component}/index.d.ts`,
-            default: `./dist/esm/${component}/index.js`,
+            types: `./dist/${component}/index.d.mts`,
+            default: `./dist/${component}/index.mjs`,
           },
         ];
       })
