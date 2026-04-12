@@ -22,7 +22,6 @@
  * and static CSS selectors (generated at build time) apply colors via direct
  * var(--tt-*) theme token references.
  */
-import { Field } from '@ark-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as React from 'react';
 import {
@@ -318,11 +317,7 @@ describe('defineComponent — withInvalidOverlay', () => {
   });
 
   test('renders with correct data-variant (no inline invalid overlay styles)', () => {
-    render(
-      <Field.Root>
-        <FormInput data-testid={tid} />
-      </Field.Root>
-    );
+    render(<FormInput data-testid={tid} />);
     const expectedRole = resolveRole({ responsibility: 'Input' });
     expect(screen.getByTestId(tid)).toHaveAttribute(
       'data-variant',
@@ -331,11 +326,7 @@ describe('defineComponent — withInvalidOverlay', () => {
   });
 
   test('no --_* inline CSS custom properties are injected', () => {
-    render(
-      <Field.Root>
-        <FormInput data-testid={tid} />
-      </Field.Root>
-    );
+    render(<FormInput data-testid={tid} />);
     expect(getScopedVars(screen.getByTestId(tid))).toHaveLength(0);
   });
 
@@ -424,29 +415,29 @@ describe('defineComponent — sizes', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 7. Ark element — Field.Label
+// 7. Native HTML element — label
 // ---------------------------------------------------------------------------
 
-describe('defineComponent — Ark element (Field.Label)', () => {
+describe('defineComponent — Native HTML element (label)', () => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return <Field.Root>{children}</Field.Root>;
+    return <>{children}</>;
   };
 
-  const { Component: ArkLabel, contractConfig } = defineComponent({
-    name: 'ArkLabel',
-    scope: 'ark-label',
+  const { Component: NativeLabel, contractConfig } = defineComponent({
+    name: 'NativeLabel',
+    scope: 'native-label',
     responsibility: 'Structure',
-    element: 'Field.Label',
+    element: 'label',
     evaluation: 'secondary',
     hasConsequence: false,
     dimensions: ['text'],
     wrapperForTests: Wrapper,
   });
 
-  test('renders a <label> element (Field.Label renders as label)', () => {
+  test('renders a <label> element', () => {
     render(
       <Wrapper>
-        <ArkLabel data-testid={tid}>Name</ArkLabel>
+        <NativeLabel data-testid={tid}>Name</NativeLabel>
       </Wrapper>
     );
     expect(screen.getByTestId(tid).tagName).toBe('LABEL');
@@ -455,17 +446,17 @@ describe('defineComponent — Ark element (Field.Label)', () => {
   test('data-scope and data-part are applied', () => {
     render(
       <Wrapper>
-        <ArkLabel data-testid={tid}>Name</ArkLabel>
+        <NativeLabel data-testid={tid}>Name</NativeLabel>
       </Wrapper>
     );
-    expect(screen.getByTestId(tid)).toHaveAttribute('data-scope', 'ark-label');
+    expect(screen.getByTestId(tid)).toHaveAttribute('data-scope', 'native-label');
     expect(screen.getByTestId(tid)).toHaveAttribute('data-part', 'root');
   });
 
   test('no --_* inline CSS custom properties are injected', () => {
     render(
       <Wrapper>
-        <ArkLabel data-testid={tid}>Name</ArkLabel>
+        <NativeLabel data-testid={tid}>Name</NativeLabel>
       </Wrapper>
     );
     expect(getScopedVars(screen.getByTestId(tid))).toHaveLength(0);
@@ -477,38 +468,39 @@ describe('defineComponent — Ark element (Field.Label)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 8. Ark element — Field.HelperText
+// 8. Native HTML element — span (for feedback text like HelperText)
 // ---------------------------------------------------------------------------
 
-describe('defineComponent — Ark element (Field.HelperText)', () => {
+describe('defineComponent — Native HTML element (span, text-only)', () => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return <Field.Root>{children}</Field.Root>;
+    return <>{children}</>;
   };
 
-  const { Component: ArkHelper } = defineComponent({
-    name: 'ArkHelper',
-    scope: 'ark-helper',
+  const { Component: NativeSpan } = defineComponent({
+    name: 'NativeSpan',
+    scope: 'native-span',
     responsibility: 'Feedback',
-    element: 'Field.HelperText',
+    element: 'span',
     evaluation: 'muted',
     hasConsequence: false,
     dimensions: ['text'],
     wrapperForTests: Wrapper,
   });
 
-  test('renders within Field.Root without error', () => {
+  test('renders a <span> element', () => {
     render(
       <Wrapper>
-        <ArkHelper data-testid={tid}>Hint</ArkHelper>
+        <NativeSpan data-testid={tid}>Hint</NativeSpan>
       </Wrapper>
     );
     expect(screen.getByTestId(tid)).toBeInTheDocument();
+    expect(screen.getByTestId(tid).tagName).toBe('SPAN');
   });
 
   test('no --_* inline CSS custom properties are injected', () => {
     render(
       <Wrapper>
-        <ArkHelper data-testid={tid}>Hint</ArkHelper>
+        <NativeSpan data-testid={tid}>Hint</NativeSpan>
       </Wrapper>
     );
     expect(getScopedVars(screen.getByTestId(tid))).toHaveLength(0);
@@ -516,49 +508,19 @@ describe('defineComponent — Ark element (Field.HelperText)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 9. Ark element — Field.ErrorText
-// ---------------------------------------------------------------------------
-
-describe('defineComponent — Ark element (Field.ErrorText)', () => {
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return <Field.Root invalid>{children}</Field.Root>;
-  };
-
-  const { Component: ArkError } = defineComponent({
-    name: 'ArkError',
-    scope: 'ark-error',
-    responsibility: 'Feedback',
-    element: 'Field.ErrorText',
-    evaluation: 'negative',
-    hasConsequence: false,
-    dimensions: ['text'],
-    wrapperForTests: Wrapper,
-  });
-
-  test('renders within invalid Field.Root without error', () => {
-    render(
-      <Wrapper>
-        <ArkError data-testid={tid}>Error</ArkError>
-      </Wrapper>
-    );
-    expect(screen.getByTestId(tid)).toBeInTheDocument();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 10. contractConfig — full shape validation for testComponentContract() use
+// 9. contractConfig — full shape validation for testComponentContract() use
 // ---------------------------------------------------------------------------
 
 describe('defineComponent — contractConfig is ready to pass to testComponentContract', () => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return <Field.Root>{children}</Field.Root>;
+    return <>{children}</>;
   };
 
   const { Component, contractConfig, componentMeta } = defineComponent({
     name: 'ConfigTest',
     scope: 'config-test',
     responsibility: 'Feedback',
-    element: 'Field.HelperText',
+    element: 'span',
     evaluation: 'negative',
     hasConsequence: false,
     dimensions: ['text'],
@@ -826,25 +788,21 @@ describe('defineComponent — ref forwarding', () => {
     expect(ref.current?.tagName).toBe('BUTTON');
   });
 
-  test('ref is forwarded to Ark element (Field.Input)', () => {
+  test('ref is forwarded to native input element', () => {
     const { Component: RefInput } = defineComponent({
       name: 'RefInput',
       scope: 'ref-input',
       responsibility: 'Input',
-      element: 'Field.Input',
+      element: 'input',
       isVoid: true,
       hasConsequence: false,
       wrapperForTests: ({ children }) => {
-        return <Field.Root>{children}</Field.Root>;
+        return <>{children}</>;
       },
     });
 
     const ref = React.createRef<HTMLElement>();
-    render(
-      <Field.Root>
-        <RefInput ref={ref} data-testid={tid} />
-      </Field.Root>
-    );
+    render(<RefInput ref={ref} data-testid={tid} />);
     expect(ref.current).toBe(screen.getByTestId(tid));
     expect(ref.current?.tagName).toBe('INPUT');
   });
