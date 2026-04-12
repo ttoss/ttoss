@@ -2,11 +2,11 @@
  * defineComposite() — Composite component definition factory for @ttoss/ui2.
  *
  * **The problem it solves (B-07):**
- * TextField is a composite that assembles 4 ui2 primitives inside an Ark Field.Root.
- * But there's no machine-readable declaration of:
+ * TextField is a composite that assembles 4 ui2 primitives. There's no
+ * machine-readable declaration of:
  *   - Which parts the composite assembles (the composition contract)
  *   - What data-scope the composite root carries
- *   - Whether the composite uses Ark Field context (and thus supports
+ *   - Whether the composite uses Field context (and thus supports
  *     invalid/disabled/required/readOnly propagation automatically)
  *   - How composites differ from primitives in the contract test strategy
  *
@@ -21,7 +21,7 @@
  *   name: 'TextField',
  *   scope: 'text-field',
  *   parts: ['Label', 'Input', 'HelperText', 'ValidationMessage'],
- *   context: 'Field',        // 'Field' → wraps in Ark Field.Root with state props
+ *   context: 'Field',        // Context wrapper (Field context with state props)
  *   render: ({ label, helperText, errorText, size, ...inputProps }, { Label, Input, HelperText, ValidationMessage }) => (
  *     <>
  *       {label !== undefined && <Label>{label}</Label>}

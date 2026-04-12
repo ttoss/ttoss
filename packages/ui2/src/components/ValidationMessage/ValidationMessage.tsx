@@ -16,6 +16,8 @@ export interface ValidationMessageProps extends React.HTMLAttributes<HTMLSpanEle
 // Component
 // ---------------------------------------------------------------------------
 
+const defaultTestWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
 const {
   Component: ValidationMessageBase,
   contractConfig: validationMessageContractConfig,
@@ -40,9 +42,7 @@ const {
       marginTop: T.spacing.gap.inline.sm,
     },
   },
-  wrapperForTests: ({ children }: { children: React.ReactNode }) => {
-    return <>{children}</>;
-  },
+  wrapperForTests: defaultTestWrapper,
 });
 
 export { validationMessageComponentMeta, validationMessageContractConfig };
@@ -50,23 +50,16 @@ export { validationMessageComponentMeta, validationMessageContractConfig };
 /**
  * ValidationMessage — form field error or validation feedback text.
  *
- * Wraps `Field.ErrorText` from Ark UI, which:
- * - wires `aria-describedby` automatically via Field context
- * - only renders its children when `Field.Root` has `invalid={true}`
- * - adds `role="alert"` / `aria-live` for accessible announcements
+ * A native `<span>` element with semantic tokens applied. Shows validation
+ * errors and feedback for form fields.
  *
  * Always uses `negative` evaluation — validation messages communicate errors.
  * This evaluation is not consumer-configurable; it is part of the semantic contract.
  *
- * Must be rendered inside a `Field.Root` to display. When `Field.Root` does not
- * have `invalid={true}`, Ark suppresses rendering automatically.
- *
  * @example
- * <Field.Root invalid={!!error}>
- *   <Label>Email</Label>
- *   <Input type="email" />
- *   <ValidationMessage>{error?.message}</ValidationMessage>
- * </Field.Root>
+ * <Label>Email</Label>
+ * <Input type="email" />
+ * {error && <ValidationMessage>{error}</ValidationMessage>}
  */
 export const ValidationMessage = React.forwardRef<
   HTMLSpanElement,

@@ -16,6 +16,8 @@ export interface HelperTextProps extends React.HTMLAttributes<HTMLSpanElement> {
 // Component
 // ---------------------------------------------------------------------------
 
+const defaultTestWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
 const {
   Component: HelperTextBase,
   contractConfig: helperTextContractConfig,
@@ -40,9 +42,7 @@ const {
       marginTop: T.spacing.gap.inline.sm,
     },
   },
-  wrapperForTests: ({ children }) => {
-    return <>{children}</>;
-  },
+  wrapperForTests: defaultTestWrapper,
 });
 
 export { helperTextComponentMeta, helperTextContractConfig };
@@ -50,19 +50,16 @@ export { helperTextComponentMeta, helperTextContractConfig };
 /**
  * HelperText — supporting descriptive text for a form field.
  *
- * Wraps `Field.HelperText` from Ark UI, which wires `aria-describedby`
- * automatically via the Field context.
+ * A native `<span>` element with semantic tokens applied. Used to provide
+ * helpful context or instructions about a form field.
  *
  * Always uses `muted` evaluation — helper text is intentionally de-emphasized
- * to maintain visual hierarchy: label > input > helper text (> error text).
- * This evaluation is not consumer-configurable; it is part of the semantic contract.
+ * to maintain visual hierarchy: label > input > helper text.
  *
  * @example
- * <Field.Root>
- *   <Label>Password</Label>
- *   <Input type="password" />
- *   <HelperText>Must be at least 8 characters.</HelperText>
- * </Field.Root>
+ * <Label>Password</Label>
+ * <Input type="password" />
+ * <HelperText>Must be at least 8 characters.</HelperText>
  */
 export const HelperText = React.forwardRef<HTMLSpanElement, HelperTextProps>(
   (props, ref) => {

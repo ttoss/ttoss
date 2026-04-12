@@ -35,6 +35,8 @@ export interface InputProps extends Omit<
 // Factory definition
 // ---------------------------------------------------------------------------
 
+const defaultTestWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
 const {
   Component: InputBase,
   contractConfig: inputContractConfig,
@@ -48,6 +50,7 @@ const {
   withInvalidOverlay: true,
   isVoid: true,
   sizes: ['sm', 'md', 'lg'] as const,
+  wrapperForTests: defaultTestWrapper,
   layout: {
     base: {
       display: 'block',
@@ -100,9 +103,6 @@ const {
   outline-offset: 2px;
 }`,
   ],
-  wrapperForTests: ({ children }) => {
-    return <>{children}</>;
-  },
 });
 
 export { inputComponentMeta, inputContractConfig };
@@ -112,25 +112,21 @@ export { inputComponentMeta, inputContractConfig };
 // ---------------------------------------------------------------------------
 
 /**
- * Input — a semantic text input that participates in Ark UI Field context.
+ * Input — a semantic text input field component.
  *
- * Wraps `Field.Input` from Ark UI, which wires ARIA attributes automatically
- * when nested inside a `Field.Root` (`aria-labelledby`, `aria-describedby`,
- * `aria-invalid`, `aria-required`, `aria-readonly`).
+ * A native `<input>` element with @ttoss/theme2 semantic tokens applied via
+ * `data-variant` (role resolution). Includes visual invalid state support via
+ * `[data-invalid]` CSS overlay when invalid prop is set.
  *
- * Invalid state is automatically reflected when `Field.Root` has `invalid={true}`:
- * Ark adds `data-invalid` to the underlying `<input>`, and static CSS
- * transitions to the negative-role color tokens without any React re-render.
+ * Works standalone or within a form context:
  *
  * @example
- * // Standalone (no Field context)
+ * // Standalone
  * <Input placeholder="Enter text" />
  *
  * @example
- * // Inside Field.Root — full ARIA wiring automatic
- * <Field.Root invalid={!!error} disabled={disabled}>
- *   <Input placeholder="Email" />
- * </Field.Root>
+ * // With validation state
+ * <Input placeholder="Email" invalid={!!error} />
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ type = 'text', size = 'md', ...props }, ref) => {

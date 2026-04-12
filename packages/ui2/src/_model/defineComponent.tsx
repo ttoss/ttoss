@@ -35,17 +35,15 @@
  * });
  *
  * @example
- * // Defining Label: static text-only Ark-based component
+ * // Defining Label: static text-only component with native label element
  * const { Component: Label, contractConfig: labelContractConfig } = defineComponent({
  *   name: 'Label',
  *   scope: 'label',
  *   responsibility: 'Structure',
  *   evaluation: 'secondary',
- *   element: 'Field.Label',
+ *   element: 'label',
  *   dimensions: ['text'],
  *   hasConsequence: false,
- *
- *   wrapperForTests: ({ children }) => <Field.Root>{children}</Field.Root>,
  * });
  */
 import * as React from 'react';

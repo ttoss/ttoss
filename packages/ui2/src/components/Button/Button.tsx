@@ -69,6 +69,8 @@ export interface ButtonProps extends Omit<
 // Factory definition
 // ---------------------------------------------------------------------------
 
+const defaultTestWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
 const {
   Component: ButtonBase,
   contractConfig: buttonContractConfig,
@@ -80,6 +82,7 @@ const {
   element: 'button',
   hasConsequence: true,
   sizes: ['sm', 'md', 'lg'] as const,
+  wrapperForTests: defaultTestWrapper,
   layout: {
     base: {
       display: 'inline-flex',

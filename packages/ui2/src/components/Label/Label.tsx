@@ -16,6 +16,8 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
 // Component
 // ---------------------------------------------------------------------------
 
+const defaultTestWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
 const {
   Component: LabelBase,
   contractConfig: labelContractConfig,
@@ -40,32 +42,23 @@ const {
       marginBottom: T.spacing.gap.inline.sm,
     },
   },
-  wrapperForTests: ({ children }) => {
-    return <>{children}</>;
-  },
+  wrapperForTests: defaultTestWrapper,
 });
 
 export { labelComponentMeta, labelContractConfig };
 
 /**
- * Label — a semantic form field label that participates in Ark UI Field context.
+ * Label — a semantic form field label.
  *
- * Wraps `Field.Label` from Ark UI, which wires `htmlFor` automatically via
- * the Field context — no manual `id`/`htmlFor` matching required.
+ * A native `<label>` element with semantic tokens applied. Intended to work
+ * with Input and other form components, but can be used standalone.
  *
- * State propagation from `Field.Root`:
- * - `disabled` → Ark adds `data-disabled` — CSS applies disabled color tokens
- * - `required` → Ark adds `data-required` — CSS renders the required indicator
- * - `invalid`  → Ark adds `data-invalid` — label color unchanged (intentional)
- *
- * Uses `Structure` responsibility with `secondary` evaluation — labels are
- * supporting text with intentional visual subordination to body content.
+ * Always uses `secondary` evaluation — labels are supporting text with
+ * intentional visual subordination to body content.
  *
  * @example
- * <Field.Root>
- *   <Label>Email address</Label>
- *   <Input placeholder="you@example.com" />
- * </Field.Root>
+ * <Label>Email address</Label>
+ * <Input placeholder="you@example.com" />
  */
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
   (props, ref) => {
