@@ -9,7 +9,6 @@
  */
 import type * as React from 'react';
 
-import type { Dimension, FslState } from './resolver';
 import type { Evaluation, Responsibility } from './taxonomy';
 
 /**
@@ -24,10 +23,10 @@ export interface ComponentContractConfig {
   Component: React.ComponentType<any>;
   /** The value written to data-scope — must match the component's CSS namespace. */
   scope: string;
-  /** The FSL Responsibility the component declares in its resolveTokens() call. */
+  /** The FSL Responsibility the component declares. */
   responsibility: Responsibility;
   /**
-   * The fixed evaluation the component uses in its resolveTokens() call.
+   * The fixed evaluation the component uses.
    * Omit for components that default to 'primary' or accept an evaluation prop.
    */
   evaluation?: Evaluation;
@@ -41,15 +40,6 @@ export interface ComponentContractConfig {
    * @default false
    */
   isVoid?: boolean;
-  /**
-   * The scoped CSS var to probe in resolver bridge tests.
-   * Defaults to `{ cssVar: '--_bg', dimension: 'background', state: 'default' }`.
-   */
-  probeVar?: {
-    cssVar: string;
-    dimension: Dimension;
-    state: FslState;
-  };
   /**
    * Optional React wrapper component that provides context required by the
    * component under test (e.g. Field.Root for Ark-based form parts).

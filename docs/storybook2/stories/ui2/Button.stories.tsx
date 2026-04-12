@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from '@ttoss/ui2';
 
-// ---------------------------------------------------------------------------
-// Button
-// ---------------------------------------------------------------------------
-
-const ButtonMeta: Meta<typeof Button> = {
+const meta: Meta<typeof Button> = {
   title: 'ui2/Button',
   component: Button,
   tags: ['autodocs'],
@@ -29,25 +25,58 @@ const ButtonMeta: Meta<typeof Button> = {
   },
 };
 
-export default ButtonMeta;
-type ButtonStory = StoryObj<typeof Button>;
+export default meta;
+type Story = StoryObj<typeof Button>;
 
-export const Primary: ButtonStory = {
+export const Primary: Story = {
   args: { evaluation: 'primary' },
 };
 
-export const Secondary: ButtonStory = {
+export const Secondary: Story = {
   args: { evaluation: 'secondary' },
 };
 
-export const Muted: ButtonStory = {
+export const Muted: Story = {
   args: { evaluation: 'muted' },
 };
 
-export const Destructive: ButtonStory = {
+export const Destructive: Story = {
   args: { consequence: 'destructive' },
 };
 
-export const Disabled: ButtonStory = {
+export const Small: Story = {
+  args: { size: 'sm', children: 'Small' },
+};
+
+export const Large: Story = {
+  args: { size: 'lg', children: 'Large' },
+};
+
+export const Disabled: Story = {
   args: { evaluation: 'primary', disabled: true },
+};
+
+export const AllEvaluations: Story = {
+  render: () => {
+    return (
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <Button evaluation="primary">Primary</Button>
+        <Button evaluation="secondary">Secondary</Button>
+        <Button evaluation="muted">Muted</Button>
+        <Button consequence="destructive">Destructive</Button>
+      </div>
+    );
+  },
+};
+
+export const AllSizes: Story = {
+  render: () => {
+    return (
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Button size="sm">Small</Button>
+        <Button size="md">Medium</Button>
+        <Button size="lg">Large</Button>
+      </div>
+    );
+  },
 };

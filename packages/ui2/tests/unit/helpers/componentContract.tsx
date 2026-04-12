@@ -2,28 +2,24 @@
  * Component contract test factory for @ttoss/ui2.
  *
  * Generates 5 invariant tests (or 4 when hasConsequence=false) that verify the
- * architectural bridge between a component and the FSL token system:
+ * architectural bridge between a component and the FSL semantic system:
  *
- *   ComponentExpression → resolveTokens() → scoped CSS vars → DOM
+ *   ComponentExpression → resolveRole() → data-variant → static CSS
  *
  * These are integration tests — they cover what resolver.test.ts cannot:
- * whether the component actually calls the resolver correctly and injects
- * the result into the DOM as --_* scoped vars.
+ * whether the component actually calls the resolver correctly and sets
+ * the correct `data-variant` attribute on the DOM element.
  *
  * NOT tested here (resolver.test.ts covers): formula correctness, state sets,
  * UxContext mapping, consequence override logic.
  *
  * NOT tested here (standard HTML): className forwarding, onClick, aria-*,
  * disabled — these don't require per-component assertions.
- *
- * To register a new component, add one testComponentContract() call in
- * tests/unit/tests/components.contract.test.tsx.
  */
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import type { ComponentContractConfig } from 'src/_model/factory.types';
-import type { ColorSpec, Dimension, FslState } from 'src/_model/resolver';
-import { resolveTokens } from 'src/_model/resolver';
+import { resolveRole } from 'src/_model/resolver';
 import type { Consequence } from 'src/_model/taxonomy';
 
 export type { ComponentContractConfig };
@@ -35,7 +31,6 @@ export const testComponentContract = ({
   evaluation,
   hasConsequence = true,
   isVoid = false,
-  probeVar,
   wrapper: Wrapper,
 }: ComponentContractConfig): void => {
   describe(`${scope} — component contract`, () => {
@@ -44,27 +39,21 @@ export const testComponentContract = ({
     // Void elements (e.g. <input>) cannot have children.
     const content = isVoid ? undefined : 'test';
 
-    const probe = probeVar ?? {
-      cssVar: '--_bg',
-      dimension: 'background' as Dimension,
-      state: 'default' as FslState,
-    };
-
     const wrap = (el: React.ReactElement): React.ReactElement => {
       return Wrapper ? React.createElement(Wrapper, null, el) : el;
     };
 
-    test(`resolveTokens output reaches DOM as ${probe.cssVar} scoped var`, () => {
+    test('data-variant reflects resolved role', () => {
       render(wrap(<Component data-testid={tid}>{content}</Component>));
-      const resolved = resolveTokens({ responsibility, evaluation }).colors as ColorSpec;
-      const expected = resolved[probe.dimension][probe.state];
-      expect(screen.getByTestId(tid).style.getPropertyValue(probe.cssVar)).toBe(
-        expected
+      const expectedRole = resolveRole({ responsibility, evaluation });
+      expect(screen.getByTestId(tid)).toHaveAttribute(
+        'data-variant',
+        expectedRole
       );
     });
 
     if (hasConsequence) {
-      test('consequence="destructive" propagates to --_bg (negative role)', () => {
+      test('consequence="destructive" sets data-variant="negative"', () => {
         const destructive: Consequence = 'destructive';
         render(
           wrap(
@@ -73,12 +62,9 @@ export const testComponentContract = ({
             </Component>
           )
         );
-        const expected = resolveTokens({
-          responsibility,
-          consequence: destructive,
-        }).colors.background.default;
-        expect(screen.getByTestId(tid).style.getPropertyValue('--_bg')).toBe(
-          expected
+        expect(screen.getByTestId(tid)).toHaveAttribute(
+          'data-variant',
+          'negative'
         );
       });
     }
@@ -89,7 +75,6 @@ export const testComponentContract = ({
     });
 
     test('data-scope cannot be overridden by consumer props', () => {
-      // Verifies semantic attrs are placed AFTER {...rest} spread in the component.
       render(
         wrap(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,7 +86,7 @@ export const testComponentContract = ({
       expect(screen.getByTestId(tid)).toHaveAttribute('data-scope', scope);
     });
 
-    test('consumer style prop is merged alongside scoped vars', () => {
+    test('no inline color styles injected — consumer style is passed through', () => {
       render(
         wrap(
           <Component data-testid={tid} style={{ opacity: 0.5 }}>
@@ -110,10 +95,24 @@ export const testComponentContract = ({
         )
       );
       const el = screen.getByTestId(tid);
+      // Consumer style works
       expect(el.style.opacity).toBe('0.5');
-      const resolved = resolveTokens({ responsibility, evaluation }).colors as ColorSpec;
-      const expected = resolved[probe.dimension][probe.state];
-      expect(el.style.getPropertyValue(probe.cssVar)).toBe(expected);
+      // No inline color styles — colors come from static CSS via data-variant
+      expect(el.style.getPropertyValue('--_bg')).toBe('');
+      expect(el.style.getPropertyValue('--_text')).toBe('');
+      expect(el.style.getPropertyValue('--_border')).toBe('');
+    });
+
+    test('ref is forwarded to the root DOM element', () => {
+      const ref = React.createRef<HTMLElement>();
+      render(
+        wrap(
+          <Component ref={ref} data-testid={tid}>
+            {content}
+          </Component>
+        )
+      );
+      expect(ref.current).toBe(screen.getByTestId(tid));
     });
   });
 };

@@ -1,5 +1,5 @@
 import type { ThemeTokens } from '../Types';
-import { flattenAndResolve } from './helpers';
+import { toFlatTokens } from './helpers';
 import { DTCG_TYPE_PREFIXES } from './tokenRegistry';
 
 // ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ const setNestedValue = (
  * ```
  */
 export const toDTCG = (theme: ThemeTokens): DTCGTokenTree => {
-  const flat = flattenAndResolve(theme);
+  const flat = toFlatTokens(theme);
   const tree: MutableTree = {};
 
   for (const [path, value] of Object.entries(flat)) {

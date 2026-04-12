@@ -2,33 +2,31 @@
  * defineComponent() — Component definition factory for @ttoss/ui2.
  *
  * Encodes the complete definition of a ui2 primitive in one call. Derives:
- *   - The React component (evaluation prop wiring, consequence override,
- *     scope-var injection, Ark primitive selection, semantic data attributes)
+ *   - The React component (role resolution, semantic data attributes)
  *   - The contract test configuration (ready to pass to testComponentContract)
+ *   - The component metadata (used by the CSS generation build step)
+ *
+ * **Architecture (data-variant):**
+ * Components do NOT inject inline color styles. Instead, each component writes
+ * `data-variant="{role}"` to the DOM, and static CSS selectors (generated at
+ * build time) apply colors via direct `var(--tt-*)` theme token references.
+ * This makes component CSS fully static, cacheable, and DevTools-readable.
  *
  * **The problem it solves (B-06):**
- * Creating a new ui2 component today requires touching 5 separate files and
- * knowing the wiring protocol from memory. The 5 decisions that must be made
- * correctly each time:
- *   1. Call `resolveTokens({ responsibility, evaluation, consequence })`
- *   2. Call `toScopeVars(colors, { dimensions? })` + spread overlays
- *   3. `style={{ ...scopeVars, ...consumerStyle }}`
- *   4. `data-scope`, `data-part`, `data-variant` AFTER `{...rest}` (guards override)
- *   5. Register in components.contract.test.tsx with matching responsibility, probeVar, wrapper
+ * Creating a new ui2 component today requires touching 1 file. The decisions
+ * that must be made correctly:
+ *   1. Call `resolveRole({ responsibility, evaluation, consequence })`
+ *   2. Set `data-scope`, `data-part`, `data-variant` AFTER `{...rest}` (guards override)
+ *   3. Export `contractConfig` for auto-discovered contract tests
  *
- * With `defineComponent()`, all five decisions are encoded in one object. A
+ * With `defineComponent()`, all decisions are encoded in one object. A
  * developer (or AI agent) that calls this function cannot get state selectors
  * wrong, cannot forget to protect semantic attrs, cannot mismatch the contract
  * registration. The definition IS the component.
  *
- * **What defineComponent() does NOT cover:**
- * Layout (sizing, spacing, typography) is inherently per-component and
- * hand-authored in styles.css. defineComponent() covers the color/semantic
- * layer only — the invariant part of every component.
- *
  * @example
  * // Defining Button: interactive action component
- * const { Button, buttonContractConfig } = defineComponent({
+ * const { Component: Button, contractConfig: buttonContractConfig } = defineComponent({
  *   name: 'Button',
  *   scope: 'button',
  *   responsibility: 'Action',
@@ -38,7 +36,7 @@
  *
  * @example
  * // Defining Label: static text-only Ark-based component
- * const { Label, labelContractConfig } = defineComponent({
+ * const { Component: Label, contractConfig: labelContractConfig } = defineComponent({
  *   name: 'Label',
  *   scope: 'label',
  *   responsibility: 'Structure',
@@ -49,58 +47,66 @@
  *
  *   wrapperForTests: ({ children }) => <Field.Root>{children}</Field.Root>,
  * });
- *
- * @example
- * // Defining Input: void element with invalid-state overlay + consequence
- * const { Input, inputContractConfig } = defineComponent({
- *   name: 'Input',
- *   scope: 'input',
- *   responsibility: 'Input',
- *   element: 'Field.Input',
- *   isVoid: true,
- *   hasConsequence: false,
- *   withInvalidOverlay: true,
- * });
  */
-import { Field } from '@ark-ui/react';
 import * as React from 'react';
 
-import type { Dimension } from './resolver';
+import type { ComponentSpec } from './componentTokens';
 import type { ComponentContractConfig } from './factory.types';
-import {
-  resolveInvalidOverlay,
-  resolveTokens,
-  toScopeVars,
-} from './resolver';
+import type { Dimension } from './resolver';
+import { resolveRole } from './resolver';
 import type { Consequence, Evaluation, Responsibility } from './taxonomy';
 
 // ---------------------------------------------------------------------------
-// Ark element registry
+// Native element → HTMLElement type map
 // ---------------------------------------------------------------------------
 
 /**
- * Supported Ark UI element identifiers.
- *
- * When `element` is one of these, `defineComponent()` renders the matching
- * Ark primitive instead of a native HTML element. This gives the component
- * the full Ark state-machine integration (ARIA, data-attributes, Field context)
- * without any additional wiring.
- *
- * Extend this union when new Ark primitives are adopted.
+ * Maps element descriptors to their corresponding DOM element types.
+ * Used to infer the correct ref type for `React.forwardRef`.
  */
-export type ArkElement =
-  | 'Field.Input'
-  | 'Field.Label'
-  | 'Field.HelperText'
-  | 'Field.ErrorText';
+type NativeElementType<TElement extends ElementDescriptor> =
+  TElement extends 'button'
+    ? HTMLButtonElement
+    : TElement extends 'input'
+      ? HTMLInputElement
+      : TElement extends 'a'
+        ? HTMLAnchorElement
+        : TElement extends 'select'
+          ? HTMLSelectElement
+          : TElement extends 'textarea'
+            ? HTMLTextAreaElement
+            : TElement extends 'label'
+              ? HTMLLabelElement
+              : HTMLElement;
+
+// ---------------------------------------------------------------------------
+// Native element descriptor
+// ---------------------------------------------------------------------------
 
 /**
  * Valid element descriptors for the `element` option.
+ * Now supports only native HTML tags (no more Ark UI elements).
  *
- * - A native HTML tag string (e.g. `'button'`, `'a'`, `'div'`) → renders that tag.
- * - An `ArkElement` identifier → renders the matching Ark UI primitive.
+ * Examples: 'button', 'input', 'label', 'span', 'div', 'a', etc.
  */
-export type ElementDescriptor = keyof React.JSX.IntrinsicElements | ArkElement;
+export type ElementDescriptor = keyof React.JSX.IntrinsicElements;
+
+// ---------------------------------------------------------------------------
+// Component metadata — used by CSS generation build step
+// ---------------------------------------------------------------------------
+
+/**
+ * Metadata describing a component's CSS generation requirements.
+ * Attached to the `defineComponent()` result for the build step to consume.
+ */
+export interface ComponentMeta {
+  scope: string;
+  responsibility: Responsibility;
+  dimensions?: ReadonlyArray<Dimension>;
+  withInvalidOverlay: boolean;
+  layout?: ComponentSpec;
+  extraCss?: ReadonlyArray<string>;
+}
 
 // ---------------------------------------------------------------------------
 // defineComponent options
@@ -115,6 +121,8 @@ export type ElementDescriptor = keyof React.JSX.IntrinsicElements | ArkElement;
 export interface DefineComponentOptions<
   TElement extends ElementDescriptor,
   TSize extends string = never,
+  TFixedEval extends Evaluation | undefined = undefined,
+  THasConsequence extends boolean = true,
 > {
   /**
    * Display name for the React component. Used in React DevTools and error messages.
@@ -125,8 +133,8 @@ export interface DefineComponentOptions<
   /**
    * Ark UI `data-scope` value — the CSS namespace for this component.
    *
-   * All CSS rules in `styles.css` targeting this component use
-   * `[data-scope='${scope}']` as the base selector. Must be unique across ui2.
+   * All CSS rules targeting this component use `[data-scope='${scope}']` as
+   * the base selector. Must be unique across ui2.
    *
    * Convention: kebab-case (e.g. `'button'`, `'helper-text'`).
    */
@@ -135,9 +143,8 @@ export interface DefineComponentOptions<
   /**
    * FSL Responsibility of the component — the single fixed semantic identity.
    *
-   * Passed to `resolveTokens()` on every render. Cannot vary per instance.
-   * If a component needs a different responsibility in a different context,
-   * it must be a different component.
+   * Determines the UX context (via RESPONSIBILITY_UX_MAP) which in turn
+   * determines which color roles are valid. Cannot vary per instance.
    */
   responsibility: Responsibility;
 
@@ -147,9 +154,8 @@ export interface DefineComponentOptions<
    * - Native HTML tag → rendered directly (e.g. `'button'`, `'input'`)
    * - `ArkElement` string → rendered via the Ark Field primitive registry
    *
-   * The rendered element receives all props not consumed by `defineComponent()`
-   * via `{...rest}`. Semantic attrs (`data-scope`, `data-part`, `data-variant`,
-   * `data-size`) are applied AFTER `{...rest}` so they cannot be overridden.
+   * Semantic attrs (`data-scope`, `data-part`, `data-variant`, `data-size`)
+   * are applied AFTER `{...rest}` so they cannot be overridden.
    */
   element: TElement;
 
@@ -157,51 +163,35 @@ export interface DefineComponentOptions<
    * Fixed semantic evaluation — when the component's evaluation is not a
    * consumer prop but an architectural decision.
    *
-   * Examples:
-   * - `HelperText` always uses `'muted'` (intentional visual subordination)
-   * - `ValidationMessage` always uses `'negative'` (error semantics)
-   * - `Label` always uses `'secondary'` (supporting text hierarchy)
-   *
    * When `evaluation` is set, the component does NOT accept an `evaluation`
-   * prop — the evaluation is fixed. When omitted, the component accepts and
-   * forwards an `evaluation` prop.
-   *
-   * Omit when the component has a variable evaluation (e.g. Button, Input).
+   * prop. When omitted, the component accepts and forwards an `evaluation` prop.
    */
-  evaluation?: Evaluation;
+  evaluation?: TFixedEval;
 
   /**
    * Whether the component accepts and forwards a `consequence` prop.
-   *
-   * When `true`, a `consequence` prop is accepted and forwarded to
-   * `resolveTokens()`. The `'destructive'` consequence automatically resolves
-   * to `role: 'negative'` via the consequence override mechanism.
    *
    * Set to `false` for passive/static components where `consequence` has no
    * semantic meaning (e.g. Label, HelperText, Badge, ValidationMessage).
    *
    * @default true
    */
-  hasConsequence?: boolean;
+  hasConsequence?: THasConsequence;
 
   /**
-   * Restricts scoped var injection to a subset of color dimensions.
+   * Restricts CSS generation to a subset of color dimensions.
    *
-   * By default, `toScopeVars()` emits all three dimensions (background, border,
-   * text). Static components that CSS only references `--_text*` vars can pass
-   * `['text']` here to avoid injecting unused background/border vars.
-   *
-   * @example ['text'] — for Label, HelperText, ValidationMessage
+   * Static components that only need color (e.g. Label, HelperText) pass
+   * `['text']` here. The CSS generator emits only `color:` declarations,
+   * never `background-color:` or `border-color:`.
    */
   dimensions?: ReadonlyArray<Dimension>;
 
   /**
-   * Whether to also inject invalid-state scoped vars via `resolveInvalidOverlay()`.
+   * Whether to generate `[data-invalid]` overlay CSS rules.
    *
    * Set to `true` for components that participate in Ark's `[data-invalid]`
-   * state (e.g. Input, Select, TextArea). Adds `--_bg-invalid`, `--_border-invalid`,
-   * `--_border-invalid-focused`, etc. — the full negative-role overlay consumed
-   * by CSS `[data-invalid]` rules in styles.css.
+   * state (e.g. Input, Select, TextArea).
    *
    * @default false
    */
@@ -210,9 +200,7 @@ export interface DefineComponentOptions<
   /**
    * Whether the rendered element is a void element (e.g. `<input>`).
    *
-   * When `true`:
-   * - The component does not accept or forward `children`.
-   * - Contract tests omit children from the rendered component.
+   * When `true`, the component does not accept or forward `children`.
    *
    * @default false
    */
@@ -222,23 +210,34 @@ export interface DefineComponentOptions<
    * Available size variants for this component.
    *
    * When provided, the component accepts a `size` prop and writes it to
-   * `data-size`. CSS in styles.css uses `[data-size='sm']` etc. for sizing.
-   *
-   * The first value in the array is the default size.
-   *
-   * @example ['sm', 'md', 'lg'] — for Button, Input
+   * `data-size`. CSS uses `[data-size='sm']` etc. for sizing.
    */
   sizes?: ReadonlyArray<TSize>;
 
   /**
+   * Layout declaration — encodes the component's layout CSS declaratively.
+   *
+   * The CSS generator converts this to static CSS rules targeting
+   * `[data-scope='X'][data-part='root']` and size-variant selectors.
+   *
+   * Layout tokens (`--tt-*`) are automatically wrapped in `var(...)` by
+   * the generator. Literal CSS values are emitted as-is.
+   */
+  layout?: ComponentSpec<TSize>;
+
+  /**
+   * Additional raw CSS blocks emitted by the CSS generator.
+   *
+   * Use for component-specific overrides that cannot be expressed via `layout`
+   * (e.g. custom focus ring behavior on Input). Each string is emitted as-is
+   * in the generated `styles.css`.
+   */
+  extraCss?: ReadonlyArray<string>;
+
+  /**
    * Wrapper component for contract tests.
    *
-   * Some Ark UI primitives require a Field context (Field.Root) to avoid
-   * console warnings or to render at all. Supply a wrapper here and it will
-   * be forwarded to the generated `contractConfig.wrapper`.
-   *
-   * @example
-   * wrapperForTests: ({ children }) => <Field.Root>{children}</Field.Root>
+   * Some Ark UI primitives require a Field context to render.
    */
   wrapperForTests?: React.ComponentType<{ children: React.ReactNode }>;
 }
@@ -251,58 +250,69 @@ type SizeProps<TSize extends string> = [TSize] extends [never]
   ? { size?: never }
   : { size?: TSize };
 
-type BaseHTMLProps<TElement extends ElementDescriptor> =
-  TElement extends keyof React.JSX.IntrinsicElements
-    ? Omit<React.JSX.IntrinsicElements[TElement], 'size'>
-    : React.HTMLAttributes<HTMLElement>;
+type BaseHTMLProps<TElement extends ElementDescriptor> = Omit<
+  React.JSX.IntrinsicElements[TElement],
+  'size'
+>;
+
+// ---------------------------------------------------------------------------
+// Conditional prop helpers — L6
+// ---------------------------------------------------------------------------
+
+/**
+ * Excludes the `evaluation` prop when `TFixedEval` is a concrete Evaluation.
+ */
+type EvaluationProp<TFixedEval extends Evaluation | undefined> =
+  TFixedEval extends Evaluation
+    ? { evaluation?: never }
+    : { evaluation?: Evaluation };
+
+/**
+ * Excludes the `consequence` prop when `THasConsequence` is `false`.
+ */
+type ConsequenceProp<THasConsequence extends boolean> =
+  THasConsequence extends false
+    ? { consequence?: never }
+    : { consequence?: Consequence };
 
 /**
  * The props type for a component produced by `defineComponent()`.
- *
- * - `evaluation` and `consequence` are always in the type but are ignored
- *   at runtime when the component was defined with a fixed `evaluation`.
- * - If the component has sizes, the `size` prop is typed to the size union.
  */
 export type ComponentProps<
   TElement extends ElementDescriptor,
   TSize extends string = never,
+  TFixedEval extends Evaluation | undefined = undefined,
+  THasConsequence extends boolean = true,
 > = BaseHTMLProps<TElement> &
   SizeProps<TSize> &
-  { evaluation?: Evaluation; consequence?: Consequence; style?: React.CSSProperties };
+  EvaluationProp<TFixedEval> &
+  ConsequenceProp<THasConsequence> & {
+    style?: React.CSSProperties;
+  };
 
 /**
  * The result of a `defineComponent()` call.
  *
- * - `Component` — the React component, ready to export from `src/index.ts`.
- * - `contractConfig` — pre-built config for `testComponentContract()`,
- *   eliminating the need to manually register each component.
+ * - `Component` — the React component, ready to export.
+ * - `contractConfig` — pre-built config for `testComponentContract()`.
+ * - `componentMeta` — metadata for the CSS generation build step.
  */
 export interface DefineComponentResult<
   TElement extends ElementDescriptor,
   TSize extends string = never,
+  TFixedEval extends Evaluation | undefined = undefined,
+  THasConsequence extends boolean = true,
 > {
-  Component: React.ComponentType<ComponentProps<TElement, TSize>>;
+  Component: React.ForwardRefExoticComponent<
+    ComponentProps<TElement, TSize, TFixedEval, THasConsequence> &
+      React.RefAttributes<NativeElementType<TElement>>
+  >;
   contractConfig: ComponentContractConfig;
+  componentMeta: ComponentMeta;
 }
 
 // ---------------------------------------------------------------------------
 // Ark element → React component map
-// ---------------------------------------------------------------------------
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyComponent = React.ComponentType<any>;
-
-const ARK_ELEMENT_MAP: Record<ArkElement, AnyComponent> = {
-  'Field.Input': Field.Input as AnyComponent,
-  'Field.Label': Field.Label as AnyComponent,
-  'Field.HelperText': Field.HelperText as AnyComponent,
-  'Field.ErrorText': Field.ErrorText as AnyComponent,
-};
-
-const isArkElement = (el: ElementDescriptor): el is ArkElement => {
-  return el in ARK_ELEMENT_MAP;
-};
-
 // ---------------------------------------------------------------------------
 // defineComponent
 // ---------------------------------------------------------------------------
@@ -310,101 +320,108 @@ const isArkElement = (el: ElementDescriptor): el is ArkElement => {
 /**
  * Factory that creates a ui2 primitive component from a declarative definition.
  *
- * The returned `Component` and `contractConfig` together replace:
- *   1. The hand-written component file (token resolution, scope-var injection,
- *      semantic attribute application)
- *   2. The manual contract registration in `components.contract.test.tsx`
- *
- * See module-level JSDoc and `DefineComponentOptions` for full option documentation.
+ * The returned `Component`, `contractConfig`, and `componentMeta` together encode
+ * the complete identity of a ui2 primitive — no additional wiring files needed.
  */
 export const defineComponent = <
   TElement extends ElementDescriptor,
-  TSize extends string,
+  TSize extends string = never,
+  TFixedEval extends Evaluation | undefined = undefined,
+  THasConsequence extends boolean = true,
 >({
   name,
   scope,
   responsibility,
   element,
   evaluation: fixedEvaluation,
-  hasConsequence = true,
+  hasConsequence = true as unknown as THasConsequence,
   dimensions,
   withInvalidOverlay = false,
   isVoid = false,
   sizes,
+  layout,
+  extraCss,
   wrapperForTests,
-}: DefineComponentOptions<TElement, TSize>): DefineComponentResult<
+}: DefineComponentOptions<
   TElement,
-  TSize
-> => {
+  TSize,
+  TFixedEval,
+  THasConsequence
+>): DefineComponentResult<TElement, TSize, TFixedEval, THasConsequence> => {
   // ── Render element ────────────────────────────────────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const RenderElement: React.ComponentType<any> | string =
-    isArkElement(element)
-      ? ARK_ELEMENT_MAP[element]
-      : (element as string);
+  const RenderElement: string = element as string;
 
   // ── React component ───────────────────────────────────────────────────────
-  const Component = ({
-    evaluation: instanceEvaluation,
-    consequence,
-    size,
-    style,
-    children,
-    ...rest
-  }: ComponentProps<TElement, TSize> & {
-    children?: React.ReactNode;
-  }) => {
-    const resolvedEvaluation = fixedEvaluation ?? instanceEvaluation;
+  const Component = React.forwardRef<
+    NativeElementType<TElement>,
+    ComponentProps<TElement, TSize> & { children?: React.ReactNode }
+  >(
+    (
+      {
+        evaluation: instanceEvaluation,
+        consequence,
+        size,
+        style,
+        children,
+        ...rest
+      },
+      ref
+    ) => {
+      const resolvedEvaluation = fixedEvaluation ?? instanceEvaluation;
 
-    const { role, colors } = resolveTokens({
-      responsibility,
-      evaluation: resolvedEvaluation,
-      consequence: hasConsequence ? consequence : undefined,
-    });
+      const role = resolveRole({
+        responsibility,
+        evaluation: resolvedEvaluation,
+        consequence: hasConsequence ? consequence : undefined,
+      });
 
-    const scopeVars: Record<string, string> = {
-      ...toScopeVars(colors, dimensions ? { dimensions } : undefined),
-      ...(withInvalidOverlay ? resolveInvalidOverlay({ responsibility }) : {}),
-    };
+      const semanticAttrs: Record<string, string | undefined> = {
+        'data-scope': scope,
+        'data-part': 'root',
+        'data-variant': role,
+        ...(sizes && size !== undefined ? { 'data-size': size } : {}),
+      };
 
-    const semanticAttrs: Record<string, string | undefined> = {
-      'data-scope': scope,
-      'data-part': 'root',
-      'data-variant': role,
-      ...(sizes && size !== undefined ? { 'data-size': size } : {}),
-    };
-
-    return React.createElement(RenderElement, {
-      style: { ...(scopeVars as React.CSSProperties), ...style },
-      ...rest,
-      // Semantic attrs AFTER rest — cannot be overridden by consumers
-      ...semanticAttrs,
-      ...(isVoid ? {} : { children }),
-    });
-  };
+      return React.createElement(RenderElement, {
+        ref,
+        style,
+        ...rest,
+        // Semantic attrs AFTER rest — cannot be overridden by consumers
+        ...semanticAttrs,
+        ...(isVoid ? {} : { children }),
+      });
+    }
+  );
 
   Component.displayName = name;
 
   // ── Contract config ───────────────────────────────────────────────────────
-  // Derive the probeVar: text-only components probe '--_text'; all others '--_bg'.
-  const probeVar: ComponentContractConfig['probeVar'] =
-    dimensions && dimensions.length === 1 && dimensions[0] === 'text'
-      ? { cssVar: '--_text', dimension: 'text', state: 'default' }
-      : undefined; // undefined = use default '--_bg'
-
   const contractConfig: ComponentContractConfig = {
     Component: Component as React.ComponentType<unknown>,
     scope,
     responsibility,
     evaluation: fixedEvaluation,
-    hasConsequence: hasConsequence && !fixedEvaluation, // fixed evaluation → no consequence semantics
+    hasConsequence: hasConsequence && !fixedEvaluation,
     isVoid,
-    probeVar,
     wrapper: wrapperForTests,
   };
 
+  // ── Component metadata for CSS generation ─────────────────────────────────
+  const componentMeta: ComponentMeta = {
+    scope,
+    responsibility,
+    dimensions,
+    withInvalidOverlay,
+    layout,
+    extraCss,
+  };
+
   return {
-    Component: Component as React.ComponentType<ComponentProps<TElement, TSize>>,
+    Component: Component as unknown as React.ForwardRefExoticComponent<
+      ComponentProps<TElement, TSize, TFixedEval, THasConsequence> &
+        React.RefAttributes<NativeElementType<TElement>>
+    >,
     contractConfig,
+    componentMeta,
   };
 };

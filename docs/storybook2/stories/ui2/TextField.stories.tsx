@@ -45,3 +45,23 @@ export const Required: Story = {
     required: true,
   },
 };
+
+export const WithHelperText: Story = {
+  args: {
+    helperText: 'Enter your professional email address.',
+  },
+};
+
+export const Small: Story = {
+  args: {
+    size: 'sm',
+    label: 'Small field',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    size: 'lg',
+    label: 'Large field',
+  },
+};

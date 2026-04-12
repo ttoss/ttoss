@@ -37,7 +37,7 @@ describe('getThemeScriptContent', () => {
 
   test('when defaultTheme is provided, data-tt-theme is written', () => {
     const script = getThemeScriptContent({ defaultTheme: 'bruttal' });
-    expect(script).toContain("'data-tt-theme'");
+    expect(script).toContain('data-tt-theme');
     expect(script).toContain('"bruttal"');
   });
 
@@ -58,7 +58,7 @@ describe('getThemeScriptContent', () => {
 
   test('sets data-tt-mode attribute', () => {
     const script = getThemeScriptContent();
-    expect(script).toContain("'data-tt-mode'");
+    expect(script).toContain('data-tt-mode');
   });
 
   test('checks prefers-color-scheme for system mode', () => {

@@ -15,7 +15,11 @@
  *   3. CONSEQUENCES has no duplicates or empty strings
  */
 
-import { CONSEQUENCES, EVALUATIONS, RESPONSIBILITIES } from 'src/_model/taxonomy';
+import {
+  CONSEQUENCES,
+  EVALUATIONS,
+  RESPONSIBILITIES,
+} from 'src/_model/taxonomy';
 
 /* ================================================================== */
 /*  1. RESPONSIBILITIES — structural integrity                         */

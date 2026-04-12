@@ -88,7 +88,23 @@
  * });
  */
 import { Field } from '@ark-ui/react';
-import * as React from 'react';
+import type * as React from 'react';
+
+import type { ComponentDeclaration } from './componentTokens';
+
+// ---------------------------------------------------------------------------
+// CompositeMeta — layout metadata for CSS generation
+// ---------------------------------------------------------------------------
+
+/**
+ * Metadata describing a composite's CSS generation requirements.
+ * Composites only have layout — no color tokens (each assembled
+ * primitive carries its own color resolution).
+ */
+export interface CompositeMeta {
+  scope: string;
+  layout?: { base: ComponentDeclaration };
+}
 
 // ---------------------------------------------------------------------------
 // CompositeConfig — the machine-readable composite declaration
@@ -177,7 +193,10 @@ export interface FieldContextProps {
  *   the FieldContextProps (which are handled automatically by the factory).
  *   These are the composite's "content" props: label text, helper text, etc.
  */
-export interface DefineCompositeOptions<TContentProps extends object> {
+export interface DefineCompositeOptions<
+  TContentProps extends object,
+  TCtx extends CompositeContext = CompositeContext,
+> {
   /**
    * Display name for the React component. Used in React DevTools and error messages.
    * Convention: PascalCase, matches the export name (e.g. `'TextField'`).
@@ -206,7 +225,7 @@ export interface DefineCompositeOptions<TContentProps extends object> {
    *   Use for composites that don't use Ark Field parts or that wrap a full
    *   Ark multi-part component which provides its own context.
    */
-  context: CompositeContext;
+  context: TCtx;
 
   /**
    * The render function that defines how parts are assembled.
@@ -233,7 +252,10 @@ export interface DefineCompositeOptions<TContentProps extends object> {
    * ),
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render: (contentProps: TContentProps, parts: Record<string, React.ComponentType<any>>) => React.ReactNode;
+  render: (
+    contentProps: TContentProps,
+    parts: Record<string, React.ComponentType<unknown>>
+  ) => React.ReactNode;
 
   /**
    * Part component map — the ui2 primitives this composite uses.
@@ -255,6 +277,14 @@ export interface DefineCompositeOptions<TContentProps extends object> {
    * For `context: 'none'`, the root is a `<div>` — standard HTML div attributes.
    */
   rootProps?: Record<string, unknown>;
+
+  /**
+   * Layout declaration for the composite root element.
+   *
+   * Composites are layout-only — they never have color tokens.
+   * The CSS generator uses this to emit a `[data-scope][data-part='root']` block.
+   */
+  layout?: { base: ComponentDeclaration };
 }
 
 // ---------------------------------------------------------------------------
@@ -267,11 +297,15 @@ export interface DefineCompositeOptions<TContentProps extends object> {
  * - `Component` — the React composite component, ready to export from `src/index.ts`.
  * - `compositeConfig` — the machine-readable declaration, for tooling and documentation.
  */
-export interface DefineCompositeResult<TContentProps extends object> {
+export interface DefineCompositeResult<
+  TContentProps extends object,
+  TCtx extends CompositeContext = 'none',
+> {
   Component: React.ComponentType<
-    TContentProps & (CompositeContext extends 'Field' ? FieldContextProps : object)
+    TContentProps & (TCtx extends 'Field' ? FieldContextProps : object)
   >;
   compositeConfig: CompositeConfig;
+  compositeMeta: CompositeMeta;
 }
 
 // ---------------------------------------------------------------------------
@@ -283,7 +317,10 @@ export interface DefineCompositeResult<TContentProps extends object> {
  *
  * See module-level JSDoc and `DefineCompositeOptions` for full documentation.
  */
-export const defineComposite = <TContentProps extends object>({
+export const defineComposite = <
+  TContentProps extends object,
+  TCtx extends CompositeContext = CompositeContext,
+>({
   name,
   scope,
   parts,
@@ -291,7 +328,11 @@ export const defineComposite = <TContentProps extends object>({
   render,
   partComponents,
   rootProps,
-}: DefineCompositeOptions<TContentProps>): DefineCompositeResult<TContentProps> => {
+  layout,
+}: DefineCompositeOptions<TContentProps, TCtx>): DefineCompositeResult<
+  TContentProps,
+  TCtx
+> => {
   // ── Composite component ────────────────────────────────────────────────────
   const Component = ({
     invalid,
@@ -341,10 +382,17 @@ export const defineComposite = <TContentProps extends object>({
     context,
   };
 
+  // ── Composite meta (CSS generation) ───────────────────────────────────────
+  const compositeMeta: CompositeMeta = {
+    scope,
+    layout,
+  };
+
   return {
     Component: Component as React.ComponentType<
-      TContentProps & (CompositeContext extends 'Field' ? FieldContextProps : object)
+      TContentProps & (TCtx extends 'Field' ? FieldContextProps : object)
     >,
     compositeConfig,
+    compositeMeta,
   };
 };

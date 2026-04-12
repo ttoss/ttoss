@@ -17,18 +17,21 @@
  *  10. UX_VALID_ROLES covers all UX contexts
  *  11. TokenSpec structure — all three dimensions always present
  *  12. STATE_SELECTORS structural integrity
+ *  13. resolveRole — lightweight render-time role resolution
+ *  14. buildColorSpec — var-tree navigation for a given ux + role
+ *  15. generateComponentCss — per-variant CSS selector generation with direct var(--tt-*) refs
  */
 
 import {
+  buildColorSpec,
   type ColorRole,
   type FslState,
   generateComponentCss,
-  resolveInvalidOverlay,
+  resolveRole,
   resolveTokens,
   RESPONSIBILITY_UX_MAP,
   STATE_SELECTORS,
   type TokenSpec,
-  toScopeVars,
   UX_VALID_ROLES,
   type UxContext,
 } from 'src/_model/resolver';
@@ -413,7 +416,7 @@ describe('resolveTokens — invalid role handling', () => {
     spy.mockRestore();
   });
 
-  test('returns empty ColorSpec on invalid role', () => {
+  test('returns fallback primary ColorSpec on invalid role', () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const spec = resolveTokens({
@@ -422,10 +425,9 @@ describe('resolveTokens — invalid role handling', () => {
     });
 
     expect(spec.ux).toBe('action');
-    expect(spec.role).toBe('positive');
-    expect(Object.keys(spec.colors.background)).toHaveLength(0);
-    expect(Object.keys(spec.colors.border)).toHaveLength(0);
-    expect(Object.keys(spec.colors.text)).toHaveLength(0);
+    expect(spec.role).toBe('primary');
+    // Falls back to 'primary' and builds that role's ColorSpec
+    expect(Object.keys(spec.colors.background).length).toBeGreaterThan(0);
 
     spy.mockRestore();
   });
@@ -546,149 +548,282 @@ describe('STATE_SELECTORS', () => {
     expect(STATE_SELECTORS['visited']).toBe(':visited');
   });
 
-  test('expanded uses [data-state="open"]', () => {
+  test('hover uses :hover CSS pseudo-class (works for native elements and Ark UI alike)', () => {
+    expect(STATE_SELECTORS['hover']).toBe(':hover');
+  });
+
+  test('active uses :active CSS pseudo-class', () => {
+    expect(STATE_SELECTORS['active']).toBe(':active');
+  });
+
+  test('focused uses :focus-visible CSS pseudo-class', () => {
+    expect(STATE_SELECTORS['focused']).toBe(':focus-visible');
+  });
+
+  test('expanded uses [data-state="open"] (Ark state machine — no CSS pseudo-class equivalent)', () => {
     expect(STATE_SELECTORS['expanded']).toBe('[data-state="open"]');
   });
+
+  test('checked uses [data-state="checked"] (Ark state machine)', () => {
+    expect(STATE_SELECTORS['checked']).toBe('[data-state="checked"]');
+  });
+
+  test('disabled uses [data-disabled] (Ark context propagation form)', () => {
+    expect(STATE_SELECTORS['disabled']).toBe('[data-disabled]');
+  });
+
+  test('selected and checked produce the same CSS selector (collision by design)', () => {
+    expect(STATE_SELECTORS['selected']).toBe(STATE_SELECTORS['checked']);
+  });
 });
 
 // ---------------------------------------------------------------------------
-// 13. toScopeVars — scoped CSS custom property formula
+// 13. resolveRole — lightweight render-time role resolution
 // ---------------------------------------------------------------------------
 
-describe('toScopeVars', () => {
-  const { colors } = resolveTokens({ responsibility: 'Action' });
+describe('resolveRole', () => {
+  // ── Default fallback ───────────────────────────────────────────────────────
 
-  test('background.default → --_bg (no suffix for default state)', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_bg']).toBe(colors.background['default']);
+  test("returns 'primary' by default (no evaluation, no consequence)", () => {
+    const role = resolveRole({ responsibility: 'Action' });
+    expect(role).toBe('primary');
   });
 
-  test('background.hover → --_bg-hover', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_bg-hover']).toBe(colors.background['hover']);
-  });
+  // ── Evaluation passthrough ─────────────────────────────────────────────────
 
-  test('background.disabled → --_bg-disabled', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_bg-disabled']).toBe(colors.background['disabled']);
-  });
-
-  test('border.default → --_border (no suffix)', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_border']).toBe(colors.border['default']);
-  });
-
-  test('border.focused → --_border-focused', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_border-focused']).toBe(colors.border['focused']);
-  });
-
-  test('text.default → --_text (no suffix)', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_text']).toBe(colors.text['default']);
-  });
-
-  test('text.disabled → --_text-disabled', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_text-disabled']).toBe(colors.text['disabled']);
-  });
-
-  test('emits all (dim × state) pairs — count matches sum of states per dim', () => {
-    const out = toScopeVars(colors);
-    const expectedCount =
-      Object.keys(colors.background).length +
-      Object.keys(colors.border).length +
-      Object.keys(colors.text).length;
-    expect(Object.keys(out)).toHaveLength(expectedCount);
-  });
-
-  test('values are CSS var() references (start with "var(")', () => {
-    const out = toScopeVars(colors);
-    for (const val of Object.values(out)) {
-      expect(val).toMatch(/^var\(--tt-/);
-    }
-  });
-
-  test('no --_* key contains "background", "border", or "text" (abbrev applied)', () => {
-    const out = toScopeVars(colors);
-    for (const key of Object.keys(out)) {
-      expect(key).not.toContain('background');
-      expect(key).not.toContain('border-color');
-      expect(key).not.toContain('text-color');
-    }
-  });
-
-  test('works for Feedback responsibility (base states only)', () => {
-    const { colors: fbColors } = resolveTokens({ responsibility: 'Feedback' });
-    const out = toScopeVars(fbColors);
-    expect(out['--_bg']).toBeDefined();
-    // Feedback has no pressed/expanded/checked — these keys must be absent
-    expect(out['--_bg-pressed']).toBeUndefined();
-    expect(out['--_bg-checked']).toBeUndefined();
-  });
-
-  test('works for Selection responsibility (includes checked, indeterminate)', () => {
-    const { colors: selColors } = resolveTokens({
-      responsibility: 'Selection',
+  test('returns the evaluation when provided', () => {
+    const role = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'secondary',
     });
-    const out = toScopeVars(selColors);
-    expect(out['--_bg-checked']).toBeDefined();
-    expect(out['--_bg-indeterminate']).toBeDefined();
+    expect(role).toBe('secondary');
   });
 
-  test('spreading into style produces --_bg key readable via getPropertyValue', () => {
-    // Verify the key format is correct for CSS custom property injection.
-    // Custom property names must start with '--'.
-    const out = toScopeVars(colors);
-    expect(
-      Object.keys(out).every((k) => {
-        return k.startsWith('--');
-      })
-    ).toBe(true);
+  test('returns muted when evaluation is muted', () => {
+    const role = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'muted',
+    });
+    expect(role).toBe('muted');
   });
 
-  test('dimension filter ["text"] emits only --_text* keys', () => {
-    const out = toScopeVars(colors, { dimensions: ['text'] });
-    const keys = Object.keys(out);
-    expect(keys.length).toBeGreaterThan(0);
-    expect(
-      keys.every((k) => {
-        return k.startsWith('--_text');
-      })
-    ).toBe(true);
-    expect(
-      keys.some((k) => {
-        return k.startsWith('--_bg');
-      })
-    ).toBe(false);
-    expect(
-      keys.some((k) => {
-        return k.startsWith('--_border');
-      })
-    ).toBe(false);
+  // ── Consequence override ───────────────────────────────────────────────────
+
+  test("returns 'negative' when consequence is 'destructive'", () => {
+    const role = resolveRole({
+      responsibility: 'Action',
+      consequence: 'destructive',
+    });
+    expect(role).toBe('negative');
   });
 
-  test('dimension filter ["background", "text"] omits --_border* keys', () => {
-    const out = toScopeVars(colors, { dimensions: ['background', 'text'] });
-    expect(out['--_bg']).toBeDefined();
-    expect(out['--_text']).toBeDefined();
-    expect(
-      Object.keys(out).every((k) => {
-        return !k.startsWith('--_border');
-      })
-    ).toBe(true);
+  test('consequence override takes precedence over evaluation', () => {
+    const role = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'secondary',
+      consequence: 'destructive',
+    });
+    expect(role).toBe('negative');
   });
 
-  test('no options (backward compat) emits all 3 dimensions', () => {
-    const out = toScopeVars(colors);
-    expect(out['--_bg']).toBeDefined();
-    expect(out['--_border']).toBeDefined();
-    expect(out['--_text']).toBeDefined();
+  test('neutral consequence has no override — falls back to evaluation', () => {
+    const role = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'secondary',
+      consequence: 'neutral',
+    });
+    expect(role).toBe('secondary');
+  });
+
+  test('non-override consequences do not affect role (V1)', () => {
+    for (const consequence of [
+      'reversible',
+      'committing',
+      'interruptive',
+      'recoverable',
+      'safeDefaultRequired',
+    ] as const) {
+      const role = resolveRole({ responsibility: 'Action', consequence });
+      expect(role).toBe('primary');
+    }
+  });
+
+  // ── Invalid role fallback ──────────────────────────────────────────────────
+
+  test("falls back to 'primary' with console.warn when role is invalid for ux context", () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // 'positive' is not valid for 'action' context
+    const role = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'positive',
+    });
+
+    expect(role).toBe('primary');
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0]).toContain('[ui2/resolver]');
+    expect(spy.mock.calls[0][0]).toContain('"positive"');
+    expect(spy.mock.calls[0][0]).toContain('"action"');
+    expect(spy.mock.calls[0][0]).toContain("Falling back to 'primary'");
+
+    spy.mockRestore();
+  });
+
+  test("falls back to 'primary' when accent is used in feedback context", () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const role = resolveRole({
+      responsibility: 'Feedback',
+      evaluation: 'accent',
+    });
+
+    expect(role).toBe('primary');
+    expect(spy).toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  // ── Each responsibility maps to the correct UX context for role resolution ─
+
+  test('each responsibility with default expression resolves to primary', () => {
+    for (const r of RESPONSIBILITIES) {
+      const role = resolveRole({ responsibility: r });
+      expect(role).toBe('primary');
+    }
+  });
+
+  test('Selection uses input ux context — negative is a valid role', () => {
+    const role = resolveRole({
+      responsibility: 'Selection',
+      evaluation: 'negative',
+    });
+    expect(role).toBe('negative');
+  });
+
+  test('Disclosure uses navigation ux context — only primary is valid', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // secondary is not valid for navigation context
+    const role = resolveRole({
+      responsibility: 'Disclosure',
+      evaluation: 'secondary',
+    });
+    expect(role).toBe('primary');
+    expect(spy).toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  // ── Consistency with resolveTokens role resolution ─────────────────────────
+
+  test('resolveRole returns the same role as resolveTokens for valid roles', () => {
+    for (const r of RESPONSIBILITIES) {
+      const roleFromResolveRole = resolveRole({ responsibility: r });
+      const { role: roleFromResolveTokens } = resolveTokens({
+        responsibility: r,
+      });
+      expect(roleFromResolveRole).toBe(roleFromResolveTokens);
+    }
+  });
+
+  test('resolveRole and resolveTokens both fall back to primary for invalid roles', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // resolveRole falls back to 'primary'
+    const roleResult = resolveRole({
+      responsibility: 'Action',
+      evaluation: 'positive',
+    });
+    expect(roleResult).toBe('primary');
+
+    // resolveTokens also falls back to 'primary' (consistent behavior)
+    const tokenResult = resolveTokens({
+      responsibility: 'Action',
+      evaluation: 'positive',
+    });
+    expect(tokenResult.role).toBe('primary');
+
+    spy.mockRestore();
+  });
+
+  // ── Warn message includes valid roles and responsibility ───────────────────
+
+  test('warn message lists valid roles for the context', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    resolveRole({ responsibility: 'Action', evaluation: 'positive' });
+
+    const msg = spy.mock.calls[0][0] as string;
+    expect(msg).toContain('Valid roles:');
+    expect(msg).toContain('primary');
+    expect(msg).toContain('secondary');
+    expect(msg).toContain('Responsibility: "Action"');
+
+    spy.mockRestore();
   });
 });
 
 // ---------------------------------------------------------------------------
-// 14. generateComponentCss — CSS state-selector block generation (B-01)
+// 14. buildColorSpec — var-tree navigation for a given ux + role
+// ---------------------------------------------------------------------------
+
+describe('buildColorSpec', () => {
+  test('returns all three dimensions', () => {
+    const spec = buildColorSpec('action', 'primary');
+    expect(spec).toHaveProperty('background');
+    expect(spec).toHaveProperty('border');
+    expect(spec).toHaveProperty('text');
+  });
+
+  test('each dimension has a default state', () => {
+    const spec = buildColorSpec('action', 'primary');
+    expect(spec.background['default']).toBeDefined();
+    expect(spec.border['default']).toBeDefined();
+    expect(spec.text['default']).toBeDefined();
+  });
+
+  test('values are var(--tt-colors-*) references', () => {
+    const spec = buildColorSpec('action', 'primary');
+    expect(spec.background['default']).toBe(
+      'var(--tt-colors-action-primary-background-default)'
+    );
+  });
+
+  test('matches resolveTokens output for the same ux/role', () => {
+    const fromBuild = buildColorSpec('input', 'primary');
+    const fromResolve = resolveTokens({
+      responsibility: 'Input',
+      evaluation: 'primary',
+    });
+    expect(fromBuild).toEqual(fromResolve.colors);
+  });
+
+  test('returns all states defined in baseTheme for the given ux/role', () => {
+    const spec = buildColorSpec('action', 'primary');
+    // action.primary should have hover, disabled, etc.
+    expect(spec.background['hover']).toBeDefined();
+    expect(spec.background['disabled']).toBeDefined();
+  });
+
+  test('content.secondary returns valid ColorSpec', () => {
+    const spec = buildColorSpec('content', 'secondary');
+    expect(spec.background['default']).toBe(
+      'var(--tt-colors-content-secondary-background-default)'
+    );
+  });
+
+  test('all values across all dimensions are CSS var() references', () => {
+    const spec = buildColorSpec('action', 'primary');
+    for (const dim of ['background', 'border', 'text'] as const) {
+      for (const val of Object.values(spec[dim])) {
+        expect(val).toMatch(/^var\(--tt-colors-/);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 15. generateComponentCss — per-variant CSS generation with direct var(--tt-*)
 // ---------------------------------------------------------------------------
 
 describe('generateComponentCss', () => {
@@ -730,36 +865,74 @@ describe('generateComponentCss', () => {
     expect(withDefault).toBe(withExplicit);
   });
 
-  // ── Uses scoped --_* vars, never semantic --tt-* vars ───────────────────
+  // ── Per-variant selectors (data-variant) ────────────────────────────────
 
-  test('declarations use --_* scoped vars, not --tt-* semantic vars', () => {
+  test('emits per-variant selectors for each valid role', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    // Every var() reference in declarations must use the --_* prefix
+    const actionRoles = UX_VALID_ROLES['action'];
+    for (const role of actionRoles) {
+      expect(css).toContain(`[data-variant='${role}']`);
+    }
+  });
+
+  test('navigation context emits only primary variant (only valid role)', () => {
+    const css = generateComponentCss({
+      scope: 'nav-item',
+      responsibility: 'Navigation',
+    });
+    expect(css).toContain("[data-variant='primary']");
+    // navigation only has 'primary' — no secondary, muted, etc.
+    expect(css).not.toContain("[data-variant='secondary']");
+    expect(css).not.toContain("[data-variant='muted']");
+  });
+
+  test('input context emits all its valid roles', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+    });
+    const inputRoles = UX_VALID_ROLES['input'];
+    for (const role of inputRoles) {
+      expect(css).toContain(`[data-variant='${role}']`);
+    }
+  });
+
+  // ── Direct theme token references (var(--tt-colors-*)) ─────────────────
+
+  test('declarations use direct var(--tt-colors-*) references, not var(--_*) scoped vars', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
     const varRefs = [...css.matchAll(/var\((--[a-z_-]+)\)/g)].map((m) => {
       return m[1];
     });
     expect(varRefs.length).toBeGreaterThan(0);
     for (const ref of varRefs) {
-      expect(ref).toMatch(/^--_/);
-      expect(ref).not.toMatch(/^--tt-/);
+      expect(ref).toMatch(/^--tt-colors-/);
+      expect(ref).not.toMatch(/^--_/);
     }
   });
 
-  // ── Default state is NOT in the output (handled by base rule) ───────────
-
-  test('does not emit a rule for the default state', () => {
+  test('base rule for primary variant uses correct token reference', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    // The default state has no CSS selector suffix — its absence means the
-    // base rule in the component's hand-authored CSS handles it.
-    expect(css).not.toContain('--_bg)'); // that would be the default var
-    expect(css).not.toContain('--_border)');
-    expect(css).not.toContain('--_text)');
+    expect(css).toContain('var(--tt-colors-action-primary-background-default)');
+  });
+
+  test('base rule for negative variant uses negative token references', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(css).toContain(
+      'var(--tt-colors-action-negative-background-default)'
+    );
   });
 
   // ── CSS property names per dimension ────────────────────────────────────
@@ -769,7 +942,7 @@ describe('generateComponentCss', () => {
       scope: 'button',
       responsibility: 'Action',
     });
-    expect(css).toContain('background-color: var(--_bg-');
+    expect(css).toContain('background-color:');
   });
 
   test('border dimension → border-color property', () => {
@@ -777,7 +950,7 @@ describe('generateComponentCss', () => {
       scope: 'button',
       responsibility: 'Action',
     });
-    expect(css).toContain('border-color: var(--_border-');
+    expect(css).toContain('border-color:');
   });
 
   test('text dimension → color property', () => {
@@ -785,25 +958,50 @@ describe('generateComponentCss', () => {
       scope: 'button',
       responsibility: 'Action',
     });
-    expect(css).toContain('color: var(--_text-');
+    expect(css).toContain('color:');
   });
 
-  // ── Ark UI selectors from STATE_SELECTORS ────────────────────────────────
+  // ── Base + state rules for each role ───────────────────────────────────
 
-  test('uses [data-hover] for hover state (Ark UI state machine)', () => {
+  test('emits base (default state) rule for each variant', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    expect(css).toContain('][data-hover]');
+    for (const role of UX_VALID_ROLES['action']) {
+      expect(css).toContain(
+        `var(--tt-colors-action-${role}-background-default)`
+      );
+    }
   });
 
-  test('uses [data-focus-visible] for focused state', () => {
+  test('emits hover state rules for each variant with hover tokens', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    expect(css).toContain('][data-focus-visible]');
+    const colors = buildColorSpec('action', 'primary');
+    if (colors.background['hover']) {
+      expect(css).toContain('var(--tt-colors-action-primary-background-hover)');
+    }
+  });
+
+  // ── CSS selectors from STATE_SELECTORS ──────────────────────────────────
+
+  test('uses :hover for hover state (universal CSS pseudo-class)', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(css).toContain(']:hover');
+  });
+
+  test('uses :focus-visible for focused state (universal CSS pseudo-class)', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(css).toContain(']:focus-visible');
   });
 
   // ── Disabled: both :disabled and [data-disabled] ─────────────────────────
@@ -838,73 +1036,83 @@ describe('generateComponentCss', () => {
     expect(disabledBlock).toContain('color');
   });
 
-  // ── disabled is always the last rule (highest cascade priority) ──────────
-
-  test('disabled rule appears after hover and focused rules', () => {
+  test('disabled rule emits both :disabled and [data-disabled] in a comma-separated selector', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    const hoverPos = css.indexOf('[data-hover]');
-    const disabledPos = css.indexOf(':disabled');
-    expect(hoverPos).toBeGreaterThan(-1);
-    expect(disabledPos).toBeGreaterThan(hoverPos);
+    // The format is: variantBase:disabled,\nvariantBase[data-disabled] { ... }
+    expect(css).toMatch(/:disabled,\n.*\[data-disabled\]/);
   });
 
-  // ── Action context (Button) specifics ───────────────────────────────────
+  // ── disabled is always the last state rule (highest cascade priority) ──
 
-  test('Action: emits hover rule with background-color and border-color', () => {
+  test('disabled rule appears after hover and focused rules within a variant block', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    const lines = css.split('\n');
-    const hoverBlockStart = lines.findIndex((l) => {
-      return l.includes('[data-hover]');
+    const primaryHoverPos = css.indexOf("[data-variant='primary']:hover");
+    const primaryDisabledPos = css.indexOf("[data-variant='primary']:disabled");
+    expect(primaryHoverPos).toBeGreaterThan(-1);
+    expect(primaryDisabledPos).toBeGreaterThan(primaryHoverPos);
+  });
+
+  // ── Selector deduplication (selected/checked collision) ─────────────────
+
+  test('deduplicates selected and checked selectors (both map to [data-state="checked"])', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
     });
-    expect(hoverBlockStart).toBeGreaterThan(-1);
-    // The block body follows
-    const blockContent = lines
-      .slice(hoverBlockStart + 1, hoverBlockStart + 5)
-      .join('\n');
+    // Both selected and checked map to [data-state="checked"]
+    // The generator should emit at most ONE rule block per unique selector per variant
+    const primaryCheckedMatches = css.match(
+      /\[data-variant='primary'\]\[data-state="checked"\]\s*\{/g
+    );
+    // If selected or checked tokens exist, there should be at most 1 rule
+    if (primaryCheckedMatches) {
+      expect(primaryCheckedMatches.length).toBe(1);
+    }
+  });
+
+  // ── Action context specifics ───────────────────────────────────────────
+
+  test('Action: hover rule with background-color for primary variant', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    const hoverIdx = css.indexOf("[data-variant='primary']:hover");
+    expect(hoverIdx).toBeGreaterThan(-1);
+    const blockEnd = css.indexOf('}', hoverIdx);
+    const blockContent = css.slice(hoverIdx, blockEnd);
     expect(blockContent).toContain('background-color');
-    expect(blockContent).toContain('border-color');
   });
 
-  test('Action: emits focused rule (border-color only — bg stays same on focus)', () => {
+  test('Action: emits focused rule with border-color', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
-    const lines = css.split('\n');
-    const focusedIdx = lines.findIndex((l) => {
-      return l.includes('[data-focus-visible]');
-    });
-    expect(focusedIdx).toBeGreaterThan(-1);
-    const blockBody = lines.slice(focusedIdx + 1, focusedIdx + 4).join('\n');
+    expect(css).toContain("[data-variant='primary']:focus-visible");
+    const focusIdx = css.indexOf("[data-variant='primary']:focus-visible");
+    const blockEnd = css.indexOf('}', focusIdx);
+    const blockBody = css.slice(focusIdx, blockEnd);
     expect(blockBody).toContain('border-color');
-    expect(blockBody).not.toContain('background-color');
   });
 
-  test('Action: does not include checked or indeterminate (action context has none)', () => {
+  test('Action: does not include indeterminate (action context has none)', () => {
     const css = generateComponentCss({
       scope: 'button',
       responsibility: 'Action',
     });
     expect(css).not.toContain('[data-state="indeterminate"]');
-    // checked and selected both map to [data-state="checked"] in STATE_SELECTORS
-    // action context has selected — check via token presence, not just selector text
-    // but action context must not have checked-specific tokens
-    const actionColors = resolveTokens({
-      responsibility: 'Action',
-      evaluation: 'primary',
-    });
-    expect(actionColors.colors.background['checked']).toBeUndefined();
   });
 
   // ── Input / Selection context specifics ─────────────────────────────────
 
-  test('Selection: includes [data-state="checked"] rule for checked state', () => {
+  test('Selection: includes [data-state="checked"] rule', () => {
     const css = generateComponentCss({
       scope: 'checkbox',
       responsibility: 'Selection',
@@ -940,15 +1148,15 @@ describe('generateComponentCss', () => {
 
   // ── Feedback context — minimal states ────────────────────────────────────
 
-  test('Feedback: generates CSS string (minimal — feedback is not interactive)', () => {
+  test('Feedback: generates CSS for all valid feedback roles', () => {
     const css = generateComponentCss({
       scope: 'alert',
       responsibility: 'Feedback',
     });
     expect(typeof css).toBe('string');
-    // Feedback has focused and disabled — at minimum those selectors appear
-    expect(css).toContain('[data-focus-visible]');
-    expect(css).toContain(':disabled');
+    for (const role of UX_VALID_ROLES['feedback']) {
+      expect(css).toContain(`[data-variant='${role}']`);
+    }
   });
 
   test('Feedback: does not include hover, pressed, or expanded (no interactive states)', () => {
@@ -956,24 +1164,9 @@ describe('generateComponentCss', () => {
       scope: 'alert',
       responsibility: 'Feedback',
     });
-    expect(css).not.toContain('[data-hover]');
+    expect(css).not.toContain(':hover');
     expect(css).not.toContain('[data-pressed]');
     expect(css).not.toContain('[data-state="open"]');
-  });
-
-  // ── Union across evaluations (evaluation-agnostic CSS) ───────────────────
-
-  test('Action CSS is the same regardless of which evaluation is implied — uses --_* vars', () => {
-    // generateComponentCss does not take an evaluation arg — it is evaluation-agnostic.
-    // All Action evaluations (primary, secondary, muted, negative) share the same CSS rules.
-    const css = generateComponentCss({
-      scope: 'button',
-      responsibility: 'Action',
-    });
-    // Union of states should include hover from primary+secondary+muted+negative
-    expect(css).toContain('[data-hover]');
-    // selected state appears in action.primary.background.selected
-    expect(css).toContain('[data-state="checked"]');
   });
 
   // ── Multiple Responsibilities sharing a UX context ───────────────────────
@@ -987,187 +1180,247 @@ describe('generateComponentCss', () => {
       scope: 'nav',
       responsibility: 'Disclosure',
     });
-    // Same UX context → same state set → same CSS (only scope differs, but scope is equal here)
+    // Same UX context → same valid roles → same CSS output (scope is equal)
     expect(navCss).toBe(disclosureCss);
   });
-});
 
-// ---------------------------------------------------------------------------
-// 15. resolveInvalidOverlay — invalid-state scoped var generation (B-03)
-// ---------------------------------------------------------------------------
+  // ── dimensions filter ─────────────────────────────────────────────────────
 
-describe('resolveInvalidOverlay', () => {
-  // ── Structural invariants ────────────────────────────────────────────────
-
-  test('returns a plain object', () => {
-    expect(typeof resolveInvalidOverlay({ responsibility: 'Input' })).toBe(
-      'object'
-    );
-  });
-
-  test('all keys start with "--_" and contain "-invalid"', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    const keys = Object.keys(out);
-    expect(keys.length).toBeGreaterThan(0);
-    for (const key of keys) {
-      expect(key).toMatch(/^--_/);
-      expect(key).toContain('-invalid');
-    }
-  });
-
-  test('all values are var(--tt-colors-*) CSS var references', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    for (const val of Object.values(out)) {
-      expect(val).toMatch(/^var\(--tt-colors-/);
-    }
-  });
-
-  // ── Naming formula (the canonical contract) ───────────────────────────────
-  //
-  // Formula: --_{dim_prefix}-invalid        for state='default'
-  //          --_{dim_prefix}-invalid-{state} for non-default states
-
-  test('background default → --_bg-invalid (no extra state suffix)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_bg-invalid']).toBeDefined();
-    // Must NOT contain a state segment after "-invalid"
-    expect(out['--_bg-invalid']).toMatch(
-      /^var\(--tt-colors-input-negative-background-default\)$/
-    );
-  });
-
-  test('border default → --_border-invalid', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_border-invalid']).toBeDefined();
-    expect(out['--_border-invalid']).toMatch(
-      /^var\(--tt-colors-input-negative-border-default\)$/
-    );
-  });
-
-  test('text default → --_text-invalid', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_text-invalid']).toBeDefined();
-    expect(out['--_text-invalid']).toMatch(
-      /^var\(--tt-colors-input-negative-text-default\)$/
-    );
-  });
-
-  test('border focused → --_border-invalid-focused (state suffix after -invalid)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_border-invalid-focused']).toBeDefined();
-    expect(out['--_border-invalid-focused']).toMatch(
-      /^var\(--tt-colors-input-negative-border-focused\)$/
-    );
-  });
-
-  test('no key is just --_bg-invalid-default (default state uses no suffix)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_bg-invalid-default']).toBeUndefined();
-    expect(out['--_border-invalid-default']).toBeUndefined();
-    expect(out['--_text-invalid-default']).toBeUndefined();
-  });
-
-  test('"background" is abbreviated to "bg" — no key contains the full word "background"', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    for (const key of Object.keys(out)) {
-      expect(key).not.toContain('background');
-    }
-    // Explicit check: --_background-invalid must not exist; --_bg-invalid must exist
-    expect(out['--_background-invalid']).toBeUndefined();
-    expect(out['--_bg-invalid']).toBeDefined();
-  });
-
-  // ── Formula equivalence with resolveTokens + toScopeVars for negative role ──
-
-  test('--_bg-invalid equals the background.default var from input.negative resolved tokens', () => {
-    const { colors: negColors } = resolveTokens({
-      responsibility: 'Input',
-      evaluation: 'negative',
+  test('dimensions filter omits unrequested dimension CSS properties', () => {
+    const css = generateComponentCss({
+      scope: 'label',
+      responsibility: 'Structure',
+      dimensions: ['text'],
     });
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_bg-invalid']).toBe(negColors.background['default']);
+    expect(css).not.toContain('background-color:');
+    expect(css).not.toContain('border-color:');
   });
 
-  test('--_border-invalid-focused equals the border.focused var from input.negative resolved tokens', () => {
-    const { colors: negColors } = resolveTokens({
-      responsibility: 'Input',
-      evaluation: 'negative',
+  test('dimensions filter ["text"] only generates rules with text-dimension vars', () => {
+    const css = generateComponentCss({
+      scope: 'label',
+      responsibility: 'Structure',
+      dimensions: ['text'],
     });
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_border-invalid-focused']).toBe(negColors.border['focused']);
-  });
-
-  test('--_text-invalid equals the text.default var from input.negative resolved tokens', () => {
-    const { colors: negColors } = resolveTokens({
-      responsibility: 'Input',
-      evaluation: 'negative',
-    });
-    const out = resolveInvalidOverlay({ responsibility: 'Input' });
-    expect(out['--_text-invalid']).toBe(negColors.text['default']);
-  });
-
-  // ── Works for other Responsibilities with negative roles ─────────────────
-
-  test('Action responsibility produces non-empty output (action.negative is defined)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Action' });
-    expect(Object.keys(out).length).toBeGreaterThan(0);
-    expect(out['--_bg-invalid']).toMatch(
-      /^var\(--tt-colors-action-negative-background-default\)$/
-    );
-  });
-
-  test('Feedback responsibility produces non-empty output (feedback.negative is defined)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Feedback' });
-    expect(Object.keys(out).length).toBeGreaterThan(0);
-    expect(out['--_bg-invalid']).toMatch(
-      /^var\(--tt-colors-feedback-negative-background-default\)$/
-    );
-  });
-
-  test('Selection maps to input UX context — same output as Input responsibility', () => {
-    const inputOut = resolveInvalidOverlay({ responsibility: 'Input' });
-    const selectionOut = resolveInvalidOverlay({ responsibility: 'Selection' });
-    expect(selectionOut).toEqual(inputOut);
-  });
-
-  // ── Safe empty output for contexts without negative role ──────────────────
-
-  test('Navigation responsibility returns an empty record (navigation has no negative role in baseTheme)', () => {
-    const out = resolveInvalidOverlay({ responsibility: 'Navigation' });
-    // navigation.negative is not defined in baseTheme → no vars to inject
-    expect(Object.keys(out)).toHaveLength(0);
-  });
-
-  // ── No cross-contamination with normal toScopeVars keys ──────────────────
-
-  test('keys do not collide with normal toScopeVars keys (no --_bg or --_border without -invalid)', () => {
-    const { colors } = resolveTokens({ responsibility: 'Input' });
-    const normalOut = toScopeVars(colors);
-    const invalidOut = resolveInvalidOverlay({ responsibility: 'Input' });
-
-    // No key from invalidOut exists in normalOut
-    for (const key of Object.keys(invalidOut)) {
-      expect(normalOut[key]).toBeUndefined();
-    }
-
-    // No key from normalOut exists in invalidOut
-    for (const key of Object.keys(normalOut)) {
-      expect(invalidOut[key]).toBeUndefined();
+    if (css.length > 0) {
+      // Every var() reference should be for text dimension
+      const varRefs = [...css.matchAll(/var\((--tt-colors-[a-z-]+)\)/g)].map(
+        (m) => {
+          return m[1];
+        }
+      );
+      for (const ref of varRefs) {
+        expect(ref).toContain('-text-');
+      }
     }
   });
 
-  test('merging toScopeVars and resolveInvalidOverlay produces a superset with both key families', () => {
-    const { colors } = resolveTokens({ responsibility: 'Input' });
-    const merged = {
-      ...toScopeVars(colors),
-      ...resolveInvalidOverlay({ responsibility: 'Input' }),
-    };
-    // Normal var present
-    expect(merged['--_bg']).toBeDefined();
-    expect(merged['--_border']).toBeDefined();
-    // Invalid var present
-    expect(merged['--_bg-invalid']).toBeDefined();
-    expect(merged['--_border-invalid']).toBeDefined();
-    expect(merged['--_border-invalid-focused']).toBeDefined();
+  test('no dimensions filter emits all three CSS property types', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(css).toContain('background-color:');
+    expect(css).toContain('border-color:');
+    expect(css).toContain('color:');
+  });
+
+  // ── withInvalidOverlay ───────────────────────────────────────────────────
+
+  test('withInvalidOverlay: false (default) does not emit [data-invalid] rules', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+    });
+    expect(css).not.toContain('[data-invalid]');
+  });
+
+  test('withInvalidOverlay: true emits per-variant [data-invalid] base rules', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    // Each valid role gets its own [data-invalid] rule
+    for (const role of UX_VALID_ROLES['input']) {
+      expect(css).toContain(`[data-variant='${role}'][data-invalid]`);
+    }
+  });
+
+  test('withInvalidOverlay: true base invalid rule uses negative token references', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    // Invalid overlay should reference input.negative tokens
+    expect(css).toContain('var(--tt-colors-input-negative-background-default)');
+    expect(css).toContain('var(--tt-colors-input-negative-border-default)');
+    expect(css).toContain('var(--tt-colors-input-negative-text-default)');
+  });
+
+  test('withInvalidOverlay: true emits compound [data-invalid]:focus-visible rule', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    expect(css).toContain('[data-invalid]:focus-visible');
+    // The compound rule uses negative border focused token
+    expect(css).toContain('var(--tt-colors-input-negative-border-focused)');
+  });
+
+  test('withInvalidOverlay: true emits [data-invalid]:disabled dual selector', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    expect(css).toContain('[data-invalid]:disabled');
+    expect(css).toContain('[data-invalid][data-disabled]');
+  });
+
+  test('withInvalidOverlay: true invalid rules appear after normal disabled rule (cascade ordering)', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    // For each variant, the normal disabled rule comes before [data-invalid] base rule
+    const normalDisabledPos = css.indexOf("[data-variant='primary']:disabled");
+    const invalidBasePos = css.indexOf(
+      "[data-variant='primary'][data-invalid]"
+    );
+    expect(normalDisabledPos).toBeGreaterThan(-1);
+    expect(invalidBasePos).toBeGreaterThan(normalDisabledPos);
+  });
+
+  test('withInvalidOverlay: true respects dimensions filter', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+      dimensions: ['border'],
+    });
+    // Invalid rules should only contain border-color, not background-color or color (text)
+    const invalidPart = css.slice(css.indexOf('[data-invalid]'));
+    expect(invalidPart).toContain('border-color:');
+    expect(invalidPart).not.toContain('background-color:');
+    // "color:" as a standalone CSS property (text dimension) — exclude "border-color:"
+    const hasStandaloneColor = /(?<!-)color:/m.test(invalidPart);
+    expect(hasStandaloneColor).toBe(false);
+  });
+
+  test('withInvalidOverlay: true normal state rules do NOT have :not([data-invalid]) guards', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      withInvalidOverlay: true,
+    });
+    // The whole point: no :not() guards — cascade ordering handles it
+    expect(css).not.toContain(':not(');
+  });
+
+  test('withInvalidOverlay: true with Action responsibility emits invalid rules from action.negative', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+      withInvalidOverlay: true,
+    });
+    expect(css).toContain('[data-invalid]');
+    expect(css).toContain(
+      'var(--tt-colors-action-negative-background-default)'
+    );
+  });
+
+  // ── Invalid overlay deduplication ─────────────────────────────────────────
+
+  test('withInvalidOverlay: true deduplicates compound invalid selectors (selected/checked collision)', () => {
+    const css = generateComponentCss({
+      scope: 'checkbox',
+      responsibility: 'Selection',
+      withInvalidOverlay: true,
+    });
+    // [data-invalid][data-state="checked"] should appear at most once per variant
+    const primaryInvalidChecked = css.match(
+      /\[data-variant='primary'\]\[data-invalid\]\[data-state="checked"\]\s*\{/g
+    );
+    if (primaryInvalidChecked) {
+      expect(primaryInvalidChecked.length).toBe(1);
+    }
+  });
+
+  // ── Every valid role gets rules ─────────────────────────────────────────
+
+  test('content context emits all 6 valid roles', () => {
+    const css = generateComponentCss({
+      scope: 'card',
+      responsibility: 'Collection',
+    });
+    for (const role of UX_VALID_ROLES['content']) {
+      expect(css).toContain(`[data-variant='${role}']`);
+    }
+  });
+
+  // ── Determinism ─────────────────────────────────────────────────────────
+
+  test('same inputs always produce the same CSS output', () => {
+    const a = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    const b = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(a).toBe(b);
+  });
+
+  // ── Variant rules contain role-specific token paths ─────────────────────
+
+  test('secondary variant rules reference secondary tokens', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    const secondaryStart = css.indexOf("[data-variant='secondary']");
+    expect(secondaryStart).toBeGreaterThan(-1);
+    const secondarySection = css.slice(
+      secondaryStart,
+      css.indexOf("[data-variant='muted']")
+    );
+    expect(secondarySection).toContain(
+      'var(--tt-colors-action-secondary-background-default)'
+    );
+  });
+
+  test('muted variant rules reference muted tokens', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+    });
+    expect(css).toContain('var(--tt-colors-action-muted-background-default)');
+  });
+
+  // ── Edge case: empty dimensions ──────────────────────────────────────────
+
+  test('empty dimensions array produces no base or state CSS declarations', () => {
+    const css = generateComponentCss({
+      scope: 'button',
+      responsibility: 'Action',
+      dimensions: [],
+    });
+    // With no active dimensions, there are no CSS property declarations to emit
+    expect(css).toBe('');
+  });
+
+  test('empty dimensions array with withInvalidOverlay produces no invalid rules', () => {
+    const css = generateComponentCss({
+      scope: 'input',
+      responsibility: 'Input',
+      dimensions: [],
+      withInvalidOverlay: true,
+    });
+    expect(css).toBe('');
   });
 });

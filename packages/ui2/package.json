@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@ttoss/ui2",
   "version": "0.1.0",
   "description": "Semantic, token-native component library for the ttoss ecosystem. Built on Ark UI primitives with @ttoss/theme2 tokens.",
@@ -20,13 +19,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsx scripts/generate-barrel.ts && tsx scripts/generate-css.ts && tsup",
+    "generate:barrel": "tsx scripts/generate-barrel.ts",
+    "generate:css": "tsx scripts/generate-css.ts",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
-    "@ark-ui/react": "^5.31.0",
-    "@ttoss/theme2": "workspace:^"
+    "@ttoss/theme2": "workspace:^",
+    "react-aria": "^3.47.0"
   },
   "peerDependencies": {
     "react": ">=18",

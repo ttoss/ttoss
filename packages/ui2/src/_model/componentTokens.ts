@@ -1,5 +1,5 @@
 /**
- * LAYOUT_TOKENS — canonical index of semantic layout CSS custom properties for @ttoss/ui2.
+ * COMPONENT_TOKENS — canonical index of semantic layout CSS custom properties for @ttoss/ui2.
  *
  * **The problem it solves (B-05):**
  * Layout token names in `styles.css` are raw strings (e.g. `var(--tt-sizing-hit-base)`).
@@ -24,13 +24,13 @@
  * ```css
  * /* Instead of typing from memory: *\/
  * min-height: var(--tt-sizing-hit-base);
- * /* Use LAYOUT_TOKENS as the reference to confirm the name before authoring: *\/
- * /* LAYOUT_TOKENS.sizing.hit.base → '--tt-sizing-hit-base' *\/
+ * /* Use COMPONENT_TOKENS as the reference to confirm the name before authoring: *\/
+ * /* COMPONENT_TOKENS.sizing.hit.base → '--tt-sizing-hit-base' *\/
  * ```
  *
  * **Usage in defineComponent() layout specs (type-safe):**
  * ```typescript
- * import { LAYOUT_TOKENS as T } from './_model/layoutTokens';
+ * import { COMPONENT_TOKENS as T } from './_model/componentTokens';
  *
  * const buttonDef = defineComponent({
  *   // ... semantic options ...
@@ -68,10 +68,10 @@
  * @example '--tt-spacing-inset-control-md'
  * @example '--tt-text-label-md-fontFamily'
  */
-export type LayoutToken = `--tt-${string}`;
+export type ComponentToken = `--tt-${string}`;
 
 // ---------------------------------------------------------------------------
-// LAYOUT_TOKENS
+// COMPONENT_TOKENS
 // ---------------------------------------------------------------------------
 
 /**
@@ -85,7 +85,7 @@ export type LayoutToken = `--tt-${string}`;
  * every `var(--tt-*)` in `styles.css`. This const maps those verified names
  * into an ergonomic, autocomplete-friendly structure.
  */
-export const LAYOUT_TOKENS = {
+export const COMPONENT_TOKENS = {
   /**
    * Hit-target sizing — the height dimension for interactive controls.
    *
@@ -102,11 +102,11 @@ export const LAYOUT_TOKENS = {
   sizing: {
     hit: {
       /** Minimum touch target — smallest interactive control. Use for compact UIs. */
-      min: '--tt-sizing-hit-min' as LayoutToken,
+      min: '--tt-sizing-hit-min' as ComponentToken,
       /** Default control height — use for most interactive elements (Button, Input). */
-      base: '--tt-sizing-hit-base' as LayoutToken,
+      base: '--tt-sizing-hit-base' as ComponentToken,
       /** Large/prominent control — high-emphasis CTAs, hero actions. */
-      prominent: '--tt-sizing-hit-prominent' as LayoutToken,
+      prominent: '--tt-sizing-hit-prominent' as ComponentToken,
     },
   },
 
@@ -128,17 +128,17 @@ export const LAYOUT_TOKENS = {
     inset: {
       control: {
         /** Compact inset — small controls, tight layouts. */
-        sm: '--tt-spacing-inset-control-sm' as LayoutToken,
+        sm: '--tt-spacing-inset-control-sm' as ComponentToken,
         /** Default inset — standard controls (Button md, Input md). */
-        md: '--tt-spacing-inset-control-md' as LayoutToken,
+        md: '--tt-spacing-inset-control-md' as ComponentToken,
         /** Spacious inset — large/prominent controls. */
-        lg: '--tt-spacing-inset-control-lg' as LayoutToken,
+        lg: '--tt-spacing-inset-control-lg' as ComponentToken,
       },
     },
     gap: {
       inline: {
         /** Small inline gap — icon-to-label, icon-to-indicator spacing inside controls. */
-        sm: '--tt-spacing-gap-inline-sm' as LayoutToken,
+        sm: '--tt-spacing-gap-inline-sm' as ComponentToken,
       },
     },
   },
@@ -153,11 +153,11 @@ export const LAYOUT_TOKENS = {
    */
   radii: {
     /** Standard control border radius — for all interactive input-like elements. */
-    control: '--tt-radii-control' as LayoutToken,
+    control: '--tt-radii-control' as ComponentToken,
     /** Surface container border radius — for cards, panels, overlays. */
-    surface: '--tt-radii-surface' as LayoutToken,
+    surface: '--tt-radii-surface' as ComponentToken,
     /** Pill / fully-rounded — for tags, badges, and circular elements. */
-    round: '--tt-radii-round' as LayoutToken,
+    round: '--tt-radii-round' as ComponentToken,
   },
 
   /**
@@ -176,9 +176,9 @@ export const LAYOUT_TOKENS = {
     outline: {
       control: {
         /** Border width for standard interactive controls (1px). */
-        width: '--tt-border-outline-control-width' as LayoutToken,
+        width: '--tt-border-outline-control-width' as ComponentToken,
         /** Border style for standard interactive controls (solid). */
-        style: '--tt-border-outline-control-style' as LayoutToken,
+        style: '--tt-border-outline-control-style' as ComponentToken,
       },
     },
     selected: {
@@ -187,7 +187,7 @@ export const LAYOUT_TOKENS = {
        * Must be strictly > outline.control.width.
        * Use for Checkbox checked state indicator, Radio selected dot, etc.
        */
-      width: '--tt-border-selected-width' as LayoutToken,
+      width: '--tt-border-selected-width' as ComponentToken,
     },
   },
 
@@ -208,11 +208,11 @@ export const LAYOUT_TOKENS = {
   focus: {
     ring: {
       /** Focus ring width — must be ≥ border.outline.control.width. */
-      width: '--tt-focus-ring-width' as LayoutToken,
+      width: '--tt-focus-ring-width' as ComponentToken,
       /** Focus ring style — typically `solid`; theme-overridable. */
-      style: '--tt-focus-ring-style' as LayoutToken,
+      style: '--tt-focus-ring-style' as ComponentToken,
       /** Focus ring color — cross-cutting accessibility contract. */
-      color: '--tt-focus-ring-color' as LayoutToken,
+      color: '--tt-focus-ring-color' as ComponentToken,
     },
   },
 
@@ -228,7 +228,7 @@ export const LAYOUT_TOKENS = {
    */
   opacity: {
     /** Opacity for disabled media (icons, images). Resolves to 0.5. */
-    disabled: '--tt-opacity-disabled' as LayoutToken,
+    disabled: '--tt-opacity-disabled' as ComponentToken,
   },
 
   /**
@@ -243,9 +243,9 @@ export const LAYOUT_TOKENS = {
   motion: {
     feedback: {
       /** Transition duration for immediate UI feedback (hover, active, focus). */
-      duration: '--tt-motion-feedback-duration' as LayoutToken,
+      duration: '--tt-motion-feedback-duration' as ComponentToken,
       /** Transition easing for immediate UI feedback. */
-      easing: '--tt-motion-feedback-easing' as LayoutToken,
+      easing: '--tt-motion-feedback-easing' as ComponentToken,
     },
   },
 
@@ -274,38 +274,120 @@ export const LAYOUT_TOKENS = {
     label: {
       /** Small label text — compact UI (tags, secondary labels, helper text). */
       sm: {
-        fontFamily: '--tt-text-label-sm-fontFamily' as LayoutToken,
-        fontSize: '--tt-text-label-sm-fontSize' as LayoutToken,
-        fontWeight: '--tt-text-label-sm-fontWeight' as LayoutToken,
-        lineHeight: '--tt-text-label-sm-lineHeight' as LayoutToken,
-        letterSpacing: '--tt-text-label-sm-letterSpacing' as LayoutToken,
-        fontOpticalSizing: '--tt-text-label-sm-fontOpticalSizing' as LayoutToken,
+        fontFamily: '--tt-text-label-sm-fontFamily' as ComponentToken,
+        fontSize: '--tt-text-label-sm-fontSize' as ComponentToken,
+        fontWeight: '--tt-text-label-sm-fontWeight' as ComponentToken,
+        lineHeight: '--tt-text-label-sm-lineHeight' as ComponentToken,
+        letterSpacing: '--tt-text-label-sm-letterSpacing' as ComponentToken,
+        fontOpticalSizing:
+          '--tt-text-label-sm-fontOpticalSizing' as ComponentToken,
       },
       /** Medium label text — default interactive control text (Button md, Input md). */
       md: {
-        fontFamily: '--tt-text-label-md-fontFamily' as LayoutToken,
-        fontSize: '--tt-text-label-md-fontSize' as LayoutToken,
-        fontWeight: '--tt-text-label-md-fontWeight' as LayoutToken,
-        lineHeight: '--tt-text-label-md-lineHeight' as LayoutToken,
-        letterSpacing: '--tt-text-label-md-letterSpacing' as LayoutToken,
-        fontOpticalSizing: '--tt-text-label-md-fontOpticalSizing' as LayoutToken,
+        fontFamily: '--tt-text-label-md-fontFamily' as ComponentToken,
+        fontSize: '--tt-text-label-md-fontSize' as ComponentToken,
+        fontWeight: '--tt-text-label-md-fontWeight' as ComponentToken,
+        lineHeight: '--tt-text-label-md-lineHeight' as ComponentToken,
+        letterSpacing: '--tt-text-label-md-letterSpacing' as ComponentToken,
+        fontOpticalSizing:
+          '--tt-text-label-md-fontOpticalSizing' as ComponentToken,
       },
       /** Large label text — prominent controls, hero CTAs (Button lg). */
       lg: {
-        fontFamily: '--tt-text-label-lg-fontFamily' as LayoutToken,
-        fontSize: '--tt-text-label-lg-fontSize' as LayoutToken,
-        fontWeight: '--tt-text-label-lg-fontWeight' as LayoutToken,
-        lineHeight: '--tt-text-label-lg-lineHeight' as LayoutToken,
-        letterSpacing: '--tt-text-label-lg-letterSpacing' as LayoutToken,
-        fontOpticalSizing: '--tt-text-label-lg-fontOpticalSizing' as LayoutToken,
+        fontFamily: '--tt-text-label-lg-fontFamily' as ComponentToken,
+        fontSize: '--tt-text-label-lg-fontSize' as ComponentToken,
+        fontWeight: '--tt-text-label-lg-fontWeight' as ComponentToken,
+        lineHeight: '--tt-text-label-lg-lineHeight' as ComponentToken,
+        letterSpacing: '--tt-text-label-lg-letterSpacing' as ComponentToken,
+        fontOpticalSizing:
+          '--tt-text-label-lg-fontOpticalSizing' as ComponentToken,
       },
     },
   },
 } as const;
 
 /**
- * Type of just the values within LAYOUT_TOKENS — every string in this union
+ * Type of just the values within COMPONENT_TOKENS — every string in this union
  * is a real `--tt-*` CSS custom property name whose existence is validated
  * by the cross-system test (B-10).
  */
-export type LayoutTokenValue = LayoutToken;
+export type ComponentTokenValue = ComponentToken;
+
+// ---------------------------------------------------------------------------
+// Component declaration types — used by defineComponent() layout specs
+// ---------------------------------------------------------------------------
+
+/**
+ * A single CSS value that can appear in a layout declaration.
+ *
+ * - `ComponentToken` — a `--tt-*` CSS custom property name. The CSS generator wraps
+ *   it in `var(...)` automatically.
+ * - `string` — a literal CSS value (e.g. `'block'`, `'pointer'`, `'none'`,
+ *   `'100%'`, `'background-color, border-color, color'`).
+ * - `number` — a raw numeric value (e.g. `0`, `2` for `outline-offset: 2px`).
+ */
+export type ComponentValue = ComponentToken | string | number;
+
+/**
+ * Union of camelCase CSS property names that are valid in layout declarations.
+ *
+ * This is an intentionally focused subset — not the full `React.CSSProperties`.
+ * Only properties used for component _layout_ (sizing, spacing, typography,
+ * border geometry, motion, cursor/interaction) are allowed. This prevents
+ * color properties from leaking into layout declarations (colors are handled
+ * by the data-variant system).
+ */
+export type ComponentCssProperty =
+  | 'display'
+  | 'alignItems'
+  | 'justifyContent'
+  | 'minHeight'
+  | 'paddingBlock'
+  | 'paddingInline'
+  | 'borderRadius'
+  | 'borderWidth'
+  | 'borderStyle'
+  | 'fontFamily'
+  | 'fontSize'
+  | 'fontWeight'
+  | 'lineHeight'
+  | 'letterSpacing'
+  | 'fontOpticalSizing'
+  | 'transitionProperty'
+  | 'transitionDuration'
+  | 'transitionTimingFunction'
+  | 'cursor'
+  | 'userSelect'
+  | 'textDecoration'
+  | 'appearance'
+  | 'whiteSpace'
+  | 'flexShrink'
+  | 'gap'
+  | 'width'
+  | 'flexDirection'
+  | 'outline'
+  | 'outlineOffset'
+  | 'marginBottom'
+  | 'marginTop';
+
+/**
+ * A component declaration — a partial record of camelCase CSS properties to values.
+ *
+ * Used in `defineComponent()` to declare the component's layout CSS declaratively.
+ * The CSS generator converts this to a CSS rule block.
+ */
+export type ComponentDeclaration = Partial<
+  Record<ComponentCssProperty, ComponentValue>
+>;
+
+/**
+ * Layout specification for a component — base styles + optional size overrides.
+ *
+ * @typeParam TSize - the size variant union (e.g. `'sm' | 'md' | 'lg'`)
+ */
+export interface ComponentSpec<TSize extends string = string> {
+  /** Base layout properties applied to all instances. */
+  base: ComponentDeclaration;
+  /** Per-size overrides — only the properties that differ from base. */
+  sizes?: Partial<Record<TSize, ComponentDeclaration>>;
+}

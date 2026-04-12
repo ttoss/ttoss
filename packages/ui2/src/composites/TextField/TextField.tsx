@@ -16,8 +16,10 @@ import { ValidationMessage } from '../../components/ValidationMessage/Validation
  * FieldContextProps (invalid, disabled, required, readOnly), which are
  * handled automatically by defineComposite({ context: 'Field' }).
  */
-export interface TextFieldContentProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface TextFieldContentProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'size'
+> {
   /**
    * Label text rendered above the input.
    * Wired to the input via Ark Field context — no manual `htmlFor` required.
@@ -41,26 +43,6 @@ export interface TextFieldContentProps
    */
   size?: InputSize;
 }
-
-/**
- * Props for the TextField composite component.
- *
- * Extends TextFieldContentProps with FieldContextProps (invalid, disabled,
- * required, readOnly) — all forwarded to Ark Field.Root for automatic
- * ARIA wiring and state propagation.
- */
-export type TextFieldProps = TextFieldContentProps & {
-  /** Marks the field as invalid — triggers visual error state. */
-  invalid?: boolean;
-  /** Marks the field as disabled. */
-  disabled?: boolean;
-  /** Marks the field as required — Ark renders a required indicator on the label. */
-  required?: boolean;
-  /** Marks the field as read-only. */
-  readOnly?: boolean;
-  /** Inline styles applied to the Field.Root container. */
-  style?: React.CSSProperties;
-};
 
 // ---------------------------------------------------------------------------
 // Component — defined via defineComposite() (B-07 reference implementation)
@@ -106,26 +88,45 @@ export type TextFieldProps = TextFieldContentProps & {
  *   <ValidationMessage>{error}</ValidationMessage>
  * </Field.Root>
  */
-const { Component: TextFieldBase, compositeConfig: textFieldCompositeConfig } =
-  defineComposite<TextFieldContentProps>({
-    name: 'TextField',
-    scope: 'text-field',
-    parts: ['Label', 'Input', 'HelperText', 'ValidationMessage'],
-    context: 'Field',
-    partComponents: { Label, Input, HelperText, ValidationMessage },
-    render: (
-      { label, helperText, errorText, size, ...inputProps },
-      { Label: L, Input: I, HelperText: HT, ValidationMessage: VM }
-    ) => (
+export const {
+  Component: TextField,
+  compositeConfig: textFieldCompositeConfig,
+  compositeMeta: textFieldCompositeMeta,
+} = defineComposite<TextFieldContentProps>({
+  name: 'TextField',
+  scope: 'text-field',
+  parts: ['Label', 'Input', 'HelperText', 'ValidationMessage'],
+  context: 'Field',
+  partComponents: { Label, Input, HelperText, ValidationMessage },
+  layout: {
+    base: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  },
+  render: (
+    { label, helperText, errorText, size, ...inputProps },
+    { Label: L, Input: I, HelperText: HT, ValidationMessage: VM }
+  ) => {
+    return (
       <>
         {label !== undefined && <L>{label}</L>}
         <I size={size as InputSize} {...inputProps} />
         {helperText !== undefined && <HT>{helperText}</HT>}
         <VM>{errorText}</VM>
       </>
-    ),
-  });
+    );
+  },
+});
 
-export const TextField = TextFieldBase as React.ComponentType<TextFieldProps>;
-export { textFieldCompositeConfig };
-
+/**
+ * Props for the TextField composite component.
+ *
+ * Derived from the `defineComposite()` factory return type — includes
+ * `TextFieldContentProps` plus `FieldContextProps` (`invalid`, `disabled`,
+ * `required`, `readOnly`) from the `context: 'Field'` declaration.
+ *
+ * No manual declaration or cast needed: TypeScript resolves the intersection
+ * because `TCtx = 'Field'` is captured as a concrete literal type.
+ */
+export type TextFieldProps = React.ComponentProps<typeof TextField>;

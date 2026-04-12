@@ -498,25 +498,28 @@ describe('toCssVars (bundle overload)', () => {
       }
     });
 
-    test('alternate toCssString includes coarse pointer block', () => {
+    test('alternate toCssString does not include coarse pointer block (diff-only)', () => {
       const result = toCssVars(baseBundle, {
         themeId: 'default',
       });
       const altCss = result.alternate!.toCssString();
-      expect(altCss).toContain('@media (any-pointer: coarse)');
+      // alternate is diff-only — coarse hit vars are core-sourced (immutable)
+      // and therefore never differ between modes.
+      expect(altCss).not.toContain('@media (any-pointer: coarse)');
       expect(altCss).toContain(
         '[data-tt-theme="default"][data-tt-mode="dark"]'
       );
     });
 
-    test('combined toCssString includes coarse blocks for both modes', () => {
+    test('combined toCssString emits coarse block once (base covers all modes)', () => {
       const css = toCssVars(baseBundle, {
         themeId: 'default',
       }).toCssString();
-      // Should have at least 2 coarse blocks: one for base, one for alternate
+      // core is immutable in ModeOverride — coarse hit targets cannot differ
+      // between base and alternate, so the combined output has exactly one block.
       const coarseMatches = css.match(/@media \(any-pointer: coarse\)/g);
       expect(coarseMatches).not.toBeNull();
-      expect(coarseMatches!.length).toBeGreaterThanOrEqual(2);
+      expect(coarseMatches!.length).toBe(1);
     });
   });
 });
@@ -587,25 +590,28 @@ describe('reducedMotionVars', () => {
     );
   });
 
-  test('toCssVars (bundle) alternate includes reduced-motion block', () => {
+  test('toCssVars (bundle) alternate does not include reduced-motion block when motion is not overridden', () => {
     const result = toCssVars(baseBundle, { themeId: 'default' });
     const altCss = result.alternate!.toCssString();
 
-    expect(altCss).toContain('@media (prefers-reduced-motion: reduce)');
+    // darkAlternate does not override semantic.motion — reduced-motion diff is
+    // empty, so the block is correctly absent from the alternate standalone output.
+    expect(altCss).not.toContain('@media (prefers-reduced-motion: reduce)');
     expect(altCss).toContain('[data-tt-theme="default"][data-tt-mode="dark"]');
   });
 
-  test('toCssVars (bundle) combined has reduced-motion blocks for both modes', () => {
+  test('toCssVars (bundle) combined emits reduced-motion block once when motion is not overridden', () => {
     const css = toCssVars(baseBundle, {
       themeId: 'default',
     }).toCssString();
 
-    // Should have at least 2 reduced-motion blocks: one for base, one for alternate
+    // darkAlternate does not override semantic.motion — the diff is empty,
+    // so the combined output has exactly one reduced-motion block (from base).
     const reducedMotionMatches = css.match(
       /@media \(prefers-reduced-motion: reduce\)/g
     );
     expect(reducedMotionMatches).not.toBeNull();
-    expect(reducedMotionMatches!.length).toBeGreaterThanOrEqual(2);
+    expect(reducedMotionMatches!.length).toBe(1);
   });
 });
 

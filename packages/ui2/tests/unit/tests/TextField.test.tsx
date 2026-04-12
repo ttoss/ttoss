@@ -190,10 +190,10 @@ describe('ValidationMessage — inside TextField', () => {
     expect(el).toHaveAttribute('data-part', 'root');
   });
 
-  test('validation message has --_text scoped var injected (negative feedback token)', () => {
+  test('validation message has data-variant set (negative feedback role via resolveRole)', () => {
     render(<TextField label="Email" invalid errorText="Required field" />);
     const el = screen.getByText('Required field');
-    // The --_text var must be present (verifies ValidationMessage called resolveTokens)
-    expect(el.style.getPropertyValue('--_text')).toBeTruthy();
+    // data-variant must be present (verifies ValidationMessage called resolveRole)
+    expect(el).toHaveAttribute('data-variant', 'negative');
   });
 });

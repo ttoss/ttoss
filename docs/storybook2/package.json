@@ -5,10 +5,10 @@
   "author": "ttoss",
   "type": "module",
   "scripts": {
-    "storybook": "storybook dev -p 6007",
     "build": "storybook build",
     "dev": "pnpm run storybook",
-    "start": "pnpm run storybook"
+    "start": "pnpm run storybook",
+    "storybook": "storybook dev -p 6007"
   },
   "dependencies": {
     "@ttoss/theme2": "workspace:^",

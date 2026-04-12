@@ -14,7 +14,7 @@
  */
 import { Field } from '@ark-ui/react';
 import { render, screen } from '@testing-library/react';
-import * as React from 'react';
+import type * as React from 'react';
 import { defineComposite } from 'src/_model/defineComposite';
 
 // ---------------------------------------------------------------------------
@@ -22,13 +22,13 @@ import { defineComposite } from 'src/_model/defineComposite';
 // ---------------------------------------------------------------------------
 
 /** A minimal part component for use in rendering assertions */
-const PartA = ({ children }: { children?: React.ReactNode }) => (
-  <span data-testid="part-a">{children}</span>
-);
+const PartA = ({ children }: { children?: React.ReactNode }) => {
+  return <span data-testid="part-a">{children}</span>;
+};
 
-const PartB = ({ children }: { children?: React.ReactNode }) => (
-  <span data-testid="part-b">{children}</span>
-);
+const PartB = ({ children }: { children?: React.ReactNode }) => {
+  return <span data-testid="part-b">{children}</span>;
+};
 
 // ---------------------------------------------------------------------------
 // 1. context: 'Field' — root element and data attributes
@@ -46,12 +46,14 @@ describe("defineComposite — context: 'Field' — root element", () => {
       parts: ['PartA', 'PartB'],
       context: 'Field',
       partComponents: { PartA, PartB },
-      render: ({ value }, { PartA: A, PartB: B }) => (
-        <>
-          <A>{value}</A>
-          <B />
-        </>
-      ),
+      render: ({ value }, { PartA: A, PartB: B }) => {
+        return (
+          <>
+            <A>{value}</A>
+            <B />
+          </>
+        );
+      },
     });
 
   test('root has data-scope from the definition', () => {
@@ -106,7 +108,9 @@ describe("defineComposite — context: 'Field' — root element", () => {
 
 describe("defineComposite — context: 'Field' — FieldContextProps propagation", () => {
   /** Use a genuine Ark Field.Input to observe context propagation */
-  const ArkInput = () => <Field.Input data-testid="ark-input" />;
+  const ArkInput = () => {
+    return <Field.Input data-testid="ark-input" />;
+  };
 
   const { Component: ContextPropTest } = defineComposite<object>({
     name: 'ContextPropTest',
@@ -114,7 +118,9 @@ describe("defineComposite — context: 'Field' — FieldContextProps propagation
     parts: ['ArkInput'],
     context: 'Field',
     partComponents: { ArkInput },
-    render: (_props, { ArkInput: I }) => <I />,
+    render: (_props, { ArkInput: I }) => {
+      return <I />;
+    },
   });
 
   test('invalid=true sets data-invalid on the root container (Field.Root)', () => {
@@ -144,7 +150,9 @@ describe("defineComposite — context: 'Field' — FieldContextProps propagation
 
   test('FieldContextProps are NOT forwarded to the render contentProps', () => {
     const capturedProps: Record<string, unknown>[] = [];
-    const CapturingPart = () => null;
+    const CapturingPart = () => {
+      return null;
+    };
 
     const { Component: CapturingComposite } = defineComposite<{
       someValue: string;
@@ -196,12 +204,17 @@ describe("defineComposite — context: 'none' — root element", () => {
       parts: ['PartA'],
       context: 'none',
       partComponents: { PartA },
-      render: ({ label }, { PartA: A }) => <A>{label}</A>,
+      render: ({ label }, { PartA: A }) => {
+        return <A>{label}</A>;
+      },
     });
 
   test('root has data-scope from the definition', () => {
     const { container } = render(<NoneComposite />);
-    expect(container.firstChild).toHaveAttribute('data-scope', 'none-composite');
+    expect(container.firstChild).toHaveAttribute(
+      'data-scope',
+      'none-composite'
+    );
   });
 
   test('root always has data-part="root"', () => {
@@ -235,14 +248,14 @@ describe('defineComposite — style and rootProps forwarding', () => {
     parts: [],
     context: 'none',
     partComponents: {},
-    render: () => null,
+    render: () => {
+      return null;
+    },
     rootProps: { 'data-custom': 'custom-value' },
   });
 
   test('style prop is applied to the root container', () => {
-    const { container } = render(
-      <StyledComposite style={{ color: 'red' }} />
-    );
+    const { container } = render(<StyledComposite style={{ color: 'red' }} />);
     expect((container.firstChild as HTMLElement).style.color).toBe('red');
   });
 
@@ -275,12 +288,14 @@ describe('defineComposite — partComponents are passed as render parts arg', ()
     parts: ['TrackingPartA', 'TrackingPartB'],
     context: 'none',
     partComponents: { TrackingPartA, TrackingPartB },
-    render: (_props, { TrackingPartA: A, TrackingPartB: B }) => (
-      <>
-        <A />
-        <B />
-      </>
-    ),
+    render: (_props, { TrackingPartA: A, TrackingPartB: B }) => {
+      return (
+        <>
+          <A />
+          <B />
+        </>
+      );
+    },
   });
 
   test('all provided partComponents are rendered via the render function', () => {
@@ -291,3 +306,87 @@ describe('defineComposite — partComponents are passed as render parts arg', ()
   });
 });
 
+// ---------------------------------------------------------------------------
+// 6. L3 — TCtx type parameter: conditional FieldContextProps resolution
+//
+// Verifies that:
+// - context: 'Field' produces a component whose prop type includes
+//   FieldContextProps (invalid, disabled, required, readOnly).
+// - context: 'none' produces a component whose prop type does NOT include
+//   FieldContextProps (TypeScript would reject them at the call site).
+//
+// The compile-time assertions use type-level variable assignment (outside any
+// test body) so that TypeScript reports an error during compilation if the
+// conditional type is broken, not at runtime.
+// ---------------------------------------------------------------------------
+
+// ── Compile-time assertion: 'Field' → FieldContextProps are in the prop type ──
+
+const { Component: L3FieldComposite } = defineComposite<{ value?: string }>({
+  name: 'L3FieldComposite',
+  scope: 'l3-field',
+  parts: [],
+  context: 'Field',
+  partComponents: {},
+  render: () => {
+    return null;
+  },
+});
+
+// If TCtx resolution is broken (reverts to the union behaviour), `invalid` would
+// not be in the prop type and this assignment would be a compile error.
+const _l3FieldProps: React.ComponentProps<typeof L3FieldComposite> = {
+  value: 'x',
+  invalid: true,
+  disabled: false,
+  required: true,
+  readOnly: false,
+};
+
+// ── Compile-time assertion: 'none' → FieldContextProps are NOT in the prop type ─
+
+const { Component: L3NoneComposite } = defineComposite<{ label?: string }>({
+  name: 'L3NoneComposite',
+  scope: 'l3-none',
+  parts: [],
+  context: 'none',
+  partComponents: {},
+  render: () => {
+    return null;
+  },
+});
+
+// FieldContextProps must be absent for context: 'none'. Verify by confirming
+// `invalid` is not assignable to the prop type's known keys.
+type _L3NoneProps = React.ComponentProps<typeof L3NoneComposite>;
+// `invalid` should not be a key in the 'none' composite props
+const _l3NoneHasNoInvalidKey: 'invalid' extends keyof _L3NoneProps
+  ? 'FAIL — invalid must not be in none props'
+  : 'ok' = 'ok';
+
+describe('defineComposite — L3 — TCtx type parameter: runtime guard', () => {
+  test("context: 'Field' component accepts FieldContextProps at runtime", () => {
+    // If the factory wiring is correct, invalid is forwarded to Field.Root and
+    // reflected as data-invalid on the container. This is already tested in
+    // section 2; this test documents the L3 invariant explicitly.
+    const { container } = render(<L3FieldComposite invalid={true} />);
+    expect(container.firstChild).toHaveAttribute('data-invalid');
+  });
+
+  test("context: 'none' component is not a Field.Root (FieldContextProps are no-op)", () => {
+    // context: 'none' renders a plain <div>, not a Field.Root.
+    // Even though the implementation always destructures the field props,
+    // the div element is just a div — no data-invalid attribute.
+    const { container } = render(<L3NoneComposite />);
+    expect((container.firstChild as HTMLElement).tagName).toBe('DIV');
+  });
+
+  test('TextFieldProps includes invalid and disabled (derived from factory, no cast)', () => {
+    // TextFieldProps is now derived via React.ComponentProps<typeof TextField>
+    // instead of a hand-authored intersection. This assertion verifies that
+    // defineComposite resolves the type correctly end-to-end.
+    type TFProps = import('src/composites/TextField/TextField').TextFieldProps;
+    const _: TFProps = { invalid: true, disabled: false, label: 'Email' };
+    expect(true).toBe(true); // runtime guard — the real check is the TS compilation above
+  });
+});

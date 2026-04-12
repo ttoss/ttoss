@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { getThemeStylesContent } from './css';
-import { deepMerge, flattenAndResolve } from './roots/helpers';
+import { deepMerge, toFlatTokens } from './roots/helpers';
 import {
   createThemeRuntime,
   type ResolvedMode,
@@ -235,7 +235,7 @@ export const ThemeProvider = ({
       core: theme.base.core,
       semantic: semanticTokens,
     };
-    const all = flattenAndResolve(effectiveTheme);
+    const all = toFlatTokens(effectiveTheme);
 
     const result: Record<string, string | number> = {};
     for (const [key, value] of Object.entries(all)) {

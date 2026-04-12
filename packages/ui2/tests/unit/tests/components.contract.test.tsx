@@ -1,30 +1,60 @@
 /**
  * Universal component contract tests for @ttoss/ui2.
  *
- * Every public ui2 primitive is registered here. testComponentContract()
- * generates 4–5 invariant tests per component that verify the architectural
- * bridge: ComponentExpression → resolveTokens() → scoped CSS vars → DOM.
+ * Auto-discovers all ui2 primitives by scanning `src/components/`.
+ * Each component using `defineComponent()` exports a `*ContractConfig`.
+ * This test file discovers them automatically — no manual registration.
  *
- * Each component uses `defineComponent()` which auto-generates a `contractConfig`.
- * Registration here is a single `testComponentContract(config)` call — no manual
- * duplication of scope, responsibility, evaluation, or wrapper facts.
+ * Convention: `src/components/Name/Name.tsx` exports `{camelName}ContractConfig`.
  *
- * Note: ValidationMessage is NOT registered here — it requires a Field.Root
- * with invalid=true to render, making standalone contract tests impractical.
- * It is tested through TextField.test.tsx instead.
- *
- * Note: TextField is NOT registered here — it is a composite without its own
- * resolveTokens() call. It is tested through TextField.test.tsx.
+ * Note: Composites (e.g. TextField) are NOT included — they don't have their
+ * own resolveTokens() call. They are tested through their own test files.
  */
-import { buttonContractConfig } from 'src/components/Button/Button';
-import { helperTextContractConfig } from 'src/components/HelperText/HelperText';
-import { inputContractConfig } from 'src/components/Input/Input';
-import { labelContractConfig } from 'src/components/Label/Label';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import type { ComponentContractConfig } from 'src/_model/factory.types';
 
 import { testComponentContract } from '../helpers/componentContract';
 
-testComponentContract(buttonContractConfig);
-testComponentContract(inputContractConfig);
-testComponentContract(labelContractConfig);
-testComponentContract(helperTextContractConfig);
+// ---------------------------------------------------------------------------
+// Auto-discovery
+// ---------------------------------------------------------------------------
 
+const componentsDir = path.resolve(__dirname, '../../../src/components');
+const componentDirs = fs
+  .readdirSync(componentsDir, { withFileTypes: true })
+  .filter((d) => {
+    return d.isDirectory();
+  })
+  .map((d) => {
+    return d.name;
+  });
+
+const configs: ComponentContractConfig[] = [];
+
+for (const dir of componentDirs) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mod = require(`src/components/${dir}/${dir}`) as Record<
+    string,
+    unknown
+  >;
+  const configKey = Object.keys(mod).find((k) => {
+    return k.endsWith('ContractConfig');
+  });
+  if (configKey) {
+    configs.push(mod[configKey] as ComponentContractConfig);
+  }
+}
+
+// Verify we discovered all expected components (guard against silent failures)
+if (configs.length === 0) {
+  throw new Error(
+    'Auto-discovery found 0 component contract configs. ' +
+      'Check that components export *ContractConfig from their module files.'
+  );
+}
+
+for (const config of configs) {
+  testComponentContract(config);
+}

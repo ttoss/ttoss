@@ -125,20 +125,27 @@ describe('createThemeRuntime', () => {
   describe('onSystemChange', () => {
     test('updates resolvedMode when system preference changes while in system mode', () => {
       let changeHandler: (() => void) | undefined;
-      const captureListener = jest.fn((_event: string, handler: () => void) => {
-        changeHandler = handler;
-      });
-      (window.matchMedia as jest.Mock).mockImplementation(
-        matchMediaMockImpl({ addEventListener: captureListener })
-      );
+      // Use a single shared object — the browser always updates .matches on the
+      // same MediaQueryList instance before dispatching the change event.
+      const mql = {
+        matches: false,
+        media: '(prefers-color-scheme: dark)',
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn((_event: string, handler: () => void) => {
+          changeHandler = handler;
+        }),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      };
+      (window.matchMedia as jest.Mock).mockReturnValue(mql);
 
       runtime = createThemeRuntime({ defaultMode: 'system' });
       expect(runtime.getState().resolvedMode).toBe('light');
 
-      // Simulate system switching to dark
-      (window.matchMedia as jest.Mock).mockImplementation(
-        matchMediaMockImpl({ dark: true })
-      );
+      // Simulate system switching to dark — mutate .matches on the same object
+      mql.matches = true;
 
       // Fire the change handler
       changeHandler?.();
@@ -330,6 +337,24 @@ describe('createThemeRuntime', () => {
 
       // Restore default mock
       (window.matchMedia as jest.Mock).mockImplementation(matchMediaMockImpl());
+    });
+
+    test('subscribe after destroy returns a no-op unsubscribe and does not add to listeners', () => {
+      runtime = createThemeRuntime();
+      runtime.destroy();
+
+      const listener = jest.fn();
+      const unsub = runtime.subscribe(listener);
+
+      // The returned unsubscribe must be callable without throwing
+      expect(() => {
+        return unsub();
+      }).not.toThrow();
+
+      // The listener must never fire — setMode is already guarded, but the
+      // listener must not even be registered in the Set
+      runtime.setMode('dark');
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 

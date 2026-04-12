@@ -1,6 +1,6 @@
-import { Field } from '@ark-ui/react';
 import * as React from 'react';
 
+import { COMPONENT_TOKENS as T } from '../../_model/componentTokens';
 import { defineComponent } from '../../_model/defineComponent';
 
 // ---------------------------------------------------------------------------
@@ -16,18 +16,36 @@ export interface HelperTextProps extends React.HTMLAttributes<HTMLSpanElement> {
 // Component
 // ---------------------------------------------------------------------------
 
-const { Component: HelperTextBase, contractConfig: helperTextContractConfig } = defineComponent({
+const {
+  Component: HelperTextBase,
+  contractConfig: helperTextContractConfig,
+  componentMeta: helperTextComponentMeta,
+} = defineComponent({
   name: 'HelperText',
   scope: 'helper-text',
   responsibility: 'Feedback',
-  element: 'Field.HelperText',
+  element: 'span',
   evaluation: 'muted',
   hasConsequence: false,
   dimensions: ['text'],
-  wrapperForTests: ({ children }) => <Field.Root>{children}</Field.Root>,
+  layout: {
+    base: {
+      display: 'block',
+      fontFamily: T.text.label.sm.fontFamily,
+      fontSize: T.text.label.sm.fontSize,
+      fontWeight: T.text.label.sm.fontWeight,
+      lineHeight: T.text.label.sm.lineHeight,
+      letterSpacing: T.text.label.sm.letterSpacing,
+      fontOpticalSizing: T.text.label.sm.fontOpticalSizing,
+      marginTop: T.spacing.gap.inline.sm,
+    },
+  },
+  wrapperForTests: ({ children }) => {
+    return <>{children}</>;
+  },
 });
 
-export { helperTextContractConfig };
+export { helperTextComponentMeta, helperTextContractConfig };
 
 /**
  * HelperText — supporting descriptive text for a form field.
@@ -46,6 +64,9 @@ export { helperTextContractConfig };
  *   <HelperText>Must be at least 8 characters.</HelperText>
  * </Field.Root>
  */
-export const HelperText = (props: HelperTextProps) => {
-  return <HelperTextBase {...props} />;
-};
+export const HelperText = React.forwardRef<HTMLSpanElement, HelperTextProps>(
+  (props, ref) => {
+    return <HelperTextBase ref={ref} {...props} />;
+  }
+);
+HelperText.displayName = 'HelperText';

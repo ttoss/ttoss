@@ -43,7 +43,7 @@ src/
   runtime-entry.ts      — sub-path entry for '@ttoss/theme2/runtime'
 
   roots/
-    helpers.ts          — isTokenRef, extractRefPath, deepMerge, flattenObject, flattenAndResolve
+    helpers.ts          — isTokenRef, extractRefPath, deepMerge, flattenObject, toFlatTokens
     tokenRegistry.ts    — single source of truth: token path prefix → CSS var prefix + DTCG type
     toCssVars.ts        — ThemeTokens → flat CSS custom properties record + full CSS string
     toVars.ts           — ThemeTokens → typed semantic tree with var() leaf values
@@ -74,7 +74,7 @@ baseTheme (ThemeTokens)          ← edit here to change default values
         ├──▶ buildVarsMap()       → typed semantic tree with 'var(--tt-*)' leaves
         │                            consumed at build-time to produce vars.ts
         │
-        └──▶ flattenAndResolve()  → flat record of all tokens resolved to raw values
+        └──▶ toFlatTokens()      → flat record of all tokens resolved to raw values
                                      used by useResolvedTokens() (React Native, canvas, PDF)
 ```
 
@@ -93,7 +93,7 @@ Key functions in `roots/helpers.ts`:
 
 - `isTokenRef(value)` — checks if a value is a `{path}` reference
 - `extractRefPath(ref)` — extracts `core.colors.brand.500` from `{core.colors.brand.500}`
-- `flattenAndResolve(theme)` — flattens + recursively resolves all refs to raw values
+- `toFlatTokens(theme)` — flattens + recursively resolves all refs to raw values; returns **both** `core.*` and `semantic.*` keys. Callers that need only semantic keys filter with `key.startsWith('semantic.')` at the call site. Do not introduce a `toFlatSemanticTokens` wrapper — core keys are required internally for ref resolution, the filter is a one-liner, and a wrapper would be a single-use abstraction.
 
 ---
 
@@ -159,7 +159,7 @@ a theme or mode switches. Components reference vars; `toCssVars` carries the val
 
 1. Creates a `ThemeRuntime` (mode resolution + localStorage persistence)
 2. Resolves `SemanticTokens` for the current mode (`deepMerge(base.semantic, alternate.semantic)`)
-3. Calls `flattenAndResolve` for the resolved-tokens context
+3. Calls `toFlatTokens` for the resolved-tokens context
 4. Injects CSS via `getThemeStylesContent` into a `<style>` tag
 5. Writes `data-tt-mode` on `<html>`
 
@@ -176,6 +176,76 @@ Hooks:
 `ssrScript.ts` produces a small inline JS string that reads localStorage and sets `data-tt-mode` on `<html>` before the page paints. Inject it as the first `<script>` in `<head>` via `getThemeScriptContent` from `@ttoss/theme2/runtime`. See README for the full integration pattern.
 
 > Import only from sub-paths defined in `package.json` exports. Reaching into `src/` directly is unsupported.
+
+---
+
+## Runtime architecture — decisions and invariants
+
+This section documents deliberate design decisions in the runtime layer (`runtime.ts`, `themeBootstrap.ts`, `ssrScript.ts`). These decisions have been revisited and should not be reverted without understanding the reasoning.
+
+### `apply()` is the single owner of all DOM writes
+
+`apply()` inside `createThemeRuntime` is the only place that writes `data-tt-theme`, `data-tt-mode`, and `style.colorScheme`. It is called on init and on every subsequent state transition.
+
+`themeBootstrap.ts` exports `resolveTheme`, which **only reads localStorage and resolves the mode** — it never writes the DOM. This separation exists because:
+
+- A single DOM-write path eliminates the need to keep two implementations in sync.
+- Previously, `applyTheme` (in `themeBootstrap.ts`) wrote the DOM during init AND `apply()` duplicated the same writes for updates — two owners, invisible coupling.
+
+**Invariant**: if you need to write a new DOM attribute (e.g. `data-tt-contrast`), add it to `apply()` only. Then also add it to the template string in `ssrScript.ts` (see below).
+
+### SSR script — unavoidable duplication, made explicit
+
+`getThemeScriptContent` in `ssrScript.ts` returns a self-contained JavaScript IIFE string. This string replicates the logic of `resolveTheme` + `apply()` because it must run synchronously in the browser **before the app bundle loads** — no imports, no module system.
+
+This is the only remaining duplication and it cannot be eliminated without changing the script delivery mechanism (e.g. build-time emission). It is made explicit and co-located: the template string is in the same file that documents it. The in-source comment marks the exact place to update if `apply()` grows.
+
+**If you add a DOM attribute to `apply()`, you must also add it to the template string in `ssrScript.ts`.** The comment in both files marks the exact location.
+
+The previous approach serialized a TypeScript function via `.toString()`. This was replaced by the explicit template string because:
+
+- `.toString()` output depends on the bundler/transpiler (minification, sourcemaps, coverage instrumentation can break it).
+- It prevented Istanbul from covering `applyTheme` — requiring `/* istanbul ignore next */` on the only interesting runtime function.
+- The self-containment constraint (`no external references`) was an invisible rule enforced only by a comment, not by the type system.
+
+### `mediaQuery` — single `MediaQueryList`, never re-queried
+
+`window.matchMedia('(prefers-color-scheme: dark)')` is called once per runtime instance and the result is stored in `mediaQuery`. All subsequent reads use `mediaQuery.matches` — never `window.matchMedia(...)` again.
+
+This is correct because browsers mutate `.matches` on the existing `MediaQueryList` object before dispatching the `change` event. Re-calling `window.matchMedia()` on each check would create a new throwaway object per call and would break if the mock in tests returns different objects per call.
+
+**Do not replace `mediaQuery.matches` with a `getSystemMode()` helper that calls `window.matchMedia()` internally.** This was tried and reverted — it creates a new `MediaQueryList` per invocation and makes tests unreliable.
+
+### `onSystemChange` has no guards — this is intentional
+
+```typescript
+const onSystemChange = (): void => {
+  resolvedMode = mediaQuery.matches ? 'dark' : 'light';
+  applyState({ persist: false });
+};
+```
+
+There are no `if (destroyed)` or `if (mode !== 'system')` guards here, and that is correct:
+
+- `destroyed`: `destroy()` calls `syncMediaListener(false)` synchronously before returning. JS is single-threaded; the handler cannot fire after the listener is removed.
+- `mode !== 'system'`: `syncMediaListener` is called on every `setMode`. When mode leaves `'system'`, the listener is removed immediately. The check would be unreachable.
+
+Adding these guards back would imply the runtime can be in an inconsistent state — which it structurally cannot. They are dead code.
+
+### `DEFAULT_STORAGE_KEY` — never hardcode `'tt-theme'`
+
+The default localStorage key is defined once in `runtime.ts` as `DEFAULT_STORAGE_KEY`. Both `runtime.ts` and `ssrScript.ts` use this constant. Do not hardcode `'tt-theme'` anywhere else — a divergence would cause the SSR script and the runtime to read from different keys, silently breaking persistence.
+
+### `resolveSemanticTokens` and `bundleToCssVars` both call `deepMerge(base.semantic, alternate.semantic)` — intentionally
+
+`react.tsx` has a private `resolveSemanticTokens(bundle, resolvedMode)` that returns `SemanticTokens` for the active mode at runtime. `toCssVars.ts › bundleToCssVars` builds an `alternateTheme: ThemeTokens` using the same `deepMerge(base.semantic, alternate.semantic)` call for CSS generation.
+
+They look similar but serve distinct purposes:
+
+- `resolveSemanticTokens` is **mode-sensitive**: it checks `resolvedMode === bundle.baseMode` and returns `base.semantic` unchanged for the base mode. Return type is `SemanticTokens`.
+- `bundleToCssVars` is **mode-agnostic**: it always constructs the full alternate `ThemeTokens` (core + merged semantic) regardless of the current user mode, because it needs to emit CSS for both modes upfront. Return type is `ThemeTokens`.
+
+A shared `resolveSemanticForMode` helper would only encapsulate the `react.tsx` path and would not reduce the `toCssVars.ts` code, which has to composite `ThemeTokens` — not `SemanticTokens`. The `deepMerge` call is a correct primitive used independently in two different contexts; this is not duplication.
 
 ---
 

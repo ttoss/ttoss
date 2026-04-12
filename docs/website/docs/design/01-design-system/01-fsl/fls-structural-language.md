@@ -37,9 +37,11 @@ Those belong to other artifacts.
 The purpose of the FSL Structural Language is to make the FSL Lexicon usable as a real language.
 
 The Lexicon defines:
+
 - what the terms mean
 
 The Structural Language defines:
+
 - how terms can be combined
 - what combinations are valid
 - what combinations are invalid
@@ -79,27 +81,34 @@ This document defines only layer 2.
 # 3. Design principles
 
 ## 3.1 Structure must remain smaller than projections
+
 The Structural Language must remain minimal.  
 Anything that exists only because a downstream system needs it belongs in a projection profile, not here.
 
 ## 3.2 Every dimension must answer a distinct question
+
 Dimensions must be orthogonal.  
 If two dimensions answer the same semantic question, one of them is wrong or redundant.
 
 ## 3.3 The language must support composition
+
 The meaning of a valid expression must come from:
+
 - the meanings of its constituent terms
 - the structure that combines them
 - lawful context refinement only
 
 ## 3.4 Context refines; it does not redefine
+
 Context may narrow or specialize meaning, but it may not replace foundational identity.
 
 ## 3.5 Structural legality is part of the language
+
 Validity is not a downstream implementation heuristic.  
 It is part of the language itself.
 
 ## 3.6 Projections are derived, not foundational
+
 Component semantics and token semantics must derive from this structure.  
 They must not define their own incompatible language.
 
@@ -110,6 +119,7 @@ They must not define their own incompatible language.
 The Structural Language recognizes two strata.
 
 ## 4.1 Foundational stratum
+
 The foundational stratum contains semantic dimensions that exist before:
 
 - component APIs
@@ -120,9 +130,11 @@ The foundational stratum contains semantic dimensions that exist before:
 These dimensions are the true core of the language.
 
 ## 4.2 Projection stratum
+
 The projection stratum contains semantic forms needed by downstream systems.
 
 Examples:
+
 - token-family-specific semantic domains
 - text-scale grammars
 - spacing contracts
@@ -142,11 +154,13 @@ The actual vocabulary of each dimension lives in the **FSL Lexicon**.
 This document defines their structural role in the language.
 
 ## 5.1 Entity
+
 **Question answered:** What kind of interactive thing is this?
 
 The semantic identity of the thing.
 
 Examples of expected lexical values:
+
 - Action
 - Input
 - Selection
@@ -163,11 +177,13 @@ It must not be redefined by context.
 ---
 
 ## 5.2 Structure
+
 **Question answered:** What structural function does this part play?
 
 The semantic topology of the thing or part.
 
 Examples of expected lexical values:
+
 - root
 - control
 - label
@@ -184,11 +200,13 @@ Structure describes part function, not identity.
 ---
 
 ## 5.3 Interaction
+
 **Question answered:** What kind of interaction is being expressed?
 
 Interaction describes the mode of user-system semantic operation.
 
 Examples of expected lexical values:
+
 - command
 - confirm
 - dismiss
@@ -212,11 +230,13 @@ Interaction is required because real interface structures cannot be disambiguate
 ---
 
 ## 5.4 Composition
+
 **Question answered:** What role does this thing play within a larger composition?
 
 Composition expresses relational semantics.
 
 Examples of expected lexical values:
+
 - primaryAction
 - secondaryAction
 - dismissAction
@@ -235,11 +255,13 @@ It does not replace entity identity.
 ---
 
 ## 5.5 Evaluation
+
 **Question answered:** What evaluative or emphatic meaning is carried?
 
 Evaluation expresses semantic emphasis or valence.
 
 Examples of expected lexical values:
+
 - primary
 - secondary
 - accent
@@ -253,11 +275,13 @@ Evaluation is foundational because meaning like “negative” or “muted” mu
 ---
 
 ## 5.6 Consequence
+
 **Question answered:** What user-facing consequence or risk profile is carried?
 
 Consequence expresses interaction-critical semantics such as risk, reversibility, or interruption.
 
 Examples of expected lexical values:
+
 - neutral
 - reversible
 - committing
@@ -271,9 +295,11 @@ Consequence exists because some semantics materially shape interaction design an
 ---
 
 ## 5.7 State
+
 **Question answered:** What semantic or interactional state is active?
 
 Examples of expected lexical values:
+
 - default
 - hover
 - active
@@ -294,9 +320,11 @@ Not every state is legal for every interaction type.
 ---
 
 ## 5.8 Layer
+
 **Question answered:** What semantic layer role does this thing occupy?
 
 Examples of expected lexical values:
+
 - base
 - sticky
 - raised
@@ -309,11 +337,13 @@ Layer is semantic layering, not raw z-index.
 ---
 
 ## 5.9 Context
+
 **Question answered:** What lawful contextual refinements are active?
 
 Context is a controlled refinement dimension.
 
 Expected context classes include:
+
 - composition
 - environment
 - interactionEnvironment
@@ -350,8 +380,8 @@ SemanticExpression = {
 
 Every valid semantic expression must contain:
 
-* `entity`
-* `structure`
+- `entity`
+- `structure`
 
 All other dimensions are optional by form, but only legal when semantically meaningful.
 
@@ -359,9 +389,9 @@ All other dimensions are optional by form, but only legal when semantically mean
 
 A dimension may be omitted when:
 
-* it is not relevant to the expression
-* it is lawfully inferable during normalization
-* it is absent at the foundational layer and introduced later only by lawful projection
+- it is not relevant to the expression
+- it is lawfully inferable during normalization
+- it is absent at the foundational layer and introduced later only by lawful projection
 
 A dimension must not be omitted when its absence would make the expression semantically ambiguous in a way that the language cannot legally resolve.
 
@@ -387,9 +417,9 @@ Example shape:
 
 A minimal expression is legal if:
 
-* it is well-formed
-* the combination is permitted by legality rules
-* omitted dimensions may remain omitted or be lawfully inferred later
+- it is well-formed
+- the combination is permitted by legality rules
+- omitted dimensions may remain omitted or be lawfully inferred later
 
 ## 7.2 Qualified expression
 
@@ -455,9 +485,9 @@ The language requires legality checking.
 
 Every term must be:
 
-* defined in the FSL Lexicon
-* active in the current FSL version
-* legal for its dimension
+- defined in the FSL Lexicon
+- active in the current FSL version
+- legal for its dimension
 
 ## 9.2 Structural legality
 
@@ -486,8 +516,8 @@ Defines which structures are legal for each entity kind.
 
 Example:
 
-* `Overlay × backdrop` may be legal
-* `Action × backdrop` is generally illegal
+- `Overlay × backdrop` may be legal
+- `Action × backdrop` is generally illegal
 
 ## 10.2 Entity × Interaction
 
@@ -495,8 +525,8 @@ Defines which interaction kinds are legal for each entity kind.
 
 Example:
 
-* `Selection × toggle.tristate` may be legal
-* `Feedback × entry.text` is illegal
+- `Selection × toggle.tristate` may be legal
+- `Feedback × entry.text` is illegal
 
 ## 10.3 Interaction × State
 
@@ -504,9 +534,9 @@ Defines which states are legal for each interaction kind.
 
 Example:
 
-* `toggle.tristate` allows `indeterminate`
-* `navigate.link` may allow `visited`
-* `command` does not generally allow `checked`
+- `toggle.tristate` allows `indeterminate`
+- `navigate.link` may allow `visited`
+- `command` does not generally allow `checked`
 
 ## 10.4 Structure × Layer
 
@@ -514,8 +544,8 @@ Defines which layer roles are meaningful for which structural roles.
 
 Example:
 
-* `backdrop × blocking` may be legal
-* `label × blocking` is generally not legal
+- `backdrop × blocking` may be legal
+- `label × blocking` is generally not legal
 
 ## 10.5 Composition × Refinement
 
@@ -523,8 +553,8 @@ Defines what refinements are legal under each composition role.
 
 Example:
 
-* `dismissAction` may lawfully bias downstream evaluation or consequence handling
-* no composition role may redefine entity identity
+- `dismissAction` may lawfully bias downstream evaluation or consequence handling
+- no composition role may redefine entity identity
 
 Each Projection Profile is incomplete if it does not define values for all applicable matrices.
 
@@ -540,10 +570,10 @@ Normalization is part of the language contract.
 
 Normalization exists to:
 
-* fill lawful defaults
-* make implicit semantics explicit when permitted
-* produce a canonical form for downstream systems
-* avoid repeated ad hoc interpretation
+- fill lawful defaults
+- make implicit semantics explicit when permitted
+- produce a canonical form for downstream systems
+- avoid repeated ad hoc interpretation
 
 ## 11.2 Types of normalization
 
@@ -553,7 +583,7 @@ A dimension may receive a default if the default is explicitly governed.
 
 Example:
 
-* `Action + control` may default to `interaction=command`
+- `Action + control` may default to `interaction=command`
 
 ### B. Inference
 
@@ -561,7 +591,7 @@ A dimension may be inferred if the inference is explicit, deterministic, and gov
 
 Example:
 
-* `Selection + toggle.tristate` may make `indeterminate` a legal state even if it is not active
+- `Selection + toggle.tristate` may make `indeterminate` a legal state even if it is not active
 
 ### C. Canonicalization
 
@@ -571,10 +601,10 @@ Equivalent structural forms may be normalized to one canonical representation.
 
 Normalization must not:
 
-* invent new base identity
-* bypass legality
-* hide ambiguity that should instead be rejected
-* smuggle in projection-specific terms into the foundational layer
+- invent new base identity
+- bypass legality
+- hide ambiguity that should instead be rejected
+- smuggle in projection-specific terms into the foundational layer
 
 ---
 
@@ -586,31 +616,31 @@ Context is part of the language, but it is tightly constrained.
 
 Context may:
 
-* narrow interpretation
-* select among lawful alternatives
-* specialize downstream projection
-* encode known environmental constraints
+- narrow interpretation
+- select among lawful alternatives
+- specialize downstream projection
+- encode known environmental constraints
 
 ## 12.2 What context may not do
 
 Context may not:
 
-* redefine `entity`
-* contradict legality matrices
-* collapse distinctions between dimensions
-* introduce projection-only meaning into the foundational layer
+- redefine `entity`
+- contradict legality matrices
+- collapse distinctions between dimensions
+- introduce projection-only meaning into the foundational layer
 
 ## 12.3 Context classes
 
 The language recognizes the following context classes:
 
-* `composition`
-* `environment`
-* `interactionEnvironment`
-* `mode`
-* `density`
-* `accessibilityPreference`
-* `platformCondition`
+- `composition`
+- `environment`
+- `interactionEnvironment`
+- `mode`
+- `density`
+- `accessibilityPreference`
+- `platformCondition`
 
 Any new context class must be governed as an extension.
 
@@ -630,19 +660,19 @@ The architecture must support at least:
 
 Derives:
 
-* semantic identity for the component model
-* part/topology semantics
-* relational/compositional semantics
-* interaction legality for components
+- semantic identity for the component model
+- part/topology semantics
+- relational/compositional semantics
+- interaction legality for components
 
 ### Semantic Token Projection
 
 Derives:
 
-* family-specific semantic forms
-* semantic contracts
-* semantic addresses
-* projection-level legality rules
+- family-specific semantic forms
+- semantic contracts
+- semantic addresses
+- projection-level legality rules
 
 ## 13.2 Projection boundary rule
 
@@ -657,26 +687,26 @@ But it must define the interface the resolver depends on.
 
 The resolver must consume:
 
-* a semantic expression
-* active lexical registries
-* legality matrices
-* normalization rules
-* contextual refinement inputs
-* a selected projection profile
+- a semantic expression
+- active lexical registries
+- legality matrices
+- normalization rules
+- contextual refinement inputs
+- a selected projection profile
 
 The resolver must output:
 
-* the normalized expression
-* legality verdict
-* projected semantic form
-* explanation trace
+- the normalized expression
+- legality verdict
+- projected semantic form
+- explanation trace
 
 The Structural Language therefore guarantees that the resolver has:
 
-* typed semantic inputs
-* lawful normalization rules
-* explicit legality boundaries
-* projection hooks
+- typed semantic inputs
+- lawful normalization rules
+- explicit legality boundaries
+- projection hooks
 
 This is what makes automatic token resolution possible.
 
@@ -741,9 +771,9 @@ This is a qualified expression.
 
 This is valid only if:
 
-* `Overlay × backdrop` is legal
-* `status.interruptive` is legal under that entity/structure combination
-* `blocking` is legal for `backdrop`
+- `Overlay × backdrop` is legal
+- `status.interruptive` is legal under that entity/structure combination
+- `blocking` is legal for `backdrop`
 
 ---
 
@@ -775,9 +805,9 @@ This expression exists specifically to prove that the language can represent sem
 
 This is valid only if:
 
-* `Navigation × item` is legal
-* `navigate.link` is legal for `Navigation`
-* `current` is legal for `navigate.link`
+- `Navigation × item` is legal
+- `navigate.link` is legal for `Navigation`
+- `current` is legal for `navigate.link`
 
 ---
 
@@ -787,12 +817,12 @@ The Structural Language supports extensions.
 
 An extension is legal only if it:
 
-* introduces meaning not already expressible
-* does not duplicate existing dimensions
-* does not contradict foundational meaning
-* declares its legality rules
-* declares its normalization rules if needed
-* declares whether it belongs to the foundational or projection stratum
+- introduces meaning not already expressible
+- does not duplicate existing dimensions
+- does not contradict foundational meaning
+- declares its legality rules
+- declares its normalization rules if needed
+- declares whether it belongs to the foundational or projection stratum
 
 Extension must be rare.
 
@@ -814,12 +844,12 @@ The FSL Structural Language is the formal structure of the foundational semantic
 
 It turns the Lexicon into a real language by defining:
 
-* the foundational dimensions
-* the canonical expression form
-* legality
-* normalization
-* contextual refinement
-* projection interfaces
+- the foundational dimensions
+- the canonical expression form
+- legality
+- normalization
+- contextual refinement
+- projection interfaces
 
 It is intentionally small.
 

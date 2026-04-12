@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { COMPONENT_TOKENS as T } from '../../_model/componentTokens';
 import { defineComponent } from '../../_model/defineComponent';
 
 // ---------------------------------------------------------------------------
@@ -15,15 +16,36 @@ export interface ValidationMessageProps extends React.HTMLAttributes<HTMLSpanEle
 // Component
 // ---------------------------------------------------------------------------
 
-const { Component: ValidationMessageBase } = defineComponent({
+const {
+  Component: ValidationMessageBase,
+  contractConfig: validationMessageContractConfig,
+  componentMeta: validationMessageComponentMeta,
+} = defineComponent({
   name: 'ValidationMessage',
   scope: 'validation-message',
   responsibility: 'Feedback',
-  element: 'Field.ErrorText',
+  element: 'span',
   evaluation: 'negative',
   hasConsequence: false,
   dimensions: ['text'],
+  layout: {
+    base: {
+      display: 'block',
+      fontFamily: T.text.label.sm.fontFamily,
+      fontSize: T.text.label.sm.fontSize,
+      fontWeight: T.text.label.sm.fontWeight,
+      lineHeight: T.text.label.sm.lineHeight,
+      letterSpacing: T.text.label.sm.letterSpacing,
+      fontOpticalSizing: T.text.label.sm.fontOpticalSizing,
+      marginTop: T.spacing.gap.inline.sm,
+    },
+  },
+  wrapperForTests: ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+  },
 });
+
+export { validationMessageComponentMeta, validationMessageContractConfig };
 
 /**
  * ValidationMessage — form field error or validation feedback text.
@@ -46,6 +68,10 @@ const { Component: ValidationMessageBase } = defineComponent({
  *   <ValidationMessage>{error?.message}</ValidationMessage>
  * </Field.Root>
  */
-export const ValidationMessage = (props: ValidationMessageProps) => {
-  return <ValidationMessageBase {...props} />;
-};
+export const ValidationMessage = React.forwardRef<
+  HTMLSpanElement,
+  ValidationMessageProps
+>((props, ref) => {
+  return <ValidationMessageBase ref={ref} {...props} />;
+});
+ValidationMessage.displayName = 'ValidationMessage';

@@ -35,8 +35,116 @@ import * as path from 'node:path';
 
 import { createTheme } from '@ttoss/theme2';
 import { toCssVarName, toFlatTokens } from '@ttoss/theme2/css';
-import { LAYOUT_TOKENS } from 'src/_model/layoutTokens';
-import { UX_VALID_ROLES } from 'src/_model/resolver';
+import type { ComponentToken } from 'src/_model/componentTokens';
+import { COMPONENT_TOKENS } from 'src/_model/componentTokens';
+import type { ComponentMeta } from 'src/_model/defineComponent';
+import type { CompositeMeta } from 'src/_model/defineComposite';
+import { generateComponentCss, UX_VALID_ROLES } from 'src/_model/resolver';
+
+// ---------------------------------------------------------------------------
+// Auto-discovery of component and composite metas
+// ---------------------------------------------------------------------------
+
+const discoverComponentMetas = (): ComponentMeta[] => {
+  const componentsDir = path.resolve(__dirname, '../../../src/components');
+  const dirs = fs
+    .readdirSync(componentsDir, { withFileTypes: true })
+    .filter((d) => {
+      return d.isDirectory();
+    })
+    .map((d) => {
+      return d.name;
+    });
+
+  const metas: ComponentMeta[] = [];
+  for (const dir of dirs) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require(`src/components/${dir}/${dir}`) as Record<
+      string,
+      unknown
+    >;
+    const metaKey = Object.keys(mod).find((k) => {
+      return k.endsWith('ComponentMeta');
+    });
+    if (metaKey) {
+      metas.push(mod[metaKey] as ComponentMeta);
+    }
+  }
+  metas.sort((a, b) => {
+    return a.scope.localeCompare(b.scope);
+  });
+  return metas;
+};
+
+const discoverCompositeMetas = (): CompositeMeta[] => {
+  const compositesDir = path.resolve(__dirname, '../../../src/composites');
+  if (!fs.existsSync(compositesDir)) return [];
+
+  const dirs = fs
+    .readdirSync(compositesDir, { withFileTypes: true })
+    .filter((d) => {
+      return d.isDirectory();
+    })
+    .map((d) => {
+      return d.name;
+    });
+
+  const metas: CompositeMeta[] = [];
+  for (const dir of dirs) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require(`src/composites/${dir}/${dir}`) as Record<
+      string,
+      unknown
+    >;
+    const metaKey = Object.keys(mod).find((k) => {
+      return k.endsWith('CompositeMeta');
+    });
+    if (metaKey) {
+      metas.push(mod[metaKey] as CompositeMeta);
+    }
+  }
+  metas.sort((a, b) => {
+    return a.scope.localeCompare(b.scope);
+  });
+  return metas;
+};
+
+const discoveredComponentMetas = discoverComponentMetas();
+const discoveredCompositeMetas = discoverCompositeMetas();
+
+// ---------------------------------------------------------------------------
+// 0. Scope uniqueness — no two components share a scope
+// ---------------------------------------------------------------------------
+
+describe('scope uniqueness — no two component or composite metas share a scope', () => {
+  test('all component scopes are unique', () => {
+    const scopes = discoveredComponentMetas.map((m) => {
+      return m.scope;
+    });
+    expect(scopes).toEqual([...new Set(scopes)]);
+  });
+
+  test('all composite scopes are unique', () => {
+    const scopes = discoveredCompositeMetas.map((m) => {
+      return m.scope;
+    });
+    expect(scopes).toEqual([...new Set(scopes)]);
+  });
+
+  test('component and composite scopes do not overlap', () => {
+    const componentScopes = new Set(
+      discoveredComponentMetas.map((m) => {
+        return m.scope;
+      })
+    );
+    const compositeScopes = discoveredCompositeMetas.map((m) => {
+      return m.scope;
+    });
+    for (const scope of compositeScopes) {
+      expect(componentScopes.has(scope)).toBe(false);
+    }
+  });
+});
 
 // ---------------------------------------------------------------------------
 // Shared fixtures — built once per file, re-used across all test groups
@@ -126,14 +234,14 @@ describe('styles.css — every var(--tt-*) reference has a backing token (B-10)'
 });
 
 // ---------------------------------------------------------------------------
-// 3. LAYOUT_TOKENS — every declared value resolves to a real theme token (B-05)
+// 3. COMPONENT_TOKENS — every declared value resolves to a real theme token (B-05)
 //
-// Invariant: every `--tt-*` string in the LAYOUT_TOKENS const must correspond
+// Invariant: every `--tt-*` string in the COMPONENT_TOKENS const must correspond
 // to a real CSS custom property defined by @ttoss/theme2. This catches forward-
 // looking token declarations that do not yet have backing theme data.
 //
-// This test walks the nested LAYOUT_TOKENS object recursively and collects all
-// leaf strings (which are all LayoutToken = `--tt-${string}` values), then
+// This test walks the nested COMPONENT_TOKENS object recursively and collects all
+// leaf strings (which are all ComponentToken = `--tt-${string}` values), then
 // verifies each one exists in the resolved theme token set.
 //
 // NOTE: Only tokens that are CURRENTLY defined in baseTheme are valid.
@@ -142,18 +250,179 @@ describe('styles.css — every var(--tt-*) reference has a backing token (B-10)'
 // ---------------------------------------------------------------------------
 
 /** Recursively collect all string leaves from a nested object */
-const walkLayoutTokens = (obj: unknown): string[] => {
+const walkComponentTokens = (obj: unknown): string[] => {
   if (typeof obj === 'string') return [obj];
   if (typeof obj === 'object' && obj !== null) {
-    return Object.values(obj).flatMap(walkLayoutTokens);
+    return Object.values(obj).flatMap(walkComponentTokens);
   }
   return [];
 };
 
-describe('LAYOUT_TOKENS — every value maps to a real theme token (B-05)', () => {
-  const allLayoutTokenValues = walkLayoutTokens(LAYOUT_TOKENS);
+describe('COMPONENT_TOKENS — every value maps to a real theme token (B-05)', () => {
+  const allComponentTokenValues = walkComponentTokens(COMPONENT_TOKENS);
 
-  test.each(allLayoutTokenValues)('%s', (varName) => {
+  test.each(allComponentTokenValues)('%s', (varName) => {
     expect(DEFINED_VARS.has(varName)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. styles.css is fully generated — file matches generate-css.ts output
+//
+// Invariant: the ENTIRE styles.css file is a build artifact produced by
+// `pnpm run generate:css`. It must match what the generator would produce
+// from the current component definitions. If it doesn't, SSR will deliver
+// stale layout or color-state rules.
+//
+// Fix: run `pnpm run generate:css` to regenerate.
+//
+// This test replicates the generator's logic (layout + color CSS) and
+// compares key content sections against the actual file. It uses substring
+// matching rather than full-file equality to avoid coupling to comment
+// formatting while still catching functional drift.
+//
+// @see L5 resolution in REVIEW.md
+// ---------------------------------------------------------------------------
+
+describe('styles.css is fully generated — matches component definitions (L5)', () => {
+  const stylesPath = path.resolve(__dirname, '../../../src/styles.css');
+  const stylesCss = fs.readFileSync(stylesPath, 'utf-8');
+
+  // ── Layout CSS drift check ──────────────────────────────────────
+
+  const camelToKebab = (s: string): string => {
+    return s.replace(/[A-Z]/g, (m) => {
+      return `-${m.toLowerCase()}`;
+    });
+  };
+
+  const isComponentToken = (v: string | number): v is ComponentToken => {
+    return typeof v === 'string' && v.startsWith('--tt-');
+  };
+
+  const formatValue = (v: string | number): string => {
+    if (isComponentToken(v)) return `var(${v})`;
+    return String(v);
+  };
+
+  const componentMetas = discoveredComponentMetas;
+
+  test.each(
+    componentMetas.filter((m) => {
+      return m.layout;
+    })
+  )('layout CSS for $scope is present and matches', (meta) => {
+    const baseSelector = `[data-scope='${meta.scope}'][data-part='root']`;
+
+    // Check base layout properties exist in CSS
+    for (const [prop, val] of Object.entries(meta.layout!.base)) {
+      const cssProp = camelToKebab(prop);
+      const cssVal = formatValue(val!);
+      expect(stylesCss).toContain(`${cssProp}: ${cssVal}`);
+    }
+
+    // Check size variants if present
+    if (meta.layout?.sizes) {
+      for (const [size, overrides] of Object.entries(meta.layout.sizes)) {
+        if (!overrides) continue;
+        const sizeSelector = `${baseSelector}[data-size='${size}']`;
+        expect(stylesCss).toContain(sizeSelector);
+      }
+    }
+  });
+
+  // ── Composite layout CSS drift check ────────────────────────────
+
+  test.each(
+    discoveredCompositeMetas.filter((m) => {
+      return m.layout;
+    })
+  )('composite layout CSS for $scope is present', (meta) => {
+    const baseSelector = `[data-scope='${meta.scope}'][data-part='root']`;
+    expect(stylesCss).toContain(baseSelector);
+
+    for (const [prop, val] of Object.entries(meta.layout!.base)) {
+      const cssProp = camelToKebab(prop);
+      const cssVal = formatValue(val!);
+      expect(stylesCss).toContain(`${cssProp}: ${cssVal}`);
+    }
+  });
+
+  // ── Color CSS drift check ───────────────────────────────────────
+
+  const expectedColorCss = componentMetas
+    .map((meta) => {
+      return generateComponentCss({
+        scope: meta.scope,
+        responsibility: meta.responsibility,
+        dimensions: meta.dimensions,
+        withInvalidOverlay: meta.withInvalidOverlay,
+      });
+    })
+    .filter(Boolean)
+    .join('\n\n')
+    .trim();
+
+  test('color-state CSS matches generateComponentCss() output — run `pnpm run generate:css` if this fails', () => {
+    // Every line of the expected color CSS must be present in styles.css
+    for (const line of expectedColorCss.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('/*')) {
+        expect(stylesCss).toContain(trimmed);
+      }
+    }
+  });
+
+  // ── Structural invariants ───────────────────────────────────────
+
+  test('file header indicates auto-generated', () => {
+    expect(stylesCss).toContain('AUTO-GENERATED');
+  });
+
+  test('no @generated-begin/@generated-end markers (entire file is generated)', () => {
+    expect(stylesCss).not.toContain('@generated-begin');
+    expect(stylesCss).not.toContain('@generated-end');
+  });
+
+  test('input focus ring override is present', () => {
+    expect(stylesCss).toContain(
+      "[data-scope='input'][data-part='root']:focus-visible"
+    );
+  });
+
+  test('behavioral layer is present', () => {
+    expect(stylesCss).toContain('@layer ui2.behavioral');
+    expect(stylesCss).toContain('[data-scope]:focus-visible');
+    expect(stylesCss).toContain('cursor: not-allowed');
+  });
+
+  // ── selected/checked deduplication (ISSUE-008) ───────────────────
+
+  test('no duplicate selectors emitted for any component (selected/checked collision)', () => {
+    for (const meta of componentMetas) {
+      const css = generateComponentCss({
+        scope: meta.scope,
+        responsibility: meta.responsibility,
+        dimensions: meta.dimensions,
+        withInvalidOverlay: meta.withInvalidOverlay,
+      });
+
+      // Extract all selector lines (lines ending with ' {')
+      const selectorLines = css
+        .split('\n')
+        .filter((line) => {
+          return line.trimEnd().endsWith('{');
+        })
+        .map((line) => {
+          return line.trim();
+        });
+
+      // No two identical selectors should appear
+      const seen = new Set<string>();
+      for (const sel of selectorLines) {
+        expect(seen.has(sel)).toBe(false);
+        seen.add(sel);
+      }
+    }
   });
 });

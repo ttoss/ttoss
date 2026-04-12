@@ -6,7 +6,7 @@ import type { ThemeTokens } from '../Types';
 // ---------------------------------------------------------------------------
 
 /** Check if a value is a token reference like `{core.colors.brand.500}` */
-export const isTokenRef = (value: unknown): value is string => {
+export const isTokenRef = (value: unknown): value is `{${string}}` => {
   return (
     typeof value === 'string' &&
     value.length > 2 &&
@@ -19,6 +19,24 @@ export const isTokenRef = (value: unknown): value is string => {
 export const extractRefPath = (ref: string): string => {
   return ref.slice(1, -1);
 };
+
+// ---------------------------------------------------------------------------
+// ID validation
+// ---------------------------------------------------------------------------
+
+/**
+ * Allowed characters for a theme identifier: alphanumeric, hyphens, underscores.
+ * Shared between toCssVars (CSS selector injection guard) and ssrScript (SSR inline script).
+ * A single definition prevents the two validation paths from silently diverging.
+ */
+export const SAFE_ID_RE = /^[a-zA-Z0-9_-]+$/;
+
+/**
+ * Matches every `{token.path}` reference embedded in a string value.
+ * Shared between helpers.ts (toFlatTokens) and toCssVars.ts (inlineRefsToVars)
+ * so a single definition governs the `{…}` syntax in both resolution paths.
+ */
+export const COMPOUND_REF_RE = /\{([^}]+)\}/g;
 
 // ---------------------------------------------------------------------------
 // Object traversal
@@ -88,6 +106,32 @@ export const flattenObject = (
   return result;
 };
 
+/**
+ * Flatten a `ThemeTokens` into separate `{ core, semantic }` flat records
+ * with dot-separated keys. Centralizes the unsafe casts needed to traverse
+ * the opaque token trees.
+ *
+ * Used by both `toFlatTokens` (resolution) and `buildCssVars` (CSS emission)
+ * so the casts live in exactly one place.
+ */
+export const flattenTheme = (
+  theme: ThemeTokens
+): {
+  core: Record<string, string | number>;
+  semantic: Record<string, string | number>;
+} => {
+  return {
+    core: flattenObject(
+      theme.core as unknown as Record<string, unknown>,
+      'core'
+    ),
+    semantic: flattenObject(
+      theme.semantic as unknown as Record<string, unknown>,
+      'semantic'
+    ),
+  };
+};
+
 // ---------------------------------------------------------------------------
 // Flatten + resolve all refs to raw values
 // ---------------------------------------------------------------------------
@@ -102,18 +146,11 @@ export const flattenObject = (
  *
  * This is the universal primitive — every root is derived from this.
  */
-export const flattenAndResolve = (
+export const toFlatTokens = (
   theme: ThemeTokens
 ): Record<string, string | number> => {
   // 1. Flatten both layers (refs still as `{path}` strings)
-  const coreFlat = flattenObject(
-    theme.core as unknown as Record<string, unknown>,
-    'core'
-  );
-  const semanticFlat = flattenObject(
-    theme.semantic as unknown as Record<string, unknown>,
-    'semantic'
-  );
+  const { core: coreFlat, semantic: semanticFlat } = flattenTheme(theme);
   const all = { ...coreFlat, ...semanticFlat };
 
   // 2. Resolve every ref recursively (with cycle guard)
@@ -149,7 +186,7 @@ export const flattenAndResolve = (
    * (`clamp({core.space.4}, {core.space.6}, {core.space.12})`).
    */
   const resolveInline = (value: string, seen: Set<string>): string => {
-    return value.replace(/\{([^}]+)\}/g, (_match, path) => {
+    return value.replace(COMPOUND_REF_RE, (_match, path) => {
       const target = all[path];
       if (target === undefined) {
         return `{${path}}`; // unresolvable — keep as-is
@@ -166,11 +203,7 @@ export const flattenAndResolve = (
   const resolved: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(all)) {
     if (typeof value === 'string') {
-      if (
-        value.startsWith('{') &&
-        value.endsWith('}') &&
-        !value.slice(1, -1).includes('{')
-      ) {
+      if (isTokenRef(value)) {
         // pure token ref e.g. {core.colors.brand.500}
         resolved[key] = resolveRef(value, new Set());
       } else if (value.includes('{')) {
@@ -198,14 +231,3 @@ export const flattenAndResolve = (
  * references are preserved as their original `{path}` string.
  */
 export type FlatTokenMap = Record<string, string | number>;
-
-/**
- * Root 2 — Flat Token Map.
- *
- * Convert a `ThemeTokens` into a flat `Record<string, string | number>`
- * with dot-separated keys and all `{ref}` values recursively resolved
- * to their final raw value.
- */
-export const toFlatTokens = (theme: ThemeTokens): FlatTokenMap => {
-  return flattenAndResolve(theme);
-};

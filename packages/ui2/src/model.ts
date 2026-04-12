@@ -2,22 +2,22 @@
  * @ttoss/ui2/model — Semantic model and factory exports.
  *
  * This entry point exposes the complete model layer of @ttoss/ui2:
- *   - Semantic resolver (resolveTokens, toScopeVars, STATE_SELECTORS)
+ *   - Semantic resolver (resolveTokens, resolveRole, STATE_SELECTORS)
  *   - Component taxonomy (Responsibility, Evaluation, Consequence)
- *   - Layout token catalog (LAYOUT_TOKENS)
+ *   - Component token catalog (COMPONENT_TOKENS)
  *   - Component factories (defineComponent, defineComposite)
  *
  * **Runtime environment note:**
- * The resolver, taxonomy, and LAYOUT_TOKENS exports are pure TypeScript with
+ * The resolver, taxonomy, and COMPONENT_TOKENS exports are pure TypeScript with
  * no React dependency. The factory exports (defineComponent, defineComposite)
  * import React and @ark-ui/react — they require a React-capable environment.
  * Both are marked as `external` in the package build so consumers provide them.
  *
  * Intended consumers:
  *   - Component authors: import defineComponent / defineComposite
- *   - Contract test helpers: import resolveTokens, ComponentContractConfig
+ *   - Contract test helpers: import resolveRole, ComponentContractConfig
  *   - AI agents or code generators: import the full model to generate or validate ui2 components
- *   - Tooling: import resolveTokens, LAYOUT_TOKENS, taxonomy consts
+ *   - Tooling: import resolveTokens, COMPONENT_TOKENS, taxonomy consts
  */
 
 // -- Resolver ---------------------------------------------------------------
@@ -31,16 +31,17 @@ export type {
   UxContext,
 } from './_model/resolver';
 export {
+  generateComponentCss,
+  resolveRole,
   resolveTokens,
   RESPONSIBILITY_UX_MAP,
   STATE_SELECTORS,
-  toScopeVars,
   UX_VALID_ROLES,
 } from './_model/resolver';
 
 // -- Component Factory ------------------------------------------------------
 export type {
-  ArkElement,
+  ComponentMeta,
   ComponentProps,
   DefineComponentOptions,
   DefineComponentResult,
@@ -58,14 +59,22 @@ export type {
 } from './_model/taxonomy';
 export { CONSEQUENCES, EVALUATIONS, RESPONSIBILITIES } from './_model/taxonomy';
 
-// -- Layout Tokens (B-05) ---------------------------------------------------
-export type { LayoutToken, LayoutTokenValue } from './_model/layoutTokens';
-export { LAYOUT_TOKENS } from './_model/layoutTokens';
+// -- Component Tokens (B-05) ------------------------------------------------
+export type {
+  ComponentCssProperty,
+  ComponentDeclaration,
+  ComponentSpec,
+  ComponentToken,
+  ComponentTokenValue,
+  ComponentValue,
+} from './_model/componentTokens';
+export { COMPONENT_TOKENS } from './_model/componentTokens';
 
 // -- Composite Factory (B-07) -----------------------------------------------
 export type {
   CompositeConfig,
   CompositeContext,
+  CompositeMeta,
   DefineCompositeOptions,
   DefineCompositeResult,
   FieldContextProps,

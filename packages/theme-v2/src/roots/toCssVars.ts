@@ -1,6 +1,11 @@
-import type { DeepPartial } from '../Types';
 import type { ThemeBundle, ThemeTokens } from '../Types';
-import { deepMerge, flattenObject } from './helpers';
+import {
+  COMPOUND_REF_RE,
+  deepMerge,
+  flattenObject,
+  flattenTheme,
+  SAFE_ID_RE,
+} from './helpers';
 import { CSS_PATH_PREFIXES } from './tokenRegistry';
 
 // ---------------------------------------------------------------------------
@@ -31,7 +36,7 @@ export const toCssVarName = (tokenPath: string): string => {
  *   → `clamp(var(--tt-core-spacing-4), var(--tt-core-spacing-6), var(--tt-core-spacing-12))`
  */
 const inlineRefsToVars = (value: string): string => {
-  return value.replace(/\{([^}]+)\}/g, (_match, path) => {
+  return value.replace(COMPOUND_REF_RE, (_match, path) => {
     return `var(${toCssVarName(path)})`;
   });
 };
@@ -49,18 +54,11 @@ const inlineRefsToVars = (value: string): string => {
 const buildCssVars = (theme: ThemeTokens): Record<string, string | number> => {
   const vars: Record<string, string | number> = {};
 
-  const coreFlat = flattenObject(
-    theme.core as unknown as Record<string, unknown>,
-    'core'
-  );
+  const { core: coreFlat, semantic: semanticFlat } = flattenTheme(theme);
   for (const [path, value] of Object.entries(coreFlat)) {
     vars[toCssVarName(path)] = value;
   }
 
-  const semanticFlat = flattenObject(
-    theme.semantic as unknown as Record<string, unknown>,
-    'semantic'
-  );
   for (const [path, value] of Object.entries(semanticFlat)) {
     const varName = toCssVarName(path);
     if (typeof value === 'string' && value.includes('{')) {
@@ -138,12 +136,6 @@ export interface CssVarsResult {
 // ---------------------------------------------------------------------------
 // Selector builder
 // ---------------------------------------------------------------------------
-
-/**
- * Allowed characters for a themeId: alphanumeric, hyphens, underscores.
- * Prevents CSS selector injection when interpolating into attribute selectors.
- */
-const SAFE_ID_RE = /^[a-zA-Z0-9_-]+$/;
 
 const sanitizeId = (value: string): string => {
   if (!SAFE_ID_RE.test(value)) {
@@ -256,14 +248,18 @@ const buildReducedMotionVars = (theme: ThemeTokens): Record<string, string> => {
  * The semantic hit tokens default to fine-pointer values. This record
  * contains the coarse overrides, to be emitted inside
  * `@media (any-pointer: coarse)`.
+ *
+ * Derives every `*.coarse.*` path from `core.sizing.hit.coarse` dynamically,
+ * so adding a new step to `CoreSizeHitScale` never silently omits it here.
  */
 const buildCoarseHitVars = (theme: ThemeTokens): Record<string, string> => {
-  const { hit } = theme.core.sizing;
-  return {
-    [toCssVarName('semantic.sizing.hit.min')]: hit.coarse.min,
-    [toCssVarName('semantic.sizing.hit.base')]: hit.coarse.base,
-    [toCssVarName('semantic.sizing.hit.prominent')]: hit.coarse.prominent,
-  };
+  const vars: Record<string, string> = {};
+  for (const [key, value] of Object.entries(theme.core.sizing.hit.coarse)) {
+    if (typeof value === 'string') {
+      vars[toCssVarName(`semantic.sizing.hit.${key}`)] = value;
+    }
+  }
+  return vars;
 };
 
 // ---------------------------------------------------------------------------
@@ -280,57 +276,71 @@ const buildCoarseHitVars = (theme: ThemeTokens): Record<string, string> => {
 const buildCssBlock = ({
   selector,
   vars,
+  containerQueryVars,
   coarseHitVars,
   reducedMotionVars,
   colorScheme,
 }: {
   selector: string;
   vars: Record<string, string | number>;
+  containerQueryVars: Record<string, string | number>;
   coarseHitVars: Record<string, string>;
   reducedMotionVars: Record<string, string>;
   colorScheme?: string;
 }): string => {
-  const lines: string[] = [];
+  // Local helpers — capture `selector` from closure, only used here.
+
+  /** Maps a vars record to indented CSS declaration lines (4-space, for nested at-rule blocks). */
+  const varLines = (v: Record<string, string | number>): string[] => {
+    return Object.entries(v).map(([name, val]) => {
+      return `    ${name}: ${val};`;
+    });
+  };
+
+  /** Builds a complete at-rule block, or empty string if the vars record is empty. */
+  const atRuleBlock = (
+    atRule: string,
+    v: Record<string, string | number>
+  ): string => {
+    const lines = varLines(v);
+    return lines.length > 0
+      ? `${atRule} {\n  ${selector} {\n${lines.join('\n')}\n  }\n}`
+      : '';
+  };
+
+  const baseLines: string[] = [];
 
   if (colorScheme) {
-    lines.push(`  color-scheme: ${colorScheme};`);
+    baseLines.push(`  color-scheme: ${colorScheme};`);
   }
 
   for (const [name, value] of Object.entries(vars)) {
     // Emit viewport-safe fallback for CQ vars in the base block
     if (hasCqUnits(value)) {
-      lines.push(`  ${name}: ${toViewportFallback(String(value))};`);
+      baseLines.push(`  ${name}: ${toViewportFallback(String(value))};`);
     } else {
-      lines.push(`  ${name}: ${value};`);
+      baseLines.push(`  ${name}: ${value};`);
     }
   }
 
-  const baseBlock = `${selector} {\n${lines.join('\n')}\n}`;
+  const baseBlock = `${selector} {\n${baseLines.join('\n')}\n}`;
 
-  // Container query progressive enhancement
-  const cqVars = extractContainerQueryVars(vars);
-  const cqEntries = Object.entries(cqVars);
-  let cqBlock = '';
-  if (cqEntries.length > 0) {
-    const cqLines = cqEntries.map(([name, val]) => {
-      return `    ${name}: ${val};`;
-    });
-    cqBlock = `\n\n@supports (width: 1cqi) {\n  ${selector} {\n${cqLines.join('\n')}\n  }\n}`;
-  }
+  // Container query progressive enhancement — appended to baseBlock (not joined separately)
+  const cqContent = atRuleBlock('@supports (width: 1cqi)', containerQueryVars);
+  const cqBlock = cqContent ? `\n\n${cqContent}` : '';
 
-  const coarseLines = Object.entries(coarseHitVars).map(([name, val]) => {
-    return `    ${name}: ${val};`;
-  });
-  const coarseBlock = `@media (any-pointer: coarse) {\n  ${selector} {\n${coarseLines.join('\n')}\n  }\n}`;
-
-  const reducedMotionLines = Object.entries(reducedMotionVars).map(
-    ([name, val]) => {
-      return `    ${name}: ${val};`;
-    }
+  const coarseBlock = atRuleBlock(
+    '@media (any-pointer: coarse)',
+    coarseHitVars
   );
-  const reducedMotionBlock = `@media (prefers-reduced-motion: reduce) {\n  ${selector} {\n${reducedMotionLines.join('\n')}\n  }\n}`;
+  const reducedMotionBlock = atRuleBlock(
+    '@media (prefers-reduced-motion: reduce)',
+    reducedMotionVars
+  );
 
-  return `${baseBlock}${cqBlock}\n\n${coarseBlock}\n\n${reducedMotionBlock}`;
+  return [baseBlock + cqBlock, coarseBlock, reducedMotionBlock]
+    .filter(Boolean)
+    .join('\n\n');
 };
 
 // ---------------------------------------------------------------------------
@@ -363,6 +373,7 @@ const toCssVarsBase = (
       return buildCssBlock({
         selector,
         vars: cssVars,
+        containerQueryVars,
         coarseHitVars,
         reducedMotionVars,
         colorScheme: effectiveColorScheme,
@@ -464,11 +475,17 @@ const bundleToCssVars = (
     };
   }
 
-  // Alternate: resolve full theme by merging semantic overrides into base
-  const alternateTheme = deepMerge(
-    baseTheme,
-    alternate as DeepPartial<ThemeTokens>
-  ) as ThemeTokens;
+  // Alternate: core is immutable across modes — only semantic refs are remapped.
+  // This construction makes the invariant explicit in code: core is copied as-is,
+  // and deepMerge is scoped to the semantic layer only (one narrower cast instead
+  // of two casts through the full ThemeTokens shape).
+  const alternateTheme: ThemeTokens = {
+    core: baseTheme.core,
+    semantic: deepMerge(
+      baseTheme.semantic,
+      alternate.semantic
+    ) as ThemeTokens['semantic'],
+  };
   const fullAlternateVars = buildCssVars(alternateTheme);
   const diffVars = diffCssVars({
     base: baseResult.cssVars,
@@ -480,8 +497,17 @@ const bundleToCssVars = (
     mode: alternateMode,
   });
 
-  const altCoarseHitVars = buildCoarseHitVars(alternateTheme);
-  const altReducedMotionVars = buildReducedMotionVars(alternateTheme);
+  // core is immutable in ModeOverride (only semantic? is allowed) — coarse hit
+  // targets are structurally guaranteed identical across modes. The alternate
+  // block is diff-only (like cssVars), so coarse is not repeated here.
+  const altCoarseHitVars: Record<string, string> = {};
+  // Reduced-motion: emit only entries that actually differ from the base so the
+  // block is omitted when semantic.motion is not overridden in the alternate.
+  // cast is safe: reducedMotionVars values are always var() strings
+  const altReducedMotionVars = diffCssVars({
+    base: baseResult.reducedMotionVars,
+    full: buildReducedMotionVars(alternateTheme),
+  }) as Record<string, string>;
   const altContainerQueryVars = extractContainerQueryVars(diffVars);
 
   const alternateResult: CssVarsResult = {
@@ -494,6 +520,7 @@ const bundleToCssVars = (
       return buildCssBlock({
         selector: alternateSelector,
         vars: diffVars,
+        containerQueryVars: altContainerQueryVars,
         coarseHitVars: altCoarseHitVars,
         reducedMotionVars: altReducedMotionVars,
         colorScheme: alternateMode,

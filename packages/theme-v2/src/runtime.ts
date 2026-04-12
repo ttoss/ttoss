@@ -6,6 +6,8 @@
 // Client-only — do not call on the server.
 // ---------------------------------------------------------------------------
 
+import { resolveTheme } from './themeBootstrap';
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -71,41 +73,12 @@ export interface ThemeRuntime {
 // Helpers (module-private)
 // ---------------------------------------------------------------------------
 
-const readStorage = (key: string): { mode?: ThemeMode } | null => {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) {
-      return null;
-    }
-    return JSON.parse(raw) as { mode?: ThemeMode };
-  } catch {
-    return null;
-  }
-};
-
 const writeStorage = (key: string, data: { mode: ThemeMode }): void => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch {
     // localStorage unavailable (SSR, privacy mode, quota exceeded) — silent fail
   }
-};
-
-const getSystemMode = (): ResolvedMode => {
-  if (
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-color-scheme: dark)').matches
-  ) {
-    return 'dark';
-  }
-  return 'light';
-};
-
-const resolveMode = (mode: ThemeMode): ResolvedMode => {
-  if (mode === 'system') {
-    return getSystemMode();
-  }
-  return mode;
 };
 
 // ---------------------------------------------------------------------------
@@ -142,21 +115,22 @@ export const createThemeRuntime = (
   const listeners = new Set<(state: ThemeState) => void>();
   let destroyed = false;
 
-  // --- Read persisted state ------------------------------------------------
+  // --- Init: read persisted mode and resolve --------------------------------
 
-  const stored = readStorage(storageKey);
-  const themeId = defaultTheme;
+  const init = resolveTheme({
+    storageKey,
+    defaultMode,
+    validModes: VALID_MODES,
+  });
+  let mode: ThemeMode = init.mode;
+  let resolvedMode: ResolvedMode = init.resolvedMode;
 
-  const storedMode = stored?.mode;
-  let mode: ThemeMode =
-    storedMode && VALID_MODES.includes(storedMode) ? storedMode : defaultMode;
-  let resolvedMode: ResolvedMode = resolveMode(mode);
-
-  // --- DOM helpers ---------------------------------------------------------
-
+  // --- DOM write — single owner for all attribute mutations ----------------
+  // NOTE: If you add a new DOM attribute here, add it to the template string
+  // in ssrScript.ts too (both are visible in context; drift is obvious).
   const apply = (): void => {
-    if (themeId) {
-      root.setAttribute(DATA_THEME_ATTR, themeId);
+    if (defaultTheme) {
+      root.setAttribute(DATA_THEME_ATTR, defaultTheme);
     } else {
       root.removeAttribute(DATA_THEME_ATTR);
     }
@@ -165,30 +139,27 @@ export const createThemeRuntime = (
   };
 
   const getState = (): ThemeState => {
-    return {
-      mode,
-      resolvedMode,
-    };
+    return { mode, resolvedMode };
   };
+
+  // Initial DOM write — same path used by all subsequent updates
+  apply();
 
   // --- Centralized state transition ----------------------------------------
 
-  let prevSnapshot = `${mode}\0${resolvedMode}`;
+  let prevMode = mode;
+  let prevResolvedMode = resolvedMode;
 
   const applyState = ({ persist }: { persist: boolean }): void => {
-    const snapshot = `${mode}\0${resolvedMode}`;
-
-    if (snapshot === prevSnapshot) {
+    if (mode === prevMode && resolvedMode === prevResolvedMode) {
       return;
     }
-
-    prevSnapshot = snapshot;
+    prevMode = mode;
+    prevResolvedMode = resolvedMode;
     apply();
-
     if (persist) {
       writeStorage(storageKey, { mode });
     }
-
     const state = getState();
     for (const listener of listeners) {
       listener(state);
@@ -197,21 +168,14 @@ export const createThemeRuntime = (
 
   // --- Lazy system mode listener -------------------------------------------
 
-  const mediaQuery =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-color-scheme: dark)')
-      : null;
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
   const onSystemChange = (): void => {
-    if (destroyed || mode !== 'system') return;
-    resolvedMode = getSystemMode();
+    resolvedMode = mediaQuery.matches ? 'dark' : 'light';
     applyState({ persist: false });
   };
 
   const syncMediaListener = (active: boolean): void => {
-    if (!mediaQuery) {
-      return;
-    }
     mediaQuery.removeEventListener('change', onSystemChange);
     if (active) {
       mediaQuery.addEventListener('change', onSystemChange);
@@ -227,12 +191,16 @@ export const createThemeRuntime = (
       return;
     }
     mode = newMode;
-    resolvedMode = resolveMode(mode);
+    resolvedMode =
+      mode === 'system' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
     syncMediaListener(mode === 'system');
     applyState({ persist: true });
   };
 
   const subscribe = (listener: (state: ThemeState) => void): (() => void) => {
+    if (destroyed) {
+      return () => {};
+    }
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
@@ -244,10 +212,6 @@ export const createThemeRuntime = (
     syncMediaListener(false);
     listeners.clear();
   };
-
-  // --- Init ----------------------------------------------------------------
-
-  apply();
 
   return { getState, setMode, subscribe, destroy };
 };

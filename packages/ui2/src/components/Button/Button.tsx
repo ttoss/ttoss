@@ -1,5 +1,6 @@
-import type * as React from 'react';
+import * as React from 'react';
 
+import { COMPONENT_TOKENS as T } from '../../_model/componentTokens';
 import { defineComponent } from '../../_model/defineComponent';
 import type { Consequence, Evaluation } from '../../_model/taxonomy';
 
@@ -68,17 +69,71 @@ export interface ButtonProps extends Omit<
 // Factory definition
 // ---------------------------------------------------------------------------
 
-const { Component: ButtonBase, contractConfig: buttonContractConfig } =
-  defineComponent({
-    name: 'Button',
-    scope: 'button',
-    responsibility: 'Action',
-    element: 'button',
-    hasConsequence: true,
-    sizes: ['sm', 'md', 'lg'] as const,
-  });
+const {
+  Component: ButtonBase,
+  contractConfig: buttonContractConfig,
+  componentMeta: buttonComponentMeta,
+} = defineComponent({
+  name: 'Button',
+  scope: 'button',
+  responsibility: 'Action',
+  element: 'button',
+  hasConsequence: true,
+  sizes: ['sm', 'md', 'lg'] as const,
+  layout: {
+    base: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: T.spacing.gap.inline.sm,
+      whiteSpace: 'nowrap',
+      flexShrink: 0,
+      minHeight: T.sizing.hit.base,
+      paddingBlock: T.spacing.inset.control.sm,
+      paddingInline: T.spacing.inset.control.md,
+      borderRadius: T.radii.control,
+      borderWidth: T.border.outline.control.width,
+      borderStyle: T.border.outline.control.style,
+      fontFamily: T.text.label.md.fontFamily,
+      fontSize: T.text.label.md.fontSize,
+      fontWeight: T.text.label.md.fontWeight,
+      lineHeight: T.text.label.md.lineHeight,
+      letterSpacing: T.text.label.md.letterSpacing,
+      fontOpticalSizing: T.text.label.md.fontOpticalSizing,
+      cursor: 'pointer',
+      userSelect: 'none',
+      textDecoration: 'none',
+      appearance: 'none',
+      transitionProperty: 'background-color, border-color, color, opacity',
+      transitionDuration: T.motion.feedback.duration,
+      transitionTimingFunction: T.motion.feedback.easing,
+    },
+    sizes: {
+      sm: {
+        minHeight: T.sizing.hit.min,
+        paddingBlock: T.spacing.inset.control.sm,
+        paddingInline: T.spacing.inset.control.sm,
+        fontSize: T.text.label.sm.fontSize,
+        fontWeight: T.text.label.sm.fontWeight,
+        lineHeight: T.text.label.sm.lineHeight,
+        letterSpacing: T.text.label.sm.letterSpacing,
+        fontOpticalSizing: T.text.label.sm.fontOpticalSizing,
+      },
+      lg: {
+        minHeight: T.sizing.hit.prominent,
+        paddingBlock: T.spacing.inset.control.md,
+        paddingInline: T.spacing.inset.control.lg,
+        fontSize: T.text.label.lg.fontSize,
+        fontWeight: T.text.label.lg.fontWeight,
+        lineHeight: T.text.label.lg.lineHeight,
+        letterSpacing: T.text.label.lg.letterSpacing,
+        fontOpticalSizing: T.text.label.lg.fontOpticalSizing,
+      },
+    },
+  },
+});
 
-export { buttonContractConfig };
+export { buttonComponentMeta, buttonContractConfig };
 
 // ---------------------------------------------------------------------------
 // Component
@@ -122,10 +177,9 @@ export { buttonContractConfig };
  * // Small ghost button
  * <Button evaluation="muted" size="sm">Learn more</Button>
  */
-export const Button = ({
-  type = 'button',
-  size = 'md',
-  ...props
-}: ButtonProps) => {
-  return <ButtonBase type={type} size={size} {...props} />;
-};
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ type = 'button', size = 'md', ...props }, ref) => {
+    return <ButtonBase ref={ref} type={type} size={size} {...props} />;
+  }
+);
+Button.displayName = 'Button';

@@ -7,10 +7,10 @@ export default jestUnitConfig({
     '/node_modules/',
     'src/index.ts',
     'src/model.ts',
-    'src/_model/tokenResolution.ts',
-    'src/_model/contract.ts',
     'src/_model/factory.types.ts',
-    'src/_model/layoutTokens.ts', // pure `as const` data — no executable branches
+    'src/_model/componentTokens.ts', // pure `as const` data — no executable branches
+    'src/_model/resolver.types.ts', // pure type definitions
+    'src/_model/tokenMap.ts', // pure `as const` data
   ],
   coverageThreshold: {
     global: {
