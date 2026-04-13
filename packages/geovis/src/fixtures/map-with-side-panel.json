@@ -1,0 +1,38 @@
+{
+  "id": "map-with-side-panel",
+  "title": "Map With Side Panel",
+  "description": "Map fixture intended for layouts with contextual panel metadata.",
+  "engine": "openlayers",
+  "view": {
+    "center": [-46.6333, -23.5505],
+    "zoom": 11,
+    "projection": "EPSG:3857"
+  },
+  "basemap": {
+    "attribution": "OpenStreetMap contributors"
+  },
+  "sources": [
+    {
+      "id": "neighborhoods",
+      "type": "geojson",
+      "data": "https://openlayers.org/data/vector/ecoregions.json"
+    }
+  ],
+  "layers": [
+    {
+      "id": "neighborhoods-fill",
+      "sourceId": "neighborhoods",
+      "geometry": "polygon",
+      "paint": {
+        "fillColor": "#60a5fa",
+        "fillOpacity": 0.3,
+        "lineColor": "#1d4ed8",
+        "lineWidth": 1
+      }
+    }
+  ],
+  "metadata": {
+    "layout": "map-with-side-panel",
+    "panelId": "details"
+  }
+}

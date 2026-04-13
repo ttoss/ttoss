@@ -23,7 +23,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm --filter @docs/storybook run dev",
-    "test": "jest --projects tests/unit"
+    "test": "jest --projects tests/unit",
+    "type-check": "tsc --noEmit"
   },
   "sideEffects": false,
   "peerDependencies": {

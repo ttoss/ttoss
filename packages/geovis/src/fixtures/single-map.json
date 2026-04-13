@@ -1,0 +1,85 @@
+{
+  "id": "single-map",
+  "title": "Single Map",
+  "description": "Minimal single-map fixture with one polygon and one point.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-46.6333, -23.5505],
+    "zoom": 10
+  },
+  "basemap": {
+    "styleUrl": "https://demotiles.maplibre.org/style.json"
+  },
+  "sources": [
+    {
+      "id": "city-point",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "Sao Paulo"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-46.6333, -23.5505]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "district-polygon",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "Example District"
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.6433, -23.5605],
+                  [-46.6233, -23.5605],
+                  [-46.6233, -23.5405],
+                  [-46.6433, -23.5405],
+                  [-46.6433, -23.5605]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "district-fill",
+      "sourceId": "district-polygon",
+      "geometry": "polygon",
+      "paint": {
+        "fillColor": "#ef4444",
+        "fillOpacity": 0.4,
+        "lineColor": "#b91c1c",
+        "lineWidth": 2
+      }
+    },
+    {
+      "id": "city-point-layer",
+      "sourceId": "city-point",
+      "geometry": "point",
+      "paint": {
+        "circleColor": "#111827",
+        "circleRadius": 6,
+        "circleStrokeColor": "#ffffff",
+        "circleStrokeWidth": 2
+      }
+    }
+  ]
+}

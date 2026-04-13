@@ -1,0 +1,19 @@
+{
+  "maplibre": {
+    "styleSpec": "https://maplibre.org/maplibre-style-spec/",
+    "rootProperties": "https://maplibre.org/maplibre-style-spec/root/",
+    "sources": "https://maplibre.org/maplibre-style-spec/sources/",
+    "layers": "https://maplibre.org/maplibre-style-spec/layers/",
+    "integrationFixtures": "https://github.com/maplibre/maplibre-style-spec/tree/main/test/integration"
+  },
+  "openlayers": {
+    "examples": "https://openlayers.org/en/latest/examples/",
+    "geojsonExample": "https://openlayers.org/en/latest/examples/geojson.html",
+    "vectorLayerExample": "https://openlayers.org/en/latest/examples/vector-layer.html"
+  },
+  "deckgl": {
+    "examples": "https://deck.gl/examples",
+    "geojsonPolygons": "https://deck.gl/examples/geojson-layer-polygons",
+    "apiReference": "https://deck.gl/docs/api-reference/core/deck"
+  }
+}

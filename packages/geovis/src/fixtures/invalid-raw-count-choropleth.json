@@ -1,0 +1,59 @@
+{
+  "id": "invalid-raw-count-choropleth",
+  "title": "Invalid Raw Count Choropleth",
+  "description": "Intentionally invalid by cartography policy: choropleth with raw counts.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-46.6333, -23.5505],
+    "zoom": 10
+  },
+  "sources": [
+    {
+      "id": "districts",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "district": "A",
+              "population": 150000,
+              "rawCountCases": 900
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.66, -23.58],
+                  [-46.63, -23.58],
+                  [-46.63, -23.55],
+                  [-46.66, -23.55],
+                  [-46.66, -23.58]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "districts-choropleth",
+      "sourceId": "districts",
+      "geometry": "polygon",
+      "paint": {
+        "fillColor": "#7c3aed",
+        "fillOpacity": 0.5,
+        "lineColor": "#4c1d95",
+        "lineWidth": 1
+      }
+    }
+  ],
+  "metadata": {
+    "isPolicyInvalid": true,
+    "invalidReason": "raw-count-choropleth",
+    "metricField": "rawCountCases"
+  }
+}

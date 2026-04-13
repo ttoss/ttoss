@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ttoss.dev/geovis/spec.schema.json",
+  "title": "VisualizationSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "engine", "view", "sources", "layers"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string",
+      "enum": ["maplibre", "openlayers", "deckgl"]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["center", "zoom"],
+      "properties": {
+        "center": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "zoom": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number"
+        },
+        "bearing": {
+          "type": "number"
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["EPSG:3857", "EPSG:4326"]
+        }
+      }
+    },
+    "basemap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "styleUrl": {
+          "type": "string"
+        },
+        "attribution": {
+          "type": "string"
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "data"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "geojson"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "tiles"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": ["vector-tiles", "raster-tiles"]
+              },
+              "tiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "sourceLayer": {
+                "type": "string"
+              },
+              "tileSize": {
+                "type": "integer",
+                "enum": [256, 512]
+              },
+              "minzoom": {
+                "type": "number"
+              },
+              "maxzoom": {
+                "type": "number"
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "url", "coordinates"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "image"
+              },
+              "url": {
+                "type": "string"
+              },
+              "coordinates": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "sourceId", "geometry"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "string",
+            "enum": ["point", "line", "polygon", "raster", "symbol", "heatmap"]
+          },
+          "title": {
+            "type": "string"
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "minzoom": {
+            "type": "number"
+          },
+          "maxzoom": {
+            "type": "number"
+          },
+          "paint": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      }
+    },
+    "adapterHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maplibre": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "styleVersion": {
+              "type": "integer",
+              "const": 8
+            }
+          }
+        },
+        "openlayers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wrapX": {
+              "type": "boolean"
+            }
+          }
+        },
+        "deckgl": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "controller": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}
