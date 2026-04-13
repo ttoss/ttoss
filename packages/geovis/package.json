@@ -27,6 +27,9 @@
     "type-check": "tsc --noEmit"
   },
   "sideEffects": false,
+  "dependencies": {
+    "maplibre-gl": "^5.23.0"
+  },
   "peerDependencies": {
     "react": "^19.2.5"
   },

@@ -1,5 +1,3 @@
-export type GeoVisEngine = 'maplibre' | 'openlayers' | 'deckgl';
-
 export type LngLat = [number, number];
 
 export interface GeoJSONGeometry {
@@ -125,7 +123,7 @@ export interface VisualizationSpec {
   id: string;
   title?: string;
   description?: string;
-  engine: GeoVisEngine;
+  engine: 'maplibre' | 'deckgl';
   view: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];
