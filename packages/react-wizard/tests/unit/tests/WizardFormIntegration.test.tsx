@@ -178,7 +178,7 @@ describe('Wizard Form Integration', () => {
     render(<TestWizardForm />);
 
     // Try to go to next step without filling required fields
-    const nextButton = screen.getByText('Next');
+    const nextButton = screen.getByRole('button', { name: 'Next' });
     await act(async () => {
       await user.click(nextButton);
     });
@@ -211,7 +211,7 @@ describe('Wizard Form Integration', () => {
 
     // Click Next button
     await act(async () => {
-      await user.click(screen.getByText('Next'));
+      await user.click(screen.getByRole('button', { name: 'Next' }));
     });
 
     // Should now be on step 2
@@ -228,7 +228,7 @@ describe('Wizard Form Integration', () => {
     await user.type(screen.getByLabelText('Last Name'), 'Doe');
     await user.type(screen.getByLabelText('Email'), 'invalid-email');
 
-    const nextButton = screen.getByText('Next');
+    const nextButton = screen.getByRole('button', { name: 'Next' });
     await act(async () => {
       await user.click(nextButton);
     });
@@ -253,7 +253,7 @@ describe('Wizard Form Integration', () => {
     await user.tab();
 
     await act(async () => {
-      await user.click(screen.getByText('Next'));
+      await user.click(screen.getByRole('button', { name: 'Next' }));
     });
 
     await waitFor(() => {
@@ -262,7 +262,7 @@ describe('Wizard Form Integration', () => {
 
     // Try to navigate without filling step 2 fields
     await act(async () => {
-      await user.click(screen.getByText('Next'));
+      await user.click(screen.getByRole('button', { name: 'Next' }));
     });
 
     // Should still be on step 2
@@ -282,7 +282,7 @@ describe('Wizard Form Integration', () => {
     render(<TestWizardForm onCancel={onCancel} />);
 
     await act(async () => {
-      await user.click(screen.getByText('Cancel'));
+      await user.click(screen.getByRole('button', { name: 'Cancel' }));
     });
 
     expect(onCancel).toHaveBeenCalledTimes(1);

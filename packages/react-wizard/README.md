@@ -35,6 +35,13 @@ const MyWizard = () => {
     <Wizard
       steps={steps}
       layout="top"
+      variant="spotlight-accent"
+      labels={{
+        previous: 'Voltar',
+        next: 'Avançar',
+        finish: 'Concluir',
+        cancel: 'Sair',
+      }}
       onComplete={() => console.log('Done!')}
       onCancel={() => console.log('Cancelled')}
     />
@@ -44,15 +51,17 @@ const MyWizard = () => {
 
 ## Props
 
-| Prop             | Type                                      | Default | Description                                            |
-| ---------------- | ----------------------------------------- | ------- | ------------------------------------------------------ |
-| `steps`          | `WizardStep[]`                            | —       | Array of step definitions.                             |
-| `layout`         | `'top' \| 'right' \| 'bottom' \| 'left'`  | `'top'` | Position of the step list relative to content.         |
-| `onComplete`     | `() => void`                              | —       | Called when the user finishes the last step.           |
-| `onCancel`       | `() => void`                              | —       | Called on cancel. If omitted, cancel button is hidden. |
-| `onStepChange`   | `(params: { stepIndex: number }) => void` | —       | Called when the active step changes.                   |
-| `initialStep`    | `number`                                  | `0`     | The initially active step index.                       |
-| `allowStepClick` | `boolean`                                 | `true`  | Allow clicking completed steps to navigate back.       |
+| Prop             | Type                                                                                | Default              | Description                                                     |
+| ---------------- | ----------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
+| `steps`          | `WizardStep[]`                                                                      | —                    | Array of step definitions.                                      |
+| `layout`         | `'top' \| 'right' \| 'bottom' \| 'left'`                                            | `'top'`              | Position of the step list relative to content.                  |
+| `variant`        | `'spotlight-accent' \| 'spotlight-primary' \| 'primary' \| 'secondary' \| 'accent'` | `'spotlight-accent'` | Visual variant for the shell, step accents, and primary action. |
+| `onComplete`     | `() => void`                                                                        | —                    | Called when the user finishes the last step.                    |
+| `onCancel`       | `() => void`                                                                        | —                    | Called on cancel. If omitted, cancel button is hidden.          |
+| `onStepChange`   | `(params: { stepIndex: number }) => void`                                           | —                    | Called when the active step changes.                            |
+| `initialStep`    | `number`                                                                            | `0`                  | The initially active step index.                                |
+| `allowStepClick` | `boolean`                                                                           | `true`               | Allow clicking completed steps to navigate back.                |
+| `labels`         | `Partial<{ previous: string; next: string; finish: string; cancel: string }>`       | —                    | Override the built-in navigation labels.                        |
 
 ## WizardStep
 

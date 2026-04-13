@@ -1,0 +1,18 @@
+{
+  "5lZ8VT": {
+    "defaultMessage": "Concluir",
+    "description": "Label for the finish button on the last wizard step."
+  },
+  "60eH0J": {
+    "defaultMessage": "Voltar",
+    "description": "Label for the previous step button in the wizard."
+  },
+  "6I9gjk": {
+    "defaultMessage": "Sair",
+    "description": "Label for the cancel button in the wizard."
+  },
+  "FmaVut": {
+    "defaultMessage": "Avançar",
+    "description": "Label for the next step button in the wizard."
+  }
+}

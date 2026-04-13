@@ -14,11 +14,32 @@ const meta: Meta<typeof Wizard> = {
       },
     },
   },
+  args: {
+    variant: 'spotlight-accent',
+    labels: {
+      previous: 'Voltar',
+      next: 'Avançar',
+      finish: 'Concluir',
+      cancel: 'Sair',
+    },
+  },
   argTypes: {
     layout: {
       control: 'select',
       options: ['top', 'right', 'bottom', 'left'],
       description: 'Position of the step list relative to the content.',
+    },
+    variant: {
+      control: 'select',
+      options: [
+        'spotlight-accent',
+        'spotlight-primary',
+        'primary',
+        'secondary',
+        'accent',
+      ],
+      description:
+        'Visual variant for the wizard shell, step accents, and primary action.',
     },
     allowStepClick: {
       control: 'boolean',
@@ -129,6 +150,7 @@ export const Left: Story = {
   args: {
     steps: basicSteps,
     layout: 'left',
+    variant: 'spotlight-primary',
     onComplete: () => {
       alert('Wizard completed!');
     },
@@ -145,6 +167,7 @@ export const Right: Story = {
   args: {
     steps: basicSteps,
     layout: 'right',
+    variant: 'primary',
     onComplete: () => {
       alert('Wizard completed!');
     },
@@ -161,6 +184,7 @@ export const Bottom: Story = {
   args: {
     steps: basicSteps,
     layout: 'bottom',
+    variant: 'accent',
     onComplete: () => {
       alert('Wizard completed!');
     },
@@ -202,6 +226,7 @@ export const WithValidation: Story = {
       },
     ],
     layout: 'top',
+    variant: 'secondary',
   },
 };
 
