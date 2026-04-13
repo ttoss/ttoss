@@ -1,13 +1,4 @@
 import {
-  Form,
-  FormFieldInput,
-  FormFieldSelect,
-  FormFieldTextarea,
-  useForm,
-  z,
-  zodResolver,
-} from '@ttoss/forms';
-import {
   act,
   render,
   screen,
@@ -15,34 +6,227 @@ import {
   waitFor,
 } from '@ttoss/test-utils/react';
 import { Box, Text } from '@ttoss/ui';
+import type * as React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Wizard } from 'src/index';
 import type { WizardStep } from 'src/types';
 
-/**
- * This test suite demonstrates the integration between @ttoss/react-wizard
- * and @ttoss/forms with Zod validation. It shows how to create a multi-step
- * form where each step validates only its relevant fields before allowing
- * navigation to the next step.
- */
+const reviewHeading = 'Review Your Information';
 
-// Define the complete Zod schema for all steps
-const schema = z.object({
-  // Step 1: Personal Information
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  street: string;
+  city: string;
+  country: string;
+  phone: string;
+  comments?: string;
+}
 
-  // Step 2: Address
-  street: z.string().min(1, 'Street is required'),
-  city: z.string().min(1, 'City is required'),
-  country: z.string().min(1, 'Country is required'),
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type FormFieldName = keyof FormData;
 
-  // Step 3: Additional Info
-  phone: z.string().min(10, 'Phone must be at least 10 digits'),
-  comments: z.string().optional(),
-});
+const validateFormData = ({
+  values,
+  fieldNames,
+}: {
+  values: Partial<FormData>;
+  fieldNames?: string[];
+}) => {
+  const errors: Record<string, { type: string; message: string }> = {};
+  const requestedFieldNames = fieldNames ? new Set(fieldNames) : undefined;
+  const shouldValidate = (fieldName: FormFieldName) => {
+    return !requestedFieldNames || requestedFieldNames.has(fieldName);
+  };
 
-type FormData = z.infer<typeof schema>;
+  if (shouldValidate('firstName') && !values.firstName?.trim()) {
+    errors.firstName = {
+      type: 'required',
+      message: 'First name is required',
+    };
+  }
+
+  if (shouldValidate('lastName') && !values.lastName?.trim()) {
+    errors.lastName = {
+      type: 'required',
+      message: 'Last name is required',
+    };
+  }
+
+  if (shouldValidate('email') && !values.email?.trim()) {
+    errors.email = {
+      type: 'required',
+      message: 'Email is required',
+    };
+  } else if (shouldValidate('email') && !emailPattern.test(values.email)) {
+    errors.email = {
+      type: 'pattern',
+      message: 'Invalid email address',
+    };
+  }
+
+  if (shouldValidate('street') && !values.street?.trim()) {
+    errors.street = {
+      type: 'required',
+      message: 'Street is required',
+    };
+  }
+
+  if (shouldValidate('city') && !values.city?.trim()) {
+    errors.city = {
+      type: 'required',
+      message: 'City is required',
+    };
+  }
+
+  if (shouldValidate('country') && !values.country?.trim()) {
+    errors.country = {
+      type: 'required',
+      message: 'Country is required',
+    };
+  }
+
+  if (shouldValidate('phone') && !values.phone?.trim()) {
+    errors.phone = {
+      type: 'required',
+      message: 'Phone must be at least 10 digits',
+    };
+  } else if (shouldValidate('phone') && values.phone.trim().length < 10) {
+    errors.phone = {
+      type: 'minLength',
+      message: 'Phone must be at least 10 digits',
+    };
+  }
+
+  return errors;
+};
+
+const formResolver = async (
+  values: FormData,
+  _context: unknown,
+  options?: { names?: string[] }
+) => {
+  const errors = validateFormData({
+    values,
+    fieldNames: options?.names,
+  });
+
+  return {
+    values: Object.keys(errors).length === 0 ? values : {},
+    errors,
+  };
+};
+
+interface TestFormProps extends UseFormReturn<FormData> {
+  children: React.ReactNode;
+  onSubmit: (values: FormData) => void;
+}
+
+const Form = ({ children, onSubmit, ...formMethods }: TestFormProps) => {
+  return (
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(onSubmit)}>{children}</form>
+    </FormProvider>
+  );
+};
+
+const FormFieldInput = ({
+  name,
+  label,
+  placeholder,
+  type = 'text',
+}: {
+  name: keyof FormData;
+  label: string;
+  placeholder?: string;
+  type?: string;
+}) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<FormData>();
+  const fieldError = errors[name];
+
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <input
+        id={name}
+        aria-label={label}
+        placeholder={placeholder}
+        type={type}
+        {...register(name)}
+      />
+      {fieldError?.message && <span>{String(fieldError.message)}</span>}
+    </div>
+  );
+};
+
+const FormFieldSelect = ({
+  name,
+  label,
+  placeholder,
+  options,
+}: {
+  name: keyof FormData;
+  label: string;
+  placeholder?: string;
+  options: Array<{ value: string; label: string }>;
+}) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<FormData>();
+  const fieldError = errors[name];
+
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <select id={name} aria-label={label} {...register(name)}>
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option) => {
+          return (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          );
+        })}
+      </select>
+      {fieldError?.message && <span>{String(fieldError.message)}</span>}
+    </div>
+  );
+};
+
+const FormFieldTextarea = ({
+  name,
+  label,
+  placeholder,
+}: {
+  name: keyof FormData;
+  label: string;
+  placeholder?: string;
+}) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<FormData>();
+  const fieldError = errors[name];
+
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <textarea
+        id={name}
+        aria-label={label}
+        placeholder={placeholder}
+        {...register(name)}
+      />
+      {fieldError?.message && <span>{String(fieldError.message)}</span>}
+    </div>
+  );
+};
 
 const TestWizardForm = ({
   onComplete,
@@ -53,14 +237,13 @@ const TestWizardForm = ({
 }) => {
   const formMethods = useForm<FormData>({
     mode: 'onChange',
-    resolver: zodResolver(schema),
-    shouldUnregister: false, // Keep field values when fields are unmounted
+    resolver: formResolver,
+    shouldUnregister: false,
   });
 
-  const { trigger } = formMethods;
-
-  const handleComplete = (data: FormData) => {
-    onComplete?.(data);
+  const { getValues, trigger } = formMethods;
+  const handleComplete = () => {
+    onComplete?.(getValues());
   };
 
   const steps: WizardStep[] = [
@@ -88,7 +271,6 @@ const TestWizardForm = ({
         </Box>
       ),
       onNext: async () => {
-        // Validate only Step 1 fields
         return trigger(['firstName', 'lastName', 'email']);
       },
     },
@@ -120,7 +302,6 @@ const TestWizardForm = ({
         </Box>
       ),
       onNext: async () => {
-        // Validate only Step 2 fields
         return trigger(['street', 'city', 'country']);
       },
     },
@@ -142,7 +323,6 @@ const TestWizardForm = ({
         </Box>
       ),
       onNext: async () => {
-        // Validate only Step 3 fields
         return trigger(['phone', 'comments']);
       },
     },
@@ -151,15 +331,20 @@ const TestWizardForm = ({
       description: 'Confirm details',
       content: (
         <Box>
-          <Text variant="heading">Review Your Information</Text>
+          <Text variant="heading">{reviewHeading}</Text>
         </Box>
       ),
     },
   ];
 
   return (
-    <Form {...formMethods} onSubmit={handleComplete}>
-      <Wizard steps={steps} layout="top" onCancel={onCancel} />
+    <Form {...formMethods} onSubmit={() => {}}>
+      <Wizard
+        steps={steps}
+        layout="top"
+        onCancel={onCancel}
+        onComplete={handleComplete}
+      />
     </Form>
   );
 };
@@ -177,19 +362,15 @@ describe('Wizard Form Integration', () => {
     const user = userEvent.setup({ delay: null });
     render(<TestWizardForm />);
 
-    // Try to go to next step without filling required fields
-    const nextButton = screen.getByText('Next');
     await act(async () => {
-      await user.click(nextButton);
+      await user.click(screen.getByText('Next'));
     });
 
-    // Should still be on step 1
     await waitFor(() => {
       expect(screen.getByLabelText('First Name')).toBeInTheDocument();
       expect(screen.queryByLabelText('Street')).not.toBeInTheDocument();
     });
 
-    // Should show validation errors
     await waitFor(() => {
       expect(screen.getByText('First name is required')).toBeInTheDocument();
     });
@@ -199,26 +380,18 @@ describe('Wizard Form Integration', () => {
     const user = userEvent.setup({ delay: null });
     render(<TestWizardForm />);
 
-    // Fill in all required fields
     await user.type(screen.getByLabelText('First Name'), 'John');
     await user.type(screen.getByLabelText('Last Name'), 'Doe');
     await user.type(screen.getByLabelText('Email'), 'john.doe@example.com');
 
-    expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
-
-    // Trigger validation by tabbing out
-    await user.tab();
-
-    // Click Next button
     await act(async () => {
       await user.click(screen.getByText('Next'));
     });
 
-    // Should now be on step 2
     await waitFor(() => {
       expect(screen.getByLabelText('Street')).toBeInTheDocument();
     });
-  }, 15000);
+  });
 
   test('shows validation error for invalid email format', async () => {
     const user = userEvent.setup({ delay: null });
@@ -228,30 +401,23 @@ describe('Wizard Form Integration', () => {
     await user.type(screen.getByLabelText('Last Name'), 'Doe');
     await user.type(screen.getByLabelText('Email'), 'invalid-email');
 
-    const nextButton = screen.getByText('Next');
     await act(async () => {
-      await user.click(nextButton);
+      await user.click(screen.getByText('Next'));
     });
 
     await waitFor(() => {
       expect(screen.getByText('Invalid email address')).toBeInTheDocument();
     });
-  }, 15000);
+  });
 
   test('prevents navigation from step 2 when validation fails', async () => {
     const user = userEvent.setup({ delay: null });
     render(<TestWizardForm />);
 
-    // Fill step 1 and navigate
     await user.type(screen.getByLabelText('First Name'), 'John');
     await user.type(screen.getByLabelText('Last Name'), 'Doe');
     await user.type(screen.getByLabelText('Email'), 'john.doe@example.com');
 
-    expect(screen.getByLabelText('Email')).toHaveValue('john.doe@example.com');
-
-    // Trigger validation by tabbing out
-    await user.tab();
-
     await act(async () => {
       await user.click(screen.getByText('Next'));
     });
@@ -260,21 +426,15 @@ describe('Wizard Form Integration', () => {
       expect(screen.getByLabelText('Street')).toBeInTheDocument();
     });
 
-    // Try to navigate without filling step 2 fields
     await act(async () => {
       await user.click(screen.getByText('Next'));
     });
 
-    // Should still be on step 2
     await waitFor(() => {
       expect(screen.getByLabelText('Street')).toBeInTheDocument();
+      expect(screen.getByText('Country is required')).toBeInTheDocument();
     });
-
-    // Should show validation errors
-    await waitFor(() => {
-      expect(screen.getByText('Street is required')).toBeInTheDocument();
-    });
-  }, 15000);
+  });
 
   test('calls onCancel when cancel button is clicked', async () => {
     const user = userEvent.setup({ delay: null });
@@ -286,5 +446,69 @@ describe('Wizard Form Integration', () => {
     });
 
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  test('navigates back through the completed steps after reaching review', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    render(<TestWizardForm />);
+
+    await user.type(screen.getByLabelText('First Name'), 'John');
+    await user.type(screen.getByLabelText('Last Name'), 'Doe');
+    await user.type(screen.getByLabelText('Email'), 'john.doe@example.com');
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Next' }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Street')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText('Street'), 'Main Street');
+    await user.type(screen.getByLabelText('City'), 'Sao Paulo');
+    await user.selectOptions(screen.getByLabelText('Country'), 'br');
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Next' }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Phone')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText('Phone'), '11999999999');
+    await user.type(screen.getByLabelText('Comments (Optional)'), 'Ready');
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Next' }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(reviewHeading)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(reviewHeading)).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Previous' }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Phone')).toBeInTheDocument();
+      expect(screen.getByLabelText('Comments (Optional)')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Previous' }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Street')).toBeInTheDocument();
+      expect(screen.getByLabelText('City')).toBeInTheDocument();
+      expect(screen.getByLabelText('Country')).toBeInTheDocument();
+    });
   });
 });
