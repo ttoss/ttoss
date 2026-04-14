@@ -5,7 +5,11 @@
  */
 
 import maplibregl from 'maplibre-gl';
-import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
+import createMapLibreAdapter, {
+  toMaplibreLayer,
+  toMaplibreSource,
+} from 'src/adapters/maplibre/MapLibreAdapter';
+import type { DataSource, VisualizationLayer } from 'src/spec/types';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -213,5 +217,183 @@ describe('createMapLibreAdapter', () => {
         value: '#ff0000',
       });
     }).not.toThrow();
+  });
+});
+
+describe('toMaplibreSource', () => {
+  test('geojson source with url string', () => {
+    const source: DataSource = {
+      id: 's1',
+      type: 'geojson',
+      data: 'https://example.com/data.geojson',
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'geojson',
+      data: 'https://example.com/data.geojson',
+    });
+  });
+
+  test('vector-tiles source', () => {
+    const source: DataSource = {
+      id: 's2',
+      type: 'vector-tiles',
+      tiles: ['https://example.com/{z}/{x}/{y}.pbf'],
+      minzoom: 0,
+      maxzoom: 14,
+      attribution: '© Example',
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'vector',
+      tiles: ['https://example.com/{z}/{x}/{y}.pbf'],
+      minzoom: 0,
+      maxzoom: 14,
+      attribution: '© Example',
+    });
+  });
+
+  test('raster-tiles source applies default tileSize 256', () => {
+    const source: DataSource = {
+      id: 's3',
+      type: 'raster-tiles',
+      tiles: ['https://example.com/{z}/{x}/{y}.png'],
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'raster',
+      tileSize: 256,
+    });
+  });
+
+  test('raster-tiles source respects explicit tileSize 512', () => {
+    const source: DataSource = {
+      id: 's3b',
+      type: 'raster-tiles',
+      tiles: ['https://tile.example/{z}/{x}/{y}.png'],
+      tileSize: 512,
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'raster',
+      tileSize: 512,
+    });
+  });
+
+  test('image source', () => {
+    const source: DataSource = {
+      id: 's4',
+      type: 'image',
+      url: 'https://example.com/image.png',
+      coordinates: [
+        [-80, 25],
+        [-80, 26],
+        [-79, 26],
+        [-79, 25],
+      ],
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'image',
+      url: 'https://example.com/image.png',
+    });
+  });
+
+  test('raster-dem source with encoding', () => {
+    const source: DataSource = {
+      id: 's5',
+      type: 'raster-dem',
+      tiles: ['https://tiles.example/{z}/{x}/{y}.png'],
+      encoding: 'terrarium',
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'raster-dem',
+      encoding: 'terrarium',
+      tileSize: 256,
+    });
+  });
+
+  test('video source', () => {
+    const source: DataSource = {
+      id: 's6',
+      type: 'video',
+      urls: ['https://example.com/v.mp4'],
+      coordinates: [
+        [-122, 37],
+        [-122, 38],
+        [-121, 38],
+        [-121, 37],
+      ],
+    };
+    expect(toMaplibreSource(source)).toMatchObject({
+      type: 'video',
+      urls: ['https://example.com/v.mp4'],
+    });
+  });
+});
+
+describe('toMaplibreLayer', () => {
+  const base = { id: 'l1', sourceId: 's1', visible: true as const };
+
+  test('polygon → fill with defaults', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'polygon' };
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      type: 'fill',
+      paint: { 'fill-color': '#3b82f6', 'fill-opacity': 0.6 },
+    });
+  });
+
+  test('polygon with custom paint', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'polygon',
+      paint: { fillColor: '#ff0000', fillOpacity: 0.9, lineColor: '#000' },
+    };
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      paint: { 'fill-color': '#ff0000', 'fill-opacity': 0.9 },
+    });
+  });
+
+  test('line → line with defaults', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'line' };
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      type: 'line',
+      paint: { 'line-color': '#3b82f6', 'line-width': 2 },
+    });
+  });
+
+  test('point → circle', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'point' };
+    expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
+  });
+
+  test('symbol → circle', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'symbol' };
+    expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
+  });
+
+  test('heatmap → circle', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'heatmap' };
+    expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
+  });
+
+  test('raster → raster', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'raster' };
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      type: 'raster',
+      paint: { 'raster-opacity': 1 },
+    });
+  });
+
+  test('visible: false → layout visibility none', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'polygon',
+      visible: false,
+    };
+    expect(toMaplibreLayer(layer)).toHaveProperty('layout.visibility', 'none');
+  });
+
+  test('visible: true → layout visibility visible', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'line' };
+    expect(toMaplibreLayer(layer)).toHaveProperty(
+      'layout.visibility',
+      'visible'
+    );
   });
 });

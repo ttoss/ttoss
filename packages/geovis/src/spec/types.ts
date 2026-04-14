@@ -31,7 +31,7 @@ export interface ViewState {
   zoom: number;
   pitch?: number;
   bearing?: number;
-  projection?: 'EPSG:3857' | 'EPSG:4326';
+  projection?: 'mercator' | 'vertical-perspective';
 }
 
 export interface GeoJSONSource {

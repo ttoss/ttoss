@@ -28,7 +28,7 @@ const resolveStyleUrl = (spec: VisualizationSpec): string => {
 
 type MaplibreSourceSpec = maplibregl.SourceSpecification;
 
-const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
+export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
   switch (source.type) {
     case 'geojson':
       return {
@@ -59,12 +59,29 @@ const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
         url: source.url,
         coordinates: source.coordinates,
       };
+    case 'raster-dem':
+      return {
+        type: 'raster-dem',
+        tiles: source.tiles,
+        url: source.url,
+        tileSize: source.tileSize ?? 256,
+        encoding: source.encoding,
+        minzoom: source.minzoom,
+        maxzoom: source.maxzoom,
+        attribution: source.attribution,
+      };
+    case 'video':
+      return {
+        type: 'video',
+        urls: source.urls,
+        coordinates: source.coordinates,
+      };
   }
 };
 
 // Layer translation
 
-const toMaplibreLayer = (
+export const toMaplibreLayer = (
   layer: VisualizationLayer
 ): maplibregl.LayerSpecification => {
   const base = {

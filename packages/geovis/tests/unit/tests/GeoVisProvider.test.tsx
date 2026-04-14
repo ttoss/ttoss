@@ -4,7 +4,7 @@
 
 import { act, render } from '@testing-library/react';
 import * as React from 'react';
-import { GeoVisProvider } from 'src/react/GeoVisProvider';
+import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
 const mockRuntimeUpdate = jest.fn();
@@ -123,5 +123,21 @@ describe('GeoVisProvider spec memoization', () => {
     });
 
     expect(mockRuntimeUpdate.mock.calls.length).toBeGreaterThan(callsBefore);
+  });
+});
+
+describe('GeoVisProvider useGeoVis', () => {
+  test('useGeoVis throws when used outside GeoVisProvider', () => {
+    const BrokenConsumer = () => {
+      useGeoVis();
+      return null;
+    };
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {
+      return undefined;
+    });
+    expect(() => {
+      return render(<BrokenConsumer />);
+    }).toThrow('useGeoVis must be used inside <GeoVisProvider>');
+    spy.mockRestore();
   });
 });

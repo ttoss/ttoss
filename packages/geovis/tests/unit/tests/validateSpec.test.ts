@@ -1,12 +1,12 @@
 import { validateSpec } from 'src/spec/validateSpec';
 
-import geojsonUrlMap from '../../../src/fixtures/geojson-url-map.json';
-import imageMap from '../../../src/fixtures/image-map.json';
-import rasterDemMap from '../../../src/fixtures/raster-dem-map.json';
-import rasterTilesMap from '../../../src/fixtures/raster-tiles-map.json';
 import singleMap from '../../../src/fixtures/single-map.json';
-import vectorTilesMap from '../../../src/fixtures/vector-tiles-map.json';
-import videoMap from '../../../src/fixtures/video-map.json';
+import geojsonUrlMap from '../../../src/fixtures/source-geojson-url-map.json';
+import imageMap from '../../../src/fixtures/source-image-map.json';
+import rasterDemMap from '../../../src/fixtures/source-raster-dem-map.json';
+import rasterTilesMap from '../../../src/fixtures/source-raster-tiles-map.json';
+import vectorTilesMap from '../../../src/fixtures/source-vector-tiles-map.json';
+import videoMap from '../../../src/fixtures/source-video-map.json';
 
 describe('validateSpec', () => {
   test.each([

@@ -44,7 +44,7 @@
         },
         "projection": {
           "type": "string",
-          "enum": ["EPSG:3857", "EPSG:4326"]
+          "enum": ["mercator", "vertical-perspective"]
         }
       }
     },
