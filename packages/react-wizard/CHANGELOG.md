@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.3.18...@ttoss/react-wizard@0.4.0) (2026-04-14)
+
+### Features
+
+- add wizard variants i18n and other changes ([#937](https://github.com/ttoss/ttoss/issues/937)) ([60f5959](https://github.com/ttoss/ttoss/commit/60f595965d1939593457ef2ff964f6770ea3afc9))
+
 ## [0.3.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.3.13...@ttoss/react-wizard@0.3.18) (2026-04-07)
 
 **Note:** Version bump only for package @ttoss/react-wizard

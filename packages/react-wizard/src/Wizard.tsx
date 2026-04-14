@@ -3,6 +3,10 @@ import { Box, Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
 
 import type { WizardLayout, WizardProps, WizardStepStatus } from './types';
+import {
+  getWizardPrimaryButtonVariant,
+  getWizardShellSx,
+} from './Wizard.styles';
 import { WizardContext } from './WizardContext';
 import { WizardStepList } from './WizardStepList';
 
@@ -38,14 +42,26 @@ const getFlexDirection = (layout: WizardLayout) => {
   }
 };
 
+/**
+ * Renders a multi-step wizard with step navigation, localized action labels,
+ * and support for completion, cancellation, and step changes.
+ *
+ * @param props - Wizard configuration and step content.
+ * @param props.steps - The ordered steps displayed in the wizard.
+ * @param props.onComplete - Called when the user finishes the last step.
+ * @param props.onCancel - Called when the user cancels the wizard.
+ * @param props.onStepChange - Called when the current step changes.
+ */
 export const Wizard = ({
   steps,
   layout = 'top',
+  variant = 'spotlight-accent',
   onComplete,
   onCancel,
   onStepChange,
   initialStep = 0,
   allowStepClick = true,
+  labels,
 }: WizardProps) => {
   const { intl } = useI18n();
   const [currentStep, setCurrentStep] = React.useState(initialStep);
@@ -56,6 +72,14 @@ export const Wizard = ({
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
+  const buttonLabels = React.useMemo(() => {
+    return {
+      previous: labels?.previous ?? intl.formatMessage(messages.previous),
+      next: labels?.next ?? intl.formatMessage(messages.next),
+      finish: labels?.finish ?? intl.formatMessage(messages.finish),
+      cancel: labels?.cancel ?? intl.formatMessage(messages.cancel),
+    };
+  }, [intl, labels]);
 
   const getStepStatus = React.useCallback(
     ({ stepIndex }: { stepIndex: number }): WizardStepStatus => {
@@ -164,20 +188,17 @@ export const Wizard = ({
   return (
     <WizardContext.Provider value={contextValue}>
       <Flex
+        data-variant={variant}
         sx={{
           flexDirection: getFlexDirection(layout),
-          width: '100%',
-          minHeight: '300px',
-          border: '1px solid',
-          borderColor: 'display.border.muted.default',
-          borderRadius: '8px',
-          overflow: 'hidden',
+          ...getWizardShellSx(variant),
         }}
       >
         <WizardStepList
           steps={steps}
           currentStep={currentStep}
           layout={layout}
+          variant={variant}
           allowStepClick={allowStepClick}
           getStepStatus={getStepStatus}
           onStepClick={goToStep}
@@ -208,9 +229,9 @@ export const Wizard = ({
                 <Button
                   variant="secondary"
                   onClick={onCancel}
-                  aria-label={intl.formatMessage(messages.cancel)}
+                  aria-label={buttonLabels.cancel}
                 >
-                  {intl.formatMessage(messages.cancel)}
+                  {buttonLabels.cancel}
                 </Button>
               )}
             </Flex>
@@ -220,21 +241,18 @@ export const Wizard = ({
                 variant="secondary"
                 onClick={goToPrevious}
                 disabled={isFirstStep}
-                aria-label={intl.formatMessage(messages.previous)}
+                aria-label={buttonLabels.previous}
               >
-                {intl.formatMessage(messages.previous)}
+                {buttonLabels.previous}
               </Button>
               <Button
+                variant={getWizardPrimaryButtonVariant(variant)}
                 onClick={goToNext}
                 aria-label={
-                  isLastStep
-                    ? intl.formatMessage(messages.finish)
-                    : intl.formatMessage(messages.next)
+                  isLastStep ? buttonLabels.finish : buttonLabels.next
                 }
               >
-                {isLastStep
-                  ? intl.formatMessage(messages.finish)
-                  : intl.formatMessage(messages.next)}
+                {isLastStep ? buttonLabels.finish : buttonLabels.next}
               </Button>
             </Flex>
           </Flex>
