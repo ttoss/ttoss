@@ -1,6 +1,6 @@
 import Ajv2020 from 'ajv/dist/2020';
 
-import schema from './schema.json' with { type: 'json' };
+import schema from './schema.json';
 import type { VisualizationSpec } from './types';
 
 export type ValidationResult =

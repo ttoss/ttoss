@@ -1,22 +1,80 @@
 export type LngLat = [number, number];
 
-export interface GeoJSONGeometry {
-  type: string;
-  coordinates?: unknown;
-  geometries?: GeoJSONGeometry[];
+export type GeoJSONPosition = [number, number] | [number, number, number];
+
+export type GeoJSONBoundingBox =
+  | [number, number, number, number]
+  | [number, number, number, number, number, number];
+
+export interface GeoJSONPoint {
+  type: 'Point';
+  coordinates: GeoJSONPosition;
+  bbox?: GeoJSONBoundingBox;
 }
+
+export interface GeoJSONMultiPoint {
+  type: 'MultiPoint';
+  coordinates: GeoJSONPosition[];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export interface GeoJSONLineString {
+  type: 'LineString';
+  coordinates: GeoJSONPosition[];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export interface GeoJSONMultiLineString {
+  type: 'MultiLineString';
+  coordinates: GeoJSONPosition[][];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export interface GeoJSONPolygon {
+  type: 'Polygon';
+  coordinates: GeoJSONPosition[][];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export interface GeoJSONMultiPolygon {
+  type: 'MultiPolygon';
+  coordinates: GeoJSONPosition[][][];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export interface GeoJSONGeometryCollection {
+  type: 'GeometryCollection';
+  geometries: GeoJSONGeometry[];
+  bbox?: GeoJSONBoundingBox;
+}
+
+export type GeoJSONGeometry =
+  | GeoJSONPoint
+  | GeoJSONMultiPoint
+  | GeoJSONLineString
+  | GeoJSONMultiLineString
+  | GeoJSONPolygon
+  | GeoJSONMultiPolygon
+  | GeoJSONGeometryCollection;
 
 export interface GeoJSONFeature {
   type: 'Feature';
-  geometry: GeoJSONGeometry;
-  properties?: Record<string, unknown>;
+  geometry: GeoJSONGeometry | null;
+  properties: Record<string, unknown> | null;
   id?: string | number;
+  bbox?: GeoJSONBoundingBox;
 }
 
 export interface GeoJSONFeatureCollection {
   type: 'FeatureCollection';
   features: GeoJSONFeature[];
+  bbox?: GeoJSONBoundingBox;
 }
+
+export type GeoJSONObject =
+  | GeoJSONGeometry
+  | GeoJSONFeature
+  | GeoJSONFeatureCollection;
 
 export type GeoVisGeometryType =
   | 'point'
@@ -37,7 +95,7 @@ export interface ViewState {
 export interface GeoJSONSource {
   id: string;
   type: 'geojson';
-  data: string | GeoJSONFeatureCollection;
+  data: string | GeoJSONObject;
   attribution?: string;
 }
 
@@ -147,7 +205,7 @@ export interface VisualizationSpec {
   engine: 'maplibre';
   view: ViewState;
   basemap?: BaseMapSpec;
-  sources: DataSource[];
+  sources: [DataSource, ...DataSource[]];
   layers: VisualizationLayer[];
   metadata?: Record<string, string | number | boolean>;
   adapterHints?: {

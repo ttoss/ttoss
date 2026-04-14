@@ -62,6 +62,7 @@
     },
     "sources": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "oneOf": [
           {
@@ -100,7 +101,7 @@
                 "type": "string"
               },
               "type": {
-                "enum": ["vector-tiles", "raster-tiles"]
+                "const": "vector-tiles"
               },
               "tiles": {
                 "type": "array",
@@ -111,6 +112,35 @@
               },
               "sourceLayer": {
                 "type": "string"
+              },
+              "minzoom": {
+                "type": "number"
+              },
+              "maxzoom": {
+                "type": "number"
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "tiles"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "raster-tiles"
+              },
+              "tiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
               },
               "tileSize": {
                 "type": "integer",

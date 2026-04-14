@@ -33,7 +33,7 @@ export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
     case 'geojson':
       return {
         type: 'geojson',
-        data: source.data as maplibregl.GeoJSONSourceSpecification['data'],
+        data: source.data,
         attribution: source.attribution,
       };
     case 'vector-tiles':
@@ -188,6 +188,17 @@ const syncSourcesAndLayers = (
   for (const layer of spec.layers) {
     const mapLayer = map.getLayer(layer.id);
     const desiredLayer = toMaplibreLayer(layer);
+    const desiredPaint = (desiredLayer as { paint?: Record<string, unknown> })
+      .paint;
+
+    if (desiredPaint) {
+      (desiredLayer as { paint?: Record<string, unknown> }).paint =
+        Object.fromEntries(
+          Object.entries(desiredPaint).filter(([, value]) => {
+            return value !== undefined;
+          })
+        );
+    }
 
     if (!mapLayer) {
       map.addLayer(desiredLayer);
@@ -203,7 +214,6 @@ const syncSourcesAndLayers = (
     const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
     if (paint) {
       for (const [property, value] of Object.entries(paint)) {
-        if (value === undefined) continue;
         map.setPaintProperty(
           layer.id,
           property,

@@ -47,6 +47,8 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     let cancelled = false;
     let activeRuntime: GeoVisRuntime | null = null;
 
+    setAdapterError(null);
+
     const init = async () => {
       try {
         const adapter = await resolveAdapter(spec.engine);
