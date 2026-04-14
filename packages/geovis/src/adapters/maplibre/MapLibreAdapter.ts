@@ -82,9 +82,10 @@ export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
 // Layer translation
 
 export const toMaplibreLayer = (
-  layer: VisualizationLayer
+  layer: VisualizationLayer,
+  sourceLayer?: string
 ): maplibregl.LayerSpecification => {
-  const base = {
+  const base: Record<string, unknown> = {
     id: layer.id,
     source: layer.sourceId,
     minzoom: layer.minzoom,
@@ -94,6 +95,11 @@ export const toMaplibreLayer = (
         layer.visible === false ? ('none' as const) : ('visible' as const),
     },
   };
+
+  const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;
+  if (effectiveSourceLayer) {
+    base['source-layer'] = effectiveSourceLayer;
+  }
 
   const p = layer.paint ?? {};
 
@@ -187,7 +193,14 @@ const syncSourcesAndLayers = (
 
   for (const layer of spec.layers) {
     const mapLayer = map.getLayer(layer.id);
-    const desiredLayer = toMaplibreLayer(layer);
+    const source = spec.sources.find((s) => {
+      return s.id === layer.sourceId;
+    });
+    const sourceLayer =
+      source && 'sourceLayer' in source
+        ? (source as { sourceLayer?: string }).sourceLayer
+        : undefined;
+    const desiredLayer = toMaplibreLayer(layer, sourceLayer);
     const desiredPaint = (desiredLayer as { paint?: Record<string, unknown> })
       .paint;
 
@@ -230,9 +243,13 @@ const syncSourcesAndLayers = (
  * allowing multiple maps to coexist without shared mutable state.
  */
 const createMapLibreAdapter = (): EngineAdapter => {
-  let _map: maplibregl.Map | null = null;
-  let _currentSpec: VisualizationSpec | null = null;
-  let _activeStyleUrl: string | null = null;
+  interface ViewState {
+    map: maplibregl.Map;
+    spec: VisualizationSpec;
+    styleUrl: string;
+  }
+
+  const _views = new Map<string, ViewState>();
 
   return {
     id: 'maplibre',
@@ -263,13 +280,12 @@ const createMapLibreAdapter = (): EngineAdapter => {
         bearing: view.bearing ?? 0,
       });
 
-      _map = map;
-      _currentSpec = spec;
-      _activeStyleUrl = styleUrl;
+      _views.set(viewId, { map, spec, styleUrl });
 
       map.on('load', () => {
-        if (_currentSpec) {
-          syncSourcesAndLayers(map, _currentSpec, null);
+        const viewState = _views.get(viewId);
+        if (viewState) {
+          syncSourcesAndLayers(map, viewState.spec, null);
         }
       });
 
@@ -278,65 +294,73 @@ const createMapLibreAdapter = (): EngineAdapter => {
         container,
         destroy: () => {
           map.remove();
-          if (_map === map) _map = null;
+          _views.delete(viewId);
         },
       };
     },
 
     update: (spec: VisualizationSpec) => {
-      if (!_map) return;
-      const map = _map;
-      const nextStyleUrl = resolveStyleUrl(spec);
-      const previousSpec = _currentSpec;
+      for (const [viewId, viewState] of _views) {
+        const map = viewState.map;
+        const nextStyleUrl = resolveStyleUrl(spec);
+        const previousSpec = viewState.spec;
 
-      _currentSpec = spec;
+        viewState.spec = spec;
 
-      if (nextStyleUrl !== _activeStyleUrl) {
-        _activeStyleUrl = nextStyleUrl;
-        map.once('style.load', () => {
-          if (_currentSpec) {
-            syncSourcesAndLayers(map, _currentSpec, null);
-          }
-        });
-        map.setStyle(nextStyleUrl);
-        return;
-      }
+        if (nextStyleUrl !== viewState.styleUrl) {
+          viewState.styleUrl = nextStyleUrl;
+          map.once('style.load', () => {
+            const updated = _views.get(viewId);
+            if (updated) {
+              syncSourcesAndLayers(map, updated.spec, null);
+            }
+          });
+          map.setStyle(nextStyleUrl);
+          continue;
+        }
 
-      if (map.isStyleLoaded()) {
-        syncSourcesAndLayers(map, spec, previousSpec);
-      } else {
-        map.once('style.load', () => {
-          if (_currentSpec) {
-            syncSourcesAndLayers(map, _currentSpec, null);
-          }
-        });
+        if (map.isStyleLoaded()) {
+          syncSourcesAndLayers(map, spec, previousSpec);
+        } else {
+          map.once('style.load', () => {
+            const updated = _views.get(viewId);
+            if (updated) {
+              syncSourcesAndLayers(map, updated.spec, null);
+            }
+          });
+        }
       }
     },
 
     applyPatch: (patch: SpecPatch) => {
-      if (!_map || patch.target !== 'layer') return;
+      if (patch.target !== 'layer') return;
       const parts = patch.path.split('.');
       const layerId = parts[1];
       const prop = parts[2];
       if (!layerId || !prop || patch.op !== 'replace') return;
-      if (patch.value !== undefined) {
-        _map.setPaintProperty(
-          layerId,
-          prop,
-          patch.value as maplibregl.StyleSpecification
-        );
+
+      for (const viewState of _views.values()) {
+        if (patch.value !== undefined) {
+          viewState.map.setPaintProperty(
+            layerId,
+            prop,
+            patch.value as maplibregl.StyleSpecification
+          );
+        }
       }
     },
 
     destroy: () => {
-      _map?.remove();
-      _map = null;
-      _currentSpec = null;
-      _activeStyleUrl = null;
+      for (const viewState of _views.values()) {
+        viewState.map.remove();
+      }
+      _views.clear();
     },
 
     getNativeInstance: (): unknown => {
-      return _map;
+      return _views.size > 0
+        ? (_views.values().next().value?.map ?? null)
+        : null;
     },
   };
 };
