@@ -1,3 +1,5 @@
+import 'maplibre-gl/dist/maplibre-gl.css';
+
 import maplibregl from 'maplibre-gl';
 
 import type {
@@ -6,17 +8,6 @@ import type {
   MountedView,
   SpecPatch,
 } from '../../runtime/adapter';
-
-const injectMaplibreCSS = () => {
-  const id = 'maplibre-gl-css';
-  if (document.getElementById(id)) return;
-  const link = document.createElement('link');
-  link.id = id;
-  link.rel = 'stylesheet';
-  link.href = new URL('maplibre-gl/dist/maplibre-gl.css', import.meta.url).href;
-  document.head.appendChild(link);
-};
-
 import type {
   CirclePaint,
   DataSource,
@@ -232,7 +223,6 @@ const createMapLibreAdapter = (): EngineAdapter => {
       spec: VisualizationSpec,
       viewId: string
     ): MountedView => {
-      injectMaplibreCSS();
       const { view } = spec;
       const styleUrl = resolveStyleUrl(spec);
 
