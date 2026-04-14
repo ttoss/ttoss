@@ -1,3 +1,4 @@
+import { baseIcons } from './baseIcons';
 import { baseTheme, darkAlternate } from './baseTheme';
 import { createTheme } from './createTheme';
 
@@ -10,6 +11,7 @@ import { createTheme } from './createTheme';
 const baseBundle = createTheme({
   base: baseTheme,
   alternate: darkAlternate,
+  icons: baseIcons,
 });
 
 // ---------------------------------------------------------------------------
@@ -24,3 +26,6 @@ export { baseTheme };
 
 /** Dark-mode semantic override for composition with createTheme. */
 export { darkAlternate };
+
+/** Default icon glyph mapping. */
+export { baseIcons };

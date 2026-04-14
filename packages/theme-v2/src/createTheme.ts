@@ -1,7 +1,9 @@
+import { baseIcons } from './baseIcons';
 import { baseTheme, darkAlternate } from './baseTheme';
 import { deepMerge } from './roots/helpers';
 import type {
   DeepPartial,
+  IconGlyphMap,
   ModeOverride,
   ThemeBundle,
   ThemeTokensV2,
@@ -86,6 +88,7 @@ export const createTheme = ({
   base,
   overrides,
   alternate,
+  icons,
 }: {
   /**
    * Parent bundle to inherit from. `base`, `baseMode`, and `alternate` all
@@ -107,6 +110,13 @@ export const createTheme = ({
    * Pass `null` to opt out of any alternate (single-mode theme).
    */
   alternate?: ModeOverride | null;
+  /**
+   * Glyph mapping for all canonical icon intents.
+   * Defaults to `parentBundle.icons` when `extends` is provided,
+   * or to `baseIcons` (via baseBundle) when neither is given.
+   * Pass a full `IconGlyphMap` to replace the mapping entirely.
+   */
+  icons?: IconGlyphMap;
 } = {}): ThemeBundle => {
   const resolvedBase = base ?? parentBundle?.base;
   const resolvedBaseMode = baseMode ?? parentBundle?.baseMode ?? 'light';
@@ -116,9 +126,12 @@ export const createTheme = ({
       : alternate !== undefined
         ? alternate
         : (parentBundle?.alternate ?? darkAlternate);
+  const resolvedIcons = icons ?? parentBundle?.icons ?? baseIcons;
+
   return {
     baseMode: resolvedBaseMode,
     base: buildTheme({ base: resolvedBase, overrides }),
     alternate: resolvedAlternate,
+    icons: resolvedIcons,
   };
 };
