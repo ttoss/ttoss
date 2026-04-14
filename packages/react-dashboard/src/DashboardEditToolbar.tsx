@@ -109,7 +109,7 @@ export const DashboardEditToolbar = () => {
           rightIcon="lucide:plus"
           sx={{ marginRight: '10' }}
         >
-          Adicionar item
+          Adicionar Métrica
         </Button>
         {selectedTemplate?.editable && (
           <Button variant="accent" onClick={saveEdit} rightIcon="lucide:save">
@@ -121,10 +121,10 @@ export const DashboardEditToolbar = () => {
           onClick={saveAsNew}
           rightIcon="lucide:copy-check"
         >
-          Salvar como novo
+          Salvar Novo Template
         </Button>
         <Button variant="secondary" onClick={cancelEdit} rightIcon="lucide:x">
-          Cancelar edição
+          Cancelar
         </Button>
       </Flex>
 

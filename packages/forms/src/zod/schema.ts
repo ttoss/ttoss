@@ -72,11 +72,16 @@ z.ZodString.prototype.cpf = function (message = 'Invalid CPF') {
   return this.refine(cpfRefinement, { message });
 };
 
-// Extend ZodEffects prototype for chainability
-z.ZodEffects.prototype.cnpj = function (message = 'Invalid CNPJ') {
-  return this.refine(cnpjRefinement, { message });
-};
+// Extend ZodEffects prototype for chainability (Zod v3 only — removed in v4)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if ((z as any).ZodEffects) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (z as any).ZodEffects.prototype.cnpj = function (message = 'Invalid CNPJ') {
+    return this.refine(cnpjRefinement, { message });
+  };
 
-z.ZodEffects.prototype.cpf = function (message = 'Invalid CPF') {
-  return this.refine(cpfRefinement, { message });
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (z as any).ZodEffects.prototype.cpf = function (message = 'Invalid CPF') {
+    return this.refine(cpfRefinement, { message });
+  };
+}

@@ -27,7 +27,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@ttoss/http-server": "workspace:^",
-    "zod": "^3.25.0"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
