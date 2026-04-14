@@ -49,7 +49,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Try to navigate without validation passing
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Should still be on step 1
@@ -63,7 +63,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Now navigation should work
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Should be on step 2
@@ -124,7 +124,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Try to navigate before async validation passes
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Should still be on step 1
@@ -144,7 +144,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Now navigation should work
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Should be on step 2
@@ -200,14 +200,14 @@ describe('Wizard - setStepValidation', () => {
 
     // Navigate to step 2
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     expect(step1ValidationSpy).toHaveBeenCalledTimes(1);
 
     // Navigate to step 3 (should call step 2 validation, not step 1)
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     expect(step2ValidationSpy).toHaveBeenCalledTimes(1);
@@ -247,7 +247,7 @@ describe('Wizard - setStepValidation', () => {
     render(<Wizard steps={steps} />);
 
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Both validations should be called
@@ -291,7 +291,7 @@ describe('Wizard - setStepValidation', () => {
     render(<Wizard steps={steps} />);
 
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // setStepValidation should be called first and block
@@ -370,7 +370,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Try to navigate with invalid data
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     // Should show validation errors
@@ -390,7 +390,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Try again - should still fail because password is invalid
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     expect(screen.queryByText('Setup Complete')).not.toBeInTheDocument();
@@ -404,7 +404,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Now should be able to navigate
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     expect(screen.getByText('Setup Complete')).toBeInTheDocument();
@@ -426,7 +426,7 @@ describe('Wizard - setStepValidation', () => {
 
     // Should navigate freely without any validation
     await act(async () => {
-      screen.getByText('Next').click();
+      screen.getByRole('button', { name: 'Next' }).click();
     });
 
     expect(screen.getByText('Step 2 Content')).toBeInTheDocument();

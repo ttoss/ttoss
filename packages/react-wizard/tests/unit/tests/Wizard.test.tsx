@@ -1,3 +1,4 @@
+import { I18nProvider, type LoadLocaleData } from '@ttoss/react-i18n';
 import { act, render, screen } from '@ttoss/test-utils/react';
 import { useWizard, Wizard } from 'src/index';
 import type { WizardStep } from 'src/types';
@@ -215,6 +216,60 @@ describe('Wizard', () => {
 
     expect(screen.getByText('Step 2 Content')).toBeInTheDocument();
   });
+
+  test('supports custom portuguese navigation labels', () => {
+    render(
+      <Wizard
+        steps={createSteps()}
+        onCancel={() => {
+          return;
+        }}
+        labels={{
+          previous: 'Voltar',
+          next: 'Avançar',
+          finish: 'Concluir',
+          cancel: 'Sair',
+        }}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Voltar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Avançar' })).toBeInTheDocument();
+  });
+
+  test('loads portuguese translations when locale data is available', async () => {
+    const loadLocaleData: LoadLocaleData = async (locale) => {
+      switch (locale) {
+        case 'pt-BR':
+          return {
+            '5lZ8VT': 'Concluir',
+            '60eH0J': 'Voltar',
+            '6I9gjk': 'Sair',
+            FmaVut: 'Avançar',
+          };
+        default:
+          return {};
+      }
+    };
+
+    render(
+      <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
+        <Wizard
+          steps={createSteps()}
+          onCancel={() => {
+            return;
+          }}
+        />
+      </I18nProvider>
+    );
+
+    expect(await screen.findByRole('button', { name: 'Sair' })).toBeVisible();
+    expect(await screen.findByRole('button', { name: 'Voltar' })).toBeVisible();
+    expect(
+      await screen.findByRole('button', { name: 'Avançar' })
+    ).toBeVisible();
+  });
 });
 
 describe('Wizard layouts', () => {
@@ -242,6 +297,26 @@ describe('Wizard layouts', () => {
       <Wizard steps={createSteps()} layout="left" />
     );
     expect(container.querySelector('[role="navigation"]')).toBeInTheDocument();
+  });
+
+  test('centers the step descriptions', () => {
+    render(<Wizard steps={createSteps()} />);
+
+    expect(screen.getByText('First step description')).toHaveStyleRule(
+      'text-align',
+      'center'
+    );
+  });
+
+  test('exposes the selected variant on the shell and navigation', () => {
+    const { container } = render(
+      <Wizard steps={createSteps()} variant="accent" />
+    );
+
+    expect(container.querySelector('[data-variant="accent"]')).toBeTruthy();
+    expect(
+      container.querySelector('[role="navigation"][data-variant="accent"]')
+    ).toBeInTheDocument();
   });
 });
 

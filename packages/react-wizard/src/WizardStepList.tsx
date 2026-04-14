@@ -3,11 +3,22 @@ import { Box, Flex } from '@ttoss/ui';
 import type * as React from 'react';
 
 import type { WizardLayout, WizardStep, WizardStepStatus } from './types';
+import {
+  getWizardStepDescriptionSx,
+  getWizardStepIndicatorSx,
+  getWizardStepListSx,
+  getWizardStepSeparatorSx,
+  getWizardStepTitleSx,
+  WizardStepDescriptionFlexSx,
+  WizardStepTextWrapperSx,
+  type WizardVariant,
+} from './Wizard.styles';
 
 interface WizardStepListProps {
   steps: WizardStep[];
   currentStep: number;
   layout: WizardLayout;
+  variant: WizardVariant;
   allowStepClick: boolean;
   getStepStatus: (params: { stepIndex: number }) => WizardStepStatus;
   onStepClick: (params: { stepIndex: number }) => void;
@@ -17,6 +28,7 @@ export const WizardStepList = ({
   steps,
   currentStep,
   layout,
+  variant,
   allowStepClick,
   getStepStatus,
   onStepClick,
@@ -28,23 +40,8 @@ export const WizardStepList = ({
     <Flex
       role="navigation"
       aria-label="Wizard steps"
-      sx={{
-        padding: '6',
-        backgroundColor: 'navigation.background.muted.default',
-        ...(isHorizontal
-          ? {
-              width: '100%',
-              borderBottom: layout === 'top' ? '1px solid' : undefined,
-              borderTop: layout === 'bottom' ? '1px solid' : undefined,
-              borderColor: 'display.border.muted.default',
-            }
-          : {
-              minWidth: '200px',
-              borderRight: layout === 'left' ? '1px solid' : undefined,
-              borderLeft: layout === 'right' ? '1px solid' : undefined,
-              borderColor: 'display.border.muted.default',
-            }),
-      }}
+      data-variant={variant}
+      sx={getWizardStepListSx({ layout, variant })}
     >
       <Steps.Root
         step={currentStep}
@@ -85,7 +82,13 @@ export const WizardStepList = ({
                       cursor: isClickable ? 'pointer' : 'default',
                     }}
                   >
-                    <Steps.Indicator>
+                    <Steps.Indicator
+                      css={getWizardStepIndicatorSx({
+                        status,
+                        variant,
+                        isClickable,
+                      })}
+                    >
                       <Steps.Status
                         complete="✓"
                         incomplete={<Steps.Number />}
@@ -93,17 +96,37 @@ export const WizardStepList = ({
                     </Steps.Indicator>
                   </Box>
                   {(step.title || step.description) && (
-                    <Box>
-                      {step.title && <Steps.Title>{step.title}</Steps.Title>}
+                    <Box sx={WizardStepTextWrapperSx}>
+                      {step.title && (
+                        <Steps.Title
+                          css={getWizardStepTitleSx({ status, variant })}
+                        >
+                          {step.title}
+                        </Steps.Title>
+                      )}
                       {step.description && (
-                        <Steps.Description>
-                          {step.description}
-                        </Steps.Description>
+                        <Flex sx={WizardStepDescriptionFlexSx}>
+                          <Steps.Description
+                            css={getWizardStepDescriptionSx({
+                              status,
+                              variant,
+                            })}
+                          >
+                            {step.description}
+                          </Steps.Description>
+                        </Flex>
                       )}
                     </Box>
                   )}
                 </Flex>
-                {index < steps.length - 1 && <Steps.Separator />}
+                {index < steps.length - 1 && (
+                  <Steps.Separator
+                    css={getWizardStepSeparatorSx({
+                      isCompleted: index < currentStep,
+                      variant,
+                    })}
+                  />
+                )}
               </Steps.Item>
             );
           })}

@@ -1,5 +1,7 @@
 import type * as React from 'react';
 
+import type { WizardVariant } from './Wizard.styles';
+
 /**
  * Position of the step list relative to the wizard content.
  */
@@ -46,6 +48,11 @@ export interface WizardProps {
    */
   layout?: WizardLayout;
   /**
+   * Visual variant for the wizard shell, step accents, and primary action.
+   * @default 'spotlight-accent'
+   */
+  variant?: WizardVariant;
+  /**
    * Called when the wizard completes (user clicks "Finish" on the last step).
    */
   onComplete?: () => void;
@@ -67,6 +74,20 @@ export interface WizardProps {
    * Defaults to true.
    */
   allowStepClick?: boolean;
+  /**
+   * Optional custom labels for the navigation buttons.
+   */
+  labels?: Partial<WizardLabels>;
+}
+
+/**
+ * Customizable labels used by the wizard navigation buttons.
+ */
+export interface WizardLabels {
+  previous: string;
+  next: string;
+  finish: string;
+  cancel: string;
 }
 
 /**
