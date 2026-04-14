@@ -42,6 +42,16 @@ const getFlexDirection = (layout: WizardLayout) => {
   }
 };
 
+/**
+ * Renders a multi-step wizard with step navigation, localized action labels,
+ * and support for completion, cancellation, and step changes.
+ *
+ * @param props - Wizard configuration and step content.
+ * @param props.steps - The ordered steps displayed in the wizard.
+ * @param props.onComplete - Called when the user finishes the last step.
+ * @param props.onCancel - Called when the user cancels the wizard.
+ * @param props.onStepChange - Called when the current step changes.
+ */
 export const Wizard = ({
   steps,
   layout = 'top',
