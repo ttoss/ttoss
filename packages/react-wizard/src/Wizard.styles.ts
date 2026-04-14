@@ -40,7 +40,6 @@ type WizardVariantStyles = {
   accentColor: string;
   accentTextColor: string;
   borderColor: string;
-  stepListBackgroundColor: string;
   primaryButtonVariant: NonNullable<ButtonProps['variant']>;
   gradientBackground?: (theme: unknown) => string | undefined;
 };
@@ -88,7 +87,6 @@ const getVariantStyles = (
       accentColor: 'action.background.accent.default',
       accentTextColor: 'action.text.accent.default',
       borderColor: 'display.border.muted.default',
-      stepListBackgroundColor: 'navigation.background.muted.default',
       primaryButtonVariant: 'accent',
       gradientBackground: getAccentGradientBackground,
     },
@@ -96,7 +94,6 @@ const getVariantStyles = (
       accentColor: 'action.background.primary.default',
       accentTextColor: 'display.text.accent.default',
       borderColor: 'display.border.muted.default',
-      stepListBackgroundColor: 'navigation.background.muted.default',
       primaryButtonVariant: 'primary',
       gradientBackground: getPrimaryGradientBackground,
     },
@@ -104,21 +101,18 @@ const getVariantStyles = (
       accentColor: 'action.background.primary.default',
       accentTextColor: 'action.text.primary.default',
       borderColor: 'display.border.muted.default',
-      stepListBackgroundColor: 'navigation.background.muted.default',
       primaryButtonVariant: 'primary',
     },
     secondary: {
       accentColor: 'action.background.secondary.default',
       accentTextColor: 'action.text.primary.default',
       borderColor: 'display.border.muted.default',
-      stepListBackgroundColor: 'navigation.background.muted.default',
       primaryButtonVariant: 'secondary',
     },
     accent: {
       accentColor: 'action.background.accent.default',
       accentTextColor: 'action.text.accent.default',
       borderColor: 'display.border.muted.default',
-      stepListBackgroundColor: 'navigation.background.muted.default',
       primaryButtonVariant: 'accent',
     },
   };
