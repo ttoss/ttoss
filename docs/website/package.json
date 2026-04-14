@@ -25,8 +25,8 @@
     "@mdx-js/react": "3.1.1",
     "force-graph": "^1.51.2",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-force-graph-2d": "^1.29.1",
     "rehype-katex": "7",
     "remark-math": "6"
@@ -43,7 +43,7 @@
     "minimist": "^1.2.8",
     "typedoc": "^0.28.18",
     "typedoc-plugin-markdown": "^4.11.0",
-    "typescript": "~6.0.2"
+    "typescript": "^6.0.2"
   },
   "browserslist": {
     "production": [

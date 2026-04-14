@@ -22,7 +22,6 @@
     "monorepo:update": "ttoss-monorepo setup",
     "prepare": "husky",
     "storybook": "pnpm --filter @docs/storybook run storybook",
-    "storybook2": "pnpm --filter @docs/storybook2 run storybook",
     "syncpack:fix": "syncpack fix",
     "syncpack:lint": "syncpack lint"
   },
@@ -43,7 +42,7 @@
     "prettier": "^3.8.1",
     "syncpack": "14.3.0",
     "turbo": "^2.9.3",
-    "typescript": "~6.0.2"
+    "typescript": "^6.0.2"
   },
   "keywords": [
     "cli",

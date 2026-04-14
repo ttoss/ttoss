@@ -40,9 +40,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
-    "react": "^19.2.4",
+    "react": "^19.2.5",
     "tsup": "^8.5.1",
-    "typescript": "~6.0.2"
+    "typescript": "^6.0.2"
   },
   "keywords": [
     "React",
