@@ -29,6 +29,10 @@ import type {
 
 const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
+const resolveStyleUrl = (spec: VisualizationSpec): string => {
+  return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
+};
+
 // Source translation
 
 type MaplibreSourceSpec = maplibregl.SourceSpecification;
@@ -143,6 +147,67 @@ const toMaplibreLayer = (
 // Adapter
 
 let _map: maplibregl.Map | null = null;
+let _currentSpec: VisualizationSpec | null = null;
+let _activeStyleUrl: string | null = null;
+
+const syncSourcesAndLayers = (map: maplibregl.Map, spec: VisualizationSpec) => {
+  const previousSpec = _currentSpec;
+
+  if (previousSpec) {
+    for (const layer of previousSpec.layers) {
+      const stillExists = spec.layers.some((nextLayer) => {
+        return nextLayer.id === layer.id;
+      });
+      if (!stillExists && map.getLayer(layer.id)) {
+        map.removeLayer(layer.id);
+      }
+    }
+
+    for (const source of previousSpec.sources) {
+      const stillExists = spec.sources.some((nextSource) => {
+        return nextSource.id === source.id;
+      });
+      if (!stillExists && map.getSource(source.id)) {
+        map.removeSource(source.id);
+      }
+    }
+  }
+
+  for (const source of spec.sources) {
+    if (!map.getSource(source.id)) {
+      map.addSource(source.id, toMaplibreSource(source));
+    }
+  }
+
+  for (const layer of spec.layers) {
+    const mapLayer = map.getLayer(layer.id);
+    const desiredLayer = toMaplibreLayer(layer);
+
+    if (!mapLayer) {
+      map.addLayer(desiredLayer);
+      continue;
+    }
+
+    map.setLayoutProperty(
+      layer.id,
+      'visibility',
+      layer.visible === false ? 'none' : 'visible'
+    );
+
+    const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
+    if (paint) {
+      for (const [property, value] of Object.entries(paint)) {
+        map.setPaintProperty(
+          layer.id,
+          property,
+          value as maplibregl.StyleSpecification
+        );
+      }
+    }
+  }
+
+  _currentSpec = spec;
+};
 
 const MapLibreAdapter: EngineAdapter = {
   id: 'maplibre',
@@ -162,11 +227,12 @@ const MapLibreAdapter: EngineAdapter = {
     viewId: string
   ): MountedView => {
     injectMaplibreCSS();
-    const { view, basemap, sources, layers } = spec;
+    const { view } = spec;
+    const styleUrl = resolveStyleUrl(spec);
 
     const map = new maplibregl.Map({
       container,
-      style: basemap?.styleUrl ?? DEFAULT_STYLE,
+      style: styleUrl,
       center: view.center,
       zoom: view.zoom,
       pitch: view.pitch ?? 0,
@@ -174,13 +240,12 @@ const MapLibreAdapter: EngineAdapter = {
     });
 
     _map = map;
+    _currentSpec = spec;
+    _activeStyleUrl = styleUrl;
 
     map.on('load', () => {
-      for (const source of sources) {
-        map.addSource(source.id, toMaplibreSource(source));
-      }
-      for (const layer of layers) {
-        map.addLayer(toMaplibreLayer(layer));
+      if (_currentSpec) {
+        syncSourcesAndLayers(map, _currentSpec);
       }
     });
 
@@ -197,16 +262,29 @@ const MapLibreAdapter: EngineAdapter = {
   update: (spec: VisualizationSpec) => {
     if (!_map) return;
     const map = _map;
-    if (!map.isStyleLoaded()) return;
+    const nextStyleUrl = resolveStyleUrl(spec);
 
-    for (const layer of spec.layers) {
-      if (map.getLayer(layer.id)) {
-        map.setLayoutProperty(
-          layer.id,
-          'visibility',
-          layer.visible === false ? 'none' : 'visible'
-        );
-      }
+    _currentSpec = spec;
+
+    if (nextStyleUrl !== _activeStyleUrl) {
+      _activeStyleUrl = nextStyleUrl;
+      map.once('style.load', () => {
+        if (_currentSpec) {
+          syncSourcesAndLayers(map, _currentSpec);
+        }
+      });
+      map.setStyle(nextStyleUrl);
+      return;
+    }
+
+    if (map.isStyleLoaded()) {
+      syncSourcesAndLayers(map, spec);
+    } else {
+      map.once('style.load', () => {
+        if (_currentSpec) {
+          syncSourcesAndLayers(map, _currentSpec);
+        }
+      });
     }
   },
 
@@ -217,13 +295,19 @@ const MapLibreAdapter: EngineAdapter = {
     const prop = parts[2];
     if (!layerId || !prop || patch.op !== 'replace') return;
     if (patch.value !== undefined) {
-      _map.setPaintProperty(layerId, prop, patch.value);
+      _map.setPaintProperty(
+        layerId,
+        prop,
+        patch.value as maplibregl.StyleSpecification
+      );
     }
   },
 
   destroy: () => {
     _map?.remove();
     _map = null;
+    _currentSpec = null;
+    _activeStyleUrl = null;
   },
 
   getNativeInstance: (): unknown => {

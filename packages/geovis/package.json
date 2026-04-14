@@ -28,6 +28,7 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "ajv": "^8.18.0",
     "maplibre-gl": "^5.23.0"
   },
   "peerDependencies": {
