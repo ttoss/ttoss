@@ -146,13 +146,11 @@ const toMaplibreLayer = (
 
 // Adapter
 
-let _map: maplibregl.Map | null = null;
-let _currentSpec: VisualizationSpec | null = null;
-let _activeStyleUrl: string | null = null;
-
-const syncSourcesAndLayers = (map: maplibregl.Map, spec: VisualizationSpec) => {
-  const previousSpec = _currentSpec;
-
+const syncSourcesAndLayers = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec,
+  previousSpec: VisualizationSpec | null
+) => {
   if (previousSpec) {
     for (const layer of previousSpec.layers) {
       const stillExists = spec.layers.some((nextLayer) => {
@@ -205,114 +203,124 @@ const syncSourcesAndLayers = (map: maplibregl.Map, spec: VisualizationSpec) => {
       }
     }
   }
-
-  _currentSpec = spec;
 };
 
-const MapLibreAdapter: EngineAdapter = {
-  id: 'maplibre',
+/**
+ * Creates a new, isolated MapLibre adapter instance.
+ * Each call returns an independent instance with its own internal state,
+ * allowing multiple maps to coexist without shared mutable state.
+ */
+const createMapLibreAdapter = (): EngineAdapter => {
+  let _map: maplibregl.Map | null = null;
+  let _currentSpec: VisualizationSpec | null = null;
+  let _activeStyleUrl: string | null = null;
 
-  getCapabilities: (): CapabilitySet => {
-    return {
-      supports3D: false,
-      supportsRaster: true,
-      supportsVectorTiles: true,
-      supportsCustomLayers: true,
-    };
-  },
+  return {
+    id: 'maplibre',
 
-  mount: (
-    container: HTMLElement,
-    spec: VisualizationSpec,
-    viewId: string
-  ): MountedView => {
-    injectMaplibreCSS();
-    const { view } = spec;
-    const styleUrl = resolveStyleUrl(spec);
+    getCapabilities: (): CapabilitySet => {
+      return {
+        supports3D: false,
+        supportsRaster: true,
+        supportsVectorTiles: true,
+        supportsCustomLayers: true,
+      };
+    },
 
-    const map = new maplibregl.Map({
-      container,
-      style: styleUrl,
-      center: view.center,
-      zoom: view.zoom,
-      pitch: view.pitch ?? 0,
-      bearing: view.bearing ?? 0,
-    });
+    mount: (
+      container: HTMLElement,
+      spec: VisualizationSpec,
+      viewId: string
+    ): MountedView => {
+      injectMaplibreCSS();
+      const { view } = spec;
+      const styleUrl = resolveStyleUrl(spec);
 
-    _map = map;
-    _currentSpec = spec;
-    _activeStyleUrl = styleUrl;
+      const map = new maplibregl.Map({
+        container,
+        style: styleUrl,
+        center: view.center,
+        zoom: view.zoom,
+        pitch: view.pitch ?? 0,
+        bearing: view.bearing ?? 0,
+      });
 
-    map.on('load', () => {
-      if (_currentSpec) {
-        syncSourcesAndLayers(map, _currentSpec);
+      _map = map;
+      _currentSpec = spec;
+      _activeStyleUrl = styleUrl;
+
+      map.on('load', () => {
+        if (_currentSpec) {
+          syncSourcesAndLayers(map, _currentSpec, null);
+        }
+      });
+
+      return {
+        viewId,
+        container,
+        destroy: () => {
+          map.remove();
+          if (_map === map) _map = null;
+        },
+      };
+    },
+
+    update: (spec: VisualizationSpec) => {
+      if (!_map) return;
+      const map = _map;
+      const nextStyleUrl = resolveStyleUrl(spec);
+      const previousSpec = _currentSpec;
+
+      _currentSpec = spec;
+
+      if (nextStyleUrl !== _activeStyleUrl) {
+        _activeStyleUrl = nextStyleUrl;
+        map.once('style.load', () => {
+          if (_currentSpec) {
+            syncSourcesAndLayers(map, _currentSpec, null);
+          }
+        });
+        map.setStyle(nextStyleUrl);
+        return;
       }
-    });
 
-    return {
-      viewId,
-      container,
-      destroy: () => {
-        map.remove();
-        if (_map === map) _map = null;
-      },
-    };
-  },
+      if (map.isStyleLoaded()) {
+        syncSourcesAndLayers(map, spec, previousSpec);
+      } else {
+        map.once('style.load', () => {
+          if (_currentSpec) {
+            syncSourcesAndLayers(map, _currentSpec, null);
+          }
+        });
+      }
+    },
 
-  update: (spec: VisualizationSpec) => {
-    if (!_map) return;
-    const map = _map;
-    const nextStyleUrl = resolveStyleUrl(spec);
+    applyPatch: (patch: SpecPatch) => {
+      if (!_map || patch.target !== 'layer') return;
+      const parts = patch.path.split('.');
+      const layerId = parts[1];
+      const prop = parts[2];
+      if (!layerId || !prop || patch.op !== 'replace') return;
+      if (patch.value !== undefined) {
+        _map.setPaintProperty(
+          layerId,
+          prop,
+          patch.value as maplibregl.StyleSpecification
+        );
+      }
+    },
 
-    _currentSpec = spec;
+    destroy: () => {
+      _map?.remove();
+      _map = null;
+      _currentSpec = null;
+      _activeStyleUrl = null;
+    },
 
-    if (nextStyleUrl !== _activeStyleUrl) {
-      _activeStyleUrl = nextStyleUrl;
-      map.once('style.load', () => {
-        if (_currentSpec) {
-          syncSourcesAndLayers(map, _currentSpec);
-        }
-      });
-      map.setStyle(nextStyleUrl);
-      return;
-    }
-
-    if (map.isStyleLoaded()) {
-      syncSourcesAndLayers(map, spec);
-    } else {
-      map.once('style.load', () => {
-        if (_currentSpec) {
-          syncSourcesAndLayers(map, _currentSpec);
-        }
-      });
-    }
-  },
-
-  applyPatch: (patch: SpecPatch) => {
-    if (!_map || patch.target !== 'layer') return;
-    const parts = patch.path.split('.');
-    const layerId = parts[1];
-    const prop = parts[2];
-    if (!layerId || !prop || patch.op !== 'replace') return;
-    if (patch.value !== undefined) {
-      _map.setPaintProperty(
-        layerId,
-        prop,
-        patch.value as maplibregl.StyleSpecification
-      );
-    }
-  },
-
-  destroy: () => {
-    _map?.remove();
-    _map = null;
-    _currentSpec = null;
-    _activeStyleUrl = null;
-  },
-
-  getNativeInstance: (): unknown => {
-    return _map;
-  },
+    getNativeInstance: (): unknown => {
+      return _map;
+    },
+  };
 };
 
-export default MapLibreAdapter;
+export default createMapLibreAdapter;

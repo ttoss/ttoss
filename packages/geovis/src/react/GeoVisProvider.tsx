@@ -21,7 +21,7 @@ const resolveAdapter = async (
   switch (engine) {
     case 'maplibre': {
       const mod = await import('../adapters/maplibre/MapLibreAdapter');
-      return mod.default;
+      return mod.default();
     }
     default:
       throw new Error(`[GeoVis] Unsupported engine: ${engine}`);
@@ -66,8 +66,14 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.engine]);
 
+  const specJsonRef = React.useRef<string>('');
+
   React.useEffect(() => {
-    runtime?.update(spec);
+    if (!runtime) return;
+    const specJson = JSON.stringify(spec);
+    if (specJson === specJsonRef.current) return;
+    specJsonRef.current = specJson;
+    runtime.update(spec);
   }, [runtime, spec]);
 
   const applyPatch = (patch: SpecPatch) => {
