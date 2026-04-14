@@ -14,7 +14,7 @@ export const validateSpec = (input: unknown): ValidationResult => {
   const valid = _validate(input);
 
   if (valid) {
-    return { valid: true, spec: input as VisualizationSpec };
+    return { valid: true, spec: input as unknown as VisualizationSpec };
   }
 
   const errors = (_validate.errors ?? []).map((e) => {
