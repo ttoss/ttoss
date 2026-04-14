@@ -49,6 +49,8 @@ const MyWizard = () => {
 };
 ```
 
+Labels are customizable, so applications can localize them as needed.
+
 ## Props
 
 | Prop             | Type                                                                                | Default              | Description                                                     |
