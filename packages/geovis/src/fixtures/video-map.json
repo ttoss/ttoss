@@ -1,0 +1,38 @@
+{
+  "id": "video-map",
+  "title": "Video Map",
+  "description": "Map using a video source to overlay drone footage as a georeferenced raster layer.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-122.514426, 37.562984],
+    "zoom": 17,
+    "bearing": -96
+  },
+  "sources": [
+    {
+      "id": "drone-footage",
+      "type": "video",
+      "urls": [
+        "https://static-assets.mapbox.com/mapbox-gl-js/drone.mp4",
+        "https://static-assets.mapbox.com/mapbox-gl-js/drone.webm"
+      ],
+      "coordinates": [
+        [-122.51596391201019, 37.56238816766053],
+        [-122.51467645168304, 37.56410183312965],
+        [-122.51309394836426, 37.563391708549425],
+        [-122.51423120498657, 37.56161849366671]
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "id": "drone-layer",
+      "sourceId": "drone-footage",
+      "geometry": "raster",
+      "visible": true,
+      "paint": {
+        "rasterOpacity": 0.85
+      }
+    }
+  ]
+}

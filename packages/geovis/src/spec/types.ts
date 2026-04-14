@@ -61,6 +61,25 @@ export interface RasterTileSource {
   attribution?: string;
 }
 
+export interface RasterDemSource {
+  id: string;
+  type: 'raster-dem';
+  tiles?: string[];
+  url?: string;
+  tileSize?: number;
+  minzoom?: number;
+  maxzoom?: number;
+  attribution?: string;
+  encoding?: 'mapbox' | 'terrarium' | 'custom';
+}
+
+export interface VideoSource {
+  id: string;
+  type: 'video';
+  urls: string[];
+  coordinates: [LngLat, LngLat, LngLat, LngLat];
+}
+
 export interface ImageSource {
   id: string;
   type: 'image';
@@ -73,6 +92,8 @@ export type DataSource =
   | GeoJSONSource
   | VectorTileSource
   | RasterTileSource
+  | RasterDemSource
+  | VideoSource
   | ImageSource;
 
 export interface FillPaint {
@@ -123,7 +144,7 @@ export interface VisualizationSpec {
   id: string;
   title?: string;
   description?: string;
-  engine: 'maplibre' | 'deckgl';
+  engine: 'maplibre';
   view: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];
@@ -132,12 +153,6 @@ export interface VisualizationSpec {
   adapterHints?: {
     maplibre?: {
       styleVersion?: 8;
-    };
-    openlayers?: {
-      wrapX?: boolean;
-    };
-    deckgl?: {
-      controller?: boolean;
     };
   };
 }

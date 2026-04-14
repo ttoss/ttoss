@@ -1,0 +1,27 @@
+{
+  "id": "geojson-url-map",
+  "title": "GeoJSON URL Map",
+  "description": "Map using a remote GeoJSON URL as source.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-47.9292, -15.7801],
+    "zoom": 10
+  },
+  "basemap": {
+    "styleUrl": "https://tiles.openfreemap.org/styles/bright"
+  },
+  "sources": [
+    {
+      "id": "remote-geojson",
+      "type": "geojson",
+      "data": "https://api-forja.triangulos.tech/v1/multifiles/a555e514-e374-4027-958d-d8cf716a4449/baf83822-40d3-4ce1-83b2-3b4dea68a691/download"
+    }
+  ],
+  "layers": [
+    {
+      "id": "remote-geojson-layer",
+      "sourceId": "remote-geojson",
+      "geometry": "polygon"
+    }
+  ]
+}

@@ -47,28 +47,32 @@
                   [-121.353637, 40.584978]
                 ]
               ]
-            }
+            },
+            "properties": null
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "Point",
               "coordinates": [-121.415061, 40.506229]
-            }
+            },
+            "properties": null
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "Point",
               "coordinates": [-121.505184, 40.488084]
-            }
+            },
+            "properties": null
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "Point",
               "coordinates": [-121.354465, 40.488737]
-            }
+            },
+            "properties": null
           }
         ]
       }
