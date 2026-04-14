@@ -63,7 +63,7 @@ beforeEach(() => {
 });
 
 describe('GeoVisProvider spec memoization', () => {
-  test('does not call runtime.update when spec reference changes but content is identical', async () => {
+  test('does not call runtime.update when the same spec reference is passed again', async () => {
     type SpecController = { setSpec: (s: VisualizationSpec) => void };
     const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
       const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);
@@ -85,15 +85,15 @@ describe('GeoVisProvider spec memoization', () => {
 
     const callsBefore = mockRuntimeUpdate.mock.calls.length;
 
-    // Pass a new object reference with identical content — must NOT trigger update
+    // Pass the same object reference — must NOT trigger update
     await act(async () => {
-      ref.current?.setSpec({ ...baseSpec });
+      ref.current?.setSpec(baseSpec);
     });
 
     expect(mockRuntimeUpdate.mock.calls.length).toBe(callsBefore);
   });
 
-  test('calls runtime.update when spec content actually changes', async () => {
+  test('calls runtime.update when a new spec reference is passed', async () => {
     type SpecController = { setSpec: (s: VisualizationSpec) => void };
     const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
       const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);

@@ -193,6 +193,7 @@
             "type": "object",
             "additionalProperties": false,
             "required": ["id", "type"],
+            "anyOf": [{ "required": ["tiles"] }, { "required": ["url"] }],
             "properties": {
               "id": {
                 "type": "string"
@@ -274,6 +275,9 @@
           "geometry": {
             "type": "string",
             "enum": ["point", "line", "polygon", "raster", "symbol", "heatmap"]
+          },
+          "sourceLayer": {
+            "type": "string"
           },
           "title": {
             "type": "string"

@@ -333,11 +333,13 @@ const createMapLibreAdapter = (): EngineAdapter => {
     },
 
     applyPatch: (patch: SpecPatch) => {
-      if (patch.target !== 'layer') return;
+      if (patch.target !== 'layer' || patch.op !== 'replace') return;
       const parts = patch.path.split('.');
+      // Expected path format: "layer.<layerId>.paint.<property>"
+      if (parts.length < 4 || parts[2] !== 'paint') return;
       const layerId = parts[1];
-      const prop = parts[2];
-      if (!layerId || !prop || patch.op !== 'replace') return;
+      const prop = parts[3];
+      if (!layerId || !prop) return;
 
       for (const viewState of _views.values()) {
         if (patch.value !== undefined) {

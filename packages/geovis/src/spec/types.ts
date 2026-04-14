@@ -186,6 +186,7 @@ export interface VisualizationLayer {
   id: string;
   sourceId: string;
   geometry: GeoVisGeometryType;
+  sourceLayer?: string;
   title?: string;
   visible?: boolean;
   minzoom?: number;

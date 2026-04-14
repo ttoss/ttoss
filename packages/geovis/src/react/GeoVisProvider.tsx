@@ -75,13 +75,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.engine]);
 
-  const specJsonRef = React.useRef<string>('');
+  const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
 
   React.useEffect(() => {
     if (!runtime) return;
-    const specJson = JSON.stringify(spec);
-    if (specJson === specJsonRef.current) return;
-    specJsonRef.current = specJson;
+    if (spec === prevSpecRef.current) return;
+    prevSpecRef.current = spec;
     runtime.update(spec);
   }, [runtime, spec]);
 
