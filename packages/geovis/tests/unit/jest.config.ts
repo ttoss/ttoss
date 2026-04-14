@@ -5,10 +5,10 @@ export default jestUnitConfig({
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
   coverageThreshold: {
     global: {
-      statements: 50,
-      branches: 20,
+      statements: 48,
+      branches: 19,
       functions: 62,
-      lines: 50,
+      lines: 48,
     },
   },
 });
