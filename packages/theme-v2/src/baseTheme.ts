@@ -19,8 +19,11 @@ export const baseTheme: ThemeTokens = {
         100: '#dbeafe',
         200: '#bfdbfe',
         300: '#60a5fa',
+        400: '#2b87f5',
         500: '#0469e3',
+        600: '#035fca',
         700: '#034da6',
+        800: '#023d85',
         900: '#022e63',
       },
 
@@ -33,7 +36,7 @@ export const baseTheme: ThemeTokens = {
         500: '#64748b',
         700: '#334155',
         900: '#0f172a',
-        1000: '#000000',
+        1000: '#020617',
       },
 
       red: {
@@ -232,7 +235,14 @@ export const baseTheme: ThemeTokens = {
       },
 
       hit: {
-        fine: { min: '28px', base: '40px', prominent: '48px' },
+        // Fine: clamp(floor, preferred, max) — floor is the fixed ergonomic minimum;
+        // preferred scales with rem so user font-size preferences (accessibility) are respected.
+        fine: {
+          min: 'clamp(28px, 1.75rem, 40px)',
+          base: 'clamp(36px, 2.5rem, 48px)',
+          prominent: 'clamp(44px, 3rem, 56px)',
+        },
+        // Coarse: always fixed px — touch ergonomics require predictable, reliable targets.
         coarse: { min: '44px', base: '48px', prominent: '56px' },
       },
     },
@@ -334,17 +344,78 @@ export const baseTheme: ThemeTokens = {
       //   indeterminate, visited) may match default when semantically justified.
       action: {
         primary: {
-          // brand.500 background, brand.500 border, neutral.0 text
+          // neutral.1000 (black) background — authoritative, neutral primary action.
+          // Contrast: neutral.0 text on neutral.1000 → ~20:1 ✓ ; neutral.700 hover → ~12:1 ✓
+          background: {
+            default: '{core.colors.neutral.1000}',
+            hover: '{core.colors.neutral.900}',
+            active: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.100}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+            // focused: omitted — action focus ring is shown via border, not background
+          },
+          border: {
+            default: '{core.colors.neutral.1000}',
+            hover: '{core.colors.neutral.900}',
+            active: '{core.colors.neutral.700}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.700}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            // On droptarget background (neutral.100 = light), dark text is required
+            droptarget: '{core.colors.neutral.900}',
+            // hover/active/focused/selected/pressed/expanded: all neutral.0 — omitted
+          },
+        },
+        secondary: {
+          // neutral.100 background, neutral.300 border, neutral.900 text
+          background: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.400}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.neutral.400}',
+            droptarget: '{core.colors.neutral.50}',
+            pressed: '{core.colors.neutral.400}',
+            expanded: '{core.colors.neutral.200}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.400}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.500}',
+            pressed: '{core.colors.neutral.400}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            // hover/active/focused/selected: all neutral.900 — omitted
+          },
+        },
+        accent: {
+          // brand.500 background — vivid blue that draws attention in the UI.
+          // Contrast: neutral.0 text on brand.500 (#0469e3) → ~5.7:1 ✓ AA
+          // All interactive states darken further → neutral.0 text remains valid.
           background: {
             default: '{core.colors.brand.500}',
             hover: '{core.colors.brand.700}',
             active: '{core.colors.brand.900}',
             disabled: '{core.colors.neutral.200}',
             selected: '{core.colors.brand.700}',
-            droptarget: '{core.colors.brand.100}',
+            droptarget: '{core.colors.brand.50}',
             pressed: '{core.colors.brand.900}',
             expanded: '{core.colors.brand.700}',
-            // focused: omitted — action focus ring is shown via border, not background
           },
           border: {
             default: '{core.colors.brand.500}',
@@ -357,39 +428,11 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.brand.700}',
           },
           text: {
+            // brand.500 is dark enough — neutral.0 meets ≥ 4.5:1 AA on all states
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            // On droptarget background (brand.100 = light blue), dark text is required
             droptarget: '{core.colors.neutral.900}',
-            // hover/active/focused/selected/pressed/expanded: all neutral.0 — omitted
-          },
-        },
-        secondary: {
-          // neutral.100 background, neutral.300 border, neutral.900 text
-          background: {
-            default: '{core.colors.neutral.100}',
-            hover: '{core.colors.neutral.200}',
-            active: '{core.colors.neutral.300}',
-            disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.neutral.300}',
-            droptarget: '{core.colors.neutral.50}',
-            pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.neutral.200}',
-          },
-          border: {
-            default: '{core.colors.neutral.300}',
-            hover: '{core.colors.neutral.500}',
-            active: '{core.colors.neutral.500}',
-            focused: '{core.colors.brand.500}',
-            disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.500}',
-            pressed: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.500}',
-          },
-          text: {
-            default: '{core.colors.neutral.900}',
-            disabled: '{core.colors.neutral.500}',
-            // hover/active/focused/selected: all neutral.900 — omitted
+            // hover/active/selected/pressed/expanded: all neutral.0 — omitted
           },
         },
         negative: {
@@ -721,6 +764,34 @@ export const baseTheme: ThemeTokens = {
             visited: '{core.colors.red.700}',
           },
         },
+        accent: {
+          // brand.400 bg — louder than primary (brand.500). Outlined/tinted card accent.
+          // Follows filled pattern for selected, rest stays light.
+          background: {
+            default: '{core.colors.brand.50}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.400}',
+          },
+          border: {
+            default: '{core.colors.brand.400}',
+            hover: '{core.colors.brand.500}',
+            active: '{core.colors.brand.600}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.600}',
+          },
+          text: {
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            active: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.500}',
+            // selected uses filled bg (brand.400) — neutral.0 meets 4.5:1
+            selected: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.700}',
+          },
+        },
       },
 
       feedback: {
@@ -786,36 +857,123 @@ export const baseTheme: ThemeTokens = {
 
       navigation: {
         primary: {
-          // Dark nav: neutral.900 bg, neutral.700 border, neutral.0 text
+          // Inline link on light surfaces: transparent bg, brand text underline.
+          // Contrast: brand.700 (#034da6) on neutral.0 (#ffffff) → ~9.5:1 ✓
           background: {
-            default: '{core.colors.neutral.900}',
-            hover: '{core.colors.neutral.700}',
-            active: '{core.colors.neutral.700}',
-            selected: '{core.colors.brand.700}',
-            droptarget: '{core.colors.neutral.700}',
-            current: '{core.colors.brand.700}',
-            visited: '{core.colors.neutral.900}',
-            expanded: '{core.colors.neutral.700}',
-            // focused: omitted — same as neutral.900 default; ring shown via border
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.50}',
+            visited: '{core.colors.neutral.0}',
           },
           border: {
-            default: '{core.colors.neutral.700}',
-            active: '{core.colors.neutral.300}',
-            focused: '{core.colors.brand.300}',
-            selected: '{core.colors.brand.300}',
-            current: '{core.colors.brand.300}',
-            // hover active same as default in border → hover omitted
+            default: '{core.colors.neutral.0}',
+            focused: '{core.colors.brand.500}',
           },
           text: {
-            default: '{core.colors.neutral.0}',
-            hover: '{core.colors.neutral.100}',
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            active: '{core.colors.brand.900}',
             disabled: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.900}',
+            visited: '{core.colors.neutral.500}',
+          },
+        },
+        secondary: {
+          // Light nav: neutral.50 background, neutral.200 border, neutral.700 text
+          background: {
+            default: '{core.colors.neutral.50}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
             droptarget: '{core.colors.neutral.100}',
-            // neutral.100 (not brand.300) — brand.300 on brand.700 bg fails 4.5:1; neutral.100 gives ~7.4:1
-            current: '{core.colors.neutral.100}',
-            visited: '{core.colors.neutral.300}',
+            current: '{core.colors.brand.100}',
+            visited: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.100}',
-            // active/focused/selected: all neutral.0 = default — omitted
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.400}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            visited: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+          },
+        },
+        accent: {
+          // Brand accent nav: brand.50 background with brand border — louder than secondary.
+          // Targeted use: highlighted/featured nav items.
+          background: {
+            default: '{core.colors.brand.50}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            expanded: '{core.colors.brand.100}',
+          },
+          border: {
+            default: '{core.colors.brand.400}',
+            hover: '{core.colors.brand.500}',
+            active: '{core.colors.brand.600}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+          },
+          text: {
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.500}',
+            // selected/current use brand.700 bg — neutral.0 meets ≥ 4.5:1
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.500}',
+            expanded: '{core.colors.brand.900}',
+          },
+        },
+        muted: {
+          // Subdued nav: transparent / neutral.100 background, none border, neutral.500 text.
+          // Used for secondary nav items, breadcrumbs, or inactive sidebar links.
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.neutral.100}',
+            current: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.300}',
+            selected: '{core.colors.neutral.900}',
+            current: '{core.colors.brand.700}',
+            visited: '{core.colors.neutral.500}',
+            expanded: '{core.colors.neutral.700}',
           },
         },
       },
@@ -1168,20 +1326,29 @@ export const darkAlternate: ModeOverride = {
     colors: {
       action: {
         primary: {
+          // White button on dark surface — inverted authority for dark contexts.
+          // Contrast: neutral.900 text on neutral.0 → ~19:1 ✓
           background: {
-            default: '{core.colors.brand.500}',
-            hover: '{core.colors.brand.300}',
-            active: '{core.colors.brand.100}',
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            pressed: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.200}',
+            expanded: '{core.colors.neutral.100}',
             disabled: '{core.colors.neutral.700}',
           },
           border: {
-            default: '{core.colors.brand.500}',
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
             focused: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.200}',
             disabled: '{core.colors.neutral.700}',
           },
           text: {
-            default: '{core.colors.neutral.0}',
+            default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
+            droptarget: '{core.colors.neutral.900}',
           },
         },
         secondary: {
@@ -1329,6 +1496,118 @@ export const darkAlternate: ModeOverride = {
           background: { default: '{core.colors.neutral.900}' },
           border: { default: '{core.colors.red.500}' },
           text: { default: '{core.colors.red.300}' },
+        },
+      },
+      navigation: {
+        // Dark mode: differentiate nav from content.primary (neutral.900) surface.
+        // primary nav shifts to neutral.800-equivalent (using neutral.700 as darkest available)
+        // to maintain depth separation from page background.
+        primary: {
+          // Inline link on dark surfaces: transparent bg, brand.300 text.
+          // Contrast: brand.300 (#60a5fa) on neutral.900 (#0f172a) → ~6.8:1 ✓
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
+            current: '{core.colors.neutral.700}',
+            visited: '{core.colors.neutral.900}',
+          },
+          border: {
+            default: '{core.colors.neutral.900}',
+            focused: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.100}',
+            visited: '{core.colors.neutral.300}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.900}',
+            current: '{core.colors.brand.900}',
+            visited: '{core.colors.neutral.900}',
+            expanded: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.brand.500}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.300}',
+            hover: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.brand.300}',
+            current: '{core.colors.brand.300}',
+            visited: '{core.colors.neutral.300}',
+            expanded: '{core.colors.neutral.50}',
+          },
+        },
+        accent: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            expanded: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.400}',
+            active: '{core.colors.brand.300}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.brand.400}',
+            current: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.500}',
+            expanded: '{core.colors.brand.200}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.neutral.700}',
+            current: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.neutral.300}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.700}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.brand.300}',
+            visited: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.300}',
+          },
         },
       },
     },

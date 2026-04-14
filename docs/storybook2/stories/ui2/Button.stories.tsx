@@ -5,23 +5,21 @@ const meta: Meta<typeof Button> = {
   title: 'ui2/Button',
   component: Button,
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
   args: {
     children: 'Click me',
   },
   argTypes: {
     evaluation: {
+      description:
+        'Semantic emphasis. Drives the color role used — maps to `action.*` tokens.',
       control: 'select',
-      options: ['primary', 'secondary', 'muted', 'negative'],
+      options: ['primary', 'secondary', 'accent', 'muted', 'negative'],
     },
-    consequence: {
-      control: 'select',
-      options: [undefined, 'destructive', 'neutral'],
+    isDisabled: {
+      description: 'Disables the button. Applies `disabled` state tokens.',
+      control: 'boolean',
     },
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-    disabled: { control: 'boolean' },
   },
 };
 
@@ -36,46 +34,64 @@ export const Secondary: Story = {
   args: { evaluation: 'secondary' },
 };
 
+export const Accent: Story = {
+  args: { evaluation: 'accent' },
+};
+
 export const Muted: Story = {
   args: { evaluation: 'muted' },
 };
 
-export const Destructive: Story = {
-  args: { consequence: 'destructive' },
-};
-
-export const Small: Story = {
-  args: { size: 'sm', children: 'Small' },
-};
-
-export const Large: Story = {
-  args: { size: 'lg', children: 'Large' },
+export const Negative: Story = {
+  args: { evaluation: 'negative' },
 };
 
 export const Disabled: Story = {
-  args: { evaluation: 'primary', disabled: true },
+  args: { evaluation: 'primary', isDisabled: true },
 };
 
+/** Focus ring — trigger with Tab after clicking inside the canvas. */
+export const FocusState: Story = {
+  args: { evaluation: 'primary', autoFocus: true },
+};
+
+/** All evaluations side-by-side for quick visual comparison. */
 export const AllEvaluations: Story = {
+  parameters: { layout: 'padded' },
   render: () => {
     return (
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Button evaluation="primary">Primary</Button>
         <Button evaluation="secondary">Secondary</Button>
+        <Button evaluation="accent">Accent</Button>
         <Button evaluation="muted">Muted</Button>
-        <Button consequence="destructive">Destructive</Button>
+        <Button evaluation="negative">Negative</Button>
       </div>
     );
   },
 };
 
-export const AllSizes: Story = {
+/** All evaluations in the disabled state — verify token coverage per role. */
+export const AllDisabled: Story = {
+  parameters: { layout: 'padded' },
   render: () => {
     return (
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        <Button size="sm">Small</Button>
-        <Button size="md">Medium</Button>
-        <Button size="lg">Large</Button>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <Button evaluation="primary" isDisabled>
+          Primary
+        </Button>
+        <Button evaluation="secondary" isDisabled>
+          Secondary
+        </Button>
+        <Button evaluation="accent" isDisabled>
+          Accent
+        </Button>
+        <Button evaluation="muted" isDisabled>
+          Muted
+        </Button>
+        <Button evaluation="negative" isDisabled>
+          Negative
+        </Button>
       </div>
     );
   },

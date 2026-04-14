@@ -12,22 +12,19 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./model": "./src/model.ts",
-    "./styles.css": "./src/styles.css"
+    "./model": "./src/model.ts"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsx scripts/generate-barrel.ts && tsx scripts/generate-css.ts && tsup",
-    "generate:barrel": "tsx scripts/generate-barrel.ts",
-    "generate:css": "tsx scripts/generate-css.ts",
+    "build": "tsup",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
   "dependencies": {
     "@ttoss/theme2": "workspace:^",
-    "react-aria": "^3.47.0"
+    "react-aria-components": "^1.9.0"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -52,8 +49,7 @@
       "./model": {
         "types": "./dist/model.d.ts",
         "default": "./dist/esm/model.js"
-      },
-      "./styles.css": "./dist/styles.css"
+      }
     },
     "provenance": true
   }

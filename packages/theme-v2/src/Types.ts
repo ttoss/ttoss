@@ -564,7 +564,11 @@ interface SemanticSizing {
    * Ergonomic hit targets. Each token resolves to the **fine-pointer** value.
    * The CSS output layer (`toCssVars`) automatically injects coarse-pointer
    * overrides inside `@media (any-pointer: coarse)` — no component code needed.
-   * These tokens must never resolve to fluid or intrinsic values.
+   *
+   * Fine-pointer values (`core.sizing.hit.fine.*`) may use `clamp(floor, preferred, max)`
+   * where `floor` is a fixed `Npx` ergonomic minimum — this guarantees accessibility
+   * while allowing themes to express density preferences (e.g. via the rem scale).
+   * Coarse-pointer values (`core.sizing.hit.coarse.*`) are always fixed `px`.
    */
   hit: {
     min: TokenRef;

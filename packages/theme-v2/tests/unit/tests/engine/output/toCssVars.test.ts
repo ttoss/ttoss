@@ -190,7 +190,7 @@ describe('toCssVars', () => {
     test('generates CSS vars for semantic tokens with var() refs', () => {
       const { cssVars } = toCssVars(defaultTheme);
       expect(cssVars['--tt-colors-action-primary-background-default']).toBe(
-        'var(--tt-core-colors-brand-500)'
+        'var(--tt-core-colors-neutral-1000)'
       );
     });
 

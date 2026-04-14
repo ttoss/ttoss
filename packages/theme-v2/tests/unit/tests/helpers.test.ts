@@ -123,12 +123,12 @@ describe('flattenAndResolve', () => {
   test('resolves semantic refs to core raw values', () => {
     const flat = toFlatTokens(defaultTheme);
 
-    const coreBrand500 = flat['core.colors.brand.500'];
+    const coreNeutral1000 = flat['core.colors.neutral.1000'];
     const semanticAction =
       flat['semantic.colors.action.primary.background.default'];
 
-    expect(typeof coreBrand500).toBe('string');
-    expect(semanticAction).toBe(coreBrand500);
+    expect(typeof coreNeutral1000).toBe('string');
+    expect(semanticAction).toBe(coreNeutral1000);
   });
 
   test('resolves all refs — no {path} strings remain', () => {

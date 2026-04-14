@@ -5,12 +5,13 @@ export default jestUnitConfig({
   testEnvironment: 'jsdom',
   coveragePathIgnorePatterns: [
     '/node_modules/',
+    // barrel files — no executable logic
     'src/index.ts',
     'src/model.ts',
-    'src/_model/factory.types.ts',
-    'src/_model/componentTokens.ts', // pure `as const` data — no executable branches
-    'src/_model/resolver.types.ts', // pure type definitions
-    'src/_model/tokenMap.ts', // pure `as const` data
+    'src/semantics/index.ts',
+    'src/tokens/index.ts',
+    // pure `as const` data — no branches to cover
+    'src/semantics/taxonomy.ts',
   ],
   coverageThreshold: {
     global: {

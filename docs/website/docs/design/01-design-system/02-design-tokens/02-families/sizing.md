@@ -77,10 +77,10 @@ Ramps are the **engine**. They are bounded ranges expressed with `clamp(min, pre
 
 #### 3) Ergonomic hit primitives (required)
 
-- `core.sizing.hit.fine.{min|default|prominent}` — fixed values for fine pointer (mouse, trackpad)
-- `core.sizing.hit.coarse.{min|default|prominent}` — fixed values for coarse pointer (touch)
+- `core.sizing.hit.fine.{min|base|prominent}` — ergonomic floors for fine pointer (mouse, trackpad); may be fluid via `clamp(floor, preferred, max)` where `floor` is a fixed px minimum
+- `core.sizing.hit.coarse.{min|base|prominent}` — fixed px values for coarse pointer (touch); never fluid
 
-Hit targets are **never fluid**. The build output emits fine values as the baseline and coarse values inside `@media (any-pointer: coarse)` automatically.
+**Coarse** hit targets are **always fixed px** — reliable ergonomic guarantees for touch. **Fine** hit targets may use `clamp(floor, preferred, max)` where `floor` is a fixed px ergonomic minimum, allowing the theme to express density preferences (e.g. via the rem scale) while guaranteeing accessibility. The build output emits fine values as the baseline and coarse values inside `@media (any-pointer: coarse)` automatically.
 
 ### Example
 
@@ -132,7 +132,13 @@ const coreSizing = {
     },
 
     hit: {
-      fine: { min: '28px', base: '40px', prominent: '48px' },
+      // Fine: clamp(floor, preferred, max) — floor is fixed px; preferred scales with rem
+      fine: {
+        min: 'clamp(28px, 1.75rem, 40px)',
+        base: 'clamp(36px, 2.5rem, 48px)',
+        prominent: 'clamp(44px, 3rem, 56px)',
+      },
+      // Coarse: always fixed px — touch ergonomics require predictable, reliable targets
       coarse: { min: '44px', base: '48px', prominent: '56px' },
     },
   },
@@ -158,14 +164,14 @@ This avoids ambiguity and prevents token-per-component drift.
 
 #### Families
 
-| `{family}` | Description                                                                                                |
-| :--------- | :--------------------------------------------------------------------------------------------------------- |
-| `hit`      | minimum **interactive target** sizing (ergonomic contract). Values adapt to input capability. Never fluid. |
-| `icon`     | **visual glyph** sizing only. May be fluid via core ramp.                                                  |
-| `identity` | **visual identity object** sizing (profile / brand / entity). May be fluid via core ramp.                  |
-| `measure`  | **readability measure** (line-length contract, character-based).                                           |
-| `surface`  | **structural bounds** for UI surfaces (constraints, not components).                                       |
-| viewport   | viewport primitives for full-height and full-width layouts.                                                |
+| `{family}` | Description                                                                                                                                                                                        |
+| :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hit`      | minimum **interactive target** sizing (ergonomic contract). Values adapt to input capability. Fine values may be fluid with `clamp()` (floor must be fixed px). Coarse values are always fixed px. |
+| `icon`     | **visual glyph** sizing only. May be fluid via core ramp.                                                                                                                                          |
+| `identity` | **visual identity object** sizing (profile / brand / entity). May be fluid via core ramp.                                                                                                          |
+| `measure`  | **readability measure** (line-length contract, character-based).                                                                                                                                   |
+| `surface`  | **structural bounds** for UI surfaces (constraints, not components).                                                                                                                               |
+| viewport   | viewport primitives for full-height and full-width layouts.                                                                                                                                        |
 
 #### Canonical shapes
 
@@ -215,12 +221,16 @@ In CSS output, fine values are the baseline and coarse values are injected insid
 
 ```css
 :root {
-  --tt-sizing-hit-base: 40px; /* fine baseline */
+  --tt-sizing-hit-base: clamp(
+    36px,
+    2.5rem,
+    48px
+  ); /* fine baseline — fluid, ergonomic floor guaranteed */
 }
 
 @media (any-pointer: coarse) {
   :root {
-    --tt-sizing-hit-base: 48px; /* touch override */
+    --tt-sizing-hit-base: 48px; /* touch override — fixed px, always reliable */
   }
 }
 ```
@@ -242,7 +252,8 @@ Themes may tune:
 - the **core ramps** (`core.sizing.ramp.ui.*`, `core.sizing.ramp.layout.*`)
 - `surface.maxWidth` mapping to a different layout ramp step
 - `measure.reading` in rare cases, validated with real content
-- `core.sizing.hit.{fine,coarse}.*` to adjust ergonomic targets per pointer capability
+- `core.sizing.hit.fine.*` to tune ergonomic floors for mouse; may use `clamp(floor, preferred, max)` where `floor` is fixed px
+- `core.sizing.hit.coarse.*` to adjust ergonomic targets for touch; always fixed px
 
 Semantic token names **never change across themes**.
 
@@ -252,25 +263,20 @@ Semantic token names **never change across themes**.
 
 ### Errors (validation must fail when)
 
-- any `hit.*` token resolves to a fluid or intrinsic value, including:
-  - `clamp(...)`
-  - `cqi`
-  - `%`
-  - `auto`
-  - `fit-content`
-  - `min-content`
-  - `max-content`
+- any `hit.coarse.*` token resolves to a fluid or intrinsic value, including `clamp(...)`, `cqi`, `%`, `auto`, or content-sizing keywords
+
+- any `hit.fine.*` token uses `clamp()` without a fixed px floor (the minimum bound must be a literal `Npx` value, not a variable or formula)
 
 - hit targets do not preserve order inside a pointer profile:
-  - `fine.min > fine.default`
-  - `fine.default > fine.prominent`
-  - `coarse.min > coarse.default`
-  - `coarse.default > coarse.prominent`
+  - `fine.min > fine.base` (compare floors)
+  - `fine.base > fine.prominent` (compare floors)
+  - `coarse.min > coarse.base`
+  - `coarse.base > coarse.prominent`
 
-- any coarse-pointer hit token is smaller than its fine-pointer counterpart:
-  - `coarse.min < fine.min`
-  - `coarse.default < fine.default`
-  - `coarse.prominent < fine.prominent`
+- any coarse-pointer hit token is smaller than the fine-pointer floor counterpart:
+  - `coarse.min < fine.min` (compare coarse fixed to fine clamp floor)
+  - `coarse.base < fine.base` (compare coarse fixed to fine clamp floor)
+  - `coarse.prominent < fine.prominent` (compare coarse fixed to fine clamp floor)
 
 - `measure.reading` is not a bounded character-based measure
 

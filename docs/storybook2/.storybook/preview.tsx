@@ -1,5 +1,3 @@
-import '@ttoss/ui2/styles.css';
-
 import type { Preview } from '@storybook/react-vite';
 import { createTheme } from '@ttoss/theme2';
 import { ThemeProvider } from '@ttoss/theme2/react';
@@ -7,7 +5,6 @@ import { bruttal } from '@ttoss/theme2/themes/bruttal';
 import { corporate } from '@ttoss/theme2/themes/corporate';
 import { oca } from '@ttoss/theme2/themes/oca';
 import { ventures } from '@ttoss/theme2/themes/ventures';
-import * as React from 'react';
 
 const themes = {
   base: createTheme(),
@@ -33,20 +30,51 @@ const preview: Preview = {
         ],
       },
     },
+    colorMode: {
+      name: 'Color Mode',
+      defaultValue: 'light',
+      toolbar: {
+        icon: 'circlehollow',
+        items: [
+          { value: 'light', title: 'Light', icon: 'sun' },
+          { value: 'dark', title: 'Dark', icon: 'moon' },
+          { value: 'system', title: 'System', icon: 'mirror' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   decorators: [
     (Story, context) => {
       const themeKey = (context.globals.theme as keyof typeof themes) || 'base';
       const theme = themes[themeKey] || themes.base;
+      const colorMode =
+        (context.globals.colorMode as 'light' | 'dark' | 'system') || 'light';
       return (
-        <ThemeProvider theme={theme}>
-          <Story />
+        // key forces remount when colorMode changes so defaultMode is re-applied.
+        // storageKey per-colorMode prevents stale localStorage from overriding
+        // the toolbar selection (resolveTheme prefers stored value over defaultMode).
+        <ThemeProvider
+          key={`${themeKey}-${colorMode}`}
+          theme={theme}
+          defaultMode={colorMode}
+          storageKey={`storybook-${themeKey}-${colorMode}`}
+        >
+          <div
+            style={{
+              background: 'var(--tt-colors-content-primary-background-default)',
+              color: 'var(--tt-colors-content-primary-text-default)',
+            }}
+          >
+            <Story />
+          </div>
         </ThemeProvider>
       );
     },
   ],
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
+    backgrounds: { disable: true },
     options: {
       storySort: {
         method: 'alphabetical',
