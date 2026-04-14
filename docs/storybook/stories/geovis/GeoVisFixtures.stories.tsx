@@ -1,40 +1,9 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
-import * as React from 'react';
 
-type FixtureName = 'single-map';
-
-type FixtureSpec = {
-  id: string;
-} & VisualizationSpec;
-
-type FixtureReference = {
-  label: string;
-  url: string;
-};
-
-const fixtureReferences: Record<FixtureName, FixtureReference[]> = {
-  'single-map': [
-    {
-      label: 'MapLibre official example (source)',
-      url: 'https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L24',
-    },
-    {
-      label: 'Polygon and points section',
-      url: 'https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L35',
-    },
-  ],
-};
-
-const loadFixture = async (name: FixtureName): Promise<FixtureSpec> => {
-  switch (name) {
-    case 'single-map':
-      return (
-        await import('../../../../packages/geovis/src/fixtures/single-map.json')
-      ).default as FixtureSpec;
-  }
-};
+import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.json';
+import geojsonUrlMapSpec from '../../../../packages/geovis/src/fixtures/source-geojson-url-map.json';
 
 export default {
   title: 'GeoVis/Fixtures',
@@ -49,80 +18,64 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
-export const SingleMap: StoryFn = () => {
-  const fixtureName: FixtureName = 'single-map';
-  const [spec, setSpec] = React.useState<FixtureSpec | null>(null);
-  const [loadError, setLoadError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    let cancelled = false;
-    setSpec(null);
-    setLoadError(null);
-
-    loadFixture(fixtureName)
-      .then((nextSpec) => {
-        if (!cancelled) setSpec(nextSpec);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setLoadError(error instanceof Error ? error.message : String(error));
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fixtureName]);
-
-  const references = fixtureReferences[fixtureName];
-
-  if (loadError) {
-    return <p>{loadError}</p>;
-  }
-
-  if (!spec) {
-    return <p>Loading fixture...</p>;
-  }
-
+const FixtureStory = ({
+  spec,
+  references,
+}: {
+  spec: VisualizationSpec;
+  references?: { label: string; url: string }[];
+}) => {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <strong>{spec.title ?? spec.id}</strong>
+        <strong>{spec.title}</strong>
         {spec.description ? <p>{spec.description}</p> : null}
       </div>
-
-      {spec.engine === 'maplibre' ? (
-        <div
-          style={{ width: '100%', height: 560, border: '1px solid #d4d4d8' }}
-        >
-          <GeoVisProvider spec={spec}>
-            <GeoVisCanvas viewId="primary" />
-          </GeoVisProvider>
-        </div>
-      ) : (
-        <div style={{ border: '1px solid #d4d4d8', padding: 12 }}>
-          <p>
-            This fixture uses the {spec.engine} engine and is shown here as a
-            data-reference demo because the runtime adapter is currently
-            available for maplibre only.
-          </p>
-        </div>
-      )}
-
-      <div>
-        <strong>Official references (with anchors)</strong>
-        <ul>
-          {references.map((reference) => {
-            return (
-              <li key={reference.url}>
-                <a href={reference.url} target="_blank" rel="noreferrer">
-                  {reference.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+      <div style={{ width: '100%', height: 560, border: '1px solid #d4d4d8' }}>
+        <GeoVisProvider spec={spec}>
+          <GeoVisCanvas viewId="primary" />
+        </GeoVisProvider>
       </div>
+      {references && references.length > 0 ? (
+        <div>
+          <strong>Official references (with anchors)</strong>
+          <ul>
+            {references.map((ref) => {
+              return (
+                <li key={ref.url}>
+                  <a href={ref.url} target="_blank" rel="noreferrer">
+                    {ref.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
     </div>
+  );
+};
+
+export const SingleMap: StoryFn = () => {
+  return (
+    <FixtureStory
+      spec={singleMapSpec as unknown as VisualizationSpec}
+      references={[
+        {
+          label: 'MapLibre official example (source)',
+          url: 'https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L24',
+        },
+        {
+          label: 'Polygon and points section',
+          url: 'https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L35',
+        },
+      ]}
+    />
+  );
+};
+
+export const GeoJsonUrlMap: StoryFn = () => {
+  return (
+    <FixtureStory spec={geojsonUrlMapSpec as unknown as VisualizationSpec} />
   );
 };
