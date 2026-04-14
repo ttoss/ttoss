@@ -3,12 +3,7 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
-type FixtureName =
-  | 'single-map'
-  | 'map-with-side-panel'
-  | 'split-compare'
-  | 'linked-map-chart'
-  | 'invalid-raw-count-choropleth';
+type FixtureName = 'single-map';
 
 type FixtureSpec = {
   id: string;

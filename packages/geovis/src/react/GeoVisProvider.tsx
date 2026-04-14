@@ -33,6 +33,12 @@ interface GeoVisProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * Provides a GeoVis runtime context for child components.
+ * Resolves the appropriate engine adapter based on the spec's engine field,
+ * initializes the runtime, and keeps it in sync with spec updates.
+ * Throws any adapter initialization error as a React error boundary–catchable exception.
+ */
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
@@ -48,6 +54,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         activeRuntime = createRuntime(adapter, spec);
         setRuntime(activeRuntime);
       } catch (error) {
+        if (cancelled) return;
         setAdapterError(
           error instanceof Error ? error : new Error(String(error))
         );

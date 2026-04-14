@@ -8,6 +8,12 @@ interface GeoVisCanvasProps {
   className?: string;
 }
 
+/**
+ * Renders a map canvas managed by the GeoVis runtime.
+ * Must be used inside a {@link GeoVisProvider}.
+ * The component mounts the engine's native map into a `<div>` and
+ * unmounts it automatically when removed from the tree.
+ */
 export const GeoVisCanvas = ({
   viewId,
   style,

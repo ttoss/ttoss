@@ -203,6 +203,7 @@ const syncSourcesAndLayers = (
     const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
     if (paint) {
       for (const [property, value] of Object.entries(paint)) {
+        if (value === undefined) continue;
         map.setPaintProperty(
           layer.id,
           property,
