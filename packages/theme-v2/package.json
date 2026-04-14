@@ -1,8 +1,8 @@
 {
   "private": true,
   "name": "@ttoss/theme2",
-  "version": "1.1.13",
-  "description": "Theme v2 for packages.",
+  "version": "1.1.10",
+  "description": "ttoss theme provider for UI.",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
@@ -21,7 +21,11 @@
     "./react": "./src/react.tsx",
     "./vars": "./src/vars.ts",
     "./dtcg": "./src/dtcg.ts",
-    "./dataviz": "./src/dataviz/index.ts"
+    "./dataviz": "./src/dataviz/index.ts",
+    "./themes/bruttal": "./src/themes/bruttal.ts",
+    "./themes/corporate": "./src/themes/corporate.ts",
+    "./themes/ventures": "./src/themes/ventures.ts",
+    "./themes/oca": "./src/themes/oca.ts"
   },
   "files": [
     "dist"
@@ -87,6 +91,22 @@
       "./dataviz": {
         "types": "./dist/dataviz/index.d.ts",
         "default": "./dist/esm/dataviz/index.js"
+      },
+      "./themes/bruttal": {
+        "types": "./dist/themes/bruttal.d.ts",
+        "default": "./dist/esm/themes/bruttal.js"
+      },
+      "./themes/corporate": {
+        "types": "./dist/themes/corporate.d.ts",
+        "default": "./dist/esm/themes/corporate.js"
+      },
+      "./themes/ventures": {
+        "types": "./dist/themes/ventures.d.ts",
+        "default": "./dist/esm/themes/ventures.js"
+      },
+      "./themes/oca": {
+        "types": "./dist/themes/oca.d.ts",
+        "default": "./dist/esm/themes/oca.js"
       }
     },
     "provenance": true

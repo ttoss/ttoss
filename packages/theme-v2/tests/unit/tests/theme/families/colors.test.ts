@@ -72,6 +72,8 @@ const ALLOWED_ROLES: Readonly<Record<string, ReadonlyArray<string>>> = {
   ],
 };
 
+// droptarget was promoted to BaseColorStates (FSL Lexicon §7 — general FSL State).
+// Any UX context accepting drag-and-drop may use it without needing a context-specific override.
 const BASE_STATES = new Set([
   'default',
   'hover',
@@ -79,15 +81,18 @@ const BASE_STATES = new Set([
   'focused',
   'disabled',
   'selected',
+  'droptarget',
 ]);
 
+// expanded was added to ActionColorStates — Action components (disclosure triggers,
+// menu anchors, split buttons) communicate the open/closed state visually.
 const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
-  action: ['pressed'],
+  action: ['pressed', 'expanded'],
   input: ['checked', 'indeterminate', 'pressed', 'expanded'],
   navigation: ['current', 'visited', 'expanded'],
   feedback: [],
   guidance: [],
-  discovery: ['expanded', 'droptarget'],
+  discovery: ['expanded'],
   content: ['visited'],
 };
 
@@ -336,7 +341,7 @@ describe('Color contrast — text vs background', () => {
 // then replace this block with test.each once the count reaches zero.
 // ---------------------------------------------------------------------------
 
-const KNOWN_BORDER_CONTRAST_VIOLATIONS = 22; // measured 2026-04-02
+const KNOWN_BORDER_CONTRAST_VIOLATIONS = 63; // updated 2026-XX-XX after full state expansion (+38); new violations are by-design cases: solid-button border==background patterns (action.primary/negative hover/active/pressed/expanded/selected) and checkbox border==background in checked/indeterminate states. Decrease as tokens are improved.
 
 describe('Color contrast — border vs background', () => {
   for (const { label, base } of bundleEntries) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { getThemeStylesContent } from './css';
-import { deepMerge, flattenAndResolve } from './roots/helpers';
+import { deepMerge, toFlatTokens } from './roots/helpers';
 import {
   createThemeRuntime,
   type ResolvedMode,
@@ -10,7 +10,7 @@ import {
   type ThemeState,
 } from './runtime';
 import { getThemeScriptContent, type ThemeScriptConfig } from './ssrScript';
-import type { SemanticTokens, ThemeBundle, ThemeTokensV2 } from './Types';
+import type { SemanticTokens, ThemeBundle, ThemeTokens } from './Types';
 
 export type { ThemeMode } from './runtime';
 export type { ResolvedMode } from './runtime';
@@ -50,13 +50,13 @@ const ResolvedTokensCtx = React.createContext<Record<
 // Mode Context — subscribed only to mode state for re-render isolation
 // ---------------------------------------------------------------------------
 
-interface ModeContextValue {
+interface ModeCtxValue {
   mode: ThemeMode;
   resolvedMode: ResolvedMode;
   setMode: (mode: ThemeMode) => void;
 }
 
-const ModeContext = React.createContext<ModeContextValue | null>(null);
+const ModeCtx = React.createContext<ModeCtxValue | null>(null);
 
 // ---------------------------------------------------------------------------
 // ThemeProvider
@@ -231,11 +231,11 @@ export const ThemeProvider = ({
   > | null => {
     if (!theme || !semanticTokens) return null;
 
-    const effectiveTheme: ThemeTokensV2 = {
+    const effectiveTheme: ThemeTokens = {
       core: theme.base.core,
       semantic: semanticTokens,
     };
-    const all = flattenAndResolve(effectiveTheme);
+    const all = toFlatTokens(effectiveTheme);
 
     const result: Record<string, string | number> = {};
     for (const [key, value] of Object.entries(all)) {
@@ -278,16 +278,14 @@ export const ThemeProvider = ({
     onModeChangeRef.current?.(state.mode, state.resolvedMode);
   }, [state.mode, state.resolvedMode]);
 
-  // ModeContext value is memoized separately so that useColorMode() consumers
+  // ModeCtx value is memoized separately so that useColorMode() consumers
   // only re-render on mode changes — never on themeId changes.
-  const modeContextValue = React.useMemo<ModeContextValue>(() => {
+  const modeCtxValue = React.useMemo<ModeCtxValue>(() => {
     return { mode: state.mode, resolvedMode: state.resolvedMode, setMode };
   }, [state.mode, state.resolvedMode, setMode]);
 
   const coreNode = (
-    <ModeContext.Provider value={modeContextValue}>
-      {children}
-    </ModeContext.Provider>
+    <ModeCtx.Provider value={modeCtxValue}>{children}</ModeCtx.Provider>
   );
 
   if (theme) {
@@ -340,7 +338,7 @@ export interface UseColorModeResult {
 }
 
 export const useColorMode = (): UseColorModeResult => {
-  const context = React.useContext(ModeContext);
+  const context = React.useContext(ModeCtx);
   if (!context) {
     throw new Error('useColorMode must be used within a <ThemeProvider>');
   }
@@ -391,7 +389,7 @@ export const useColorMode = (): UseColorModeResult => {
  */
 export const useTokens = (): SemanticTokens => {
   const tokens = React.useContext(SemanticTokensCtx);
-  const context = React.useContext(ModeContext);
+  const context = React.useContext(ModeCtx);
 
   if (!context) {
     throw new Error('useTokens must be used within a <ThemeProvider>');
@@ -451,7 +449,7 @@ export const useTokens = (): SemanticTokens => {
  */
 export const useResolvedTokens = (): Record<string, string | number> => {
   const resolved = React.useContext(ResolvedTokensCtx);
-  const context = React.useContext(ModeContext);
+  const context = React.useContext(ModeCtx);
 
   if (!context) {
     throw new Error('useResolvedTokens must be used within a <ThemeProvider>');

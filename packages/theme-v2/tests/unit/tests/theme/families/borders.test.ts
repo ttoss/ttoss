@@ -221,6 +221,36 @@ describe('Semantic borders — errors', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Focus ring color contract
+//
+// focus.ring.color is a required semantic token providing a cross-cutting
+// accessible focus color. Every theme must define it. Its resolved value
+// must be a non-empty string (a hex color from the core palette).
+// ---------------------------------------------------------------------------
+
+describe('Semantic focus — color contract', () => {
+  describe('default', () => {
+    const base = themeFlatToTest;
+    const alt = themeAltFlatToTest;
+
+    test('base: focus.ring.color is defined and resolves to a non-empty value', () => {
+      const color = base['semantic.focus.ring.color'];
+      expect(color).toBeDefined();
+      expect(typeof color).toBe('string');
+      expect(String(color).length).toBeGreaterThan(0);
+    });
+
+    test('alternate: focus.ring.color is defined and resolves to a non-empty value', () => {
+      if (!alt) return;
+      const color = alt['semantic.focus.ring.color'];
+      expect(color).toBeDefined();
+      expect(typeof color).toBe('string');
+      expect(String(color).length).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Semantic borders — WARNINGS
 // ---------------------------------------------------------------------------
 // Warning #1: border.selected resolves to the same effective contract as the resting outline

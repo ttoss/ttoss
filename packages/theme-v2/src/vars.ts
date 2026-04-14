@@ -1,9 +1,9 @@
 import { baseBundle } from './baseBundle';
-import type { CssVarMap } from './roots/toVars';
+import type { CssVarsMap } from './roots/toVars';
 import { buildVarsMap } from './roots/toVars';
 import type { SemanticTokens } from './Types';
 
-export type { CssVarMap } from './roots/toVars';
+export type { CssVarsMap } from './roots/toVars';
 
 // ---------------------------------------------------------------------------
 // vars — Static typed CSS Custom Property references
@@ -57,4 +57,4 @@ export type { CssVarMap } from './roots/toVars';
  * @see {@link toCssVarName}        — for raw CSS property names (without `var()`)
  * @see {@link useResolvedTokens}  — for resolved raw values in non-CSS environments (React Native, canvas, PDF)
  */
-export const vars: CssVarMap<SemanticTokens> = buildVarsMap(baseBundle.base);
+export const vars: CssVarsMap<SemanticTokens> = buildVarsMap(baseBundle.base);

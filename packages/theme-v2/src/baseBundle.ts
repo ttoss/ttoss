@@ -19,7 +19,7 @@ const baseBundle = createTheme({
 /** @internal Used by vars.ts — not part of the public API. */
 export { baseBundle };
 
-/** Base theme — complete reference implementation of ThemeTokensV2. */
+/** Base theme — complete reference implementation of ThemeTokens. */
 export { baseTheme };
 
 /** Dark-mode semantic override for composition with createTheme. */

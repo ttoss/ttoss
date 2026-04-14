@@ -4,12 +4,12 @@ import { buildTheme } from '../../../src/createTheme';
 import {
   deepMerge,
   extractRefPath,
-  flattenAndResolve,
   flattenObject,
   isPlainObject,
   isTokenRef,
+  toFlatTokens,
 } from '../../../src/roots/helpers';
-import type { ThemeTokensV2 } from '../../../src/Types';
+import type { ThemeTokens } from '../../../src/Types';
 
 // ---------------------------------------------------------------------------
 // Token reference detection
@@ -121,18 +121,18 @@ describe('deepMerge', () => {
 
 describe('flattenAndResolve', () => {
   test('resolves semantic refs to core raw values', () => {
-    const flat = flattenAndResolve(defaultTheme);
+    const flat = toFlatTokens(defaultTheme);
 
-    const coreBrand500 = flat['core.colors.brand.500'];
+    const coreNeutral1000 = flat['core.colors.neutral.1000'];
     const semanticAction =
       flat['semantic.colors.action.primary.background.default'];
 
-    expect(typeof coreBrand500).toBe('string');
-    expect(semanticAction).toBe(coreBrand500);
+    expect(typeof coreNeutral1000).toBe('string');
+    expect(semanticAction).toBe(coreNeutral1000);
   });
 
   test('resolves all refs — no {path} strings remain', () => {
-    const flat = flattenAndResolve(defaultTheme);
+    const flat = toFlatTokens(defaultTheme);
 
     const unresolvedRefs = Object.entries(flat).filter(([, value]) => {
       return isTokenRef(value);
@@ -142,14 +142,14 @@ describe('flattenAndResolve', () => {
   });
 
   test('preserves raw numeric values', () => {
-    const flat = flattenAndResolve(defaultTheme);
+    const flat = toFlatTokens(defaultTheme);
     expect(flat['core.opacity.100']).toBe(1);
     expect(flat['core.zIndex.level.3']).toBe(300);
     expect(flat['core.font.weight.bold']).toBe(700);
   });
 
   test('handles chained refs (A → B → raw)', () => {
-    const flat = flattenAndResolve(defaultTheme);
+    const flat = toFlatTokens(defaultTheme);
     // semantic.elevation.surface.flat → {core.elevation.level.0} → "none"
     expect(flat['semantic.elevation.surface.flat']).toBe('none');
   });
@@ -161,7 +161,7 @@ describe('flattenAndResolve', () => {
       },
     });
 
-    const flat = flattenAndResolve(theme);
+    const flat = toFlatTokens(theme);
     expect(flat['core.colors.brand.500']).toBe('#FF4500');
   });
 
@@ -180,7 +180,7 @@ describe('flattenAndResolve', () => {
       },
     });
 
-    const flat = flattenAndResolve(theme);
+    const flat = toFlatTokens(theme);
     // core.border.width.selected = '2px', core.colors.brand.500 = '#0469e3'
     expect(flat['semantic.elevation.surface.flat']).toBe(
       'inset 0 0 2px #0469e3'
@@ -204,9 +204,9 @@ describe('flattenAndResolve', () => {
     });
 
     expect(() => {
-      return flattenAndResolve(theme);
+      return toFlatTokens(theme);
     }).not.toThrow();
-    const flat = flattenAndResolve(theme);
+    const flat = toFlatTokens(theme);
     // cycle guard breaks the loop — the ref is returned as-is (still a token ref)
     expect(isTokenRef(flat['semantic.elevation.surface.flat'])).toBe(true);
   });
@@ -225,14 +225,14 @@ describe('flattenAndResolve', () => {
       },
     });
 
-    const flat = flattenAndResolve(theme);
+    const flat = toFlatTokens(theme);
     expect(flat['semantic.elevation.surface.flat']).toBe(
       '{core.nonexistent.token}'
     );
   });
 
   test('all built-in themes resolve completely', () => {
-    const themes: ThemeTokensV2[] = [baseBundle.base];
+    const themes: ThemeTokens[] = [baseBundle.base];
     if (baseBundle.alternate) {
       themes.push(
         buildTheme({ overrides: { semantic: baseBundle.alternate.semantic } })
@@ -240,7 +240,7 @@ describe('flattenAndResolve', () => {
     }
 
     for (const theme of themes) {
-      const flat = flattenAndResolve(theme);
+      const flat = toFlatTokens(theme);
       const unresolvedRefs = Object.entries(flat).filter(([, value]) => {
         return isTokenRef(value);
       });

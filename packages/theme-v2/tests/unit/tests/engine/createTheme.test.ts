@@ -79,14 +79,17 @@ describe('buildTheme', () => {
   test('overrides multiple categories in a single call', () => {
     const theme = buildTheme({
       overrides: {
-        core: { radii: { sm: '6px', lg: '16px' }, breakpoint: { sm: '36rem' } },
+        core: {
+          radii: { sm: '6px', lg: '16px' },
+          breakpoints: { sm: '36rem' },
+        },
         semantic: { radii: { control: '{core.radii.md}' } },
       },
     });
     expect(theme.core.radii.sm).toBe('6px');
     expect(theme.core.radii.lg).toBe('16px');
     expect(theme.core.radii.md).toBe(defaultTheme.core.radii.md);
-    expect(theme.core.breakpoint.sm).toBe('36rem');
+    expect(theme.core.breakpoints.sm).toBe('36rem');
     expect(theme.semantic.radii.control).toBe('{core.radii.md}');
   });
 
