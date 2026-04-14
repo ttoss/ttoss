@@ -280,10 +280,10 @@ export default {
 
 ### CI/CD Behavior
 
-| Runner             | Behavior                                                                                        |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| **GitHub Actions** | Appends `KEY=VALUE` lines to `$GITHUB_ENV`, making variables available to all subsequent steps. |
-| **Generic shell**  | Prints `export KEY=VALUE` lines to stdout so the output can be `eval`-ed.                       |
+| Runner             | Behavior                                                                                                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **GitHub Actions** | Appends `KEY=VALUE` lines to `$GITHUB_ENV`, making variables available to all subsequent steps.                                                                                                                                              |
+| **Generic CI**     | Appends `KEY=VALUE` lines to a `.env` file in the current working directory for dotenv-based tools (e.g. Vite). Also prints `export KEY=VALUE` lines to stdout so the caller can `eval` the output to set them in the current shell session. |
 
 ### Pipeline Example
 

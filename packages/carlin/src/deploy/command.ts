@@ -197,7 +197,9 @@ export const options = {
    * the mapped variables to the CI/CD runner environment:
    *
    * - **GitHub Actions**: appends `KEY=VALUE` lines to `$GITHUB_ENV`.
-   * - **Generic shell**: prints `export KEY=VALUE` lines to stdout.
+   * - **Generic CI**: appends `KEY=VALUE` lines to a `.env` file in the
+   *   current working directory for dotenv-based tools (e.g. Vite). Also
+   *   prints `export KEY=VALUE` lines to stdout for manual `eval`.
    *
    * Configure in your `carlin.ts`:
    *

@@ -78,6 +78,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
 });
 
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import {
   describeStack,
@@ -204,8 +205,12 @@ describe('exportEnvVars', () => {
     );
   });
 
-  test('should print export statements to stdout when GITHUB_ENV is not set', async () => {
+  test('should write KEY=VALUE lines to .env file and print export statements to stdout when GITHUB_ENV is not set', async () => {
     delete process.env.GITHUB_ENV;
+
+    const appendFileMock = jest
+      .spyOn(fs.promises, 'appendFile')
+      .mockResolvedValue(undefined);
 
     const stdoutWriteMock = jest
       .spyOn(process.stdout, 'write')
@@ -221,6 +226,18 @@ describe('exportEnvVars', () => {
       },
     });
 
+    const expectedDotEnvPath = path.join(process.cwd(), '.env');
+
+    expect(appendFileMock).toHaveBeenCalledTimes(2);
+    expect(appendFileMock).toHaveBeenCalledWith(
+      expectedDotEnvPath,
+      `MY_FIRST_VAR=${firstOutput.OutputValue}\n`
+    );
+    expect(appendFileMock).toHaveBeenCalledWith(
+      expectedDotEnvPath,
+      `MY_SECOND_VAR=${secondOutput.OutputValue}\n`
+    );
+
     expect(stdoutWriteMock).toHaveBeenCalledTimes(2);
     expect(stdoutWriteMock).toHaveBeenCalledWith(
       `export MY_FIRST_VAR='${firstOutput.OutputValue}'\n`
@@ -232,6 +249,10 @@ describe('exportEnvVars', () => {
 
   test('should warn and skip when a CloudFormation output key is not found', async () => {
     delete process.env.GITHUB_ENV;
+
+    const appendFileMock = jest
+      .spyOn(fs.promises, 'appendFile')
+      .mockResolvedValue(undefined);
 
     const stdoutWriteMock = jest
       .spyOn(process.stdout, 'write')
@@ -247,17 +268,29 @@ describe('exportEnvVars', () => {
       },
     });
 
+    const expectedDotEnvPath = path.join(process.cwd(), '.env');
+
+    expect(appendFileMock).toHaveBeenCalledTimes(1);
+    expect(appendFileMock).toHaveBeenCalledWith(
+      expectedDotEnvPath,
+      `FOUND_VAR=${firstOutput.OutputValue}\n`
+    );
+
     expect(stdoutWriteMock).toHaveBeenCalledTimes(1);
     expect(stdoutWriteMock).toHaveBeenCalledWith(
       `export FOUND_VAR='${firstOutput.OutputValue}'\n`
     );
   });
-  test('should escape single quotes in values for generic shell output', async () => {
+  test('should escape single quotes in values for generic shell output and write unescaped value to .env', async () => {
     delete process.env.GITHUB_ENV;
 
     const outputsWithQuote = [
       { OutputKey: 'MyKey', OutputValue: "it's a value" },
     ];
+
+    const appendFileMock = jest
+      .spyOn(fs.promises, 'appendFile')
+      .mockResolvedValue(undefined);
 
     const stdoutWriteMock = jest
       .spyOn(process.stdout, 'write')
@@ -269,6 +302,11 @@ describe('exportEnvVars', () => {
       outputs: outputsWithQuote,
       envExport: { MyKey: 'MY_VAR' },
     });
+
+    expect(appendFileMock).toHaveBeenCalledWith(
+      path.join(process.cwd(), '.env'),
+      `MY_VAR=it's a value\n`
+    );
 
     expect(stdoutWriteMock).toHaveBeenCalledWith(
       `export MY_VAR='it'\\''s a value'\n`
@@ -292,6 +330,32 @@ describe('exportEnvVars', () => {
     });
 
     expect(appendFileMock).not.toHaveBeenCalled();
+  });
+
+  test('should warn and skip when value contains newlines in generic CI (.env)', async () => {
+    delete process.env.GITHUB_ENV;
+
+    const outputsWithNewline = [
+      { OutputKey: 'MultilineKey', OutputValue: 'line1\nline2' },
+    ];
+
+    const appendFileMock = jest
+      .spyOn(fs.promises, 'appendFile')
+      .mockResolvedValue(undefined);
+
+    const stdoutWriteMock = jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation(() => {
+        return true;
+      });
+
+    await exportEnvVars({
+      outputs: outputsWithNewline,
+      envExport: { MultilineKey: 'MY_MULTILINE_VAR' },
+    });
+
+    expect(appendFileMock).not.toHaveBeenCalled();
+    expect(stdoutWriteMock).not.toHaveBeenCalled();
   });
 });
 

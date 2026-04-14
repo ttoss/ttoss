@@ -251,8 +251,10 @@ const saveEnvironmentOutput = async ({
  *
  * - **GitHub Actions**: appends `KEY=VALUE` lines to the file at `$GITHUB_ENV`,
  *   making the variables available to all subsequent steps.
- * - **Generic shell**: prints `export KEY=VALUE` lines to stdout so the output
- *   can be `eval`-ed by the calling shell.
+ * - **Generic CI / local**: appends `KEY=VALUE` lines to a `.env` file in the
+ *   current working directory so dotenv-based tools (e.g. Vite, Node.js apps)
+ *   can load the values in subsequent steps. Also prints `export KEY=VALUE`
+ *   lines to stdout so the caller can `eval` the output if needed.
  *
  * @example
  * ```ts
@@ -307,8 +309,32 @@ export const exportEnvVars = async ({
       log.info(logPrefix, `envExport: wrote ${envVarName} to GITHUB_ENV`);
     } else {
       /**
-       * Escape single quotes in the value so the shell `export` statement
-       * remains syntactically correct (POSIX: replace each `'` with `'\''`).
+       * Values with newlines would corrupt the `.env` file format (and the
+       * shell `export` statement), so warn and skip — matching the same guard
+       * used for GITHUB_ENV above.
+       */
+      if (value.includes('\n')) {
+        log.warn(
+          logPrefix,
+          `envExport: value for "${cfOutputKey}" contains newlines and cannot be exported to .env safely. Skipping.`
+        );
+        continue;
+      }
+
+      /**
+       * Write to a `.env` file in the current working directory so that
+       * dotenv-based tools (e.g. Vite, Node.js) can load the variable in
+       * subsequent pipeline steps without any extra wiring.
+       */
+      const dotEnvPath = path.join(process.cwd(), '.env');
+      await fs.promises.appendFile(dotEnvPath, `${envVarName}=${value}\n`);
+      log.info(logPrefix, `envExport: wrote ${envVarName} to .env`);
+
+      /**
+       * Also print an `export` statement to stdout so callers can still
+       * `eval $(carlin deploy ...)` to get the variable into the current
+       * shell session if needed. Escape single quotes to keep the statement
+       * syntactically correct (POSIX: replace each `'` with `'\''`).
        */
       const escapedValue = value.replace(/'/g, `'\\''`);
       process.stdout.write(`export ${envVarName}='${escapedValue}'\n`);

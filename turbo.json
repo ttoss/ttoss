@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
   "concurrency": "4",
-  "globalEnv": ["NODE_ENV", "TTOSS_MONOREPO"],
+  "globalEnv": ["NODE_ENV", "TTOSS_MONOREPO", "GITHUB_ENV"],
   "tasks": {
     "build-config": {
       "dependsOn": ["^build-config"],
