@@ -263,55 +263,6 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`. Use [`carlin deploy report`](/docs/carlin/commands/deploy-report) to print them to stdout or publish them to a channel (e.g. a GitHub PR comment).
 
-## Exporting Outputs to the CI/CD Environment (`envExport`)
-
-When deploying a backend package that exports CloudFormation outputs (e.g. `AppSyncApiGraphQLUrl`), downstream packages built in the same CI pipeline often need those values as specific environment variable names before their build step runs.
-
-Use the `envExport` option in your `carlin.ts` to declare this mapping once. After a successful deployment, carlin reads the stack outputs and exports the mapped variables to the runner environment automatically — no manual `jq` parsing or shell variable wiring needed.
-
-```ts title="carlin.ts"
-export default {
-  envExport: {
-    AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-    AppSyncApiArn: 'APPSYNC_API_ARN',
-  },
-};
-```
-
-### CI/CD Behavior
-
-| Runner             | Behavior                                                                                        |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| **GitHub Actions** | Appends `KEY=VALUE` lines to `$GITHUB_ENV`, making variables available to all subsequent steps. |
-| **Generic shell**  | Prints `export KEY=VALUE` lines to stdout so the output can be `eval`-ed.                       |
-
-### Pipeline Example
-
-```sh
-# 1. Deploy graph-api — carlin reads envExport, writes to $GITHUB_ENV
-carlin deploy --environment Staging
-# → VITE_APPSYNC_GRAPHQL_ENDPOINT is now available to subsequent steps
-
-# 2. Build app — Vite picks up the exported variable automatically
-pnpm turbo run build --filter=app
-```
-
-### Per-environment Override
-
-`envExport` composes with per-environment configuration:
-
-```ts title="carlin.ts"
-export default {
-  environments: {
-    Staging: {
-      envExport: {
-        AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-      },
-    },
-  },
-};
-```
-
 ## API
 
 ### Options
