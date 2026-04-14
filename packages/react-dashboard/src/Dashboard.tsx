@@ -1,5 +1,5 @@
-import { Divider, Flex } from '@ttoss/ui';
-import type * as React from 'react';
+import { Button, Divider, Flex } from '@ttoss/ui';
+import * as React from 'react';
 import type ReactGridLayout from 'react-grid-layout';
 
 import type { DashboardCard } from './DashboardCard';
@@ -22,14 +22,44 @@ export interface DashboardTemplate {
   editable?: boolean;
 }
 
+const ExportButton = ({
+  onExportPdf,
+}: {
+  onExportPdf: () => Promise<void>;
+}) => {
+  const [exporting, setExporting] = React.useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await onExportPdf();
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  return (
+    <Button
+      aria-label="Export PDF"
+      disabled={exporting}
+      loading={exporting}
+      onClick={handleExport}
+    >
+      Export PDF
+    </Button>
+  );
+};
+
 const DashboardContent = ({
   loading = false,
   headerChildren,
   selectedTemplate,
+  onExportPdf,
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
   selectedTemplate?: DashboardTemplate;
+  onExportPdf?: () => Promise<void>;
 }) => {
   const { isEditMode, editingGrid } = useDashboard();
   const grid = isEditMode && editingGrid ? editingGrid : selectedTemplate?.grid;
@@ -38,11 +68,18 @@ const DashboardContent = ({
       ? { ...selectedTemplate, grid }
       : selectedTemplate;
 
+  const combinedHeaderChildren = (
+    <>
+      {headerChildren}
+      {onExportPdf && <ExportButton onExportPdf={onExportPdf} />}
+    </>
+  );
+
   return (
     <Flex
       sx={{ flexDirection: 'column', gap: '5', padding: '2', width: '100%' }}
     >
-      <DashboardHeader>{headerChildren}</DashboardHeader>
+      <DashboardHeader>{combinedHeaderChildren}</DashboardHeader>
 
       <Divider color="display.border.muted.default" />
 
@@ -67,6 +104,8 @@ export const Dashboard = ({
   onSaveLayout,
   onSaveAsNewTemplate,
   onCancelEdit,
+  onEditingGridChange,
+  onExportPdf,
 }: {
   selectedTemplate?: DashboardTemplate;
   loading?: boolean;
@@ -80,6 +119,10 @@ export const Dashboard = ({
   onSaveLayout?: (template: DashboardTemplate) => void;
   onSaveAsNewTemplate?: (template: DashboardTemplate) => void;
   onCancelEdit?: () => void;
+  /** Called whenever the internal editing grid changes; receives `null` when edit mode exits. */
+  onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
+  /** When provided, renders a built-in Export button. The button is disabled while the promise is pending. */
+  onExportPdf?: () => Promise<void>;
 }) => {
   return (
     <DashboardProvider
@@ -92,11 +135,13 @@ export const Dashboard = ({
       onSaveLayout={onSaveLayout}
       onSaveAsNewTemplate={onSaveAsNewTemplate}
       onCancelEdit={onCancelEdit}
+      onEditingGridChange={onEditingGridChange}
     >
       <DashboardContent
         loading={loading}
         headerChildren={headerChildren}
         selectedTemplate={selectedTemplate}
+        onExportPdf={onExportPdf}
       />
     </DashboardProvider>
   );

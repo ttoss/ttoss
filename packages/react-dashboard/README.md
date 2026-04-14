@@ -160,19 +160,21 @@ import { Dashboard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                                    | Default         | Description                                            |
-| --------------------- | --------------------------------------- | --------------- | ------------------------------------------------------ |
-| `selectedTemplate`    | `DashboardTemplate \| undefined`        | -               | The template to display in the dashboard               |
-| `templates`           | `DashboardTemplate[]`                   | `[]`            | Array of dashboard templates                           |
-| `filters`             | `DashboardFilter[]`                     | `[]`            | Array of dashboard filters                             |
-| `loading`             | `boolean`                               | `false`         | Loading state for the dashboard                        |
-| `cardCatalog`         | `CardCatalogItem[]`                     | default catalog | Card types available in "Add item" while editing       |
-| `headerChildren`      | `React.ReactNode`                       | -               | Additional content to render in the header             |
-| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`  | -               | Callback when filters change                           |
-| `editable`            | `boolean`                               | `false`         | Enables dashboard edit mode controls                   |
-| `onSaveLayout`        | `(template: DashboardTemplate) => void` | -               | Called when user saves edits to current template       |
-| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void` | -               | Called when user saves edited layout as a new template |
-| `onCancelEdit`        | `() => void`                            | -               | Called when user cancels edit mode                     |
+| Prop                  | Type                                          | Default         | Description                                                                                          |
+| --------------------- | --------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------- |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                                                             |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                                                         |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                                                           |
+| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                                                      |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                                                     |
+| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header (auto-centered)                                           |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                                                         |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                                                 |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                                                     |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                                               |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                                                   |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the internal editing grid changes; receives `null` when edit mode exits              |
+| `onExportPdf`         | `() => Promise<void>`                         | -               | When provided, renders a built-in Export button. The button is disabled while the promise is pending |
 
 ### DashboardProvider
 
@@ -193,18 +195,19 @@ import { DashboardProvider } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                                    | Default         | Description                       |
-| --------------------- | --------------------------------------- | --------------- | --------------------------------- |
-| `children`            | `React.ReactNode`                       | -               | Child components                  |
-| `filters`             | `DashboardFilter[]`                     | `[]`            | Filter state                      |
-| `templates`           | `DashboardTemplate[]`                   | `[]`            | Template state                    |
-| `cardCatalog`         | `CardCatalogItem[]`                     | default catalog | Card types available in edit mode |
-| `selectedTemplate`    | `DashboardTemplate \| undefined`        | -               | The template to display           |
-| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`  | -               | Callback when filters change      |
-| `editable`            | `boolean`                               | `false`         | Enables dashboard edit controls   |
-| `onSaveLayout`        | `(template: DashboardTemplate) => void` | -               | Saves edits in current template   |
-| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void` | -               | Saves edits as a new template     |
-| `onCancelEdit`        | `() => void`                            | -               | Called when editing is canceled   |
+| Prop                  | Type                                          | Default         | Description                                                           |
+| --------------------- | --------------------------------------------- | --------------- | --------------------------------------------------------------------- |
+| `children`            | `React.ReactNode`                             | -               | Child components                                                      |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Filter state                                                          |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Template state                                                        |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in edit mode                                     |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display                                               |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                          |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit controls                                       |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Saves edits in current template                                       |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Saves edits as a new template                                         |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when editing is canceled                                       |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits |
 
 ### useDashboard Hook
 
@@ -354,6 +357,8 @@ import { DashboardGrid } from '@ttoss/react-dashboard';
 | --------- | --------- | ------- | ----------------------------- |
 | `loading` | `boolean` | -       | Shows loading spinner if true |
 
+The grid container includes a `data-export-target` attribute that consumers can use to locate it for screenshotting or PDF export.
+
 ### DashboardSectionDivider
 
 Component that displays a section divider with a title and horizontal line to visually separate sections in the dashboard grid.
@@ -420,6 +425,38 @@ const selectedTemplate: DashboardTemplate = {
   ],
 };
 ```
+
+## Utilities
+
+### Card Signature & Deduplication
+
+Helpers for identifying and deduplicating cards.
+
+```tsx
+import { getCardSignature, filterCatalogForGrid } from '@ttoss/react-dashboard';
+
+// Get a stable signature for a card (null for sectionDivider)
+const sig = getCardSignature(card);
+
+// Filter a catalog removing cards already placed in the grid
+const available = filterCatalogForGrid(catalog, grid);
+```
+
+- `getCardSignature(card)` — returns `null` for section dividers; prefers `id`, then `metrics`-based signature, then `type:title`.
+- `filterCatalogForGrid(catalog, grid)` — excludes catalog items whose signature matches a grid item and deduplicates the catalog. Does not mutate inputs.
+
+### Period Presets
+
+Factory for standard date-range presets. Dates are computed lazily at call time.
+
+```tsx
+import { createDefaultPeriodPresets } from '@ttoss/react-dashboard';
+
+const presets = createDefaultPeriodPresets();
+// Returns: Today, Yesterday, Last 7 days, This month, Last month, Last 30 days, Last quarter
+```
+
+Each preset has a `label` and a `getValue()` that returns `{ from: Date; to: Date }`.
 
 ## Filter Types
 

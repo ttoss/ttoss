@@ -138,7 +138,7 @@ export const DashboardGrid = ({
   };
 
   return (
-    <Box sx={{ width: '100%', height: 'full' }}>
+    <Box sx={{ width: '100%', height: 'full' }} data-export-target>
       <Global
         styles={{
           '.react-grid-item:has([data-tooltip-id]:hover)': {

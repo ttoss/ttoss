@@ -13,4 +13,13 @@ describe('index exports', () => {
     expect(dashboard.DEFAULT_CARD_CATALOG).toBeDefined();
     expect(dashboard.useDashboard).toBeDefined();
   });
+
+  test('should export card signature utilities', () => {
+    expect(dashboard.getCardSignature).toBeDefined();
+    expect(dashboard.filterCatalogForGrid).toBeDefined();
+  });
+
+  test('should export period presets factory', () => {
+    expect(dashboard.createDefaultPeriodPresets).toBeDefined();
+  });
 });
