@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.23.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.22.5...@docs/storybook@3.23.0) (2026-04-14)
+
+### Features
+
+- add wizard variants i18n and other changes ([#937](https://github.com/ttoss/ttoss/issues/937)) ([60f5959](https://github.com/ttoss/ttoss/commit/60f595965d1939593457ef2ff964f6770ea3afc9))
+
 ## [3.22.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.22.0...@docs/storybook@3.22.5) (2026-04-07)
 
 **Note:** Version bump only for package @docs/storybook
