@@ -5,7 +5,8 @@
 import { act, render, renderHook } from '@ttoss/test-utils/react';
 import type * as React from 'react';
 
-import { baseBundle } from '../../../../../src/baseBundle';
+import { createTheme } from '../../../../../src';
+import { baseBundle, baseIcons } from '../../../../../src/baseBundle';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
@@ -14,6 +15,7 @@ import {
   ThemeScript,
   ThemeStyles,
   useColorMode,
+  useIconGlyph,
   useResolvedTokens,
   useTokens,
 } from '../../../../../src/react';
@@ -969,5 +971,135 @@ describe('ThemeHead', () => {
     );
     const script = container.querySelector('script');
     expect(script?.innerHTML).toContain('"dark"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useIconGlyph
+// ---------------------------------------------------------------------------
+
+describe('useIconGlyph', () => {
+  afterEach(clearDom);
+
+  test('returns a non-empty string for a valid intent', () => {
+    const { result } = renderHook(
+      () => {
+        return useIconGlyph('action.search');
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider defaultMode="light" theme={defaultBundle}>
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    expect(typeof result.current).toBe('string');
+    expect(result.current.length).toBeGreaterThan(0);
+  });
+
+  test('returns the glyph defined in baseIcons for each intent', () => {
+    const { result } = renderHook(
+      () => {
+        return useIconGlyph('action.search');
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider defaultMode="light" theme={defaultBundle}>
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    expect(result.current).toBe(baseIcons['action.search']);
+  });
+
+  test('returns custom glyph when theme overrides a specific intent', () => {
+    const customBundle = createTheme({
+      icons: { ...baseIcons, 'action.search': 'custom:magnify' },
+    });
+
+    const { result } = renderHook(
+      () => {
+        return useIconGlyph('action.search');
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider defaultMode="light" theme={customBundle}>
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    expect(result.current).toBe('custom:magnify');
+  });
+
+  test('non-overridden intents still return baseIcons glyph in custom theme', () => {
+    const customBundle = createTheme({
+      icons: { ...baseIcons, 'action.search': 'custom:magnify' },
+    });
+
+    const { result } = renderHook(
+      () => {
+        return useIconGlyph('action.delete');
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider defaultMode="light" theme={customBundle}>
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    expect(result.current).toBe(baseIcons['action.delete']);
+  });
+
+  test('throws when theme prop is missing', () => {
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    expect(() => {
+      renderHook(
+        () => {
+          return useIconGlyph('action.search');
+        },
+        {
+          wrapper: ({ children }) => {
+            return (
+              <ThemeProvider defaultMode="light">{children}</ThemeProvider>
+            );
+          },
+        }
+      );
+    }).toThrow('useIconGlyph requires a <ThemeProvider theme={...}>');
+
+    consoleSpy.mockRestore();
+  });
+
+  test('throws when used outside ThemeProvider', () => {
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    expect(() => {
+      renderHook(() => {
+        return useIconGlyph('action.search');
+      });
+    }).toThrow('useIconGlyph must be used within a <ThemeProvider>');
+
+    consoleSpy.mockRestore();
   });
 });

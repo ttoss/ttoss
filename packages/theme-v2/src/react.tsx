@@ -10,7 +10,13 @@ import {
   type ThemeState,
 } from './runtime';
 import { getThemeScriptContent, type ThemeScriptConfig } from './ssrScript';
-import type { SemanticTokens, ThemeBundle, ThemeTokensV2 } from './Types';
+import type {
+  IconGlyphMap,
+  IconIntent,
+  SemanticTokens,
+  ThemeBundle,
+  ThemeTokensV2,
+} from './Types';
 
 export type { ThemeMode } from './runtime';
 export type { ResolvedMode } from './runtime';
@@ -45,6 +51,8 @@ const ResolvedTokensCtx = React.createContext<Record<
   string,
   string | number
 > | null>(null);
+
+const IconsCtx = React.createContext<IconGlyphMap | null>(null);
 
 // ---------------------------------------------------------------------------
 // Mode Context — subscribed only to mode state for re-render isolation
@@ -294,11 +302,13 @@ export const ThemeProvider = ({
     return (
       <>
         <style precedence="default">{cssContent}</style>
-        <ResolvedTokensCtx.Provider value={resolvedTokens}>
-          <SemanticTokensCtx.Provider value={semanticTokens}>
-            {coreNode}
-          </SemanticTokensCtx.Provider>
-        </ResolvedTokensCtx.Provider>
+        <IconsCtx.Provider value={theme.icons ?? null}>
+          <ResolvedTokensCtx.Provider value={resolvedTokens}>
+            <SemanticTokensCtx.Provider value={semanticTokens}>
+              {coreNode}
+            </SemanticTokensCtx.Provider>
+          </ResolvedTokensCtx.Provider>
+        </IconsCtx.Provider>
       </>
     );
   }
@@ -465,6 +475,39 @@ export const useResolvedTokens = (): Record<string, string | number> => {
   }
 
   return resolved;
+};
+
+// ---------------------------------------------------------------------------
+// useIconGlyph
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolves a canonical icon intent to its renderable glyph string for the
+ * current theme.
+ *
+ * Must be used within a `<ThemeProvider theme={...}>`.
+ *
+ * @example
+ * ```tsx
+ * const glyph = useIconGlyph('action.search'); // → 'lucide:search'
+ * ```
+ */
+export const useIconGlyph = (intent: IconIntent): string => {
+  const icons = React.useContext(IconsCtx);
+  const context = React.useContext(ModeContext);
+
+  if (!context) {
+    throw new Error('useIconGlyph must be used within a <ThemeProvider>');
+  }
+
+  if (icons === null) {
+    throw new Error(
+      'useIconGlyph requires a <ThemeProvider theme={...}>. ' +
+        'Pass your theme bundle: <ThemeProvider theme={myTheme} />'
+    );
+  }
+
+  return icons[intent];
 };
 
 // ---------------------------------------------------------------------------
