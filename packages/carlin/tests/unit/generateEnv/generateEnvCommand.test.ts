@@ -1,7 +1,9 @@
 /* eslint-disable no-var */
-import * as fs from 'fs';
-import { DEFAULT_ENVIRONMENT } from '../../../src/generateEnv/generateEnvCommand';
+import * as fs from 'node:fs';
+
 import { faker } from '@ttoss/test-utils/faker';
+
+import { DEFAULT_ENVIRONMENT } from '../../../src/generateEnv/generateEnvCommand';
 import { parseCli } from '../../testUtils';
 
 jest.mock('findup-sync', () => {
@@ -103,4 +105,178 @@ test('should read envs from path', async () => {
     expect.stringContaining('/.env'),
     content
   );
+});
+
+describe('deployOutputs', () => {
+  const envContent = 'EXISTING_VAR=existing_value';
+
+  const latestDeployFixture = {
+    stackName: 'TestStack',
+    outputs: {
+      AppSyncApiGraphQLUrl: {
+        OutputKey: 'AppSyncApiGraphQLUrl',
+        OutputValue:
+          'https://example.appsync-api.us-east-1.amazonaws.com/graphql',
+        ExportName: 'TestStack:AppSyncApiGraphQLUrl',
+      },
+      AppSyncApiArn: {
+        OutputKey: 'AppSyncApiArn',
+        OutputValue: 'arn:aws:appsync:us-east-1:123456789:apis/abc123',
+        ExportName: 'TestStack:AppSyncApiArn',
+      },
+    },
+  };
+
+  test('should append deploy output variables to .env content', async () => {
+    jest
+      .mocked(fs.promises.readFile)
+      .mockImplementation(async (filePath: unknown) => {
+        const p = filePath as string;
+
+        if (p.includes('/.env.Staging')) {
+          return envContent;
+        }
+
+        if (p.includes('.carlin/latest-deploy.json')) {
+          return JSON.stringify(latestDeployFixture);
+        }
+
+        throw new Error(`Unexpected readFile call: ${p}`);
+      });
+
+    await parseCli('generate-env', {
+      environment: 'Staging',
+      deployOutputs: [
+        {
+          dir: '../graph-api',
+          variables: {
+            VITE_APPSYNC_GRAPHQL_ENDPOINT: 'AppSyncApiGraphQLUrl.OutputValue',
+            VITE_APPSYNC_ARN: 'AppSyncApiArn.OutputValue',
+          },
+        },
+      ],
+    });
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.stringContaining(
+        'VITE_APPSYNC_GRAPHQL_ENDPOINT=https://example.appsync-api.us-east-1.amazonaws.com/graphql'
+      )
+    );
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.stringContaining(
+        'VITE_APPSYNC_ARN=arn:aws:appsync:us-east-1:123456789:apis/abc123'
+      )
+    );
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.stringContaining('EXISTING_VAR=existing_value')
+    );
+  });
+
+  test('should support non-OutputValue fields via dot-notation', async () => {
+    jest
+      .mocked(fs.promises.readFile)
+      .mockImplementation(async (filePath: unknown) => {
+        const p = filePath as string;
+
+        if (p.includes('/.env.Staging')) {
+          return envContent;
+        }
+
+        if (p.includes('.carlin/latest-deploy.json')) {
+          return JSON.stringify(latestDeployFixture);
+        }
+
+        throw new Error(`Unexpected readFile call: ${p}`);
+      });
+
+    await parseCli('generate-env', {
+      environment: 'Staging',
+      deployOutputs: [
+        {
+          dir: '../graph-api',
+          variables: {
+            VITE_APPSYNC_CONSOLE: 'AppSyncApiGraphQLUrl.ExportName',
+          },
+        },
+      ],
+    });
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.stringContaining(
+        'VITE_APPSYNC_CONSOLE=TestStack:AppSyncApiGraphQLUrl'
+      )
+    );
+  });
+
+  test('should skip and warn when output key is not found', async () => {
+    jest
+      .mocked(fs.promises.readFile)
+      .mockImplementation(async (filePath: unknown) => {
+        const p = filePath as string;
+
+        if (p.includes('/.env.Staging')) {
+          return envContent;
+        }
+
+        if (p.includes('.carlin/latest-deploy.json')) {
+          return JSON.stringify(latestDeployFixture);
+        }
+
+        throw new Error(`Unexpected readFile call: ${p}`);
+      });
+
+    await parseCli('generate-env', {
+      environment: 'Staging',
+      deployOutputs: [
+        {
+          dir: '../graph-api',
+          variables: {
+            VITE_MISSING: 'NonExistentKey.OutputValue',
+          },
+        },
+      ],
+    });
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.not.stringContaining('VITE_MISSING')
+    );
+  });
+
+  test('should skip dir and warn when latest-deploy.json cannot be read', async () => {
+    jest
+      .mocked(fs.promises.readFile)
+      .mockImplementation(async (filePath: unknown) => {
+        const p = filePath as string;
+
+        if (p.includes('/.env.Staging')) {
+          return envContent;
+        }
+
+        throw new Error('File not found');
+      });
+
+    await parseCli('generate-env', {
+      environment: 'Staging',
+      deployOutputs: [
+        {
+          dir: '../missing-pkg',
+          variables: {
+            VITE_SOMETHING: 'SomeKey.OutputValue',
+          },
+        },
+      ],
+    });
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      envContent
+    );
+  });
 });
