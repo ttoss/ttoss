@@ -12,6 +12,7 @@ import type {
   CirclePaint,
   DataSource,
   FillPaint,
+  GeoVisGeometryType,
   LinePaint,
   RasterPaint,
   VisualizationLayer,
@@ -22,6 +23,33 @@ const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
 const resolveStyleUrl = (spec: VisualizationSpec): string => {
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
+};
+
+// Maps spec-level camelCase paint keys to MapLibre kebab-case paint properties.
+// lineColor is geometry-dependent: polygon uses fill-outline-color, line uses line-color.
+const specPaintKeyToMaplibre = (
+  key: string,
+  geometry: GeoVisGeometryType
+): string | undefined => {
+  const map: Record<string, string | ((g: GeoVisGeometryType) => string)> = {
+    fillColor: 'fill-color',
+    fillOpacity: 'fill-opacity',
+    lineColor: (g) => {
+      return g === 'polygon' ? 'fill-outline-color' : 'line-color';
+    },
+    lineWidth: 'line-width',
+    lineOpacity: 'line-opacity',
+    lineDasharray: 'line-dasharray',
+    circleColor: 'circle-color',
+    circleRadius: 'circle-radius',
+    circleOpacity: 'circle-opacity',
+    circleStrokeColor: 'circle-stroke-color',
+    circleStrokeWidth: 'circle-stroke-width',
+    rasterOpacity: 'raster-opacity',
+  };
+  const entry = map[key];
+  if (!entry) return undefined;
+  return typeof entry === 'function' ? entry(geometry) : entry;
 };
 
 // Source translation
@@ -307,6 +335,25 @@ const createMapLibreAdapter = (): EngineAdapter => {
 
         viewState.spec = spec;
 
+        // Apply view state changes regardless of style changes.
+        const prevView = previousSpec.view;
+        const nextView = spec.view;
+        if (
+          prevView.center[0] !== nextView.center[0] ||
+          prevView.center[1] !== nextView.center[1]
+        ) {
+          map.setCenter(nextView.center as maplibregl.LngLatLike);
+        }
+        if (prevView.zoom !== nextView.zoom) {
+          map.setZoom(nextView.zoom);
+        }
+        if ((prevView.pitch ?? 0) !== (nextView.pitch ?? 0)) {
+          map.setPitch(nextView.pitch ?? 0);
+        }
+        if ((prevView.bearing ?? 0) !== (nextView.bearing ?? 0)) {
+          map.setBearing(nextView.bearing ?? 0);
+        }
+
         if (nextStyleUrl !== viewState.styleUrl) {
           viewState.styleUrl = nextStyleUrl;
           map.once('style.load', () => {
@@ -336,16 +383,23 @@ const createMapLibreAdapter = (): EngineAdapter => {
       if (patch.target !== 'layer' || patch.op !== 'replace') return;
       const parts = patch.path.split('.');
       // Expected path format: "layer.<layerId>.paint.<property>"
+      // <property> is a spec-level camelCase key (e.g. fillColor, circleRadius).
       if (parts.length < 4 || parts[2] !== 'paint') return;
       const layerId = parts[1];
-      const prop = parts[3];
-      if (!layerId || !prop) return;
+      const specKey = parts[3];
+      if (!layerId || !specKey) return;
 
       for (const viewState of _views.values()) {
+        const layer = viewState.spec.layers.find((l) => {
+          return l.id === layerId;
+        });
+        if (!layer) continue;
+        const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
+        if (!maplibreKey) continue;
         if (patch.value !== undefined) {
           viewState.map.setPaintProperty(
             layerId,
-            prop,
+            maplibreKey,
             patch.value as maplibregl.StyleSpecification
           );
         }

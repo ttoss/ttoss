@@ -29,12 +29,9 @@ export const createRuntime = (
     },
     applyPatch: (patch) => {
       adapter.applyPatch?.(patch);
-      // Keep currentSpec in sync so runtime.spec remains authoritative.
-      // Currently only layer-paint replace patches are reflected in currentSpec
-      // because the adapter (and MapLibre) only expose setPaintProperty for this.
+      // Keep currentSpec in sync with spec-level paint keys (camelCase)
       if (patch.op !== 'replace' || patch.target !== 'layer') return;
       const parts = patch.path.split('.');
-      // Expected path format: "layer.<layerId>.paint.<property>"
       if (parts.length < 4 || parts[2] !== 'paint') return;
       const layerId = parts[1];
       const prop = parts[3];

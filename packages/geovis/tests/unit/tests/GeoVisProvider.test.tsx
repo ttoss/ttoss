@@ -7,7 +7,9 @@ import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
-const mockRuntimeUpdate = jest.fn();
+// var is hoisted alongside jest.mock, so the reference is valid inside the factory.
+// eslint-disable-next-line no-var
+var mockRuntimeUpdate = jest.fn();
 
 jest.mock('src/runtime/createRuntime', () => {
   return {

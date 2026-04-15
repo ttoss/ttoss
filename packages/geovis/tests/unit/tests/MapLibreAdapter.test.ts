@@ -59,6 +59,10 @@ const makeMapMock = () => {
     setLayoutProperty: jest.fn(),
     setPaintProperty: jest.fn(),
     setStyle: jest.fn(),
+    setCenter: jest.fn(),
+    setZoom: jest.fn(),
+    setPitch: jest.fn(),
+    setBearing: jest.fn(),
   };
 };
 
@@ -324,6 +328,144 @@ describe('toMaplibreSource', () => {
       type: 'video',
       urls: ['https://example.com/v.mp4'],
     });
+  });
+});
+
+describe('applyPatch — camelCase to MapLibre key translation', () => {
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = {
+      ...makeSpec('p'),
+      sources: [
+        { id: 'src', type: 'geojson' as const, data: 'https://x.com/d.json' },
+      ],
+      layers: [
+        { id: 'poly', sourceId: 'src', geometry: 'polygon' as const },
+        { id: 'ln', sourceId: 'src', geometry: 'line' as const },
+        { id: 'pt', sourceId: 'src', geometry: 'point' as const },
+      ],
+    };
+    adapter.mount(makeContainer(), spec, 'v');
+    return { adapter, map };
+  };
+
+  test('fillColor → fill-color for polygon layer', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.poly.paint.fillColor',
+      value: '#ff0000',
+    });
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'poly',
+      'fill-color',
+      '#ff0000'
+    );
+  });
+
+  test('lineColor → fill-outline-color for polygon layer', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.poly.paint.lineColor',
+      value: '#000000',
+    });
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'poly',
+      'fill-outline-color',
+      '#000000'
+    );
+  });
+
+  test('lineColor → line-color for line layer', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.ln.paint.lineColor',
+      value: '#0000ff',
+    });
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'ln',
+      'line-color',
+      '#0000ff'
+    );
+  });
+
+  test('circleRadius → circle-radius for point layer', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.pt.paint.circleRadius',
+      value: 12,
+    });
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'pt',
+      'circle-radius',
+      12
+    );
+  });
+
+  test('unknown spec key is ignored (no setPaintProperty call)', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.poly.paint.unknownKey',
+      value: 'x',
+    });
+    expect(map.setPaintProperty).not.toHaveBeenCalled();
+  });
+});
+
+describe('update() — view state sync', () => {
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = makeSpec('vs');
+    adapter.mount(makeContainer(), spec, 'v');
+    return { adapter, map, spec };
+  };
+
+  test('changing center calls map.setCenter', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, center: [-43.0, -22.0] } });
+    expect(map.setCenter).toHaveBeenCalledWith([-43.0, -22.0]);
+  });
+
+  test('changing zoom calls map.setZoom', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, zoom: 15 } });
+    expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
+  test('changing pitch calls map.setPitch', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, pitch: 45 } });
+    expect(map.setPitch).toHaveBeenCalledWith(45);
+  });
+
+  test('changing bearing calls map.setBearing', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, bearing: 90 } });
+    expect(map.setBearing).toHaveBeenCalledWith(90);
+  });
+
+  test('unchanged view does not call setCenter or setZoom', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec });
+    expect(map.setCenter).not.toHaveBeenCalled();
+    expect(map.setZoom).not.toHaveBeenCalled();
   });
 });
 

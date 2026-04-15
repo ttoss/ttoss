@@ -206,7 +206,7 @@ export interface VisualizationSpec {
   engine: 'maplibre';
   view: ViewState;
   basemap?: BaseMapSpec;
-  sources: [DataSource, ...DataSource[]];
+  sources: DataSource[];
   layers: VisualizationLayer[];
   metadata?: Record<string, string | number | boolean>;
   adapterHints?: {
