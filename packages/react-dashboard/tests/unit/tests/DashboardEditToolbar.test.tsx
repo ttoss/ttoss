@@ -178,19 +178,21 @@ describe('DashboardEditToolbar', () => {
     render(<DashboardEditToolbar />);
 
     expect(
-      screen.getByRole('button', { name: 'Adicionar métricas' })
+      screen.getByRole('button', { name: 'Adicionar Métricas' })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Salvar' })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Salvar como novo' })
+      screen.getByRole('button', { name: 'Salvar Novo Template' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Cancelar edição' })
+      screen.getByRole('button', { name: 'Cancelar Edição' })
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar como novo' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar edição' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Salvar Novo Template' })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar Edição' }));
 
     expect(saveEdit).toHaveBeenCalledTimes(1);
     expect(saveAsNew).toHaveBeenCalledTimes(1);
@@ -226,7 +228,7 @@ describe('DashboardEditToolbar', () => {
 
     render(<DashboardEditToolbar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar métricas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métricas' }));
 
     expect(screen.getByText('Divisor de seção')).toBeInTheDocument();
     expect(screen.getByText('Meta')).toBeInTheDocument();
@@ -246,7 +248,7 @@ describe('DashboardEditToolbar', () => {
     );
 
     render(<DashboardEditToolbar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar métricas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métricas' }));
 
     fireEvent.change(screen.getByLabelText('Search cards'), {
       target: { value: 'meta' },
