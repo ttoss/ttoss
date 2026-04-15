@@ -2,7 +2,7 @@ import {
   type CloudFormationTemplate,
   findAndReadCloudFormationTemplate,
 } from '@ttoss/cloudformation';
-import AWS from 'aws-sdk';
+import type AWS from 'aws-sdk';
 import log from 'npmlog';
 
 import { getEnvironment, getPackageName, getProjectName } from '../utils';
@@ -338,7 +338,14 @@ const destroy = async ({ stackName }: { stackName: string }) => {
     throw new Error(message);
   }
 
-  await emptyStackBuckets({ stackName });
+  try {
+    await emptyStackBuckets({ stackName });
+  } catch (error) {
+    log.warn(
+      logPrefix,
+      `Failed to empty buckets for stack ${stackName}: ${(error as Error)?.message || error}. Proceeding with stack deletion.`
+    );
+  }
 
   await deleteStack({ stackName });
 };
