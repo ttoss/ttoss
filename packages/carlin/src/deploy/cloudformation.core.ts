@@ -246,78 +246,6 @@ const saveEnvironmentOutput = async ({
 };
 
 /**
- * Export CloudFormation stack outputs as environment variables to the CI/CD
- * runner environment.
- *
- * - **GitHub Actions**: appends `KEY=VALUE` lines to the file at `$GITHUB_ENV`,
- *   making the variables available to all subsequent steps.
- * - **Generic shell**: prints `export KEY=VALUE` lines to stdout so the output
- *   can be `eval`-ed by the calling shell.
- *
- * @example
- * ```ts
- * // carlin.ts
- * export default {
- *   envExport: {
- *     AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
- *     AppSyncApiArn: 'APPSYNC_API_ARN',
- *   },
- * };
- * ```
- */
-export const exportEnvVars = async ({
-  outputs,
-  envExport,
-}: {
-  outputs: AWS.CloudFormation.Output[];
-  envExport: Record<string, string>;
-}) => {
-  const githubEnvFile = process.env.GITHUB_ENV;
-
-  for (const [cfOutputKey, envVarName] of Object.entries(envExport)) {
-    const output = outputs.find(({ OutputKey }) => {
-      return OutputKey === cfOutputKey;
-    });
-
-    if (!output?.OutputValue) {
-      log.warn(
-        logPrefix,
-        `envExport: CloudFormation output "${cfOutputKey}" not found or has no value. Skipping export of "${envVarName}".`
-      );
-      continue;
-    }
-
-    const value = output.OutputValue;
-
-    if (githubEnvFile) {
-      /**
-       * GitHub Actions environment file format: each variable is written on a
-       * separate line as `KEY=VALUE`. Values with newlines must use the
-       * heredoc delimiter syntax; for simplicity we warn and skip those.
-       */
-      if (value.includes('\n')) {
-        log.warn(
-          logPrefix,
-          `envExport: value for "${cfOutputKey}" contains newlines and cannot be exported to GITHUB_ENV safely. Skipping.`
-        );
-        continue;
-      }
-
-      await fs.promises.appendFile(githubEnvFile, `${envVarName}=${value}\n`);
-      log.info(logPrefix, `envExport: wrote ${envVarName} to GITHUB_ENV`);
-    } else {
-      /**
-       * Escape single quotes in the value so the shell `export` statement
-       * remains syntactically correct (POSIX: replace each `'` with `'\''`).
-       */
-      const escapedValue = value.replace(/'/g, `'\\''`);
-      process.stdout.write(`export ${envVarName}='${escapedValue}'\n`);
-      log.info(logPrefix, `envExport: printed export ${envVarName} to stdout`);
-    }
-  }
-};
-
-/**
  * After deployment, Carlin prints the outputs defined in your CloudFormation
  * template and saves them in two files:
  *
@@ -330,16 +258,11 @@ export const exportEnvVars = async ({
  * to access the outputs of the last deployment, but don't have access to the
  * stack name. It's useful for end-to-end tests that need to access the outputs
  * of the last deployment and test the application.
- *
- * If `envExport` is provided, carlin also exports the mapped CloudFormation
- * outputs as environment variables to the CI/CD runner (see `exportEnvVars`).
  */
 export const printStackOutputsAfterDeploy = async ({
   stackName,
-  envExport,
 }: {
   stackName: string;
-  envExport?: Record<string, string>;
 }) => {
   const {
     EnableTerminationProtection,
@@ -364,10 +287,6 @@ export const printStackOutputsAfterDeploy = async ({
         '',
       ].join('\n')
     );
-  }
-
-  if (envExport && Object.keys(envExport).length > 0) {
-    await exportEnvVars({ outputs: Outputs, envExport });
   }
 };
 
@@ -471,11 +390,9 @@ export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
  */
 export const deploy = async ({
   terminationProtection = false,
-  envExport,
   ...paramsAndTemplate
 }: {
   terminationProtection?: boolean;
-  envExport?: Record<string, string>;
   params: CreateStackCommandInput | UpdateStackCommandInput;
   template: CloudFormationTemplate;
 }) => {
@@ -520,7 +437,7 @@ export const deploy = async ({
     await enableTerminationProtection({ stackName });
   }
 
-  await printStackOutputsAfterDeploy({ stackName, envExport });
+  await printStackOutputsAfterDeploy({ stackName });
 
   return describeStack({ stackName });
 };
