@@ -18,7 +18,7 @@ export const DashboardHeader = ({
           padding: '2',
           flexWrap: 'wrap',
           gap: '4',
-          alignItems: 'center',
+          alignItems: 'flex-end',
         }}
       >
         <DashboardFilters />
