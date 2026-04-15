@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.22...@docs/website@2.7.0) (2026-04-15)
+
+### Features
+
+- generate env dir ([#945](https://github.com/ttoss/ttoss/issues/945)) ([f5eed4c](https://github.com/ttoss/ttoss/commit/f5eed4c6a3c50cdee1c58db6d440a46e9d860862))
+
 ## [2.6.22](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.21...@docs/website@2.6.22) (2026-04-15)
 
 ### Reverts
