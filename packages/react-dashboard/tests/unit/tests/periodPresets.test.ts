@@ -101,6 +101,37 @@ describe('createDefaultPeriodPresets', () => {
     expect(lastQuarter.to.getDate()).toBe(31);
   });
 
+  test('Last quarter from Q2 (April) should be Q1', () => {
+    jest.setSystemTime(new Date('2025-04-15T12:00:00.000Z'));
+    const presets = createDefaultPeriodPresets();
+    const lastQuarter = presets[6];
+
+    expect(lastQuarter.from.getMonth()).toBe(0); // January
+    expect(lastQuarter.from.getFullYear()).toBe(2025);
+    expect(lastQuarter.to.getMonth()).toBe(2); // March
+    expect(lastQuarter.to.getDate()).toBe(31);
+  });
+
+  test('Last quarter from Q3 (July) should be Q2', () => {
+    jest.setSystemTime(new Date('2025-07-10T12:00:00.000Z'));
+    const presets = createDefaultPeriodPresets();
+    const lastQuarter = presets[6];
+
+    expect(lastQuarter.from.getMonth()).toBe(3); // April
+    expect(lastQuarter.to.getMonth()).toBe(5); // June
+    expect(lastQuarter.to.getDate()).toBe(30);
+  });
+
+  test('Last quarter from Q4 (October) should be Q3', () => {
+    jest.setSystemTime(new Date('2025-10-01T12:00:00.000Z'));
+    const presets = createDefaultPeriodPresets();
+    const lastQuarter = presets[6];
+
+    expect(lastQuarter.from.getMonth()).toBe(6); // July
+    expect(lastQuarter.to.getMonth()).toBe(8); // September
+    expect(lastQuarter.to.getDate()).toBe(30);
+  });
+
   test('all presets have from <= to', () => {
     const presets = createDefaultPeriodPresets();
     for (const preset of presets) {

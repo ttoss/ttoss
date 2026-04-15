@@ -142,9 +142,7 @@ export const DashboardGrid = ({
   return (
     <Box
       sx={{ width: '100%', height: 'full' }}
-      {...(rest['data-export-target']
-        ? { 'data-export-target': '' }
-        : undefined)}
+      {...(rest['data-export-target'] && { 'data-export-target': '' })}
     >
       <Global
         styles={{
