@@ -50,6 +50,28 @@ describe('getCardSignature', () => {
     expect(getCardSignature(card)).toBe('type:bigNumber:Total Revenue');
   });
 
+  test('should produce the same signature regardless of metrics key insertion order', () => {
+    const card1 = {
+      id: '',
+      title: 'Revenue',
+      numberType: 'number' as const,
+      type: 'bigNumber' as const,
+      sourceType: [{ source: 'api' as const }],
+      data: {},
+      metrics: [{ api: ['revenue'], meta: ['total_revenue'] }],
+    };
+    const card2 = {
+      id: '',
+      title: 'Revenue',
+      numberType: 'number' as const,
+      type: 'bigNumber' as const,
+      sourceType: [{ source: 'api' as const }],
+      data: {},
+      metrics: [{ meta: ['total_revenue'], api: ['revenue'] }],
+    };
+    expect(getCardSignature(card1)).toBe(getCardSignature(card2));
+  });
+
   test('should fall back to type:title when metrics array is empty', () => {
     const card = {
       id: '',

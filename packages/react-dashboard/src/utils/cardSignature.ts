@@ -4,6 +4,30 @@ import type { CardCatalogItem } from '../dashboardCardCatalog';
 import type { SectionDivider } from '../DashboardSectionDivider';
 
 /**
+ * Recursively sorts object keys and array elements to produce a
+ * deterministic JSON string regardless of key insertion order.
+ */
+const stableStringify = (value: unknown): string => {
+  if (value === null || value === undefined) {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(',')}]`;
+  }
+
+  if (typeof value === 'object') {
+    const sortedKeys = Object.keys(value as Record<string, unknown>).sort();
+    const entries = sortedKeys.map((key) => {
+      return `${JSON.stringify(key)}:${stableStringify((value as Record<string, unknown>)[key])}`;
+    });
+    return `{${entries.join(',')}}`;
+  }
+
+  return JSON.stringify(value);
+};
+
+/**
  * Returns a stable string signature for a dashboard card, or `null` for
  * `sectionDivider` cards.
  *
@@ -23,7 +47,7 @@ export const getCardSignature = (
   }
 
   if (dashboardCard.metrics && dashboardCard.metrics.length > 0) {
-    const metricsKey = JSON.stringify(dashboardCard.metrics);
+    const metricsKey = stableStringify(dashboardCard.metrics);
     return `metrics:${metricsKey}`;
   }
 
