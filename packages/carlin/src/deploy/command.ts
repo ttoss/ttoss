@@ -191,56 +191,6 @@ export const options = {
     describe: 'Set the stack name.',
     type: 'string',
   },
-  /**
-   * Mapping of CloudFormation output keys to environment variable names.
-   * After a successful deployment, carlin reads the stack outputs and exports
-   * the mapped variables to the CI/CD runner environment:
-   *
-   * - **GitHub Actions**: appends `KEY=VALUE` lines to `$GITHUB_ENV`.
-   * - **Generic shell**: prints `export KEY=VALUE` lines to stdout.
-   *
-   * Configure in your `carlin.ts`:
-   *
-   * ```ts
-   * export default {
-   *   envExport: {
-   *     AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-   *     AppSyncApiArn: 'APPSYNC_API_ARN',
-   *   },
-   * };
-   * ```
-   *
-   * Can also be combined with per-environment config:
-   *
-   * ```ts
-   * export default {
-   *   environments: {
-   *     Staging: {
-   *       envExport: {
-   *         AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-   *       },
-   *     },
-   *   },
-   * };
-   * ```
-   */
-  'env-export': {
-    describe:
-      'Mapping of CloudFormation output keys to environment variable names to export after deployment.',
-    coerce: (arg: unknown) => {
-      if (
-        typeof arg === 'object' &&
-        arg !== null &&
-        !Array.isArray(arg) &&
-        Object.values(arg).every((v) => {
-          return typeof v === 'string';
-        })
-      ) {
-        return arg as Record<string, string>;
-      }
-      return undefined;
-    },
-  },
   'template-path': {
     alias: 't',
     describe: 'Path to the CloudFormation template.',
