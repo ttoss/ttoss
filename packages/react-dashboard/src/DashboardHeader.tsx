@@ -22,7 +22,17 @@ export const DashboardHeader = ({
         }}
       >
         <DashboardFilters />
-        {children}
+        {children && (
+          <Flex
+            sx={{
+              gap: '2',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            {children}
+          </Flex>
+        )}
       </Flex>
       {editable && <DashboardEditToolbar />}
     </Flex>

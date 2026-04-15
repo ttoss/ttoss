@@ -63,6 +63,7 @@ export const DashboardProvider = (props: {
   onSaveLayout?: (template: DashboardTemplate) => void;
   onSaveAsNewTemplate?: (template: DashboardTemplate) => void;
   onCancelEdit?: () => void;
+  onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
 }) => {
   const {
     filters: externalFilters,
@@ -74,6 +75,7 @@ export const DashboardProvider = (props: {
     onSaveLayout,
     onSaveAsNewTemplate,
     onCancelEdit,
+    onEditingGridChange,
   } = props;
 
   const [isEditMode, setIsEditMode] = React.useState(false);
@@ -103,6 +105,15 @@ export const DashboardProvider = (props: {
   React.useEffect(() => {
     onCancelEditRef.current = onCancelEdit;
   }, [onCancelEdit]);
+
+  const onEditingGridChangeRef = React.useRef(onEditingGridChange);
+  React.useEffect(() => {
+    onEditingGridChangeRef.current = onEditingGridChange;
+  }, [onEditingGridChange]);
+
+  React.useEffect(() => {
+    onEditingGridChangeRef.current?.(editingGrid);
+  }, [editingGrid]);
 
   const updateFilter = React.useCallback(
     (key: string, value: DashboardFilterValue) => {

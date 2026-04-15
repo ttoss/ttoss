@@ -1,4 +1,4 @@
-import { render, screen } from '@ttoss/test-utils/react';
+import { act, render, screen } from '@ttoss/test-utils/react';
 import {
   Dashboard,
   type DashboardFilter,
@@ -313,5 +313,142 @@ describe('Dashboard', () => {
     expect(screen.getByText('Revenue Metrics')).toBeInTheDocument();
     expect(screen.getByText('CTR')).toBeInTheDocument();
     expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+  });
+
+  test('should call onEditingGridChange with null on cancel', async () => {
+    const onEditingGridChange = jest.fn();
+
+    const EditTrigger = () => {
+      const { startEdit, cancelEdit } = useDashboard();
+      return (
+        <>
+          <button
+            onClick={() => {
+              return startEdit();
+            }}
+          >
+            Start Edit
+          </button>
+          <button
+            onClick={() => {
+              return cancelEdit();
+            }}
+          >
+            Cancel Edit
+          </button>
+        </>
+      );
+    };
+
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        selectedTemplate={mockTemplate}
+        editable
+        onEditingGridChange={onEditingGridChange}
+        headerChildren={<EditTrigger />}
+      />
+    );
+
+    await act(async () => {
+      screen.getByText('Start Edit').click();
+    });
+
+    // Should have been called with the grid array when entering edit mode
+    expect(onEditingGridChange).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ i: 'card-1' })])
+    );
+
+    onEditingGridChange.mockClear();
+
+    await act(async () => {
+      screen.getByText('Cancel Edit').click();
+    });
+
+    // Should be called with null when edit mode exits
+    expect(onEditingGridChange).toHaveBeenCalledWith(null);
+  });
+
+  test('should render Export PDF button when onExportPdf is provided', () => {
+    const onExportPdf = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        onExportPdf={onExportPdf}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Export PDF' })
+    ).toBeInTheDocument();
+  });
+
+  test('should not render Export PDF button when onExportPdf is not provided', () => {
+    render(<Dashboard templates={[mockTemplate]} filters={mockFilters} />);
+
+    expect(
+      screen.queryByRole('button', { name: 'Export PDF' })
+    ).not.toBeInTheDocument();
+  });
+
+  test('should disable Export PDF button while promise is pending', async () => {
+    let resolveExport: () => void;
+    const onExportPdf = jest.fn(() => {
+      return new Promise<void>((resolve) => {
+        resolveExport = resolve;
+      });
+    });
+
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        onExportPdf={onExportPdf}
+      />
+    );
+
+    const button = screen.getByRole('button', { name: 'Export PDF' });
+    expect(button).not.toBeDisabled();
+
+    await act(async () => {
+      button.click();
+    });
+
+    expect(button).toBeDisabled();
+
+    await act(async () => {
+      resolveExport!();
+    });
+
+    expect(button).not.toBeDisabled();
+  });
+
+  test('should render headerChildren items centered via wrapper', () => {
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        headerChildren={
+          <>
+            <button data-testid="btn-1">Button 1</button>
+            <button data-testid="btn-2">Button 2</button>
+          </>
+        }
+      />
+    );
+
+    const btn1 = screen.getByTestId('btn-1');
+    const btn2 = screen.getByTestId('btn-2');
+
+    // Both buttons should be rendered inside the header
+    expect(btn1).toBeInTheDocument();
+    expect(btn2).toBeInTheDocument();
+
+    // The wrapper should have align-items: center style
+    const wrapper = btn1.parentElement;
+    expect(wrapper).toBeTruthy();
   });
 });

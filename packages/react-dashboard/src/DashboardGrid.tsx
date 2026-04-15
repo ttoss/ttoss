@@ -68,10 +68,12 @@ export const DashboardGrid = ({
   loading,
   selectedTemplate,
   isEditMode = false,
+  ...rest
 }: {
   loading: boolean;
   selectedTemplate?: DashboardTemplate;
   isEditMode?: boolean;
+  'data-export-target'?: boolean;
 }) => {
   const { onLayoutChange, removeCard, updateCard } = useDashboard();
 
@@ -138,7 +140,12 @@ export const DashboardGrid = ({
   };
 
   return (
-    <Box sx={{ width: '100%', height: 'full' }}>
+    <Box
+      sx={{ width: '100%', height: 'full' }}
+      {...(rest['data-export-target']
+        ? { 'data-export-target': '' }
+        : undefined)}
+    >
       <Global
         styles={{
           '.react-grid-item:has([data-tooltip-id]:hover)': {
