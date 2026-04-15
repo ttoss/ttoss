@@ -29,6 +29,7 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/theme": "workspace:^",
+    "@ttoss/theme2": "workspace:^",
     "@ttoss/ui": "workspace:^"
   },
   "devDependencies": {

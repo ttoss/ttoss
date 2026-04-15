@@ -8,7 +8,7 @@
  */
 
 import { createTheme, type ModeOverride } from '../../../../src';
-import { baseBundle } from '../../../../src/baseBundle';
+import { baseBundle, baseIcons } from '../../../../src/baseBundle';
 import {
   baseTheme as defaultTheme,
   darkAlternate,
@@ -181,6 +181,33 @@ describe('createTheme', () => {
   test('baseBundle has light baseMode and a dark alternate', () => {
     expect(baseBundle.baseMode).toBe('light');
     expect(baseBundle.alternate).toBeDefined();
+  });
+
+  test('createTheme() with no args includes baseIcons as default icons', () => {
+    const bundle = createTheme();
+    expect(bundle.icons).toBeDefined();
+    expect(typeof bundle.icons?.['action.search']).toBe('string');
+    expect((bundle.icons?.['action.search'] as string).length).toBeGreaterThan(
+      0
+    );
+  });
+
+  test('createTheme({ icons }) replaces the default mapping entirely', () => {
+    const customIcons = { ...baseIcons, 'action.search': 'custom:magnify' };
+    const bundle = createTheme({ icons: customIcons });
+    expect(bundle.icons?.['action.search']).toBe('custom:magnify');
+    expect(bundle.icons?.['action.add']).toBe(baseIcons['action.add']);
+  });
+
+  test('createTheme({ extends }) inherits icons from parent bundle', () => {
+    const child = createTheme({ extends: baseBundle });
+    expect(child.icons).toEqual(baseBundle.icons);
+  });
+
+  test('explicit icons override inherited icons from extends', () => {
+    const customIcons = { ...baseIcons, 'action.search': 'custom:magnify' };
+    const child = createTheme({ extends: baseBundle, icons: customIcons });
+    expect(child.icons?.['action.search']).toBe('custom:magnify');
   });
 });
 

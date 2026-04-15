@@ -12,10 +12,11 @@
 //   dataviz         → '@ttoss/theme2/dataviz'
 // ---------------------------------------------------------------------------
 
-export { darkAlternate } from './baseBundle';
+export { baseIcons, darkAlternate } from './baseBundle';
 export { createTheme } from './createTheme';
 export type { ThemeHeadProps, ThemeStylesProps } from './react';
 export type { ThemeMode } from './runtime';
+export type { IconGlyphMap, IconIntent } from './Types';
 export type { SemanticTokens } from './Types';
 export type {
   DeepPartial,

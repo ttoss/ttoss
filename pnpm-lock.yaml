@@ -230,6 +230,9 @@ importers:
       '@ttoss/theme':
         specifier: workspace:^
         version: link:../../packages/theme
+      '@ttoss/theme2':
+        specifier: workspace:^
+        version: link:../../packages/theme-v2
       '@ttoss/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -1722,6 +1725,9 @@ importers:
       '@iconify-icon/react':
         specifier: ^2.2.0
         version: 2.3.0(react@19.2.4)
+      '@ttoss/theme2':
+        specifier: '>=1.0.0'
+        version: 1.0.1(react@19.2.4)
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
@@ -6810,6 +6816,14 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@ttoss/theme2@1.0.1':
+    resolution: {integrity: sha512-sQXKtonyasTNnlKh0ILWv/63t/Jt1yAQC0h+wwbu4t2pJnAPc9mvs0TUPVbUvJoX4rDmjUKbSoIptTfiOld+Bg==}
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@turbo/darwin-64@2.9.3':
     resolution: {integrity: sha512-P8foouaP+y/p+hhEGBoZpzMbpVvUMwPjDpcy6wN7EYfvvyISD1USuV27qWkczecihwuPJzQ1lDBuL8ERcavTyg==}
@@ -23762,6 +23776,10 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@ttoss/theme2@1.0.1(react@19.2.4)':
+    optionalDependencies:
+      react: 19.2.4
 
   '@turbo/darwin-64@2.9.3':
     optional: true

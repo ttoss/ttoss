@@ -28,7 +28,13 @@
     "@iconify-icon/react": "^2.2.0"
   },
   "peerDependencies": {
+    "@ttoss/theme2": ">=1.0.0",
     "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "@ttoss/theme2": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

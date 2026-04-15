@@ -756,6 +756,63 @@ export type ModeOverride = {
   semantic: DeepPartial<ThemeTokensV2['semantic']>;
 };
 
+// ---------------------------------------------------------------------------
+// Icon System
+// ---------------------------------------------------------------------------
+
+/**
+ * All canonical icon intents. Follows the grammar: `{family}.{intent}`
+ *
+ * @see icon-system.md — Canonical Intent Registry
+ */
+export type IconIntent =
+  // action
+  | 'action.add'
+  | 'action.edit'
+  | 'action.copy'
+  | 'action.paste'
+  | 'action.search'
+  | 'action.download'
+  | 'action.upload'
+  | 'action.share'
+  | 'action.refresh'
+  | 'action.close'
+  | 'action.clear'
+  | 'action.delete'
+  // navigation
+  | 'navigation.back'
+  | 'navigation.forward'
+  | 'navigation.external'
+  // disclosure
+  | 'disclosure.expand'
+  | 'disclosure.collapse'
+  // visibility
+  | 'visibility.show'
+  | 'visibility.hide'
+  // selection
+  | 'selection.checked'
+  | 'selection.unchecked'
+  | 'selection.indeterminate'
+  // status
+  | 'status.success'
+  | 'status.warning'
+  | 'status.error'
+  | 'status.info'
+  // object
+  | 'object.user'
+  | 'object.calendar'
+  | 'object.attachment'
+  | 'object.settings';
+
+/**
+ * Complete mapping from every canonical intent to a renderable glyph.
+ *
+ * The glyph is a provider-specific string — an Iconify ID, a sprite reference,
+ * or any other format the consuming Icon component understands.
+ * The theme decides the format; the contract enforces completeness.
+ */
+export type IconGlyphMap = Record<IconIntent, string>;
+
 /**
  * A theme bundle packages a complete `ThemeTokensV2` (the base)
  * with an optional semantic-only override for the alternate color mode.
@@ -791,6 +848,18 @@ export interface ThemeBundle {
    * Only semantic references that differ need to be listed — core tokens are shared.
    */
   alternate?: ModeOverride;
+  /**
+   * Glyph mapping — assigns a renderable glyph to every canonical icon intent.
+   *
+   * Icon glyphs are not CSS tokens and are not serialized to CSS custom properties.
+   * They live here, separate from `base`, because they are renderable assets
+   * consumed by the Icon component at runtime, not by the CSS cascade.
+   *
+   * A theme that omits `icons` inherits the default mapping from the base bundle.
+   * A theme that provides `icons` must map every canonical intent — partial
+   * mappings are a contract violation enforced by the TypeScript type system.
+   */
+  icons?: IconGlyphMap;
 }
 
 // ---------------------------------------------------------------------------
