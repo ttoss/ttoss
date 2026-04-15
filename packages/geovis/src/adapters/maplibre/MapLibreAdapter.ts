@@ -430,11 +430,21 @@ const createMapLibreAdapter = (): EngineAdapter => {
             const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
             if (!maplibreKey) continue;
             if (patch.value !== undefined) {
-              map.setPaintProperty(
-                layerId,
-                maplibreKey,
-                patch.value as maplibregl.StyleSpecification
-              );
+              if (map.isStyleLoaded()) {
+                map.setPaintProperty(
+                  layerId,
+                  maplibreKey,
+                  patch.value as maplibregl.StyleSpecification
+                );
+              } else {
+                map.once('style.load', () => {
+                  map.setPaintProperty(
+                    layerId,
+                    maplibreKey,
+                    patch.value as maplibregl.StyleSpecification
+                  );
+                });
+              }
             }
           }
         } else if (patch.target === 'source') {
