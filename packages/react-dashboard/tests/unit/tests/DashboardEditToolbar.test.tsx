@@ -178,7 +178,7 @@ describe('DashboardEditToolbar', () => {
     render(<DashboardEditToolbar />);
 
     expect(
-      screen.getByRole('button', { name: 'Adicionar item' })
+      screen.getByRole('button', { name: 'Adicionar métricas' })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Salvar' })).toBeInTheDocument();
     expect(
@@ -226,7 +226,7 @@ describe('DashboardEditToolbar', () => {
 
     render(<DashboardEditToolbar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar item' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar métricas' }));
 
     expect(screen.getByText('Divisor de seção')).toBeInTheDocument();
     expect(screen.getByText('Meta')).toBeInTheDocument();
@@ -246,7 +246,7 @@ describe('DashboardEditToolbar', () => {
     );
 
     render(<DashboardEditToolbar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar item' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar métricas' }));
 
     fireEvent.change(screen.getByLabelText('Search cards'), {
       target: { value: 'meta' },
