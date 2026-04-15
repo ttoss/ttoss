@@ -23,7 +23,7 @@ export const generateEnvCommand: CommandModule<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any,
   InferredOptionTypes<typeof options> & {
-    envFromDeployOutputs?: DeployOutput[];
+    envFromDeployOutputs?: DeployOutput[] | null;
   }
 > = {
   command: ['generate-env', 'ge', 'env'],

@@ -59,26 +59,17 @@ and deploy accordingly to the following algorithm:
 
 ### Stack Name
 
-<Carlin /> creates automatically the
-<a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-console-create-stack-parameters.html">
-  CloudFormation stack name
-</a>
-, unless it is already specified at the
-<OptionAliasesInline
-  options={deployCommandOptions}
-  option="stack-name"
-  to="/docs/carlin/commands/deploy#options"
-/>
-option. This name is very important because it'll track the deployment when a
-update or a delete is performed.
+<Carlin /> creates automatically the CloudFormation stack name. See [Stack
+Naming](/docs/carlin/core-concepts/stack-naming) for the full naming algorithm
+and examples.
+
+You can override the automatic name with the <OptionAliasesInline options={deployCommandOptions} option="stack-name" to="/docs/carlin/commands/deploy#options" /> option.
 
 :::caution
 
 <InnerHTML html={stackNameWarningComment} />
 
 ::::
-
-<InnerHTML html={stackNameComment} />
 
 ## Lambda
 
@@ -244,7 +235,7 @@ The destroy algorithm is the following:
 :::danger
 
 This operation is irreversible. You must pay attention because you may destroy resources that contains your App data, like DynamoDB, using this command.
-To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/configuration#global-options" /> isn't defined.
+To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/commands/deploy#options" /> isn't defined.
 
 :::
 
@@ -261,7 +252,7 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 <InnerHTML html={cloudFormationOutputsComment} />
 
-After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`. Use [`carlin deploy report`](/docs/carlin/commands/deploy-report) to print them to stdout or publish them to a channel (e.g. a GitHub PR comment).
+After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`.
 
 ## API
 
