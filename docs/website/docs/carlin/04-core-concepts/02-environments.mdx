@@ -188,165 +188,24 @@ jobs:
 
 ## Environment vs Branch Naming
 
-Understanding the difference between environment-based and branch-based stack naming:
+See [Stack Naming](/docs/carlin/core-concepts/stack-naming) for the full naming algorithm.
 
-| Configuration                           | Stack Name            | Termination Protection |
-| --------------------------------------- | --------------------- | ---------------------- |
-| No environment, branch `main`           | `my-app-main`         | ❌ No                  |
-| No environment, branch `feature/auth`   | `my-app-feature-auth` | ❌ No                  |
-| `--environment staging`                 | `my-app-staging`      | ✅ Yes                 |
-| `--environment production`              | `my-app-production`   | ✅ Yes                 |
-| `--environment dev`, branch `feature/x` | `my-app-dev`          | ✅ Yes                 |
-
-:::tip
-Environment always takes precedence over branch name in stack naming.
-:::
+Key difference: deploying with `--environment` enables **termination protection** and the environment name takes precedence over the branch name.
 
 ## Environment Variables
 
-carlin supports environment-specific variables through template parameters:
-
-```typescript
-// cloudformation.ts
-export const template = {
-  Parameters: {
-    Environment: {
-      Type: 'String',
-      Default: 'development',
-      AllowedValues: ['development', 'staging', 'production'],
-    },
-    DatabaseInstanceType: {
-      Type: 'String',
-      Default: 'db.t3.micro',
-    },
-  },
-  Resources: {
-    Database: {
-      Type: 'AWS::RDS::DBInstance',
-      Properties: {
-        DBInstanceClass: { Ref: 'DatabaseInstanceType' },
-        // Different settings based on environment
-        BackupRetentionPeriod: {
-          'Fn::If': [
-            { 'Fn::Equals': [{ Ref: 'Environment' }, 'production'] },
-            7, // 7 days for production
-            1, // 1 day for non-production
-          ],
-        },
-      },
-    },
-  },
-};
-```
-
-Pass environment-specific values:
+Use CloudFormation parameters to pass environment-specific values:
 
 ```bash
 carlin deploy --environment staging --parameters '{"Environment":"staging","DatabaseInstanceType":"db.t3.small"}'
-
-carlin deploy --environment production --parameters '{"Environment":"production","DatabaseInstanceType":"db.r5.large"}'
-```
-
-## Verifying Environment Configuration
-
-Check which environment is active:
-
-```bash
-# Set environment
-export CARLIN_ENVIRONMENT=staging
-
-# Deploy (uses staging environment)
-carlin deploy
-
-# Verify stack name includes environment
-carlin deploy describe
-# Stack: my-app-staging
 ```
 
 ## Best Practices
 
-### 1. Always Use Environments for Shared Stages
-
-```bash
-# ✅ Good: Protected staging/production
-carlin deploy --environment staging
-carlin deploy --environment production
-
-# ❌ Avoid: No protection for important environments
-carlin deploy # relies on branch name
-```
-
-### 2. Separate AWS Accounts for Production
-
-Use different AWS accounts for production:
-
-```bash
-# Development account (111111111111)
-AWS_PROFILE=dev carlin deploy --environment staging
-
-# Production account (222222222222)
-AWS_PROFILE=prod carlin deploy --environment production
-```
-
-### 3. Document Environment Configurations
-
-Create `README.md` documenting environment setup:
-
-````markdown
-## Environments
-
-- **Development**: Feature branches, no environment flag
-- **Staging**: `--environment staging`, AWS account 111111111111
-- **Production**: `--environment production`, AWS account 222222222222
-
-## Deploy Commands
-
-```bash
-# Development
-carlin deploy
-
-# Staging
-AWS_PROFILE=staging carlin deploy --environment staging
-
-# Production
-AWS_PROFILE=production carlin deploy --environment production
-```
-````
-
-````
-
-### 4. Use Environment-Specific Parameters
-
-Never hardcode environment-specific values:
-
-```typescript
-// ❌ Bad: Hardcoded production values
-export const template = {
-  Resources: {
-    Bucket: {
-      Type: 'AWS::S3::Bucket',
-      Properties: {
-        BucketName: 'my-production-bucket', // hardcoded
-      },
-    },
-  },
-};
-
-// ✅ Good: Parameterized values
-export const template = {
-  Parameters: {
-    BucketName: { Type: 'String' },
-  },
-  Resources: {
-    Bucket: {
-      Type: 'AWS::S3::Bucket',
-      Properties: {
-        BucketName: { Ref: 'BucketName' },
-      },
-    },
-  },
-};
-````
+- **Always use `--environment` for shared stages** (staging, production) to enable termination protection
+- **Separate AWS accounts for production** when possible
+- **Use parameterized values** instead of hardcoding environment-specific settings
+- **Document your environment setup** in a README
 
 ## Troubleshooting
 

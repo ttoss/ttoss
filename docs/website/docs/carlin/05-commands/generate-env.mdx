@@ -14,11 +14,10 @@ By default this reads `.env.Staging` and writes `.env`. The environment is resol
 
 ## Options
 
-| Option                  | Alias | Default       | Description                                                     |
-| ----------------------- | ----- | ------------- | --------------------------------------------------------------- |
-| `--default-environment` | `-d`  | `Staging`     | Fallback environment name when `--environment` is not set       |
-| `--path`                | `-p`  | `./`          | Directory where `.env.<Environment>` source files are looked up |
-| `--stack-name`          |       | auto-detected | CloudFormation stack to fetch outputs from                      |
+| Option                  | Alias | Default   | Description                                                     |
+| ----------------------- | ----- | --------- | --------------------------------------------------------------- |
+| `--default-environment` | `-d`  | `Staging` | Fallback environment name when `--environment` is not set       |
+| `--path`                | `-p`  | `./`      | Directory where `.env.<Environment>` source files are looked up |
 
 ## Merging Outputs from Other Packages
 
@@ -41,17 +40,37 @@ Each entry under `envFromDeployOutputs` reads `.carlin/latest-deploy.json` insid
 
 If the file cannot be read, or the specified output key/field does not exist, a warning is logged and that variable is skipped.
 
-The result is appended to the content copied from `.env.<Environment>`:
+Deploy output variables are merged into the generated `.env`. If a key from `envFromDeployOutputs` already exists in `.env.<Environment>`, the **deploy output value wins** — the static value is removed. This lets you commit a sensible default in `.env.Staging` and have the real deployed value override it automatically.
 
 ```bash
+# .env.Staging (source)
+EXISTING_VAR=from-env-staging-file
+VITE_APPSYNC_GRAPHQL_ENDPOINT=https://static-placeholder.example.com/graphql
+
 # .env (generated)
 EXISTING_VAR=from-env-staging-file
 
-VITE_APPSYNC_GRAPHQL_ENDPOINT=https://wlzbneunwjctrddgrvlll672bm.appsync-api.us-east-1.amazonaws.com/graphql
+VITE_APPSYNC_GRAPHQL_ENDPOINT=https://wlzbneunwjctrddgrvlllm.appsync-api.us-east-1.amazonaws.com/graphql
 VITE_APPSYNC_CONSOLE_URL=MyStack:AppSyncApiGraphQLUrl
 ```
 
-## Related Topics
+## Disabling Deploy Outputs for a Specific Environment
 
-- [Commands: deploy](/docs/carlin/commands/deploy) - Deploy infrastructure and write `latest-deploy.json`
-- [Configuration](/docs/carlin/configuration) - Stack naming and regions
+You can set `envFromDeployOutputs: null` under a specific environment in `carlin.yml` to skip deploy output resolution entirely for that environment. This is useful when a particular environment (e.g. `Production`) should always use values baked into the static `.env.Production` file rather than pulling live stack outputs.
+
+```yaml
+# carlin.yml
+envFromDeployOutputs:
+  - dir: ../graph-api
+    variables:
+      VITE_APPSYNC_GRAPHQL_ENDPOINT: AppSyncApiGraphQLUrl.OutputValue
+
+environments:
+  Staging:
+    cloudfront: true
+  Production:
+    cloudfront: true
+    envFromDeployOutputs: null # disables deploy output resolution for Production
+```
+
+When `carlin generate-env --environment Production` runs, it reads `.env.Production` as normal but does **not** attempt to read any `latest-deploy.json` files. The generated `.env` contains only the static values from `.env.Production`.

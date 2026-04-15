@@ -22,11 +22,11 @@ When you don't specify `--stack-name`, carlin generates the name using this algo
 
 | Package Name      | Environment  | Branch         | Stack Name               |
 | ----------------- | ------------ | -------------- | ------------------------ |
-| `my-app`          | `production` | `main`         | `my-app-production`      |
+| `my-app`          | `Production` | `main`         | `my-app-Production`      |
 | `my-app`          | -            | `feature/auth` | `my-app-feature-auth`    |
-| `@company/api`    | `staging`    | -              | `api-staging`            |
+| `@company/api`    | `Staging`    | -              | `api-Staging`            |
 | `my-app`          | -            | `main`         | `my-app-main`            |
-| (no package.json) | `production` | -              | `Stack-96830-production` |
+| (no package.json) | `Production` | -              | `Stack-96830-Production` |
 
 :::tip
 Scoped package names (e.g., `@company/api`) use only the package name without the scope (`api`).
@@ -218,9 +218,3 @@ carlin deploy --destroy --environment production
 # This works (removes environment constraint)
 carlin deploy --destroy --stack-name my-app-production
 ```
-
-## Related Topics
-
-- [Environments](/docs/carlin/core-concepts/environments) - Environment configuration and protection
-- [Configuration](/docs/carlin/configuration) - Global and stack-specific settings
-- [Multi-Environment Guide](/docs/carlin/guides/multi-environment-setup) - Setting up staging and production

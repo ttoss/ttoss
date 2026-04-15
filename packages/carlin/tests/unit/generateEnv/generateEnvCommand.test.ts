@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 import * as fs from 'node:fs';
 
 import { faker } from '@ttoss/test-utils/faker';
@@ -177,6 +176,52 @@ describe('envFromDeployOutputs', () => {
     );
   });
 
+  test('should override duplicate keys from .env source file', async () => {
+    const staticEndpoint = 'https://static.example.com/graphql';
+    const deployedEndpoint =
+      'https://example.appsync-api.us-east-1.amazonaws.com/graphql';
+
+    jest
+      .mocked(fs.promises.readFile)
+      .mockImplementation(async (filePath: unknown) => {
+        const p = filePath as string;
+
+        if (p.includes('/.env.Staging')) {
+          return `EXISTING_VAR=existing_value\nVITE_APPSYNC_GRAPHQL_ENDPOINT=${staticEndpoint}`;
+        }
+
+        if (p.includes('.carlin/latest-deploy.json')) {
+          return JSON.stringify(latestDeployFixture);
+        }
+
+        throw new Error(`Unexpected readFile call: ${p}`);
+      });
+
+    await parseCli('generate-env', {
+      environment: 'Staging',
+      envFromDeployOutputs: [
+        {
+          dir: '../graph-api',
+          variables: {
+            VITE_APPSYNC_GRAPHQL_ENDPOINT: 'AppSyncApiGraphQLUrl.OutputValue',
+          },
+        },
+      ],
+    });
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.not.stringContaining(staticEndpoint)
+    );
+
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      expect.stringContaining('/.env'),
+      expect.stringContaining(
+        `VITE_APPSYNC_GRAPHQL_ENDPOINT=${deployedEndpoint}`
+      )
+    );
+  });
+
   test('should support non-OutputValue fields via dot-notation', async () => {
     jest
       .mocked(fs.promises.readFile)
@@ -278,5 +323,57 @@ describe('envFromDeployOutputs', () => {
       expect.stringContaining('/.env'),
       envContent
     );
+  });
+
+  describe('setting envFromDeployOutputs to null for a specific environment', () => {
+    const productionEnvContent =
+      'EXISTING_VAR=existing_value\nVITE_OTHER_VAR=other_value';
+
+    /**
+     * This test mirrors the following carlin.yml pattern:
+     *
+     * envFromDeployOutputs:
+     *   - dir: ../graph-api
+     *     variables:
+     *       VITE_APPSYNC_GRAPHQL_ENDPOINT: AppSyncApiGraphQLUrl.OutputValue
+     *
+     * environments:
+     *   Production:
+     *     envFromDeployOutputs: null
+     *
+     * When running `carlin generate-env --environment Production`, the
+     * handleEnvironments middleware detects that envFromDeployOutputs came from
+     * the config file and replaces it with null, disabling deploy output
+     * resolution for Production. The effect is simulated here by passing
+     * envFromDeployOutputs: null directly in context.
+     */
+    test('should write only static env content and skip deploy output resolution', async () => {
+      jest
+        .mocked(fs.promises.readFile)
+        .mockImplementation(async (filePath: unknown) => {
+          const p = filePath as string;
+
+          if (p.includes('/.env.Production')) {
+            return productionEnvContent;
+          }
+
+          throw new Error(`Unexpected readFile call: ${p}`);
+        });
+
+      await parseCli('generate-env', {
+        environment: 'Production',
+        envFromDeployOutputs: null,
+      });
+
+      expect(fs.promises.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('/.env'),
+        productionEnvContent
+      );
+
+      expect(fs.promises.readFile).not.toHaveBeenCalledWith(
+        expect.stringContaining('.carlin/latest-deploy.json'),
+        expect.anything()
+      );
+    });
   });
 });

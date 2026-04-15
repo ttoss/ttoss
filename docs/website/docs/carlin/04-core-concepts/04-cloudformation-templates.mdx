@@ -92,14 +92,11 @@ Standard CloudFormation JSON syntax:
 
 carlin automatically searches for templates in this order:
 
-1. `cloudformation.ts`
-2. `cloudformation.js`
-3. `cloudformation.yml`
-4. `cloudformation.yaml`
-5. `cloudformation.json`
-6. `template.yml`
-7. `template.yaml`
-8. `template.json`
+1. `./src/cloudformation.ts`
+2. `./src/cloudformation.js`
+3. `./src/cloudformation.yaml`
+4. `./src/cloudformation.yml`
+5. `./src/cloudformation.json`
 
 Override with `--template-path`:
 
@@ -203,149 +200,12 @@ export const template = {
 
 ## Template Structure
 
-### Parameters
-
-Define configurable values:
-
-```typescript
-export const template = {
-  Parameters: {
-    DomainName: {
-      Type: 'String',
-      Description: 'Domain name for the application',
-    },
-    InstanceType: {
-      Type: 'String',
-      Default: 't3.micro',
-      AllowedValues: ['t3.micro', 't3.small', 't3.medium'],
-    },
-  },
-  Resources: {
-    // Use parameters with Ref
-    Instance: {
-      Type: 'AWS::EC2::Instance',
-      Properties: {
-        InstanceType: { Ref: 'InstanceType' },
-      },
-    },
-  },
-};
-```
+Templates follow the standard [AWS CloudFormation template structure](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html) with `Parameters`, `Resources`, `Outputs`, and `Conditions` sections.
 
 Pass parameters during deployment:
 
 ```bash
 carlin deploy --parameters '{"DomainName":"example.com","InstanceType":"t3.small"}'
-```
-
-### Resources
-
-Define AWS resources:
-
-```typescript
-export const template = {
-  Resources: {
-    // S3 Bucket
-    Bucket: {
-      Type: 'AWS::S3::Bucket',
-      Properties: {
-        BucketName: 'my-bucket',
-      },
-    },
-
-    // DynamoDB Table
-    Table: {
-      Type: 'AWS::DynamoDB::Table',
-      Properties: {
-        TableName: 'my-table',
-        BillingMode: 'PAY_PER_REQUEST',
-        AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-        KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      },
-    },
-
-    // Lambda Function
-    Function: {
-      Type: 'AWS::Lambda::Function',
-      Properties: {
-        Runtime: 'nodejs20.x',
-        Handler: 'index.handler',
-        Code: {
-          S3Bucket: { Ref: 'LambdaS3Bucket' },
-          S3Key: { Ref: 'LambdaS3Key' },
-        },
-      },
-    },
-  },
-};
-```
-
-### Outputs
-
-Export values for use in other stacks or for display:
-
-```typescript
-export const template = {
-  Resources: {
-    Api: {
-      Type: 'AWS::ApiGateway::RestApi',
-      Properties: {
-        Name: 'MyApi',
-      },
-    },
-  },
-  Outputs: {
-    ApiEndpoint: {
-      Description: 'API Gateway endpoint URL',
-      Value: {
-        'Fn::Sub':
-          'https://${Api}.execute-api.${AWS::Region}.amazonaws.com/prod',
-      },
-      Export: {
-        Name: 'MyApiEndpoint', // Can be imported by other stacks
-      },
-    },
-  },
-};
-```
-
-View outputs after deployment:
-
-```bash
-carlin deploy describe
-```
-
-### Conditions
-
-Create conditional resources:
-
-```typescript
-export const template = {
-  Parameters: {
-    Environment: {
-      Type: 'String',
-      AllowedValues: ['development', 'production'],
-    },
-  },
-  Conditions: {
-    IsProduction: {
-      'Fn::Equals': [{ Ref: 'Environment' }, 'production'],
-    },
-  },
-  Resources: {
-    Database: {
-      Type: 'AWS::RDS::DBInstance',
-      Properties: {
-        DBInstanceClass: {
-          'Fn::If': ['IsProduction', 'db.r5.large', 'db.t3.micro'],
-        },
-        MultiAZ: {
-          'Fn::If': ['IsProduction', true, false],
-        },
-      },
-    },
-  },
-};
 ```
 
 ## Lambda Function Handling
