@@ -30,8 +30,8 @@ export {
 } from './phoneCountryCodes';
 export { yup } from './yup/yup';
 export { z } from './zod/zod';
+export { zodResolver } from './zodResolver';
 export { yupResolver } from '@hookform/resolvers/yup';
-export { zodResolver } from '@hookform/resolvers/zod';
 
 /**
  * Export everything from react-hook-form without using export *

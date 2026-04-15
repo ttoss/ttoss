@@ -391,7 +391,7 @@ describe('Dashboard', () => {
 
       // Click cancel
       const cancelButton = screen.getByRole('button', {
-        name: 'Cancelar edição',
+        name: 'Cancelar',
       });
       await act(async () => {
         fireEvent.click(cancelButton);

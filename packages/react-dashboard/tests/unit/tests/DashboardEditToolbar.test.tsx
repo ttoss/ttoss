@@ -1,3 +1,4 @@
+/* eslint-disable formatjs/no-literal-string-in-jsx */
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 import { DashboardEditToolbar } from 'src/DashboardEditToolbar';
 import { useDashboard } from 'src/DashboardProvider';
@@ -178,19 +179,21 @@ describe('DashboardEditToolbar', () => {
     render(<DashboardEditToolbar />);
 
     expect(
-      screen.getByRole('button', { name: 'Adicionar item' })
+      screen.getByRole('button', { name: 'Adicionar Métrica' })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Salvar' })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Salvar como novo' })
+      screen.getByRole('button', { name: 'Salvar Novo Template' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Cancelar edição' })
+      screen.getByRole('button', { name: 'Cancelar' })
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar como novo' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar edição' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Salvar Novo Template' })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
 
     expect(saveEdit).toHaveBeenCalledTimes(1);
     expect(saveAsNew).toHaveBeenCalledTimes(1);
@@ -226,7 +229,7 @@ describe('DashboardEditToolbar', () => {
 
     render(<DashboardEditToolbar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar item' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métrica' }));
 
     expect(screen.getByText('Divisor de seção')).toBeInTheDocument();
     expect(screen.getByText('Meta')).toBeInTheDocument();
@@ -246,7 +249,7 @@ describe('DashboardEditToolbar', () => {
     );
 
     render(<DashboardEditToolbar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar item' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métrica' }));
 
     fireEvent.change(screen.getByLabelText('Search cards'), {
       target: { value: 'meta' },
@@ -256,7 +259,7 @@ describe('DashboardEditToolbar', () => {
     expect(screen.queryByText('API metric')).not.toBeInTheDocument();
 
     fireEvent.keyDown(
-      screen.getByText('Meta metric').closest('[role="button"]'),
+      screen.getByText('Meta metric').closest('[role="button"]')!,
       {
         key: 'Enter',
       }
@@ -287,7 +290,8 @@ describe('DashboardEditToolbar', () => {
       target: { value: 'Copied Template' },
     });
     fireEvent.click(screen.getAllByRole('button', { name: 'Salvar' })[1]);
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+    // multiple "Cancelar" buttons exist (toolbar + modal) — click the modal one
+    fireEvent.click(screen.getAllByRole('button', { name: 'Cancelar' })[1]);
 
     expect(confirmSaveAsNew).toHaveBeenCalledWith('Copied Template');
     expect(cancelSaveAsNew).toHaveBeenCalledTimes(1);

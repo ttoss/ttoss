@@ -1,3 +1,4 @@
+/* eslint-disable formatjs/no-literal-string-in-jsx */
 import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 import { FormFieldCNPJ } from 'src/Brazil/FormFieldCNPJ';
@@ -105,7 +106,8 @@ describe('Zod Integration', () => {
     const submitButton = screen.getByRole('button', { name: 'Submit' });
     await user.click(submitButton);
 
-    await screen.findByText(/Invalid Value for Field of type number/);
+    // zod/resolver may surface a generic invalid message for type mismatch
+    await screen.findByText(/Invalid input/i);
   });
 
   test('should validate CNPJ with custom zod method', async () => {

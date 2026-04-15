@@ -1,1 +1,5 @@
-export { MultistepForm, type MultistepFormProps } from './MultistepForm';
+export {
+  MultistepForm,
+  type MultistepFormProps,
+  type MultistepStep,
+} from './MultistepForm';
