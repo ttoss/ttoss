@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.2](https://github.com/ttoss/ttoss/compare/carlin@1.49.1...carlin@1.49.2) (2026-04-15)
+
+### Bug Fixes
+
+- **carlin:** continue stack deletion when pre-destroy bucket emptying fails ([#950](https://github.com/ttoss/ttoss/issues/950)) ([d07e044](https://github.com/ttoss/ttoss/commit/d07e044d79151718c16476fb135c5899106a24c0))
+
 ## [1.49.1](https://github.com/ttoss/ttoss/compare/carlin@1.49.0...carlin@1.49.1) (2026-04-15)
 
 ### Bug Fixes
