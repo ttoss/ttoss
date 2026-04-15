@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.22](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.21...@docs/website@2.6.22) (2026-04-15)
+
+### Reverts
+
+- Revert "carlin deploy: add `envExport` to export CloudFormation outputs as env vars to CI/CD runner" (#944) ([ed0b24c](https://github.com/ttoss/ttoss/commit/ed0b24c1c4d23e4125ad6bd62a5994d5566e61ad)), closes [#944](https://github.com/ttoss/ttoss/issues/944)
+
 ## [2.6.21](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.21) (2026-04-07)
 
 **Note:** Version bump only for package @docs/website
