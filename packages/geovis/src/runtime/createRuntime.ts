@@ -31,9 +31,12 @@ export const createRuntime = (
       // For replace operations, a missing value is a no-op — don't write
       // undefined into currentSpec or forward it to the adapter.
       if (patch.op === 'replace' && patch.value === undefined) return;
-      adapter.applyPatch?.(patch);
       // Keep currentSpec in sync with spec-level paint keys (camelCase)
-      if (patch.op !== 'replace' || patch.target !== 'layer') return;
+      if (patch.op !== 'replace' || patch.target !== 'layer') {
+        adapter.applyPatch?.(patch);
+        return;
+      }
+      adapter.applyPatch?.(patch);
       const parts = patch.path.split('.');
       if (parts.length < 4 || parts[2] !== 'paint') return;
       const layerId = parts[1];
