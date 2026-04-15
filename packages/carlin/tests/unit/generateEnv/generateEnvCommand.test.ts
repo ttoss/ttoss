@@ -107,7 +107,7 @@ test('should read envs from path', async () => {
   );
 });
 
-describe('deployOutputs', () => {
+describe('envFromDeployOutputs', () => {
   const envContent = 'EXISTING_VAR=existing_value';
 
   const latestDeployFixture = {
@@ -146,7 +146,7 @@ describe('deployOutputs', () => {
 
     await parseCli('generate-env', {
       environment: 'Staging',
-      deployOutputs: [
+      envFromDeployOutputs: [
         {
           dir: '../graph-api',
           variables: {
@@ -196,7 +196,7 @@ describe('deployOutputs', () => {
 
     await parseCli('generate-env', {
       environment: 'Staging',
-      deployOutputs: [
+      envFromDeployOutputs: [
         {
           dir: '../graph-api',
           variables: {
@@ -233,7 +233,7 @@ describe('deployOutputs', () => {
 
     await parseCli('generate-env', {
       environment: 'Staging',
-      deployOutputs: [
+      envFromDeployOutputs: [
         {
           dir: '../graph-api',
           variables: {
@@ -264,7 +264,7 @@ describe('deployOutputs', () => {
 
     await parseCli('generate-env', {
       environment: 'Staging',
-      deployOutputs: [
+      envFromDeployOutputs: [
         {
           dir: '../missing-pkg',
           variables: {

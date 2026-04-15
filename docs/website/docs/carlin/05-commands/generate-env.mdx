@@ -22,19 +22,18 @@ By default this reads `.env.Staging` and writes `.env`. The environment is resol
 
 ## Merging Outputs from Other Packages
 
-In a monorepo it is common for one package to need outputs from a stack deployed by another package (e.g. a frontend app needing the AppSync URL from a backend API package). Use `generateEnv.deployOutputs` in `carlin.yml` to map those outputs into your `.env` file.
+In a monorepo it is common for one package to need outputs from a stack deployed by another package (e.g. a frontend app needing the AppSync URL from a backend API package). Use `envFromDeployOutputs` in `carlin.yml` to map those outputs into your `.env` file.
 
 ```yaml
 # carlin.yml
-generateEnv:
-  deployOutputs:
-    - dir: ../graph-api # relative path to the other package
-      variables:
-        VITE_APPSYNC_GRAPHQL_ENDPOINT: AppSyncApiGraphQLUrl.OutputValue
-        VITE_APPSYNC_CONSOLE_URL: AppSyncApiGraphQLUrl.ExportName
+envFromDeployOutputs:
+  - dir: ../graph-api # relative path to the other package
+    variables:
+      VITE_APPSYNC_GRAPHQL_ENDPOINT: AppSyncApiGraphQLUrl.OutputValue
+      VITE_APPSYNC_CONSOLE_URL: AppSyncApiGraphQLUrl.ExportName
 ```
 
-Each entry under `deployOutputs` reads `.carlin/latest-deploy.json` inside `dir` (written by `carlin deploy`). The variable value is a dot-notation path into the outputs object:
+Each entry under `envFromDeployOutputs` reads `.carlin/latest-deploy.json` inside `dir` (written by `carlin deploy`). The variable value is a dot-notation path into the outputs object:
 
 - `AppSyncApiGraphQLUrl` — shorthand for `AppSyncApiGraphQLUrl.OutputValue`
 - `AppSyncApiGraphQLUrl.OutputValue` — explicit field selection

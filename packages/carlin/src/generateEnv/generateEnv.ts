@@ -45,13 +45,13 @@ export type DeployOutput = {
 };
 
 const readDeployOutputLines = async ({
-  deployOutputs,
+  envFromDeployOutputs,
 }: {
-  deployOutputs: DeployOutput[];
+  envFromDeployOutputs: DeployOutput[];
 }) => {
   const lines: string[] = [];
 
-  for (const { dir, variables } of deployOutputs) {
+  for (const { dir, variables } of envFromDeployOutputs) {
     const latestDeployPath = path.resolve(
       process.cwd(),
       dir,
@@ -112,11 +112,11 @@ const readDeployOutputLines = async ({
  */
 export const generateEnv = async ({
   defaultEnvironment,
-  deployOutputs,
+  envFromDeployOutputs,
   path: envsPath,
 }: {
   defaultEnvironment: string;
-  deployOutputs?: DeployOutput[];
+  envFromDeployOutputs?: DeployOutput[];
   path: string;
 }) => {
   const environment = getEnvironment() || defaultEnvironment;
@@ -136,8 +136,8 @@ export const generateEnv = async ({
   }
 
   const deployOutputLines =
-    deployOutputs && deployOutputs.length > 0
-      ? await readDeployOutputLines({ deployOutputs })
+    envFromDeployOutputs && envFromDeployOutputs.length > 0
+      ? await readDeployOutputLines({ envFromDeployOutputs })
       : [];
 
   const content =
