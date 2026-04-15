@@ -380,28 +380,85 @@ const createMapLibreAdapter = (): EngineAdapter => {
     },
 
     applyPatch: (patch: SpecPatch) => {
-      if (patch.target !== 'layer' || patch.op !== 'replace') return;
-      const parts = patch.path.split('.');
-      // Expected path format: "layer.<layerId>.paint.<property>"
-      // <property> is a spec-level camelCase key (e.g. fillColor, circleRadius).
-      if (parts.length < 4 || parts[2] !== 'paint') return;
-      const layerId = parts[1];
-      const specKey = parts[3];
-      if (!layerId || !specKey) return;
-
       for (const viewState of _views.values()) {
-        const layer = viewState.spec.layers.find((l) => {
-          return l.id === layerId;
-        });
-        if (!layer) continue;
-        const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
-        if (!maplibreKey) continue;
-        if (patch.value !== undefined) {
-          viewState.map.setPaintProperty(
-            layerId,
-            maplibreKey,
-            patch.value as maplibregl.StyleSpecification
-          );
+        const { map } = viewState;
+
+        if (patch.target === 'layer') {
+          if (patch.op === 'add' && patch.value != null) {
+            const newLayer = patch.value as VisualizationLayer;
+            if (!map.getLayer(newLayer.id)) {
+              const mlLayer = toMaplibreLayer(newLayer, newLayer.sourceLayer);
+              // Strip undefined paint values before passing to MapLibre.
+              const paint = (mlLayer as { paint?: Record<string, unknown> })
+                .paint;
+              if (paint) {
+                (mlLayer as { paint?: Record<string, unknown> }).paint =
+                  Object.fromEntries(
+                    Object.entries(paint).filter(([, v]) => {
+                      return v !== undefined;
+                    })
+                  );
+              }
+              map.addLayer(mlLayer);
+              viewState.spec = {
+                ...viewState.spec,
+                layers: [...viewState.spec.layers, newLayer],
+              };
+            }
+          } else if (patch.op === 'remove') {
+            const layerId = patch.value as string;
+            if (map.getLayer(layerId)) {
+              map.removeLayer(layerId);
+              viewState.spec = {
+                ...viewState.spec,
+                layers: viewState.spec.layers.filter((l) => {
+                  return l.id !== layerId;
+                }),
+              };
+            }
+          } else if (patch.op === 'replace') {
+            // Expected path: "layer.<layerId>.paint.<camelCaseKey>"
+            const parts = patch.path.split('.');
+            if (parts.length < 4 || parts[2] !== 'paint') continue;
+            const layerId = parts[1];
+            const specKey = parts[3];
+            if (!layerId || !specKey) continue;
+            const layer = viewState.spec.layers.find((l) => {
+              return l.id === layerId;
+            });
+            if (!layer) continue;
+            const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
+            if (!maplibreKey) continue;
+            if (patch.value !== undefined) {
+              map.setPaintProperty(
+                layerId,
+                maplibreKey,
+                patch.value as maplibregl.StyleSpecification
+              );
+            }
+          }
+        } else if (patch.target === 'source') {
+          if (patch.op === 'add' && patch.value != null) {
+            const newSource = patch.value as DataSource;
+            if (!map.getSource(newSource.id)) {
+              map.addSource(newSource.id, toMaplibreSource(newSource));
+              viewState.spec = {
+                ...viewState.spec,
+                sources: [...viewState.spec.sources, newSource],
+              };
+            }
+          } else if (patch.op === 'remove') {
+            const sourceId = patch.value as string;
+            if (map.getSource(sourceId)) {
+              map.removeSource(sourceId);
+              viewState.spec = {
+                ...viewState.spec,
+                sources: viewState.spec.sources.filter((s) => {
+                  return s.id !== sourceId;
+                }),
+              };
+            }
+          }
         }
       }
     },

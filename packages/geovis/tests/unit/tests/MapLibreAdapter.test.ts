@@ -539,3 +539,39 @@ describe('toMaplibreLayer', () => {
     );
   });
 });
+
+describe('applyPatch — add / remove operations', () => {
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = makeSpec('vs');
+    adapter.mount(makeContainer(), spec, 'v');
+    return { adapter, map, spec };
+  };
+
+  test('op:add target:layer → calls map.addLayer with the converted layer', () => {
+    const { adapter, map } = mountAdapter();
+    // getLayer returns null by default in makeMapMock, so addLayer should fire.
+    const newLayer: VisualizationLayer = {
+      id: 'new-layer',
+      sourceId: 'vs-src',
+      geometry: 'polygon',
+      visible: true,
+    };
+    adapter.applyPatch?.({ target: 'layer', op: 'add', value: newLayer });
+    expect(map.addLayer).toHaveBeenCalledTimes(1);
+    const calledWith = jest.mocked(map.addLayer).mock.calls[0][0];
+    expect(calledWith).toMatchObject({ id: 'new-layer', type: 'fill' });
+  });
+
+  test('op:remove target:source → calls map.removeSource when source exists', () => {
+    const { adapter, map } = mountAdapter();
+    // Mock getSource to simulate the source being present on the map.
+    jest.mocked(map.getSource).mockReturnValue({} as never);
+    adapter.applyPatch?.({ target: 'source', op: 'remove', value: 'vs-src' });
+    expect(map.removeSource).toHaveBeenCalledWith('vs-src');
+  });
+});
