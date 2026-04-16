@@ -5,7 +5,7 @@
 import { act, render } from '@testing-library/react';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
-import type { VisualizationSpec } from 'src/spec/types';
+import type { PolicyViolation, VisualizationSpec } from 'src/spec/types';
 
 // var is hoisted alongside jest.mock, so the reference is valid inside the factory.
 // eslint-disable-next-line no-var
@@ -141,5 +141,76 @@ describe('GeoVisProvider useGeoVis', () => {
       return render(<BrokenConsumer />);
     }).toThrow('useGeoVis must be used inside <GeoVisProvider>');
     spy.mockRestore();
+  });
+});
+
+describe('GeoVisProvider policyViolations', () => {
+  test('is empty when spec has no metadata', async () => {
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toEqual([]);
+  });
+
+  test('has one entry when metadata.isPolicyInvalid is true', async () => {
+    const invalidSpec: VisualizationSpec = {
+      ...baseSpec,
+      metadata: {
+        isPolicyInvalid: true,
+        invalidReason: 'raw-count-choropleth',
+        metricField: 'population',
+        normalizedExpression: 'population / sq-km',
+        normalizedLabel: 'hab por km²',
+      },
+    };
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={invalidSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toHaveLength(1);
+    expect(capturedRef.current![0].reason).toBe('raw-count-choropleth');
+    expect(capturedRef.current![0].message).toContain('population');
+  });
+
+  test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
+    const specNoReason: VisualizationSpec = {
+      ...baseSpec,
+      id: 'no-reason',
+      metadata: { isPolicyInvalid: true },
+    };
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={specNoReason}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toHaveLength(1);
+    expect(capturedRef.current![0].reason).toBe('policy-invalid');
   });
 });

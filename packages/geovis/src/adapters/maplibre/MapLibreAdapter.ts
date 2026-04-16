@@ -317,11 +317,20 @@ const createMapLibreAdapter = (): EngineAdapter => {
         }
       });
 
+      let _removed = false;
+
       return {
         viewId,
         container,
         destroy: () => {
-          map.remove();
+          if (_removed) return;
+          _removed = true;
+          try {
+            map.remove();
+          } catch {
+            // MapLibre can throw if the map was not fully initialized
+            // (e.g. unmounted before the style loaded).
+          }
           _views.delete(viewId);
         },
       };
@@ -475,7 +484,11 @@ const createMapLibreAdapter = (): EngineAdapter => {
 
     destroy: () => {
       for (const viewState of _views.values()) {
-        viewState.map.remove();
+        try {
+          viewState.map.remove();
+        } catch {
+          // ignore partially-initialized maps
+        }
       }
       _views.clear();
     },

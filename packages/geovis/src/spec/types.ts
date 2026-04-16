@@ -199,6 +199,21 @@ export interface BaseMapSpec {
   attribution?: string;
 }
 
+/**
+ * Declares one visual perspective of a spec in a multi-view layout.
+ * Each view references a subset of `spec.layers` by id.
+ * Layout components (e.g. `GeoVisSplitLayout`) read this field to derive
+ * per-panel specs and manage synchronization automatically.
+ */
+export interface VisualizationView {
+  /** Unique view identifier. Must match the `viewId` prop of `GeoVisCanvas`. */
+  id: string;
+  /** Human-readable label rendered above the canvas by layout components. */
+  label?: string;
+  /** Layer ids from `spec.layers` that this view displays. */
+  layers: string[];
+}
+
 export interface VisualizationSpec {
   id: string;
   title?: string;
@@ -208,6 +223,12 @@ export interface VisualizationSpec {
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];
+  /**
+   * Optional array of views for multi-panel layouts.
+   * When present, layout components derive one spec per view by
+   * filtering `layers` to those listed in each view's `layers` array.
+   */
+  views?: VisualizationView[];
   metadata?: Record<string, string | number | boolean>;
   adapterHints?: {
     maplibre?: {
@@ -217,3 +238,10 @@ export interface VisualizationSpec {
 }
 
 export type GeovisSpec = VisualizationSpec;
+
+export interface PolicyViolation {
+  /** Identifies the violated policy rule. */
+  reason: string;
+  /** Human-readable explanation surfaced to the consumer. */
+  message: string;
+}

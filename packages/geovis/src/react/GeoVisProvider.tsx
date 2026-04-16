@@ -3,12 +3,47 @@ import * as React from 'react';
 import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
-import type { VisualizationSpec } from '../spec/types';
+import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+
+/**
+ * Evaluates spec.metadata for known policy violations.
+ * Called once per spec on Provider mount — not on every update,
+ * because metadata is treated as static fixture-level contract.
+ * Returns an empty array when no violations are found.
+ */
+const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
+  const violations: PolicyViolation[] = [];
+  const m = spec.metadata;
+
+  if (!m) return violations;
+
+  if (m.isPolicyInvalid === true) {
+    const reason = (m.invalidReason as string | undefined) ?? 'policy-invalid';
+    const metricField = m.metricField as string | undefined;
+    const normalizedField =
+      (m.normalizedField as string | undefined) ??
+      (m.normalizedExpression as string | undefined);
+    const label = m.normalizedLabel as string | undefined;
+
+    let message = `Spec '${spec.id}' violates cartographic policy: ${reason}.`;
+    if (metricField) message += ` Invalid field: '${metricField}'.`;
+    if (normalizedField)
+      message += ` Correct alternative: '${normalizedField}'`;
+    if (label) message += ` (${label})`;
+    message += '.';
+
+    violations.push({ reason, message });
+  }
+
+  return violations;
+};
 
 interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
   applyPatch: (patch: SpecPatch) => void;
+  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
+  policyViolations: PolicyViolation[];
 }
 
 export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
@@ -42,6 +77,11 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
+
+  // Computed once from the initial spec — metadata is a static fixture contract.
+  const policyViolations = React.useMemo(() => {
+    return checkPolicies(spec);
+  }, [spec.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     let cancelled = false;
@@ -91,7 +131,9 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   if (adapterError) throw adapterError;
 
   return (
-    <GeoVisContext.Provider value={{ runtime, spec, applyPatch }}>
+    <GeoVisContext.Provider
+      value={{ runtime, spec, applyPatch, policyViolations }}
+    >
       {children}
     </GeoVisContext.Provider>
   );
