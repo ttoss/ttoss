@@ -2,7 +2,7 @@ import {
   type CloudFormationTemplate,
   findAndReadCloudFormationTemplate,
 } from '@ttoss/cloudformation';
-import AWS from 'aws-sdk';
+import type AWS from 'aws-sdk';
 import log from 'npmlog';
 
 import { getEnvironment, getPackageName, getProjectName } from '../utils';

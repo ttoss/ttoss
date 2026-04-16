@@ -160,21 +160,20 @@ import { Dashboard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                                          | Default         | Description                                                                    |
-| --------------------- | --------------------------------------------- | --------------- | ------------------------------------------------------------------------------ |
-| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                                       |
-| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                                   |
-| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                                     |
-| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                                |
-| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                               |
-| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header                                     |
-| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                                   |
-| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                           |
-| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                               |
-| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                         |
-| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                             |
-| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits          |
-| `onExportPdf`         | `() => Promise<void>`                         | -               | When provided, renders an Export PDF button; disabled while promise is pending |
+| Prop                  | Type                                          | Default         | Description                                                           |
+| --------------------- | --------------------------------------------- | --------------- | --------------------------------------------------------------------- |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                              |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                          |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                            |
+| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                       |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                      |
+| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header                            |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                          |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                  |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                      |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                    |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits |
 
 ### DashboardProvider
 

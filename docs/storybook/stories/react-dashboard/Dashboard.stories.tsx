@@ -999,56 +999,6 @@ export const EditableCustomizeMode: StoryObj = {
   },
 };
 
-const WithExportPdfStory = () => {
-  const [filters, setFilters] =
-    React.useState<DashboardFilter[]>(defaultFilters);
-
-  const selectedTemplateId =
-    (filters.find((f) => {
-      return f.key === 'template';
-    })?.value as string) || 'default';
-  const selectedTemplate =
-    defaultTemplates.find((t) => {
-      return t.id === selectedTemplateId;
-    }) || defaultTemplates[0];
-
-  const handleExportPdf = async () => {
-    // Simulate PDF export
-    await new Promise((resolve) => {
-      return setTimeout(resolve, 2000);
-    });
-    // eslint-disable-next-line no-alert
-    alert('PDF exported successfully!');
-  };
-
-  return (
-    <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
-      <Dashboard
-        templates={defaultTemplates}
-        filters={filters}
-        selectedTemplate={selectedTemplate}
-        loading={false}
-        onFiltersChange={setFilters}
-        onExportPdf={handleExportPdf}
-      />
-    </Box>
-  );
-};
-
-export const WithExportPdf: StoryObj = {
-  render: () => {
-    return <WithExportPdfStory />;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Dashboard with an Export PDF button. When `onExportPdf` is provided, the dashboard renders a built-in "Export PDF" button in the header. The button is disabled and shows a loading spinner while the export promise is pending. Consumers can use the `data-export-target` attribute on the grid to locate the element for screenshotting.',
-      },
-    },
-  },
-};
-
 const WithEditingGridChangeStory = () => {
   const initialTemplate: DashboardTemplate = {
     id: 'editable-dashboard',
@@ -1215,11 +1165,6 @@ const WithCustomHeaderChildrenStory = () => {
         selectedTemplate={selectedTemplate}
         loading={false}
         onFiltersChange={setFilters}
-        onExportPdf={async () => {
-          await new Promise((resolve) => {
-            return setTimeout(resolve, 1000);
-          });
-        }}
         headerChildren={
           <>
             {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
@@ -1233,7 +1178,7 @@ const WithCustomHeaderChildrenStory = () => {
   );
 };
 
-export const WithCustomHeaderAndExport: StoryObj = {
+export const WithCustomHeaderChildren: StoryObj = {
   render: () => {
     return <WithCustomHeaderChildrenStory />;
   },
@@ -1241,7 +1186,7 @@ export const WithCustomHeaderAndExport: StoryObj = {
     docs: {
       description: {
         story:
-          'Dashboard with custom header buttons alongside the built-in Export PDF button. The `headerChildren` wrapper automatically centers all children vertically, so no per-child `alignSelf` or `height` overrides are needed.',
+          'Dashboard with custom header buttons. The `headerChildren` wrapper automatically centers all children vertically, so no per-child `alignSelf` or `height` overrides are needed.',
       },
     },
   },

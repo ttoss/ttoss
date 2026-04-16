@@ -370,62 +370,6 @@ describe('Dashboard', () => {
     expect(onEditingGridChange).toHaveBeenCalledWith(null);
   });
 
-  test('should render Export PDF button when onExportPdf is provided', () => {
-    const onExportPdf = jest.fn().mockResolvedValue(undefined);
-
-    render(
-      <Dashboard
-        templates={[mockTemplate]}
-        filters={mockFilters}
-        onExportPdf={onExportPdf}
-      />
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Export PDF' })
-    ).toBeInTheDocument();
-  });
-
-  test('should not render Export PDF button when onExportPdf is not provided', () => {
-    render(<Dashboard templates={[mockTemplate]} filters={mockFilters} />);
-
-    expect(
-      screen.queryByRole('button', { name: 'Export PDF' })
-    ).not.toBeInTheDocument();
-  });
-
-  test('should disable Export PDF button while promise is pending', async () => {
-    let resolveExport: () => void;
-    const onExportPdf = jest.fn(() => {
-      return new Promise<void>((resolve) => {
-        resolveExport = resolve;
-      });
-    });
-
-    render(
-      <Dashboard
-        templates={[mockTemplate]}
-        filters={mockFilters}
-        onExportPdf={onExportPdf}
-      />
-    );
-
-    const button = screen.getByRole('button', { name: 'Export PDF' });
-    expect(button).not.toBeDisabled();
-
-    await act(async () => {
-      button.click();
-    });
-
-    expect(button).toBeDisabled();
-
-    await act(async () => {
-      resolveExport!();
-    });
-
-    expect(button).not.toBeDisabled();
-  });
-
   test('should render headerChildren items centered via wrapper', () => {
     render(
       <Dashboard
