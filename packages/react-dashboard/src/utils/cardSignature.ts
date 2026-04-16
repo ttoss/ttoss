@@ -8,7 +8,10 @@ import type { SectionDivider } from '../DashboardSectionDivider';
  * deterministic JSON string regardless of key insertion order.
  */
 const stableStringify = (value: unknown): string => {
-  if (value === null || value === undefined) {
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (value === null) {
     return JSON.stringify(value);
   }
 
