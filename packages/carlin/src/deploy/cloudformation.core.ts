@@ -510,7 +510,14 @@ export const destroy = async ({ stackName }: { stackName: string }) => {
     throw new Error(message);
   }
 
-  await emptyStackBuckets({ stackName });
+  try {
+    await emptyStackBuckets({ stackName });
+  } catch (error) {
+    log.warn(
+      logPrefix,
+      `Failed to empty buckets for stack ${stackName}: ${(error as Error)?.message || error}. Proceeding with stack deletion.`
+    );
+  }
 
   await deleteStack({ stackName });
 };
