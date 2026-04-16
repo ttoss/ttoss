@@ -46,7 +46,7 @@ export const createRuntime = (
           return {
             ...layer,
             paint: {
-              ...(layer.paint as Record<string, unknown>),
+              ...((layer.paint ?? {}) as Record<string, unknown>),
               [prop]: patch.value,
             },
           };

@@ -42,6 +42,7 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
+  const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -54,6 +55,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         const adapter = await resolveAdapter(spec.engine);
         if (cancelled) return;
         activeRuntime = createRuntime(adapter, spec);
+        prevSpecRef.current = spec;
         setRuntime(activeRuntime);
       } catch (error) {
         if (cancelled) return;
@@ -75,8 +77,6 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.engine]);
 
-  const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
-
   React.useEffect(() => {
     if (!runtime) return;
     if (spec === prevSpecRef.current) return;
@@ -91,7 +91,9 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   if (adapterError) throw adapterError;
 
   return (
-    <GeoVisContext.Provider value={{ runtime, spec, applyPatch }}>
+    <GeoVisContext.Provider
+      value={{ runtime, spec: runtime?.spec ?? spec, applyPatch }}
+    >
       {children}
     </GeoVisContext.Provider>
   );
