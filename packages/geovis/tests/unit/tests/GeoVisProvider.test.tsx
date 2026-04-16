@@ -10,13 +10,18 @@ import type { PolicyViolation, VisualizationSpec } from 'src/spec/types';
 // var is hoisted alongside jest.mock, so the reference is valid inside the factory.
 // eslint-disable-next-line no-var
 var mockRuntimeUpdate = jest.fn();
+// eslint-disable-next-line no-var
+var mockRuntimeApplyPatch = jest.fn();
+// Holds the spec that runtime.spec getter returns; tests can mutate this.
+// eslint-disable-next-line no-var
+var mockRuntimeSpec: unknown = {};
 
 jest.mock('src/runtime/createRuntime', () => {
   return {
     createRuntime: jest.fn(() => {
       return {
         get spec() {
-          return {};
+          return mockRuntimeSpec;
         },
         mount: jest.fn(() => {
           return {
@@ -26,7 +31,7 @@ jest.mock('src/runtime/createRuntime', () => {
           };
         }),
         update: mockRuntimeUpdate,
-        applyPatch: jest.fn(),
+        applyPatch: mockRuntimeApplyPatch,
         destroy: jest.fn(),
         getAdapter: jest.fn(),
       };
@@ -62,6 +67,7 @@ const baseSpec: VisualizationSpec = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockRuntimeSpec = {};
 });
 
 describe('GeoVisProvider spec memoization', () => {
@@ -212,5 +218,54 @@ describe('GeoVisProvider policyViolations', () => {
     });
     expect(capturedRef.current).toHaveLength(1);
     expect(capturedRef.current![0].reason).toBe('policy-invalid');
+  });
+});
+
+describe('GeoVisProvider applyPatch updates context spec', () => {
+  test('context spec reflects runtime.spec immediately after applyPatch', async () => {
+    const updatedSpec: VisualizationSpec = {
+      ...baseSpec,
+      layers: [
+        { id: 'patched', sourceId: 'src', geometry: 'polygon' as const },
+      ],
+    };
+
+    // Make mockRuntimeApplyPatch update the runtime spec when called.
+    mockRuntimeApplyPatch.mockImplementation(() => {
+      mockRuntimeSpec = updatedSpec;
+    });
+
+    const latestSpecRef = { current: baseSpec as VisualizationSpec };
+    const triggerPatchRef = { current: () => {} };
+
+    const Consumer = () => {
+      const { spec, applyPatch } = useGeoVis();
+      // eslint-disable-next-line react-hooks/immutability
+      latestSpecRef.current = spec as VisualizationSpec;
+      // eslint-disable-next-line react-hooks/immutability
+      triggerPatchRef.current = () => {
+        applyPatch({
+          target: 'layer',
+          op: 'add',
+          value: updatedSpec.layers[0],
+        });
+      };
+      return null;
+    };
+
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+
+    await act(async () => {
+      triggerPatchRef.current();
+    });
+
+    expect(latestSpecRef.current.layers).toHaveLength(1);
+    expect(latestSpecRef.current.layers[0].id).toBe('patched');
   });
 });

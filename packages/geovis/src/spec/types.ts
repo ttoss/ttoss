@@ -179,7 +179,38 @@ export interface RasterPaint {
   rasterOpacity?: number;
 }
 
-export type LayerPaint = FillPaint | LinePaint | CirclePaint | RasterPaint;
+export interface HeatmapPaint {
+  /** Radius of influence of each data point, in pixels. Default: 15. */
+  heatmapRadius?: number;
+  /** Similar to `circleOpacity` — controls overall layer opacity. Default: 1. */
+  heatmapOpacity?: number;
+  /** Multiplier applied to each pixel's weight. Default: 1. */
+  heatmapIntensity?: number;
+  /** Individual data point contribution weight. Default: 1. */
+  heatmapWeight?: number;
+}
+
+export interface SymbolPaint {
+  // Paint properties
+  textColor?: string;
+  textOpacity?: number;
+  textHaloColor?: string;
+  textHaloWidth?: number;
+  iconColor?: string;
+  iconOpacity?: number;
+  // Layout properties (GeoVis treats them uniformly in the paint bag)
+  textField?: string;
+  textSize?: number;
+  iconImage?: string;
+}
+
+export type LayerPaint =
+  | FillPaint
+  | LinePaint
+  | CirclePaint
+  | RasterPaint
+  | HeatmapPaint
+  | SymbolPaint;
 
 export interface VisualizationLayer {
   id: string;

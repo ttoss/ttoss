@@ -77,12 +77,13 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
+  const [effectiveSpec, setEffectiveSpec] =
+    React.useState<VisualizationSpec>(spec);
   const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
 
-  // Computed once from the initial spec — metadata is a static fixture contract.
   const policyViolations = React.useMemo(() => {
     return checkPolicies(spec);
-  }, [spec.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [spec]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -121,18 +122,21 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     if (!runtime) return;
     if (spec === prevSpecRef.current) return;
     prevSpecRef.current = spec;
+    setEffectiveSpec(spec);
     runtime.update(spec);
   }, [runtime, spec]);
 
   const applyPatch = (patch: SpecPatch) => {
-    runtime?.applyPatch(patch);
+    if (!runtime) return;
+    runtime.applyPatch(patch);
+    setEffectiveSpec(runtime.spec);
   };
 
   if (adapterError) throw adapterError;
 
   return (
     <GeoVisContext.Provider
-      value={{ runtime, spec, applyPatch, policyViolations }}
+      value={{ runtime, spec: effectiveSpec, applyPatch, policyViolations }}
     >
       {children}
     </GeoVisContext.Provider>

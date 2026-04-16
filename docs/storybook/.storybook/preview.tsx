@@ -47,7 +47,24 @@ const preview: Preview = {
     options: {
       storySort: {
         method: 'alphabetical',
-        order: ['Introduction', '*'],
+        order: [
+          'Introduction',
+          'GeoVis',
+          [
+            'Fixtures',
+            [
+              'SingleMap',
+              'GeoJsonUrlMap',
+              'MapWithSidePanel',
+              'LinkedMapChart',
+              'SplitCompare',
+              'InvalidRawCountChoropleth',
+              '*',
+            ],
+            '*',
+          ],
+          '*',
+        ],
       },
     },
   },

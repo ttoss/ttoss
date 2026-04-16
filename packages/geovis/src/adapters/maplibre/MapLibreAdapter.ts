@@ -13,8 +13,10 @@ import type {
   DataSource,
   FillPaint,
   GeoVisGeometryType,
+  HeatmapPaint,
   LinePaint,
   RasterPaint,
+  SymbolPaint,
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
@@ -52,6 +54,16 @@ const specPaintKeyToMaplibre = (
     circleStrokeColor: 'circle-stroke-color',
     circleStrokeWidth: 'circle-stroke-width',
     rasterOpacity: 'raster-opacity',
+    heatmapRadius: 'heatmap-radius',
+    heatmapOpacity: 'heatmap-opacity',
+    heatmapIntensity: 'heatmap-intensity',
+    heatmapWeight: 'heatmap-weight',
+    textColor: 'text-color',
+    textOpacity: 'text-opacity',
+    textHaloColor: 'text-halo-color',
+    textHaloWidth: 'text-halo-width',
+    iconColor: 'icon-color',
+    iconOpacity: 'icon-opacity',
   };
   const entry = map[key];
   if (!entry) return undefined;
@@ -163,9 +175,7 @@ export const toMaplibreLayer = (
         },
       };
     }
-    case 'point':
-    case 'heatmap':
-    case 'symbol': {
+    case 'point': {
       const cp = p as CirclePaint;
       return {
         ...base,
@@ -176,6 +186,40 @@ export const toMaplibreLayer = (
           'circle-opacity': cp.circleOpacity ?? 1,
           'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
           'circle-stroke-width': cp.circleStrokeWidth ?? 1,
+        },
+      };
+    }
+    case 'heatmap': {
+      const hp = p as HeatmapPaint;
+      return {
+        ...base,
+        type: 'heatmap',
+        paint: {
+          'heatmap-radius': hp.heatmapRadius ?? 15,
+          'heatmap-opacity': hp.heatmapOpacity ?? 1,
+          'heatmap-intensity': hp.heatmapIntensity ?? 1,
+          'heatmap-weight': hp.heatmapWeight ?? 1,
+        },
+      };
+    }
+    case 'symbol': {
+      const sp = p as SymbolPaint;
+      return {
+        ...base,
+        type: 'symbol',
+        layout: {
+          ...(base.layout as object),
+          'text-field': sp.textField ?? '',
+          'text-size': sp.textSize ?? 12,
+          'icon-image': sp.iconImage,
+        },
+        paint: {
+          'text-color': sp.textColor ?? '#000000',
+          'text-opacity': sp.textOpacity ?? 1,
+          'text-halo-color': sp.textHaloColor ?? '#ffffff',
+          'text-halo-width': sp.textHaloWidth ?? 0,
+          'icon-color': sp.iconColor ?? '#000000',
+          'icon-opacity': sp.iconOpacity ?? 1,
         },
       };
     }
@@ -222,6 +266,17 @@ const syncSourcesAndLayers = (
   for (const source of spec.sources) {
     if (!map.getSource(source.id)) {
       map.addSource(source.id, toMaplibreSource(source));
+    } else if (source.type === 'geojson') {
+      const prevSource = previousSpec?.sources.find((s) => {
+        return s.id === source.id;
+      });
+      const prevData =
+        prevSource?.type === 'geojson' ? prevSource.data : undefined;
+      if (prevData !== source.data) {
+        (map.getSource(source.id) as maplibregl.GeoJSONSource).setData(
+          source.data as maplibregl.GeoJSONSourceSpecification['data']
+        );
+      }
     }
   }
 

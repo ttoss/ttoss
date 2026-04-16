@@ -9,7 +9,12 @@ import createMapLibreAdapter, {
   toMaplibreLayer,
   toMaplibreSource,
 } from 'src/adapters/maplibre/MapLibreAdapter';
-import type { DataSource, VisualizationLayer } from 'src/spec/types';
+import type {
+  DataSource,
+  HeatmapPaint,
+  SymbolPaint,
+  VisualizationLayer,
+} from 'src/spec/types';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -526,14 +531,37 @@ describe('toMaplibreLayer', () => {
     expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
   });
 
-  test('symbol → circle', () => {
-    const layer: VisualizationLayer = { ...base, geometry: 'symbol' };
-    expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
+  test('symbol → symbol layer with text/icon paint and layout', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'symbol',
+      paint: { textField: 'Hello', textSize: 14 } as SymbolPaint,
+    };
+    const result = toMaplibreLayer(layer);
+    expect(result).toMatchObject({ type: 'symbol' });
+    expect(
+      (result as { layout: Record<string, unknown> }).layout
+    ).toMatchObject({ 'text-field': 'Hello', 'text-size': 14 });
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'text-color': '#000000',
+      'text-opacity': 1,
+    });
   });
 
-  test('heatmap → circle', () => {
-    const layer: VisualizationLayer = { ...base, geometry: 'heatmap' };
-    expect(toMaplibreLayer(layer)).toMatchObject({ type: 'circle' });
+  test('heatmap → heatmap layer with heatmap paint properties', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'heatmap',
+      paint: { heatmapRadius: 20, heatmapOpacity: 0.8 } as HeatmapPaint,
+    };
+    const result = toMaplibreLayer(layer);
+    expect(result).toMatchObject({ type: 'heatmap' });
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'heatmap-radius': 20,
+      'heatmap-opacity': 0.8,
+      'heatmap-intensity': 1,
+      'heatmap-weight': 1,
+    });
   });
 
   test('raster → raster', () => {
@@ -595,5 +623,65 @@ describe('applyPatch — add / remove operations', () => {
     jest.mocked(map.getSource).mockReturnValue({} as never);
     adapter.applyPatch?.({ target: 'source', op: 'remove', value: 'vs-src' });
     expect(map.removeSource).toHaveBeenCalledWith('vs-src');
+  });
+});
+
+describe('syncSourcesAndLayers — GeoJSON setData', () => {
+  const mountAndFireLoad = () => {
+    const map = makeMapMock();
+    const setData = jest.fn();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const initialSpec = {
+      ...makeSpec('gj'),
+      sources: [
+        {
+          id: 'geo-src',
+          type: 'geojson' as const,
+          data: 'https://example.com/v1.geojson',
+        },
+      ],
+      layers: [],
+    };
+    adapter.mount(makeContainer(), initialSpec, 'v');
+    // Simulate source already registered on the map and expose setData mock.
+    jest
+      .mocked(map.getSource)
+      .mockReturnValue({ setData } as unknown as ReturnType<
+        typeof map.getSource
+      >);
+    return { adapter, map, setData, initialSpec };
+  };
+
+  test('calls setData when GeoJSON source data changes on update', () => {
+    const { adapter, map, setData, initialSpec } = mountAndFireLoad();
+
+    const nextSpec = {
+      ...initialSpec,
+      sources: [
+        {
+          id: 'geo-src',
+          type: 'geojson' as const,
+          data: 'https://example.com/v2.geojson',
+        },
+      ],
+    };
+
+    // isStyleLoaded returns true so syncSourcesAndLayers runs immediately.
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    adapter.update(nextSpec);
+
+    expect(setData).toHaveBeenCalledWith('https://example.com/v2.geojson');
+  });
+
+  test('does not call setData when GeoJSON source data is unchanged', () => {
+    const { adapter, map, setData, initialSpec } = mountAndFireLoad();
+
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    adapter.update({ ...initialSpec });
+
+    expect(setData).not.toHaveBeenCalled();
   });
 });
