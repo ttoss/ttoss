@@ -116,7 +116,7 @@ export const generateEnv = async ({
   path: envsPath,
 }: {
   defaultEnvironment: string;
-  envFromDeployOutputs?: DeployOutput[];
+  envFromDeployOutputs?: DeployOutput[] | null;
   path: string;
 }) => {
   const environment = getEnvironment() || defaultEnvironment;
@@ -140,9 +140,30 @@ export const generateEnv = async ({
       ? await readDeployOutputLines({ envFromDeployOutputs })
       : [];
 
+  const deployOutputKeys = new Set(
+    deployOutputLines.map((line) => {
+      return line.split('=')[0];
+    })
+  );
+
+  const filteredEnvFile = envFile
+    .split('\n')
+    .filter((line) => {
+      const trimmed = line.trim();
+
+      if (!trimmed || trimmed.startsWith('#')) {
+        return true;
+      }
+
+      const key = trimmed.split('=')[0].trim();
+
+      return !deployOutputKeys.has(key);
+    })
+    .join('\n');
+
   const content =
     deployOutputLines.length > 0
-      ? `${envFile}\n${deployOutputLines.join('\n')}\n`
+      ? `${filteredEnvFile}\n${deployOutputLines.join('\n')}\n`
       : envFile;
 
   await writeEnvFile({ content, envFileName: '.env' });
