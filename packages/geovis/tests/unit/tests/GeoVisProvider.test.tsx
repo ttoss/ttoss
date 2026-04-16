@@ -269,3 +269,93 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
     expect(latestSpecRef.current.layers[0].id).toBe('patched');
   });
 });
+
+describe('GeoVisProvider effectiveSpec synchronization', () => {
+  /**
+   * Regression test for: "When spec.engine changes, the runtime is re-created
+   * but effectiveSpec is not updated. Because prevSpecRef.current is set to spec
+   * in the init effect, the sync effect exits early (spec === prevSpecRef.current),
+   * leaving the context serving the previous spec."
+   *
+   * The init effect MUST NOT set prevSpecRef.current. Only the sync effect
+   * manages prevSpecRef so that after every runtime re-creation (engine change),
+   * the sync effect correctly sees spec !== prevSpecRef.current and calls
+   * setEffectiveSpec(spec) + runtime.update(spec).
+   *
+   * Observable in unit tests (single engine):
+   *   - Fixed code: sync effect runs after init → runtime.update IS called once.
+   *   - Buggy code: init sets prevSpecRef → sync exits early → runtime.update NOT called.
+   *
+   * Full engine-change scenario (requires multiple engine support / integration test):
+   *   1. Mount with spec1  → effectiveSpec = spec1
+   *   2. Change to spec2 (same engine) → effectiveSpec = spec2 (sync path)
+   *   3. Change to spec3 (different engine) → runtime re-created
+   *      Fixed: sync sees spec3 !== prevSpecRef(=spec2) → effectiveSpec = spec3
+   *      Buggy: init sets prevSpecRef=spec3 → sync exits → effectiveSpec = spec2 (stale)
+   */
+  test('runtime.update is called once after initial mount (init must not set prevSpecRef)', async () => {
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <div />
+        </GeoVisProvider>
+      );
+    });
+
+    // The sync effect fires after the async init completes and setRuntime is called.
+    // prevSpecRef starts as null → spec !== null → setEffectiveSpec + runtime.update called.
+    // If the init effect had set prevSpecRef = spec, sync would have exited early here.
+    expect(mockRuntimeUpdate).toHaveBeenCalledTimes(1);
+    expect(mockRuntimeUpdate).toHaveBeenCalledWith(baseSpec);
+  });
+
+  test('context spec (effectiveSpec) tracks spec prop through multiple changes', async () => {
+    type SpecController = { setSpec: (s: VisualizationSpec) => void };
+    const specCaptureRef = { current: baseSpec as VisualizationSpec };
+
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      specCaptureRef.current = useGeoVis().spec as VisualizationSpec;
+      return null;
+    };
+
+    const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
+      const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);
+      React.useImperativeHandle(ref, () => {
+        return { setSpec };
+      }, [setSpec]);
+      return (
+        <GeoVisProvider spec={spec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    Wrapper.displayName = 'Wrapper';
+
+    const ref = React.createRef<SpecController>();
+    await act(async () => {
+      render(<Wrapper ref={ref} />);
+    });
+    expect(specCaptureRef.current.id).toBe(baseSpec.id);
+
+    const spec2: VisualizationSpec = {
+      ...baseSpec,
+      id: 'spec-v2',
+      view: { ...baseSpec.view, zoom: 14 },
+    };
+    await act(async () => {
+      ref.current?.setSpec(spec2);
+    });
+    expect(specCaptureRef.current.id).toBe('spec-v2');
+
+    const spec3: VisualizationSpec = {
+      ...baseSpec,
+      id: 'spec-v3',
+      view: { ...baseSpec.view, zoom: 8 },
+    };
+    await act(async () => {
+      ref.current?.setSpec(spec3);
+    });
+    expect(specCaptureRef.current.id).toBe('spec-v3');
+  });
+});

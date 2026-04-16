@@ -96,7 +96,10 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         const adapter = await resolveAdapter(spec.engine);
         if (cancelled) return;
         activeRuntime = createRuntime(adapter, spec);
-        prevSpecRef.current = spec;
+        // Do not set prevSpecRef here: the sync effect below is responsible
+        // for tracking prevSpecRef and calling setEffectiveSpec. If we set it
+        // here, the sync effect exits early (spec === prevSpecRef.current) and
+        // effectiveSpec is never updated after an engine change.
         setRuntime(activeRuntime);
       } catch (error) {
         if (cancelled) return;

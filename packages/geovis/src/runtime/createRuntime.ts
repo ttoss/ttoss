@@ -84,6 +84,9 @@ export const createRuntime = (
           const sourceId = patch.value as string;
           currentSpec = {
             ...currentSpec,
+            layers: currentSpec.layers.filter((l) => {
+              return l.sourceId !== sourceId;
+            }),
             sources: currentSpec.sources.filter((s) => {
               return s.id !== sourceId;
             }),

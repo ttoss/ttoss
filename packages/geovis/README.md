@@ -116,7 +116,7 @@ applyPatch({
 });
 ```
 
-**Effect:** the adapter calls `setPaintProperty` on the live map instance and `runtime.spec` is updated in sync — no React re-render triggered.
+**Effect:** the adapter calls `setPaintProperty` on the live map without re-mounting — `runtime.spec` is updated and `effectiveSpec` in context is refreshed, triggering a lightweight re-render in consumers but no map re-mount.
 
 ### `add` — add a new layer or source to the spec
 
@@ -194,7 +194,7 @@ const LayerControls = () => {
         onClick={() =>
           applyPatch({
             target: 'layer',
-            op: 'add',
+            op: 'replace',
             path: 'layer.points-layer.paint.circleStrokeColor',
             value: '#ffffff',
           })
@@ -206,8 +206,9 @@ const LayerControls = () => {
         onClick={() =>
           applyPatch({
             target: 'layer',
-            op: 'remove',
+            op: 'replace',
             path: 'layer.points-layer.paint.circleStrokeColor',
+            value: undefined,
           })
         }
       >

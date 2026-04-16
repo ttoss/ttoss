@@ -219,7 +219,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
               defaultColor="#eff6ff"
               steps={rawSteps}
             />
-            {/* PolicyDetector hissa violations para o estado da story pai */}
+            {/* PolicyDetector lifts violations to parent story state */}
             <PolicyDetector onViolations={handleViolations} />
           </GeoVisProvider>
         </div>

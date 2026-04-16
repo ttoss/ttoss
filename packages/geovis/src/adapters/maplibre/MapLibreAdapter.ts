@@ -79,7 +79,7 @@ export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
     case 'geojson':
       return {
         type: 'geojson',
-        data: source.data,
+        data: source.data as maplibregl.GeoJSONSourceSpecification['data'],
         attribution: source.attribution,
       };
     case 'vector-tiles':
@@ -160,7 +160,7 @@ export const toMaplibreLayer = (
           'fill-opacity': fp.fillOpacity ?? 0.6,
           'fill-outline-color': fp.lineColor ?? '#1d4ed8',
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
     case 'line': {
       const lp = p as LinePaint;
@@ -173,7 +173,7 @@ export const toMaplibreLayer = (
           'line-opacity': lp.lineOpacity ?? 1,
           'line-dasharray': lp.lineDasharray,
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
     case 'point': {
       const cp = p as CirclePaint;
@@ -187,7 +187,7 @@ export const toMaplibreLayer = (
           'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
           'circle-stroke-width': cp.circleStrokeWidth ?? 1,
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
     case 'heatmap': {
       const hp = p as HeatmapPaint;
@@ -200,7 +200,7 @@ export const toMaplibreLayer = (
           'heatmap-intensity': hp.heatmapIntensity ?? 1,
           'heatmap-weight': hp.heatmapWeight ?? 1,
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
     case 'symbol': {
       const sp = p as SymbolPaint;
@@ -221,7 +221,7 @@ export const toMaplibreLayer = (
           'icon-color': sp.iconColor ?? '#000000',
           'icon-opacity': sp.iconOpacity ?? 1,
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
     case 'raster': {
       const rp = p as RasterPaint;
@@ -231,7 +231,7 @@ export const toMaplibreLayer = (
         paint: {
           'raster-opacity': rp.rasterOpacity ?? 1,
         },
-      };
+      } as maplibregl.LayerSpecification;
     }
   }
 };
@@ -539,9 +539,19 @@ const createMapLibreAdapter = (): EngineAdapter => {
           } else if (patch.op === 'remove') {
             const sourceId = patch.value as string;
             if (map.getSource(sourceId)) {
+              // Remove dependent layers first; MapLibre throws if a layer still
+              // references the source when removeSource is called.
+              for (const layer of viewState.spec.layers) {
+                if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
+                  map.removeLayer(layer.id);
+                }
+              }
               map.removeSource(sourceId);
               viewState.spec = {
                 ...viewState.spec,
+                layers: viewState.spec.layers.filter((l) => {
+                  return l.sourceId !== sourceId;
+                }),
                 sources: viewState.spec.sources.filter((s) => {
                   return s.id !== sourceId;
                 }),

@@ -69,7 +69,7 @@ const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
 };
 
-// Story principal
+// Main story
 
 /**
  * Two independent `GeoVisProvider` instances sharing the same data source.

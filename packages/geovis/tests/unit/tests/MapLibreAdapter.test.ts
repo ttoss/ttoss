@@ -19,6 +19,9 @@ import type {
 jest.mock('maplibre-gl', () => {
   return {
     Map: jest.fn(),
+    NavigationControl: jest.fn().mockImplementation(() => {
+      return {};
+    }),
   };
 });
 
@@ -48,6 +51,7 @@ const makeMapMock = () => {
     on: jest.fn(),
     once: jest.fn(),
     remove: jest.fn(),
+    addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
     getSource: jest.fn(() => {
