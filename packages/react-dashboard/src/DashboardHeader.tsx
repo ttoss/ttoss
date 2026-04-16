@@ -34,7 +34,11 @@ export const DashboardHeader = ({
           </Flex>
         )}
       </Flex>
-      {editable && <DashboardEditToolbar />}
+      {editable && (
+        <Flex sx={{ padding: '2' }}>
+          <DashboardEditToolbar />
+        </Flex>
+      )}
     </Flex>
   );
 };
