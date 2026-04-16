@@ -45,6 +45,131 @@ export const CurrencyCard: StoryObj = {
   },
 };
 
+export const CurrencyCardUSD: StoryObj = {
+  render: () => {
+    return (
+      <Box sx={{ maxWidth: '400px', padding: '4' }}>
+        <DashboardCard
+          id="abc-usd"
+          title="Total Revenue"
+          description="Revenue from all sources (USD)"
+          numberType="currency"
+          currency="USD"
+          type="bigNumber"
+          sourceType={[{ source: 'api' }]}
+          data={{
+            api: { total: 150000 },
+          }}
+        />
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Currency formatted card using USD (US Dollar). Set the `currency` prop to any ISO 4217 code (e.g. `"USD"`, `"EUR"`, `"MXN"`) to change the currency symbol. Defaults to `"BRL"` when omitted.',
+      },
+    },
+  },
+};
+
+export const CurrencyCardEUR: StoryObj = {
+  render: () => {
+    return (
+      <Box sx={{ maxWidth: '400px', padding: '4' }}>
+        <DashboardCard
+          id="abc-eur"
+          title="Total Revenue"
+          description="Revenue from all sources (EUR)"
+          numberType="currency"
+          currency="EUR"
+          type="bigNumber"
+          sourceType={[{ source: 'api' }]}
+          data={{
+            api: { total: 150000 },
+          }}
+        />
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Currency formatted card using EUR (Euro). Demonstrates how the `currency` prop works with European currency formatting.',
+      },
+    },
+  },
+};
+
+export const CurrencyComparison: StoryObj = {
+  render: () => {
+    return (
+      <Stack
+        sx={{
+          gap: '4',
+          padding: '4',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-brl"
+            title="Revenue (BRL)"
+            numberType="currency"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-usd"
+            title="Revenue (USD)"
+            numberType="currency"
+            currency="USD"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-eur"
+            title="Revenue (EUR)"
+            numberType="currency"
+            currency="EUR"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-mxn"
+            title="Revenue (MXN)"
+            numberType="currency"
+            currency="MXN"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+      </Stack>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of the same value formatted in different currencies (BRL, USD, EUR, MXN). The `currency` prop accepts any ISO 4217 currency code.',
+      },
+    },
+  },
+};
+
 export const PercentageCard: StoryObj = {
   render: () => {
     return (

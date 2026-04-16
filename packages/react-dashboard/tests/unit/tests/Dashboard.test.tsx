@@ -395,4 +395,77 @@ describe('Dashboard', () => {
     const wrapper = btn1.parentElement;
     expect(wrapper).toBeTruthy();
   });
+
+  test('should pass currency prop to all cards', () => {
+    const currencyTemplate: DashboardTemplate = {
+      id: 'currency-template',
+      name: 'Currency Template',
+      grid: [
+        {
+          i: 'card-usd',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue USD',
+            numberType: 'currency',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 1000 } },
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[currencyTemplate]}
+        filters={[]}
+        selectedTemplate={currencyTemplate}
+        currency="USD"
+      />
+    );
+
+    // Should display US$ instead of R$
+    expect(screen.getByText(/US\$/)).toBeInTheDocument();
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+  });
+
+  test('should allow card-level currency to override dashboard-level currency', () => {
+    const mixedTemplate: DashboardTemplate = {
+      id: 'mixed-template',
+      name: 'Mixed Template',
+      grid: [
+        {
+          i: 'card-eur',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue EUR',
+            numberType: 'currency',
+            type: 'bigNumber',
+            currency: 'EUR',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 2000 } },
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[mixedTemplate]}
+        filters={[]}
+        selectedTemplate={mixedTemplate}
+        currency="USD"
+      />
+    );
+
+    // Card-level EUR should take precedence over dashboard-level USD
+    expect(screen.getByText(/€/)).toBeInTheDocument();
+    expect(screen.queryByText(/US\$/)).not.toBeInTheDocument();
+  });
 });

@@ -160,20 +160,21 @@ import { Dashboard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                                          | Default         | Description                                                           |
-| --------------------- | --------------------------------------------- | --------------- | --------------------------------------------------------------------- |
-| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                              |
-| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                          |
-| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                            |
-| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                       |
-| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                      |
-| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header                            |
-| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                          |
-| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                  |
-| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                      |
-| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                |
-| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                    |
-| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits |
+| Prop                  | Type                                          | Default         | Description                                                                                                      |
+| --------------------- | --------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                                                                         |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                                                                     |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                                                                       |
+| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                                                                  |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                                                                 |
+| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header                                                                       |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                                                                     |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                                                             |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                                                                 |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                                                           |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                                                               |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits                                            |
+| `currency`            | `string`                                      | `"BRL"`         | ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence |
 
 ### DashboardProvider
 
@@ -290,24 +291,25 @@ import { DashboardCard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                      | Default | Description                                                                                                           |
-| --------------------- | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | `string`                  | -       | Card identification                                                                                                   |
-| `title`               | `string`                  | -       | Card title                                                                                                            |
-| `description`         | `string`                  | -       | Optional card description                                                                                             |
-| `icon`                | `string`                  | -       | Optional icon name                                                                                                    |
-| `color`               | `string`                  | -       | Optional color for the card                                                                                           |
-| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                                                 |
-| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                                                     |
-| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                                               |
-| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`)                             |
-| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                                             |
-| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                                                          |
-| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                                                        |
-| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                                              |
-| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                                                  |
-| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                                             |
-| `suffix`              | `string`                  | -       | Optional text appended after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`). Not shown when value is undefined. |
+| Prop                  | Type                      | Default | Description                                                                                                                        |
+| --------------------- | ------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | `string`                  | -       | Card identification                                                                                                                |
+| `title`               | `string`                  | -       | Card title                                                                                                                         |
+| `description`         | `string`                  | -       | Optional card description                                                                                                          |
+| `icon`                | `string`                  | -       | Optional icon name                                                                                                                 |
+| `color`               | `string`                  | -       | Optional color for the card                                                                                                        |
+| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                                                              |
+| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                                                                  |
+| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                                                            |
+| `currency`            | `string`                  | `"BRL"` | ISO 4217 currency code (e.g. `"USD"`, `"EUR"`). Only used when `numberType` is `"currency"`. Overrides dashboard-level `currency`. |
+| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`)                                          |
+| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                                                          |
+| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                                                                       |
+| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                                                                     |
+| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                                                           |
+| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                                                               |
+| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                                                          |
+| `suffix`              | `string`                  | -       | Optional text appended after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`). Not shown when value is undefined.              |
 
 ### DashboardFilters
 

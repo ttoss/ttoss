@@ -4,7 +4,10 @@ import { Box, Flex, Global, IconButton, Spinner } from '@ttoss/ui';
 import { type Layout, Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { DashboardTemplate } from './Dashboard';
-import { DashboardCard } from './DashboardCard';
+import {
+  DashboardCard,
+  type DashboardCard as DashboardCardProps,
+} from './DashboardCard';
 import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
@@ -68,11 +71,14 @@ export const DashboardGrid = ({
   loading,
   selectedTemplate,
   isEditMode = false,
+  currency,
   ...rest
 }: {
   loading: boolean;
   selectedTemplate?: DashboardTemplate;
   isEditMode?: boolean;
+  /** ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. */
+  currency?: string;
   'data-export-target'?: boolean;
 }) => {
   const { onLayoutChange, removeCard, updateCard } = useDashboard();
@@ -231,7 +237,10 @@ export const DashboardGrid = ({
                         height: '100%',
                       }}
                     >
-                      <DashboardCard {...(item.card as DashboardCard)} />
+                      <DashboardCard
+                        {...{ currency }}
+                        {...(item.card as DashboardCardProps)}
+                      />
                       <RemoveCardButton
                         onClick={() => {
                           return removeCard(item.i);
@@ -240,7 +249,10 @@ export const DashboardGrid = ({
                     </Box>
                   </>
                 ) : (
-                  <DashboardCard {...(item.card as DashboardCard)} />
+                  <DashboardCard
+                    {...{ currency }}
+                    {...(item.card as DashboardCardProps)}
+                  />
                 )}
               </div>
             );

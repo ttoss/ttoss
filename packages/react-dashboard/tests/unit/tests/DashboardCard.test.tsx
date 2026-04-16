@@ -49,4 +49,16 @@ describe('DashboardCard', () => {
 
     expect(screen.getByText('Total Revenue')).toBeInTheDocument();
   });
+
+  test('should use card-level currency prop for formatting', () => {
+    render(<DashboardCard {...mockBigNumberCard} currency="USD" />);
+
+    expect(screen.getByText(/US\$/)).toBeInTheDocument();
+  });
+
+  test('should default to BRL when no currency prop is provided', () => {
+    render(<DashboardCard {...mockBigNumberCard} />);
+
+    expect(screen.getByText(/R\$/)).toBeInTheDocument();
+  });
 });
