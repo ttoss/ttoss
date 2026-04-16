@@ -1,6 +1,6 @@
 /**
- * Helpers internos compartilhados entre stories de GeoVis.
- * Nao sao artefatos publicos do package — apenas utilidades de story.
+ * Internal helpers shared across GeoVis stories.
+ * Not public package artefacts — story utilities only.
  */
 import type { VisualizationSpec, VisualizationView } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
@@ -15,10 +15,10 @@ export type MapRef = React.MutableRefObject<MapLibreMap | null>;
 export type LockRef = React.MutableRefObject<boolean>;
 
 /**
- * Renderizado dentro de um GeoVisProvider.
- * Registra o mapa nativo em `selfRef` e sincroniza movimentos com `peerRef`.
- * `lockRef` eh compartilhado entre os dois MapSync para evitar loop de retorno.
- * `animate: false` no jumpTo impede que a animacao do peer gere novos eventos move.
+ * Rendered inside a GeoVisProvider.
+ * Registers the native map in `selfRef` and synchronises movements with `peerRef`.
+ * `lockRef` is shared between the two MapSync instances to prevent feedback loops.
+ * `animate: false` in jumpTo prevents peer animation from generating new move events.
  */
 export const MapSync = ({
   selfRef,
@@ -104,16 +104,16 @@ export interface ColorStep {
 }
 
 /**
- * Componente sem render renderizado dentro de um GeoVisProvider.
- * Aplica uma expressao `step` de cor data-driven via getNativeInstance().
- * Necessario pois FillPaint.fillColor nao suporta expressoes MapLibre (so string).
+ * Render-less component mounted inside a GeoVisProvider.
+ * Applies a data-driven `step` colour expression via getNativeInstance().
+ * Required because FillPaint.fillColor does not support MapLibre expressions (string only).
  *
- * `field` pode ser:
- * - string: usa ['get', field] — propriedade direta do feature
- * - array: usa como expressao MapLibre arbitraria (ex: ['/', ['get', 'pop'], ['get', 'area']])
+ * `field` can be:
+ * - string: uses ['get', field] — direct feature property
+ * - array: used as an arbitrary MapLibre expression (e.g. ['/', ['get', 'pop'], ['get', 'area']])
  *
- * Reaplica quando o layer ainda nao existe (retry em idle) para lidar com
- * corridas entre montagem React e carregamento do estilo do adapter.
+ * Retries on `idle` when the layer does not yet exist, to handle races
+ * between React mounting and adapter style loading.
  */
 export const ChoroplethPainter = ({
   layerId,
@@ -173,19 +173,19 @@ export const ChoroplethPainter = ({
 // ---------------------------------------------------------------------------
 
 /**
- * Overlay de gradiente posicionado abaixo do MapLabel (topo-esquerdo do painel).
- * Deve ser filho direto de um div com `position: relative` (o painel do mapa),
- * nao precisa estar dentro de GeoVisProvider.
+ * Gradient overlay positioned below the MapLabel (top-left of the panel).
+ * Must be a direct child of a div with `position: relative` (the map panel);
+ * does not need to be inside a GeoVisProvider.
  *
- * [cartografia] Robinson & Slocum "Thematic Cartography" cap. 18:
- * Em mapas de comparacao lado a lado, a legenda deve ser agrupada com o
- * rotulo do layer correspondente, formando um bloco informativo coeso que
- * o leitor processa ANTES de explorar os dados — padrao seguido por
- * ESRI StoryMaps e ArcGIS Dashboards.
- * `top: 40` ancora o overlay imediatamente abaixo do MapLabel (~32px de altura).
- * Canto inferior-esquerdo (ICA) e preferido em mapas isolados, mas em
- * split-compare o topo-esquerdo agrupa rotulo + escala e evita sobreposicao
- * com a barra de atribuicao do MapLibre (bottom-right).
+ * [cartography] Robinson & Slocum “Thematic Cartography” ch. 18:
+ * In side-by-side comparison maps, the legend should be grouped with the
+ * corresponding layer label, forming a cohesive informational block that
+ * the reader processes BEFORE exploring the data — the pattern followed by
+ * ESRI StoryMaps and ArcGIS Dashboards.
+ * `top: 40` anchors the overlay immediately below the MapLabel (~32px tall).
+ * Bottom-left (ILC) is preferred for isolated maps, but in split-compare
+ * top-left groups label + scale and avoids overlap with MapLibre’s
+ * attribution bar (bottom-right).
  */
 export const MapOverlayLegend = ({
   label,
@@ -217,7 +217,7 @@ export const MapOverlayLegend = ({
     <div
       style={{
         position: 'absolute',
-        // Ancorado abaixo do MapLabel (top: 8, ~28px de altura) — ver comentario no JSDoc.
+        // Anchored below the MapLabel (top: 8, ~28px tall) — see JSDoc comment.
         top: 40,
         left: 8,
         zIndex: 1,
@@ -260,24 +260,24 @@ export const MapOverlayLegend = ({
 // ---------------------------------------------------------------------------
 
 /**
- * Legenda de swatches (quadrado + faixa de valor) para secao abaixo dos mapas.
+ * Swatch legend (colour square + value band) for the section below the maps.
  */
 // ---------------------------------------------------------------------------
 // GeoVisSplitLayout
 // ---------------------------------------------------------------------------
 
 /**
- * Renderiza um split-compare de dois paineis a partir de um spec que declara
- * `views[]`. Cada view gera um `GeoVisProvider` com layers filtrados e
- * sincronizacao de movimento automatica — o consumer nao precisa gerenciar
- * `MapRef`, `LockRef` ou `MapSync` diretamente.
+ * Renders a two-panel split-compare from a spec that declares `views[]`.
+ * Each view produces a `GeoVisProvider` with filtered layers and automatic
+ * movement synchronisation — the consumer does not need to manage
+ * `MapRef`, `LockRef`, or `MapSync` directly.
  *
- * O prop `render` recebe a `VisualizationView` corrente e deve retornar os
- * filhos a serem montados DENTRO do `GeoVisProvider` daquela view (ex:
- * `ChoroplethPainter`, `MapOverlayLegend`). Eh o escape hatch para logica
- * que ainda nao pode ser declarada no spec (ex: expressoes MapLibre em paint).
+ * The `render` prop receives the current `VisualizationView` and should return
+ * children to mount INSIDE that view’s `GeoVisProvider` (e.g. `ChoroplethPainter`,
+ * `MapOverlayLegend`). It is the escape hatch for logic not yet declarable in
+ * the spec (e.g. MapLibre expressions in paint).
  *
- * Requer exatamente 2 views em `spec.views`. Emite aviso visual se ausente.
+ * Requires exactly 2 views in `spec.views`. Displays a visual warning if absent.
  */
 export const GeoVisSplitLayout = ({
   spec,
@@ -305,7 +305,7 @@ export const GeoVisSplitLayout = ({
   if (!left || !right) {
     return (
       <div style={{ padding: 12, color: '#ef4444', fontSize: 13 }}>
-        GeoVisSplitLayout: spec.views deve conter exatamente 2 views.
+        GeoVisSplitLayout: spec.views must contain exactly 2 views.
       </div>
     );
   }
@@ -373,7 +373,7 @@ export const ColorSwatchLegend = ({
   const fmt =
     formatValue ??
     ((v: number) => {
-      return v.toLocaleString('pt-BR');
+      return v.toLocaleString('en-US');
     });
   const entries: { color: string; label: string }[] = [
     { color: defaultColor, label: `< ${fmt(steps[0].threshold)}` },

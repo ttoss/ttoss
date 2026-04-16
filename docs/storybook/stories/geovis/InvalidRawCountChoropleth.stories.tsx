@@ -27,8 +27,8 @@ const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
 };
 
-// Escala azul para contagem absoluta (invalido)
-// Ruanda: Kigali=1.1M (menor, mais denso), East/South/West=2.5-2.6M (maiores)
+// Blue scale for absolute count (invalid).
+// Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
 const rawSteps = [
   { threshold: 1_300_000, color: '#bfdbfe' },
   { threshold: 1_700_000, color: '#60a5fa' },
@@ -36,8 +36,8 @@ const rawSteps = [
   { threshold: 2_300_000, color: '#1d4ed8' },
 ];
 
-// Escala verde para densidade normalizada (correto)
-// Ruanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km2
+// Green scale for normalised density (correct).
+// Rwanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
 const densitySteps = [
   { threshold: 350, color: '#86efac' },
   { threshold: 430, color: '#4ade80' },
@@ -46,14 +46,14 @@ const densitySteps = [
   { threshold: 1300, color: '#14532d' },
 ];
 
-// Expressao MapLibre para calcular densidade em runtime: population / sq-km
+// MapLibre expression to calculate density at runtime: population / sq-km.
 const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
 
 /**
- * Componente nulo que le policyViolations do GeoVisContext (via useGeoVis)
- * e os hissa para a story pai via callback.
- * Deve ser filho de um GeoVisProvider montado com o mesmo spec.
- * Substitui a leitura direta de metadata.isPolicyInvalid do JSON importado.
+ * Null component that reads policyViolations from GeoVisContext (via useGeoVis)
+ * and lifts them to the parent story via callback.
+ * Must be a child of a GeoVisProvider mounted with the same spec.
+ * Replaces direct reading of metadata.isPolicyInvalid from the imported JSON.
  */
 const PolicyDetector = ({
   onViolations,
@@ -90,15 +90,15 @@ const PolicyWarningBanner = ({
       <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>⚠️</span>
       <div style={{ fontSize: 13, color: '#78350f', lineHeight: 1.5 }}>
         <strong style={{ display: 'block', marginBottom: 4 }}>
-          Guardrail cartografico: contagem absoluta em coropletico
+          Cartographic guardrail: absolute count in choropleth
         </strong>
-        Provincias de Ruanda codificadas por <strong>populacao absoluta</strong>{' '}
-        (esq.) vs <strong>densidade</strong> (hab/km², dir.). Kigali tem apenas
-        1,1M hab. — a menor contagem — mas e a provincia mais densa (1.551
-        hab/km²). No mapa esquerdo Kigali parece quase branca; no mapa direito e
-        a mais escura.
+        Rwanda provinces encoded by <strong>absolute population count</strong>{' '}
+        (left) vs <strong>density</strong> (hab/km², right). Kigali has only
+        1.1M inhabitants — the smallest count — yet is the densest province
+        (1,551 hab/km²). On the left map Kigali appears almost white; on the
+        right it is the darkest.
         <br />
-        <strong>Correto:</strong> dividir por area antes de codificar em cor.
+        <strong>Correct:</strong> divide by area before encoding in colour.
         {violations.map((v) => {
           return (
             <span
@@ -122,14 +122,14 @@ const PolicyWarningBanner = ({
 // Story
 
 /**
- * Fixture **propositalmente invalido** — artefato de contrato da policy
- * `cartography.warnOnRawCountChoropleth`.
+ * Intentionally **invalid** fixture — contract artefact for the
+ * `cartography.warnOnRawCountChoropleth` policy.
  *
- * Usa dados oficiais do MapLibre (provincias de Ruanda) e split-compare para
- * evidenciar o problema: Kigali City tem a menor populacao absoluta (1,1M) mas
- * a maior densidade (1.551 hab/km²). No mapa esquerdo parece quase branca;
- * no mapa direito e a mais escura. A densidade e calculada em runtime via
- * expressao MapLibre `['/', ['get', 'population'], ['get', 'sq-km']]`.
+ * Uses official MapLibre data (Rwanda provinces) and a split-compare to
+ * expose the issue: Kigali City has the smallest absolute population (1.1M)
+ * but the highest density (1,551 hab/km²). On the left map it appears almost
+ * white; on the right it is the darkest. Density is calculated at runtime via
+ * the MapLibre expression `['/', ['get', 'population'], ['get', 'sq-km']]`.
  */
 export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
@@ -137,7 +137,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
   const syncLock = React.useRef(false) as LockRef;
   const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
 
-  // Estabiliza a referencia do callback para nao disparar re-renders desnecessarios.
+  // Stabilise the callback reference to avoid unnecessary re-renders.
   const handleViolations = React.useCallback((v: PolicyViolation[]) => {
     return setViolations(v);
   }, []);
@@ -182,11 +182,11 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             flexShrink: 0,
           }}
         >
-          Recentralizar
+          Recenter
         </button>
       </div>
 
-      {/* Banner acionado via policyViolations do GeoVisContext — nao le metadata diretamente do JSON */}
+      {/* Banner triggered via policyViolations from GeoVisContext — does not read metadata directly from JSON */}
       <PolicyWarningBanner violations={violations} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
@@ -199,9 +199,9 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             overflow: 'hidden',
           }}
         >
-          <MapLabel>Populacao absoluta (population) - invalido</MapLabel>
+          <MapLabel>Absolute population count (population) - invalid</MapLabel>
           <MapOverlayLegend
-            label="populacao absoluta"
+            label="absolute population"
             defaultColor="#eff6ff"
             steps={rawSteps}
             formatValue={fmtPop}
@@ -233,9 +233,9 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             overflow: 'hidden',
           }}
         >
-          <MapLabel>Densidade (population / sq-km) - correto</MapLabel>
+          <MapLabel>Density (population / sq-km) - correct</MapLabel>
           <MapOverlayLegend
-            label="densidade (hab/km²)"
+            label="density (hab/km²)"
             defaultColor="#f0fdf4"
             steps={densitySteps}
             formatValue={fmtDensity}
@@ -257,11 +257,11 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         </div>
       </div>
 
-      {/* gap: 4 espelha o layout da linha dos mapas — cada swatch alinha com seu painel correspondente */}
+      {/* gap: 4 mirrors the map row layout — each swatch aligns with its corresponding panel */}
       <div style={{ display: 'flex', gap: 4 }}>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Azul — contagem absoluta (invalido)"
+            title="Blue — absolute count (invalid)"
             defaultColor="#eff6ff"
             steps={rawSteps}
             formatValue={fmtPop}
@@ -269,7 +269,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         </div>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Verde — densidade hab/km² (correto)"
+            title="Green — density hab/km² (correct)"
             defaultColor="#f0fdf4"
             steps={densitySteps}
             formatValue={fmtDensity}
@@ -281,14 +281,12 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         <strong>Policy</strong>
         <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
           <li>
-            <code>cartography.warnOnRawCountChoropleth: true</code> - este
-            fixture deve disparar aviso em runtime quando a policy estiver
-            ativa.
+            <code>cartography.warnOnRawCountChoropleth: true</code> — this
+            fixture should raise a runtime warning when the policy is enabled.
           </li>
           <li>
-            Campo invalido:{' '}
-            <code>{fixture.metadata.metricField as string}</code>. Expressao
-            correta:{' '}
+            Invalid field: <code>{fixture.metadata.metricField as string}</code>
+            . Correct expression:{' '}
             <code>{fixture.metadata.normalizedExpression as string}</code> (
             {fixture.metadata.normalizedLabel as string}).
           </li>

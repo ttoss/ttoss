@@ -72,13 +72,22 @@ if (!result.valid) {
 Use `useGeoVis` to access `applyPatch` for efficient paint updates without re-rendering the full spec. A `SpecPatch` has the shape:
 
 ```ts
-interface SpecPatch {
-  target: 'layer' | 'source' | 'view' | 'style';
-  op: 'replace' | 'add' | 'remove';
-  path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
-  value?: unknown; // required for 'replace' and 'add'
-  rationale?: string;
-}
+// Replace an existing paint property on a layer:
+type SpecPatch =
+  | {
+      target: 'layer' | 'source' | 'view' | 'style';
+      op: 'replace';
+      path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
+      value?: unknown; // required for 'replace'
+      rationale?: string;
+    }
+  | {
+      target: 'layer' | 'source' | 'view' | 'style';
+      op: 'add' | 'remove';
+      path?: string; // unused for layer/source add and remove ops
+      value?: unknown;
+      rationale?: string;
+    };
 ```
 
 Paint property keys follow **spec-level camelCase** (e.g. `circleOpacity`, `fillColor`, `lineWidth`).
@@ -109,36 +118,49 @@ applyPatch({
 
 **Effect:** the adapter calls `setPaintProperty` on the live map instance and `runtime.spec` is updated in sync — no React re-render triggered.
 
-### `add` — set a paint property that was not previously defined
+### `add` — add a new layer or source to the spec
 
-Use `add` when the property does not yet exist in the layer's `paint` object.
+Use `add` to append a new `VisualizationLayer` or `DataSource` at runtime.
 
 ```tsx
 applyPatch({
   target: 'layer',
   op: 'add',
-  path: 'layer.routes-layer.paint.lineOpacity',
-  value: 0.8,
+  value: { id: 'new-layer', sourceId: 'points', geometry: 'point' },
+});
+
+applyPatch({
+  target: 'source',
+  op: 'add',
+  value: {
+    id: 'new-source',
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  },
 });
 ```
 
-**Effect:** behaves like `replace` at the adapter level (MapLibre's `setPaintProperty` handles both); `runtime.spec` is updated with the new property.
+**Effect:** the layer or source is appended to `runtime.spec` and forwarded to the adapter. No React re-render triggered.
 
-> **Note:** `add` and `remove` for targets other than `layer.paint` (e.g. adding a new source or layer) are not yet implemented in the MapLibre adapter and are treated as a no-op.
+### `remove` — remove a layer or source from the spec
 
-### `remove` — clear a paint property (reset to default)
-
-Pass `value: undefined` (or omit `value`) together with `op: 'remove'` to reset a property to the engine default.
+Pass the target `id` as `value` to remove an existing layer or source.
 
 ```tsx
 applyPatch({
   target: 'layer',
   op: 'remove',
-  path: 'layer.routes-layer.paint.lineDasharray',
+  value: 'routes-layer', // id of the layer to remove
+});
+
+applyPatch({
+  target: 'source',
+  op: 'remove',
+  value: 'routes-source', // id of the source to remove
 });
 ```
 
-**Effect:** the property is removed from `runtime.spec`; the adapter resets the paint property to its MapLibre default.
+**Effect:** the entry is removed from `runtime.spec` and the adapter is notified.
 
 ### Full interactive example
 

@@ -1,7 +1,7 @@
 {
   "id": "split-compare",
-  "title": "Split Compare — Cobertura vs Perímetro",
-  "description": "Dois mapas derivados da mesma fonte de dados (distritos de São Paulo). O mapa esquerdo mostra a cobertura territorial (fill). O mapa direito mostra o perímetro das zonas (line). Ambos compartilham source, view e basemap — apenas os layers diferem.",
+  "title": "Split Compare — Territorial Coverage vs Perimeter",
+  "description": "Two maps derived from the same data source (São Paulo districts). The left map shows territorial coverage (fill). The right map shows zone perimeters (line). Both share the same source, view and basemap — only the layers differ.",
   "engine": "maplibre",
   "view": {
     "center": [-46.665, -23.56],

@@ -259,7 +259,7 @@ export interface VisualizationSpec {
    * filtering `layers` to those listed in each view's `layers` array.
    */
   views?: VisualizationView[];
-  metadata?: Record<string, string | number | boolean>;
+  metadata?: Record<string, unknown>;
   adapterHints?: {
     maplibre?: {
       styleVersion?: 8;

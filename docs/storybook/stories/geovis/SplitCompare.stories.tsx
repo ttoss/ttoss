@@ -20,8 +20,8 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
-// Specs derivados do mesmo fixture
-// Ambos compartilham source, view e basemap. Apenas os layers diferem.
+// Specs derived from the same fixture.
+// Both share source, view and basemap. Only the layers differ.
 
 const leftSpec: VisualizationSpec = {
   ...(fixture as unknown as VisualizationSpec),
@@ -37,11 +37,11 @@ const rightSpec: VisualizationSpec = {
   }),
 };
 
-// Spec com views[] declaradas — usado pela Option A
+// Spec with declared views[] — used by Option A.
 const choroplethSpec = choroplethFixture as unknown as VisualizationSpec;
 
-// Escala azul para contagem absoluta (invalido)
-// Ruanda: Kigali=1.1M (menor, mais denso), East/South/West=2.5-2.6M (maiores)
+// Blue scale for absolute count (invalid).
+// Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
 const rawSteps = [
   { threshold: 1_300_000, color: '#bfdbfe' },
   { threshold: 1_700_000, color: '#60a5fa' },
@@ -49,8 +49,8 @@ const rawSteps = [
   { threshold: 2_300_000, color: '#1d4ed8' },
 ];
 
-// Escala verde para densidade normalizada (correto)
-// Ruanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km2
+// Green scale for normalised density (correct).
+// Rwanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
 const densitySteps = [
   { threshold: 350, color: '#86efac' },
   { threshold: 430, color: '#4ade80' },
@@ -59,7 +59,7 @@ const densitySteps = [
   { threshold: 1300, color: '#14532d' },
 ];
 
-// Expressao MapLibre: population / sq-km — calculada em runtime
+// MapLibre expression: population / sq-km — evaluated at runtime.
 const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
 
 const fmtPop = (v: number) => {
@@ -72,10 +72,10 @@ const fmtDensity = (v: number) => {
 // Story principal
 
 /**
- * Dois `GeoVisProvider` independentes com o mesmo source de dados.
- * O mapa esquerdo exibe cobertura territorial (fill).
- * O mapa direito exibe perímetro das zonas (line).
- * O movimento é sincronizado via `getNativeInstance()` — sem API adicional no package.
+ * Two independent `GeoVisProvider` instances sharing the same data source.
+ * The left panel displays territorial coverage (fill).
+ * The right panel displays zone perimeters (line).
+ * Movement is synchronised via `getNativeInstance()` — no additional package API needed.
  */
 export const SplitCompare: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
@@ -127,13 +127,13 @@ export const SplitCompare: StoryFn = () => {
             flexShrink: 0,
           }}
         >
-          ⊙ Recentralizar
+          ⊙ Recenter
         </button>
       </div>
 
       <div style={{ display: 'flex', gap: 4, height: 480 }}>
         <div style={panelStyle}>
-          <MapLabel>Cobertura territorial (fill)</MapLabel>
+          <MapLabel>Territorial coverage (fill)</MapLabel>
           <GeoVisProvider spec={leftSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
             <MapSync
@@ -145,7 +145,7 @@ export const SplitCompare: StoryFn = () => {
         </div>
 
         <div style={panelStyle}>
-          <MapLabel>Per&iacute;metro das zonas (line)</MapLabel>
+          <MapLabel>Zone perimeters (line)</MapLabel>
           <GeoVisProvider spec={rightSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
             <MapSync
@@ -197,9 +197,9 @@ export const SplitCompare: StoryFn = () => {
 // Exploração de APIs nativas da biblioteca
 
 /**
- * **Opcao A — `views[]` na VisualizationSpec (spec-first)**
+ * **Option A — `views[]` in VisualizationSpec (spec-first)**
  *
- * O fixture `invalid-raw-count-choropleth.json` declara:
+ * The fixture `invalid-raw-count-choropleth.json` declares:
  * ```json
  * "views": [
  *   { "id": "left",  "label": "...", "layers": ["rwanda-choropleth"] },
@@ -207,17 +207,17 @@ export const SplitCompare: StoryFn = () => {
  * ]
  * ```
  *
- * `GeoVisSplitLayout` le `spec.views[]`, deriva um spec filtrado por view,
- * cria um `GeoVisProvider` + `GeoVisCanvas` por painel e gerencia sincronizacao
- * internamente. O consumer nao precisa de `MapRef`, `LockRef` ou `MapSync`.
+ * `GeoVisSplitLayout` reads `spec.views[]`, derives a spec filtered per view,
+ * creates one `GeoVisProvider` + `GeoVisCanvas` per panel and manages synchronisation
+ * internally. The consumer needs no `MapRef`, `LockRef`, or `MapSync`.
  *
- * O prop `render` e o escape hatch para logica ainda nao declaravel no spec:
- * `ChoroplethPainter` aplica paint data-driven via `getNativeInstance()` pois
- * `FillPaint.fillColor` nao suporta expressoes MapLibre no schema v1.
+ * The `render` prop is the escape hatch for logic not yet declarable in the spec:
+ * `ChoroplethPainter` applies data-driven paint via `getNativeInstance()` because
+ * `FillPaint.fillColor` does not support MapLibre expressions in schema v1.
  *
- * Dados: provincias de Ruanda (dataset oficial MapLibre — campos `population` e `sq-km`).
- * Demonstra o anti-padrao classico: Kigali City tem 1,1M hab (menor provinicia)
- * mas 1.551 hab/km² (mais densa). No mapa esquerdo parece branca; no direito e a mais escura.
+ * Data: Rwanda provinces (official MapLibre dataset — fields `population` and `sq-km`).
+ * Demonstrates the classic anti-pattern: Kigali City has 1.1M inhabitants (smallest province)
+ * but 1,551 hab/km² (densest). On the left map it appears almost white; on the right it is the darkest.
  */
 export const OptionA_ViewsInSpec: StoryFn = () => {
   const renderView = (view: VisualizationView) => {
@@ -225,7 +225,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
       return (
         <>
           <MapOverlayLegend
-            label="populacao absoluta"
+            label="absolute population"
             defaultColor="#eff6ff"
             steps={rawSteps}
             formatValue={fmtPop}
@@ -242,7 +242,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
     return (
       <>
         <MapOverlayLegend
-          label="densidade (hab/km²)"
+          label="density (hab/km²)"
           defaultColor="#f0fdf4"
           steps={densitySteps}
           formatValue={fmtDensity}
@@ -260,11 +260,11 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <strong>Opcao A — spec.views[] com GeoVisSplitLayout</strong>
+        <strong>Option A — spec.views[] with GeoVisSplitLayout</strong>
         <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-          O fixture declara <code>views[]</code>. O layout le a spec e cria os
-          paineis com sync automatico — sem <code>MapRef</code> ou{' '}
-          <code>MapSync</code> no consumer.
+          The fixture declares <code>views[]</code>. The layout reads the spec
+          and creates panels with automatic sync — no <code>MapRef</code> or{' '}
+          <code>MapSync</code> in the consumer.
         </p>
       </div>
 
@@ -278,7 +278,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
       <div style={{ display: 'flex', gap: 4 }}>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Azul — contagem absoluta (invalido)"
+            title="Blue — absolute count (invalid)"
             defaultColor="#eff6ff"
             steps={rawSteps}
             formatValue={fmtPop}
@@ -286,7 +286,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
         </div>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Verde — densidade hab/km² (correto)"
+            title="Green — density hab/km² (correct)"
             defaultColor="#f0fdf4"
             steps={densitySteps}
             formatValue={fmtDensity}
@@ -303,7 +303,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
             cursor: 'pointer',
           }}
         >
-          Como usar: codigo do consumer
+          How to use: consumer code
         </summary>
         <pre
           style={{
@@ -318,22 +318,22 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
             color: '#1f2937',
           }}
         >
-          {`// 1. O fixture (ou spec gerada por IA) declara views[]:
+          {`// 1. The fixture (or AI-generated spec) declares views[]:
 //
 // {
 //   "id": "invalid-raw-count-choropleth",
 //   "sources": [{ "id": "rwanda-provinces", ... }],
 //   "layers": [{ "id": "rwanda-choropleth", ... }],
 //   "views": [
-//     { "id": "left",  "label": "Populacao absoluta — invalido", "layers": ["rwanda-choropleth"] },
-//     { "id": "right", "label": "Densidade (hab/km²) — correto",  "layers": ["rwanda-choropleth"] }
+//     { "id": "left",  "label": "Absolute population count — invalid", "layers": ["rwanda-choropleth"] },
+//     { "id": "right", "label": "Population density (hab/km²) — correct",  "layers": ["rwanda-choropleth"] }
 //   ]
 // }
 
 import { GeoVisSplitLayout } from './_map-story-helpers';
 import type { VisualizationView } from '@ttoss/geovis';
 
-// 2. O consumer fornece logica por view via prop render:
+// 2. The consumer provides per-view logic via the render prop:
 const renderView = (view: VisualizationView) => {
   if (view.id === 'left') {
     return (
@@ -355,7 +355,7 @@ const renderView = (view: VisualizationView) => {
   );
 };
 
-// 3. Layout e sync automaticos — sem MapRef, LockRef ou MapSync:
+// 3. Layout and sync are automatic — no MapRef, LockRef or MapSync:
 <GeoVisSplitLayout
   spec={spec}
   leftBorder="2px solid #f59e0b"
@@ -387,16 +387,16 @@ OptionA_ViewsInSpec.parameters = {
   docs: {
     description: {
       story:
-        'Spec-first: `views[]` declara múltiplas perspectivas do mesmo dado no fixture JSON. `GeoVisSplitLayout` lê a spec do prop, filtra layers por view, cria um `GeoVisProvider` por painel e sincroniza automaticamente — sem `MapRef`, `LockRef` ou `MapSync` no consumer. O prop `render` é o _escape hatch_ para lógica ainda não declarável no spec (ex: expressões MapLibre em paint via `ChoroplethPainter`).',
+        'Spec-first: `views[]` declares multiple perspectives of the same data in the fixture JSON. `GeoVisSplitLayout` reads the spec from the prop, filters layers per view, creates one `GeoVisProvider` per panel and synchronises automatically — no `MapRef`, `LockRef` or `MapSync` in the consumer. The `render` prop is the _escape hatch_ for logic not yet declarable in the spec (e.g. MapLibre expressions in paint via `ChoroplethPainter`).',
     },
   },
 };
 
 /**
- * **Opcao B — `useSplitCompare()` hook**
+ * **Option B — `useSplitCompare()` hook**
  *
- * O hook recebe um spec base e overrides por painel (ex: layers filtrados),
- * retorna specs derivadas e um par de componentes de sync para o consumer montar.
+ * The hook receives a base spec and per-panel overrides (e.g. filtered layers),
+ * returns derived specs and a pair of sync components for the consumer to mount.
  *
  * ```tsx
  * const { leftProps, rightProps, syncRef } = useSplitCompare(baseSpec, {
@@ -418,34 +418,34 @@ OptionA_ViewsInSpec.parameters = {
  *
  * ---
  *
- * ## Trade-offs: Opcao A (views[] na spec) vs Opcao B (useSplitCompare hook)
+ * ## Trade-offs: Option A (views[] in spec) vs Option B (useSplitCompare hook)
  *
- * | Dimensao                  | Opcao A — spec-first              | Opcao B — hook                     |
+ * | Dimension                 | Option A — spec-first             | Option B — hook                    |
  * |---------------------------|-----------------------------------|------------------------------------|
- * | Acoplamento de schema     | Adiciona `views[]` ao schema v1   | Nenhuma mudanca no schema          |
- * | Declaratividade           | Estrutura de dados (JSON)         | Codigo TypeScript                  |
- * | Serializabilidade         | Spec e persistivel/transmissivel  | Override e ephemero (codigo)       |
- * | Gerabilidade por IA       | LLM gera `views[]` como JSON puro | Requer geracao de codigo           |
- * | Controle de layout        | Delegado ao componente de layout  | Consumer controla 100%             |
- * | Sync                      | Automatico — nao pode esquecer    | Explicito via `syncRef` — fragil   |
- * | Escape hatch por painel   | Prop `render` com view como arg   | Filho direto por painel            |
- * | Testabilidade             | Requer render-level test          | Hook pode ser testado isoladamente |
- * | Evolucao do schema        | Breaking change se views[] mudar  | Mudanca isolada na API do hook     |
- * | Numero de paineis         | Fixo (2 no layout atual)          | N paineis (flexivel)               |
- * | Boilerplate no consumer   | Minimo (um prop `render`)         | Verbose (2 providers + syncRef)    |
+ * | Schema coupling           | Adds `views[]` to schema v1       | No schema change                   |
+ * | Declarativeness           | Data structure (JSON)             | TypeScript code                    |
+ * | Serializability           | Spec is persistable/transmittable | Override is ephemeral (code)       |
+ * | AI generability           | LLM generates `views[]` as JSON   | Requires code generation           |
+ * | Layout control            | Delegated to layout component     | Consumer controls 100%             |
+ * | Sync                      | Automatic — cannot be forgotten   | Explicit via `syncRef` — fragile   |
+ * | Per-panel escape hatch    | `render` prop with view arg       | Direct child per panel             |
+ * | Testability               | Requires render-level test        | Hook can be tested in isolation    |
+ * | Schema evolution          | Breaking if views[] schema changes | Change isolated to hook API       |
+ * | Number of panels          | Fixed (2 in current layout)       | N panels (flexible)                |
+ * | Consumer boilerplate      | Minimal (one `render` prop)       | Verbose (2 providers + syncRef)    |
  *
- * ### Quando preferir A
- * - O split-compare e parte da definicao do dado (ex: fixture de policy invalida
- *   que SEMPRE deve ser mostrada com contexto correto ao lado)
- * - Specs sao geradas por IA ou persistidas em banco — a estrutura de views
- *   deve ser legivel por qualquer consumer sem conhecer o hook
- * - Sync automatico e um requisito de seguranca (ex: auditorias, revisoes)
+ * ### When to prefer A
+ * - The split-compare is part of the data definition (e.g. an invalid-policy fixture
+ *   that MUST always be shown with the correct version alongside)
+ * - Specs are AI-generated or persisted in a database — the views structure
+ *   must be readable by any consumer without knowing the hook
+ * - Automatic sync is a compliance requirement (e.g. audits, reviews)
  *
- * ### Quando preferir B
- * - O layout e variavel: o consumer pode querer 3 paineis, direction column,
- *   tamanhos assimetricos ou integrar com um sistema de UI externo
- * - O hook e composto com outras logicas (ex: filtros condicionais por painel)
- * - Time-to-first-implementation e curto: nao ha custo de ADR para schema
+ * ### When to prefer B
+ * - The layout is variable: the consumer may want 3 panels, column direction,
+ *   asymmetric sizes, or integration with an external UI system
+ * - The hook is composed with other logic (e.g. conditional filters per panel)
+ * - Time-to-first-implementation is short: no ADR cost for schema changes
  */
 export const OptionB_UseSplitCompareHook: StoryFn = () => {
   return (
@@ -459,7 +459,7 @@ export const OptionB_UseSplitCompareHook: StoryFn = () => {
       }}
     >
       <strong style={{ fontSize: 15 }}>
-        Opcao B — <code>useSplitCompare()</code> hook
+        Option B — <code>useSplitCompare()</code> hook
       </strong>
       <pre
         style={{
@@ -486,14 +486,13 @@ export const OptionB_UseSplitCompareHook: StoryFn = () => {
 </GeoVisProvider>`}
       </pre>
       <p style={{ marginTop: 16, lineHeight: 1.6 }}>
-        O consumer monta os providers e controla o layout diretamente. A
-        sincronizacao e explicitamente declarada via <code>syncRef.Left</code> /{' '}
-        <code>syncRef.Right</code> — se omitida, os mapas nao sincronizam.
-        Nenhuma mudanca no schema de <code>VisualizationSpec</code> e
-        necessaria.
+        The consumer mounts the providers and controls the layout directly.
+        Synchronisation is explicitly declared via <code>syncRef.Left</code> /{' '}
+        <code>syncRef.Right</code> — if omitted, the maps do not synchronise. No
+        changes to the <code>VisualizationSpec</code> schema are required.
       </p>
       <p style={{ marginTop: 8, lineHeight: 1.6 }}>
-        Ver tabela de trade-offs completa na documentacao desta story.
+        See the full trade-offs table in this story’s documentation.
       </p>
     </div>
   );
@@ -503,33 +502,33 @@ OptionB_UseSplitCompareHook.parameters = {
   docs: {
     description: {
       story: `
-Hook \`useSplitCompare\` que deriva specs filtradas por painel e expõe
-componentes de sync como \`syncRef.Left\` / \`syncRef.Right\`.
-Composable e sem mudança no schema — o consumer mantém controle total do layout.
+Hook \`useSplitCompare\` that derives filtered specs per panel and exposes
+sync components as \`syncRef.Left\` / \`syncRef.Right\`.
+Composable and schema-free — the consumer retains full layout control.
 
-**Trade-offs vs Opção A (\`views[]\` na spec)**
+**Trade-offs vs Option A (\`views[]\` in spec)**
 
-| Dimensão | A — spec-first | B — hook |
+| Dimension | A — spec-first | B — hook |
 |---|---|---|
-| Acoplamento de schema | Adiciona \`views[]\` ao schema v1 | Nenhuma mudança no schema |
-| Declaratividade | JSON — estrutura de dados | TypeScript — código |
-| Serializabilidade | Spec é persistível/transmissível como JSON | Override é efémero (código) |
-| Gerabilidade por IA | LLM gera \`views[]\` sem conhecer o package | Requer geração de código com a API do hook |
-| Controle de layout | Delegado ao componente de layout | Consumer controla 100% (direção, tamanhos, N painéis) |
-| Sincronização | Automática — não pode ser esquecida | Explícita via \`syncRef\` — frágil se omitida |
-| Escape hatch por painel | Prop \`render(view)\` | Filho direto por painel |
-| Testabilidade | Requer render-level test | Hook pode ser testado isoladamente |
-| Evolução da API | Breaking se \`views[]\` schema mudar | Mudança isolada na assinatura do hook |
-| Número de painéis | Fixo (2 no layout padrão) | N painéis (flexível) |
-| Boilerplate no consumer | Mínimo (spec + prop \`render\`) | Verbose (2 providers + 2 syncRef + refs) |
+| Schema coupling | Adds \`views[]\` to schema v1 | No schema change |
+| Declarativeness | JSON — data structure | TypeScript — code |
+| Serializability | Spec is persistable/transmittable as JSON | Override is ephemeral (code) |
+| AI generability | LLM generates \`views[]\` without knowing the package | Requires code generation with the hook API |
+| Layout control | Delegated to layout component | Consumer controls 100% (direction, sizes, N panels) |
+| Synchronisation | Automatic — cannot be forgotten | Explicit via \`syncRef\` — fragile if omitted |
+| Per-panel escape hatch | \`render(view)\` prop | Direct child per panel |
+| Testability | Requires render-level test | Hook can be tested in isolation |
+| API evolution | Breaking if \`views[]\` schema changes | Change isolated to hook signature |
+| Number of panels | Fixed (2 in default layout) | N panels (flexible) |
+| Consumer boilerplate | Minimal (spec + \`render\` prop) | Verbose (2 providers + 2 syncRef + refs) |
 
-**Quando preferir A:** a perspectiva múltipla faz parte da definição do dado — ex: fixture de policy
-inválida que _sempre_ deve ser mostrada com o correto ao lado; specs geradas por IA ou
-persistidas em banco; sync automático é requisito de conformidade.
+**When to prefer A:** the multi-panel perspective is part of the data definition — e.g. an invalid-policy
+fixture that _must_ always be shown with the correct version alongside; AI-generated or database-persisted
+specs; automatic sync is a compliance requirement.
 
-**Quando preferir B:** o layout é variável (N painéis, column, tamanhos assimétricos, integração com
-um design system externo); o hook é composto com outras lógicas condicionais por painel; a
-equipe quer adiar a decisão de schema e iterar antes de um ADR formal.
+**When to prefer B:** the layout is variable (N panels, column, asymmetric sizes, integration with
+an external design system); the hook is composed with conditional per-panel logic; the team wants
+to defer the schema decision and iterate before a formal ADR.
       `.trim(),
     },
   },

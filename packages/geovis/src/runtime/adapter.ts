@@ -27,10 +27,18 @@ export interface CapabilitySet {
   supportsCustomLayers: boolean;
 }
 
-export interface SpecPatch {
-  target: 'layer' | 'source' | 'view' | 'style';
-  op: 'replace' | 'add' | 'remove';
-  path: string;
-  value?: unknown;
-  rationale?: string;
-}
+export type SpecPatch =
+  | {
+      target: 'layer' | 'source' | 'view' | 'style';
+      op: 'replace';
+      path: string;
+      value?: unknown;
+      rationale?: string;
+    }
+  | {
+      target: 'layer' | 'source' | 'view' | 'style';
+      op: 'add' | 'remove';
+      path?: string;
+      value?: unknown;
+      rationale?: string;
+    };

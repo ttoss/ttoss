@@ -34,12 +34,12 @@
   "views": [
     {
       "id": "left",
-      "label": "Populacao absoluta (population) — invalido",
+      "label": "Absolute population count (population) — invalid",
       "layers": ["rwanda-choropleth"]
     },
     {
       "id": "right",
-      "label": "Densidade (hab/km²) — correto",
+      "label": "Population density (hab/km²) — correct",
       "layers": ["rwanda-choropleth"]
     }
   ],
@@ -48,7 +48,7 @@
     "invalidReason": "raw-count-choropleth",
     "metricField": "population",
     "normalizedExpression": "population / sq-km",
-    "normalizedLabel": "habitantes por km²",
+    "normalizedLabel": "inhabitants per km²",
     "referenceExample": "https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
   }
 }
