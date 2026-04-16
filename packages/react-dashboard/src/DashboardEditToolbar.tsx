@@ -103,9 +103,7 @@ export const DashboardEditToolbar = () => {
       <Flex
         sx={{
           gap: '3',
-          alignItems: 'center',
           flexWrap: 'wrap',
-          justifyContent: 'space-between',
         }}
       >
         <Button
@@ -117,23 +115,21 @@ export const DashboardEditToolbar = () => {
         >
           Adicionar Métricas
         </Button>
-        <Flex sx={{ gap: '3', alignItems: 'center', flexWrap: 'wrap' }}>
-          {selectedTemplate?.editable && (
-            <Button variant="accent" onClick={saveEdit} rightIcon="lucide:save">
-              Salvar
-            </Button>
-          )}
-          <Button
-            variant="primary"
-            onClick={saveAsNew}
-            rightIcon="lucide:copy-check"
-          >
-            Salvar Novo Template
+        {selectedTemplate?.editable && (
+          <Button variant="accent" onClick={saveEdit} rightIcon="lucide:save">
+            Salvar
           </Button>
-          <Button variant="secondary" onClick={cancelEdit} rightIcon="lucide:x">
-            Cancelar Edição
-          </Button>
-        </Flex>
+        )}
+        <Button
+          variant="primary"
+          onClick={saveAsNew}
+          rightIcon="lucide:copy-check"
+        >
+          Salvar Novo Template
+        </Button>
+        <Button variant="secondary" onClick={cancelEdit} rightIcon="lucide:x">
+          Cancelar Edição
+        </Button>
       </Flex>
 
       <Drawer
