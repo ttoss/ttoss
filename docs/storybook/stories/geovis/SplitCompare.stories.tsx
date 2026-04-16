@@ -194,7 +194,7 @@ export const SplitCompare: StoryFn = () => {
   );
 };
 
-// Exploração de APIs nativas da biblioteca
+// Exploration of native library APIs
 
 /**
  * **Option A — `views[]` in VisualizationSpec (spec-first)**

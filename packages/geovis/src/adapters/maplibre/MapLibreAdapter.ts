@@ -369,6 +369,15 @@ const createMapLibreAdapter = (): EngineAdapter => {
         bearing: view.bearing ?? 0,
       });
 
+      map.addControl(
+        new maplibregl.NavigationControl({
+          visualizePitch: true,
+          visualizeRoll: true,
+          showZoom: true,
+          showCompass: true,
+        })
+      );
+
       _views.set(viewId, { map, spec, styleUrl });
 
       map.on('load', () => {
