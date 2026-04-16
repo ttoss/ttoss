@@ -31,13 +31,19 @@ const specPaintKeyToMaplibre = (
   key: string,
   geometry: GeoVisGeometryType
 ): string | undefined => {
-  const map: Record<string, string | ((g: GeoVisGeometryType) => string)> = {
+  const map: Record<
+    string,
+    string | ((g: GeoVisGeometryType) => string | undefined)
+  > = {
     fillColor: 'fill-color',
     fillOpacity: 'fill-opacity',
     lineColor: (g) => {
       return g === 'polygon' ? 'fill-outline-color' : 'line-color';
     },
-    lineWidth: 'line-width',
+    lineWidth: (g) => {
+      // line-width is not a valid paint property for fill layers (polygon).
+      return g === 'polygon' ? undefined : 'line-width';
+    },
     lineOpacity: 'line-opacity',
     lineDasharray: 'line-dasharray',
     circleColor: 'circle-color',

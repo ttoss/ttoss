@@ -225,6 +225,6 @@ Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch }`. Must 
 
 Validates a plain object against the `@ttoss/geovis` JSON schema.
 
-Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: ErrorObject[] }`.
+Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: string[] }`.
 
 _For more on product development principles that guide our approach, see [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles)._

@@ -158,7 +158,6 @@ export interface FillPaint {
   fillColor?: string;
   fillOpacity?: number;
   lineColor?: string;
-  lineWidth?: number;
 }
 
 export interface LinePaint {

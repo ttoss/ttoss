@@ -413,6 +413,28 @@ describe('applyPatch — camelCase to MapLibre key translation', () => {
     );
   });
 
+  test('lineWidth → line-width for line layer', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.ln.paint.lineWidth',
+      value: 4,
+    });
+    expect(map.setPaintProperty).toHaveBeenCalledWith('ln', 'line-width', 4);
+  });
+
+  test('lineWidth is ignored for polygon layer (not a valid fill paint property)', () => {
+    const { adapter, map } = mountAdapter();
+    adapter.applyPatch?.({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.poly.paint.lineWidth',
+      value: 4,
+    });
+    expect(map.setPaintProperty).not.toHaveBeenCalled();
+  });
+
   test('unknown spec key is ignored (no setPaintProperty call)', () => {
     const { adapter, map } = mountAdapter();
     adapter.applyPatch?.({
