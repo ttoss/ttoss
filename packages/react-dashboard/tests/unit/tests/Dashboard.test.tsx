@@ -1,4 +1,4 @@
-import { render, screen } from '@ttoss/test-utils/react';
+import { act, render, screen } from '@ttoss/test-utils/react';
 import {
   Dashboard,
   type DashboardFilter,
@@ -313,5 +313,159 @@ describe('Dashboard', () => {
     expect(screen.getByText('Revenue Metrics')).toBeInTheDocument();
     expect(screen.getByText('CTR')).toBeInTheDocument();
     expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+  });
+
+  test('should call onEditingGridChange with null on cancel', async () => {
+    const onEditingGridChange = jest.fn();
+
+    const EditTrigger = () => {
+      const { startEdit, cancelEdit } = useDashboard();
+      return (
+        <>
+          <button
+            onClick={() => {
+              return startEdit();
+            }}
+          >
+            Start Edit
+          </button>
+          <button
+            onClick={() => {
+              return cancelEdit();
+            }}
+          >
+            Cancel Edit
+          </button>
+        </>
+      );
+    };
+
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        selectedTemplate={mockTemplate}
+        editable
+        onEditingGridChange={onEditingGridChange}
+        headerChildren={<EditTrigger />}
+      />
+    );
+
+    await act(async () => {
+      screen.getByText('Start Edit').click();
+    });
+
+    // Should have been called with the grid array when entering edit mode
+    expect(onEditingGridChange).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ i: 'card-1' })])
+    );
+
+    onEditingGridChange.mockClear();
+
+    await act(async () => {
+      screen.getByText('Cancel Edit').click();
+    });
+
+    // Should be called with null when edit mode exits
+    expect(onEditingGridChange).toHaveBeenCalledWith(null);
+  });
+
+  test('should render headerChildren items centered via wrapper', () => {
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        headerChildren={
+          <>
+            <button data-testid="btn-1">Button 1</button>
+            <button data-testid="btn-2">Button 2</button>
+          </>
+        }
+      />
+    );
+
+    const btn1 = screen.getByTestId('btn-1');
+    const btn2 = screen.getByTestId('btn-2');
+
+    // Both buttons should be rendered inside the header
+    expect(btn1).toBeInTheDocument();
+    expect(btn2).toBeInTheDocument();
+
+    // The wrapper should have align-items: center style
+    const wrapper = btn1.parentElement;
+    expect(wrapper).toBeTruthy();
+  });
+
+  test('should pass currency prop to all cards', () => {
+    const currencyTemplate: DashboardTemplate = {
+      id: 'currency-template',
+      name: 'Currency Template',
+      grid: [
+        {
+          i: 'card-usd',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue USD',
+            numberType: 'currency',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 1000 } },
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[currencyTemplate]}
+        filters={[]}
+        selectedTemplate={currencyTemplate}
+        currency="USD"
+      />
+    );
+
+    // Should display US$ instead of R$
+    expect(screen.getByText(/US\$/)).toBeInTheDocument();
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+  });
+
+  test('should allow card-level currency to override dashboard-level currency', () => {
+    const mixedTemplate: DashboardTemplate = {
+      id: 'mixed-template',
+      name: 'Mixed Template',
+      grid: [
+        {
+          i: 'card-eur',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue EUR',
+            numberType: 'currency',
+            type: 'bigNumber',
+            currency: 'EUR',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 2000 } },
+          },
+        },
+      ],
+    };
+
+    render(
+      <Dashboard
+        templates={[mixedTemplate]}
+        filters={[]}
+        selectedTemplate={mixedTemplate}
+        currency="USD"
+      />
+    );
+
+    // Card-level EUR should take precedence over dashboard-level USD
+    expect(screen.getByText(/€/)).toBeInTheDocument();
+    expect(screen.queryByText(/US\$/)).not.toBeInTheDocument();
   });
 });

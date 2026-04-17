@@ -100,16 +100,20 @@ export const DashboardEditToolbar = () => {
 
   return (
     <>
-      <Flex sx={{ gap: '3', alignItems: 'center', flexWrap: 'wrap' }}>
+      <Flex
+        sx={{
+          gap: '3',
+          flexWrap: 'wrap',
+        }}
+      >
         <Button
           variant="accent"
           onClick={() => {
             setAddCardDrawerOpen(true);
           }}
           rightIcon="lucide:plus"
-          sx={{ marginRight: '10' }}
         >
-          Adicionar item
+          Adicionar Métricas
         </Button>
         {selectedTemplate?.editable && (
           <Button variant="accent" onClick={saveEdit} rightIcon="lucide:save">
@@ -121,10 +125,10 @@ export const DashboardEditToolbar = () => {
           onClick={saveAsNew}
           rightIcon="lucide:copy-check"
         >
-          Salvar como novo
+          Salvar Novo Template
         </Button>
         <Button variant="secondary" onClick={cancelEdit} rightIcon="lucide:x">
-          Cancelar edição
+          Cancelar Edição
         </Button>
       </Flex>
 
@@ -157,10 +161,10 @@ export const DashboardEditToolbar = () => {
             }}
           >
             <Text sx={{ fontWeight: 'bold', fontSize: 'lg' }}>
-              Adicionar item
+              Adicionar métricas
             </Text>
             <Text sx={{ color: 'text.muted', fontSize: 'sm' }}>
-              Escolha o tipo de card para adicionar ao dashboard.
+              Escolha a métrica para adicionar ao dashboard.
             </Text>
             <Search
               key={addCardDrawerOpen ? 'open' : 'closed'}

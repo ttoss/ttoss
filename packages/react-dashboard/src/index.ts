@@ -17,3 +17,8 @@ export { DashboardHeader } from './DashboardHeader';
 export { DashboardProvider, useDashboard } from './DashboardProvider';
 export { DashboardSectionDivider } from './DashboardSectionDivider';
 export { type SectionDivider } from './DashboardSectionDivider';
+export { filterCatalogForGrid, getCardSignature } from './utils/cardSignature';
+export {
+  createDefaultPeriodPresets,
+  type PeriodPreset,
+} from './utils/periodPresets';
