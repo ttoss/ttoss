@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.20...@ttoss/react-dashboard@0.7.0) (2026-04-17)
+
+### Features
+
+- **react-dashboard:** add onEditingGridChange, card utils, period presets, currency prop ([#947](https://github.com/ttoss/ttoss/issues/947)) ([8c4d4a2](https://github.com/ttoss/ttoss/commit/8c4d4a206956fd6a2237055dbae7036db1324d9d))
+
 ## [0.6.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.20) (2026-04-07)
 
 **Note:** Version bump only for package @ttoss/react-dashboard
