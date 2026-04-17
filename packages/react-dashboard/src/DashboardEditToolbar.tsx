@@ -103,11 +103,12 @@ export const DashboardEditToolbar = () => {
       <Flex
         sx={{
           gap: '3',
-          flexWrap: 'wrap',
+          //flexWrap: 'nowrap',
+          //overflowX: 'auto',
         }}
       >
         <Button
-          variant="accent"
+          variant="secondary"
           onClick={() => {
             setAddCardDrawerOpen(true);
           }}
@@ -116,12 +117,16 @@ export const DashboardEditToolbar = () => {
           Adicionar Métricas
         </Button>
         {selectedTemplate?.editable && (
-          <Button variant="accent" onClick={saveEdit} rightIcon="lucide:save">
+          <Button
+            variant="secondary"
+            onClick={saveEdit}
+            rightIcon="lucide:save"
+          >
             Salvar
           </Button>
         )}
         <Button
-          variant="primary"
+          variant="secondary"
           onClick={saveAsNew}
           rightIcon="lucide:copy-check"
         >
@@ -141,8 +146,8 @@ export const DashboardEditToolbar = () => {
         direction="right"
         size={drawerSizeXs}
         sx={{
-          width: addCardDrawerOpen ? '100%' : '0',
-          display: addCardDrawerOpen ? 'block' : 'none',
+          position: 'fixed',
+          pointerEvents: addCardDrawerOpen ? 'auto' : 'none',
         }}
       >
         <Flex
@@ -259,8 +264,8 @@ export const DashboardEditToolbar = () => {
         direction="right"
         size={drawerSizeSm}
         sx={{
-          width: saveAsNewModalOpen ? '100%' : '0',
-          display: saveAsNewModalOpen ? 'block' : 'none',
+          position: 'fixed',
+          pointerEvents: saveAsNewModalOpen ? 'auto' : 'none',
         }}
       >
         <Flex
