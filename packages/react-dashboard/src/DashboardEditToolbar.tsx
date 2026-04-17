@@ -103,8 +103,7 @@ export const DashboardEditToolbar = () => {
       <Flex
         sx={{
           gap: '3',
-          //flexWrap: 'nowrap',
-          //overflowX: 'auto',
+          flexWrap: 'wrap',
         }}
       >
         <Button
