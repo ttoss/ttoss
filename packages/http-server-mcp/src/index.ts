@@ -506,6 +506,16 @@ export const registerToolFromSchema = (
       | ((req: unknown, extra: unknown) => Promise<{ tools: unknown[] }>)
       | undefined;
 
+    if (!origHandler && process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[registerToolFromSchema] Could not patch tools/list — ' +
+          'internal MCP SDK structure may have changed. ' +
+          'The tool will still be callable, but tools/list may return ' +
+          'a Zod-derived schema instead of the verbatim JSON Schema.'
+      );
+    }
+
     if (origHandler) {
       rawServer._requestHandlers.set(
         'tools/list',

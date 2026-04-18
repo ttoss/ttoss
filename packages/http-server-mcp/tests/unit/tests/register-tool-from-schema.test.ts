@@ -318,4 +318,43 @@ describe('registerToolFromSchema', () => {
     expect(router).toBeDefined();
     expect(typeof router.routes).toBe('function');
   });
+
+  test('emits a dev-time warning when the tools/list handler cannot be patched', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const origEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'test';
+
+    try {
+      // Use a fresh server and delete the tools/list handler after the SDK installs
+      // it (via a normal registerTool call), to simulate the "origHandler undefined"
+      // branch inside registerToolFromSchema's patching logic.
+      const server = new McpServer({ name: 'server-warn', version: '1.0.0' });
+
+      server.registerTool(
+        'seed',
+        { description: 'seed', inputSchema: { x: z.string() } },
+        async ({ x }) => {
+          return { content: [{ type: 'text', text: x }] };
+        }
+      );
+
+      // Remove the tools/list handler so origHandler will be undefined
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (server as any).server?._requestHandlers?.delete('tools/list');
+
+      registerToolFromSchema(server, {
+        name: 'my-tool',
+        handler: async () => {
+          return { content: [{ type: 'text', text: 'hi' }] };
+        },
+      });
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Could not patch tools/list')
+      );
+    } finally {
+      process.env.NODE_ENV = origEnv;
+      warnSpy.mockRestore();
+    }
+  });
 });

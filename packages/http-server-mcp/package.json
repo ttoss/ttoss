@@ -29,6 +29,9 @@
     "@ttoss/http-server": "workspace:^",
     "zod": "^3.25.0"
   },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.1",
