@@ -14,9 +14,9 @@ FSL is not styling, not a token tree, not a component API. It is the formal lang
 
 FSL is composed of two normative artifacts:
 
-**[FSL Lexicon](./fls-lexicon.md)** — the controlled vocabulary. Defines the canonical meaning of every core term across nine semantic dimensions: Entity Kind, Structural Role, Interaction Kind, Composition Role, Evaluation, Consequence, State, Layer Role, and Context Class.
+**[FSL Lexicon](./fsl-lexicon.md)** — the controlled vocabulary. Defines the canonical meaning of every core term across nine semantic dimensions: Entity Kind, Structural Role, Interaction Kind, Composition Role, Evaluation, Consequence, State, Layer Role, and Context Class.
 
-**[FSL Structural Language](./fls-structural-language.md)** — the grammar. Defines how lexicon terms combine into valid semantic expressions, what combinations are legal, how context may refine meaning, and how downstream projections must derive from the foundation.
+**[FSL Structural Language](./fsl-structural-language.md)** — the grammar. Defines how lexicon terms combine into valid semantic expressions, what combinations are legal, how context may refine meaning, and how downstream projections must derive from the foundation.
 
 ## What derives from FSL
 

@@ -1,5 +1,6 @@
 ---
 title: Token Model
+sidebar_position: 3
 ---
 
 # Token Model
@@ -22,6 +23,22 @@ Separate **value** from **meaning**.
 - **Components and patterns** consume semantic tokens only
 
 > Semantic tokens are the public API of the system.
+
+### The flow in one picture
+
+```text
+   raw value          core token                   semantic token                   component
+   ─────────          ──────────                   ──────────────                   ─────────
+   "#0F172A"   ──►    core.colors.neutral.1000 ──► semantic.colors.action           <Button />
+                                                     .primary.background.default
+
+   only in theme      never consumed by            the contract surface             consumes semantic
+   sources / files    components                   components depend on             tokens only
+```
+
+- **Left to right** — values become meaning, meaning becomes UI.
+- **Right to left** — a theme change (light → dark, brand A → brand B) touches only the `semantic → core` arrow; the component does not change.
+- **Each layer has one job** and is not allowed to do the next one's job. This is what the invariants below enforce.
 
 ## Architecture
 
@@ -67,12 +84,12 @@ Applications must **never**:
 
 The semantic color token grammar `{ux}.{role}.{dimension}.{state}` is a formal FSL Structural Language §17.1 projection that renames and subsets FSL dimensions. The mapping is normative:
 
-| Token grammar axis | FSL dimension   | Notes                                                                                                                                                                                      |
-| :----------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ux`               | Entity Kind     | Projection-scoped subset: `action`, `input`, `navigation`, `feedback`, `content`. `guidance` and `discovery` are projection-stratum extensions with no FSL Entity Kind backing (§FSL 4.2). |
-| `role`             | Evaluation      | Projection-scoped name for the FSL `Evaluation` dimension. Values are identical (`primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative`).                            |
-| `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                      |
-| `state`            | State           | Values identical, no renaming.                                                                                                                                                             |
+| Token grammar axis | FSL dimension   | Notes                                                                                                                                                                                                                                                  |
+| :----------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ux`               | Entity Kind     | Projection-scoped subset of FSL Entity Kinds: `action`, `input`, `navigation`, `feedback`, `informational`. `Collection`/`Overlay`/`Structure` all project to `informational`; `Selection` projects to `input`; `Disclosure` projects to `navigation`. |
+| `role`             | Evaluation      | Projection-scoped name for the FSL `Evaluation` dimension. Values are identical (`primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative`).                                                                                        |
+| `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                                                                                  |
+| `state`            | State           | Values identical, no renaming.                                                                                                                                                                                                                         |
 
 For the full Entity Kind → UX context mapping (covering all nine FSL Entity Kinds), see the [Colors family](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
 

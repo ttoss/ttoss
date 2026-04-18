@@ -7,4 +7,9 @@
  */
 
 export type { ComponentMeta } from './componentMeta';
-export type { EvaluationsFor } from './taxonomy';
+export type {
+  CompositionsFor,
+  EvaluationsFor,
+  SurfaceTypeFor,
+  UxContextFor,
+} from './taxonomy';

@@ -112,6 +112,12 @@ It is part of the language itself.
 Component semantics and token semantics must derive from this structure.  
 They must not define their own incompatible language.
 
+## 3.7 Composition names structural slots
+
+The Composition dimension deliberately reuses Structural Role names (`label`, `description`, `status`, `control`, `body`, `selection`, and others) as **slot designators** — the parent-side name of the position where a structurally-typed part belongs.
+
+This is a design choice, not a disjointness violation. A term like `label` in the Structural Role dimension describes a part's own topology; the same term in the Composition dimension designates the slot that part occupies in a larger whole. The dimension carries the distinction; the shared name carries the correspondence between a part and the slot it fills. See §11.3 for the formal disjointness rule.
+
 ---
 
 # 4. Semantic strata
@@ -159,7 +165,7 @@ This document defines their structural role in the language.
 
 The semantic identity of the thing.
 
-Examples of expected lexical values:
+Expected lexical values (the complete Entity Kind registry is normative in the Lexicon §1):
 
 - Action
 - Input
@@ -171,8 +177,12 @@ Examples of expected lexical values:
 - Feedback
 - Structure
 
-Entity is the strongest identity dimension.  
+Entity is the strongest identity dimension.
 It must not be redefined by context.
+
+:::note Name collision with the Structure dimension
+The Entity Kind `Structure` (capitalized) is distinct from the Structural Role dimension (§5.2) which uses lowercase `structure` as its field name in the canonical expression. See Lexicon §10.12 for the full disambiguation.
+:::
 
 ---
 
@@ -218,12 +228,10 @@ Examples of expected lexical values:
 - toggle.tristate
 - navigate.link
 - disclose.toggle
-- popup.dialog
-- popup.listbox
-- popup.grid
-- popup.tree
 - status.passive
 - status.interruptive
+
+> `popup.*` composite terms (listbox/grid/tree/dialog) are intentionally **not** foundational — they belong to the Web/ARIA Projection Profile. The trigger carries `disclose.toggle`; the revealed surface is modeled as its own Entity expression. See FSL Lexicon §10.14.
 
 Interaction is required because real interface structures cannot be disambiguated safely from identity and structure alone.
 
@@ -677,6 +685,16 @@ Derives:
 ## 13.2 Projection boundary rule
 
 If a term exists only because a downstream projection needs it, it does not belong in the Structural Language.
+
+## 13.3 Profile dimension dispositions
+
+A Projection Profile is not required to codify every foundational dimension identically. Each dimension in a profile must declare one of three dispositions:
+
+- **Codified** — the profile exposes the dimension with its own registry and legality rules. The canonical case.
+- **Absorbed** — the profile declares that the dimension's semantic content is fully captured by another mechanism already present in the profile, and the dimension is therefore not exposed as independent. The profile must name the absorbing mechanism and justify why no meaning is lost.
+- **Deferred** — the profile acknowledges the dimension, reserves its name, but does not yet codify it. The profile must state the criterion that will graduate the dimension from deferred to codified.
+
+A disposition is legal only if it preserves foundational meaning. A profile may not **silently** omit a dimension, nor may it absorb a dimension whose distinctions cannot be recovered from the absorbing mechanism.
 
 ---
 

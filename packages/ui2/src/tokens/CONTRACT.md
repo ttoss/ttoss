@@ -60,17 +60,17 @@ the current combination of React Aria state booleans.
 
 A component MUST use ONLY tokens from its Entity row.
 
-| Entity         | Colors       | Radii     | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | ------------ | --------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`     | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Input**      | `input`      | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`      | `control` | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation` | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation` | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `content`    | `surface` | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`   | `surface` | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `content`    | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `content`    | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+| Entity         | Colors          | Radii     | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
+| -------------- | --------------- | --------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
+| **Action**     | `action`        | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Input**      | `input`         | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Selection**  | `input`         | `control` | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Navigation** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Disclosure** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
+| **Overlay**    | `informational` | `surface` | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
+| **Feedback**   | `feedback`      | `surface` | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
+| **Collection** | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
+| **Structure**  | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
@@ -79,7 +79,41 @@ A component MUST use ONLY tokens from its Entity row.
 | Focus ring       | `vars.focus.ring.width` / `.style` / `.color` |
 | Disabled opacity | `vars.opacity.disabled`                       |
 | Scrim opacity    | `vars.opacity.scrim`                          |
+| Scrim color      | `vars.colors.overlay.scrim`                   |
 | Z-Index          | `vars.zIndex.layer.{base                      | sticky | overlay | blocking | transient}` |
+
+### §1.1 — Mapping Rationale
+
+The Entity → Token Map above groups 9 entities into 5 UX color contexts.
+The grouping criterion is a single discriminant question:
+
+> **"What is the user's primary cognitive mode when interacting with this entity?"**
+
+| Cognitive Mode                                                             | UX Context      | Entities                       | Why they share tokens                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------- | --------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Deciding** — evaluating consequences before triggering an effect         | `action`        | Action                         | The user weighs risk/reward before committing. Visual identity must signal _actionability_ and _consequence weight_.                                                                                                                                                                                       |
+| **Providing** — supplying or selecting data for the system                 | `input`         | Input, Selection               | Both involve data provision. Selection is constrained input — the user picks from a set rather than entering freeform, but the cognitive task is the same: "give the system a value."                                                                                                                      |
+| **Orienting** — navigating across or revealing within an information space | `navigation`    | Navigation, Disclosure         | Navigation moves the user across destinations; Disclosure reveals structure in place. Both answer "where am I / what's here?" — spatial and structural orientation share the same visual language.                                                                                                         |
+| **Receiving** — consuming a system-initiated status or outcome message     | `feedback`      | Feedback                       | The user is the audience, not the initiator. Tokens must communicate valence (positive/caution/negative) without implying interactivity.                                                                                                                                                                   |
+| **Reading** — consuming organized, persistent content                      | `informational` | Overlay, Collection, Structure | All are content-carrying surfaces. Overlay is temporary content elevated above the page, Collection is a grouped set of items, Structure is the organizational frame. They share surface-level visual treatment because their tokens serve the _content they carry_, not the container's interaction mode. |
+
+**How to use this table when adding a new entity or component:**
+
+1. Ask: "What is the user's primary cognitive mode?"
+2. Find the matching row → that is the UX context → that is the `Colors` column for §1.
+3. The remaining columns (Radii, Border, Sizing, etc.) follow from the **surface type**: interactive entities use `control` tokens, content-carrying entities use `surface` tokens.
+
+**Surface type rule** (derives all non-color columns):
+
+| Surface type                             | Radii     | Border            | Sizing | Spacing         | Elevation                                    |
+| ---------------------------------------- | --------- | ----------------- | ------ | --------------- | -------------------------------------------- |
+| `control` — user operates this directly  | `control` | `outline.control` | `hit`  | `inset.control` | `flat`                                       |
+| `surface` — carries content for the user | `surface` | `outline.surface` | —      | `inset.surface` | per entity (flat, raised, overlay, blocking) |
+
+This means the full §1 row for any entity is determined by two decisions:
+
+1. **Cognitive mode** → Colors column
+2. **Surface type** → all other columns (except Typography, Motion, and Elevation which have entity-specific assignments)
 
 ---
 
@@ -214,6 +248,26 @@ style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => ({
     ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
     : 'none',
 })}
+```
+
+### §3.1 — `resolveInteractiveStyle` helper
+
+Interactive components MUST use `resolveInteractiveStyle` (in `src/tokens/`) to
+apply the cascade above **per color dimension**. Pass only the flags the
+dimension respects — e.g. `background` usually ignores `isFocusVisible`,
+`border` usually ignores `isHovered`/`isPressed`. The helper is the single
+canonical implementation of §3; no component re-implements the ternary chain.
+
+Structural tokens (`radii`, `border.*.width/style`, `sizing`, `spacing`,
+`typography`, `motion`) are read as literals from `vars.*` following the
+component's entity row in §1. They are intentionally **not** abstracted into
+a helper: the literal read is the contract's grep-able audit trail.
+
+```typescript
+backgroundColor: resolveInteractiveStyle(c?.background, { isHovered, isPressed, isDisabled }),
+borderColor:     resolveInteractiveStyle(c?.border,     { isDisabled, isFocusVisible }),
+color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, isDisabled })
+               ?? c?.text?.default,
 ```
 
 ---

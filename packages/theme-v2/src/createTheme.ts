@@ -71,7 +71,7 @@ export const buildTheme = ({
  *   overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
  *   alternate: {
  *     semantic: {
- *       colors: { content: { primary: { background: { default: '{core.colors.neutral.900}' } } } },
+ *       colors: { informational: { primary: { background: { default: '{core.colors.neutral.900}' } } } },
  *     },
  *   },
  * });

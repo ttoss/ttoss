@@ -168,11 +168,7 @@ Interaction Kind is fundamental because interactive meaning cannot be recovered 
 | **toggle.tristate**     | An interaction that can lawfully occupy three states, including an indeterminate or partial state.                       | Not **toggle.binary**.                                                          |
 | **navigate.link**       | An interaction whose primary function is movement to another destination or location.                                    | Not **command**; even if visually button-like, its semantic core is navigation. |
 | **navigate.step**       | An interaction whose function is progression between stages, screens, or ordered steps.                                  | Not general navigation across arbitrary destinations.                           |
-| **disclose.toggle**     | An interaction that reveals or hides related content in place.                                                           | Not **popup.dialog** or other overlay-like interactions.                        |
-| **popup.listbox**       | An interaction that invokes or operates through a popup whose semantic content is listbox-like.                          | Not **popup.dialog**, **popup.grid**, or **popup.tree**.                        |
-| **popup.grid**          | An interaction that invokes or operates through a popup whose semantic content is grid-like.                             | Not **popup.listbox**.                                                          |
-| **popup.tree**          | An interaction that invokes or operates through a popup whose semantic content is tree-like.                             | Not **popup.listbox** or **popup.grid**.                                        |
-| **popup.dialog**        | An interaction that invokes or operates through a popup whose semantic content is dialog-like.                           | Not generic popup; specifically dialog semantics.                               |
+| **disclose.toggle**     | An interaction that reveals or hides related content in place.                                                           | Not an overlay entity's open/close — that is modeled at the Entity layer.       |
 | **status.passive**      | A communicative condition that informs without demanding immediate user action.                                          | Not **status.interruptive**.                                                    |
 | **status.interruptive** | A communicative condition that interrupts, escalates, or demands immediate handling.                                     | Not passive informational status.                                               |
 
@@ -444,12 +440,47 @@ They model different dimensions and may lawfully co-exist. `status.interruptive`
 
 ---
 
-## 10.11 content (Structural Role) vs content (token UX context)
+## 10.11 content (Structural Role) — resolved against earlier UX-context overlap
 
-- **content** as a Structural Role (§2) is the main carried content of an entity or composite — a topological part descriptor.
-- **content** as a UX context in the Semantic Token Projection is a family-grouping for informational surfaces and readable content — a projection-stratum organizing concept.
+`content` is a **Structural Role** (§2): the main carried content of an entity or composite — a topological part descriptor (e.g. the body region of a Disclosure or the inner slot of a Collection).
 
-These exist in different layers. The Structural Role describes part topology inside an entity. The token UX context organizes token families in the Semantic Token Projection. They do not conflict, but must not be conflated.
+Historically the Semantic Token Projection also used `content` as a UX-context family name, which created a verbal overlap across layers. This was resolved by renaming the token-side family to **`informational`** — now the canonical name of the UX context covering informational surfaces and readable content. All tokens live under `vars.colors.informational.*` and the token vocabulary exposes no `content` key.
+
+Operational rule: `content` names a Structural Role only. The token UX family is named `informational`. The two layers no longer share a term.
+
+---
+
+## 10.12 Structure (Entity Kind) vs Structural Role (dimension)
+
+- **`Structure`** (capitalized) is an **Entity Kind** (§1) — an entity whose primary meaning is organizing, supporting, grouping, separating, or framing content and interaction (dividers, layouts, groups).
+- **Structural Role** is the name of a **dimension** (§2). Its canonical field in the expression is lowercase `structure`, and its lexical values are terms like `root`, `control`, `surface`, `label`, `item`.
+
+The words are phonetically identical but model different strata. An expression may lawfully carry both simultaneously: `entity: Structure, structure: root` designates a Structure entity's root part. The Entity Kind is never a legal value of the Structural Role dimension, and no Structural Role term is a legal Entity Kind.
+
+Implementations should preserve the case distinction in every artifact that names both.
+
+---
+
+## 10.13 Overlay (Entity Kind) vs overlay (Layer Role)
+
+- **`Overlay`** (capitalized) is an **Entity Kind** (§1) — an entity whose primary meaning is temporary layered presentation.
+- **`overlay`** (lowercase) is a **Layer Role** (§8) — a semantic layering role occupied by an expression above the base interface.
+
+An Overlay entity typically occupies the `overlay` or `blocking` Layer Role, but the two are independent: a non-Overlay entity may lawfully be raised to the `overlay` layer (e.g. a sticky Navigation), and an Overlay entity's inner parts may occupy different layer roles. The case distinction is normative (see §11.4).
+
+---
+
+## 10.14 `popup.*` (removed from the core) — projection-specific
+
+Earlier drafts of the FSL Interaction Kind vocabulary included `popup.listbox`, `popup.grid`, `popup.tree`, and `popup.dialog`. These were removed from the core lexicon because they smuggled projection-specific semantics (ARIA composite-widget patterns) into a foundational dimension, violating §3.1 ("Structure must remain smaller than projections") and §12.1 ("No projection-specific term may be treated as foundational").
+
+The meaning those terms carried is recovered at the correct layers:
+
+- **Trigger half** — a control that opens a popup expresses `interaction: disclose.toggle` (reveals/hides related content in place). This is the foundational interaction.
+- **Revealed half** — the popup's semantic content is modeled as an independent Entity expression: a Collection with listbox/grid/tree-shaped structure, or an Overlay with dialog semantics. The composite relation (trigger ↔ revealed) is expressed through composition and host relations, not a single fused term.
+- **ARIA mapping** — the concrete pairing between `disclose.toggle` + revealed Entity and the ARIA `role="listbox|grid|tree|dialog"` + `aria-haspopup` attribute lives in the Web/ARIA **Projection Profile**, where it belongs.
+
+Operational rule: the core Interaction Kind vocabulary contains no `popup.*` terms. Downstream projection profiles may introduce such pairings as projection-level names, but must not re-inject them into the FSL core.
 
 ---
 

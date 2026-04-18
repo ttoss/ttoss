@@ -247,4 +247,114 @@ describe('flattenAndResolve', () => {
       expect(unresolvedRefs).toEqual([]);
     }
   });
+
+  // -------------------------------------------------------------------------
+  // strict mode — palette/reference drift guard
+  // -------------------------------------------------------------------------
+
+  describe('strict mode', () => {
+    test('throws on a missing pure ref target', () => {
+      const theme = buildTheme({
+        overrides: {
+          semantic: {
+            elevation: {
+              surface: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                flat: '{core.nonexistent.token}' as any,
+              },
+            },
+          },
+        },
+      });
+
+      expect(() => {
+        return toFlatTokens(theme, { strict: true });
+      }).toThrow(
+        /semantic\.elevation\.surface\.flat → \{core\.nonexistent\.token\}.*missing target/
+      );
+    });
+
+    test('throws on a missing embedded ref inside a compound expression', () => {
+      const theme = buildTheme({
+        overrides: {
+          semantic: {
+            elevation: {
+              surface: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                flat: 'inset 0 0 {core.nonexistent.token} #000' as any,
+              },
+            },
+          },
+        },
+      });
+
+      expect(() => {
+        return toFlatTokens(theme, { strict: true });
+      }).toThrow(/missing target/);
+    });
+
+    test('throws on a circular reference', () => {
+      const theme = buildTheme({
+        overrides: {
+          semantic: {
+            elevation: {
+              surface: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                flat: '{semantic.elevation.surface.raised}' as any,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                raised: '{semantic.elevation.surface.flat}' as any,
+              },
+            },
+          },
+        },
+      });
+
+      expect(() => {
+        return toFlatTokens(theme, { strict: true });
+      }).toThrow(/circular reference/);
+    });
+
+    test('reports every unresolved ref in a single error', () => {
+      const theme = buildTheme({
+        overrides: {
+          semantic: {
+            elevation: {
+              surface: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                flat: '{core.missing.a}' as any,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                raised: '{core.missing.b}' as any,
+              },
+            },
+          },
+        },
+      });
+
+      try {
+        toFlatTokens(theme, { strict: true });
+        throw new Error('expected toFlatTokens to throw');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        expect(message).toMatch(/core\.missing\.a/);
+        expect(message).toMatch(/core\.missing\.b/);
+      }
+    });
+
+    test('all built-in themes pass strict resolution (regression guard)', () => {
+      const themes: ThemeTokens[] = [baseBundle.base];
+      if (baseBundle.alternate) {
+        themes.push(
+          buildTheme({
+            overrides: { semantic: baseBundle.alternate.semantic },
+          })
+        );
+      }
+
+      for (const theme of themes) {
+        expect(() => {
+          return toFlatTokens(theme, { strict: true });
+        }).not.toThrow();
+      }
+    });
+  });
 });

@@ -1,7 +1,7 @@
 {
   "name": "@ttoss/ui2",
   "version": "0.1.0",
-  "description": "Semantic, token-native component library for the ttoss ecosystem. Built on Ark UI primitives with @ttoss/theme2 tokens.",
+  "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/theme2 tokens.",
   "license": "MIT",
   "author": "ttoss",
   "repository": {

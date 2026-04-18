@@ -439,9 +439,9 @@ describe('toCssVars (bundle overload)', () => {
       // Core vars must NOT appear in alternate (core is immutable)
       expect(altVars['--tt-core-colors-neutral-0']).toBeUndefined();
       // Semantic vars are remapped in dark mode
-      expect(altVars['--tt-colors-content-primary-background-default']).toBe(
-        'var(--tt-core-colors-neutral-900)'
-      );
+      expect(
+        altVars['--tt-colors-informational-primary-background-default']
+      ).toBe('var(--tt-core-colors-neutral-900)');
     });
 
     test('alternate toCssString includes color-scheme opposite', () => {

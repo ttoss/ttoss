@@ -149,7 +149,7 @@ Icon is a component that **consumes** design tokens. It does not produce them.
 
 Icon renders with `currentColor`. It inherits color from its parent context via CSS. No color prop, no color token on the Icon itself.
 
-When an Icon plays `ItemFrame.supportingVisual`, its color comes from the resolved color token of that composition role (e.g. `content.muted.text.default`). When it plays inside a `Feedback` component, it inherits the feedback color. **The context owns the color, not the Icon.**
+When an Icon plays `ItemFrame.supportingVisual`, its color comes from the resolved color token of that composition role (e.g. `informational.muted.text.default`). When it plays inside a `Feedback` component, it inherits the feedback color. **The context owns the color, not the Icon.**
 
 ### Sizing
 
@@ -182,10 +182,10 @@ Icon participates in composition through the standard Component Model.
 
 When Icon has no Host context, it resolves tokens from its Responsibility default (`Structure`):
 
-- color: `content.primary.text.default`
+- color: `informational.primary.text.default`
 - sizing: `sizing.icon.md`
 
-Composition overrides refine these defaults. For example, `ItemFrame.supportingVisual` resolves to `content.muted.text.default` + `sizing.icon.md`.
+Composition overrides refine these defaults. For example, `ItemFrame.supportingVisual` resolves to `informational.muted.text.default` + `sizing.icon.md`.
 
 ---
 

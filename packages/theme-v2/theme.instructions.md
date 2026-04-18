@@ -78,7 +78,7 @@ The baseTheme maps semantic slots to core references. When a new brand palette c
 | `navigation.primary.text.default` on surface        | `brand.700` on `neutral.0`   | ≥ 4.5:1             |
 | `navigation.primary.text.hover` on surface          | `brand.900` on `neutral.0`   | ≥ 4.5:1             |
 | `navigation.primary.text.visited` on surface        | `neutral.500` on `neutral.0` | ≥ 4.5:1             |
-| `content.primary.text.default` on background        | `neutral.900` on `neutral.0` | ≥ 4.5:1             |
+| `informational.primary.text.default` on background  | `neutral.900` on `neutral.0` | ≥ 4.5:1             |
 | `input.primary.border.default` on background        | `neutral.300` on `neutral.0` | ≥ 3:1 (non-text UI) |
 | `feedback.{positive\|caution\|negative}.text` on bg | `{hue}.900` on `{hue}.100`   | ≥ 4.5:1             |
 | `input.negative.text.default` on background         | `red.700` on `red.100`       | ≥ 4.5:1             |
@@ -250,8 +250,8 @@ The alternate is a `ModeOverride`. Core tokens are immutable across modes.
 
 ### Order of operations
 
-1. **Surfaces** → `content.primary.background.default: '{core.colors.neutral.900}'`, `secondary: '{core.colors.neutral.700}'`
-2. **Text** → `content.primary.text.default: '{core.colors.neutral.0}'`, `secondary: '{core.colors.neutral.50}'`
+1. **Surfaces** → `informational.primary.background.default: '{core.colors.neutral.900}'`, `secondary: '{core.colors.neutral.700}'`
+2. **Text** → `informational.primary.text.default: '{core.colors.neutral.0}'`, `secondary: '{core.colors.neutral.50}'`
 3. **Brand on dark** → keep `action.primary.background.default: brand.500` if contrast ≥ 4.5:1. Otherwise shift to `brand.300`/`brand.400`.
 4. **Feedback text** → shift to `.300` step per hue (lighter, visible on dark surfaces).
 5. **Elevation** → remap `semantic.elevation.surface.*` to `emphatic` ramp. Pair with lighter surface backgrounds.
@@ -263,26 +263,26 @@ The alternate is a `ModeOverride`. Core tokens are immutable across modes.
 
 ## Step 6 — Final Validation Checklist
 
-| Check                                                           | Pass condition                                                      |
-| --------------------------------------------------------------- | ------------------------------------------------------------------- |
-| White text on `brand.500`                                       | ≥ 4.5:1                                                             |
-| White text on `brand.700`                                       | ≥ 4.5:1                                                             |
-| `content.primary.text` on `content.primary.background`          | ≥ 4.5:1                                                             |
-| `input.primary.border` against `input.primary.background`       | ≥ 3:1                                                               |
-| `feedback.{positive\|caution\|negative}` text on its background | ≥ 4.5:1                                                             |
-| `action.accent` vs `action.primary`                             | Accent uses contrasting hue or perceptually louder step             |
-| Feedback triads colorblind-safe                                 | Positive ≠ caution ≠ negative in both hue AND lightness             |
-| Elevation strata order                                          | `flat < raised < overlay < blocking` (no equality)                  |
-| Border width order                                              | `default < selected`, `default < focused`                           |
-| Hit target order                                                | `min < base < prominent` (compare fine floors; coarse always fixed) |
-| `inset.surface` vs `inset.control`                              | `surface ≥ control` at same size step                               |
-| `coarse.*` vs `fine.*` hit targets                              | `coarse` fixed value ≥ `fine` clamp floor                           |
-| Focus ring on `action.primary.background`                       | Ring color passes 3:1 against bg                                    |
-| Focus ring in dark alternate                                    | Same check on dark surfaces                                         |
-| All dark alternate text/background pairs                        | ≥ 4.5:1                                                             |
-| Spacing engine and typography leading                           | Same direction: compact↔tight, spacious↔relaxed                     |
-| Neutral temperature vs brand temperature                        | Same family or achromatic                                           |
-| Semantic overrides format                                       | `'{core.path.to.token}'` — no raw hex/px                            |
+| Check                                                              | Pass condition                                                      |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| White text on `brand.500`                                          | ≥ 4.5:1                                                             |
+| White text on `brand.700`                                          | ≥ 4.5:1                                                             |
+| `informational.primary.text` on `informational.primary.background` | ≥ 4.5:1                                                             |
+| `input.primary.border` against `input.primary.background`          | ≥ 3:1                                                               |
+| `feedback.{positive\|caution\|negative}` text on its background    | ≥ 4.5:1                                                             |
+| `action.accent` vs `action.primary`                                | Accent uses contrasting hue or perceptually louder step             |
+| Feedback triads colorblind-safe                                    | Positive ≠ caution ≠ negative in both hue AND lightness             |
+| Elevation strata order                                             | `flat < raised < overlay < blocking` (no equality)                  |
+| Border width order                                                 | `default < selected`, `default < focused`                           |
+| Hit target order                                                   | `min < base < prominent` (compare fine floors; coarse always fixed) |
+| `inset.surface` vs `inset.control`                                 | `surface ≥ control` at same size step                               |
+| `coarse.*` vs `fine.*` hit targets                                 | `coarse` fixed value ≥ `fine` clamp floor                           |
+| Focus ring on `action.primary.background`                          | Ring color passes 3:1 against bg                                    |
+| Focus ring in dark alternate                                       | Same check on dark surfaces                                         |
+| All dark alternate text/background pairs                           | ≥ 4.5:1                                                             |
+| Spacing engine and typography leading                              | Same direction: compact↔tight, spacious↔relaxed                     |
+| Neutral temperature vs brand temperature                           | Same family or achromatic                                           |
+| Semantic overrides format                                          | `'{core.path.to.token}'` — no raw hex/px                            |
 
 ---
 

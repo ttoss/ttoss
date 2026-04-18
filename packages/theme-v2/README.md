@@ -49,7 +49,7 @@ const myTheme = createTheme({
   alternate: {
     semantic: {
       colors: {
-        content: {
+        informational: {
           primary: { background: { default: '{core.colors.neutral.900}' } },
         },
       },
@@ -122,8 +122,33 @@ const resolved = useResolvedTokens();
 import { vars } from '@ttoss/theme2/vars';
 
 // Typed CSS variable references
-<div style={{ color: vars.colors.content.primary.default }} />;
+<div style={{ color: vars.colors.informational.primary.default }} />;
 ```
+
+### Extending `vars` with custom semantic tokens
+
+`vars` is typed against the default `SemanticTokens` shape. If your project adds custom families (e.g. a dataviz palette, project-specific component tokens), those leaves won't appear on the default export. Build a typed mirror of your extended shape with the public `buildVarsMap` helper:
+
+```ts
+import { createTheme, type SemanticTokens } from '@ttoss/theme2';
+import { buildVarsMap, type CssVarsMap } from '@ttoss/theme2/vars';
+
+type MySemanticTokens = SemanticTokens & {
+  colors: SemanticTokens['colors'] & {
+    brandX: { primary: { default: string } };
+  };
+};
+
+const myTheme = createTheme({
+  /* … */
+});
+
+export const myVars: CssVarsMap<MySemanticTokens> = buildVarsMap(
+  myTheme.base
+) as CssVarsMap<MySemanticTokens>;
+```
+
+For one-off custom keys, use `toCssVarName` from `@ttoss/theme2/css` directly — no extended type required.
 
 ## Next.js (SSR)
 

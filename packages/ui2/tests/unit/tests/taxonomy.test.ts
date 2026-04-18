@@ -8,15 +8,20 @@
 
 import { validateExpression } from 'src/semantics/taxonomy';
 import {
-  CONSEQUENCES,
+  COGNITIVE_MODES,
+  COMPOSITION_ROLES,
   ENTITIES,
+  ENTITY_COMPOSITION,
   ENTITY_INTERACTION,
   ENTITY_STRUCTURE,
+  ENTITY_TOKEN_MAPPING,
   EVALUATIONS,
   INTERACTION_KINDS,
   INTERACTION_STATE,
   STATES,
   STRUCTURAL_ROLES,
+  SURFACE_TYPES,
+  UX_CONTEXTS,
 } from 'src/semantics/taxonomy';
 
 // ---------------------------------------------------------------------------
@@ -26,10 +31,10 @@ import {
 const vocabularies: Array<[string, ReadonlyArray<string>]> = [
   ['ENTITIES', ENTITIES],
   ['EVALUATIONS', EVALUATIONS],
-  ['CONSEQUENCES', CONSEQUENCES],
   ['STRUCTURAL_ROLES', STRUCTURAL_ROLES],
   ['INTERACTION_KINDS', INTERACTION_KINDS],
   ['STATES', STATES],
+  ['COMPOSITION_ROLES', COMPOSITION_ROLES],
 ];
 
 describe('vocabulary invariants', () => {
@@ -41,6 +46,16 @@ describe('vocabulary invariants', () => {
     for (const term of vocab) {
       expect(term).not.toBe('');
     }
+  });
+
+  test('STRUCTURAL_ROLES and UX_CONTEXTS are disjoint (no cross-layer collision)', () => {
+    // FSL Lexicon §10.11: the `content` vs `content` collision was resolved by
+    // renaming the UX-context family to `informational`. This test guards the
+    // resolution — no term may live in both vocabularies simultaneously.
+    const shared = STRUCTURAL_ROLES.filter((role) => {
+      return (UX_CONTEXTS as readonly string[]).includes(role);
+    });
+    expect(shared).toEqual([]);
   });
 });
 
@@ -113,6 +128,40 @@ describe('INTERACTION_STATE', () => {
     for (const kind of INTERACTION_KINDS) {
       expect(INTERACTION_STATE[kind].length).toBeGreaterThan(0);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4b. ENTITY_COMPOSITION matrix (FSL §4)
+// ---------------------------------------------------------------------------
+
+describe('ENTITY_COMPOSITION', () => {
+  test('covers every entity', () => {
+    for (const entity of ENTITIES) {
+      expect(ENTITY_COMPOSITION).toHaveProperty(entity);
+    }
+  });
+
+  test('every entry references only known composition roles', () => {
+    for (const entity of ENTITIES) {
+      for (const role of ENTITY_COMPOSITION[entity]) {
+        expect(COMPOSITION_ROLES).toContain(role);
+      }
+    }
+  });
+
+  test('Action allows the three canonical action slots', () => {
+    expect(ENTITY_COMPOSITION.Action).toEqual(
+      expect.arrayContaining([
+        'primaryAction',
+        'secondaryAction',
+        'dismissAction',
+      ])
+    );
+  });
+
+  test('Feedback allows the status slot', () => {
+    expect(ENTITY_COMPOSITION.Feedback).toContain('status');
   });
 });
 
@@ -192,6 +241,65 @@ describe('validateExpression', () => {
     expect(errors.length).toBe(2);
   });
 
+  test('accepts a legal evaluation for the entity', () => {
+    expect(
+      validateExpression({
+        entity: 'Action',
+        structure: 'root',
+        interaction: 'command',
+        evaluation: 'primary',
+      })
+    ).toHaveLength(0);
+  });
+
+  test('rejects an evaluation not legal for the entity', () => {
+    const errors = validateExpression({
+      entity: 'Action',
+      structure: 'root',
+      interaction: 'command',
+      // @ts-expect-error — 'positive' is not legal for Action
+      evaluation: 'positive',
+    });
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain('"positive"');
+    expect(errors[0]).toContain('"Action"');
+  });
+
+  test('accepts a legal composition for the entity', () => {
+    expect(
+      validateExpression({
+        entity: 'Action',
+        structure: 'root',
+        interaction: 'command',
+        composition: 'primaryAction',
+      })
+    ).toHaveLength(0);
+  });
+
+  test('rejects a composition not legal for the entity', () => {
+    const errors = validateExpression({
+      entity: 'Action',
+      structure: 'root',
+      interaction: 'command',
+      // @ts-expect-error — 'heading' is not legal for Action
+      composition: 'heading',
+    });
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain('"heading"');
+    expect(errors[0]).toContain('"Action"');
+  });
+
+  test('rejects composition for an entity with no legal compositions', () => {
+    const errors = validateExpression({
+      entity: 'Collection',
+      structure: 'root',
+      // @ts-expect-error — Collection has no legal compositions
+      composition: 'heading',
+    });
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain('none');
+  });
+
   test('error messages include enough context to be actionable', () => {
     const [error] = validateExpression({
       entity: 'Action',
@@ -203,5 +311,85 @@ describe('validateExpression', () => {
     expect(error).toContain('"Action"');
     // must tell the developer what IS legal
     expect(error).toContain('root');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. ENTITY_TOKEN_MAPPING — cognitive mode → UX context (CONTRACT.md §1.1)
+// ---------------------------------------------------------------------------
+
+describe('ENTITY_TOKEN_MAPPING', () => {
+  test('covers every entity', () => {
+    for (const entity of ENTITIES) {
+      expect(ENTITY_TOKEN_MAPPING).toHaveProperty(entity);
+    }
+  });
+
+  test('every cognitiveMode is a known value', () => {
+    for (const entity of ENTITIES) {
+      expect(COGNITIVE_MODES).toContain(
+        ENTITY_TOKEN_MAPPING[entity].cognitiveMode
+      );
+    }
+  });
+
+  test('every uxContext is a known value', () => {
+    for (const entity of ENTITIES) {
+      expect(UX_CONTEXTS).toContain(ENTITY_TOKEN_MAPPING[entity].uxContext);
+    }
+  });
+
+  test('every surfaceType is a known value', () => {
+    for (const entity of ENTITIES) {
+      expect(SURFACE_TYPES).toContain(ENTITY_TOKEN_MAPPING[entity].surfaceType);
+    }
+  });
+
+  test('every UX context is used by at least one entity', () => {
+    const usedContexts = new Set(
+      ENTITIES.map((e) => {
+        return ENTITY_TOKEN_MAPPING[e].uxContext;
+      })
+    );
+    for (const ctx of UX_CONTEXTS) {
+      expect(usedContexts).toContain(ctx);
+    }
+  });
+
+  test('every cognitive mode is used by at least one entity', () => {
+    const usedModes = new Set(
+      ENTITIES.map((e) => {
+        return ENTITY_TOKEN_MAPPING[e].cognitiveMode;
+      })
+    );
+    for (const mode of COGNITIVE_MODES) {
+      expect(usedModes).toContain(mode);
+    }
+  });
+
+  test('cognitive mode is consistent with entity groupings', () => {
+    // Entities sharing the same UX context must share the same cognitive mode
+    const contextToMode = new Map<string, string>();
+    for (const entity of ENTITIES) {
+      const { uxContext, cognitiveMode } = ENTITY_TOKEN_MAPPING[entity];
+      if (contextToMode.has(uxContext)) {
+        expect(contextToMode.get(uxContext)).toBe(cognitiveMode);
+      } else {
+        contextToMode.set(uxContext, cognitiveMode);
+      }
+    }
+  });
+
+  test('every entity has a non-empty single-line intent', () => {
+    // The `intent` field carries AI-facing rationale per Entity. A regression
+    // (empty string, missing entry, multi-line blob) silently degrades the AI
+    // context and is caught here.
+    for (const entity of ENTITIES) {
+      const { intent } = ENTITY_TOKEN_MAPPING[entity];
+      expect(typeof intent).toBe('string');
+      expect(intent.trim()).not.toBe('');
+      expect(intent).toBe(intent.trim());
+      expect(intent).not.toMatch(/[\r\n]/);
+    }
   });
 });

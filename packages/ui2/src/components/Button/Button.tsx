@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 /**
  * Formal semantic identity — what this component *is* (Layer 1).
@@ -60,25 +61,21 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, border-color, color',
-          backgroundColor: isDisabled
-            ? colors?.background?.disabled
-            : isPressed
-              ? colors?.background?.active
-              : isHovered
-                ? colors?.background?.hover
-                : colors?.background?.default,
-          borderColor: isFocusVisible
-            ? colors?.border?.focused
-            : isDisabled
-              ? colors?.border?.disabled
-              : colors?.border?.default,
-          color: isDisabled
-            ? colors?.text?.disabled
-            : isPressed
-              ? (colors?.text?.active ?? colors?.text?.default)
-              : isHovered
-                ? (colors?.text?.hover ?? colors?.text?.default)
-                : colors?.text?.default,
+          backgroundColor: resolveInteractiveStyle(colors?.background, {
+            isHovered,
+            isPressed,
+            isDisabled,
+          }),
+          borderColor: resolveInteractiveStyle(colors?.border, {
+            isDisabled,
+            isFocusVisible,
+          }),
+          color:
+            resolveInteractiveStyle(colors?.text, {
+              isHovered,
+              isPressed,
+              isDisabled,
+            }) ?? colors?.text?.default,
           outline: isFocusVisible
             ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
             : 'none',

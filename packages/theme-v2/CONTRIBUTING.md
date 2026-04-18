@@ -328,7 +328,7 @@ Each family has its own grammar. The color family (`semantic.colors.*`) follows 
 `{ux}.{role}.{dimension}.{state}`
 
 ```
-ux        → action | input | navigation | feedback | content | guidance | discovery
+ux        → action | input | navigation | feedback | informational
 role      → primary | secondary | negative | caution | positive | ...
 dimension → background | border | text
 state     → default | hover | active | focused | disabled | selected | ...

@@ -27,8 +27,8 @@
  * Any semantic tokens that use raw values must be rare, intentional, and documented
  * exceptions — see model.md §RawValue Exceptions for the governing rule and audit inventory.
  *
- * @see /docs/design/design-system/fsl/fls-lexicon — FSL Lexicon (layer 1)
- * @see /docs/design/design-system/fsl/fls-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/fsl/fsl-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fsl-structural-language — FSL Structural Language (layer 2)
  * @see /docs/design/design-system/component-model — Component Semantics Projection (layer 3)
  * @see /docs/design/design-system/design-tokens/model — Token Model (this layer)
  * @see /docs/design/design-system/design-tokens/colors — Semantic Color Grammar
@@ -121,8 +121,7 @@ interface CoreColors {
 /**
  * Semantic color token grammar: `{ux}.{role}.{dimension}.{state}`
  *
- * Layer 1 — ux (required): action | input | navigation | feedback | content
- *            ux (optional): guidance | discovery — present only when the product uses these patterns
+ * Layer 1 — ux: action | input | navigation | feedback | informational
  * Layer 2 — role:      primary | secondary | accent | muted | positive | caution | negative
  * Layer 3 — dimension: background | border | text  (per component; not all are required)
  * Layer 4 — state:     default | hover | active | focused | disabled | selected | …
@@ -142,7 +141,7 @@ interface BaseColorStates {
   /**
    * Valid drag-and-drop destination state (FSL Lexicon §7).
    * Applies wherever drop-target semantics are valid: file inputs, collection rows,
-   * content surfaces, and any other entity that accepts dropped items.
+   * informational surfaces, and any other entity that accepts dropped items.
    */
   droptarget?: TokenRef;
 }
@@ -153,12 +152,20 @@ interface ActionColorStates extends BaseColorStates {
   expanded?: TokenRef;
 }
 
-/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded` for form controls. */
+/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded`, `invalid` for form controls. */
 interface InputColorStates extends BaseColorStates {
   checked?: TokenRef;
   indeterminate?: TokenRef;
   pressed?: TokenRef;
   expanded?: TokenRef;
+  /**
+   * Runtime validation-failure state. Driven by React Aria's `isInvalid` /
+   * form-library validation — not by author choice. Recolors the neutral
+   * base chrome to surface the failure without requiring an Evaluation
+   * variant. See FSL Lexicon §7 (State) and `taxonomy.ts` design note on
+   * `ENTITY_EVALUATION` for the State-vs-Evaluation distinction.
+   */
+  invalid?: TokenRef;
 }
 
 /** `navigation` context: adds `current`, `visited`, `expanded`. */
@@ -168,14 +175,9 @@ interface NavigationColorStates extends BaseColorStates {
   expanded?: TokenRef;
 }
 
-/** `content` context: adds `visited` for links. */
-interface ContentColorStates extends BaseColorStates {
+/** `informational` context: adds `visited` for links. */
+interface InformationalColorStates extends BaseColorStates {
   visited?: TokenRef;
-}
-
-/** `discovery` context: adds `expanded` (disclosure). `droptarget` is a base state available everywhere. */
-interface DiscoveryColorStates extends BaseColorStates {
-  expanded?: TokenRef;
 }
 
 /**
@@ -225,32 +227,26 @@ interface FeedbackColorRoles {
   negative?: ColorDimensionOf<BaseColorStates>;
 }
 
-/** `guidance`: preventive or instructional. Roles: primary | secondary | accent | muted | caution */
-interface GuidanceColorRoles {
-  primary?: ColorDimensionOf<BaseColorStates>;
-  secondary?: ColorDimensionOf<BaseColorStates>;
-  accent?: ColorDimensionOf<BaseColorStates>;
-  muted?: ColorDimensionOf<BaseColorStates>;
-  caution?: ColorDimensionOf<BaseColorStates>;
+/** `informational`: informational surfaces and readable content. Roles: primary | secondary | accent | muted | positive | caution | negative */
+interface InformationalColorRoles {
+  primary?: ColorDimensionOf<InformationalColorStates>;
+  secondary?: ColorDimensionOf<InformationalColorStates>;
+  accent?: ColorDimensionOf<InformationalColorStates>;
+  muted?: ColorDimensionOf<InformationalColorStates>;
+  positive?: ColorDimensionOf<InformationalColorStates>;
+  caution?: ColorDimensionOf<InformationalColorStates>;
+  negative?: ColorDimensionOf<InformationalColorStates>;
 }
 
-/** `discovery`: search, filter, exploration. Roles: primary | secondary | accent | muted */
-interface DiscoveryColorRoles {
-  primary?: ColorDimensionOf<DiscoveryColorStates>;
-  secondary?: ColorDimensionOf<DiscoveryColorStates>;
-  accent?: ColorDimensionOf<DiscoveryColorStates>;
-  muted?: ColorDimensionOf<DiscoveryColorStates>;
-}
-
-/** `content`: informational surfaces and readable content. Roles: primary | secondary | accent | muted | positive | caution | negative */
-interface ContentColorRoles {
-  primary?: ColorDimensionOf<ContentColorStates>;
-  secondary?: ColorDimensionOf<ContentColorStates>;
-  accent?: ColorDimensionOf<ContentColorStates>;
-  muted?: ColorDimensionOf<ContentColorStates>;
-  positive?: ColorDimensionOf<ContentColorStates>;
-  caution?: ColorDimensionOf<ContentColorStates>;
-  negative?: ColorDimensionOf<ContentColorStates>;
+/**
+ * `overlay`: cross-cutting overlay infrastructure — the scrim/backdrop color
+ * applied behind modal surfaces. Distinct from `SemanticOpacity.scrim` (which
+ * exposes only alpha): `overlay.scrim` is a full color (typically black with
+ * alpha), so components do not compose `rgba(...)` at consumption sites.
+ */
+interface OverlayColors {
+  /** Modal backdrop color — full CSS color including alpha. */
+  scrim: RawValue;
 }
 
 interface SemanticColors {
@@ -258,11 +254,8 @@ interface SemanticColors {
   input: InputColorRoles;
   navigation: NavigationColorRoles;
   feedback: FeedbackColorRoles;
-  /** Preventive or instructional guidance patterns — omit when the product does not use them. */
-  guidance?: GuidanceColorRoles;
-  /** Search, filter, and exploration patterns — omit when the product does not use them. */
-  discovery?: DiscoveryColorRoles;
-  content: ContentColorRoles;
+  informational: InformationalColorRoles;
+  overlay: OverlayColors;
 }
 
 /**
@@ -970,7 +963,7 @@ export interface ModeOverride {
  *   alternate: {
  *     semantic: {
  *       colors: {
- *         content: { primary: { background: { default: '{core.colors.neutral.900}' } } },
+ *         informational: { primary: { background: { default: '{core.colors.neutral.900}' } } },
  *       },
  *     },
  *   },

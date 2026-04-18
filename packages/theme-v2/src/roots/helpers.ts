@@ -140,25 +140,37 @@ export const flattenTheme = (
  * Flatten a `ThemeTokens` into a `Record<string, string | number>` with
  * every `{ref}` recursively resolved to its final raw value where possible.
  *
- * Unresolvable references (missing target or circular dependency) are
- * preserved as-is in the output rather than throwing. Use the dedicated
- * token validators if you need strict failure on bad references.
+ * By default, unresolvable references (missing target or circular dependency)
+ * are preserved as-is in the output. Pass `{ strict: true }` to instead throw
+ * on any unresolved reference — useful in tests and build steps that must
+ * fail loudly on palette drift.
  *
  * This is the universal primitive — every root is derived from this.
  */
 export const toFlatTokens = (
-  theme: ThemeTokens
+  theme: ThemeTokens,
+  options: { strict?: boolean } = {}
 ): Record<string, string | number> => {
+  const { strict = false } = options;
+
   // 1. Flatten both layers (refs still as `{path}` strings)
   const { core: coreFlat, semantic: semanticFlat } = flattenTheme(theme);
   const all = { ...coreFlat, ...semanticFlat };
+
+  // Collected when `strict` is enabled; reported as a single error so the
+  // caller sees every unresolved ref in one pass rather than one at a time.
+  const unresolved: string[] = [];
+  const reportUnresolved = (key: string, path: string, reason: string) => {
+    if (strict) unresolved.push(`${key} → {${path}} (${reason})`);
+  };
 
   // 2. Resolve every ref recursively (with cycle guard)
 
   /** Resolve a single pure `{path}` reference to its raw value. */
   const resolveRef = (
     value: string | number,
-    seen: Set<string>
+    seen: Set<string>,
+    ownerKey: string
   ): string | number => {
     if (typeof value !== 'string' || !isTokenRef(value)) {
       return value;
@@ -167,16 +179,18 @@ export const toFlatTokens = (
     const path = extractRefPath(value);
 
     if (seen.has(path)) {
+      reportUnresolved(ownerKey, path, 'circular reference');
       return value; // break circular reference — return unresolved
     }
 
     const target = all[path];
     if (target === undefined) {
+      reportUnresolved(ownerKey, path, 'missing target');
       return value; // unresolvable reference — return as-is
     }
 
     seen.add(path);
-    return resolveRef(target, seen);
+    return resolveRef(target, seen, ownerKey);
   };
 
   /**
@@ -185,17 +199,23 @@ export const toFlatTokens = (
    * Handles both pure refs (`{core.space.4}`) and compound expressions
    * (`clamp({core.space.4}, {core.space.6}, {core.space.12})`).
    */
-  const resolveInline = (value: string, seen: Set<string>): string => {
+  const resolveInline = (
+    value: string,
+    seen: Set<string>,
+    ownerKey: string
+  ): string => {
     return value.replace(COMPOUND_REF_RE, (_match, path) => {
       const target = all[path];
       if (target === undefined) {
+        reportUnresolved(ownerKey, path, 'missing target');
         return `{${path}}`; // unresolvable — keep as-is
       }
       if (seen.has(path)) {
+        reportUnresolved(ownerKey, path, 'circular reference');
         return `{${path}}`; // cycle guard
       }
       const childSeen = new Set(seen).add(path);
-      const resolved = resolveRef(target, childSeen);
+      const resolved = resolveRef(target, childSeen, ownerKey);
       return String(resolved);
     });
   };
@@ -205,16 +225,22 @@ export const toFlatTokens = (
     if (typeof value === 'string') {
       if (isTokenRef(value)) {
         // pure token ref e.g. {core.colors.brand.500}
-        resolved[key] = resolveRef(value, new Set());
+        resolved[key] = resolveRef(value, new Set(), key);
       } else if (value.includes('{')) {
         // compound expression with embedded refs (e.g. clamp({core.space.4}, ...))
-        resolved[key] = resolveInline(value, new Set());
+        resolved[key] = resolveInline(value, new Set(), key);
       } else {
         resolved[key] = value;
       }
     } else {
       resolved[key] = value;
     }
+  }
+
+  if (strict && unresolved.length > 0) {
+    throw new Error(
+      `toFlatTokens: ${unresolved.length} unresolved reference(s):\n  ${unresolved.join('\n  ')}`
+    );
   }
 
   return resolved;

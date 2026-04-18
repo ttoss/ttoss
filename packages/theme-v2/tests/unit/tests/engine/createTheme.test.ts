@@ -171,7 +171,7 @@ describe('createTheme', () => {
     const alt: ModeOverride = {
       semantic: {
         colors: {
-          content: {
+          informational: {
             primary: { text: { default: '{core.colors.neutral.0}' } },
           },
         },

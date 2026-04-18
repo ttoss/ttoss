@@ -8,12 +8,12 @@
  */
 
 import { flattenObject, isTokenRef } from '../../../../src/roots/helpers';
+import { TOKEN_PATH_REGISTRY } from '../../../../src/roots/tokenRegistry';
 import {
   themeAltFlatToTest,
   themeFlatToTest,
   themeToTest,
 } from '../../helpers/theme';
-
 // ---------------------------------------------------------------------------
 // Bundle fixtures — add entries here when new bundles are introduced
 // ---------------------------------------------------------------------------
@@ -123,4 +123,30 @@ describe('Semantic contract: alternate is semantic-only', () => {
     expect(themeToTest.alternate.semantic).toBeDefined();
     expect('core' in themeToTest.alternate).toBe(false);
   });
+});
+
+// ---------------------------------------------------------------------------
+// Token registry completeness — every flat token path must match a registry prefix
+//
+// The registry drives both CSS var and DTCG output. A missing prefix means a
+// token exists in the theme but is silently dropped from generated artifacts.
+// ---------------------------------------------------------------------------
+
+describe('Structural: token registry covers every token path', () => {
+  // Resolve which flat path keys belong to a known registry prefix.
+  const hasRegistryMatch = (path: string) => {
+    return TOKEN_PATH_REGISTRY.some((entry) => {
+      return path.startsWith(entry.path);
+    });
+  };
+
+  test.each(resolvedModes)(
+    '$mode mode: every token path matches a TOKEN_PATH_REGISTRY prefix',
+    ({ tokens }) => {
+      const unmatched = Object.keys(tokens).filter((path) => {
+        return !hasRegistryMatch(path);
+      });
+      expect(unmatched).toEqual([]);
+    }
+  );
 });

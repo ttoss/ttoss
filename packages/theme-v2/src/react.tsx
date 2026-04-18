@@ -71,8 +71,10 @@ export interface ThemeProviderProps {
   /** localStorage key for persistence. Only read on initial mount. @default 'tt-theme' */
   storageKey?: string;
   /**
-   * Theme identifier written to `data-tt-theme`. Only read on initial mount.
-   * Provide only for MFE / multi-theme CSS scoping.
+   * Theme identifier written to `data-tt-theme`. Reactive — changing this
+   * prop recreates the runtime and rewrites the attribute so the browser
+   * matches the scoped CSS (e.g. `[data-tt-theme="<id>"]`). Provide only
+   * for MFE / multi-theme CSS scoping (Storybook toolbar, runtime theme swap).
    */
   themeId?: string;
   /**
@@ -177,7 +179,6 @@ export const ThemeProvider = ({
   // values, and aligns with the documented "only read on initial mount" contract.
   const initDefaultMode = React.useRef(defaultMode);
   const initStorageKey = React.useRef(storageKey);
-  const initThemeId = React.useRef(themeId);
 
   const [state, setState] = React.useState<ThemeState>(() => {
     // SSR fallback — will be corrected on mount by the runtime
@@ -191,12 +192,14 @@ export const ThemeProvider = ({
     };
   });
 
-  // root is reactive: runtime is recreated when root element changes
-  // (e.g. from undefined to actual element via ref). defaultMode and
-  // storageKey are init-only and captured in refs.
+  // `root` and `themeId` are reactive: the runtime is recreated when either
+  // changes so `data-tt-theme` tracks the active theme (Storybook toolbar,
+  // MFE theme swap). `defaultMode` and `storageKey` remain init-only and are
+  // captured in refs; mode state is preserved across recreations via
+  // localStorage.
   React.useEffect(() => {
     const runtime = createThemeRuntime({
-      defaultTheme: initThemeId.current,
+      defaultTheme: themeId,
       defaultMode: initDefaultMode.current,
       storageKey: initStorageKey.current,
       root,
@@ -211,7 +214,7 @@ export const ThemeProvider = ({
       runtime.destroy();
       runtimeRef.current = null;
     };
-  }, [root]);
+  }, [root, themeId]);
 
   const setMode = React.useCallback((mode: ThemeMode) => {
     runtimeRef.current?.setMode(mode);
@@ -424,7 +427,7 @@ export const useTokens = (): SemanticTokens => {
  *
  * ```tsx
  * // ✓ CSS (browser)
- * <div style={{ color: 'var(--tt-color-content-primary-default)' }} />
+ * <div style={{ color: 'var(--tt-color-informational-primary-default)' }} />
  *
  * // ✓ Non-CSS (React Native, canvas)
  * const resolved = useResolvedTokens();

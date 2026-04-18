@@ -20,8 +20,8 @@
  *   core.dataviz    → semantic.dataviz.encoding.* / geo.*
  *   semantic.dataviz → components / patterns
  *
- * @see /docs/design/design-system/fsl/fls-lexicon — FSL Lexicon (layer 1)
- * @see /docs/design/design-system/fsl/fls-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/fsl/fsl-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fsl-structural-language — FSL Structural Language (layer 2)
  * @see /docs/design/design-system/design-tokens/model — Token Model (layer 4 foundation)
  * ========================================================================== */
 

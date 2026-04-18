@@ -10,7 +10,7 @@ import { ThemeProvider } from '@ttoss/theme2/react';
  * between all available themes and light/dark mode.
  */
 const meta: Meta<typeof ThemeProvider> = {
-  title: 'theme-v2/ThemeProvider',
+  title: 'theme-v2/Overview/ThemeProvider',
   component: ThemeProvider,
   tags: ['autodocs'],
   parameters: { layout: 'padded' },

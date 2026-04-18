@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 /**
  * Formal semantic identity — what this component *is* (Layer 1).
@@ -56,13 +57,11 @@ export const Link = ({ evaluation = 'primary', ...props }: LinkProps) => {
           transitionProperty: 'color, text-decoration-thickness',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           ...(vars.text.label.md as React.CSSProperties),
-          color: isDisabled
-            ? colors?.text?.disabled
-            : isPressed
-              ? colors?.text?.active
-              : isHovered
-                ? colors?.text?.hover
-                : colors?.text?.default,
+          color: resolveInteractiveStyle(colors?.text, {
+            isHovered,
+            isPressed,
+            isDisabled,
+          }),
           outline: isFocusVisible
             ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
             : 'none',

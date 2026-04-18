@@ -4,7 +4,7 @@ title: Component Model
 
 # Component Model
 
-The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fls-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fls-structural-language) and must not define vocabulary that contradicts them.
+The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
 The central rule:
 
@@ -35,10 +35,10 @@ The table below is the normative cross-projection mapping from FSL Entity Kind (
 | **Selection**  | `input`            | Selection components consume `input.*` tokens; no separate `selection` UX context |
 | **Navigation** | `navigation`       | 1:1                                                                               |
 | **Feedback**   | `feedback`         | 1:1                                                                               |
-| **Collection** | `content`          | Collection surfaces consume `content.*` for structural coloring                   |
-| **Overlay**    | `content`          | Overlay surfaces consume `content.*` for surface coloring                         |
+| **Collection** | `informational`    | Collection surfaces consume `informational.*` for structural coloring             |
+| **Overlay**    | `informational`    | Overlay surfaces consume `informational.*` for surface coloring                   |
 | **Disclosure** | `navigation`       | Disclosure triggers colored as `navigation.*` when acting as location anchors     |
-| **Structure**  | `content`          | Structural surfaces consume `content.*`                                           |
+| **Structure**  | `informational`    | Structural surfaces consume `informational.*`                                     |
 
 For the full `ux` role and state grammar, see the [Colors family — FSL Entity Kind Mapping](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
 
@@ -287,15 +287,15 @@ Most expressions don't need explicit Evaluation. Add it when the standard infere
 
 // Label
 { responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'label' } }
-// → content.primary.text.default
+// → informational.primary.text.default
 
 // Helper text
 { responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'description' } }
-// → content.muted.text.default
+// → informational.muted.text.default
 
 // Leading icon
 { responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'leadingAdornment' } }
-// → content.muted.text.default
+// → informational.muted.text.default
 ```
 
 #### Menu item
@@ -305,8 +305,7 @@ Most expressions don't need explicit Evaluation. Add it when the standard infere
 // → navigation.primary.text.default
 
 { responsibility: 'Structure', composition: { host: 'ItemFrame', role: 'description' } }
-// → content.muted.text.default
-
+// → informational.muted.text.default
 { responsibility: 'Structure', composition: { host: 'ItemFrame', role: 'supportingVisual' } }
 // → navigation.secondary.text.default
 ```
@@ -316,15 +315,15 @@ Most expressions don't need explicit Evaluation. Add it when the standard infere
 ```ts
 // Container
 { responsibility: 'Structure' }
-// → content.primary.background.default
+// → informational.primary.background.default
 
 // Title
 { responsibility: 'Structure', composition: { host: 'SurfaceFrame', role: 'heading' } }
-// → content.primary.text.default
+// → informational.primary.text.default
 
 // Body
 { responsibility: 'Structure', composition: { host: 'SurfaceFrame', role: 'body' } }
-// → content.primary.text.default
+// → informational.primary.text.default
 ```
 
 #### Destructive action

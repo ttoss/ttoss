@@ -33,6 +33,7 @@ export const baseTheme: ThemeTokens = {
         100: '#f1f5f9',
         200: '#e2e8f0',
         300: '#cbd5e1',
+        400: '#94a3b8',
         500: '#64748b',
         700: '#334155',
         900: '#0f172a',
@@ -511,6 +512,9 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
+            // Validation-failure tint — paired with `border.invalid` and
+            // `text.invalid` to surface the failure on the neutral chrome.
+            invalid: '{core.colors.red.100}',
             // focused: omitted — focus shown via border ring, background unchanged
           },
           border: {
@@ -524,6 +528,7 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.500}',
             expanded: '{core.colors.brand.500}',
+            invalid: '{core.colors.red.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
@@ -531,7 +536,43 @@ export const baseTheme: ThemeTokens = {
             checked: '{core.colors.neutral.0}',
             // brand.300 (indeterminate bg) is light — use dark text for contrast
             indeterminate: '{core.colors.neutral.900}',
+            invalid: '{core.colors.red.700}',
             // hover/active/focused/selected: all neutral.900 — omitted
+          },
+        },
+        // Lower-emphasis input field (inline editors, filter pills, optional fields).
+        // Mirrors primary controls but uses a lighter chrome — default border is
+        // neutral.200 (vs primary's neutral.300) so it recedes until interacted with.
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.neutral.50}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.500}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
         negative: {
@@ -631,7 +672,7 @@ export const baseTheme: ThemeTokens = {
         },
       },
 
-      content: {
+      informational: {
         primary: {
           background: {
             default: '{core.colors.neutral.0}',
@@ -772,7 +813,9 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.brand.100}',
             active: '{core.colors.brand.200}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.400}',
+            // selected uses brand.500 (not brand.400) so neutral.0 text meets
+            // AA Normal (≥ 4.5:1). brand.400 on white fails the normal threshold.
+            selected: '{core.colors.brand.500}',
           },
           border: {
             default: '{core.colors.brand.400}',
@@ -787,7 +830,7 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.brand.900}',
             active: '{core.colors.brand.900}',
             disabled: '{core.colors.neutral.500}',
-            // selected uses filled bg (brand.400) — neutral.0 meets 4.5:1
+            // selected uses filled bg (brand.500) — neutral.0 meets 4.5:1
             selected: '{core.colors.neutral.0}',
             visited: '{core.colors.brand.700}',
           },
@@ -866,6 +909,7 @@ export const baseTheme: ThemeTokens = {
             disabled: '{core.colors.neutral.0}',
             current: '{core.colors.neutral.50}',
             visited: '{core.colors.neutral.0}',
+            expanded: '{core.colors.neutral.50}',
           },
           border: {
             default: '{core.colors.neutral.0}',
@@ -878,6 +922,7 @@ export const baseTheme: ThemeTokens = {
             disabled: '{core.colors.neutral.500}',
             current: '{core.colors.brand.900}',
             visited: '{core.colors.neutral.500}',
+            expanded: '{core.colors.brand.900}',
           },
         },
         secondary: {
@@ -976,6 +1021,13 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.neutral.700}',
           },
         },
+      },
+
+      // Cross-cutting overlay infrastructure — full backdrop color.
+      // The alpha is sourced from semantic.opacity.scrim so both tokens
+      // stay in sync across themes and modes.
+      overlay: {
+        scrim: 'rgba(0, 0, 0, {semantic.opacity.scrim})',
       },
     },
 
@@ -1402,16 +1454,19 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.500}',
             disabled: '{core.colors.neutral.900}',
+            invalid: '{core.colors.neutral.900}',
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
+            invalid: '{core.colors.red.500}',
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
+            invalid: '{core.colors.red.300}',
           },
         },
         negative: {
@@ -1439,7 +1494,7 @@ export const darkAlternate: ModeOverride = {
           text: { default: '{core.colors.neutral.300}' },
         },
       },
-      content: {
+      informational: {
         primary: {
           background: { default: '{core.colors.neutral.900}' },
           border: { default: '{core.colors.neutral.700}' },
@@ -1499,7 +1554,7 @@ export const darkAlternate: ModeOverride = {
         },
       },
       navigation: {
-        // Dark mode: differentiate nav from content.primary (neutral.900) surface.
+        // Dark mode: differentiate nav from informational.primary (neutral.900) surface.
         // primary nav shifts to neutral.800-equivalent (using neutral.700 as darkest available)
         // to maintain depth separation from page background.
         primary: {
@@ -1512,6 +1567,7 @@ export const darkAlternate: ModeOverride = {
             disabled: '{core.colors.neutral.900}',
             current: '{core.colors.neutral.700}',
             visited: '{core.colors.neutral.900}',
+            expanded: '{core.colors.neutral.700}',
           },
           border: {
             default: '{core.colors.neutral.900}',
@@ -1524,6 +1580,7 @@ export const darkAlternate: ModeOverride = {
             disabled: '{core.colors.neutral.500}',
             current: '{core.colors.brand.100}',
             visited: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.100}',
           },
         },
         secondary: {
