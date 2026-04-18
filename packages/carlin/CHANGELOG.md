@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.2](https://github.com/ttoss/ttoss/compare/carlin@1.49.1...carlin@1.49.2) (2026-04-15)
+
+### Bug Fixes
+
+- **carlin:** continue stack deletion when pre-destroy bucket emptying fails ([#950](https://github.com/ttoss/ttoss/issues/950)) ([d07e044](https://github.com/ttoss/ttoss/commit/d07e044d79151718c16476fb135c5899106a24c0))
+
+## [1.49.1](https://github.com/ttoss/ttoss/compare/carlin@1.49.0...carlin@1.49.1) (2026-04-15)
+
+### Bug Fixes
+
+- generate env ([#948](https://github.com/ttoss/ttoss/issues/948)) ([294b436](https://github.com/ttoss/ttoss/commit/294b436aba3eabe14b0399e6eb84d555af2526a3))
+
+# [1.49.0](https://github.com/ttoss/ttoss/compare/carlin@1.48.4...carlin@1.49.0) (2026-04-15)
+
+### Features
+
+- generate env dir ([#945](https://github.com/ttoss/ttoss/issues/945)) ([f5eed4c](https://github.com/ttoss/ttoss/commit/f5eed4c6a3c50cdee1c58db6d440a46e9d860862))
+
+## 1.48.4 (2026-04-15)
+
+### Reverts
+
+- Revert "carlin deploy: add `envExport` to export CloudFormation outputs as env vars to CI/CD runner" (#944) ([ed0b24c](https://github.com/ttoss/ttoss/commit/ed0b24c1c4d23e4125ad6bd62a5994d5566e61ad)), closes [#944](https://github.com/ttoss/ttoss/issues/944)
+
 ## 1.48.3 (2026-04-04)
 
 ### Bug Fixes

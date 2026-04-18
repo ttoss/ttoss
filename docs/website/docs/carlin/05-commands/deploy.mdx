@@ -59,26 +59,17 @@ and deploy accordingly to the following algorithm:
 
 ### Stack Name
 
-<Carlin /> creates automatically the
-<a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-console-create-stack-parameters.html">
-  CloudFormation stack name
-</a>
-, unless it is already specified at the
-<OptionAliasesInline
-  options={deployCommandOptions}
-  option="stack-name"
-  to="/docs/carlin/commands/deploy#options"
-/>
-option. This name is very important because it'll track the deployment when a
-update or a delete is performed.
+<Carlin /> creates automatically the CloudFormation stack name. See [Stack
+Naming](/docs/carlin/core-concepts/stack-naming) for the full naming algorithm
+and examples.
+
+You can override the automatic name with the <OptionAliasesInline options={deployCommandOptions} option="stack-name" to="/docs/carlin/commands/deploy#options" /> option.
 
 :::caution
 
 <InnerHTML html={stackNameWarningComment} />
 
 ::::
-
-<InnerHTML html={stackNameComment} />
 
 ## Lambda
 
@@ -244,7 +235,7 @@ The destroy algorithm is the following:
 :::danger
 
 This operation is irreversible. You must pay attention because you may destroy resources that contains your App data, like DynamoDB, using this command.
-To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/configuration#global-options" /> isn't defined.
+To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/commands/deploy#options" /> isn't defined.
 
 :::
 
@@ -261,56 +252,7 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 <InnerHTML html={cloudFormationOutputsComment} />
 
-After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`. Use [`carlin deploy report`](/docs/carlin/commands/deploy-report) to print them to stdout or publish them to a channel (e.g. a GitHub PR comment).
-
-## Exporting Outputs to the CI/CD Environment (`envExport`)
-
-When deploying a backend package that exports CloudFormation outputs (e.g. `AppSyncApiGraphQLUrl`), downstream packages built in the same CI pipeline often need those values as specific environment variable names before their build step runs.
-
-Use the `envExport` option in your `carlin.ts` to declare this mapping once. After a successful deployment, carlin reads the stack outputs and exports the mapped variables to the runner environment automatically — no manual `jq` parsing or shell variable wiring needed.
-
-```ts title="carlin.ts"
-export default {
-  envExport: {
-    AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-    AppSyncApiArn: 'APPSYNC_API_ARN',
-  },
-};
-```
-
-### CI/CD Behavior
-
-| Runner             | Behavior                                                                                        |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| **GitHub Actions** | Appends `KEY=VALUE` lines to `$GITHUB_ENV`, making variables available to all subsequent steps. |
-| **Generic shell**  | Prints `export KEY=VALUE` lines to stdout so the output can be `eval`-ed.                       |
-
-### Pipeline Example
-
-```sh
-# 1. Deploy graph-api — carlin reads envExport, writes to $GITHUB_ENV
-carlin deploy --environment Staging
-# → VITE_APPSYNC_GRAPHQL_ENDPOINT is now available to subsequent steps
-
-# 2. Build app — Vite picks up the exported variable automatically
-pnpm turbo run build --filter=app
-```
-
-### Per-environment Override
-
-`envExport` composes with per-environment configuration:
-
-```ts title="carlin.ts"
-export default {
-  environments: {
-    Staging: {
-      envExport: {
-        AppSyncApiGraphQLUrl: 'VITE_APPSYNC_GRAPHQL_ENDPOINT',
-      },
-    },
-  },
-};
-```
+After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`.
 
 ## API
 

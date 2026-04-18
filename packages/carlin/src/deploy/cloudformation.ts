@@ -84,7 +84,6 @@ export const deployCloudFormation = async (cliOptions: {
   }[];
   templatePath?: string;
   template?: CloudFormationTemplate;
-  envExport?: Record<string, string>;
 }) => {
   try {
     const {
@@ -98,7 +97,6 @@ export const deployCloudFormation = async (cliOptions: {
       parameters,
       template,
       templatePath,
-      envExport,
     } = cliOptions;
 
     const { stackName } = await handleDeployInitialization({ logPrefix });
@@ -273,7 +271,6 @@ export const deployCloudFormation = async (cliOptions: {
     const output = await deploy({
       params,
       template: cloudFormationTemplate,
-      envExport,
     });
 
     return output;
@@ -341,7 +338,14 @@ const destroy = async ({ stackName }: { stackName: string }) => {
     throw new Error(message);
   }
 
-  await emptyStackBuckets({ stackName });
+  try {
+    await emptyStackBuckets({ stackName });
+  } catch (error) {
+    log.warn(
+      logPrefix,
+      `Failed to empty buckets for stack ${stackName}: ${(error as Error)?.message || error}. Proceeding with stack deletion.`
+    );
+  }
 
   await deleteStack({ stackName });
 };
