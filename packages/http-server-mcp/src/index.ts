@@ -1,10 +1,8 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import type {
-  CallToolResult,
-  McpServer,
-} from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { Router } from '@ttoss/http-server';
 import type { Context } from 'koa';
 import { z } from 'zod';
