@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.11.1...@ttoss/http-server-mcp@0.12.0) (2026-04-18)
+
+### Features
+
+- **http-server-mcp:** add `registerToolFromSchema` for plain JSON Schema inputSchema ([#953](https://github.com/ttoss/ttoss/issues/953)) ([f0b7e18](https://github.com/ttoss/ttoss/commit/f0b7e18d976f8382c3e55016edcbdf2021500dbd))
+
 ## [0.11.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.11.0...@ttoss/http-server-mcp@0.11.1) (2026-04-07)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
