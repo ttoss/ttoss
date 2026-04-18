@@ -157,7 +157,90 @@ Generic HTTP helper for use inside MCP tool handlers.
 
 **Returns:** `Promise<unknown>` - Parsed JSON response body
 
+### `registerToolFromSchema(server, params)`
+
+Registers a tool using a **plain JSON Schema** object for `inputSchema` instead of a Zod shape.
+
+Use this when tool definitions are shared between the MCP server and an AI SDK agent (e.g. Vercel AI SDK's `tool()` helper). Both consumers accept plain JSON Schema at runtime, so a single definition can feed both without any lossy conversion.
+
+**Parameters:**
+
+- `server` (`McpServer`) - The MCP server instance
+- `params.name` (`string`) - Unique tool name
+- `params.description` (`string`, optional) - Human-readable description
+- `params.inputSchema` (`JsonObjectSchema`, optional) - Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
+- `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) - Tool handler receiving the raw request arguments
+
+**Returns:** `void`
+
 ## Examples
+
+### Plain JSON Schema Tool (`registerToolFromSchema`)
+
+Use `registerToolFromSchema` when you share tool definitions across the MCP server **and** an AI SDK agent. The plain JSON Schema is forwarded verbatim over the MCP wire protocol — `anyOf`, `$ref`, `pattern`, and other features not supported by Zod v3 are preserved without loss.
+
+```typescript
+import {
+  createMcpRouter,
+  McpServer,
+  registerToolFromSchema,
+} from '@ttoss/http-server-mcp';
+
+const server = new McpServer({ name: 'my-server', version: '1.0.0' });
+
+registerToolFromSchema(server, {
+  name: 'get-project',
+  description: 'Get a project by ID',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', description: 'Project public ID' },
+      // anyOf is preserved — Zod v3 has no direct equivalent
+      status: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+    },
+    required: ['id'],
+  },
+  handler: async ({ id }) => {
+    const data = await apiCall('GET', `/projects/${id}`);
+    return { content: [{ type: 'text', text: JSON.stringify(data) }] };
+  },
+});
+```
+
+**Single source of truth across MCP and AI SDK:**
+
+```typescript
+// lib/tools.ts — shared tool definition
+export const getProjectTool = {
+  name: 'get-project',
+  description: 'Get a project by ID',
+  inputSchema: {
+    type: 'object' as const,
+    properties: { id: { type: 'string' } },
+    required: ['id'],
+  },
+};
+
+// MCP server
+import { registerToolFromSchema } from '@ttoss/http-server-mcp';
+registerToolFromSchema(mcpServer, {
+  ...getProjectTool,
+  handler: async ({ id }) => {
+    /* ... */
+  },
+});
+
+// AI SDK agent
+import { tool } from 'ai';
+import { jsonSchema } from 'ai';
+const agentTool = tool({
+  description: getProjectTool.description,
+  parameters: jsonSchema(getProjectTool.inputSchema),
+  execute: async ({ id }) => {
+    /* same logic */
+  },
+});
+```
 
 ### Basic Tool
 
