@@ -28,7 +28,7 @@ export const steps = defineSlotRecipe({
       // Current/active step
       _current: {
         borderColor: 'display.border.accent.default',
-        color: 'display.text.accent',
+        color: 'display.text.accent.default',
       },
     },
     separator: {
@@ -42,7 +42,7 @@ export const steps = defineSlotRecipe({
       // Map to ttoss semantic colors
       color: 'navigation.text.primary.default',
       _current: {
-        color: 'display.text.accent',
+        color: 'display.text.accent.default',
       },
     },
     description: {

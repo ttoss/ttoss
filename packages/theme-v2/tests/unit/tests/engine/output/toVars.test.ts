@@ -53,7 +53,7 @@ describe('vars', () => {
     // action.primary is optional in the type (themes may omit it) but always
     // present in the base theme — use ! to assert it exists here.
     expect(vars.colors.action.primary!.background!.default).toBe(
-      'var(--tt-action-primary-background-default)'
+      'var(--tt-colors-action-primary-background-default)'
     );
   });
 
@@ -91,7 +91,7 @@ describe('vars', () => {
 describe('buildVarsMap', () => {
   test('custom theme produces identical var names (names are path-derived, not value-derived)', () => {
     // Var names come from the token PATH, not the token VALUE.
-    // A custom brand color must still resolve to var(--tt-action-primary-background-default).
+    // A custom brand color must still resolve to var(--tt-colors-action-primary-background-default).
     const customTheme = buildTheme({
       overrides: { core: { colors: { brand: { 500: '#FF2D20' } } } },
     });

@@ -1,9 +1,10 @@
 import { baseBundle } from './baseBundle';
-import type { CssVarMap } from './roots/toVars';
+import type { CssVarsMap } from './roots/toVars';
 import { buildVarsMap } from './roots/toVars';
 import type { SemanticTokens } from './Types';
 
-export type { CssVarMap } from './roots/toVars';
+export type { CssVarsMap } from './roots/toVars';
+export { buildVarsMap } from './roots/toVars';
 
 // ---------------------------------------------------------------------------
 // vars — Static typed CSS Custom Property references
@@ -50,11 +51,42 @@ export type { CssVarMap } from './roots/toVars';
  * ## Limitations
  *
  * `vars` reflects the semantic token shape of the **default theme**. If your
- * project extends `SemanticTokens` with custom token families, those extra
- * leaves won't appear here. Use `toCssVarName` from `'@ttoss/theme2/css'` to
- * construct individual var references for any custom tokens.
+ * project extends `SemanticTokens` with custom token families (e.g. a
+ * `dataviz` palette, project-specific component tokens), those extra leaves
+ * won't appear on this export.
+ *
+ * ### Typed extension recipe
+ *
+ * Build your own typed vars object using the public `buildVarsMap` helper
+ * together with `CssVarsMap`:
+ *
+ * ```ts
+ * // my-theme.ts
+ * import { createTheme, type SemanticTokens } from '@ttoss/theme2';
+ * import { buildVarsMap, type CssVarsMap } from '@ttoss/theme2/vars';
+ *
+ * // 1. Extend the semantic shape structurally.
+ * type MySemanticTokens = SemanticTokens & {
+ *   colors: SemanticTokens['colors'] & {
+ *     brandX: { primary: { default: string } };
+ *   };
+ * };
+ *
+ * const myTheme = createTheme({ ... });
+ *
+ * // 2. Build a typed mirror of the extended shape.
+ * export const myVars: CssVarsMap<MySemanticTokens> =
+ *   buildVarsMap(myTheme.base) as CssVarsMap<MySemanticTokens>;
+ *
+ * myVars.colors.brandX.primary.default;
+ * // → 'var(--tt-colors-brandx-primary-default)'
+ * ```
+ *
+ * For one-off custom keys where the extra structure is trivial, use
+ * `toCssVarName` from `'@ttoss/theme2/css'` to construct individual var
+ * references without declaring a full extended type.
  *
  * @see {@link toCssVarName}        — for raw CSS property names (without `var()`)
  * @see {@link useResolvedTokens}  — for resolved raw values in non-CSS environments (React Native, canvas, PDF)
  */
-export const vars: CssVarMap<SemanticTokens> = buildVarsMap(baseBundle.base);
+export const vars: CssVarsMap<SemanticTokens> = buildVarsMap(baseBundle.base);

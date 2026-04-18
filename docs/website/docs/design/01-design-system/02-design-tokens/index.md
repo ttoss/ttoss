@@ -1,12 +1,37 @@
 ---
 title: Design Tokens
+sidebar_position: 1
 ---
 
 # Design Tokens
 
-Design tokens define the **semantic language** of the system.
+Design tokens are the **vocabulary** of the design system. They separate **raw values** from **meaning**, so design decisions stay consistent across themes, components, patterns, and platforms.
 
-They separate **raw values** from **meaning**, allowing design decisions to stay consistent across themes, components, patterns, and platforms.
+> **In one sentence:** raw values live in `core`, design intent lives in `semantic`, and components only consume `semantic`.
+
+---
+
+## Hello, token
+
+A primary button. Three pieces are needed: a background, a border, and a text color. All three come from the **semantic** layer:
+
+```tsx
+// ✅ what a component actually consumes
+style={{
+  backgroundColor: theme.semantic.colors.action.primary.background.default,
+  borderColor:     theme.semantic.colors.action.primary.border.default,
+  color:           theme.semantic.colors.action.primary.text.default,
+  borderRadius:    theme.semantic.radii.control,
+  padding:         theme.semantic.spacing.inset.control.md,
+  minHeight:       theme.semantic.sizing.hit.base,
+}}
+```
+
+Each semantic token resolves to a **core** value. For example, `action.primary.background.default` resolves to `core.colors.neutral.1000`. Components never reference `core` directly — that is the contract.
+
+Dark mode, high-contrast mode, or a new theme **do not change** this component. Only the `semantic → core` mapping changes.
+
+> Want to pick tokens fast? Jump to [Quick Reference](./quick-reference.md).
 
 ---
 
@@ -15,14 +40,14 @@ They separate **raw values** from **meaning**, allowing design decisions to stay
 The system follows a layered architecture:
 
 ```text
-core → semantic → components → patterns → applications
+raw values → core tokens → semantic tokens → components → patterns → applications
 ```
 
-- **Core tokens** define raw, themeable values
-- **Semantic tokens** define stable design meaning
+- **Core tokens** hold raw, themeable values (`#94A3B8`, `16px`, `200ms`…)
+- **Semantic tokens** hold stable design meaning (`action.primary.background`, `spacing.inset.control.md`…)
 - **Components and patterns** consume semantic tokens only
 
-For the architectural contract of this model, see [Token Model](./model.md).
+For the architectural contract, see [Token Model](./model.md).
 
 ## Categories
 
@@ -85,7 +110,8 @@ For details, see [Governance](./governance.md) and [Validation and Build](./vali
 
 ## Next Steps
 
-To understand the architecture, start with [Token Model](./model.md).
+- Need a token **now**? → [Quick Reference](./quick-reference.md).
+- Want the architecture? → [Token Model](./model.md).
 
 Then explore the token families:
 

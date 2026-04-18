@@ -21,29 +21,35 @@ const customTheme = buildTheme({
 
 describe('toCssVarName', () => {
   test('core color paths', () => {
-    expect(toCssVarName('core.colors.brand.500')).toBe('--tt-color-brand-500');
+    expect(toCssVarName('core.colors.brand.500')).toBe(
+      '--tt-core-colors-brand-500'
+    );
   });
 
-  test('core space paths', () => {
-    expect(toCssVarName('core.space.2')).toBe('--tt-space-2');
+  test('core spacing paths', () => {
+    expect(toCssVarName('core.spacing.2')).toBe('--tt-core-spacing-2');
   });
 
   test('core radii paths', () => {
-    expect(toCssVarName('core.radii.md')).toBe('--tt-radii-md');
+    expect(toCssVarName('core.radii.md')).toBe('--tt-core-radii-md');
   });
 
-  test('core shadow paths', () => {
-    expect(toCssVarName('core.elevation.level.3')).toBe('--tt-shadow-3');
+  test('core elevation paths', () => {
+    expect(toCssVarName('core.elevation.level.3')).toBe(
+      '--tt-core-elevation-3'
+    );
   });
 
   test('core font family paths', () => {
-    expect(toCssVarName('core.font.family.sans')).toBe('--tt-font-sans');
+    expect(toCssVarName('core.font.family.sans')).toBe(
+      '--tt-core-font-family-sans'
+    );
   });
 
   test('semantic color paths', () => {
     expect(
       toCssVarName('semantic.colors.action.primary.background.default')
-    ).toBe('--tt-action-primary-background-default');
+    ).toBe('--tt-colors-action-primary-background-default');
   });
 
   test('semantic elevation paths', () => {
@@ -52,10 +58,8 @@ describe('toCssVarName', () => {
     );
   });
 
-  test('semantic radii scoped to avoid collision', () => {
-    expect(toCssVarName('semantic.radii.surface')).toBe(
-      '--tt-radii-semantic-surface'
-    );
+  test('semantic radii paths', () => {
+    expect(toCssVarName('semantic.radii.surface')).toBe('--tt-radii-surface');
   });
 
   test('falls back to full path for unknown prefixes', () => {
@@ -63,17 +67,17 @@ describe('toCssVarName', () => {
   });
 
   // TEST-08 — CSS_PATH_PREFIXES order regression guards
-  test('core.dataviz.color.* uses the more-specific raw-color prefix', () => {
-    // If order were wrong, 'core.dataviz.color.series.1' would match 'core.dataviz.'
-    // and produce '--tt-dataviz-raw-color-series-1' instead of '--tt-dataviz-color-raw-series-1'
+  test('core.dataviz.color.* uses the more-specific core-dataviz-color prefix', () => {
+    // core.dataviz.color.series.1 must match the specific 'core.dataviz.color.' entry.
+    // Under the --tt-core-<family> scheme both candidate prefixes produce the same
+    // CSS name, so we just assert the correct result.
     const result = toCssVarName('core.dataviz.color.series.1');
-    expect(result).toBe('--tt-dataviz-color-raw-series-1');
-    expect(result).not.toBe('--tt-dataviz-raw-color-series-1');
+    expect(result).toBe('--tt-core-dataviz-color-series-1');
   });
 
-  test('core.dataviz.* (non-color) uses the less-specific raw prefix', () => {
+  test('core.dataviz.* (non-color) uses the core dataviz prefix', () => {
     const result = toCssVarName('core.dataviz.shape.circle');
-    expect(result).toBe('--tt-dataviz-raw-shape-circle');
+    expect(result).toBe('--tt-core-dataviz-shape-circle');
   });
 
   test('semantic.dataviz.* uses the public consumer prefix', () => {
@@ -178,21 +182,21 @@ describe('toCssVars', () => {
   describe('cssVars', () => {
     test('generates CSS vars for core tokens', () => {
       const { cssVars } = toCssVars(defaultTheme);
-      expect(cssVars['--tt-color-brand-500']).toBe(
+      expect(cssVars['--tt-core-colors-brand-500']).toBe(
         defaultTheme.core.colors.brand[500]
       );
     });
 
     test('generates CSS vars for semantic tokens with var() refs', () => {
       const { cssVars } = toCssVars(defaultTheme);
-      expect(cssVars['--tt-action-primary-background-default']).toBe(
-        'var(--tt-color-brand-500)'
+      expect(cssVars['--tt-colors-action-primary-background-default']).toBe(
+        'var(--tt-core-colors-neutral-1000)'
       );
     });
 
     test('reflects theme-specific values', () => {
       const { cssVars } = toCssVars(customTheme);
-      expect(cssVars['--tt-color-brand-500']).toBe('#FF2D20');
+      expect(cssVars['--tt-core-colors-brand-500']).toBe('#FF2D20');
     });
   });
 
@@ -206,7 +210,7 @@ describe('toCssVars', () => {
       expect(css).toMatch(/^:root \{/);
       expect(css).toMatch(/\}$/);
       expect(css).toContain(
-        `--tt-color-brand-500: ${defaultTheme.core.colors.brand[500]};`
+        `--tt-core-colors-brand-500: ${defaultTheme.core.colors.brand[500]};`
       );
     });
 
@@ -216,7 +220,7 @@ describe('toCssVars', () => {
       }).toCssString();
       expect(css).toMatch(/^\[data-tt-theme="custom"\] \{/);
       expect(css).toContain(
-        `--tt-color-brand-500: ${customTheme.core.colors.brand[500]};`
+        `--tt-core-colors-brand-500: ${customTheme.core.colors.brand[500]};`
       );
     });
 
@@ -287,10 +291,10 @@ describe('toCssVars', () => {
     test('fine-pointer baseline is a var() ref; coarse override is a raw value', () => {
       const { cssVars, coarseHitVars } = toCssVars(defaultTheme);
       // fine pointer: semantic var resolves to a var() reference (not a raw value)
-      expect(cssVars['--tt-sizing-hit-default']).toMatch(/^var\(/);
+      expect(cssVars['--tt-sizing-hit-base']).toMatch(/^var\(/);
       // coarse override: raw value (not a var() reference)
-      expect(coarseHitVars['--tt-sizing-hit-default']).not.toMatch(/^var\(/);
-      expect(typeof coarseHitVars['--tt-sizing-hit-default']).toBe('string');
+      expect(coarseHitVars['--tt-sizing-hit-base']).not.toMatch(/^var\(/);
+      expect(typeof coarseHitVars['--tt-sizing-hit-base']).toBe('string');
     });
 
     test('toCssString includes @media (any-pointer: coarse) block', () => {
@@ -300,7 +304,7 @@ describe('toCssVars', () => {
       const coarseBlock = css.slice(
         css.indexOf('@media (any-pointer: coarse)')
       );
-      expect(coarseBlock).toMatch(/--tt-sizing-hit-default: [^v]/);
+      expect(coarseBlock).toMatch(/--tt-sizing-hit-base: [^v]/);
     });
 
     test('coarse block uses correct selector in themed output', () => {
@@ -343,7 +347,7 @@ describe('isThemeBundle', () => {
     expect(isThemeBundle(baseBundle)).toBe(true);
   });
 
-  test('returns false for a plain ThemeTokensV2', () => {
+  test('returns false for a plain ThemeTokens', () => {
     expect(isThemeBundle(defaultTheme)).toBe(false);
   });
 });
@@ -384,11 +388,11 @@ describe('toCssVars (bundle overload)', () => {
       const result = toCssVars(baseBundle, {
         themeId: 'default',
       });
-      expect(result.base.cssVars['--tt-color-brand-500']).toBe(
+      expect(result.base.cssVars['--tt-core-colors-brand-500']).toBe(
         baseBundle.base.core.colors.brand[500]
       );
       expect(
-        result.base.cssVars['--tt-action-primary-background-default']
+        result.base.cssVars['--tt-colors-action-primary-background-default']
       ).toBeDefined();
     });
 
@@ -433,11 +437,11 @@ describe('toCssVars (bundle overload)', () => {
       });
       const altVars = result.alternate!.cssVars;
       // Core vars must NOT appear in alternate (core is immutable)
-      expect(altVars['--tt-color-neutral-0']).toBeUndefined();
+      expect(altVars['--tt-core-colors-neutral-0']).toBeUndefined();
       // Semantic vars are remapped in dark mode
-      expect(altVars['--tt-content-primary-background-default']).toBe(
-        'var(--tt-color-neutral-900)'
-      );
+      expect(
+        altVars['--tt-colors-informational-primary-background-default']
+      ).toBe('var(--tt-core-colors-neutral-900)');
     });
 
     test('alternate toCssString includes color-scheme opposite', () => {
@@ -494,25 +498,28 @@ describe('toCssVars (bundle overload)', () => {
       }
     });
 
-    test('alternate toCssString includes coarse pointer block', () => {
+    test('alternate toCssString does not include coarse pointer block (diff-only)', () => {
       const result = toCssVars(baseBundle, {
         themeId: 'default',
       });
       const altCss = result.alternate!.toCssString();
-      expect(altCss).toContain('@media (any-pointer: coarse)');
+      // alternate is diff-only — coarse hit vars are core-sourced (immutable)
+      // and therefore never differ between modes.
+      expect(altCss).not.toContain('@media (any-pointer: coarse)');
       expect(altCss).toContain(
         '[data-tt-theme="default"][data-tt-mode="dark"]'
       );
     });
 
-    test('combined toCssString includes coarse blocks for both modes', () => {
+    test('combined toCssString emits coarse block once (base covers all modes)', () => {
       const css = toCssVars(baseBundle, {
         themeId: 'default',
       }).toCssString();
-      // Should have at least 2 coarse blocks: one for base, one for alternate
+      // core is immutable in ModeOverride — coarse hit targets cannot differ
+      // between base and alternate, so the combined output has exactly one block.
       const coarseMatches = css.match(/@media \(any-pointer: coarse\)/g);
       expect(coarseMatches).not.toBeNull();
-      expect(coarseMatches!.length).toBeGreaterThanOrEqual(2);
+      expect(coarseMatches!.length).toBe(1);
     });
   });
 });
@@ -583,25 +590,28 @@ describe('reducedMotionVars', () => {
     );
   });
 
-  test('toCssVars (bundle) alternate includes reduced-motion block', () => {
+  test('toCssVars (bundle) alternate does not include reduced-motion block when motion is not overridden', () => {
     const result = toCssVars(baseBundle, { themeId: 'default' });
     const altCss = result.alternate!.toCssString();
 
-    expect(altCss).toContain('@media (prefers-reduced-motion: reduce)');
+    // darkAlternate does not override semantic.motion — reduced-motion diff is
+    // empty, so the block is correctly absent from the alternate standalone output.
+    expect(altCss).not.toContain('@media (prefers-reduced-motion: reduce)');
     expect(altCss).toContain('[data-tt-theme="default"][data-tt-mode="dark"]');
   });
 
-  test('toCssVars (bundle) combined has reduced-motion blocks for both modes', () => {
+  test('toCssVars (bundle) combined emits reduced-motion block once when motion is not overridden', () => {
     const css = toCssVars(baseBundle, {
       themeId: 'default',
     }).toCssString();
 
-    // Should have at least 2 reduced-motion blocks: one for base, one for alternate
+    // darkAlternate does not override semantic.motion — the diff is empty,
+    // so the combined output has exactly one reduced-motion block (from base).
     const reducedMotionMatches = css.match(
       /@media \(prefers-reduced-motion: reduce\)/g
     );
     expect(reducedMotionMatches).not.toBeNull();
-    expect(reducedMotionMatches!.length).toBeGreaterThanOrEqual(2);
+    expect(reducedMotionMatches!.length).toBe(1);
   });
 });
 
@@ -796,31 +806,31 @@ describe('containerQueryVars', () => {
     }
   });
 
-  test('includes type ramp vars', () => {
+  test('includes font scale vars', () => {
     const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-font-size-text-1']).toBeDefined();
-    expect(containerQueryVars['--tt-font-size-display-1']).toBeDefined();
+    expect(containerQueryVars['--tt-core-font-scale-text-1']).toBeDefined();
+    expect(containerQueryVars['--tt-core-font-scale-display-1']).toBeDefined();
   });
 
   test('includes space unit var', () => {
     const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-space-unit']).toBeDefined();
+    expect(containerQueryVars['--tt-core-spacing-engine-unit']).toBeDefined();
   });
 
   test('includes size ramp ui vars', () => {
     const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-size-ramp-ui-1']).toBeDefined();
+    expect(containerQueryVars['--tt-core-sizing-ramp-ui-1']).toBeDefined();
   });
 
   test('includes size ramp layout vars', () => {
     const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-size-ramp-layout-1']).toBeDefined();
+    expect(containerQueryVars['--tt-core-sizing-ramp-layout-1']).toBeDefined();
   });
 
   test('does not include non-CQ vars', () => {
     const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-color-brand-500']).toBeUndefined();
-    expect(containerQueryVars['--tt-radii-md']).toBeUndefined();
+    expect(containerQueryVars['--tt-core-colors-brand-500']).toBeUndefined();
+    expect(containerQueryVars['--tt-core-radii-md']).toBeUndefined();
   });
 });
 
@@ -877,5 +887,64 @@ describe('@supports (width: 1cqi) block', () => {
       const css = toCssVars(baseBundle.base, { themeId: name }).toCssString();
       expect(css).toContain('@supports (width: 1cqi)');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Spacing responsive engine — CSS output validation
+//
+// @see spacing.md — Validation > Error #17, Error #18
+// Error #17: generated output does not emit a viewport-safe fallback before
+//            container-based overrides.
+// Error #18: generated output does not gate container-based overrides behind
+//            @supports (width: 1cqi).
+//
+// These tests inspect the CSS string produced by getThemeStylesContent() to
+// verify both structural contracts for core.space.unit, which is the single
+// responsive engine for the entire spacing system.
+// ---------------------------------------------------------------------------
+
+describe('spacing responsive engine — CSS output (Error #17 / Error #18)', () => {
+  const SPACE_UNIT_VAR = '--tt-core-spacing-engine-unit';
+
+  test('Error #17: --tt-core-spacing-unit emits viewport-safe fallback in the base block', () => {
+    // Error #17: generated output does not emit a viewport-safe fallback
+    // before container-based overrides.
+    const css = getThemeStylesContent(baseBundle);
+
+    // The base :root block ends just before the first @supports
+    const baseBlock = css.split('@supports')[0];
+
+    // Must contain the vw-based fallback (cqi → vw via toViewportFallback)
+    expect(baseBlock).toContain(`${SPACE_UNIT_VAR}:`);
+    expect(baseBlock).toMatch(new RegExp(`${SPACE_UNIT_VAR}:[^;]*vw`));
+    // Must NOT contain cqi in the base block — CQ override lives in @supports only
+    expect(baseBlock).not.toMatch(/\bcqi\b/);
+  });
+
+  test('Error #18: --tt-core-spacing-unit CQ override is gated behind @supports (width: 1cqi)', () => {
+    // Error #18: generated output does not gate container-based overrides
+    // behind @supports (width: 1cqi).
+    const css = getThemeStylesContent(baseBundle);
+
+    // Locate the @supports block
+    const supportsIdx = css.indexOf('@supports (width: 1cqi)');
+    expect(supportsIdx).toBeGreaterThan(-1);
+
+    // The @supports block must contain --tt-space-unit with a cqi value
+    const supportsBlock = css.slice(supportsIdx);
+    expect(supportsBlock).toMatch(new RegExp(`${SPACE_UNIT_VAR}:[^;]*cqi`));
+  });
+
+  test('viewport fallback appears before the @supports block in source order', () => {
+    // Asserts Error #17 and #18 together: fallback must precede the CQ override.
+    const css = getThemeStylesContent(baseBundle);
+
+    const fallbackIdx = css.indexOf(`${SPACE_UNIT_VAR}:`);
+    const supportsIdx = css.indexOf('@supports (width: 1cqi)');
+
+    expect(fallbackIdx).toBeGreaterThan(-1);
+    expect(supportsIdx).toBeGreaterThan(-1);
+    expect(fallbackIdx).toBeLessThan(supportsIdx);
   });
 });

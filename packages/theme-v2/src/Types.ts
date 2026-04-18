@@ -1,20 +1,43 @@
 /* ==========================================================================
- * ttoss Design Tokens v2 — Type Definitions
+ * ttoss Design Tokens — Type Definitions
+ * FSL Layer 4: Semantic Token Projection
  *
- * This file defines the type contract for the ttoss Design System v2.
- * It is divided into two layers:
+ * This file is the formal TypeScript type contract for the Semantic Token
+ * Projection. It is derived from the FSL foundation (layers 1–2) and consumes
+ * the Component Semantics Projection (layer 3). It must not define vocabulary
+ * that contradicts the FSL Lexicon or FSL Structural Language.
  *
- *   1. Core Tokens  — raw primitives and responsiveness engines.
- *   2. Semantic Tokens — stable aliases consumed by components.
+ * FSL dimension mapping (token grammar axis → FSL dimension):
+ *
+ *   Token axis  │ FSL dimension   │ Notes
+ *   ────────────┼─────────────────┼───────────────────────────────────────────
+ *   ux          │ Entity Kind     │ projection-scoped subset + renaming (§17.1)
+ *   role        │ Evaluation      │ projection-scoped name for FSL Evaluation
+ *   dimension   │ Structural Role │ subset: background | border | text
+ *   state       │ State           │ values identical, no renaming
+ *
+ * Token naming grammar: {ux}.{role}.{dimension}.{state}
+ *
+ * Two token layers:
+ *   1. Core Tokens   — raw primitives and responsiveness engines (immutable across modes)
+ *   2. Semantic Tokens — stable aliases consumed by components (remapped per mode)
  *
  * Components must NEVER consume core tokens directly.
  * Semantic tokens should normally be references to core tokens, avoiding raw values.
- * Any semantic tokens that use raw values must be rare, intentional, and documented exceptions.
+ * Any semantic tokens that use raw values must be rare, intentional, and documented
+ * exceptions — see model.md §RawValue Exceptions for the governing rule and audit inventory.
  *
- * Token naming follows the grammar defined in the Design Tokens v2 documentation.
- *
+ * @see /docs/design/design-system/fsl/fsl-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fsl-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/component-model — Component Semantics Projection (layer 3)
+ * @see /docs/design/design-system/design-tokens/model — Token Model (this layer)
+ * @see /docs/design/design-system/design-tokens/colors — Semantic Color Grammar
  * For the default theme values, see `./baseTheme.ts`.
  * ========================================================================== */
+
+import type { CoreDataviz, SemanticDataviz } from './dataviz/Types';
+
+export type { CoreDataviz, SemanticDataviz } from './dataviz/Types';
 
 // ---------------------------------------------------------------------------
 // Type Definitions
@@ -29,9 +52,13 @@ export type TokenRef = `{${string}}`;
 /** A numeric raw value (font weight, opacity, line-height, z-index, etc.) */
 export type NumericValue = number;
 
-// ---------------------------------------------------------------------------
-// Deprecation Metadata
-// ---------------------------------------------------------------------------
+/**
+ * Recursive partial type. Every nested property becomes optional,
+ * enabling selective overrides at any depth.
+ */
+export type DeepPartial<T> = T extends object
+  ? { [P in keyof T]?: DeepPartial<T[P]> }
+  : T;
 
 // -- Colors -----------------------------------------------------------------
 
@@ -69,6 +96,8 @@ type CoreColorScale = Partial<Record<CoreColorStep, RawValue>> & {
  * - No semantic naming (no `danger`, `warning`, `link`, `surface`, etc.).
  * - No mode naming (core values are immutable across modes).
  * - No component naming (no `cardBg`, `inputBorder`, etc.).
+ *
+ * @see /docs/website/docs/design/02-design-tokens/02-families/colors.md
  */
 interface CoreColors {
   /** Primary brand identity color scale. */
@@ -92,13 +121,13 @@ interface CoreColors {
 /**
  * Semantic color token grammar: `{ux}.{role}.{dimension}.{state}`
  *
- * Layer 1 — ux:        action | input | navigation | feedback | guidance | discovery | content
+ * Layer 1 — ux: action | input | navigation | feedback | informational
  * Layer 2 — role:      primary | secondary | accent | muted | positive | caution | negative
  * Layer 3 — dimension: background | border | text  (per component; not all are required)
  * Layer 4 — state:     default | hover | active | focused | disabled | selected | …
  *
- * Role sets and extra states are constrained per UX context (see colors.md).
- * @see colors.md — Canonical Registry and Legal Combinations.
+ * Role sets and extra states are constrained per UX context (see /docs/website/design-tokens/colors.md).
+ * @see /docs/website/design-tokens/colors.md — Canonical Registry and Legal Combinations.
  */
 
 /** Base interaction states — available in every UX context. */
@@ -109,19 +138,34 @@ interface BaseColorStates {
   focused?: TokenRef;
   disabled?: TokenRef;
   selected?: TokenRef;
+  /**
+   * Valid drag-and-drop destination state (FSL Lexicon §7).
+   * Applies wherever drop-target semantics are valid: file inputs, collection rows,
+   * informational surfaces, and any other entity that accepts dropped items.
+   */
+  droptarget?: TokenRef;
 }
 
-/** `action` context: adds `pressed` for toggle controls. */
+/** `action` context: adds `pressed` for toggle controls and `expanded` for disclosure triggers and open menus. */
 interface ActionColorStates extends BaseColorStates {
   pressed?: TokenRef;
+  expanded?: TokenRef;
 }
 
-/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded` for form controls. */
+/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded`, `invalid` for form controls. */
 interface InputColorStates extends BaseColorStates {
   checked?: TokenRef;
   indeterminate?: TokenRef;
   pressed?: TokenRef;
   expanded?: TokenRef;
+  /**
+   * Runtime validation-failure state. Driven by React Aria's `isInvalid` /
+   * form-library validation — not by author choice. Recolors the neutral
+   * base chrome to surface the failure without requiring an Evaluation
+   * variant. See FSL Lexicon §7 (State) and `taxonomy.ts` design note on
+   * `ENTITY_EVALUATION` for the State-vs-Evaluation distinction.
+   */
+  invalid?: TokenRef;
 }
 
 /** `navigation` context: adds `current`, `visited`, `expanded`. */
@@ -131,15 +175,9 @@ interface NavigationColorStates extends BaseColorStates {
   expanded?: TokenRef;
 }
 
-/** `content` context: adds `visited` for links. */
-interface ContentColorStates extends BaseColorStates {
+/** `informational` context: adds `visited` for links. */
+interface InformationalColorStates extends BaseColorStates {
   visited?: TokenRef;
-}
-
-/** `discovery` context: adds `expanded` (disclosure) and `droptarget` (drag-and-drop). */
-interface DiscoveryColorStates extends BaseColorStates {
-  expanded?: TokenRef;
-  droptarget?: TokenRef;
 }
 
 /**
@@ -189,32 +227,26 @@ interface FeedbackColorRoles {
   negative?: ColorDimensionOf<BaseColorStates>;
 }
 
-/** `guidance`: preventive or instructional. Roles: primary | secondary | accent | muted | caution */
-interface GuidanceColorRoles {
-  primary?: ColorDimensionOf<BaseColorStates>;
-  secondary?: ColorDimensionOf<BaseColorStates>;
-  accent?: ColorDimensionOf<BaseColorStates>;
-  muted?: ColorDimensionOf<BaseColorStates>;
-  caution?: ColorDimensionOf<BaseColorStates>;
+/** `informational`: informational surfaces and readable content. Roles: primary | secondary | accent | muted | positive | caution | negative */
+interface InformationalColorRoles {
+  primary?: ColorDimensionOf<InformationalColorStates>;
+  secondary?: ColorDimensionOf<InformationalColorStates>;
+  accent?: ColorDimensionOf<InformationalColorStates>;
+  muted?: ColorDimensionOf<InformationalColorStates>;
+  positive?: ColorDimensionOf<InformationalColorStates>;
+  caution?: ColorDimensionOf<InformationalColorStates>;
+  negative?: ColorDimensionOf<InformationalColorStates>;
 }
 
-/** `discovery`: search, filter, exploration. Roles: primary | secondary | accent | muted */
-interface DiscoveryColorRoles {
-  primary?: ColorDimensionOf<DiscoveryColorStates>;
-  secondary?: ColorDimensionOf<DiscoveryColorStates>;
-  accent?: ColorDimensionOf<DiscoveryColorStates>;
-  muted?: ColorDimensionOf<DiscoveryColorStates>;
-}
-
-/** `content`: informational surfaces and readable content. Roles: primary | secondary | accent | muted | positive | caution | negative */
-interface ContentColorRoles {
-  primary?: ColorDimensionOf<ContentColorStates>;
-  secondary?: ColorDimensionOf<ContentColorStates>;
-  accent?: ColorDimensionOf<ContentColorStates>;
-  muted?: ColorDimensionOf<ContentColorStates>;
-  positive?: ColorDimensionOf<ContentColorStates>;
-  caution?: ColorDimensionOf<ContentColorStates>;
-  negative?: ColorDimensionOf<ContentColorStates>;
+/**
+ * `overlay`: cross-cutting overlay infrastructure — the scrim/backdrop color
+ * applied behind modal surfaces. Distinct from `SemanticOpacity.scrim` (which
+ * exposes only alpha): `overlay.scrim` is a full color (typically black with
+ * alpha), so components do not compose `rgba(...)` at consumption sites.
+ */
+interface OverlayColors {
+  /** Modal backdrop color — full CSS color including alpha. */
+  scrim: RawValue;
 }
 
 interface SemanticColors {
@@ -222,22 +254,50 @@ interface SemanticColors {
   input: InputColorRoles;
   navigation: NavigationColorRoles;
   feedback: FeedbackColorRoles;
-  guidance?: GuidanceColorRoles;
-  discovery?: DiscoveryColorRoles;
-  content: ContentColorRoles;
+  informational: InformationalColorRoles;
+  overlay: OverlayColors;
 }
 
-// -- Elevation --------------------------------------------------------------
+/**
+ * -- Elevation --------------------------------------------------------------
+ * @see elevation.md
+ */
 
-interface CoreElevationLevels {
-  0: RawValue;
-  1: RawValue;
-  2: RawValue;
-  3: RawValue;
-  4: RawValue;
+/**
+ * Open shadow recipe ramp — themes define as many levels as needed.
+ * Every key referenced by a semantic token must resolve to a defined entry here.
+ */
+type CoreElevationLevels = Record<string, RawValue>;
+
+/**
+ * Core elevation primitives — shadow recipe ramps.
+ *
+ * - `level`    — base recipes (standard opacity), used by default in light themes
+ * - `emphatic` — high-opacity recipes for surfaces needing stronger depth contrast
+ *               (e.g., on dark or heavily-colored backgrounds)
+ *
+ * Both ramps are open `Record<string, RawValue>` — themes define as many levels as
+ * needed. Every key referenced by a semantic token must be defined here.
+ *
+ * Future expansion (non-breaking): add optional sibling ramps as needed.
+ * @see elevation.md
+ */
+interface CoreElevation {
+  /** Base shadow recipes — standard opacity, light-surface defaults. */
+  level: CoreElevationLevels;
+  /**
+   * High-opacity shadow recipes for surfaces needing stronger depth contrast.
+   * Mode-agnostic: expresses shadow weight, not a mode label.
+   * Themes include this ramp when a dark alternate requires higher-opacity recipes.
+   */
+  emphatic?: CoreElevationLevels;
 }
 
 interface SemanticElevation {
+  /**
+   * Shadow-based surface strata — the primary depth contract.
+   * Maps each stratum to a shadow recipe (core elevation reference).
+   */
   surface: {
     /** Surfaces flush with the page */
     flat: TokenRef;
@@ -248,9 +308,26 @@ interface SemanticElevation {
     /** Dialogs and blocking sheets */
     blocking: TokenRef;
   };
+  /**
+   * Tonal overlay tokens — optional surface color treatments paired with shadows
+   * to preserve depth perception in dark or heavily-colored themes.
+   *
+   * Each token typically resolves to a color overlay (e.g., `color-mix`, rgba surface).
+   * Omit when the product does not use tonal elevation.
+   * When present, must cover the same strata that carry visible shadows.
+   * @see elevation.md — "Surface + Shadow"
+   */
+  tonal?: {
+    raised: TokenRef;
+    overlay: TokenRef;
+    blocking: TokenRef;
+  };
 }
 
-// -- Typography -------------------------------------------------------------
+/**
+ * -- Typography -------------------------------------------------------------
+ * @see typography.md
+ */
 
 interface CoreFontFamilies {
   sans: RawValue;
@@ -278,7 +355,7 @@ interface CoreFontTracking {
   wide: RawValue;
 }
 
-interface CoreFontOpticalSizing {
+interface CoreFontOptical {
   auto: RawValue;
   none: RawValue;
 }
@@ -288,32 +365,33 @@ interface CoreFontNumeric {
   tabular: RawValue;
 }
 
-interface CoreFont {
-  family: CoreFontFamilies;
-  weight: CoreFontWeights;
-  leading: CoreFontLeading;
-  tracking: CoreFontTracking;
-  opticalSizing: CoreFontOpticalSizing;
-  numeric: CoreFontNumeric;
-}
+type RampScale6 = Record<1 | 2 | 3 | 4 | 5 | 6, RawValue>;
 
-interface RampScale6 {
-  1: RawValue;
-  2: RawValue;
-  3: RawValue;
-  4: RawValue;
-  5: RawValue;
-  6: RawValue;
-}
-
-interface CoreTypeRamp {
+/**
+ * Responsive font size scale — text and display size ramps.
+ * Both ramps use `clamp()` expressions with container query units (cqi) as the
+ * preferred fluid step, with viewport-safe fallbacks emitted by `toCssVars`.
+ */
+interface CoreFontScale {
   /** Body text, labels, and dense UI typography */
   text: RampScale6;
   /** Headings, titles, and high-hierarchy display text */
   display: RampScale6;
 }
 
-/** Semantic text style composition — references core tokens only */
+/** Core font primitive set — family, weight, leading (line height), tracking (letter spacing), optical sizing, numeric variant references, and the responsive size scale. */
+interface CoreFont {
+  family: CoreFontFamilies;
+  weight: CoreFontWeights;
+  leading: CoreFontLeading;
+  tracking: CoreFontTracking;
+  optical: CoreFontOptical;
+  numeric: CoreFontNumeric;
+  /** Responsive font size scale. @see CoreFontScale */
+  scale: CoreFontScale;
+}
+
+/** Composite text style — groups 5–7 font token references that define a single typographic role. References core tokens only. */
 interface TextStyle {
   fontFamily: TokenRef;
   fontSize: TokenRef;
@@ -324,31 +402,34 @@ interface TextStyle {
   fontVariantNumeric?: TokenRef;
 }
 
-interface TextSizeLgMdSm {
-  lg: TextStyle;
-  md: TextStyle;
-  sm: TextStyle;
-}
+type TextStyleLgMdSm = Record<'lg' | 'md' | 'sm', TextStyle>;
 
-interface TextSizeMdSm {
-  md: TextStyle;
-  sm: TextStyle;
-}
+type TextStyleMdSm = Record<'md' | 'sm', TextStyle>;
 
 interface SemanticText {
-  display: TextSizeLgMdSm;
-  headline: TextSizeLgMdSm;
-  title: TextSizeLgMdSm;
-  body: TextSizeLgMdSm;
-  label: TextSizeLgMdSm;
-  code: TextSizeMdSm;
+  display: TextStyleLgMdSm;
+  headline: TextStyleLgMdSm;
+  title: TextStyleLgMdSm;
+  body: TextStyleLgMdSm;
+  label: TextStyleLgMdSm;
+  code: TextStyleMdSm;
 }
 
-// -- Spacing ----------------------------------------------------------------
+/**
+ * -- Spacing ----------------------------------------------------------------
+ * @see spacing.md
+ */
 
-interface CoreSpaceSteps {
-  /** Responsive engine — container-first clamp formula */
+interface CoreSpacingEngine {
+  /** Responsive base unit — container-first clamp formula */
   unit: RawValue;
+  /** Optional container-aware variant */
+  unitCq?: RawValue;
+}
+
+interface CoreSpacingSteps {
+  /** Responsive engine primitives — internal, not for direct component use */
+  engine: CoreSpacingEngine;
   0: RawValue;
   1: RawValue;
   2: RawValue;
@@ -358,8 +439,6 @@ interface CoreSpaceSteps {
   8: RawValue;
   12: RawValue;
   16: RawValue;
-  /** Optional container-aware unit */
-  unitCq?: RawValue;
 }
 
 interface InsetSteps {
@@ -381,6 +460,7 @@ interface GapInlineSteps {
   sm: TokenRef;
   md: TokenRef;
   lg: TokenRef;
+  xl: TokenRef;
 }
 
 interface SemanticSpacing {
@@ -412,27 +492,14 @@ interface SemanticSpacing {
   };
 }
 
-// -- Sizing -----------------------------------------------------------------
+/**
+ * -- Sizing -----------------------------------------------------------------
+ * @see sizing.md
+ */
 
-interface CoreSizeRampUI {
-  1: RawValue;
-  2: RawValue;
-  3: RawValue;
-  4: RawValue;
-  5: RawValue;
-  6: RawValue;
-  7: RawValue;
-  8: RawValue;
-}
+type CoreSizeRampUI = Record<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8, RawValue>;
 
-interface CoreSizeRampLayout {
-  1: RawValue;
-  2: RawValue;
-  3: RawValue;
-  4: RawValue;
-  5: RawValue;
-  6: RawValue;
-}
+type CoreSizeRampLayout = Record<1 | 2 | 3 | 4 | 5 | 6, RawValue>;
 
 interface CoreSizeRelative {
   em: RawValue;
@@ -448,15 +515,25 @@ interface CoreSizeBehavior {
 }
 
 interface CoreSizeViewport {
-  heightFull: RawValue;
+  height: {
+    full: RawValue;
+  };
+  width: {
+    full: RawValue;
+  };
 }
 
+/** Three-step hit target size ramp (min / base / prominent). */
 interface CoreSizeHitScale {
   min: RawValue;
-  default: RawValue;
+  base: RawValue;
   prominent: RawValue;
 }
 
+/**
+ * Hit target sizes split by pointer type.
+ * `toCssVars` automatically injects the `coarse` values under `@media (any-pointer: coarse)`.
+ */
 interface CoreSizeHit {
   /** Fine pointer (mouse/trackpad) hit targets */
   fine: CoreSizeHitScale;
@@ -464,7 +541,7 @@ interface CoreSizeHit {
   coarse: CoreSizeHitScale;
 }
 
-interface CoreSize {
+interface CoreSizing {
   ramp: {
     ui: CoreSizeRampUI;
     layout: CoreSizeRampLayout;
@@ -476,10 +553,19 @@ interface CoreSize {
 }
 
 interface SemanticSizing {
+  /**
+   * Ergonomic hit targets. Each token resolves to the **fine-pointer** value.
+   * The CSS output layer (`toCssVars`) automatically injects coarse-pointer
+   * overrides inside `@media (any-pointer: coarse)` — no component code needed.
+   *
+   * Fine-pointer values (`core.sizing.hit.fine.*`) may use `clamp(floor, preferred, max)`
+   * where `floor` is a fixed `Npx` ergonomic minimum — this guarantees accessibility
+   * while allowing themes to express density preferences (e.g. via the rem scale).
+   * Coarse-pointer values (`core.sizing.hit.coarse.*`) are always fixed `px`.
+   */
   hit: {
-    /** Resolves to fine-pointer value; coarse-pointer override emitted by toCssVars */
     min: TokenRef;
-    default: TokenRef;
+    base: TokenRef;
     prominent: TokenRef;
   };
   icon: {
@@ -494,6 +580,11 @@ interface SemanticSizing {
     xl: TokenRef;
   };
   measure: {
+    /**
+     * Typed as `RawValue` by design: `ch` units cannot be expressed as a core
+     * token reference. Override with a validated character-based `clamp()`
+     * expression only — never px or rem.
+     */
     reading: RawValue;
   };
   surface: {
@@ -503,28 +594,66 @@ interface SemanticSizing {
     height: {
       full: TokenRef;
     };
+    width: {
+      full: TokenRef;
+    };
   };
 }
 
-// -- Radii ------------------------------------------------------------------
+/**
+ * -- Radii ------------------------------------------------------------------
+ * @see radii.md
+ */
 
+/**
+ * Core radius scale — intent-free corner curvature primitives.
+ * Ordered: none < sm < md < lg < xl << full.
+ *
+ * **Never reference core radii directly from components.**
+ * Components consume only semantic radii (`radii.control`, `radii.surface`, `radii.round`).
+ */
 interface CoreRadii {
   none: RawValue;
   sm: RawValue;
   md: RawValue;
   lg: RawValue;
   xl: RawValue;
+  /**
+   * Fully-rounded intent (`9999px`).
+   * Expresses shape intent — perfect circles still depend on element dimensions.
+   */
   full: RawValue;
 }
 
+/**
+ * Semantic radius contracts — stable shape API consumed by components.
+ *
+ * Pick by structural role:
+ * - `control`  → interactive element (button, input, toggle, chip)
+ * - `surface`  → containing surface (card, panel, dialog, menu)
+ * - `round`    → explicitly fully-rounded shape intent (pill, capsule, avatar)
+ *
+ * @see radii.md — Decision Matrix and Rules of Engagement.
+ */
 interface SemanticRadii {
+  /** Radius for interactive controls and touchable UI elements. */
   control: TokenRef;
+  /** Radius for surfaces that contain or group content. */
   surface: TokenRef;
+  /** Full-round shape intent for pills, capsules, and circular affordances. */
   round: TokenRef;
 }
 
-// -- Borders ----------------------------------------------------------------
+/**
+ * -- Borders ----------------------------------------------------------------
+ * @see borders.md
+ */
 
+/**
+ * Core line widths — intent-free primitives.
+ * `selected` and `focused` must resolve to a width strictly greater than `default`.
+ * Never reference these directly from components — use semantic border tokens.
+ */
 interface CoreBorderWidths {
   none: RawValue;
   default: RawValue;
@@ -532,6 +661,10 @@ interface CoreBorderWidths {
   focused: RawValue;
 }
 
+/**
+ * Core line styles — intent-free primitives.
+ * Default to `solid`; use `dashed` or `dotted` only when the pattern truly requires it.
+ */
 interface CoreBorderStyles {
   solid: RawValue;
   dashed: RawValue;
@@ -539,31 +672,90 @@ interface CoreBorderStyles {
   none: RawValue;
 }
 
+/** Intent-free line primitives — width and style only. */
 interface CoreBorder {
   width: CoreBorderWidths;
   style: CoreBorderStyles;
 }
 
+/**
+ * Shared shape for every semantic line contract: width + style references only.
+ * Color is never part of this contract — pair with semantic color tokens.
+ * @see SemanticColors — for border color tokens per UX context.
+ */
 interface SemanticBorderOutline {
   width: TokenRef;
   style: TokenRef;
 }
 
+/**
+ * Semantic line contracts — the stable API consumed by components.
+ *
+ * Five canonical contracts (borders.md §Canonical semantic set):
+ * @see borders.md
+ * - `divider`         — structural separator between content groups
+ * - `outline.surface` — boundary of containing surfaces (cards, panels, dialogs)
+ * - `outline.control` — boundary of interactive controls (buttons, inputs, toggles)
+ * - `selected`        — stronger-thickness indicator for selected/current state
+ *
+ * Rules:
+ * - Components consume these tokens only — never `core.border.*` directly.
+ * - `selected` must resolve to a width strictly greater than `outline.*`.
+ * - Color meaning stays in the color system; these tokens define geometry only.
+ * - Do not add component-specific tokens (`border.input`, `border.card`, etc.).
+ */
 interface SemanticBorder {
-  divider: { width: TokenRef; style: TokenRef };
+  divider: SemanticBorderOutline;
   outline: {
     surface: SemanticBorderOutline;
     control: SemanticBorderOutline;
   };
-  selected: { width: TokenRef; style: TokenRef };
+  selected: SemanticBorderOutline;
 }
 
+// -- Focus ------------------------------------------------------------------
+
+/**
+ * Dedicated accessibility contract for keyboard/programmatic focus.
+ *
+ * Distinct from `border.outline.*` — always implemented via CSS `outline`, not `border`,
+ * to avoid layout shift and produce clearer accessible focus indicators.
+ * Must resolve to a width ≥ `border.outline.*`.
+ *
+ * The focus ring color is defined at the semantic level via `focus.ring.color`,
+ * providing a cross-cutting focus color contract any component can consume.
+ * For per-context differentiation, a component may additionally reference
+ * its own `{ux}.primary.border.focused` token alongside this geometry contract.
+ *
+ * @example
+ * ```css
+ * :focus-visible {
+ *   outline-width: var(--tt-focus-ring-width);
+ *   outline-style: var(--tt-focus-ring-style);
+ *   outline-color: var(--tt-focus-ring-color);
+ *   outline-offset: 2px;
+ * }
+ * ```
+ */
 interface SemanticFocus {
-  ring: { width: TokenRef; style: TokenRef };
+  ring: SemanticBorderOutline & {
+    /**
+     * Semantic focus ring color — cross-cutting accessibility contract.
+     * Provides a single, theme-consistent focus color for any component.
+     * Resolves to a semantic color token — typically the brand accent at
+     * sufficient contrast against expected surrounding backgrounds.
+     */
+    color: TokenRef;
+  };
 }
 
-// -- Opacity ----------------------------------------------------------------
+/**
+ * -- Opacity ----------------------------------------------------------------
+ * @see opacity.md
+ */
 
+/** Intent-free opacity scale. Components must use `SemanticOpacity` — never this directly.
+ * Invariant: `0 ≤ 25 ≤ 50 ≤ 75 ≤ 100`, all in `[0, 1]`, no two adjacent steps equal. */
 interface CoreOpacity {
   100: NumericValue;
   75: NumericValue;
@@ -572,13 +764,18 @@ interface CoreOpacity {
   0: NumericValue;
 }
 
+/** Stable opacity contracts for components. Each must resolve to `(0, 1)` exclusive.
+ * `scrim` — modal backdrops | `loading` — content veils | `disabled` — dimmed disabled media. */
 interface SemanticOpacity {
   scrim: TokenRef;
   loading: TokenRef;
-  disabledMedia: TokenRef;
+  disabled: TokenRef;
 }
 
-// -- Motion -----------------------------------------------------------------
+/**
+ * -- Motion -----------------------------------------------------------------
+ * @see motion.md
+ */
 
 interface CoreMotionDurations {
   none: RawValue;
@@ -596,40 +793,45 @@ interface CoreMotionEasings {
   linear: RawValue;
 }
 
+/** Core motion primitives — duration steps and easing curves. Components consume only semantic motion tokens. */
 interface CoreMotion {
   duration: CoreMotionDurations;
   easing: CoreMotionEasings;
 }
 
-interface SemanticMotionEntry {
+/** A duration + easing pair that fully specifies motion for one use-case. */
+interface SemanticMotionSpec {
   duration: TokenRef;
   easing: TokenRef;
 }
 
 interface SemanticMotion {
-  feedback: SemanticMotionEntry;
+  feedback: SemanticMotionSpec;
   transition: {
-    enter: SemanticMotionEntry;
-    exit: SemanticMotionEntry;
+    enter: SemanticMotionSpec;
+    exit: SemanticMotionSpec;
   };
-  emphasis: SemanticMotionEntry;
-  decorative: SemanticMotionEntry;
+  emphasis: SemanticMotionSpec;
+  decorative: SemanticMotionSpec;
 }
 
-// -- Z-Index ----------------------------------------------------------------
+/**
+ * -- Z-Index ----------------------------------------------------------------
+ * @see z-index.md
+ */
 
-interface CoreZIndexLevels {
-  0: NumericValue;
-  1: NumericValue;
-  2: NumericValue;
-  3: NumericValue;
-  4: NumericValue;
-}
+/**
+ * Intent-free z-index level scale. Components must use `SemanticZIndex` — never this directly.
+ * Ordering invariant (strictly ascending): `level.0 < level.1 < level.2 < level.3 < level.4`.
+ * `level.0` must be ≥ 0. Adjacent levels must differ by ≥ 10.
+ */
+type CoreZIndexLevels = Record<0 | 1 | 2 | 3 | 4, NumericValue>;
 
 interface CoreZIndex {
   level: CoreZIndexLevels;
 }
 
+/** Stable stacking contexts consumed by components. Top-layer browser elements are out of scope. */
 interface SemanticZIndex {
   layer: {
     base: TokenRef;
@@ -640,8 +842,27 @@ interface SemanticZIndex {
   };
 }
 
-// -- Breakpoints ------------------------------------------------------------
+/**
+ * -- Breakpoints ------------------------------------------------------------
+ * @see breakpoints.md
+ */
 
+/**
+ * Viewport threshold scale — adaptation infrastructure for macro layout changes.
+ *
+ * Rules:
+ * - Core-only: no semantic layer exists for breakpoints (they are not brand-expressive).
+ * - Mobile-first: base styles apply below `sm`; scale up with `min-width`. No `xs` step.
+ * - Values must use `rem` units to respect user font-size preferences.
+ * - Ordering invariant (strictly ascending): `sm < md < lg < xl < 2xl`.
+ * - Adjacent steps must differ by ≥ 8rem to avoid over-granularity.
+ * - Keep the scale small (≤ 5 steps). Add steps only when layout truly requires it.
+ * - Device-category names (`mobile`, `tablet`, `desktop`) are forbidden — use scale names.
+ * - CSS custom properties emitted from these tokens are for JS/tooling inspection only;
+ *   they cannot be used in `@media` queries (CSS spec restriction on custom properties).
+ *
+ * @see breakpoints.md — Foundation Default Set, Rules, Validation.
+ */
 interface CoreBreakpoints {
   sm: RawValue;
   md: RawValue;
@@ -651,19 +872,11 @@ interface CoreBreakpoints {
 }
 
 // ---------------------------------------------------------------------------
-// Extension imports
-// ---------------------------------------------------------------------------
-
-import type { CoreDataviz, SemanticDataviz } from './dataviz/Types';
-
-export type { CoreDataviz, SemanticDataviz } from './dataviz/Types';
-
-// ---------------------------------------------------------------------------
 // Theme Contract
 // ---------------------------------------------------------------------------
 
 /**
- * Full ttoss Design Tokens v2 Theme contract.
+ * Full ttoss Design Tokens Theme contract.
  *
  * Two layers:
  *   - `core`     — raw primitives and responsive engines (immutable across modes)
@@ -672,32 +885,20 @@ export type { CoreDataviz, SemanticDataviz } from './dataviz/Types';
  * Extensions are optional properties inside `core` and `semantic`.
  * When present they follow the same `core → semantic` contract.
  */
-export interface ThemeTokensV2 {
+export interface ThemeTokens {
   core: {
     colors: CoreColors;
-    elevation: {
-      /** Base shadow recipes (used by light mode by default). */
-      level: CoreElevationLevels;
-      /**
-       * Dark-optimized shadow recipes.
-       *
-       * Themes that support a dark mode enrich core with these recipes,
-       * so that the dark semantic alternate can remap to them without
-       * mutating the base `level` tokens.
-       */
-      dark?: CoreElevationLevels;
-    };
+    elevation: CoreElevation;
     font: CoreFont;
-    type: { ramp: CoreTypeRamp };
-    space: CoreSpaceSteps;
-    size: CoreSize;
+    spacing: CoreSpacingSteps;
+    sizing: CoreSizing;
     radii: CoreRadii;
     border: CoreBorder;
     opacity: CoreOpacity;
     motion: CoreMotion;
     zIndex: CoreZIndex;
-    /** Viewport thresholds. Core-only — no semantic layer. */
-    breakpoint: CoreBreakpoints;
+    /** Viewport threshold scale. Core-only — no semantic layer. @see CoreBreakpoints */
+    breakpoints: CoreBreakpoints;
     /**
      * Data Visualization extension — analytical color palettes and non-color
      * encoding primitives. Optional: omit when the theme does not support dataviz.
@@ -729,18 +930,6 @@ export interface ThemeTokensV2 {
 }
 
 // ---------------------------------------------------------------------------
-// DeepPartial
-// ---------------------------------------------------------------------------
-
-/**
- * Recursive partial type. Every nested property becomes optional,
- * enabling selective overrides at any depth.
- */
-export type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T;
-
-// ---------------------------------------------------------------------------
 // Theme Bundle — packages a theme with optional color mode alternate
 // ---------------------------------------------------------------------------
 
@@ -752,12 +941,12 @@ export type DeepPartial<T> = T extends object
  *
  * @see {@link modes.md} — "Modes remap semantic references, not core values."
  */
-export type ModeOverride = {
-  semantic: DeepPartial<ThemeTokensV2['semantic']>;
-};
+export interface ModeOverride {
+  semantic: DeepPartial<ThemeTokens['semantic']>;
+}
 
 /**
- * A theme bundle packages a complete `ThemeTokensV2` (the base)
+ * A theme bundle packages a complete `ThemeTokens` (the base)
  * with an optional semantic-only override for the alternate color mode.
  *
  * - `baseMode` declares which mode the `base` theme represents.
@@ -774,7 +963,7 @@ export type ModeOverride = {
  *   alternate: {
  *     semantic: {
  *       colors: {
- *         content: { primary: { background: { default: '{core.colors.neutral.900}' } } },
+ *         informational: { primary: { background: { default: '{core.colors.neutral.900}' } } },
  *       },
  *     },
  *   },
@@ -785,7 +974,7 @@ export interface ThemeBundle {
   /** Which color mode the `base` theme represents. */
   baseMode: 'light' | 'dark';
   /** Complete theme for the base mode. */
-  base: ThemeTokensV2;
+  base: ThemeTokens;
   /**
    * Semantic remapping overrides for the opposite mode.
    * Only semantic references that differ need to be listed — core tokens are shared.
@@ -805,4 +994,4 @@ export interface ThemeBundle {
  *
  * @see {@link useTokens}
  */
-export type SemanticTokens = ThemeTokensV2['semantic'];
+export type SemanticTokens = ThemeTokens['semantic'];

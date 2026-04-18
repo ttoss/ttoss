@@ -201,15 +201,15 @@ describe('validateBreakpoints — warnings', () => {
 
 describe('validateBreakpoints — production bundles', () => {
   // Breakpoints are core tokens — invariant across modes.
-  // The alternate semantic override does not reach core.breakpoint.
+  // The alternate semantic override does not reach core.breakpoints.
   describe('default', () => {
     const breakpoints = Object.fromEntries(
       Object.entries(themeFlatToTest)
         .filter(([key]) => {
-          return key.startsWith('core.breakpoint.');
+          return key.startsWith('core.breakpoints.');
         })
         .map(([key, value]) => {
-          return [key.replace('core.breakpoint.', ''), String(value)];
+          return [key.replace('core.breakpoints.', ''), String(value)];
         })
     );
 

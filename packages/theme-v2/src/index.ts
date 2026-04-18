@@ -21,5 +21,5 @@ export type {
   DeepPartial,
   ModeOverride,
   ThemeBundle,
-  ThemeTokensV2,
+  ThemeTokens,
 } from './Types';

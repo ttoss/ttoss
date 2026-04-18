@@ -4,7 +4,11 @@
  * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import {
+  bruttalFixtures,
+  themeAltFlatToTest,
+  themeFlatToTest,
+} from '../../../helpers/theme';
 
 // ---------------------------------------------------------------------------
 // WCAG 2.1 contrast utilities (inlined — no external dependency)
@@ -59,9 +63,7 @@ const ALLOWED_ROLES: Readonly<Record<string, ReadonlyArray<string>>> = {
   input: ['primary', 'secondary', 'muted', 'positive', 'caution', 'negative'],
   navigation: ['primary', 'secondary', 'accent', 'muted'],
   feedback: ['primary', 'muted', 'positive', 'caution', 'negative'],
-  guidance: ['primary', 'secondary', 'accent', 'muted', 'caution'],
-  discovery: ['primary', 'secondary', 'accent', 'muted'],
-  content: [
+  informational: [
     'primary',
     'secondary',
     'accent',
@@ -72,6 +74,8 @@ const ALLOWED_ROLES: Readonly<Record<string, ReadonlyArray<string>>> = {
   ],
 };
 
+// droptarget was promoted to BaseColorStates (FSL Lexicon §7 — general FSL State).
+// Any UX context accepting drag-and-drop may use it without needing a context-specific override.
 const BASE_STATES = new Set([
   'default',
   'hover',
@@ -79,16 +83,17 @@ const BASE_STATES = new Set([
   'focused',
   'disabled',
   'selected',
+  'droptarget',
 ]);
 
+// expanded was added to ActionColorStates — Action components (disclosure triggers,
+// menu anchors, split buttons) communicate the open/closed state visually.
 const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
-  action: ['pressed'],
+  action: ['pressed', 'expanded'],
   input: ['checked', 'indeterminate', 'pressed', 'expanded'],
   navigation: ['current', 'visited', 'expanded'],
   feedback: [],
-  guidance: [],
-  discovery: ['expanded', 'droptarget'],
-  content: ['visited'],
+  informational: ['visited'],
 };
 
 // ---------------------------------------------------------------------------
@@ -99,7 +104,16 @@ const bundleEntries: ReadonlyArray<{
   label: string;
   base: Record<string, string | number>;
   alt?: Record<string, string | number>;
-}> = [{ label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest }];
+  /**
+   * Known `{ux}.{role}.{state}` contexts whose border falls below AA Large
+   * against its adjacent background by design. When omitted, the default
+   * inventory is used.
+   */
+  knownBorderViolations?: ReadonlySet<string>;
+}> = [
+  { label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest },
+  { label: 'bruttal', base: bruttalFixtures.base, alt: bruttalFixtures.alt },
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -256,6 +270,40 @@ describe('Semantic color grammar — state restrictions per context', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Structural coverage — every ux→role pair in ALLOWED_ROLES must be realized
+//
+// Prevents silent gaps: if a new role is added to ALLOWED_ROLES but no tokens
+// are defined for it, the grammar drifts out of sync with the theme. This
+// invariant scales to any future bundle without manual enumeration.
+// ---------------------------------------------------------------------------
+
+describe('Semantic color grammar — ux→role coverage', () => {
+  for (const { label, base } of bundleEntries) {
+    describe(label, () => {
+      test('base: every ALLOWED_ROLES pair has at least one token defined', () => {
+        const realized = new Set<string>();
+        for (const key of Object.keys(base)) {
+          const parsed = parseSemanticColorKey(key);
+          if (!parsed) continue;
+          realized.add(`${parsed.ux}.${parsed.role}`);
+        }
+
+        const missing: string[] = [];
+        for (const [ux, roles] of Object.entries(ALLOWED_ROLES)) {
+          for (const role of roles) {
+            if (!realized.has(`${ux}.${role}`)) {
+              missing.push(`${ux}.${role}`);
+            }
+          }
+        }
+
+        expect(missing).toEqual([]);
+      });
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Error #3 (text pairing) + Error #4: text vs background contrast
 //
 // Required Pairing #1: *.text.* ≥ 4.5:1 against *.background.* (normal text)
@@ -328,33 +376,162 @@ describe('Color contrast — text vs background', () => {
 //
 // Required Pairing #2: *.border.* ≥ 3:1 against the adjacent background.
 //
-// NOTE: The current theme includes separator and decorative borders (e.g.,
-// content.*.border, action.*.border) that are intentionally below 3:1 against
-// same-surface backgrounds. Strict per-pair enforcement would fail today.
-// This regression guard counts violations so that no NEW violation is
-// introduced. Decrease KNOWN_BORDER_CONTRAST_VIOLATIONS as tokens are fixed,
-// then replace this block with test.each once the count reaches zero.
+// Rather than a single numeric baseline (which is a license to drift), the
+// guard is an explicit inventory of the `{ux}.{role}.{state}` pairs that are
+// intentionally below threshold. Any delta — new violation OR a resolved one
+// not yet removed from the inventory — fails the test and forces an explicit
+// decision.
+//
+// The inventory reflects four design patterns:
+//   (a) Solid filled buttons (action.primary/negative/accent) where
+//       border == background by design;
+//   (b) Ghost/muted buttons (action.muted/secondary) with subtle borders;
+//   (c) Informational / feedback surfaces where the border is a decorative
+//       separator deliberately below the interactive-border threshold;
+//   (d) Input / navigation resting states with intentionally soft borders.
 // ---------------------------------------------------------------------------
 
-const KNOWN_BORDER_CONTRAST_VIOLATIONS = 22; // measured 2026-04-02
+/** Known `{ux}.{role}.{state}` contexts whose border falls below AA Large against
+ *  its adjacent background by design. Sorted alphabetically for diff stability. */
+const KNOWN_BORDER_CONTRAST_VIOLATIONS: ReadonlySet<string> = new Set([
+  // action — solid and subtle variants
+  'action.accent.active',
+  'action.accent.default',
+  'action.accent.disabled',
+  'action.accent.expanded',
+  'action.accent.focused',
+  'action.accent.hover',
+  'action.accent.pressed',
+  'action.accent.selected',
+  'action.muted.active',
+  'action.muted.default',
+  'action.muted.disabled',
+  'action.muted.hover',
+  'action.muted.pressed',
+  'action.negative.active',
+  'action.negative.default',
+  'action.negative.disabled',
+  'action.negative.expanded',
+  'action.negative.focused',
+  'action.negative.hover',
+  'action.negative.pressed',
+  'action.negative.selected',
+  'action.primary.active',
+  'action.primary.default',
+  'action.primary.disabled',
+  'action.primary.expanded',
+  'action.primary.hover',
+  'action.primary.pressed',
+  'action.primary.selected',
+  'action.secondary.active',
+  'action.secondary.default',
+  'action.secondary.disabled',
+  'action.secondary.hover',
+  'action.secondary.pressed',
+  'action.secondary.selected',
+  // feedback — decorative separators
+  'feedback.caution.default',
+  'feedback.muted.default',
+  'feedback.positive.default',
+  'feedback.primary.default',
+  // informational — content-surface separators
+  'informational.accent.disabled',
+  'informational.accent.selected',
+  'informational.caution.default',
+  'informational.caution.disabled',
+  'informational.muted.default',
+  'informational.muted.hover',
+  'informational.negative.disabled',
+  'informational.positive.default',
+  'informational.positive.disabled',
+  'informational.primary.active',
+  'informational.primary.default',
+  'informational.primary.disabled',
+  'informational.primary.droptarget',
+  'informational.primary.hover',
+  'informational.primary.selected',
+  'informational.secondary.active',
+  'informational.secondary.default',
+  'informational.secondary.disabled',
+  'informational.secondary.hover',
+  'informational.secondary.selected',
+  // input — soft resting/disabled borders
+  'input.caution.default',
+  'input.caution.disabled',
+  'input.caution.indeterminate',
+  'input.muted.checked',
+  'input.muted.default',
+  'input.muted.disabled',
+  'input.muted.hover',
+  'input.muted.indeterminate',
+  'input.negative.disabled',
+  'input.negative.indeterminate',
+  'input.positive.default',
+  'input.positive.disabled',
+  'input.positive.indeterminate',
+  'input.primary.checked',
+  'input.primary.default',
+  'input.primary.disabled',
+  'input.primary.indeterminate',
+  'input.secondary.checked',
+  'input.secondary.default',
+  'input.secondary.disabled',
+  'input.secondary.hover',
+  'input.secondary.indeterminate',
+  'input.secondary.pressed',
+  // navigation — subtle nav borders
+  'navigation.accent.current',
+  'navigation.accent.disabled',
+  'navigation.accent.selected',
+  'navigation.muted.active',
+  'navigation.muted.default',
+  'navigation.muted.disabled',
+  'navigation.muted.hover',
+  'navigation.primary.default',
+  'navigation.secondary.active',
+  'navigation.secondary.default',
+  'navigation.secondary.disabled',
+  'navigation.secondary.hover',
+]);
 
 describe('Color contrast — border vs background', () => {
-  for (const { label, base } of bundleEntries) {
+  for (const entry of bundleEntries) {
+    const { label, base } = entry;
+    const inventory =
+      entry.knownBorderViolations ?? KNOWN_BORDER_CONTRAST_VIOLATIONS;
     describe(label, () => {
-      test('base: no new border/bg violations beyond known baseline', () => {
+      test('base: border/bg violations match the documented inventory exactly', () => {
         // Error #3 (border/non-text pairing): *.border.* ≥ 3:1 against adjacent *.background.*
         const pairs = extractBorderBackgroundPairs(base);
-        const violations = pairs.filter(({ borderPath, bgPath }) => {
-          const ratio = getContrastRatio(
-            String(base[borderPath]),
-            String(base[bgPath])
-          );
-          return ratio !== null && ratio < WCAG.AA_LARGE;
-        });
-
-        expect(violations.length).toBeLessThanOrEqual(
-          KNOWN_BORDER_CONTRAST_VIOLATIONS
+        const observed = new Set(
+          pairs
+            .filter(({ borderPath, bgPath }) => {
+              const ratio = getContrastRatio(
+                String(base[borderPath]),
+                String(base[bgPath])
+              );
+              return ratio !== null && ratio < WCAG.AA_LARGE;
+            })
+            .map((v) => {
+              return v.context;
+            })
         );
+
+        const added = [...observed]
+          .filter((c) => {
+            return !inventory.has(c);
+          })
+          .sort();
+        const resolved = [...inventory]
+          .filter((c) => {
+            return !observed.has(c);
+          })
+          .sort();
+
+        // New violations: a regression — require design review or fix.
+        // Resolved violations: progress — remove the entry from the inventory
+        // above to lock in the improvement.
+        expect({ added, resolved }).toEqual({ added: [], resolved: [] });
       });
     });
   }
@@ -449,8 +626,8 @@ describe('Color contrast — state distinguishability', () => {
 //
 // Whether two roles sharing a color in the same ux/dimension/state is a
 // problem depends on design intent metadata that is not present in the token
-// dictionary. For example, content.primary.border.default and
-// content.secondary.border.default both mapping to neutral.200 may be a
+// dictionary. For example, informational.primary.border.default and
+// informational.secondary.border.default both mapping to neutral.200 may be a
 // deliberate choice for visual consistency. Automating this would produce
 // false positives for intentional shared tones. Validate through design
 // review rather than automated testing.

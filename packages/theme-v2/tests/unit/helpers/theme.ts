@@ -5,6 +5,8 @@
 import { buildTheme, createTheme } from '../../../src/createTheme';
 import { toFlatTokens } from '../../../src/css';
 import { withDataviz } from '../../../src/dataviz/withDataviz';
+import { bruttal } from '../../../src/themes/bruttal';
+import type { ThemeBundle } from '../../../src/Types';
 
 /** Theme under test — default bundle extended with dataviz. */
 export const themeToTest = withDataviz(createTheme());
@@ -21,3 +23,29 @@ export const themeAltFlatToTest = themeToTest.alternate
       })
     )
   : undefined;
+
+/**
+ * Flattens a theme bundle into base + optional alternate flat-token records.
+ * Used by cross-theme contrast tests that iterate over every bundle.
+ */
+export const toBundleFixtures = (
+  bundle: ThemeBundle
+): {
+  base: Record<string, string | number>;
+  alt?: Record<string, string | number>;
+} => {
+  return {
+    base: toFlatTokens(bundle.base),
+    alt: bundle.alternate
+      ? toFlatTokens(
+          buildTheme({
+            base: bundle.base,
+            overrides: { semantic: bundle.alternate.semantic },
+          })
+        )
+      : undefined,
+  };
+};
+
+/** Pre-resolved flat tokens for the bruttal theme. */
+export const bruttalFixtures = toBundleFixtures(bruttal);

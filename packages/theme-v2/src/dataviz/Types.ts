@@ -1,20 +1,28 @@
 /* ==========================================================================
- * ttoss Design Tokens v2 — Data Visualization Extension Types
+ * ttoss Design Tokens — Data Visualization Extension Types
+ * FSL Layer 4 Extension: Semantic Token Projection — Dataviz Domain
  *
- * Extends the Design Tokens v2 model with a controlled semantic layer for
- * analytical visualization: charts, dashboards, and geospatial overlays.
+ * Controlled domain extension of the Semantic Token Projection (layer 4).
+ * Governed by the same core/semantic separation contract as the foundation:
+ *   - Components consume only semantic.dataviz.* tokens
+ *   - core.dataviz.* is never consumed directly by UI code
+ *   - This extension follows FSL Structural Language §4.2 (controlled extensions)
+ *     and §3.6 (projections must not define incompatible vocabulary)
+ *
+ * FSL architectural grounding:
+ *   - dataviz does not map to a single FSL Entity Kind
+ *   - it is a domain-specific projection for analytical visualization patterns
+ *   - core.colors feeds semantic.dataviz.color.* (no separate dataviz palette)
+ *   - core.dataviz contains only non-color encoding primitives
  *
  * Architecture:
- *
  *   core.colors     → semantic.dataviz.color.*
  *   core.dataviz    → semantic.dataviz.encoding.* / geo.*
  *   semantic.dataviz → components / patterns
  *
- * Color tokens in semantic.dataviz reference core.colors.* directly.
- * core.dataviz contains only non-color encoding primitives.
- *
- * Token path reference:
- * @see dataviz-model.md, dataviz-colors.md, dataviz-encodings.md
+ * @see /docs/design/design-system/fsl/fsl-lexicon — FSL Lexicon (layer 1)
+ * @see /docs/design/design-system/fsl/fsl-structural-language — FSL Structural Language (layer 2)
+ * @see /docs/design/design-system/design-tokens/model — Token Model (layer 4 foundation)
  * ========================================================================== */
 
 import type { NumericValue, RawValue, TokenRef } from '../Types';
@@ -32,15 +40,15 @@ type Scale1To6 = 1 | 2 | 3 | 4 | 5 | 6;
 // ---------------------------------------------------------------------------
 
 /**
- * Core non-color encoding primitives — value-only.
+ * Core data visualization token tree.
  *
- * Paths:
- *   core.dataviz.shape.1..8
- *   core.dataviz.pattern.1..6
- *   core.dataviz.stroke.solid / dashed / dotted
- *   core.dataviz.opacity.context / muted / uncertainty
+ * Contains non-color encoding primitives only.
+ * Color tokens are sourced directly from `core.colors.*` — no separate dataviz
+ * color palette is needed. Semantic dataviz color tokens reference `core.colors.*`.
+ *
+ * Placed at `theme.core.dataviz` — optional extension of `ThemeTokens`.
  */
-export interface CoreDatavizEncoding {
+export interface CoreDataviz {
   /** Mark shapes for categorical differentiation (e.g. 'circle', 'square'). */
   shape: Record<Scale1To8, RawValue>;
   /** Fill patterns for area/region differentiation (e.g. 'diagonal-stripes'). */
@@ -63,22 +71,6 @@ export interface CoreDatavizEncoding {
     /** Visual signal of estimated or uncertain data. */
     uncertainty: NumericValue;
   };
-}
-
-/**
- * Full core data visualization token tree.
- *
- * Contains non-color encoding primitives only.
- * Color tokens are sourced directly from `core.colors.*` — no separate dataviz
- * color palette is needed. Semantic dataviz color tokens reference `core.colors.*`.
- *
- * Placed at `theme.core.dataviz` — optional extension of `ThemeTokensV2`.
- */
-export interface CoreDataviz {
-  shape: CoreDatavizEncoding['shape'];
-  pattern: CoreDatavizEncoding['pattern'];
-  stroke: CoreDatavizEncoding['stroke'];
-  opacity: CoreDatavizEncoding['opacity'];
 }
 
 // ---------------------------------------------------------------------------
@@ -147,7 +139,7 @@ export interface SemanticDatavizColor {
     /** Value is withheld for confidentiality or publication rules. */
     suppressed: TokenRef;
     /** Value is structurally absent (not measured or not applicable). */
-    'not-applicable': TokenRef;
+    na: TokenRef;
   };
 }
 
@@ -212,7 +204,7 @@ export interface SemanticDatavizGeo {
 /**
  * Full semantic data visualization token tree.
  *
- * Placed at `theme.semantic.dataviz` — optional extension of `ThemeTokensV2`.
+ * Placed at `theme.semantic.dataviz` — optional extension of `ThemeTokens`.
  * This is the **public API** of the Data Visualization extension.
  * Components and patterns must consume only these tokens.
  */

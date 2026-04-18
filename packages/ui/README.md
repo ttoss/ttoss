@@ -115,6 +115,8 @@ export const customTheme: Theme = {
 - Component styles are controlled through theme configuration
 - No need for additional setup or wrappers
 - Full access to Chakra's [component theming API](https://chakra-ui.com/docs/styled-system/component-style)
+- Built-in semantic slot recipes are provided for `accordion`, `checkbox`, `switch`, `radioGroup`, `select`, `steps`, `progress`, and `toast`
+- Feedback recipes (`progress` and `toast`) expose semantic `evaluation` variants: `primary`, `positive`, `caution`, and `negative`
 
 ## Available Components
 

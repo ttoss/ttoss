@@ -1,5 +1,6 @@
 ---
 title: Token Model
+sidebar_position: 3
 ---
 
 # Token Model
@@ -23,15 +24,33 @@ Separate **value** from **meaning**.
 
 > Semantic tokens are the public API of the system.
 
+### The flow in one picture
+
+```text
+   raw value          core token                   semantic token                   component
+   ─────────          ──────────                   ──────────────                   ─────────
+   "#0F172A"   ──►    core.colors.neutral.1000 ──► semantic.colors.action           <Button />
+                                                     .primary.background.default
+
+   only in theme      never consumed by            the contract surface             consumes semantic
+   sources / files    components                   components depend on             tokens only
+```
+
+- **Left to right** — values become meaning, meaning becomes UI.
+- **Right to left** — a theme change (light → dark, brand A → brand B) touches only the `semantic → core` arrow; the component does not change.
+- **Each layer has one job** and is not allowed to do the next one's job. This is what the invariants below enforce.
+
 ## Architecture
 
 ```text
-core.foundation     → semantic.foundation
-core.dataviz        → semantic.dataviz
+core.{family}       → semantic.{family}   (foundation families: colors, font, spacing, sizing, radii, border, opacity, motion, z-index, elevation)
+core.dataviz        → semantic.dataviz    (extension: analytical visualization)
 semantic.*          → components
 components          → patterns
 patterns            → applications
 ```
+
+> `core.{family}` is shorthand for the foundation families in `ThemeTokens.core`. There is no `foundation` key in the type contract — each family is a sibling at that level.
 
 ### Layer roles
 
@@ -58,6 +77,21 @@ Applications must **never**:
 - use semantic tokens as a shortcut to bypass existing components or patterns
 
 > If an application repeatedly consumes the same semantic tokens in the same pattern, that pattern should become a component or a pattern — not remain as application-level token usage.
+
+---
+
+## Semantic Color Grammar — FSL Projection
+
+The semantic color token grammar `{ux}.{role}.{dimension}.{state}` is a formal FSL Structural Language §17.1 projection that renames and subsets FSL dimensions. The mapping is normative:
+
+| Token grammar axis | FSL dimension   | Notes                                                                                                                                                                                                                                                  |
+| :----------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ux`               | Entity Kind     | Projection-scoped subset of FSL Entity Kinds: `action`, `input`, `navigation`, `feedback`, `informational`. `Collection`/`Overlay`/`Structure` all project to `informational`; `Selection` projects to `input`; `Disclosure` projects to `navigation`. |
+| `role`             | Evaluation      | Projection-scoped name for the FSL `Evaluation` dimension. Values are identical (`primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative`).                                                                                        |
+| `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                                                                                  |
+| `state`            | State           | Values identical, no renaming.                                                                                                                                                                                                                         |
+
+For the full Entity Kind → UX context mapping (covering all nine FSL Entity Kinds), see the [Colors family](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
 
 ---
 
@@ -144,7 +178,32 @@ What must remain constant is the architecture:
 
 **Infrastructure-only families.** Some families do not express durable UI meaning and therefore do not define a semantic layer. They export values directly as adaptation infrastructure — for example, [breakpoints](./02-families/breakpoints.md) define viewport thresholds consumed by layout systems, not semantic intent consumed by components. This is architecturally valid when the family serves as operational infrastructure rather than design meaning.
 
-### 8. Tokens define meaning, not implementation
+### 8. RawValue exceptions are rare, intentional, and registered
+
+Semantic tokens must reference core tokens. A `RawValue` is permitted only when a `TokenRef` is technically impossible (e.g., `clamp()` expressions mixing units from multiple token paths, or CSS units with no core token equivalent such as `ch`).
+
+Approval criteria — a semantic `RawValue` must satisfy all three:
+
+1. **Technical necessity**: the value cannot be expressed as a single `{token.path}` reference.
+2. **Local justification**: a JSDoc comment on the token explains the necessity.
+3. **Audit registration**: the token is listed in the inventory below.
+
+**Approved RawValue inventory** (complete list as of this writing):
+
+| Token path                                    | Reason                                                                                                                        |
+| :-------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| `semantic.spacing.gutter.page`                | `clamp()` expression embedding multiple token refs — no single `TokenRef` can express responsive fluid gutters                |
+| `semantic.spacing.gutter.section`             | same as above                                                                                                                 |
+| `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference |
+| `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                             |
+
+Any new `RawValue` in the semantic layer requires an entry in this table before merging.
+
+### 9. ThemeTokens plural keys are intentional
+
+`ThemeTokens` uses `colors`, `radii`, and `breakpoints` (plural) alongside singular family names. These three are genuinely collection-typed families — each names a set of discrete, enumerable members rather than a unitary concept. The naming is an explicit convention, not an inconsistency. No migration to singular is planned.
+
+### 10. Tokens define meaning, not implementation
 
 Tokens do not define:
 
@@ -189,9 +248,7 @@ The system has a global foundation and a controlled extension model.
 
 ### Foundation
 
-`core.foundation → semantic.foundation`
-
-The foundation contains the general UI token families of the system.
+The foundation contains the general UI token families of the system, expressed as `core.{family} → semantic.{family}` pairs. There is no physical `foundation` key in `ThemeTokens` — `core.foundation` is conceptual shorthand for the full set of non-extension families.
 
 ### Extension
 

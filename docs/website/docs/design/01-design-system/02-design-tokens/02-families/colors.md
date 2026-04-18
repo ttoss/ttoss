@@ -25,6 +25,24 @@ Components must always consume **semantic colors**, never core colors directly.
 
 ---
 
+## UX contexts in 60 seconds
+
+Every semantic color token starts with a **UX context** — a plain description of _what kind of UI_ the color is for. There are five, and they cover the whole surface area of a UI:
+
+| UX context      | Use it for                                                        | Typical components                           |
+| :-------------- | :---------------------------------------------------------------- | :------------------------------------------- |
+| `action`        | anything the user **triggers**                                    | buttons, toggles, menu items, action icons   |
+| `input`         | anything the user **enters or selects data into**                 | text fields, selects, checkboxes, radios     |
+| `navigation`    | anything that **moves the user** between views or sections        | links, tabs, breadcrumbs, pagination         |
+| `feedback`      | surfaces that **report the outcome** of an action or system event | toasts, alerts, banners, inline validation   |
+| `informational` | surfaces that **display content** without being interactive       | body text, page backgrounds, cards, dividers |
+
+Picking a context is usually trivial: _"is the user about to act, type, move, hear back, or just read?"_
+
+Advanced — FSL projection: these five contexts are a formal projection of the nine FSL Entity Kinds (`Collection`, `Overlay`, and `Structure` all project to `informational`; `Selection` projects to `input`; `Disclosure` projects to `navigation`). The projection is normative and lives in [Token Model — Semantic Color Grammar](../model.md#semantic-color-grammar--fsl-projection). Most component authors never need to read the FSL layer; the table above is enough.
+
+---
+
 ## Scope: Colors vs Other Families
 
 Colors define **meaning and visual contrast**.
@@ -74,14 +92,19 @@ core.colors.{family}.{scale}
 
 #### 1. Brand scale
 
-Brand defines the identity color family of the theme.
+Brand defines the identity color family of the theme. The scale provides enough depth for light and dark modes to remap semantic references without recreating palette values.
 
 Examples:
 
+- `core.colors.brand.50`
 - `core.colors.brand.100`
+- `core.colors.brand.200`
 - `core.colors.brand.300`
+- `core.colors.brand.400`
 - `core.colors.brand.500`
+- `core.colors.brand.600`
 - `core.colors.brand.700`
+- `core.colors.brand.800`
 - `core.colors.brand.900`
 
 > `brand` is a palette family, not a semantic role.
@@ -98,24 +121,27 @@ Examples:
 - `core.colors.neutral.100`
 - `core.colors.neutral.200`
 - `core.colors.neutral.300`
+- `core.colors.neutral.400`
 - `core.colors.neutral.500`
 - `core.colors.neutral.700`
 - `core.colors.neutral.900`
 - `core.colors.neutral.1000`
 
-> `neutral` is the zero-saturation anchor scale (greyscale/slate). It is the primary source for surfaces, text contrast, dividers, and subdued UI. The name `neutral` is a palette-layer convention, not a semantic role — functionally equivalent to "gray" in other design systems. Use step `0` for the white-end and step `1000` for the black-end.
+> `neutral` is the zero-saturation anchor scale (greyscale/slate). It is the primary source for surfaces, text contrast, dividers, and subdued UI. The name `neutral` is a palette-layer convention, not a semantic role — functionally equivalent to "gray" in other design systems. Step `0` is the white-end, step `1000` is the black-end, and step `500` is the canonical mid-tone. Themes may use any subset of steps; step `500` is always required as the midpoint anchor.
 
 #### 3. Hue scales
 
 Hue scales provide additional semantic mapping options.
 
-Examples:
+Examples (from the base theme):
 
 - `core.colors.red.100..900`
+- `core.colors.orange.100..900`
 - `core.colors.green.100..900`
 - `core.colors.yellow.100..900`
-- `core.colors.blue.100..900`
+- `core.colors.teal.100..900`
 - `core.colors.purple.100..900`
+- `core.colors.pink.100..900`
 
 Hue families are fully open — a theme decides which families it includes. No fixed set is required beyond `brand` and `neutral`. Add a hue family only when it is needed to support a concrete semantic or brand requirement.
 
@@ -152,6 +178,7 @@ const coreColors = {
       100: '#F1F5F9',
       200: '#E2E8F0',
       300: '#CBD5E1',
+      400: '#94A3B8',
       500: '#64748B',
       700: '#334155',
       900: '#0F172A',
@@ -211,8 +238,51 @@ Semantic colors answer:
 - `action.primary.text.default`
 - `input.negative.border.focused`
 - `navigation.primary.text.current`
-- `content.muted.text.default`
+- `informational.muted.text.default`
 - `feedback.positive.background.default`
+
+---
+
+## FSL Entity Kind Mapping
+
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This table is the normative mapping that the resolver uses to translate a `ComponentExpression.responsibility` → token UX context:
+
+| FSL Entity Kind | Token `ux` context | Notes                                                                                                             |
+| :-------------- | :----------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `Action`        | `action`           | explicit 1:1 mapping                                                                                              |
+| `Input`         | `input`            | explicit 1:1 mapping                                                                                              |
+| `Selection`     | `input`            | Selection components (checkbox, radio, picker) consume `input.*` tokens; no separate `selection` UX context       |
+| `Navigation`    | `navigation`       | explicit 1:1 mapping                                                                                              |
+| `Feedback`      | `feedback`         | explicit 1:1 mapping                                                                                              |
+| `Collection`    | `informational`    | Collection surfaces (menu, list, table) consume `informational.*` tokens for their structural coloring            |
+| `Overlay`       | `informational`    | Overlay surfaces (dialog, popover) consume `informational.*` tokens for their surface coloring                    |
+| `Disclosure`    | `navigation`       | Disclosure triggers (accordion, details) are typically coloured as `navigation.*` when acting as location anchors |
+| `Structure`     | `informational`    | Structural surfaces (panel, shell, frame) consume `informational.*` tokens                                        |
+
+The five UX contexts map 1:1 to FSL Entity Kinds (via projection — see [model.md](../model.md#semantic-color-grammar--fsl-projection)). Interaction-pattern groupings that do not correspond to an Entity Kind (e.g. tooltips or helper banners, search or filter widgets) are expressed through the existing Entity Kinds — typically `Overlay`/`Disclosure` for guidance and `Input` for discovery.
+
+---
+
+## Role Coverage
+
+Not every FSL Evaluation value is available in every UX context. The table below is the complete normative coverage matrix. Each absence is a deliberate design decision.
+
+| Evaluation value | `action` | `input` | `navigation` | `feedback` | `informational` |
+| :--------------- | :------: | :-----: | :----------: | :--------: | :-------------: |
+| `primary`        |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
+| `secondary`      |    ✓     |    ✓    |      ✓       |     —      |        ✓        |
+| `accent`         |    ✓     |    —    |      ✓       |     —      |        ✓        |
+| `muted`          |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
+| `positive`       |    —     |    ✓    |      —       |     ✓      |        ✓        |
+| `caution`        |    —     |    ✓    |      —       |     ✓      |        ✓        |
+| `negative`       |    ✓     |    ✓    |      —       |     ✓      |        ✓        |
+
+**Rationale for notable absences:**
+
+- `action.positive / action.caution` — Actions express risk through `negative` (destructive) and through `feedback.*` for outcomes. Positive/caution actions are communicated by adjacent feedback rather than the action's own color.
+- `navigation.positive / caution / negative` — Navigation items communicate location (`current`, `visited`), not health state. Status over a nav item is a pattern concern, not a foundation semantic.
+- `feedback.secondary / accent` — Feedback is direct: `primary` and `muted` cover the emphasis range. `positive`, `caution`, and `negative` cover the semantic range. `secondary` and `accent` have no stable meaning in a reactive status context.
+- `input.accent` — Form inputs use `primary` for the brand-influenced active state. `accent` creates ambiguity in the input hierarchy.
 
 ---
 
@@ -222,15 +292,13 @@ The foundation color system keeps a **small canonical registry**.
 
 ### UX level
 
-| `ux`         | Meaning                                             |
-| :----------- | :-------------------------------------------------- |
-| `action`     | Triggers actions or changes state                   |
-| `input`      | Data entry, selection, and form controls            |
-| `navigation` | Movement and orientation through the product        |
-| `feedback`   | Reactive system or user-result messages             |
-| `guidance`   | Preventive or instructional guidance                |
-| `discovery`  | Search, filter, refine, and exploratory interaction |
-| `content`    | Informational surfaces and readable content         |
+| `ux`            | Meaning                                      |
+| :-------------- | :------------------------------------------- |
+| `action`        | Triggers actions or changes state            |
+| `input`         | Data entry, selection, and form controls     |
+| `navigation`    | Movement and orientation through the product |
+| `feedback`      | Reactive system or user-result messages      |
+| `informational` | Informational surfaces and readable content  |
 
 > Keep this set stable.
 > Domain-specific semantics such as `social`, `commerce`, or `gamification` do **not** belong to the foundation by default.
@@ -288,17 +356,15 @@ The semantic grammar is stable, but not every combination is valid. The tables b
 
 ### UX, roles, and context-specific states
 
-| `ux`         | Allowed roles                                                                | Context-specific states                           |
-| :----------- | :--------------------------------------------------------------------------- | :------------------------------------------------ |
-| `action`     | `primary`, `secondary`, `accent`, `muted`, `negative`                        | `pressed`                                         |
-| `input`      | `primary`, `secondary`, `muted`, `positive`, `caution`, `negative`           | `checked`, `indeterminate`, `pressed`, `expanded` |
-| `navigation` | `primary`, `secondary`, `accent`, `muted`                                    | `current`, `visited`, `expanded`                  |
-| `feedback`   | `primary`, `muted`, `positive`, `caution`, `negative`                        | —                                                 |
-| `guidance`   | `primary`, `secondary`, `accent`, `muted`, `caution`                         | —                                                 |
-| `discovery`  | `primary`, `secondary`, `accent`, `muted`                                    | `expanded`, `droptarget`                          |
-| `content`    | `primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative` | `visited`                                         |
+| `ux`            | Allowed roles                                                                | Context-specific states                           |
+| :-------------- | :--------------------------------------------------------------------------- | :------------------------------------------------ |
+| `action`        | `primary`, `secondary`, `accent`, `muted`, `negative`                        | `pressed`, `expanded`                             |
+| `input`         | `primary`, `secondary`, `muted`, `positive`, `caution`, `negative`           | `checked`, `indeterminate`, `pressed`, `expanded` |
+| `navigation`    | `primary`, `secondary`, `accent`, `muted`                                    | `current`, `visited`, `expanded`                  |
+| `feedback`      | `primary`, `muted`, `positive`, `caution`, `negative`                        | —                                                 |
+| `informational` | `primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative` | `visited`                                         |
 
-> Context-specific states extend the base set available in every context: `default`, `hover`, `active`, `focused`, `disabled`, `selected`.
+> Context-specific states extend the base set available in every context: `default`, `hover`, `active`, `focused`, `disabled`, `selected`, `droptarget`. The `droptarget` base state applies wherever drag-and-drop drop targets are semantically valid (FSL Lexicon §7) — it is not restricted to a single UX context.
 
 ### Dimension expectations
 
@@ -350,8 +416,8 @@ A focus ring may combine:
 
 A raised card may combine:
 
-- surface color from `content.primary.background.default`
-- outline color from `content.muted.border.default`
+- surface color from `informational.primary.background.default`
+- outline color from `informational.muted.border.default`
 - shadow from `elevation.surface.raised`
 
 ---
@@ -398,16 +464,10 @@ A raised card may combine:
 4. **Is this reactive status or outcome?**
    → `feedback.*`
 
-5. **Is this preventive help or instruction?**
-   → `guidance.*`
+5. **Is this informational content or a content-carrying surface?**
+   → `informational.*`
 
-6. **Is this search/filter/refine/explore?**
-   → `discovery.*`
-
-7. **Is this informational content or a content surface?**
-   → `content.*`
-
-8. **Are you inventing a new top-level UX domain?**
+6. **Are you inventing a new top-level UX domain?**
    → solve above the foundation first; promote only through governance
 
 ---
@@ -421,7 +481,7 @@ A raised card may combine:
 | Input border at rest             | `input.primary.border.default`         |
 | Input border on focus            | `input.primary.border.focused`         |
 | Current nav item text            | `navigation.primary.text.current`      |
-| Muted body copy                  | `content.muted.text.default`           |
+| Muted body copy                  | `informational.muted.text.default`     |
 | Negative feedback surface        | `feedback.negative.background.default` |
 | Positive feedback text           | `feedback.positive.text.default`       |
 
@@ -449,7 +509,7 @@ const semanticColors = {
     },
   },
 
-  content: {
+  informational: {
     muted: {
       text: {
         default: '{core.colors.neutral.500}',

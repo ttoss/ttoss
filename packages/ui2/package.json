@@ -1,0 +1,56 @@
+{
+  "name": "@ttoss/ui2",
+  "version": "0.1.0",
+  "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/theme2 tokens.",
+  "license": "MIT",
+  "author": "ttoss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/ui2"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./model": "./src/model.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@ttoss/theme2": "workspace:^",
+    "react-aria-components": "^1.9.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "jest": "^30.3.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tsup": "^8.5.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "./model": {
+        "types": "./dist/model.d.ts",
+        "default": "./dist/esm/model.js"
+      }
+    },
+    "provenance": true
+  }
+}

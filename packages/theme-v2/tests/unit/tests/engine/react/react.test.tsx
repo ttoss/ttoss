@@ -168,6 +168,34 @@ describe('ThemeProvider prop reactivity', () => {
 
     expect(result.current.mode).toBe('light');
   });
+
+  test('themeId prop is reactive — updates data-tt-theme on change', () => {
+    let providerThemeId = 'alpha';
+
+    const Wrapper = ({ children }: { children: React.ReactNode }) => {
+      return (
+        <ThemeProvider themeId={providerThemeId} defaultMode="light">
+          {children}
+        </ThemeProvider>
+      );
+    };
+
+    const { rerender } = renderHook(
+      () => {
+        return null;
+      },
+      { wrapper: Wrapper }
+    );
+
+    expect(document.documentElement.getAttribute('data-tt-theme')).toBe(
+      'alpha'
+    );
+
+    providerThemeId = 'beta';
+    rerender();
+
+    expect(document.documentElement.getAttribute('data-tt-theme')).toBe('beta');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -235,10 +263,12 @@ describe('useTokens', () => {
       }
     );
 
-    // Dark mode remaps content.primary.background to a dark neutral
-    const bg = result.current.colors.content?.primary?.background?.default;
+    // Dark mode remaps informational.primary.background to a dark neutral
+    const bg =
+      result.current.colors.informational?.primary?.background?.default;
     expect(bg).not.toBe(
-      defaultBundle.base.semantic.colors.content?.primary?.background?.default
+      defaultBundle.base.semantic.colors.informational?.primary?.background
+        ?.default
     );
   });
 
@@ -298,20 +328,20 @@ describe('useTokens', () => {
     );
 
     const lightBg =
-      result.current.tokens.colors.content?.primary?.background?.default;
+      result.current.tokens.colors.informational?.primary?.background?.default;
 
     act(() => {
       result.current.theme.setMode('dark');
     });
     const darkBg =
-      result.current.tokens.colors.content?.primary?.background?.default;
+      result.current.tokens.colors.informational?.primary?.background?.default;
     expect(darkBg).not.toBe(lightBg);
 
     act(() => {
       result.current.theme.setMode('light');
     });
     const restoredBg =
-      result.current.tokens.colors.content?.primary?.background?.default;
+      result.current.tokens.colors.informational?.primary?.background?.default;
     expect(restoredBg).toBe(lightBg);
   });
 });

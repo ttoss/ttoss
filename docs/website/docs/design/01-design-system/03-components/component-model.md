@@ -4,54 +4,75 @@ title: Component Model
 
 # Component Model
 
-ttoss Components is built on the rule:
+The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
-> **a component has an identity, and an instance has a role in composition.**
+The central rule:
 
-This model is organized into **two categories**:
+> **A component has an immutable identity. An instance carries that identity into a composition.**
 
-- **Component Identity** — what the component is
-- **Composition Model** — how an instance participates in composition
+## FSL dimension mapping
 
-These categories are expressed through **three dimensions**:
+The model uses projection-scoped names for FSL dimensions (authorized by FSL Structural Language §17.1):
 
-- **Responsibility** — the component’s semantic identity
-- **Host** — the compositional structure where the instance participates
-- **Role** — what the instance does inside that host
+| FSL dimension    | Model name         | Notes                                                                                                                                                              |
+| :--------------- | :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity Kind      | **Responsibility** | Values identical                                                                                                                                                   |
+| Structural Role  | **Structure**      | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                    |
+| Composition Role | **Host.Role**      | Restructured as bi-level model; ActionSet renames `primaryAction→primary`, `secondaryAction→secondary`, `dismissAction→dismiss` — Host disambiguates, no collision |
+| Interaction Kind | **Interaction**    | Values identical; legal set constrained per Entity via `ENTITY_INTERACTION`; determines which States are valid                                                     |
+| Evaluation       | **Evaluation**     | Values identical                                                                                                                                                   |
+| Consequence      | **Consequence**    | Values identical                                                                                                                                                   |
+| State            | **State**          | Values identical; legal set constrained per Interaction via `INTERACTION_STATE`                                                                                    |
 
-That is the full model.
+## Responsibility → Token UX context mapping
 
-## The model
+The table below is the normative cross-projection mapping from FSL Entity Kind (Responsibility in this model) to the Semantic Token `ux` axis (layer 4). This mapping is the authoritative input for the resolver.
 
-A component is defined first by its **Responsibility**.
-When composition matters, an instance may then participate through a **Host** and a **Role**.
+| Responsibility | Token `ux` context | Notes                                                                             |
+| :------------- | :----------------- | :-------------------------------------------------------------------------------- |
+| **Action**     | `action`           | 1:1                                                                               |
+| **Input**      | `input`            | 1:1                                                                               |
+| **Selection**  | `input`            | Selection components consume `input.*` tokens; no separate `selection` UX context |
+| **Navigation** | `navigation`       | 1:1                                                                               |
+| **Feedback**   | `feedback`         | 1:1                                                                               |
+| **Collection** | `informational`    | Collection surfaces consume `informational.*` for structural coloring             |
+| **Overlay**    | `informational`    | Overlay surfaces consume `informational.*` for surface coloring                   |
+| **Disclosure** | `navigation`       | Disclosure triggers colored as `navigation.*` when acting as location anchors     |
+| **Structure**  | `informational`    | Structural surfaces consume `informational.*`                                     |
 
-In practice:
+For the full `ux` role and state grammar, see the [Colors family — FSL Entity Kind Mapping](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
 
-- **Component Identity** → `Responsibility`
-- **Composition Model** → `Host.Role`
+## ComponentExpression
 
-This keeps the public component model small and stable while still allowing ttoss to express real interface composition.
+The model is expressed as a `ComponentExpression` — the typed semantic expression that the resolver consumes:
 
-### Responsibility
+```ts
+type ComponentExpression = {
+  responsibility: Responsibility; // required — what the component IS
+  interaction?: Interaction; // optional — interaction kind expressed by the component
+  composition?: HostRole; // optional — { host, role } pair, type-safe
+  evaluation?: Evaluation; // optional — emphatic meaning
+  consequence?: Consequence; // optional — risk profile
+};
+```
 
-It defines the component’s semantic identity and the type of behavior it represents in the system.
+All dimensions are defined in `taxonomy.ts` and derived from FSL core vocabulary.
 
-It answers:
+> **Code types:** The implementation exposes two artifacts from `semantics/`:
+>
+> - `ComponentMeta<E>` — the identity type every component declares (`entity`, `structure`, `interaction?`).
+> - `SemanticExpression` — the runtime expression type used by the resolver (`entity`, `structure`, `interaction?`, `evaluation?`, `consequence?`).
 
-- _What is this component?_
+---
 
-Every public ttoss component must have exactly **one** Responsibility.
-Because of that, a component cannot change its Responsibility depending on context, visual style, or usage. If the semantic responsibility changes, then it is not the same component.
+## Responsibility
 
-In other words:
+Responsibility answers: _What is this component?_
 
-> If a different Responsibility is required, a different component must exist.
-
-This rule keeps the system predictable for both humans and AI systems. Responsibility determines how tokens are resolved, how components compose, and what behavior is expected from the component. Allowing a component to change its Responsibility would break that contract.
+Every component has exactly one Responsibility. It cannot change based on context, variant, or usage. If a different Responsibility is required, a different component must exist.
 
 | Responsibility | Use for                                             | Typical examples                      |
-| -------------- | --------------------------------------------------- | ------------------------------------- |
+| :------------- | :-------------------------------------------------- | :------------------------------------ |
 | **Action**     | triggering actions or commands                      | button, action button, icon button    |
 | **Input**      | direct user input                                   | text field, text area, search field   |
 | **Selection**  | choosing one or more options                        | checkbox, radio group, select, picker |
@@ -62,11 +83,17 @@ This rule keeps the system predictable for both humans and AI systems. Responsib
 | **Feedback**   | communicating state, status, or outcome             | alert, banner, toast, progress        |
 | **Structure**  | organizing interface structure and support surfaces | panel, section, shell, frame          |
 
-### Composition Model
+---
 
-A **Host** defines the compositional structure. It answers:
+## Composition Model
 
-- _What kind of composition is this?_
+Composition answers: _Where does this instance participate, and in what role?_
+
+When composition matters, an instance participates through a **Host** and a **Role**. When absent, the component resolves tokens from its Responsibility default.
+
+### Host
+
+A Host defines the compositional structure.
 
 | Host             | Use for                                        |
 | :--------------- | :--------------------------------------------- |
@@ -75,16 +102,9 @@ A **Host** defines the compositional structure. It answers:
 | **ItemFrame**    | internal structure of items in collections     |
 | **SurfaceFrame** | structured surfaces and their internal regions |
 
-A **Role** defines what an instance does inside a Host. It answers:
+### Role
 
-- _What is this instance doing here?_
-
-> Use `Host.Role` only when structured composition matters.
-> When `Host.Role` is absent (standalone components), the component resolves tokens from its Responsibility default.
-
-Composition refines that default through `Host.Role`.
-
-#### Summary Table
+A Role defines what the instance does inside its Host.
 
 | Host             | Role                | Use for                                  |
 | :--------------- | :------------------ | :--------------------------------------- |
@@ -110,161 +130,225 @@ Composition refines that default through `Host.Role`.
 
 ---
 
+## Evaluation
+
+Evaluation answers: _What emphatic or evaluative meaning does this expression carry?_
+
+Evaluation is optional. When omitted, it is inferred by the resolver from the Responsibility and composition context. Add it explicitly only when the default inference is wrong.
+
+| Value         | Use for                              |
+| :------------ | :----------------------------------- |
+| **primary**   | main intended emphasis               |
+| **secondary** | subordinate but still intentional    |
+| **accent**    | deliberately differentiated emphasis |
+| **muted**     | de-emphasized but still meaningful   |
+| **positive**  | affirming, successful, or favorable  |
+| **caution**   | warning or careful-attention signal  |
+| **negative**  | harmful, erroneous, or adverse       |
+
+---
+
+## Consequence
+
+Consequence answers: _What user-facing consequence or risk profile does this carry?_
+
+Consequence is optional. When omitted, `neutral` is implied. Distinct from Evaluation: `negative` is evaluative meaning; `destructive` is outcome risk — both may appear simultaneously.
+
+| Value                   | Use for                                       |
+| :---------------------- | :-------------------------------------------- |
+| **neutral**             | no special risk profile                       |
+| **reversible**          | effect can be undone                          |
+| **committing**          | moves to a more committed state               |
+| **destructive**         | causes deletion or materially harmful loss    |
+| **interruptive**        | interrupts flow and demands handling          |
+| **recoverable**         | adverse path exists but recovery is supported |
+| **safeDefaultRequired** | the safer path must be privileged             |
+
+---
+
+## Interaction
+
+Interaction answers: _How does this component interact with the user?_
+
+Interaction is optional. Components with no interactive behavior (`Structure` surfaces, non-dismissable `Feedback`, `Collection` containers) omit it. When present, Interaction is constrained to what is legal for the component's Responsibility, and it determines which States are valid.
+
+| Interaction         | Use for                                               | Legal Responsibilities |
+| :------------------ | :---------------------------------------------------- | :--------------------- |
+| **command**         | executing a command without a confirmation step       | Action                 |
+| **confirm**         | executing with an explicit confirmation step          | Action                 |
+| **dismiss**         | leaving or closing a surface without committing       | Action, Feedback       |
+| **entry.text**      | free-text user entry                                  | Input                  |
+| **entry.value**     | structured value entry (number, date, amount, etc.)   | Input                  |
+| **select.single**   | choosing exactly one option from a set                | Selection              |
+| **select.multi**    | choosing one or more options from a set               | Selection              |
+| **toggle.binary**   | switching between two exclusive states                | Selection              |
+| **toggle.tristate** | switching across three states (e.g. indeterminate)    | Selection              |
+| **navigate.link**   | navigating to a destination (anchor / link semantics) | Navigation             |
+| **navigate.step**   | moving through an ordered step sequence               | Navigation             |
+| **disclose.toggle** | revealing or hiding content in place                  | Disclosure             |
+
+---
+
+## State
+
+State answers: _What interactional or semantic condition is currently active?_
+
+State is not a prop passed at the expression level — it is the CSS selector layer. States are legal only for specific Interactions:
+
+| State             | Meaning                                        |
+| :---------------- | :--------------------------------------------- |
+| **default**       | No special condition active                    |
+| **hover**         | Pointer is over the element                    |
+| **active**        | Element is being activated / pressed           |
+| **focused**       | Element has keyboard focus                     |
+| **disabled**      | Element is not interactive                     |
+| **selected**      | Item is selected within a collection           |
+| **pressed**       | Toggle is in its on-press state                |
+| **checked**       | Checkbox-like element is checked               |
+| **indeterminate** | Mixed or partial selection state               |
+| **expanded**      | Disclosure or select is open                   |
+| **current**       | Navigation item matches the current location   |
+| **visited**       | Link has been previously visited               |
+| **droptarget**    | Element is a valid target for a drag operation |
+
+Not all states are legal for every Interaction. For example, `checked` is only valid for selection interactions; `visited` only for `navigate.link`. Legality is enforced at build time via `INTERACTION_STATE` in `taxonomy.ts`.
+
+---
+
 ## How to use the model
 
-Use the model in this order:
+#### 1. Set Responsibility
 
-#### 1. Choose the Responsibility
-
-Start by classifying the component itself. Ask:
-
-- _What is this component?_
-
-Examples:
+Classify the component itself.
 
 - `Button` → `Action`
 - `SearchField` → `Input`
 - `Menu` → `Collection`
 - `Dialog` → `Overlay`
 
-#### 2. Add Host and Role when composition matters
+#### 2. Set Interaction when the component is interactive
 
-If the instance participates in a structured composition, assign a Host and a Role. Ask:
+Most interactive components carry an Interaction. Non-interactive components (labels, surfaces, icons) omit it.
 
-- _What composition is this part of?_
-- _What is this instance doing inside it?_
+- `Button` → `interaction: 'command'`
+- `TextField` → `interaction: 'entry.text'`
+- `Checkbox` → `interaction: 'toggle.binary'`
+- `Link` → `interaction: 'navigate.link'`
+- `Accordion trigger` → `interaction: 'disclose.toggle'`
 
-Examples:
+#### 3. Add Host and Role when the instance is inside a structured composition
 
-- `Button` in a dialog footer → `ActionSet.primary`
-- `Text` under a field label → `FieldFrame.description`
-- `Icon` inside a menu item → `ItemFrame.supportingVisual`
-- `Buttons` inside a card → `SurfaceFrame.actions`
+- `Button` in a dialog footer → `{ host: 'ActionSet', role: 'primary' }`
+- `Text` under a field label → `{ host: 'FieldFrame', role: 'description' }`
+- `Icon` inside a menu item → `{ host: 'ItemFrame', role: 'supportingVisual' }`
+- `Buttons` inside a card → `{ host: 'SurfaceFrame', role: 'actions' }`
 
-#### 3. Resolve semantic tokens from the model
+#### 4. Add Evaluation when the default inference isn't right
 
-Once `Responsibility` and `Host.Role` are clear, resolve tokens by foundation.
+Most expressions don't need explicit Evaluation. Add it when the standard inference is wrong:
 
-Use the model to choose:
+- Destructive confirm button → `evaluation: 'negative'`
+- Success state feedback → `evaluation: 'positive'`
+- Subdued ghost action → `evaluation: 'muted'`
 
-- **color** → semantic color tokens
-- **typography** → semantic `text.*` styles
-- **spacing** → semantic spacing tokens
-- **sizing** → semantic sizing tokens
-- **elevation** → semantic elevation tokens when relevant
-- **radii** → semantic radii aliases when relevant
+#### 5. Add Consequence when the interaction carries a material risk profile
 
-Quick examples:
+- Delete / irreversible action → `consequence: 'destructive'`
+- Save with no undo → `consequence: 'committing'`
 
-- `Action` + `ActionSet.primary` → `action.primary.*`
-- `Action` + `ActionSet.secondary` → `action.secondary.*`
-- `Action` + `ActionSet.dismiss` → usually `action.muted.*`
-- `Structure` + `FieldFrame.label` → usually `text.label.md`
-- `Structure` + `FieldFrame.description` → usually `text.body.sm` + `content.muted.text.default`
-- `Structure` + `ItemFrame.supportingVisual` → usually `icon.md` + a semantic `*.text.*` color
-- `Structure` + `SurfaceFrame.heading` → usually `text.title.md`
-- `Structure` + `SurfaceFrame.body` → usually `text.body.md`
-
-The model defines meaning first.  
-Tokens then express that meaning through each foundation.
+---
 
 ## Usage Examples
 
-#### Dialog footer button
+> Token paths reference the **Semantic Token Projection** (layer 4). They reflect the current token projection and will be confirmed during its re-engineering.
 
-- button save → `Action` + `ActionSet.primary`
-  - color: `action.primary.background.default`, `action.primary.text.default`
-  - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
-  - radius: `radii.control`
+#### Dialog footer buttons
 
-- button back to editing → `Action` + `ActionSet.secondary`
-  - color: `action.secondary.background.default`, `action.secondary.text.default`
-  - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
-  - radius: `radii.control`
+```ts
+// Save
+{ responsibility: 'Action', interaction: 'command', composition: { host: 'ActionSet', role: 'primary' } }
+// → action.primary.background.default, action.primary.text.default
 
-- button cancel → `Action` + `ActionSet.dismiss`
-  - color: `action.muted.text.default`
-  - typography: `text.label.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
-  - radius: `radii.control`
+// Back to editing
+{ responsibility: 'Action', interaction: 'command', composition: { host: 'ActionSet', role: 'secondary' } }
+// → action.secondary.background.default, action.secondary.text.default
+
+// Cancel
+{ responsibility: 'Action', interaction: 'dismiss', composition: { host: 'ActionSet', role: 'dismiss' } }
+// → action.muted.text.default
+```
 
 #### Search field
 
-- main field control → `Input` + `FieldFrame.control`
-  - color: `input.primary.border.default`, `input.primary.background.default`, `input.primary.text.default`
-  - typography: `text.body.md`
-  - spacing/sizing: `spacing.inset.control.md`, `hit.default`
-  - radius: `radii.control`
+```ts
+// Main control
+{ responsibility: 'Input', interaction: 'entry.text', composition: { host: 'FieldFrame', role: 'control' } }
+// → input.primary.border.default, input.primary.background.default, input.primary.text.default
 
-- field label text → `Structure` + `FieldFrame.label`
-  - color: `content.primary.text.default`
-  - typography: `text.label.md`
+// Label
+{ responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'label' } }
+// → informational.primary.text.default
 
-- helper text → `Structure` + `FieldFrame.description`
-  - color: `content.muted.text.default`
-  - typography: `text.body.sm`
+// Helper text
+{ responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'description' } }
+// → informational.muted.text.default
 
-- leading search icon → `Structure` + `FieldFrame.leadingAdornment`
-  - color: `content.muted.text.default`
-  - sizing: `icon.md`
-  - spacing: usually grouped with the control through `spacing.gap.inline.sm`
+// Leading icon
+{ responsibility: 'Structure', composition: { host: 'FieldFrame', role: 'leadingAdornment' } }
+// → informational.muted.text.default
+```
 
 #### Menu item
 
-- menu item label text → `Structure` + `ItemFrame.label`
-  - color: `navigation.primary.text.default`
-  - typography: `text.label.md`
+```ts
+{ responsibility: 'Structure', composition: { host: 'ItemFrame', role: 'label' } }
+// → navigation.primary.text.default
 
-- item description text → `Structure` + `ItemFrame.description`
-  - color: `content.muted.text.default`
-  - typography: `text.body.sm`
+{ responsibility: 'Structure', composition: { host: 'ItemFrame', role: 'description' } }
+// → informational.muted.text.default
+{ responsibility: 'Structure', composition: { host: 'ItemFrame', role: 'supportingVisual' } }
+// → navigation.secondary.text.default
+```
 
-- leading icon → `Structure` + `ItemFrame.supportingVisual`
-  - color: `navigation.secondary.text.default` or `content.muted.text.default`
-  - sizing: `icon.md`
+#### Card
 
-#### Card or panel
+```ts
+// Container
+{ responsibility: 'Structure' }
+// → informational.primary.background.default
 
-- container → `Structure`
-  - color: `content.primary.background.default`
-  - spacing: `spacing.inset.surface.md`
-  - radius: `radii.surface`
-  - elevation: `elevation.resting`
+// Title
+{ responsibility: 'Structure', composition: { host: 'SurfaceFrame', role: 'heading' } }
+// → informational.primary.text.default
 
-- title text → `Structure` + `SurfaceFrame.heading`
-  - color: `content.primary.text.default`
-  - typography: `text.title.md`
+// Body
+{ responsibility: 'Structure', composition: { host: 'SurfaceFrame', role: 'body' } }
+// → informational.primary.text.default
+```
 
-- body content → `Structure` + `SurfaceFrame.body`
-  - color: `content.primary.text.default`
-  - typography: `text.body.md`
-  - spacing: `spacing.gap.stack.sm`
+#### Destructive action
 
-- action buttons → `Action` + `SurfaceFrame.actions`
-  - spacing: `spacing.separation.interactive.min`
-  - tokens for each button still come from their own role in the action set they form
+```ts
+{
+  responsibility: 'Action',
+  interaction: 'confirm',
+  composition: { host: 'ActionSet', role: 'primary' },
+  evaluation: 'negative',
+  consequence: 'destructive',
+}
+// → action.negative.background.default, action.negative.text.default
+// Downstream: resolver applies safeDefaultRequired constraint to the cancel path
+```
 
 ---
 
 ## Rules
 
-#### 1. Responsibility is always primary
-
-Responsibility defines the component itself.
-
-#### 2. Host never replaces Responsibility
-
-Host exists only to model composition.
-
-#### 3. Role is always host-bound
-
-A Role has no meaning outside its Host.
-
-#### 4. Keep the model small
-
-Do not create new Responsibilities, Hosts, or Roles casually.  
-The goal is a system that stays clear, stable, and reusable.
+1. **Responsibility is always primary.** It defines the component, not the instance.
+2. **Host never replaces Responsibility.** Host exists only to model composition.
+3. **Role is always host-bound.** A Role has no meaning outside its Host.
+4. **Evaluation is semantic, not visual.** Choose it for its meaning, not its color.
+5. **Consequence is about outcome risk.** It shapes interaction policy before styling.
+6. **Keep the model small.** New values must come from the FSL foundation or be added through FSL governance.
 
 > **Implementation:** See [UI Components](/docs/design/ui-components) for how this model is realized in React.

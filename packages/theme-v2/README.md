@@ -1,6 +1,6 @@
 # @ttoss/theme2
 
-Type-safe design tokens for the ttoss ecosystem. Two-layer architecture (core → semantic), light/dark mode, React 19 style hoisting, SSR support.
+Design token system for the ttoss ecosystem. Separates raw values (`core`) from stable design meaning (`semantic`) so components never break when themes change or modes switch. The semantic layer is the public contract — type-safe, mode-agnostic, and consumed directly as CSS custom properties with zero runtime overhead.
 
 ## Installation
 
@@ -23,7 +23,7 @@ pnpm add @ttoss/theme2
 ## Token architecture
 
 ```
-ThemeTokensV2
+ThemeTokens
 ├── core     — raw primitives (immutable across modes)
 └── semantic — usage aliases, always {core.*} refs (remapped per mode)
 ```
@@ -49,7 +49,7 @@ const myTheme = createTheme({
   alternate: {
     semantic: {
       colors: {
-        content: {
+        informational: {
           primary: { background: { default: '{core.colors.neutral.900}' } },
         },
       },
@@ -114,7 +114,7 @@ const resolved = useResolvedTokens();
 ```css
 /* CSS — no JS overhead, no re-renders */
 .button {
-  background: var(--tt-action-primary-background-default);
+  background: var(--tt-colors-action-primary-background-default);
 }
 ```
 
@@ -122,8 +122,33 @@ const resolved = useResolvedTokens();
 import { vars } from '@ttoss/theme2/vars';
 
 // Typed CSS variable references
-<div style={{ color: vars.colors.content.primary.default }} />;
+<div style={{ color: vars.colors.informational.primary.default }} />;
 ```
+
+### Extending `vars` with custom semantic tokens
+
+`vars` is typed against the default `SemanticTokens` shape. If your project adds custom families (e.g. a dataviz palette, project-specific component tokens), those leaves won't appear on the default export. Build a typed mirror of your extended shape with the public `buildVarsMap` helper:
+
+```ts
+import { createTheme, type SemanticTokens } from '@ttoss/theme2';
+import { buildVarsMap, type CssVarsMap } from '@ttoss/theme2/vars';
+
+type MySemanticTokens = SemanticTokens & {
+  colors: SemanticTokens['colors'] & {
+    brandX: { primary: { default: string } };
+  };
+};
+
+const myTheme = createTheme({
+  /* … */
+});
+
+export const myVars: CssVarsMap<MySemanticTokens> = buildVarsMap(
+  myTheme.base
+) as CssVarsMap<MySemanticTokens>;
+```
+
+For one-off custom keys, use `toCssVarName` from `@ttoss/theme2/css` directly — no extended type required.
 
 ## Next.js (SSR)
 

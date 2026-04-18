@@ -6,7 +6,7 @@
  *
  * @example
  * ```tsx
- * import { withDataviz, coreDatavizDefault } from '@ttoss/theme2/dataviz';
+ * import { withDataviz, coreDataviz } from '@ttoss/theme2/dataviz';
  * import { createTheme } from '@ttoss/theme2';
  *
  * // Extend any theme with dataviz tokens
@@ -29,7 +29,7 @@
  * ```
  */
 
-export { coreDatavizDefault, semanticDataviz } from './baseTheme';
+export { coreDataviz, semanticDataviz } from './baseTheme';
 export type { CoreDataviz, SemanticDataviz } from './Types';
 export { useDatavizTokens } from './useDatavizTokens';
 export { withDataviz } from './withDataviz';
