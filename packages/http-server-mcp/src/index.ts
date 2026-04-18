@@ -493,6 +493,13 @@ export const registerToolFromSchema = (
   if (!patchedServerSet.has(server)) {
     patchedServerSet.add(server);
 
+    // Access the underlying `Server` instance and its internal request-handler
+    // map. This relies on McpServer exposing a `server` property (documented in
+    // the SDK's public API) and Protocol storing handlers in `_requestHandlers`
+    // (an internal implementation detail). If the MCP SDK refactors its
+    // internals, the patching is simply skipped and tools remain functional —
+    // the only degradation is that the Zod-derived schema is shown instead of
+    // the verbatim JSON Schema in `tools/list`.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawServer = (server as any).server;
     const origHandler = rawServer?._requestHandlers?.get('tools/list') as

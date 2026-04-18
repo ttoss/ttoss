@@ -118,7 +118,7 @@ describe('registerToolFromSchema', () => {
       params: {},
     });
 
-    expect(res.status).not.toBe(404);
+    expect(res.status).toBe(200);
 
     const tools: Array<{ name: string; inputSchema: unknown }> =
       res.body?.result?.tools ?? [];
@@ -257,7 +257,7 @@ describe('registerToolFromSchema', () => {
       params: { name: 'greet', arguments: { name: 'World' } },
     });
 
-    expect(res.status).not.toBe(404);
+    expect(res.status).toBe(200);
 
     const content = res.body?.result?.content ?? [];
     expect(content).toContainEqual({ type: 'text', text: 'Hello, World!' });
