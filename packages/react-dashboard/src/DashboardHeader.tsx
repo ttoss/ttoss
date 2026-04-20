@@ -18,13 +18,27 @@ export const DashboardHeader = ({
           padding: '2',
           flexWrap: 'wrap',
           gap: '4',
-          alignItems: 'center',
+          alignItems: 'flex-end',
         }}
       >
         <DashboardFilters />
-        {children}
+        {children && (
+          <Flex
+            sx={{
+              gap: '2',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            {children}
+          </Flex>
+        )}
       </Flex>
-      {editable && <DashboardEditToolbar />}
+      {editable && (
+        <Flex sx={{ padding: '2' }}>
+          <DashboardEditToolbar />
+        </Flex>
+      )}
     </Flex>
   );
 };

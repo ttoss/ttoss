@@ -38,6 +38,47 @@ describe('BigNumber', () => {
     expect(screen.getByText(/R\$\s*1\.234,56/)).toBeInTheDocument();
   });
 
+  test('should format currency with USD when currency prop is provided', () => {
+    render(
+      <BigNumber
+        {...baseCard}
+        numberType="currency"
+        currency="USD"
+        data={{ api: { total: 1234.56 } }}
+      />
+    );
+
+    expect(screen.getByText(/US\$\s*1\.234,56/)).toBeInTheDocument();
+  });
+
+  test('should default to BRL when currency prop is absent', () => {
+    render(
+      <BigNumber
+        {...baseCard}
+        numberType="currency"
+        data={{ api: { total: 500 } }}
+      />
+    );
+
+    expect(screen.getByText(/R\$/)).toBeInTheDocument();
+  });
+
+  test('should not affect number type when currency prop is provided', () => {
+    render(
+      <BigNumber
+        {...baseCard}
+        numberType="number"
+        currency="USD"
+        data={{ api: { total: 100 } }}
+      />
+    );
+
+    // Should format as a plain number, not currency
+    expect(screen.queryByText(/US\$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/100,00/)).toBeInTheDocument();
+  });
+
   test('should format percentage correctly', () => {
     render(
       <BigNumber

@@ -3,10 +3,11 @@ import {
   Dashboard,
   type DashboardFilter,
   DashboardFilterType,
+  type DashboardGridItem,
   type DashboardTemplate,
   DEFAULT_CARD_CATALOG,
 } from '@ttoss/react-dashboard';
-import { Box, Heading, Stack, Text } from '@ttoss/ui';
+import { Box, Button, Heading, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 const meta: Meta = {
@@ -992,7 +993,200 @@ export const EditableCustomizeMode: StoryObj = {
     docs: {
       description: {
         story:
-          'Dashboard with edit mode enabled. Use the toolbar to edit layout, add/remove cards from catalog, save the current template, or save as a new template.',
+          'Dashboard with edit mode enabled. Use the toolbar to edit layout, add/remove metrics from catalog, save the current template, or save as a new template. The "Adicionar métricas" button opens a drawer to select metrics to add.',
+      },
+    },
+  },
+};
+
+const WithEditingGridChangeStory = () => {
+  const initialTemplate: DashboardTemplate = {
+    id: 'editable-dashboard',
+    name: 'Editable Dashboard',
+    description: 'Dashboard configured for layout customization',
+    editable: true,
+    grid: [
+      {
+        i: 'revenue',
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          id: 'abc-200',
+          title: 'Total Revenue',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: { api: { total: 180000 } },
+          trend: { value: 12.4, status: 'positive' },
+        },
+      },
+      {
+        i: 'roas',
+        x: 4,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          id: 'abc-201',
+          title: 'ROAS',
+          numberType: 'number',
+          numberDecimalPlaces: 2,
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: { api: { total: 3.72 } },
+          variant: 'light-green',
+        },
+      },
+    ],
+  };
+
+  const [templates, setTemplates] = React.useState<DashboardTemplate[]>([
+    initialTemplate,
+  ]);
+  const [selectedTemplateId, setSelectedTemplateId] = React.useState(
+    initialTemplate.id
+  );
+  const [editingGrid, setEditingGrid] = React.useState<
+    DashboardGridItem[] | null
+  >(null);
+  const [filters, setFilters] = React.useState<DashboardFilter[]>([
+    {
+      key: 'template',
+      type: DashboardFilterType.SELECT,
+      label: 'Template',
+      value: initialTemplate.id,
+      options: [{ label: initialTemplate.name, value: initialTemplate.id }],
+    },
+  ]);
+
+  const selectedTemplate =
+    templates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || templates[0];
+
+  const handleFiltersChange = (updatedFilters: DashboardFilter[]) => {
+    setFilters(updatedFilters);
+    const templateFilter = updatedFilters.find((f) => {
+      return f.key === 'template';
+    });
+    if (templateFilter?.value && typeof templateFilter.value === 'string') {
+      setSelectedTemplateId(templateFilter.value);
+    }
+  };
+
+  const handleSaveLayout = (updatedTemplate: DashboardTemplate) => {
+    setTemplates((prev) => {
+      return prev.map((t) => {
+        return t.id === updatedTemplate.id ? updatedTemplate : t;
+      });
+    });
+  };
+
+  const handleSaveAsNewTemplate = (newTemplate: DashboardTemplate) => {
+    const normalized = { ...newTemplate, editable: true };
+    setTemplates((prev) => {
+      return [...prev, normalized];
+    });
+    setSelectedTemplateId(normalized.id);
+    setFilters((prev) => {
+      return prev.map((f) => {
+        if (f.key !== 'template') return f;
+        return {
+          ...f,
+          value: normalized.id,
+          options: [
+            ...(f.options || []),
+            { label: normalized.name, value: normalized.id },
+          ],
+        };
+      });
+    });
+  };
+
+  return (
+    <Box sx={{ width: '100%', padding: '4' }}>
+      <Dashboard
+        templates={templates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        editable
+        cardCatalog={DEFAULT_CARD_CATALOG}
+        onFiltersChange={handleFiltersChange}
+        onSaveLayout={handleSaveLayout}
+        onSaveAsNewTemplate={handleSaveAsNewTemplate}
+        onEditingGridChange={setEditingGrid}
+        headerChildren={
+          <Text sx={{ fontSize: 'sm', color: 'text.secondary' }}>
+            {editingGrid
+              ? `Editing: ${editingGrid.length} card(s) in grid`
+              : 'Not editing'}
+          </Text>
+        }
+      />
+    </Box>
+  );
+};
+
+export const WithEditingGridChange: StoryObj = {
+  render: () => {
+    return <WithEditingGridChangeStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dashboard with `onEditingGridChange` callback. The callback fires with the current `DashboardGridItem[]` on every layout mutation (drag, add, remove) and with `null` when edit mode exits. A status text in the header shows the current editing state.',
+      },
+    },
+  },
+};
+
+const WithCustomHeaderChildrenStory = () => {
+  const [filters, setFilters] =
+    React.useState<DashboardFilter[]>(defaultFilters);
+
+  const selectedTemplateId =
+    (filters.find((f) => {
+      return f.key === 'template';
+    })?.value as string) || 'default';
+  const selectedTemplate =
+    defaultTemplates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || defaultTemplates[0];
+
+  return (
+    <Box sx={{ width: '100%', height: '100vh', padding: '4' }}>
+      <Dashboard
+        templates={defaultTemplates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        onFiltersChange={setFilters}
+        headerChildren={
+          <>
+            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+            <Button variant="secondary">Refresh</Button>
+            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+            <Button variant="primary">Share</Button>
+          </>
+        }
+      />
+    </Box>
+  );
+};
+
+export const WithCustomHeaderChildren: StoryObj = {
+  render: () => {
+    return <WithCustomHeaderChildrenStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dashboard with custom header buttons. The `headerChildren` wrapper automatically centers all children vertically, so no per-child `alignSelf` or `height` overrides are needed.',
       },
     },
   },

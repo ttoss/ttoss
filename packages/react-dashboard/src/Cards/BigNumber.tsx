@@ -13,11 +13,13 @@ const formatNumber = ({
   type,
   numberDecimalPlaces,
   suffix,
+  currency = 'BRL',
 }: {
   value: number | undefined;
   type: 'number' | 'percentage' | 'currency';
   numberDecimalPlaces?: number;
   suffix?: string;
+  currency?: string;
 }): string => {
   if (value === undefined || value === null) {
     return '-';
@@ -28,7 +30,7 @@ const formatNumber = ({
     case 'currency':
       formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
-        currency: 'BRL',
+        currency,
       }).format(value);
       break;
     case 'percentage':
@@ -126,6 +128,7 @@ export const BigNumber = (props: DashboardCard) => {
     type: props.numberType,
     numberDecimalPlaces: props.numberDecimalPlaces,
     suffix: props.suffix,
+    currency: props.currency,
   });
 
   const valueColor = getValueColor(props.color, props.variant);

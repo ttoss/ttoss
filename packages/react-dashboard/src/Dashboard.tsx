@@ -26,10 +26,13 @@ const DashboardContent = ({
   loading = false,
   headerChildren,
   selectedTemplate,
+  currency,
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
   selectedTemplate?: DashboardTemplate;
+  /** ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. */
+  currency?: string;
 }) => {
   const { isEditMode, editingGrid } = useDashboard();
   const grid = isEditMode && editingGrid ? editingGrid : selectedTemplate?.grid;
@@ -50,6 +53,8 @@ const DashboardContent = ({
         loading={loading}
         selectedTemplate={effectiveTemplate}
         isEditMode={isEditMode}
+        currency={currency}
+        data-export-target
       />
     </Flex>
   );
@@ -67,6 +72,8 @@ export const Dashboard = ({
   onSaveLayout,
   onSaveAsNewTemplate,
   onCancelEdit,
+  onEditingGridChange,
+  currency,
 }: {
   selectedTemplate?: DashboardTemplate;
   loading?: boolean;
@@ -80,6 +87,10 @@ export const Dashboard = ({
   onSaveLayout?: (template: DashboardTemplate) => void;
   onSaveAsNewTemplate?: (template: DashboardTemplate) => void;
   onCancelEdit?: () => void;
+  /** Called whenever the internal editing grid changes. Receives `null` when edit mode exits. */
+  onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
+  /** ISO 4217 currency code (e.g. `"BRL"`, `"USD"`, `"EUR"`). Applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. Defaults to `"BRL"`. */
+  currency?: string;
 }) => {
   return (
     <DashboardProvider
@@ -92,11 +103,13 @@ export const Dashboard = ({
       onSaveLayout={onSaveLayout}
       onSaveAsNewTemplate={onSaveAsNewTemplate}
       onCancelEdit={onCancelEdit}
+      onEditingGridChange={onEditingGridChange}
     >
       <DashboardContent
         loading={loading}
         headerChildren={headerChildren}
         selectedTemplate={selectedTemplate}
+        currency={currency}
       />
     </DashboardProvider>
   );
