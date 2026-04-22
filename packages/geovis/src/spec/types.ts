@@ -446,7 +446,7 @@ export interface VisualizationSpec {
   view: ViewState;
   basemap?: BaseMapSpec;
   data: GeoVisDataEntry[];
-  layers: VisualizationLayer[];
+  layers?: VisualizationLayer[];
   /**
    * Optional array of views for multi-panel layouts.
    * When present, layout components derive one spec per view by

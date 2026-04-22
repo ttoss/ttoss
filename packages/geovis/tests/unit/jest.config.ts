@@ -10,7 +10,7 @@ export default jestUnitConfig({
     global: {
       statements: 73,
       branches: 66,
-      functions: 76,
+      functions: 77,
       lines: 76,
     },
   },

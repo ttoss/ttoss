@@ -10,13 +10,10 @@ import type {
 
 /**
  * Partial form of `VisualizationSpec` accepted as input by the runtime.
- * Only `data` is required; every other field is filled in by `applyDefaults`.
+ * Every field is optional; `applyDefaults` fills in id, engine, view, and
+ * layers when omitted. `data` defaults to an empty array.
  */
-export type PartialVisualizationSpec = Partial<
-  Omit<VisualizationSpec, 'data'>
-> & {
-  data: VisualizationSpec['data'];
-};
+export type PartialVisualizationSpec = Partial<VisualizationSpec>;
 
 const collectInlineGeometryTypes = (
   obj: GeoJSONObject
@@ -114,8 +111,11 @@ const autoGenerateLayers = (
 export const applyDefaults = (
   partial: PartialVisualizationSpec
 ): VisualizationSpec => {
-  const data = partial.data;
-  const id = partial.id ?? data[0]?.id ?? 'geovis-spec';
+  const data = partial.data ?? [];
+  const id =
+    partial.id ??
+    data[0]?.id ??
+    `geovis-${Math.random().toString(36).slice(2, 9)}`;
   const engine = partial.engine ?? 'maplibre';
   const view = partial.view ?? {
     ...computeBoundsFromSources(data),

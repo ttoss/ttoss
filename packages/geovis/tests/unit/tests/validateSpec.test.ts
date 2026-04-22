@@ -1,13 +1,23 @@
 import { applyDefaults } from 'src/spec/applyDefaults';
 import { validateSpec } from 'src/spec/validateSpec';
 
+import distritosMinimal from '../../../src/fixtures/distritos-sp-populacao-idosa.minimal.json';
 import geojsonUrlMapMinimal from '../../../src/fixtures/geojson-url-map.minimal.json';
+import invalidChoroplethMinimal from '../../../src/fixtures/invalid-raw-count-choropleth.minimal.json';
+import linkedMapChartMinimal from '../../../src/fixtures/linked-map-chart.minimal.json';
+import mapWithSidePanelMinimal from '../../../src/fixtures/map-with-side-panel.minimal.json';
 import singleMapMinimal from '../../../src/fixtures/single-map.minimal.json';
+import splitCompareMinimal from '../../../src/fixtures/split-compare.minimal.json';
 
 describe('validateSpec', () => {
   test.each([
-    ['single-map (minimal)', singleMapMinimal],
-    ['geojson-url-map (minimal)', geojsonUrlMapMinimal],
+    ['single-map', singleMapMinimal],
+    ['geojson-url-map', geojsonUrlMapMinimal],
+    ['invalid-raw-count-choropleth', invalidChoroplethMinimal],
+    ['linked-map-chart', linkedMapChartMinimal],
+    ['map-with-side-panel', mapWithSidePanelMinimal],
+    ['split-compare', splitCompareMinimal],
+    ['distritos-sp-populacao-idosa', distritosMinimal],
   ])(
     'fixture "%s" becomes valid after applyDefaults',
     (_name, minimalFixture) => {
