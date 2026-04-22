@@ -1,0 +1,54 @@
+{
+  "id": "invalid-raw-count-choropleth",
+  "title": "Invalid Raw Count Choropleth",
+  "description": "Intentionally invalid by cartography policy: choropleth encoded with raw population counts instead of a normalized density. Kigali City has the smallest population (1.1M) but the highest density (1551 hab/km²) — it looks least intense on the left map but most intense on the right.",
+  "engine": "maplibre",
+  "view": {
+    "center": [30.0222, -1.9596],
+    "zoom": 7
+  },
+  "basemap": {
+    "styleUrl": "https://tiles.openfreemap.org/styles/bright"
+  },
+  "sources": [
+    {
+      "id": "rwanda-provinces",
+      "type": "geojson",
+      "data": "https://maplibre.org/maplibre-gl-js/docs/assets/rwanda-provinces.geojson"
+    }
+  ],
+  "layers": [
+    {
+      "id": "rwanda-choropleth",
+      "sourceId": "rwanda-provinces",
+      "geometry": "polygon",
+      "visible": true,
+      "paint": {
+        "fillColor": "#dbeafe",
+        "fillOpacity": 0.85,
+        "lineColor": "#94a3b8",
+        "lineWidth": 0.5
+      }
+    }
+  ],
+  "views": [
+    {
+      "id": "left",
+      "label": "Absolute population count (population) — invalid",
+      "layers": ["rwanda-choropleth"]
+    },
+    {
+      "id": "right",
+      "label": "Population density (hab/km²) — correct",
+      "layers": ["rwanda-choropleth"]
+    }
+  ],
+  "metadata": {
+    "isPolicyInvalid": true,
+    "invalidReason": "raw-count-choropleth",
+    "metricField": "population",
+    "normalizedExpression": "population / sq-km",
+    "normalizedLabel": "inhabitants per km²",
+    "referenceExample": "https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
+  }
+}

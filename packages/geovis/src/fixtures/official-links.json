@@ -1,0 +1,20 @@
+{
+  "maplibre": {
+    "styleSpec": "https://maplibre.org/maplibre-style-spec/",
+    "rootProperties": "https://maplibre.org/maplibre-style-spec/root/",
+    "sources": "https://maplibre.org/maplibre-style-spec/sources/",
+    "layers": "https://maplibre.org/maplibre-style-spec/layers/",
+    "integrationFixtures": "https://github.com/maplibre/maplibre-style-spec/tree/main/test/integration",
+    "examples": {
+      "syncMovementOfMultipleMaps": "https://maplibre.org/maplibre-gl-js/docs/examples/sync-movement-of-multiple-maps/",
+      "visualizePopulationDensity": "https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
+    },
+    "assets": {
+      "rwandaProvincesGeojson": "https://maplibre.org/maplibre-gl-js/docs/assets/rwanda-provinces.geojson"
+    },
+    "notes": {
+      "syncMovementOfMultipleMaps": "Uses @mapbox/mapbox-gl-sync-move@0.3.1 plugin — syncMaps(map1, map2, map3). Not vanilla event-based.",
+      "visualizePopulationDensity": "Dataset fields: population (int) and sq-km (float). Density calculated in runtime via MapLibre expression: ['/', ['get', 'population'], ['get', 'sq-km']]. Range: 274 (East) to 1551 (Kigali) hab/km2."
+    }
+  }
+}

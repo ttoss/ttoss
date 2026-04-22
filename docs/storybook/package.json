@@ -19,6 +19,7 @@
     "@iconify/icons-carbon": "^1.2.20",
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",

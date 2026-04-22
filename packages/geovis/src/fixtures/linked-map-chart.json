@@ -1,0 +1,103 @@
+{
+  "id": "linked-map-chart",
+  "title": "Linked Map Chart",
+  "description": "Hovering a region on the map highlights it in the bar chart and vice-versa. Uses queryRenderedFeatures to sync map hover state with an external chart — based on the MapLibre 'Get features under the mouse pointer' example.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-46.6333, -23.5505],
+    "zoom": 10,
+    "pitch": 30,
+    "bearing": 15
+  },
+  "basemap": {
+    "styleUrl": "https://demotiles.maplibre.org/style.json"
+  },
+  "sources": [
+    {
+      "id": "regions",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-01",
+              "label": "Region A",
+              "value": 120
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.68, -23.58],
+                  [-46.64, -23.58],
+                  [-46.64, -23.54],
+                  [-46.68, -23.54],
+                  [-46.68, -23.58]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-02",
+              "label": "Region B",
+              "value": 80
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.64, -23.58],
+                  [-46.6, -23.58],
+                  [-46.6, -23.54],
+                  [-46.64, -23.54],
+                  [-46.64, -23.58]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-03",
+              "label": "Region C",
+              "value": 200
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.6, -23.58],
+                  [-46.56, -23.58],
+                  [-46.56, -23.54],
+                  [-46.6, -23.54],
+                  [-46.6, -23.58]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "regions-fill",
+      "sourceId": "regions",
+      "geometry": "polygon",
+      "paint": {
+        "fillColor": "#22c55e",
+        "fillOpacity": 0.35,
+        "lineColor": "#15803d",
+        "lineWidth": 1
+      }
+    }
+  ],
+  "metadata": {
+    "joinField": "regionId",
+    "referenceExample": "https://maplibre.org/maplibre-gl-js/docs/examples/get-features-under-the-mouse-pointer/"
+  }
+}
