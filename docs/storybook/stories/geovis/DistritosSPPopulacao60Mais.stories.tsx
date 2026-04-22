@@ -32,7 +32,7 @@ const BLUES_5 = ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'];
 // Story title and description (previously in fixture metadata).
 const STORY_TITLE = 'Distritos de São Paulo — small multiples 60+';
 const STORY_DESCRIPTION =
-  'Choropleth of São Paulo districts using layerTemplates with inline data. Shows the small multiples pattern from the c1..c5 properties (60+ age bands).';
+  'Choropleth of São Paulo districts using layerTemplates with inline data. Shows the small multiples pattern from the pop_60_64..pop_total_60_mais properties (60+ age bands).';
 
 // Story-level overrides on top of the data-only minimal fixture.
 const distritoTemplate: LayerTemplate = {
@@ -41,7 +41,13 @@ const distritoTemplate: LayerTemplate = {
   dataId: 'distritos',
   // properties omitted — displayProperties drives both expansion and info panel
   labelProperty: 'nm_distrit',
-  displayProperties: ['c1', 'c2', 'c3', 'c4', 'c5'],
+  displayProperties: [
+    'pop_60_64',
+    'pop_65_69',
+    'pop_70_74',
+    'pop_75_mais',
+    'pop_total_60_mais',
+  ],
   colorBy: {
     type: 'quantitative',
     scale: 'quantile',
@@ -54,11 +60,11 @@ const distritoTemplate: LayerTemplate = {
 
 const displayPropertyLabels: Record<string, string> = {
   nm_distrit: 'Distrito',
-  c1: 'População 60 a 64',
-  c2: 'População 65 a 69',
-  c3: 'População 70 a 74',
-  c4: 'População 75 e +',
-  c5: 'População Total 60+',
+  pop_60_64: 'Pop. 60 a 64',
+  pop_65_69: 'Pop. 65 a 69',
+  pop_70_74: 'Pop. 70 a 74',
+  pop_75_mais: 'Pop. 75 e +',
+  pop_total_60_mais: 'Pop. Total 60+',
 };
 
 const distritosSpec: PartialVisualizationSpec = {

@@ -18,11 +18,11 @@
     },
     "displayPropertyLabels": {
       "nm_distrit": "Distrito",
-      "c1": "População 60 a 64",
-      "c2": "População 65 a 69",
-      "c3": "População 70 a 74",
-      "c4": "População 75 e +",
-      "c5": "População Total 60+"
+      "pop_60_64": "População 60 a 64",
+      "pop_65_69": "População 65 a 69",
+      "pop_70_74": "População 70 a 74",
+      "pop_75_mais": "População 75 e +",
+      "pop_total_60_mais": "População Total 60+"
     }
   },
   "layers": [],
@@ -32,7 +32,13 @@
       "id": "distritos",
       "geometry": "polygon",
       "labelProperty": "nm_distrit",
-      "displayProperties": ["c1", "c2", "c3", "c4", "c5"],
+      "displayProperties": [
+        "pop_60_64",
+        "pop_65_69",
+        "pop_70_74",
+        "pop_75_mais",
+        "pop_total_60_mais"
+      ],
       "colorBy": {
         "type": "quantitative",
         "scale": "quantile",
