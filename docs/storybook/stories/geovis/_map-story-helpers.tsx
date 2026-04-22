@@ -2,8 +2,69 @@
  * Internal helpers shared across GeoVis stories.
  * Not public package artefacts — story utilities only.
  */
-import type { VisualizationSpec, VisualizationView } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import type {
+  PartialVisualizationSpec,
+  VisualizationSpec,
+  VisualizationView,
+} from '@ttoss/geovis';
+import {
+  DEFAULT_BASEMAP_STYLE,
+  GeoVisCanvas,
+  GeoVisProvider,
+  useGeoVis,
+} from '@ttoss/geovis';
+
+// ---------------------------------------------------------------------------
+// Basemap catalogue
+// ---------------------------------------------------------------------------
+
+/**
+ * Free, no-API-key basemap styles compatible with MapLibre GL JS.
+ * Default is `Bright` (OpenFreeMap) — production-ready, MIT-licensed, no
+ * rate limits. `Demotiles` is MapLibre's own demo style and is intentionally
+ * minimal; use it only for engine development/testing.
+ */
+export const BASEMAPS = {
+  Bright: DEFAULT_BASEMAP_STYLE,
+  Positron: 'https://tiles.openfreemap.org/styles/positron',
+  Liberty: 'https://tiles.openfreemap.org/styles/liberty',
+  Demotiles: 'https://demotiles.maplibre.org/style.json',
+} as const;
+
+export type BasemapArgs = { basemapStyleUrl: string };
+
+/**
+ * Shared Storybook `argTypes` block for the basemap selector.
+ * Spread into the story `Meta.argTypes` object.
+ */
+export const BASEMAP_ARG_TYPE = {
+  basemapStyleUrl: {
+    name: 'Basemap',
+    control: 'select',
+    options: Object.keys(BASEMAPS) as (keyof typeof BASEMAPS)[],
+    mapping: BASEMAPS as Record<string, string>,
+  },
+} as const;
+
+/** Default Storybook args — `Bright` is the default basemap. */
+export const DEFAULT_BASEMAP_ARGS: BasemapArgs = {
+  basemapStyleUrl: BASEMAPS.Bright,
+};
+
+/**
+ * Returns a new spec with `basemap.styleUrl` replaced.
+ * All other spec fields are preserved unchanged (shallow clone). Accepts
+ * either a fully-typed `VisualizationSpec` or a `PartialVisualizationSpec`.
+ */
+export const applyBasemap = <T extends PartialVisualizationSpec>(
+  spec: T,
+  styleUrl: string
+): T => {
+  return {
+    ...spec,
+    basemap: { ...spec.basemap, styleUrl },
+  };
+};
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 

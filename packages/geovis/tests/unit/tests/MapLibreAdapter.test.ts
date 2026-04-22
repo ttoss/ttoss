@@ -7,10 +7,10 @@
 import maplibregl from 'maplibre-gl';
 import createMapLibreAdapter, {
   toMaplibreLayer,
-  toMaplibreSource,
+  translateGeoVisData,
 } from 'src/adapters/maplibre/MapLibreAdapter';
 import type {
-  DataSource,
+  GeoVisDataEntry,
   HeatmapPaint,
   SymbolPaint,
   VisualizationLayer,
@@ -80,7 +80,7 @@ const makeSpec = (id: string) => {
     id,
     engine: 'maplibre' as const,
     view: { center: [-46.6, -23.5] as [number, number], zoom: 10 },
-    sources: [],
+    data: [] as never[],
     layers: [],
   };
 };
@@ -233,29 +233,41 @@ describe('createMapLibreAdapter', () => {
   });
 });
 
-describe('toMaplibreSource', () => {
-  test('geojson source with url string', () => {
-    const source: DataSource = {
+describe('translateGeoVisData', () => {
+  test('geojson-url entry', () => {
+    const entry: GeoVisDataEntry = {
       id: 's1',
-      type: 'geojson',
-      data: 'https://example.com/data.geojson',
+      kind: 'geojson-url',
+      url: 'https://example.com/data.geojson',
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'geojson',
       data: 'https://example.com/data.geojson',
     });
   });
 
-  test('vector-tiles source', () => {
-    const source: DataSource = {
+  test('geojson-inline entry', () => {
+    const entry: GeoVisDataEntry = {
+      id: 's1b',
+      kind: 'geojson-inline',
+      geojson: { type: 'FeatureCollection', features: [] },
+    };
+    expect(translateGeoVisData(entry)).toMatchObject({
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  });
+
+  test('vector-tiles entry', () => {
+    const entry: GeoVisDataEntry = {
       id: 's2',
-      type: 'vector-tiles',
+      kind: 'vector-tiles',
       tiles: ['https://example.com/{z}/{x}/{y}.pbf'],
       minzoom: 0,
       maxzoom: 14,
       attribution: '© Example',
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'vector',
       tiles: ['https://example.com/{z}/{x}/{y}.pbf'],
       minzoom: 0,
@@ -264,35 +276,35 @@ describe('toMaplibreSource', () => {
     });
   });
 
-  test('raster-tiles source applies default tileSize 256', () => {
-    const source: DataSource = {
+  test('raster-tiles applies default tileSize 256', () => {
+    const entry: GeoVisDataEntry = {
       id: 's3',
-      type: 'raster-tiles',
+      kind: 'raster-tiles',
       tiles: ['https://example.com/{z}/{x}/{y}.png'],
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'raster',
       tileSize: 256,
     });
   });
 
-  test('raster-tiles source respects explicit tileSize 512', () => {
-    const source: DataSource = {
+  test('raster-tiles respects explicit tileSize 512', () => {
+    const entry: GeoVisDataEntry = {
       id: 's3b',
-      type: 'raster-tiles',
+      kind: 'raster-tiles',
       tiles: ['https://tile.example/{z}/{x}/{y}.png'],
       tileSize: 512,
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'raster',
       tileSize: 512,
     });
   });
 
-  test('image source', () => {
-    const source: DataSource = {
+  test('image entry', () => {
+    const entry: GeoVisDataEntry = {
       id: 's4',
-      type: 'image',
+      kind: 'image',
       url: 'https://example.com/image.png',
       coordinates: [
         [-80, 25],
@@ -301,30 +313,30 @@ describe('toMaplibreSource', () => {
         [-79, 25],
       ],
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'image',
       url: 'https://example.com/image.png',
     });
   });
 
-  test('raster-dem source with encoding', () => {
-    const source: DataSource = {
+  test('raster-dem with encoding', () => {
+    const entry: GeoVisDataEntry = {
       id: 's5',
-      type: 'raster-dem',
+      kind: 'raster-dem',
       tiles: ['https://tiles.example/{z}/{x}/{y}.png'],
       encoding: 'terrarium',
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'raster-dem',
       encoding: 'terrarium',
       tileSize: 256,
     });
   });
 
-  test('video source', () => {
-    const source: DataSource = {
+  test('video entry', () => {
+    const entry: GeoVisDataEntry = {
       id: 's6',
-      type: 'video',
+      kind: 'video',
       urls: ['https://example.com/v.mp4'],
       coordinates: [
         [-122, 37],
@@ -333,9 +345,25 @@ describe('toMaplibreSource', () => {
         [-121, 37],
       ],
     };
-    expect(toMaplibreSource(source)).toMatchObject({
+    expect(translateGeoVisData(entry)).toMatchObject({
       type: 'video',
       urls: ['https://example.com/v.mp4'],
+    });
+  });
+
+  test('native entry is passed through verbatim', () => {
+    const entry: GeoVisDataEntry = {
+      id: 's7',
+      kind: 'native',
+      engine: 'maplibre',
+      spec: {
+        type: 'vector',
+        url: 'pmtiles://https://example.com/data.pmtiles',
+      },
+    };
+    expect(translateGeoVisData(entry)).toMatchObject({
+      type: 'vector',
+      url: 'pmtiles://https://example.com/data.pmtiles',
     });
   });
 });
@@ -349,13 +377,17 @@ describe('applyPatch — camelCase to MapLibre key translation', () => {
     const adapter = createMapLibreAdapter();
     const spec = {
       ...makeSpec('p'),
-      sources: [
-        { id: 'src', type: 'geojson' as const, data: 'https://x.com/d.json' },
+      data: [
+        {
+          id: 'src',
+          kind: 'geojson-url' as const,
+          url: 'https://x.com/d.json',
+        },
       ],
       layers: [
-        { id: 'poly', sourceId: 'src', geometry: 'polygon' as const },
-        { id: 'ln', sourceId: 'src', geometry: 'line' as const },
-        { id: 'pt', sourceId: 'src', geometry: 'point' as const },
+        { id: 'poly', dataId: 'src', geometry: 'polygon' as const },
+        { id: 'ln', dataId: 'src', geometry: 'line' as const },
+        { id: 'pt', dataId: 'src', geometry: 'point' as const },
       ],
     };
     adapter.mount(makeContainer(), spec, 'v');
@@ -501,7 +533,7 @@ describe('update() — view state sync', () => {
 });
 
 describe('toMaplibreLayer', () => {
-  const base = { id: 'l1', sourceId: 's1', visible: true as const };
+  const base = { id: 'l1', dataId: 's1', visible: true as const };
 
   test('polygon → fill with defaults', () => {
     const layer: VisualizationLayer = { ...base, geometry: 'polygon' };
@@ -611,7 +643,7 @@ describe('applyPatch — add / remove operations', () => {
     // getLayer returns null by default in makeMapMock, so addLayer should fire.
     const newLayer: VisualizationLayer = {
       id: 'new-layer',
-      sourceId: 'vs-src',
+      dataId: 'vs-src',
       geometry: 'polygon',
       visible: true,
     };
@@ -621,11 +653,11 @@ describe('applyPatch — add / remove operations', () => {
     expect(calledWith).toMatchObject({ id: 'new-layer', type: 'fill' });
   });
 
-  test('op:remove target:source → calls map.removeSource when source exists', () => {
+  test('op:remove target:data → calls map.removeSource when source exists', () => {
     const { adapter, map } = mountAdapter();
     // Mock getSource to simulate the source being present on the map.
     jest.mocked(map.getSource).mockReturnValue({} as never);
-    adapter.applyPatch?.({ target: 'source', op: 'remove', value: 'vs-src' });
+    adapter.applyPatch?.({ target: 'data', op: 'remove', value: 'vs-src' });
     expect(map.removeSource).toHaveBeenCalledWith('vs-src');
   });
 });
@@ -640,11 +672,11 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
     const adapter = createMapLibreAdapter();
     const initialSpec = {
       ...makeSpec('gj'),
-      sources: [
+      data: [
         {
           id: 'geo-src',
-          type: 'geojson' as const,
-          data: 'https://example.com/v1.geojson',
+          kind: 'geojson-url' as const,
+          url: 'https://example.com/v1.geojson',
         },
       ],
       layers: [],
@@ -664,11 +696,11 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
 
     const nextSpec = {
       ...initialSpec,
-      sources: [
+      data: [
         {
           id: 'geo-src',
-          type: 'geojson' as const,
-          data: 'https://example.com/v2.geojson',
+          kind: 'geojson-url' as const,
+          url: 'https://example.com/v2.geojson',
         },
       ],
     };
@@ -687,5 +719,171 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
     adapter.update({ ...initialSpec });
 
     expect(setData).not.toHaveBeenCalled();
+  });
+});
+
+describe('syncSourcesAndLayers — colorBy defaults', () => {
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+
+    return { adapter, map };
+  };
+
+  test('applies quantitative fill-color expression for polygon layers', () => {
+    const { adapter, map } = mountAdapter();
+    const spec = {
+      ...makeSpec('quant'),
+      data: [
+        {
+          id: 'src',
+          kind: 'geojson-inline' as const,
+          geojson: {
+            type: 'FeatureCollection' as const,
+            features: [
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { c1: 10 },
+              },
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { c1: 20 },
+              },
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { c1: 30 },
+              },
+            ],
+          },
+        },
+      ],
+      layers: [
+        {
+          id: 'l-quant',
+          dataId: 'src',
+          geometry: 'polygon' as const,
+          colorBy: {
+            type: 'quantitative' as const,
+            property: 'c1',
+            scale: 'quantile' as const,
+            bins: 3,
+            palette: 'Blues',
+          },
+        },
+      ],
+    };
+
+    adapter.mount(makeContainer(), spec, 'v');
+    adapter.update(spec);
+
+    const layer = jest.mocked(map.addLayer).mock.calls.slice(-1)[0]?.[0] as {
+      paint?: Record<string, unknown>;
+    };
+    const expression = layer.paint?.['fill-color'] as unknown[];
+
+    expect(Array.isArray(expression)).toBe(true);
+    expect(expression[0]).toBe('step');
+  });
+
+  test('applies categorical fill-color expression for polygon layers', () => {
+    const { adapter, map } = mountAdapter();
+    const spec = {
+      ...makeSpec('cat'),
+      data: [
+        {
+          id: 'src',
+          kind: 'geojson-inline' as const,
+          geojson: {
+            type: 'FeatureCollection' as const,
+            features: [
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { category: 'A' },
+              },
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { category: 'B' },
+              },
+            ],
+          },
+        },
+      ],
+      layers: [
+        {
+          id: 'l-cat',
+          dataId: 'src',
+          geometry: 'polygon' as const,
+          colorBy: {
+            type: 'categorical' as const,
+            property: 'category',
+            palette: 'Blues',
+          },
+        },
+      ],
+    };
+
+    adapter.mount(makeContainer(), spec, 'v');
+    adapter.update(spec);
+
+    const layer = jest.mocked(map.addLayer).mock.calls.slice(-1)[0]?.[0] as {
+      paint?: Record<string, unknown>;
+    };
+    const expression = layer.paint?.['fill-color'] as unknown[];
+
+    expect(Array.isArray(expression)).toBe(true);
+    expect(expression[0]).toBe('match');
+  });
+
+  test('keeps explicit fillColor instead of overriding with colorBy defaults', () => {
+    const { adapter, map } = mountAdapter();
+    const spec = {
+      ...makeSpec('explicit-fill'),
+      data: [
+        {
+          id: 'src',
+          kind: 'geojson-inline' as const,
+          geojson: {
+            type: 'FeatureCollection' as const,
+            features: [
+              {
+                type: 'Feature' as const,
+                geometry: null,
+                properties: { c1: 10 },
+              },
+            ],
+          },
+        },
+      ],
+      layers: [
+        {
+          id: 'l-explicit',
+          dataId: 'src',
+          geometry: 'polygon' as const,
+          paint: { fillColor: '#123456' },
+          colorBy: {
+            type: 'quantitative' as const,
+            property: 'c1',
+            scale: 'quantile' as const,
+            bins: 5,
+          },
+        },
+      ],
+    };
+
+    adapter.mount(makeContainer(), spec, 'v');
+    adapter.update(spec);
+
+    const layer = jest.mocked(map.addLayer).mock.calls.slice(-1)[0]?.[0] as {
+      paint?: Record<string, unknown>;
+    };
+    expect(layer.paint?.['fill-color']).toBe('#123456');
   });
 });

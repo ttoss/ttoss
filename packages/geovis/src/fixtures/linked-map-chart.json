@@ -1,7 +1,7 @@
 {
   "id": "linked-map-chart",
   "title": "Linked Map Chart",
-  "description": "Hovering a region on the map highlights it in the bar chart and vice-versa. Uses queryRenderedFeatures to sync map hover state with an external chart — based on the MapLibre 'Get features under the mouse pointer' example.",
+  "description": "Hovering a region on the map highlights it in the bar chart and vice-versa.",
   "engine": "maplibre",
   "view": {
     "center": [-46.6333, -23.5505],
@@ -12,11 +12,11 @@
   "basemap": {
     "styleUrl": "https://demotiles.maplibre.org/style.json"
   },
-  "sources": [
+  "data": [
     {
       "id": "regions",
-      "type": "geojson",
-      "data": {
+      "kind": "geojson-inline",
+      "geojson": {
         "type": "FeatureCollection",
         "features": [
           {
@@ -86,7 +86,7 @@
   "layers": [
     {
       "id": "regions-fill",
-      "sourceId": "regions",
+      "dataId": "regions",
       "geometry": "polygon",
       "paint": {
         "fillColor": "#22c55e",

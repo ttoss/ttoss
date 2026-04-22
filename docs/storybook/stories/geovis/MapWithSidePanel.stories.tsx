@@ -1,15 +1,28 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import type { PartialVisualizationSpec } from '@ttoss/geovis';
+import {
+  applyDefaults,
+  GeoVisCanvas,
+  GeoVisProvider,
+  useGeoVis,
+} from '@ttoss/geovis';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 
-import mapWithSidePanelSpec from '../../../../packages/geovis/src/fixtures/map-with-side-panel.json';
+import mapWithSidePanelMinimal from '../../../../packages/geovis/src/fixtures/map-with-side-panel.minimal.json';
+import {
+  applyBasemap,
+  BASEMAP_ARG_TYPE,
+  type BasemapArgs,
+  DEFAULT_BASEMAP_ARGS,
+} from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MapWithSidePanel',
   tags: ['autodocs'],
-} as Meta;
+  argTypes: BASEMAP_ARG_TYPE,
+  args: DEFAULT_BASEMAP_ARGS,
+} as Meta<BasemapArgs>;
 
 const SIDEBAR_WIDTH = 300;
 
@@ -122,12 +135,29 @@ const SidePanels = () => {
   );
 };
 
-export const MapWithSidePanel: StoryFn = () => {
+// Minimal fixture (data only) — `applyDefaults` derives center/zoom from
+// the inline focal-point feature; only the pitch is added here for the
+// side-panel padding demo.
+const mapWithSidePanelSpec: PartialVisualizationSpec = {
+  ...(mapWithSidePanelMinimal as PartialVisualizationSpec),
+  view: {
+    ...applyDefaults(mapWithSidePanelMinimal as PartialVisualizationSpec).view,
+    pitch: 60,
+  },
+};
+
+export const MapWithSidePanel: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
+  const activeSpec = React.useMemo(() => {
+    return applyBasemap(mapWithSidePanelSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <strong>{mapWithSidePanelSpec.title}</strong>
-        <p>{mapWithSidePanelSpec.description}</p>
+        <strong>Map With Side Panel</strong>
+        <p>
+          Demonstrates collapsible side panels that adjust the map&apos;s
+          padding so the focal point stays centered in the visible area.
+        </p>
       </div>
       <div
         style={{
@@ -138,9 +168,7 @@ export const MapWithSidePanel: StoryFn = () => {
           overflow: 'hidden',
         }}
       >
-        <GeoVisProvider
-          spec={mapWithSidePanelSpec as unknown as VisualizationSpec}
-        >
+        <GeoVisProvider spec={activeSpec}>
           <GeoVisCanvas
             viewId="primary"
             style={{ width: '100%', height: '100%' }}

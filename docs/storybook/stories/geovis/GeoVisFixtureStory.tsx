@@ -1,21 +1,35 @@
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type { PartialVisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+
+import { applyBasemap } from './_map-story-helpers';
 
 export const GeoVisFixtureStory = ({
   spec,
+  title,
+  description,
   references,
+  basemapStyleUrl,
 }: {
-  spec: VisualizationSpec;
+  spec: PartialVisualizationSpec;
+  title?: string;
+  description?: string;
   references?: { label: string; url: string }[];
+  /** When provided, overrides `spec.basemap.styleUrl`. */
+  basemapStyleUrl?: string;
 }) => {
+  const activeSpec = basemapStyleUrl
+    ? applyBasemap(spec, basemapStyleUrl)
+    : spec;
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div>
-        <strong>{spec.title}</strong>
-        {spec.description ? <p>{spec.description}</p> : null}
-      </div>
+      {(title ?? description) ? (
+        <div>
+          {title ? <strong>{title}</strong> : null}
+          {description ? <p>{description}</p> : null}
+        </div>
+      ) : null}
       <div style={{ width: '100%', height: 560, border: '1px solid #d4d4d8' }}>
-        <GeoVisProvider spec={spec}>
+        <GeoVisProvider spec={activeSpec}>
           <GeoVisCanvas viewId="primary" />
         </GeoVisProvider>
       </div>

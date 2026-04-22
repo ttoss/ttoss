@@ -1,0 +1,52 @@
+{
+  "id": "distritos-sp-populacao-idosa",
+  "title": "Distritos de São Paulo — População 60+ (small multiples)",
+  "description": "Coropletismo dos distritos de São Paulo usando as colunas B4:G100 da planilha Dados.xlsx (populações por faixa etária 60+). Demonstra a opção A + C: `layerTemplates` declarativo gera N `layers` e N `views` (small multiples) a partir das properties `c1..c5`, com labels resolvidos a partir de `metadata.displayPropertyLabels`.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-46.6361, -23.5475],
+    "zoom": 8.5
+  },
+  "basemap": {
+    "styleUrl": "https://tiles.openfreemap.org/styles/bright"
+  },
+  "metadata": {
+    "dataset": {
+      "name": "Dados.xlsx",
+      "range": "B4:G100",
+      "origin": "Secretaria Municipal de Saúde de São Paulo — população residente por distrito"
+    },
+    "displayPropertyLabels": {
+      "nm_distrit": "Distrito",
+      "c1": "População 60 a 64",
+      "c2": "População 65 a 69",
+      "c3": "População 70 a 74",
+      "c4": "População 75 e +",
+      "c5": "População Total 60+"
+    }
+  },
+  "layers": [],
+  "layerTemplates": [
+    {
+      "id": "distritos",
+      "geometry": "polygon",
+      "properties": ["c1", "c2", "c3", "c4", "c5"],
+      "labelProperty": "nm_distrit",
+      "displayProperties": ["nm_distrit", "c1", "c2", "c3", "c4", "c5"],
+      "colorBy": {
+        "type": "quantitative",
+        "scale": "quantile",
+        "bins": 5,
+        "palette": "Blues"
+      },
+      "dataId": "distritos"
+    }
+  ],
+  "data": [
+    {
+      "id": "distritos",
+      "kind": "geojson-url",
+      "url": "distrito-municipal-v2.json"
+    }
+  ]
+}

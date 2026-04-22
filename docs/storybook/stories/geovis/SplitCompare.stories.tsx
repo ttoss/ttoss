@@ -1,14 +1,22 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { VisualizationSpec, VisualizationView } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import type {
+  PartialVisualizationSpec,
+  VisualizationLayer,
+  VisualizationView,
+} from '@ttoss/geovis';
+import { applyDefaults, GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
-import choroplethFixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
-import fixture from '../../../../packages/geovis/src/fixtures/split-compare.json';
+import choroplethMinimal from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.minimal.json';
+import splitCompareMinimal from '../../../../packages/geovis/src/fixtures/split-compare.minimal.json';
 import type { LockRef, MapRef } from './_map-story-helpers';
 import {
+  applyBasemap,
+  BASEMAP_ARG_TYPE,
+  type BasemapArgs,
   ChoroplethPainter,
   ColorSwatchLegend,
+  DEFAULT_BASEMAP_ARGS,
   GeoVisSplitLayout,
   MapLabel,
   MapOverlayLegend,
@@ -18,27 +26,68 @@ import {
 export default {
   title: 'GeoVis/Fixtures/SplitCompare',
   tags: ['autodocs'],
-} as Meta;
+  argTypes: BASEMAP_ARG_TYPE,
+  args: DEFAULT_BASEMAP_ARGS,
+} as Meta<BasemapArgs>;
 
-// Specs derived from the same fixture.
-// Both share source, view and basemap. Only the layers differ.
-
-const leftSpec: VisualizationSpec = {
-  ...(fixture as unknown as VisualizationSpec),
-  layers: (fixture as unknown as VisualizationSpec).layers.filter((l) => {
-    return (fixture.metadata.leftLayers as string[]).includes(l.id);
-  }),
+// Story-level layer definitions overlaid on the data-only minimal fixture.
+// View (center/zoom) is auto-derived by `applyDefaults` from the inline
+// district polygons — no hardcoded camera position needed.
+const districtsFill: VisualizationLayer = {
+  id: 'districts-fill',
+  dataId: 'sp-districts',
+  geometry: 'polygon',
+  paint: { fillColor: '#3b82f6', fillOpacity: 0.45, lineColor: '#1d4ed8' },
+};
+const districtsLine: VisualizationLayer = {
+  id: 'districts-line',
+  dataId: 'sp-districts',
+  geometry: 'line',
+  paint: { lineColor: '#dc2626', lineWidth: 3 },
+};
+const leftSpec: PartialVisualizationSpec = {
+  ...(splitCompareMinimal as PartialVisualizationSpec),
+  layers: [districtsFill],
+};
+const rightSpec: PartialVisualizationSpec = {
+  ...(splitCompareMinimal as PartialVisualizationSpec),
+  layers: [districtsLine],
 };
 
-const rightSpec: VisualizationSpec = {
-  ...(fixture as unknown as VisualizationSpec),
-  layers: (fixture as unknown as VisualizationSpec).layers.filter((l) => {
-    return (fixture.metadata.rightLayers as string[]).includes(l.id);
-  }),
-};
+// Auto-derived view used by the recenter button.
+const SP_VIEW = applyDefaults(leftSpec).view;
 
-// Spec with declared views[] — used by Option A.
-const choroplethSpec = choroplethFixture as unknown as VisualizationSpec;
+// Choropleth spec used by Option A — adds layer + views[] to the
+// data-only Rwanda fixture. The source is a remote URL, so an explicit
+// view is provided here (the adapter still refines it via `autoFit` once
+// the source loads).
+const rwandaChoroplethLayer: VisualizationLayer = {
+  id: 'rwanda-choropleth',
+  dataId: 'rwanda-provinces',
+  geometry: 'polygon',
+  paint: {
+    fillColor: '#dbeafe',
+    fillOpacity: 0.85,
+    lineColor: '#94a3b8',
+  },
+};
+const choroplethSpec: PartialVisualizationSpec = {
+  ...(choroplethMinimal as PartialVisualizationSpec),
+  view: { center: [30.0222, -1.9596], zoom: 7, autoFit: true },
+  layers: [rwandaChoroplethLayer],
+  views: [
+    {
+      id: 'left',
+      label: 'Absolute population count (population) — invalid',
+      layers: ['rwanda-choropleth'],
+    },
+    {
+      id: 'right',
+      label: 'Population density (hab/km²) — correct',
+      layers: ['rwanda-choropleth'],
+    },
+  ],
+};
 
 // Blue scale for absolute count (invalid).
 // Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
@@ -77,16 +126,22 @@ const fmtDensity = (v: number) => {
  * The right panel displays zone perimeters (line).
  * Movement is synchronised via `getNativeInstance()` — no additional package API needed.
  */
-export const SplitCompare: StoryFn = () => {
+export const SplitCompare: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
+  const activeLeftSpec = React.useMemo(() => {
+    return applyBasemap(leftSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
+  const activeRightSpec = React.useMemo(() => {
+    return applyBasemap(rightSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
 
   const recenter = () => {
-    const { center, zoom } = fixture.view;
+    const { center, zoom } = SP_VIEW;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.jumpTo({ center, zoom, animate: false });
     }
     syncLock.current = false;
   };
@@ -108,9 +163,9 @@ export const SplitCompare: StoryFn = () => {
         }}
       >
         <div>
-          <strong>{fixture.title}</strong>
+          <strong>Split Compare — Territorial Coverage vs Perimeter</strong>
           <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            {fixture.description}
+            Two maps derived from the same data source (Sao Paulo districts).
           </p>
         </div>
         <button
@@ -134,7 +189,7 @@ export const SplitCompare: StoryFn = () => {
       <div style={{ display: 'flex', gap: 4, height: 480 }}>
         <div style={panelStyle}>
           <MapLabel>Territorial coverage (fill)</MapLabel>
-          <GeoVisProvider spec={leftSpec}>
+          <GeoVisProvider spec={activeLeftSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
             <MapSync
               selfRef={leftMapRef}
@@ -146,7 +201,7 @@ export const SplitCompare: StoryFn = () => {
 
         <div style={panelStyle}>
           <MapLabel>Zone perimeters (line)</MapLabel>
-          <GeoVisProvider spec={rightSpec}>
+          <GeoVisProvider spec={activeRightSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
             <MapSync
               selfRef={rightMapRef}
@@ -219,7 +274,12 @@ export const SplitCompare: StoryFn = () => {
  * Demonstrates the classic anti-pattern: Kigali City has 1.1M inhabitants (smallest province)
  * but 1,551 hab/km² (densest). On the left map it appears almost white; on the right it is the darkest.
  */
-export const OptionA_ViewsInSpec: StoryFn = () => {
+export const OptionA_ViewsInSpec: StoryFn<BasemapArgs> = ({
+  basemapStyleUrl,
+}) => {
+  const activeSpec = React.useMemo(() => {
+    return applyBasemap(choroplethSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
   const renderView = (view: VisualizationView) => {
     if (view.id === 'left') {
       return (
@@ -269,7 +329,7 @@ export const OptionA_ViewsInSpec: StoryFn = () => {
       </div>
 
       <GeoVisSplitLayout
-        spec={choroplethSpec}
+        spec={activeSpec}
         leftBorder="2px solid #f59e0b"
         rightBorder="2px solid #16a34a"
         render={renderView}
@@ -447,7 +507,7 @@ OptionA_ViewsInSpec.parameters = {
  * - The hook is composed with other logic (e.g. conditional filters per panel)
  * - Time-to-first-implementation is short: no ADR cost for schema changes
  */
-export const OptionB_UseSplitCompareHook: StoryFn = () => {
+export const OptionB_UseSplitCompareHook: StoryFn<BasemapArgs> = () => {
   return (
     <div
       style={{

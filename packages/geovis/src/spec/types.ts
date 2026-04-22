@@ -90,28 +90,55 @@ export interface ViewState {
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
+  /**
+   * When `true`, the engine adapter will refine `center`/`zoom` once data
+   * sources finish loading by calling its native `fitBounds` equivalent.
+   * Set automatically by `applyDefaults` when the spec did not include an
+   * explicit `view`. User-provided views are never auto-fit.
+   */
+  autoFit?: boolean;
 }
 
-export interface GeoJSONSource {
+/**
+ * Inline GeoJSON object embedded directly in the spec.
+ */
+export interface GeoJSONInlineData {
   id: string;
-  type: 'geojson';
-  data: string | GeoJSONObject;
+  kind: 'geojson-inline';
+  geojson: GeoJSONObject;
   attribution?: string;
 }
 
-export interface VectorTileSource {
+/**
+ * Remote GeoJSON loaded by the engine from `url`.
+ */
+export interface GeoJSONUrlData {
   id: string;
-  type: 'vector-tiles';
+  kind: 'geojson-url';
+  url: string;
+  attribution?: string;
+}
+
+/**
+ * Vector tile source (MVT / TileJSON).
+ */
+export interface VectorTilesData {
+  id: string;
+  kind: 'vector-tiles';
   tiles: string[];
+  /** Source-layer name used as a default for layers that reference this entry. */
   sourceLayer?: string;
   minzoom?: number;
   maxzoom?: number;
   attribution?: string;
 }
 
-export interface RasterTileSource {
+/**
+ * Raster tile source (PNG, JPEG, WEBP).
+ */
+export interface RasterTilesData {
   id: string;
-  type: 'raster-tiles';
+  kind: 'raster-tiles';
   tiles: string[];
   tileSize?: 256 | 512;
   minzoom?: number;
@@ -119,11 +146,14 @@ export interface RasterTileSource {
   attribution?: string;
 }
 
-export interface RasterDemSource {
+/**
+ * Terrain / elevation raster-DEM source.
+ */
+export interface RasterDemData {
   id: string;
-  type: 'raster-dem';
-  tiles?: string[];
+  kind: 'raster-dem';
   url?: string;
+  tiles?: string[];
   tileSize?: number;
   minzoom?: number;
   maxzoom?: number;
@@ -131,28 +161,55 @@ export interface RasterDemSource {
   encoding?: 'mapbox' | 'terrarium' | 'custom';
 }
 
-export interface VideoSource {
+/**
+ * Georeferenced raster image draped over four corner coordinates.
+ */
+export interface ImageData {
   id: string;
-  type: 'video';
-  urls: string[];
-  coordinates: [LngLat, LngLat, LngLat, LngLat];
-}
-
-export interface ImageSource {
-  id: string;
-  type: 'image';
+  kind: 'image';
   url: string;
   coordinates: [LngLat, LngLat, LngLat, LngLat];
   attribution?: string;
 }
 
-export type DataSource =
-  | GeoJSONSource
-  | VectorTileSource
-  | RasterTileSource
-  | RasterDemSource
-  | VideoSource
-  | ImageSource;
+/**
+ * Video source draped over four corner coordinates.
+ */
+export interface VideoData {
+  id: string;
+  kind: 'video';
+  urls: string[];
+  coordinates: [LngLat, LngLat, LngLat, LngLat];
+}
+
+/**
+ * Engine-native escape hatch. When `engine` matches the spec engine, the
+ * adapter injects `spec` verbatim into the engine without any translation.
+ * Use this for formats not yet covered by the typed variants (e.g. PMTiles).
+ */
+export interface NativeData {
+  id: string;
+  kind: 'native';
+  /** Engine identifier this spec is written for (e.g. `'maplibre'`). */
+  engine: string;
+  /** Engine-native source specification passed through verbatim. */
+  spec: Record<string, unknown>;
+}
+
+/**
+ * Discriminated union of all data entry types understood by GeoVis.
+ * The `kind` field is the discriminant; `id` is shared by all variants and
+ * referenced by `VisualizationLayer.dataId`.
+ */
+export type GeoVisDataEntry =
+  | GeoJSONInlineData
+  | GeoJSONUrlData
+  | VectorTilesData
+  | RasterTilesData
+  | RasterDemData
+  | ImageData
+  | VideoData
+  | NativeData;
 
 export interface FillPaint {
   fillColor?: string;
@@ -214,7 +271,8 @@ export type LayerPaint =
 
 export interface VisualizationLayer {
   id: string;
-  sourceId: string;
+  /** References `VisualizationSpec.data[].id`. */
+  dataId: string;
   geometry: GeoVisGeometryType;
   sourceLayer?: string;
   title?: string;
@@ -222,6 +280,102 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
+  /**
+   * @description Feature property used as the primary label/identifier for rendered
+   * features (tooltips, popups, symbol text). Example: `"nm_subpref"`.
+   */
+  labelProperty?: string;
+  /**
+   * Ordered list of feature property names that should be displayed by
+   * consumers (e.g. tooltips, popups, side panels). Each entry must match
+   * a property that exists in the layer's source features.
+   */
+  displayProperties?: string[];
+  /**
+   * Optional map of property -> human-friendly label, typically resolved from
+   * `spec.metadata.displayPropertyLabels` during template expansion.
+   */
+  displayPropertyLabels?: Record<string, string>;
+  /**
+   * @description Data-driven color configuration. When provided, the adapter derives
+   * paint colors from feature properties using the declared scheme.
+   */
+  colorBy?: ColorBy;
+  /**
+   * @description Alternative color/legend configurations. Intended for UIs that allow
+   * the user to switch between multiple visual encodings of the same layer.
+   */
+  legends?: LegendSpec[];
+  /**
+   * Id of the entry in `legends` that should be active by default.
+   * Must match one of `legends[].id`.
+   */
+  activeLegendId?: string;
+}
+
+/**
+ * Declarative template that expands into N concrete `VisualizationLayer`
+ * entries — one per entry in `properties`. Use `expandLayerTemplates(spec)`
+ * to materialize the expansion before feeding the spec to the adapter.
+ *
+ * Each expanded layer is identified by `layerIdPattern` (default:
+ * `"${templateId}-${property}"`). When `generateViews` is true, a
+ * `VisualizationView` is also emitted for each expanded layer, using
+ * `viewIdPattern` (default: same as the layer id).
+ *
+ * Pattern placeholders resolved by the expander:
+ * - `${templateId}` → the template id
+ * - `${property}`   → the current property name (e.g. `c1`)
+ * - `${label}`      → the label resolved from
+ *                     `spec.metadata.displayPropertyLabels[property]`,
+ *                     falling back to the property name
+ */
+export interface LayerTemplate {
+  /** Geometry type applied to every expanded layer. */
+  geometry: GeoVisGeometryType;
+  /**
+   * Ordered list of feature property names driving the expansion. One layer
+   * (and optionally one view) is emitted per entry. Every entry must be
+   * present in at least one feature of the referenced source.
+   */
+  properties: string[];
+  /** Label property applied to every expansion (same value for all). */
+  labelProperty: string;
+  /** Display properties applied to every expansion (same list for all). */
+  displayProperties: string[];
+  /**
+   * Optional template identifier (not a layer id). When omitted, the
+   * expander generates one based on the template index (`template${i}`).
+   */
+  id?: string;
+  /**
+   * Source consumed by every expanded layer. When omitted, defaults to
+   * the id of the first entry in `spec.data`.
+   */
+  dataId?: string;
+  /** Optional source-layer filter applied to every expansion. */
+  sourceLayer?: string;
+  /** Initial visibility applied to every expansion. */
+  visible?: boolean;
+  /** Minimum zoom applied to every expansion. */
+  minzoom?: number;
+  /** Maximum zoom applied to every expansion. */
+  maxzoom?: number;
+  /** Static paint applied to every expansion. */
+  paint?: LayerPaint;
+  /**
+   * Color-by template whose `property` is injected per expansion from
+   * `properties[i]`. When omitted, defaults to `{ type: 'categorical' }`.
+   */
+  colorBy?: ColorByTemplate;
+  /** When true, also emits one `VisualizationView` per expanded layer. */
+  generateViews?: boolean;
+  /** Pattern for expanded layer ids. Defaults to `"${templateId}-${property}"`. */
+  layerIdPattern?: string;
+  /** Pattern for expanded view ids. Defaults to the generated layer id. */
+  viewIdPattern?: string;
+  /** Pattern for expanded layer `title` and view `label`. Defaults to `"${label}"`. */
+  labelPattern?: string;
 }
 
 export interface BaseMapSpec {
@@ -251,7 +405,7 @@ export interface VisualizationSpec {
   engine: 'maplibre';
   view: ViewState;
   basemap?: BaseMapSpec;
-  sources: DataSource[];
+  data: GeoVisDataEntry[];
   layers: VisualizationLayer[];
   /**
    * Optional array of views for multi-panel layouts.
@@ -266,8 +420,6 @@ export interface VisualizationSpec {
     };
   };
 }
-
-export type GeovisSpec = VisualizationSpec;
 
 export interface PolicyViolation {
   /** Identifies the violated policy rule. */

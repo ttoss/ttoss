@@ -61,7 +61,7 @@ const baseSpec: VisualizationSpec = {
   id: 'test',
   engine: 'maplibre',
   view: { center: [-46.6, -23.5], zoom: 10 },
-  sources: [],
+  data: [],
   layers: [],
 };
 
@@ -225,9 +225,7 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
   test('context spec reflects runtime.spec immediately after applyPatch', async () => {
     const updatedSpec: VisualizationSpec = {
       ...baseSpec,
-      layers: [
-        { id: 'patched', sourceId: 'src', geometry: 'polygon' as const },
-      ],
+      layers: [{ id: 'patched', dataId: 'src', geometry: 'polygon' as const }],
     };
 
     // Make mockRuntimeApplyPatch update the runtime spec when called.

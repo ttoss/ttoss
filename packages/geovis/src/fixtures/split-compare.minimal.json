@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "id": "sp-districts",
+      "kind": "geojson-inline",
+      "geojson": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": { "name": "Jardins", "zone": "residential" },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.67, -23.57],
+                  [-46.64, -23.57],
+                  [-46.64, -23.55],
+                  [-46.67, -23.55],
+                  [-46.67, -23.57]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": { "name": "Pinheiros", "zone": "mixed" },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.7, -23.57],
+                  [-46.67, -23.57],
+                  [-46.67, -23.55],
+                  [-46.7, -23.55],
+                  [-46.7, -23.57]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": { "name": "Vila Madalena", "zone": "cultural" },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.7, -23.55],
+                  [-46.67, -23.55],
+                  [-46.67, -23.53],
+                  [-46.7, -23.53],
+                  [-46.7, -23.55]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": { "name": "Itaim Bibi", "zone": "commercial" },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.67, -23.59],
+                  [-46.64, -23.59],
+                  [-46.64, -23.57],
+                  [-46.67, -23.57],
+                  [-46.67, -23.59]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

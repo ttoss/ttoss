@@ -1,21 +1,52 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoJSONFeatureCollection,
+  PartialVisualizationSpec,
+} from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import * as React from 'react';
 
-import linkedMapChartSpec from '../../../../packages/geovis/src/fixtures/linked-map-chart.json';
+import linkedMapChartMinimal from '../../../../packages/geovis/src/fixtures/linked-map-chart.minimal.json';
+import {
+  applyBasemap,
+  BASEMAP_ARG_TYPE,
+  type BasemapArgs,
+  DEFAULT_BASEMAP_ARGS,
+} from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/LinkedMapChart',
   tags: ['autodocs'],
-} as Meta;
+  argTypes: BASEMAP_ARG_TYPE,
+  args: DEFAULT_BASEMAP_ARGS,
+} as Meta<BasemapArgs>;
+
+// Story-level overrides on top of the data-only minimal fixture: only a
+// custom layer paint so the hover highlight effect stands out. The camera
+// view (center/zoom) is derived from the inline data by `applyDefaults`.
+const LAYER_ID = 'regions-fill';
+const linkedMapChartSpec: PartialVisualizationSpec = {
+  ...(linkedMapChartMinimal as PartialVisualizationSpec),
+  layers: [
+    {
+      id: LAYER_ID,
+      dataId: 'regions',
+      geometry: 'polygon',
+      paint: {
+        fillColor: '#22c55e',
+        fillOpacity: 0.35,
+        lineColor: '#15803d',
+      },
+    },
+  ],
+};
 
 type Region = { regionId: string; label: string; value: number };
 
 const REGIONS: Region[] = (
-  linkedMapChartSpec.sources[0].data as GeoJSON.FeatureCollection
-).features.map((f) => {
+  linkedMapChartSpec.data[0] as { geojson: GeoJSONFeatureCollection }
+).geojson.features.map((f) => {
   return f.properties as Region;
 });
 
@@ -82,8 +113,6 @@ const BarChart = ({
   );
 };
 
-const LAYER_ID = 'regions-fill';
-
 const LinkedChart = ({
   hoveredId,
   onHover,
@@ -139,25 +168,30 @@ const LinkedChart = ({
   return null;
 };
 
-export const LinkedMapChart: StoryFn = () => {
+export const LinkedMapChart: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
 
   const handleHover = React.useCallback((id: string | null) => {
     setHoveredId(id);
   }, []);
 
+  const activeSpec = React.useMemo(() => {
+    return applyBasemap(linkedMapChartSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
+
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div>
-        <strong>{linkedMapChartSpec.title}</strong>
-        <p>{linkedMapChartSpec.description}</p>
+        <strong>Linked Map Chart</strong>
+        <p>
+          Hovering a region on the map highlights it in the bar chart and
+          vice-versa.
+        </p>
       </div>
       <div
         style={{ display: 'flex', border: '1px solid #d4d4d8', height: 480 }}
       >
-        <GeoVisProvider
-          spec={linkedMapChartSpec as unknown as VisualizationSpec}
-        >
+        <GeoVisProvider spec={activeSpec}>
           <GeoVisCanvas viewId="primary" style={{ flex: 1, height: '100%' }} />
           <LinkedChart hoveredId={hoveredId} onHover={handleHover} />
         </GeoVisProvider>

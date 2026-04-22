@@ -1,13 +1,24 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { PolicyViolation, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoJSONFeatureCollection,
+  PartialVisualizationSpec,
+  PolicyViolation,
+  VisualizationLayer,
+  VisualizationView,
+} from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import * as React from 'react';
 
-import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
+import choroplethMinimal from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.minimal.json';
 import type { LockRef, MapRef } from './_map-story-helpers';
 import {
+  applyBasemap,
+  BASEMAP_ARG_TYPE,
+  type BasemapArgs,
   ChoroplethPainter,
   ColorSwatchLegend,
+  DEFAULT_BASEMAP_ARGS,
+  GeoVisSplitLayout,
   MapLabel,
   MapOverlayLegend,
   MapSync,
@@ -16,9 +27,30 @@ import {
 export default {
   title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
   tags: ['autodocs'],
-} as Meta;
+  argTypes: BASEMAP_ARG_TYPE,
+  args: DEFAULT_BASEMAP_ARGS,
+} as Meta<BasemapArgs>;
 
-const spec = fixture as unknown as VisualizationSpec;
+// Story-level overrides on top of the data-only minimal fixture: a single
+// choropleth layer plus an explicit Rwanda-centred view (the source is a
+// remote URL, so `applyDefaults` cannot derive bounds at spec time — the
+// adapter will still refine the framing once the source loads).
+const rwandaChoroplethLayer: VisualizationLayer = {
+  id: 'rwanda-choropleth',
+  dataId: 'rwanda-provinces',
+  geometry: 'polygon',
+  paint: { fillColor: '#dbeafe', fillOpacity: 0.85, lineColor: '#94a3b8' },
+};
+const RWANDA_VIEW: VisualizationView = {
+  center: [30.0222, -1.9596],
+  zoom: 7,
+  autoFit: true,
+};
+const spec: PartialVisualizationSpec = {
+  ...(choroplethMinimal as PartialVisualizationSpec),
+  view: RWANDA_VIEW,
+  layers: [rwandaChoroplethLayer],
+};
 
 const fmtPop = (v: number) => {
   return `${(v / 1_000_000).toFixed(1)}M hab.`;
@@ -131,7 +163,12 @@ const PolicyWarningBanner = ({
  * white; on the right it is the darkest. Density is calculated at runtime via
  * the MapLibre expression `['/', ['get', 'population'], ['get', 'sq-km']]`.
  */
-export const InvalidRawCountChoropleth: StoryFn = () => {
+export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
+  basemapStyleUrl,
+}) => {
+  const activeSpec = React.useMemo(() => {
+    return applyBasemap(spec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
@@ -143,10 +180,10 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
   }, []);
 
   const recenter = React.useCallback(() => {
-    const { center, zoom } = fixture.view;
+    const { center, zoom } = RWANDA_VIEW;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.jumpTo({ center, zoom, animate: false });
     }
     syncLock.current = false;
   }, []);
@@ -163,9 +200,11 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         }}
       >
         <div>
-          <strong>{fixture.title}</strong>
+          <strong>Invalid Raw Count Choropleth (Rwanda Provinces)</strong>
           <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            {fixture.description}
+            Encoding absolute population counts in colour misleads readers
+            because larger areas naturally accumulate more people. Compare
+            absolute count (left) with density (right).
           </p>
         </div>
         <button
@@ -206,7 +245,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             steps={rawSteps}
             formatValue={fmtPop}
           />
-          <GeoVisProvider spec={spec}>
+          <GeoVisProvider spec={activeSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
             <MapSync
               selfRef={leftMapRef}
@@ -240,7 +279,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             steps={densitySteps}
             formatValue={fmtDensity}
           />
-          <GeoVisProvider spec={spec}>
+          <GeoVisProvider spec={activeSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
             <MapSync
               selfRef={rightMapRef}
@@ -285,10 +324,8 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             fixture should raise a runtime warning when the policy is enabled.
           </li>
           <li>
-            Invalid field: <code>{fixture.metadata.metricField as string}</code>
-            . Correct expression:{' '}
-            <code>{fixture.metadata.normalizedExpression as string}</code> (
-            {fixture.metadata.normalizedLabel as string}).
+            Invalid field: <code>population</code>. Correct expression:{' '}
+            <code>population / sq-km</code> (population density in hab/km²).
           </li>
         </ul>
       </div>
@@ -307,6 +344,242 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
           </li>
         </ul>
       </div>
+    </div>
+  );
+};
+
+const RWANDA_PROVINCES_INLINE: GeoJSONFeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      id: 'kigali',
+      properties: { name: 'Kigali City', population: 1_132_686, 'sq-km': 730 },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [29.85, -1.8],
+            [30.15, -1.8],
+            [30.15, -2.05],
+            [29.85, -2.05],
+            [29.85, -1.8],
+          ],
+        ],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'east',
+      properties: {
+        name: 'Eastern Province',
+        population: 2_553_154,
+        'sq-km': 21341,
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [30.15, -0.95],
+            [31.0, -0.95],
+            [31.0, -2.5],
+            [30.15, -2.5],
+            [30.15, -0.95],
+          ],
+        ],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'south',
+      properties: {
+        name: 'Southern Province',
+        population: 2_551_026,
+        'sq-km': 14837,
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [29.3, -2.05],
+            [30.15, -2.05],
+            [30.15, -3.0],
+            [29.3, -3.0],
+            [29.3, -2.05],
+          ],
+        ],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'north',
+      properties: {
+        name: 'Northern Province',
+        population: 2_330_213,
+        'sq-km': 8507,
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [29.3, -0.95],
+            [30.15, -0.95],
+            [30.15, -1.8],
+            [29.3, -1.8],
+            [29.3, -0.95],
+          ],
+        ],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'west',
+      properties: {
+        name: 'Western Province',
+        population: 2_534_854,
+        'sq-km': 19428,
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [28.8, -0.95],
+            [29.3, -0.95],
+            [29.3, -3.0],
+            [28.8, -3.0],
+            [28.8, -0.95],
+          ],
+        ],
+      },
+    },
+  ],
+};
+
+/**
+ * Self-contained spec — all data is inline, no fixture JSON import.
+ *
+ * Key fields to replicate this pattern:
+ * - `data[0].kind: 'geojson-inline'` — embed the GeoJSON directly
+ * - `views[]` — enables `GeoVisSplitLayout` (no `MapRef`/`MapSync` needed)
+ * - `metadata.isPolicyInvalid: true` — marks this as a policy contract artefact
+ */
+const minimalChoroplethSpec: VisualizationSpec = {
+  id: 'minimal-choropleth-split-compare',
+  engine: 'maplibre',
+  view: { center: [30.0, -1.95], zoom: 7 },
+  data: [
+    {
+      id: 'rwanda-provinces',
+      kind: 'geojson-inline',
+      geojson: RWANDA_PROVINCES_INLINE,
+    },
+  ],
+  layers: [
+    {
+      id: 'rwanda-choropleth',
+      dataId: 'rwanda-provinces',
+      geometry: 'polygon',
+      visible: true,
+      paint: {
+        fillColor: '#dbeafe',
+        fillOpacity: 0.85,
+        lineColor: '#94a3b8',
+        lineWidth: 0.5,
+      },
+    },
+  ],
+  views: [
+    {
+      id: 'left',
+      label: 'Absolute population count (population) \u2014 invalid',
+      layers: ['rwanda-choropleth'],
+    },
+    {
+      id: 'right',
+      label: 'Population density (hab/km\u00b2) \u2014 correct',
+      layers: ['rwanda-choropleth'],
+    },
+  ],
+  metadata: {
+    isPolicyInvalid: true,
+    metricField: 'population',
+    normalizedExpression: 'population / sq-km',
+    normalizedLabel: 'inhabitants per km\u00b2',
+  },
+};
+
+/**
+ * Same split-compare choropleth as `InvalidRawCountChoropleth` but with the
+ * entire spec — including GeoJSON data — defined inline in TypeScript.
+ * No fixture JSON file is imported.
+ *
+ * Uses rectangular bounding boxes for the five Rwanda provinces. The shapes
+ * are simplified but all `population` and `sq-km` values are accurate, so
+ * the `cartography.warnOnRawCountChoropleth` policy violation is genuine.
+ *
+ * **Copy-paste recipe**: `RWANDA_PROVINCES_INLINE` + `minimalChoroplethSpec`
+ * are the only artefacts needed to replicate this visualisation.
+ */
+export const MinimalChoroplethSplitCompare: StoryFn<BasemapArgs> = ({
+  basemapStyleUrl,
+}) => {
+  const activeSpec = React.useMemo(() => {
+    return applyBasemap(minimalChoroplethSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
+
+  const renderView = (view: VisualizationView) => {
+    if (view.id === 'left') {
+      return (
+        <>
+          <MapOverlayLegend
+            label="absolute population"
+            defaultColor="#eff6ff"
+            steps={rawSteps}
+            formatValue={fmtPop}
+          />
+          <ChoroplethPainter
+            layerId="rwanda-choropleth"
+            field="population"
+            defaultColor="#eff6ff"
+            steps={rawSteps}
+          />
+        </>
+      );
+    }
+    return (
+      <>
+        <MapOverlayLegend
+          label="density (hab/km\u00b2)"
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+          formatValue={fmtDensity}
+        />
+        <ChoroplethPainter
+          layerId="rwanda-choropleth"
+          field={densityExpr}
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+        />
+      </>
+    );
+  };
+
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div>
+        <strong>Minimal choropleth split-compare — spec defined in code</strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          Inline GeoJSON with rectangular province boundaries. Same
+          population/density data as the fixture story — no JSON file import.
+        </p>
+      </div>
+      <GeoVisSplitLayout
+        spec={activeSpec}
+        height={460}
+        leftBorder="2px solid #f59e0b"
+        rightBorder="2px solid #16a34a"
+        render={renderView}
+      />
     </div>
   );
 };

@@ -10,17 +10,17 @@
   "basemap": {
     "styleUrl": "https://tiles.openfreemap.org/styles/bright"
   },
-  "sources": [
+  "data": [
     {
       "id": "remote-geojson",
-      "type": "geojson",
-      "data": "https://api-forja.triangulos.tech/v1/multifiles/a555e514-e374-4027-958d-d8cf716a4449/baf83822-40d3-4ce1-83b2-3b4dea68a691/download"
+      "kind": "geojson-url",
+      "url": "https://api-forja.triangulos.tech/v1/multifiles/a555e514-e374-4027-958d-d8cf716a4449/baf83822-40d3-4ce1-83b2-3b4dea68a691/download"
     }
   ],
   "layers": [
     {
       "id": "remote-geojson-layer",
-      "sourceId": "remote-geojson",
+      "dataId": "remote-geojson",
       "geometry": "polygon"
     }
   ]

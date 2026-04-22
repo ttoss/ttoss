@@ -16,15 +16,15 @@ const makeAdapter = (): jest.Mocked<EngineAdapter> => {
 
 const makeSpec = (): VisualizationSpec => {
   return {
-    sources: [
+    data: [
       {
         id: 'src-1',
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
+        kind: 'geojson-inline',
+        geojson: { type: 'FeatureCollection', features: [] },
       },
     ],
     layers: [
-      { id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon', visible: true },
+      { id: 'lyr-1', dataId: 'src-1', geometry: 'polygon', visible: true },
     ],
     view: { center: [0, 0], zoom: 10 },
   };
@@ -36,7 +36,7 @@ describe('createRuntime — applyPatch add/remove', () => {
     const runtime = createRuntime(adapter, makeSpec());
     const newLayer = {
       id: 'lyr-2',
-      sourceId: 'src-1',
+      dataId: 'src-1',
       geometry: 'line' as const,
       visible: true,
     };
@@ -55,24 +55,24 @@ describe('createRuntime — applyPatch add/remove', () => {
     expect(runtime.spec.layers).toHaveLength(0);
   });
 
-  test('op:add target:source appends the source to currentSpec', () => {
+  test('op:add target:data appends the data entry to currentSpec', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpec());
-    const newSource = {
+    const newEntry = {
       id: 'src-2',
-      type: 'geojson' as const,
-      data: { type: 'FeatureCollection' as const, features: [] },
+      kind: 'geojson-inline' as const,
+      geojson: { type: 'FeatureCollection' as const, features: [] },
     };
-    runtime.applyPatch({ target: 'source', op: 'add', value: newSource });
-    expect(runtime.spec.sources).toHaveLength(2);
-    expect(runtime.spec.sources[1]).toEqual(newSource);
+    runtime.applyPatch({ target: 'data', op: 'add', value: newEntry });
+    expect(runtime.spec.data).toHaveLength(2);
+    expect(runtime.spec.data[1]).toEqual(newEntry);
   });
 
-  test('op:remove target:source removes the source from currentSpec', () => {
+  test('op:remove target:data removes the data entry from currentSpec', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpec());
-    runtime.applyPatch({ target: 'source', op: 'remove', value: 'src-1' });
-    expect(runtime.spec.sources).toHaveLength(0);
+    runtime.applyPatch({ target: 'data', op: 'remove', value: 'src-1' });
+    expect(runtime.spec.data).toHaveLength(0);
   });
 
   test('op:replace target:layer updates paint key in currentSpec', () => {

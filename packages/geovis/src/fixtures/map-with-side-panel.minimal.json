@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "focal-point",
+      "kind": "geojson-inline",
+      "geojson": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": { "name": "Washington, DC" },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-77.01866, 38.888]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -11,7 +11,7 @@
   "basemap": {
     "styleUrl": "https://demotiles.maplibre.org/style.json"
   },
-  "sources": [],
+  "data": [],
   "layers": [],
   "metadata": {
     "referenceExample": "https://maplibre.org/maplibre-gl-js/docs/examples/offset-the-vanishing-point-using-padding/"

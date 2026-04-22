@@ -10,17 +10,9 @@
   "basemap": {
     "styleUrl": "https://tiles.openfreemap.org/styles/bright"
   },
-  "sources": [
-    {
-      "id": "rwanda-provinces",
-      "type": "geojson",
-      "data": "https://maplibre.org/maplibre-gl-js/docs/assets/rwanda-provinces.geojson"
-    }
-  ],
   "layers": [
     {
       "id": "rwanda-choropleth",
-      "sourceId": "rwanda-provinces",
       "geometry": "polygon",
       "visible": true,
       "paint": {
@@ -28,7 +20,8 @@
         "fillOpacity": 0.85,
         "lineColor": "#94a3b8",
         "lineWidth": 0.5
-      }
+      },
+      "dataId": "rwanda-provinces"
     }
   ],
   "views": [
@@ -50,5 +43,12 @@
     "normalizedExpression": "population / sq-km",
     "normalizedLabel": "inhabitants per km²",
     "referenceExample": "https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
-  }
+  },
+  "data": [
+    {
+      "id": "rwanda-provinces",
+      "kind": "geojson-url",
+      "url": "https://maplibre.org/maplibre-gl-js/docs/assets/rwanda-provinces.geojson"
+    }
+  ]
 }

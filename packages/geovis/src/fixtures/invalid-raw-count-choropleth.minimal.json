@@ -1,0 +1,9 @@
+{
+  "data": [
+    {
+      "id": "rwanda-provinces",
+      "kind": "geojson-url",
+      "url": "https://maplibre.org/maplibre-gl-js/docs/assets/rwanda-provinces.geojson"
+    }
+  ]
+}

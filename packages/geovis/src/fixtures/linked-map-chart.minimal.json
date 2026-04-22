@@ -1,0 +1,73 @@
+{
+  "data": [
+    {
+      "id": "regions",
+      "kind": "geojson-inline",
+      "geojson": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-01",
+              "label": "Region A",
+              "value": 120
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.68, -23.58],
+                  [-46.64, -23.58],
+                  [-46.64, -23.54],
+                  [-46.68, -23.54],
+                  [-46.68, -23.58]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-02",
+              "label": "Region B",
+              "value": 80
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.64, -23.58],
+                  [-46.6, -23.58],
+                  [-46.6, -23.54],
+                  [-46.64, -23.54],
+                  [-46.64, -23.58]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "regionId": "r-03",
+              "label": "Region C",
+              "value": 200
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-46.6, -23.58],
+                  [-46.56, -23.58],
+                  [-46.56, -23.54],
+                  [-46.6, -23.54],
+                  [-46.6, -23.58]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

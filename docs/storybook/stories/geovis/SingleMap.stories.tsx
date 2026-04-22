@@ -1,18 +1,33 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type { PartialVisualizationSpec } from '@ttoss/geovis';
 
-import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.json';
+import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.minimal.json';
+import {
+  BASEMAP_ARG_TYPE,
+  type BasemapArgs,
+  DEFAULT_BASEMAP_ARGS,
+} from './_map-story-helpers';
 import { GeoVisFixtureStory } from './GeoVisFixtureStory';
 
 export default {
   title: 'GeoVis/Fixtures/SingleMap',
   tags: ['autodocs'],
-} as Meta;
+  argTypes: BASEMAP_ARG_TYPE,
+  args: DEFAULT_BASEMAP_ARGS,
+} as Meta<BasemapArgs>;
 
-export const SingleMap: StoryFn = () => {
+/**
+ * Minimal single-map example. The fixture JSON contains only a `data` entry;
+ * `id`, `engine`, `view`, and `layers` are derived by `applyDefaults` inside
+ * the runtime.
+ */
+export const SingleMap: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
   return (
     <GeoVisFixtureStory
-      spec={singleMapSpec as unknown as VisualizationSpec}
+      spec={singleMapSpec as PartialVisualizationSpec}
+      basemapStyleUrl={basemapStyleUrl}
+      title="Single Map"
+      description="Polygon and point markers from a single geojson-inline source."
       references={[
         {
           label: 'MapLibre official example (source)',

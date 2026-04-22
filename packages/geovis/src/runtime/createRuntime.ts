@@ -1,5 +1,5 @@
 import type {
-  DataSource,
+  GeoVisDataEntry,
   VisualizationLayer,
   VisualizationSpec,
 } from '../spec/types';
@@ -74,21 +74,21 @@ export const createRuntime = (
             }),
           };
         }
-      } else if (patch.target === 'source') {
+      } else if (patch.target === 'data') {
         if (patch.op === 'add' && patch.value != null) {
           currentSpec = {
             ...currentSpec,
-            sources: [...currentSpec.sources, patch.value as DataSource],
+            data: [...currentSpec.data, patch.value as GeoVisDataEntry],
           };
         } else if (patch.op === 'remove') {
-          const sourceId = patch.value as string;
+          const dataId = patch.value as string;
           currentSpec = {
             ...currentSpec,
             layers: currentSpec.layers.filter((l) => {
-              return l.sourceId !== sourceId;
+              return l.dataId !== dataId;
             }),
-            sources: currentSpec.sources.filter((s) => {
-              return s.id !== sourceId;
+            data: currentSpec.data.filter((s) => {
+              return s.id !== dataId;
             }),
           };
         }

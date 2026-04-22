@@ -14,11 +14,11 @@
     "referenceExample": "https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L24",
     "referenceGeometrySection": "https://github.com/maplibre/maplibre-gl-js/blob/main/test/examples/add-multiple-geometries-from-one-geojson-source.html#L35"
   },
-  "sources": [
+  "data": [
     {
       "id": "national-park",
-      "type": "geojson",
-      "data": {
+      "kind": "geojson-inline",
+      "geojson": {
         "type": "FeatureCollection",
         "features": [
           {
@@ -81,7 +81,7 @@
   "layers": [
     {
       "id": "park-boundary",
-      "sourceId": "national-park",
+      "dataId": "national-park",
       "geometry": "polygon",
       "paint": {
         "fillColor": "#888888",
@@ -92,7 +92,7 @@
     },
     {
       "id": "park-volcanoes",
-      "sourceId": "national-park",
+      "dataId": "national-park",
       "geometry": "point",
       "paint": {
         "circleColor": "#B42222",

@@ -3,6 +3,9 @@ import * as React from 'react';
 import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
+import type { PartialVisualizationSpec } from '../spec/applyDefaults';
+import { applyDefaults } from '../spec/applyDefaults';
+import { expandLayerTemplates } from '../spec/expandLayerTemplates';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
 /**
@@ -64,7 +67,12 @@ const resolveAdapter = async (
 };
 
 interface GeoVisProviderProps {
-  spec: VisualizationSpec;
+  /**
+   * Visualization spec. Accepts either a fully-typed `VisualizationSpec` or a
+   * minimal `PartialVisualizationSpec` (only `data` is required) — defaults
+   * for `id`, `engine`, `view`, and `layers` are filled in by `applyDefaults`.
+   */
+  spec: VisualizationSpec | PartialVisualizationSpec;
   children: React.ReactNode;
 }
 
@@ -74,7 +82,13 @@ interface GeoVisProviderProps {
  * initializes the runtime, and keeps it in sync with spec updates.
  * Throws any adapter initialization error as a React error boundary–catchable exception.
  */
-export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
+export const GeoVisProvider = ({
+  spec: rawSpec,
+  children,
+}: GeoVisProviderProps) => {
+  const spec = React.useMemo(() => {
+    return expandLayerTemplates(applyDefaults(rawSpec));
+  }, [rawSpec]);
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
   const [effectiveSpec, setEffectiveSpec] =

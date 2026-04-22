@@ -1,7 +1,7 @@
 {
   "id": "split-compare",
   "title": "Split Compare — Territorial Coverage vs Perimeter",
-  "description": "Two maps derived from the same data source (Sao Paulo districts). The left map shows territorial coverage (fill). The right map shows zone perimeters (line). Both share the same source, view and basemap — only the layers differ.",
+  "description": "Two maps derived from the same data source (Sao Paulo districts).",
   "engine": "maplibre",
   "view": {
     "center": [-46.665, -23.56],
@@ -10,16 +10,19 @@
   "basemap": {
     "styleUrl": "https://demotiles.maplibre.org/style.json"
   },
-  "sources": [
+  "data": [
     {
       "id": "sp-districts",
-      "type": "geojson",
-      "data": {
+      "kind": "geojson-inline",
+      "geojson": {
         "type": "FeatureCollection",
         "features": [
           {
             "type": "Feature",
-            "properties": { "name": "Jardins", "zone": "residential" },
+            "properties": {
+              "name": "Jardins",
+              "zone": "residential"
+            },
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -35,7 +38,10 @@
           },
           {
             "type": "Feature",
-            "properties": { "name": "Pinheiros", "zone": "mixed" },
+            "properties": {
+              "name": "Pinheiros",
+              "zone": "mixed"
+            },
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -51,7 +57,10 @@
           },
           {
             "type": "Feature",
-            "properties": { "name": "Vila Madalena", "zone": "cultural" },
+            "properties": {
+              "name": "Vila Madalena",
+              "zone": "cultural"
+            },
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -67,7 +76,10 @@
           },
           {
             "type": "Feature",
-            "properties": { "name": "Itaim Bibi", "zone": "commercial" },
+            "properties": {
+              "name": "Itaim Bibi",
+              "zone": "commercial"
+            },
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -88,7 +100,7 @@
   "layers": [
     {
       "id": "districts-fill",
-      "sourceId": "sp-districts",
+      "dataId": "sp-districts",
       "geometry": "polygon",
       "visible": true,
       "paint": {
@@ -100,7 +112,7 @@
     },
     {
       "id": "districts-line",
-      "sourceId": "sp-districts",
+      "dataId": "sp-districts",
       "geometry": "line",
       "visible": true,
       "paint": {
