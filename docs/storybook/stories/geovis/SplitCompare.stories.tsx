@@ -9,7 +9,6 @@ import * as React from 'react';
 
 import choroplethMinimal from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.minimal.json';
 import splitCompareMinimal from '../../../../packages/geovis/src/fixtures/split-compare.minimal.json';
-import type { LockRef, MapRef } from './_map-story-helpers';
 import {
   applyBasemap,
   BASEMAP_ARG_TYPE,
@@ -18,8 +17,10 @@ import {
   ColorSwatchLegend,
   DEFAULT_BASEMAP_ARGS,
   GeoVisSplitLayout,
+  type LockRef,
   MapLabel,
   MapOverlayLegend,
+  type MapRef,
   MapSync,
 } from './_map-story-helpers';
 

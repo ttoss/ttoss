@@ -161,6 +161,9 @@
         "$ref": "#/$defs/LayerTemplate"
       }
     },
+    "presentation": {
+      "$ref": "#/$defs/PresentationMode"
+    },
     "metadata": {
       "type": "object",
       "additionalProperties": true
@@ -578,7 +581,7 @@
     "LayerTemplate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "dataId", "geometry", "properties"],
+      "required": ["id", "dataId", "geometry"],
       "properties": {
         "id": {
           "type": "string",
@@ -641,11 +644,18 @@
           "type": "string",
           "minLength": 1
         },
+        "presentation": {
+          "$ref": "#/$defs/PresentationMode"
+        },
         "dataId": {
           "type": "string",
           "minLength": 1
         }
       }
+    },
+    "PresentationMode": {
+      "type": "string",
+      "enum": ["tabs", "side-by-side", "single-filter", "time-slider"]
     },
     "DataEntry": {
       "type": "object",

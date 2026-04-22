@@ -48,7 +48,7 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1', 'c2'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1', 'c2'],
+        displayProperties: ['c1', 'c2'],
         colorBy: {
           type: 'quantitative',
           scale: 'quantile',
@@ -67,7 +67,7 @@ describe('expandLayerTemplates', () => {
     expect(l1.id).toBe('distritos-c1');
     expect(l1.title).toBe('População 60 a 64');
     expect(l1.labelProperty).toBe('nm_distrit');
-    expect(l1.displayProperties).toEqual(['nm_distrit', 'c1', 'c2']);
+    expect(l1.displayProperties).toEqual(['c1', 'c2']);
     expect(l1.colorBy).toEqual({
       type: 'quantitative',
       property: 'c1',
@@ -176,7 +176,7 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1', 'c2'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1', 'c2'],
+        displayProperties: ['c1', 'c2'],
       },
     ];
 
@@ -197,15 +197,46 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1'],
+        displayProperties: ['c1'],
       },
     ];
 
     const result = expandLayerTemplates(spec);
+    // labelProperty is always included in the labels map so consumers can
+    // render a friendly label for the header without a separate lookup.
     expect(result.layers[0].displayPropertyLabels).toEqual({
-      nm_distrit: 'nm_distrit',
+      nm_distrit: 'nm_distrit', // not in metadata → falls back to property name
       c1: 'População 60 a 64',
     });
+  });
+
+  test('falls back to displayProperties when properties is omitted', () => {
+    const spec = baseSpec();
+    spec.layerTemplates = [
+      {
+        id: 'distritos',
+        dataId: 'src',
+        geometry: 'polygon',
+        labelProperty: 'nm_distrit',
+        displayProperties: ['c1', 'c2'],
+        colorBy: {
+          type: 'quantitative',
+          scale: 'quantile',
+          bins: 5,
+          palette: 'Blues',
+        },
+      },
+    ];
+
+    const result = expandLayerTemplates(spec);
+
+    expect(result.layers).toHaveLength(2);
+    expect(result.layers[0].id).toBe('distritos-c1');
+    expect(result.layers[1].id).toBe('distritos-c2');
+    expect(result.layers[0].colorBy?.property).toBe('c1');
+    expect(result.layers[1].colorBy?.property).toBe('c2');
+    expect(result.views).toHaveLength(2);
+    expect(result.views?.[0].id).toBe('distritos-c1');
   });
 
   test('defaults id to template${i} and dataId to first data entry', () => {
@@ -215,7 +246,7 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1', 'c2'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1', 'c2'],
+        displayProperties: ['c1', 'c2'],
       },
     ];
 
@@ -240,7 +271,7 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1'],
+        displayProperties: ['c1'],
       },
     ];
 
@@ -258,7 +289,7 @@ describe('expandLayerTemplates', () => {
         geometry: 'polygon',
         properties: ['c1', 'c2'],
         labelProperty: 'nm_distrit',
-        displayProperties: ['nm_distrit', 'c1', 'c2'],
+        displayProperties: ['c1', 'c2'],
         colorBy: {
           type: 'quantitative',
           scale: 'quantile',
@@ -279,6 +310,56 @@ describe('expandLayerTemplates', () => {
     expect(result.layers[1].colorBy).toMatchObject({
       type: 'quantitative',
       property: 'c2',
+    });
+  });
+
+  describe('presentation propagation', () => {
+    test('copies template.presentation to spec.presentation when not set', () => {
+      const spec = baseSpec();
+      spec.layerTemplates = [
+        {
+          id: 't',
+          dataId: 'src',
+          geometry: 'polygon',
+          properties: ['c1'],
+          presentation: 'side-by-side',
+        },
+      ];
+
+      const result = expandLayerTemplates(spec);
+      expect(result.presentation).toBe('side-by-side');
+    });
+
+    test('preserves spec.presentation over template.presentation', () => {
+      const spec = baseSpec();
+      spec.presentation = 'tabs';
+      spec.layerTemplates = [
+        {
+          id: 't',
+          dataId: 'src',
+          geometry: 'polygon',
+          properties: ['c1'],
+          presentation: 'time-slider',
+        },
+      ];
+
+      const result = expandLayerTemplates(spec);
+      expect(result.presentation).toBe('tabs');
+    });
+
+    test('leaves spec.presentation undefined when neither set it', () => {
+      const spec = baseSpec();
+      spec.layerTemplates = [
+        {
+          id: 't',
+          dataId: 'src',
+          geometry: 'polygon',
+          properties: ['c1'],
+        },
+      ];
+
+      const result = expandLayerTemplates(spec);
+      expect(result.presentation).toBeUndefined();
     });
   });
 });

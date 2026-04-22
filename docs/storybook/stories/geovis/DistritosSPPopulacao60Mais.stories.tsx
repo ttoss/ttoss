@@ -4,9 +4,8 @@ import type {
   PartialVisualizationSpec,
   QuantitativeColorBy,
   VisualizationLayer,
-  VisualizationView,
 } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import { GeoVisProvider, GeoVisViews, useGeoVis } from '@ttoss/geovis';
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import * as React from 'react';
 
@@ -16,14 +15,17 @@ import {
   BASEMAP_ARG_TYPE,
   type BasemapArgs,
   DEFAULT_BASEMAP_ARGS,
+  DEFAULT_PRESENTATION_ARGS,
+  PRESENTATION_ARG_TYPE,
+  type PresentationArgs,
 } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/DistritosSPPopulacao60Mais',
   tags: ['autodocs'],
-  argTypes: BASEMAP_ARG_TYPE,
-  args: DEFAULT_BASEMAP_ARGS,
-} as Meta<BasemapArgs>;
+  argTypes: { ...BASEMAP_ARG_TYPE, ...PRESENTATION_ARG_TYPE },
+  args: { ...DEFAULT_BASEMAP_ARGS, ...DEFAULT_PRESENTATION_ARGS },
+} as Meta<BasemapArgs & PresentationArgs>;
 
 const BLUES_5 = ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'];
 
@@ -37,15 +39,17 @@ const distritoTemplate: LayerTemplate = {
   id: 'distritos',
   geometry: 'polygon',
   dataId: 'distritos',
-  properties: ['c1', 'c2', 'c3', 'c4', 'c5'],
+  // properties omitted — displayProperties drives both expansion and info panel
   labelProperty: 'nm_distrit',
-  displayProperties: ['nm_distrit', 'c1', 'c2', 'c3', 'c4', 'c5'],
+  displayProperties: ['c1', 'c2', 'c3', 'c4', 'c5'],
   colorBy: {
     type: 'quantitative',
     scale: 'quantile',
     bins: 5,
     palette: 'Blues',
   },
+  // Hint that this story prefers tab-based switching for its 5 expanded views.
+  presentation: 'tabs',
 };
 
 const displayPropertyLabels: Record<string, string> = {
@@ -224,182 +228,17 @@ const HoverPanel = ({
 };
 
 /**
- * Renders the expanded spec as a tab-switched single-map view.
- * Each tab corresponds to one generated view (one property from the template).
- * Only the active tab's GeoVisProvider is mounted — avoids N simultaneous maps.
- * Must be rendered inside an outer GeoVisProvider so useGeoVis() resolves the
- * already-expanded spec (layerTemplates → concrete layers + views).
- */
-const ViewSwitcher = () => {
-  const { spec: expandedSpec } = useGeoVis();
-
-  const views: VisualizationView[] = expandedSpec.views ?? [];
-  const [activeViewId, setActiveViewId] = React.useState<string>(() => {
-    return views[0]?.id ?? '';
-  });
-
-  const layersById = React.useMemo(() => {
-    return new Map<string, VisualizationLayer>(
-      expandedSpec.layers.map((l) => {
-        return [l.id, l];
-      })
-    );
-  }, [expandedSpec]);
-
-  // Derive one sub-spec per view (single layer, no views/templates).
-  const subSpecs = React.useMemo(() => {
-    return Object.fromEntries(
-      views.map((view) => {
-        return [
-          view.id,
-          {
-            ...expandedSpec,
-            layers: expandedSpec.layers.filter((l) => {
-              return view.layers.includes(l.id);
-            }),
-            views: undefined,
-            layerTemplates: undefined,
-          },
-        ];
-      })
-    );
-  }, [expandedSpec, views]);
-
-  const activeView = views.find((v) => {
-    return v.id === activeViewId;
-  });
-  const activeLayer = activeView
-    ? layersById.get(activeView.layers[0])
-    : undefined;
-  const activeSubSpec = activeViewId ? subSpecs[activeViewId] : undefined;
-
-  return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <div>
-        <strong>{STORY_TITLE}</strong>
-        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-          {STORY_DESCRIPTION}
-        </p>
-      </div>
-
-      {/* Tab bar — one button per expanded view */}
-      <div
-        role="tablist"
-        style={{
-          display: 'flex',
-          gap: 4,
-          flexWrap: 'wrap',
-          borderBottom: '1px solid #e5e7eb',
-          paddingBottom: 4,
-        }}
-      >
-        {views.map((view) => {
-          const isActive = view.id === activeViewId;
-          return (
-            <button
-              key={view.id}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => {
-                return setActiveViewId(view.id);
-              }}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px 6px 0 0',
-                border: `1px solid ${isActive ? '#3b82f6' : '#d4d4d8'}`,
-                borderBottom: isActive
-                  ? '2px solid #3b82f6'
-                  : '1px solid #d4d4d8',
-                background: isActive ? '#eff6ff' : 'white',
-                color: isActive ? '#1d4ed8' : '#374151',
-                fontWeight: isActive ? 600 : 400,
-                fontSize: 13,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {view.label ?? view.id}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Single map for the active view */}
-      {activeSubSpec && activeLayer && (
-        <div
-          style={{
-            position: 'relative',
-            height: 480,
-            border: '1px solid #d4d4d8',
-            borderRadius: 6,
-            overflow: 'hidden',
-          }}
-        >
-          <GeoVisProvider spec={activeSubSpec}>
-            <GeoVisCanvas
-              viewId={activeViewId}
-              style={{ width: '100%', height: '100%' }}
-            />
-            <ChoroplethPainter layer={activeLayer} />
-            <HoverPanel layer={activeLayer} />
-          </GeoVisProvider>
-        </div>
-      )}
-
-      <details>
-        <summary
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: '#374151',
-            cursor: 'pointer',
-          }}
-        >
-          How it works — layerTemplates expanded automatically by GeoVisProvider
-        </summary>
-        <pre
-          style={{
-            marginTop: 8,
-            fontFamily: 'monospace',
-            fontSize: 12,
-            whiteSpace: 'pre',
-            overflowX: 'auto',
-            background: '#f3f4f6',
-            padding: 12,
-            borderRadius: 6,
-            color: '#1f2937',
-          }}
-        >{`// Fixture declares a minimal template (only 4 required fields):
-// {
-//   "layerTemplates": [{
-//     "geometry": "polygon",
-//     "properties": ["c1","c2","c3","c4","c5"],
-//     "labelProperty": "nm_distrit",
-//     "displayProperties": ["nm_distrit","c1","c2","c3","c4","c5"],
-//     "colorBy": { "type": "quantitative", "scale": "quantile", "bins": 5 }
-//   }]
-// }
-//
-// GeoVisProvider expands layerTemplates internally on mount.
-// useGeoVis().spec returns the expanded spec with concrete layers + views.
-// ViewSwitcher reads that spec and renders one map per tab, mounting only
-// the active view's GeoVisProvider to avoid N simultaneous map instances.`}</pre>
-      </details>
-    </div>
-  );
-};
-
-/**
  * Choropleth of São Paulo districts by 60+ age bands (small multiples).
  *
  * The minimal fixture contains only `data` (inline GeoJSON with `nm_distrit`
  * and `c1..c5` properties). `layerTemplates` in the story-level spec instruct
  * the runtime to generate one choropleth layer per property and expose each
- * as a tab. The basemap defaults to OpenFreeMap Bright (same as the lib default).
+ * as a tab. The `<GeoVisViews>` component reads `spec.presentation` and
+ * dispatches to the matching UI shell (tabs / side-by-side / time-slider).
  */
-export const DistritosSPPopulacao60Mais: StoryFn<BasemapArgs> = ({
-  basemapStyleUrl,
-}) => {
+export const DistritosSPPopulacao60Mais: StoryFn<
+  BasemapArgs & PresentationArgs
+> = ({ basemapStyleUrl, presentationMode }) => {
   const spec = React.useMemo(() => {
     return applyBasemap(distritosSpec, basemapStyleUrl);
   }, [basemapStyleUrl]);
@@ -407,7 +246,24 @@ export const DistritosSPPopulacao60Mais: StoryFn<BasemapArgs> = ({
   return (
     // GeoVisProvider expands layerTemplates internally — no manual call needed.
     <GeoVisProvider spec={spec}>
-      <ViewSwitcher />
+      <div>
+        <strong>{STORY_TITLE}</strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          {STORY_DESCRIPTION}
+        </p>
+      </div>
+      <GeoVisViews
+        mode={presentationMode}
+        renderView={({ layer }) => {
+          if (!layer) return null;
+          return (
+            <>
+              <ChoroplethPainter layer={layer} />
+              <HoverPanel layer={layer} />
+            </>
+          );
+        }}
+      />
     </GeoVisProvider>
   );
 };

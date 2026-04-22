@@ -323,7 +323,7 @@ describe('validateSpec', () => {
     test('accepts displayProperties present in the features', () => {
       const spec = makeSpec({
         featureProperties: { nm_distrit: 'SE', c1: 1, c2: 2 },
-        displayProperties: ['nm_distrit', 'c1', 'c2'],
+        displayProperties: ['c1', 'c2'],
       });
 
       const result = validateSpec(spec);
@@ -334,7 +334,7 @@ describe('validateSpec', () => {
     test('rejects displayProperties absent from all features', () => {
       const spec = makeSpec({
         featureProperties: { nm_distrit: 'SE', c1: 1 },
-        displayProperties: ['nm_distrit', 'missing'],
+        displayProperties: ['missing'],
       });
 
       const result = validateSpec(spec);
@@ -342,7 +342,7 @@ describe('validateSpec', () => {
       expect(result.valid).toBe(false);
 
       if (!result.valid) {
-        expect(result.errors.join('\n')).toContain('displayProperties/1');
+        expect(result.errors.join('\n')).toContain('displayProperties/0');
         expect(result.errors.join('\n')).toContain('missing');
       }
     });
@@ -361,7 +361,7 @@ describe('validateSpec', () => {
   });
 
   describe('layerTemplates cross-checks against source features', () => {
-    const baseSpec = (properties: string[]) => {
+    const baseSpec = (displayProperties: string[]) => {
       return {
         id: 'tpl',
         engine: 'maplibre',
@@ -388,21 +388,64 @@ describe('validateSpec', () => {
             id: 'template',
             dataId: 'src',
             geometry: 'polygon',
-            properties,
+            // properties omitted — displayProperties drives expansion
+            displayProperties,
             labelProperty: 'c1',
-            displayProperties: ['c1'],
           },
         ],
       };
     };
 
-    test('accepts properties present in the features', () => {
+    test('accepts displayProperties present in the features', () => {
       const result = validateSpec(baseSpec(['c1', 'c2']));
       expect(result.valid).toBe(true);
     });
 
-    test('rejects properties absent from the features', () => {
+    test('rejects displayProperties absent from the features', () => {
       const result = validateSpec(baseSpec(['c1', 'missing']));
+      expect(result.valid).toBe(false);
+      if (!result.valid) {
+        expect(result.errors.join('\n')).toContain(
+          '/layerTemplates/0/displayProperties/1'
+        );
+        expect(result.errors.join('\n')).toContain('missing');
+      }
+    });
+
+    test('uses properties path when explicit properties field is provided', () => {
+      const spec = {
+        id: 'tpl',
+        engine: 'maplibre',
+        view: { center: [0, 0], zoom: 1 },
+        data: [
+          {
+            id: 'src',
+            kind: 'geojson-inline',
+            geojson: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: null,
+                  properties: { c1: 1 },
+                },
+              ],
+            },
+          },
+        ],
+        layers: [],
+        layerTemplates: [
+          {
+            id: 'template',
+            dataId: 'src',
+            geometry: 'polygon',
+            properties: ['c1', 'missing'],
+            displayProperties: ['c1'],
+            labelProperty: 'c1',
+          },
+        ],
+      };
+      const result = validateSpec(spec);
       expect(result.valid).toBe(false);
       if (!result.valid) {
         expect(result.errors.join('\n')).toContain(

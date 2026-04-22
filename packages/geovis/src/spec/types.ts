@@ -337,8 +337,12 @@ export interface LayerTemplate {
    * Ordered list of feature property names driving the expansion. One layer
    * (and optionally one view) is emitted per entry. Every entry must be
    * present in at least one feature of the referenced source.
+   *
+   * When omitted, falls back to `displayProperties`. This allows declaring
+   * the list only once when the same properties both drive the visualizations
+   * and appear in the info panel.
    */
-  properties: string[];
+  properties?: string[];
   /** Label property applied to every expansion (same value for all). */
   labelProperty: string;
   /** Display properties applied to every expansion (same list for all). */
@@ -376,12 +380,48 @@ export interface LayerTemplate {
   viewIdPattern?: string;
   /** Pattern for expanded layer `title` and view `label`. Defaults to `"${label}"`. */
   labelPattern?: string;
+  /**
+   * Presentation hint copied to `spec.presentation` after expansion (only if
+   * the spec did not already declare one). Lets a template declare its
+   * preferred display mode for the views it generates.
+   */
+  presentation?: PresentationMode;
 }
 
 export interface BaseMapSpec {
   styleUrl?: string;
   attribution?: string;
 }
+
+/**
+ * How a multi-view spec should be presented to the user. Engine-agnostic:
+ * the React layer (`<GeoVisViews>`) reads it and picks a UI pattern.
+ * Defaults to `'tabs'` when omitted.
+ *
+ * Supported modes:
+ * - `'tabs'` (default): one map at a time, switched via tab/select bar.
+ * - `'side-by-side'`: small-multiples grid, all views mounted simultaneously.
+ *   Useful for comparing the same geography across N variables.
+ * - `'single-filter'`: one map with N selectable encodings; only the active
+ *   layer is visible (others kept hidden). Cheaper than `tabs` because the
+ *   map is mounted once and only paint/visibility is toggled.
+ * - `'time-slider'`: one map driven by a temporal slider; the active view is
+ *   chosen by the slider position. Each view typically represents one time
+ *   step (e.g. yearly population).
+ *
+ * Other modes considered for future extensions (NOT implemented yet):
+ * - `'swipe-compare'`: two views, divided by a draggable curtain.
+ * - `'picture-in-picture'`: main view + minimap inset for context.
+ * - `'animation'`: cycles through views automatically (looping playback).
+ * - `'story-step'`: scrollytelling — view changes as the user scrolls.
+ * - `'sync-pan-zoom'`: side-by-side with linked camera state.
+ * - `'overlay'`: views layered on the same canvas with opacity blending.
+ */
+export type PresentationMode =
+  | 'tabs'
+  | 'side-by-side'
+  | 'single-filter'
+  | 'time-slider';
 
 /**
  * Declares one visual perspective of a spec in a multi-view layout.
@@ -413,6 +453,14 @@ export interface VisualizationSpec {
    * filtering `layers` to those listed in each view's `layers` array.
    */
   views?: VisualizationView[];
+  /**
+   * Declarative templates that expand into concrete `layers` and `views`.
+   * Processed by `expandLayerTemplates` (called automatically by `GeoVisProvider`).
+   * Removed from the spec after expansion.
+   */
+  layerTemplates?: LayerTemplate[];
+  /** Hint to UI consumers about how to render multiple views. */
+  presentation?: PresentationMode;
   metadata?: Record<string, unknown>;
   adapterHints?: {
     maplibre?: {

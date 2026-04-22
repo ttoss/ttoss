@@ -93,7 +93,12 @@ const expandTemplate = (
   const layers: VisualizationLayer[] = [];
   const views: VisualizationView[] = [];
 
-  for (const property of template.properties) {
+  // `properties` drives expansion; falls back to `displayProperties` so the
+  // same list can serve both purposes when they are identical.
+  const expansionProperties =
+    template.properties ?? template.displayProperties ?? [];
+
+  for (const property of expansionProperties) {
     const label = resolveLabel(spec, property);
     const values = {
       templateId,
@@ -111,10 +116,10 @@ const expandTemplate = (
       title: resolvedLabel,
       labelProperty: template.labelProperty,
       displayProperties: template.displayProperties,
-      displayPropertyLabels: buildDisplayPropertyLabels(
-        spec,
-        template.displayProperties ?? []
-      ),
+      displayPropertyLabels: buildDisplayPropertyLabels(spec, [
+        ...(template.labelProperty ? [template.labelProperty] : []),
+        ...(template.displayProperties ?? []),
+      ]),
       colorBy: injectColorByProperty(colorByTemplate, property),
     };
 
@@ -173,6 +178,11 @@ export const expandLayerTemplates = (
     next.layers.push(...layers);
     if (views.length > 0) {
       next.views = [...(next.views ?? []), ...views];
+    }
+    // Propagate template's presentation hint to the spec when not already set.
+    // Spec-level presentation always wins (explicit consumer choice).
+    if (!next.presentation && template.presentation) {
+      next.presentation = template.presentation;
     }
     index += 1;
   }

@@ -26,13 +26,13 @@
     }
   },
   "layers": [],
+  "presentation": "tabs",
   "layerTemplates": [
     {
       "id": "distritos",
       "geometry": "polygon",
-      "properties": ["c1", "c2", "c3", "c4", "c5"],
       "labelProperty": "nm_distrit",
-      "displayProperties": ["nm_distrit", "c1", "c2", "c3", "c4", "c5"],
+      "displayProperties": ["c1", "c2", "c3", "c4", "c5"],
       "colorBy": {
         "type": "quantitative",
         "scale": "quantile",

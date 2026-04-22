@@ -4,6 +4,7 @@
  */
 import type {
   PartialVisualizationSpec,
+  PresentationMode,
   VisualizationSpec,
   VisualizationView,
 } from '@ttoss/geovis';
@@ -46,9 +47,12 @@ export const BASEMAP_ARG_TYPE = {
   },
 } as const;
 
-/** Default Storybook args — `Bright` is the default basemap. */
+/** Default Storybook args — `Bright` is the default basemap.
+ *  Uses the option key (not the URL) so the select control shows the
+ *  initial selection correctly; Storybook's `mapping` resolves it to the URL
+ *  before passing it to the story. */
 export const DEFAULT_BASEMAP_ARGS: BasemapArgs = {
-  basemapStyleUrl: BASEMAPS.Bright,
+  basemapStyleUrl: 'Bright',
 };
 
 /**
@@ -64,6 +68,34 @@ export const applyBasemap = <T extends PartialVisualizationSpec>(
     ...spec,
     basemap: { ...spec.basemap, styleUrl },
   };
+};
+
+// ---------------------------------------------------------------------------
+// Presentation mode (multi-view stories)
+// ---------------------------------------------------------------------------
+
+/** Presentation modes currently supported by `<GeoVisViews>`. */
+export const PRESENTATION_MODES: readonly PresentationMode[] = [
+  'tabs',
+  'side-by-side',
+  'single-filter',
+  'time-slider',
+] as const;
+
+export type PresentationArgs = { presentationMode: PresentationMode };
+
+/** Storybook `argTypes` block for the presentation-mode selector. */
+export const PRESENTATION_ARG_TYPE = {
+  presentationMode: {
+    name: 'View mode',
+    control: 'radio',
+    options: PRESENTATION_MODES,
+  },
+} as const;
+
+/** Default args for stories using `<GeoVisViews>`. `tabs` is the default. */
+export const DEFAULT_PRESENTATION_ARGS: PresentationArgs = {
+  presentationMode: 'tabs',
 };
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';

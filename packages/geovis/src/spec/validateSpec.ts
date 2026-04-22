@@ -143,10 +143,15 @@ const _validatePropertyReferences = (spec: VisualizationSpec): string[] => {
         continue;
       }
 
-      for (const [propertyIndex, property] of template.properties.entries()) {
+      const templateProperties = template.properties;
+      const expansionProperties =
+        templateProperties ?? template.displayProperties ?? [];
+      const propPath = templateProperties ? 'properties' : 'displayProperties';
+
+      for (const [propertyIndex, property] of expansionProperties.entries()) {
         if (!allowed.has(property)) {
           errors.push(
-            `/layerTemplates/${templateIndex}/properties/${propertyIndex} "${property}" is not present in any feature of data entry "${dataId}"`
+            `/layerTemplates/${templateIndex}/${propPath}/${propertyIndex} "${property}" is not present in any feature of data entry "${dataId}"`
           );
         }
       }
@@ -158,13 +163,18 @@ const _validatePropertyReferences = (spec: VisualizationSpec): string[] => {
 export const validateSpec = (input: unknown): ValidationResult => {
   const valid = _validate(input);
 
-  if (valid) {
-    return { valid: true, spec: input as unknown as VisualizationSpec };
+  if (!valid) {
+    const errors = (_validate.errors ?? []).map((e) => {
+      return `${e.instancePath || '(root)'} ${e.message}`;
+    });
+    return { valid: false, errors };
   }
 
-  const errors = (_validate.errors ?? []).map((e) => {
-    return `${e.instancePath || '(root)'} ${e.message}`;
-  });
+  const spec = input as VisualizationSpec;
+  const crossCheckErrors = _validatePropertyReferences(spec);
+  if (crossCheckErrors.length > 0) {
+    return { valid: false, errors: crossCheckErrors };
+  }
 
-  return { valid: false, errors };
+  return { valid: true, spec };
 };
