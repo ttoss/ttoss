@@ -1,0 +1,694 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ttoss.dev/geovis/geovis.schema.json",
+  "title": "GeoVisMinimalSpec",
+  "description": "Minimal authoring schema for GeoVis. Only `sources` is required (may be empty). `id`, `engine` and `view` are optional: defaults are applied at load time, and `view` is computed from data bounds when omitted. Legends support categorical and quantitative color scales.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["data"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "default": "geovis",
+      "description": "Optional identifier. Runtime auto-generates one when omitted."
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string",
+      "enum": ["maplibre"],
+      "default": "maplibre"
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional. When omitted, the runtime computes center + zoom from the bounding box of all inline GeoJSON features across `sources`.",
+      "properties": {
+        "center": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "zoom": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number",
+          "default": 0
+        },
+        "bearing": {
+          "type": "number",
+          "default": 0
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["mercator", "vertical-perspective"],
+          "default": "mercator"
+        }
+      }
+    },
+    "basemap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "styleUrl": {
+          "type": "string",
+          "default": "https://tiles.openfreemap.org/styles/bright"
+        },
+        "attribution": {
+          "type": "string"
+        }
+      },
+      "default": {
+        "styleUrl": "https://tiles.openfreemap.org/styles/bright"
+      }
+    },
+    "layers": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Layer"
+      }
+    },
+    "legends": {
+      "type": "array",
+      "description": "Optional top-level legends that can be referenced by layers via `activeLegendId`.",
+      "items": {
+        "$ref": "#/$defs/LegendSpec"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "data": {
+      "type": "array",
+      "description": "Required. May be an empty array (renders an empty basemap using the computed default view).",
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DataEntry"
+      }
+    }
+  },
+  "$defs": {
+    "Position": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2
+    },
+    "LinearRing": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
+      "minItems": 4
+    },
+    "Geometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "Point"
+            },
+            "coordinates": {
+              "$ref": "#/$defs/Position"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "MultiPoint"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Position"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "LineString"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Position"
+              },
+              "minItems": 2
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "MultiLineString"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Position"
+                },
+                "minItems": 2
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "Polygon"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/LinearRing"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {
+              "const": "MultiPolygon"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/LinearRing"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Feature": {
+      "type": "object",
+      "required": ["type", "geometry", "properties"],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "id": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "geometry": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Geometry"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "properties": {
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "FeatureCollection": {
+      "type": "object",
+      "required": ["type", "features"],
+      "properties": {
+        "type": {
+          "const": "FeatureCollection"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Feature"
+          }
+        }
+      }
+    },
+    "Layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "dataId"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "geometry": {
+          "type": "string",
+          "enum": ["point", "line", "polygon", "raster", "symbol", "heatmap"],
+          "description": "Optional. When omitted, runtime infers from the first feature of the referenced source."
+        },
+        "title": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean",
+          "default": true
+        },
+        "minzoom": {
+          "type": "number"
+        },
+        "maxzoom": {
+          "type": "number"
+        },
+        "paint": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "labelProperty": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayProperties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "colorBy": {
+          "$ref": "#/$defs/ColorBy"
+        },
+        "legends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LegendSpec"
+          }
+        },
+        "activeLegendId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dataId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "CategoricalColorBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "property"],
+      "properties": {
+        "type": {
+          "const": "categorical"
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "palette": {
+          "type": "string",
+          "minLength": 1
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "defaultColor": {
+          "type": "string"
+        }
+      }
+    },
+    "QuantitativeColorBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "property", "scale"],
+      "properties": {
+        "type": {
+          "const": "quantitative"
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scale": {
+          "type": "string",
+          "enum": ["quantile", "quantize", "linear", "threshold"]
+        },
+        "bins": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5
+        },
+        "thresholds": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        },
+        "palette": {
+          "type": "string",
+          "minLength": 1
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "defaultColor": {
+          "type": "string"
+        }
+      }
+    },
+    "ColorBy": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/CategoricalColorBy"
+        },
+        {
+          "$ref": "#/$defs/QuantitativeColorBy"
+        }
+      ]
+    },
+    "LegendSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorBy"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["swatch", "ramp", "steps"],
+          "description": "Visual presentation hint. `swatch` = categorical chips, `ramp` = continuous gradient, `steps` = quantized steps.",
+          "default": "swatch"
+        },
+        "colorBy": {
+          "$ref": "#/$defs/ColorBy"
+        }
+      }
+    },
+    "DataEntry": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "geojson"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "geojson-inline"
+            },
+            "geojson": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/FeatureCollection"
+                },
+                {
+                  "$ref": "#/$defs/Feature"
+                },
+                {
+                  "$ref": "#/$defs/Geometry"
+                }
+              ]
+            },
+            "attribution": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "url"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "geojson-url"
+            },
+            "url": {
+              "type": "string"
+            },
+            "attribution": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "tiles"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "vector-tiles"
+            },
+            "tiles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "sourceLayer": {
+              "type": "string"
+            },
+            "minzoom": {
+              "type": "number"
+            },
+            "maxzoom": {
+              "type": "number"
+            },
+            "attribution": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "tiles"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "raster-tiles"
+            },
+            "tiles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "tileSize": {
+              "type": "integer",
+              "enum": [256, 512]
+            },
+            "minzoom": {
+              "type": "number"
+            },
+            "maxzoom": {
+              "type": "number"
+            },
+            "attribution": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind"],
+          "anyOf": [
+            {
+              "required": ["tiles"]
+            },
+            {
+              "required": ["url"]
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "raster-dem"
+            },
+            "tiles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "url": {
+              "type": "string"
+            },
+            "tileSize": {
+              "type": "number"
+            },
+            "minzoom": {
+              "type": "number"
+            },
+            "maxzoom": {
+              "type": "number"
+            },
+            "attribution": {
+              "type": "string"
+            },
+            "encoding": {
+              "type": "string",
+              "enum": ["mapbox", "terrarium", "custom"]
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "url", "coordinates"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "image"
+            },
+            "url": {
+              "type": "string"
+            },
+            "coordinates": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "attribution": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "urls", "coordinates"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "video"
+            },
+            "urls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "coordinates": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["id", "kind", "engine", "spec"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "native"
+            },
+            "engine": {
+              "type": "string",
+              "minLength": 1
+            },
+            "spec": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}
