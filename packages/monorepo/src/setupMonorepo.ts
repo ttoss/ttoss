@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * Setup monorepo configuration following ttoss guidelines.
  * Guide: https://ttoss.dev/docs/config/README.md
@@ -406,11 +407,10 @@ const updatePackageJsonWithMonorepoScripts = ({ dir }: { dir: string }) => {
       JSON.stringify(packageJson, null, 2) + '\n'
     );
     return true;
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('- Syncpack scripts already exist in package.json');
-    return false;
   }
+  // eslint-disable-next-line no-console
+  console.log('- Syncpack scripts already exist in package.json');
+  return false;
 };
 
 const updatePackageJsonWithHuskyScript = ({ dir }: { dir: string }) => {
@@ -437,11 +437,10 @@ const updatePackageJsonWithHuskyScript = ({ dir }: { dir: string }) => {
       JSON.stringify(packageJson, null, 2) + '\n'
     );
     return true;
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('- "prepare" script already exists in package.json');
-    return false;
   }
+  // eslint-disable-next-line no-console
+  console.log('- "prepare" script already exists in package.json');
+  return false;
 };
 
 const setupHusky = ({ dir }: { dir: string }) => {
@@ -483,6 +482,7 @@ const setupHusky = ({ dir }: { dir: string }) => {
   }
 };
 
+// eslint-disable-next-line max-lines-per-function
 export const setupMonorepo = ({ dir }: { dir: string }) => {
   const absoluteDir = path.resolve(dir);
 
