@@ -15,6 +15,7 @@
   "bugs": {
     "url": "https://github.com/ttoss/ttoss/issues"
   },
+  "type": "module",
   "scripts": {
     "i18n": "turbo run i18n",
     "preinstall": "npx only-allow pnpm",
@@ -35,7 +36,7 @@
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^9.39.1",
+    "eslint": "^10.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "playwright": "1.59.0",

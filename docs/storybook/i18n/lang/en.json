@@ -255,5 +255,25 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
+  },
+  "5lZ8VT": {
+    "module": "@ttoss/react-wizard",
+    "defaultMessage": "Finish",
+    "description": "Label for the finish button on the last wizard step."
+  },
+  "60eH0J": {
+    "module": "@ttoss/react-wizard",
+    "defaultMessage": "Previous",
+    "description": "Label for the previous step button in the wizard."
+  },
+  "6I9gjk": {
+    "module": "@ttoss/react-wizard",
+    "defaultMessage": "Cancel",
+    "description": "Label for the cancel button in the wizard."
+  },
+  "FmaVut": {
+    "module": "@ttoss/react-wizard",
+    "defaultMessage": "Next",
+    "description": "Label for the next step button in the wizard."
   }
 }

@@ -1,7 +1,9 @@
 ### Issue Title
+
 Add dedicated READ ONLY environment variables and Lambda for readOnlyQuery
 
 ### Issue Body
+
 - Define dedicated read-only environment variables:
   - DATABASE_NAME_READ_ONLY
   - DATABASE_USERNAME_READ_ONLY

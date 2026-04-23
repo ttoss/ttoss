@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import { config as dotenv } from 'dotenv';
 
 // Remove string after /config, but keep the /config

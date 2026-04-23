@@ -27,3 +27,11 @@ import ttossEslintConfig from '@ttoss/eslint-config/next';
 
 export default [...ttossEslintConfig];
 ```
+
+## Rules
+
+### Cyclomatic Complexity and Module Sizes
+
+To keep code understandable and testable, this config enforces limits on complexity and size. The rationale is explained in [Cognitive Complexity — because testability, understandability, and changeability matter](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/).
+
+For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). These rules are disabled for test files (`*.spec.ts`, `*.test.ts`, `*.spec.tsx`, `*.test.tsx`).

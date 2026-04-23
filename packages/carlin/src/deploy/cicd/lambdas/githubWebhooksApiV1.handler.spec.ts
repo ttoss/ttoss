@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable turbo/no-undeclared-env-vars */
+
 // const putObjectMock = jest.fn().mockReturnValue({ promise: jest.fn() });
+
+import AWS from 'aws-sdk';
+
+import { executeTasks } from './executeTasks';
+import {
+  githubWebhooksApiV1Handler,
+  webhooks,
+} from './githubWebhooksApiV1.handler';
 
 jest.mock('aws-sdk', () => {
   return {
@@ -19,13 +27,6 @@ jest.mock('./executeTasks', () => {
     shConditionalCommands: jest.fn(),
   };
 });
-
-import { executeTasks } from './executeTasks';
-import {
-  githubWebhooksApiV1Handler,
-  webhooks,
-} from './githubWebhooksApiV1.handler';
-import AWS from 'aws-sdk';
 
 const context = {} as any;
 
