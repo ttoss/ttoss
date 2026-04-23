@@ -1,0 +1,52 @@
+{
+  "private": true,
+  "name": "@docs/storybook",
+  "version": "3.24.3",
+  "author": "ttoss",
+  "scripts": {
+    "build": "storybook build --quiet && pnpm run generate-llms",
+    "deploy": "carlin deploy static-app",
+    "dev": "pnpm run storybook",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
+    "i18n": "pnpm ttoss-i18n",
+    "start": "pnpm run storybook",
+    "storybook": "storybook dev -p 6006",
+    "update-storybook": "npx storybook@latest upgrade"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.34.0",
+    "@iconify-icons/mdi-light": "^1.2.5",
+    "@iconify/icons-carbon": "^1.2.20",
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
+    "@ttoss/landing-pages": "workspace:^",
+    "@ttoss/layouts": "workspace:^",
+    "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-billing": "workspace:^",
+    "@ttoss/react-dashboard": "workspace:^",
+    "@ttoss/react-hooks": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/react-wizard": "workspace:^",
+    "@ttoss/theme": "workspace:^",
+    "@ttoss/ui": "workspace:^"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@fluentui/storybook-llms-extractor": "^0.0.4",
+    "@storybook/addon-a11y": "^10.3.3",
+    "@storybook/addon-docs": "^10.3.3",
+    "@storybook/addon-links": "^10.3.3",
+    "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
+    "@storybook/react-webpack5": "^10.3.3",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "babel-loader": "^10.1.1",
+    "eslint-plugin-storybook": "10.3.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "storybook": "^10.3.3"
+  }
+}
