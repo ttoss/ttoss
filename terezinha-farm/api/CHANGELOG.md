@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.19.49 (2026-04-23)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.48](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.47...@terezinha-farm/api@0.19.48) (2026-04-09)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.47](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.46...@terezinha-farm/api@0.19.47) (2026-04-07)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.46 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.19.45 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.19.44 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.43 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.42 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.41 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.40 (2026-03-31)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.19.39 (2026-03-31)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+
+## [0.19.38](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.37...@terezinha-farm/api@0.19.38) (2026-03-31)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.37](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.36...@terezinha-farm/api@0.19.37) (2026-03-23)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+
+## [0.19.36](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.35...@terezinha-farm/api@0.19.36) (2026-03-20)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.35 (2026-03-20)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.34 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## [0.19.33](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.32...@terezinha-farm/api@0.19.33) (2026-01-17)
 
 **Note:** Version bump only for package @terezinha-farm/api

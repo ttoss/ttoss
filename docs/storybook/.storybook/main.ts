@@ -27,6 +27,11 @@ const config: StorybookConfig = {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
   },
+  refs: {
+    '@chakra-ui/react': {
+      disable: true,
+    },
+  },
 };
 
 export default config;

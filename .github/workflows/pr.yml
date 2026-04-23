@@ -13,6 +13,9 @@ concurrency:
 jobs:
   pr:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -27,12 +30,12 @@ jobs:
       - name: Fetch and merge most recent main
         run: |-
           git fetch origin main:main
-          git merge main --ff-only --no-edit
+          git merge main --no-edit
       - name: Setup ttoss environment
         uses: ./.github/actions/setup
       - name: Run pr command
         run: sh -e ./.cicd/commands/pr.sh
         env:
           CARLIN_BRANCH: ${{ github.event.pull_request.head.ref }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

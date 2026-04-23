@@ -6,11 +6,7 @@ import {
   cors,
   Router,
 } from '@ttoss/http-server';
-import {
-  createMcpRouter,
-  Server as McpServer,
-  z,
-} from '@ttoss/http-server-mcp';
+import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
 
 /**
  * Business logic: Simple sum function

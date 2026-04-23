@@ -1,11 +1,12 @@
+import { schemaComposer } from '@ttoss/graphql-api';
+
+import { createApiTemplate } from '../../src';
 import {
   AppSyncGraphQLApiKeyLogicalId,
   AppSyncGraphQLApiLogicalId,
   AppSyncGraphQLSchemaLogicalId,
   AppSyncLambdaFunctionLogicalId,
 } from '../../src/createApiTemplate';
-import { createApiTemplate } from '../../src';
-import { schemaComposer } from '@ttoss/graphql-api';
 
 const createApiTemplateInput = {
   schemaComposer,
@@ -32,13 +33,13 @@ describe('tests with default template', () => {
    */
   test('schema should not contain """ comments', () => {
     expect(
-      template.Resources[AppSyncGraphQLSchemaLogicalId].Properties.Definition
+      template.Resources[AppSyncGraphQLSchemaLogicalId].Properties?.Definition
     ).not.toContain('"""');
   });
 
   test('should contain UserPoolConfig', () => {
     expect(
-      template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+      template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
         'UserPoolConfig'
       ]
     ).toEqual({
@@ -79,7 +80,30 @@ test('add environment variables to lambda function', () => {
   });
 
   expect(
-    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Environment
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Environment
+      .Variables
+  ).toEqual(variables);
+});
+
+test('add CloudFormation intrinsic environment variables to lambda function', () => {
+  const variables = {
+    PLAIN_VALUE: 'literal',
+    REF_VALUE: { Ref: 'SomeParameter' },
+    IMPORT_VALUE: {
+      'Fn::ImportValue': { 'Fn::Sub': '${SomeExportedParam}' },
+    },
+  };
+
+  const template = createApiTemplate({
+    ...createApiTemplateInput,
+    lambdaFunction: {
+      ...createApiTemplateInput.lambdaFunction,
+      environment: { variables },
+    },
+  });
+
+  expect(
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Environment
       .Variables
   ).toEqual(variables);
 });
@@ -94,13 +118,13 @@ test('create api key', () => {
    * Default AuthenticationType to AMAZON_COGNITO_USER_POOLS.
    */
   expect(
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
       'AuthenticationType'
     ]
   ).toEqual('AMAZON_COGNITO_USER_POOLS');
 
   expect(
-    template.Resources[AppSyncGraphQLApiLogicalId].Properties[
+    template.Resources[AppSyncGraphQLApiLogicalId].Properties?.[
       'AdditionalAuthenticationProviders'
     ]
   ).toContainEqual({
@@ -130,7 +154,7 @@ test('should import @ttoss/appsync-api lambda layer', () => {
   });
 
   const layers =
-    template.Resources[AppSyncLambdaFunctionLogicalId].Properties.Layers;
+    template.Resources[AppSyncLambdaFunctionLogicalId].Properties?.Layers;
 
   expect(layers).toMatchObject([
     {
@@ -188,19 +212,92 @@ test('should add resolvers to template', () => {
 
   const resources = Object.values(template.Resources);
 
-  typeAndFieldNames.forEach(([typeName, fieldName]) => {
+  for (const [typeName, fieldName] of typeAndFieldNames) {
     const resource = resources.find((r) => {
       return (
-        r.Properties.TypeName === typeName &&
-        r.Properties.FieldName === fieldName
+        r.Properties?.TypeName === typeName &&
+        r.Properties?.FieldName === fieldName
       );
     });
 
     expect(resource).toBeDefined();
-  });
+  }
 });
 
 describe('custom domain name', () => {
+  test('should add conditional resources when domainName is a Ref', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: { Ref: 'DomainName' },
+        certificateArn: { Ref: 'CertificateArn' },
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Parameters?.DomainName).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    expect(template.Parameters?.CertificateArn).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    expect(template.Conditions?.HasCustomDomain).toEqual({
+      'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'DomainName' }, ''] }],
+    });
+
+    expect(template.Resources.AppSyncDomainName.Condition).toBe(
+      'HasCustomDomain'
+    );
+    expect(template.Resources.AppSyncDomainNameApiAssociation.Condition).toBe(
+      'HasCustomDomain'
+    );
+    expect(template.Outputs?.DomainName?.Condition).toBe('HasCustomDomain');
+    expect(template.Outputs?.CloudFrontDomainName?.Condition).toBe(
+      'HasCustomDomain'
+    );
+  });
+
+  test('should NOT add conditions when domainName is a plain string', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/123456',
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Conditions?.HasCustomDomain).toBeUndefined();
+    expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+  });
+
+  test('should add certificateArn parameter when it is a Ref and domainName is a plain string', () => {
+    const input = {
+      ...createApiTemplateInput,
+      customDomain: {
+        domainName: 'example.com',
+        certificateArn: { Ref: 'CertificateArn' },
+      },
+    };
+
+    const template = createApiTemplate(input);
+
+    expect(template.Parameters?.CertificateArn).toEqual({
+      Default: '',
+      Type: 'String',
+    });
+
+    // No condition should be added since domainName is a plain string
+    expect(template.Conditions?.HasCustomDomain).toBeUndefined();
+    expect(template.Resources.AppSyncDomainName.Condition).toBeUndefined();
+  });
+
   test('should add custom domain name resources to template', () => {
     const input = {
       ...createApiTemplateInput,

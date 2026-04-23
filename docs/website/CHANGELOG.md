@@ -3,6 +3,189 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.4](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.3...@docs/website@2.7.4) (2026-04-23)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.2...@docs/website@2.7.3) (2026-04-20)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.1...@docs/website@2.7.2) (2026-04-15)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.0...@docs/website@2.7.1) (2026-04-15)
+
+### Bug Fixes
+
+- generate env ([#948](https://github.com/ttoss/ttoss/issues/948)) ([294b436](https://github.com/ttoss/ttoss/commit/294b436aba3eabe14b0399e6eb84d555af2526a3))
+
+# [2.7.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.22...@docs/website@2.7.0) (2026-04-15)
+
+### Features
+
+- generate env dir ([#945](https://github.com/ttoss/ttoss/issues/945)) ([f5eed4c](https://github.com/ttoss/ttoss/commit/f5eed4c6a3c50cdee1c58db6d440a46e9d860862))
+
+## [2.6.22](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.21...@docs/website@2.6.22) (2026-04-15)
+
+### Reverts
+
+- Revert "carlin deploy: add `envExport` to export CloudFormation outputs as env vars to CI/CD runner" (#944) ([ed0b24c](https://github.com/ttoss/ttoss/commit/ed0b24c1c4d23e4125ad6bd62a5994d5566e61ad)), closes [#944](https://github.com/ttoss/ttoss/issues/944)
+
+## [2.6.21](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.21) (2026-04-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.20](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.20) (2026-04-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.19](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.19) (2026-04-07)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.18](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.18) (2026-04-04)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.17](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.16...@docs/website@2.6.17) (2026-04-04)
+
+**Note:** Version bump only for package @docs/website
+
+## 2.6.16 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 2.6.15 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 2.6.14 (2026-04-01)
+
+**Note:** Version bump only for package @docs/website
+
+## 2.6.13 (2026-04-01)
+
+**Note:** Version bump only for package @docs/website
+
+## 2.6.12 (2026-04-01)
+
+**Note:** Version bump only for package @docs/website
+
+## 2.6.11 (2026-04-01)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
+## 2.6.10 (2026-03-31)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 2.6.9 (2026-03-31)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
+## [2.6.8](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.7...@docs/website@2.6.8) (2026-03-31)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.7](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.6...@docs/website@2.6.7) (2026-03-31)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.6](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.5...@docs/website@2.6.6) (2026-03-31)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.5](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.4...@docs/website@2.6.5) (2026-03-30)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.4](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.3...@docs/website@2.6.4) (2026-03-24)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
+## [2.6.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.2...@docs/website@2.6.3) (2026-03-23)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.1...@docs/website@2.6.2) (2026-03-20)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.6.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.6.0...@docs/website@2.6.1) (2026-03-16)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.11...@docs/website@2.6.0) (2026-03-09)
+
+### Features
+
+- carlin deploy report ([#888](https://github.com/ttoss/ttoss/issues/888)) ([7f8df3a](https://github.com/ttoss/ttoss/commit/7f8df3abf5a5047848969c416df3e31ba8339caf))
+
+## [2.5.11](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.10...@docs/website@2.5.11) (2026-03-08)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.10](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.9...@docs/website@2.5.10) (2026-03-08)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.9](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.8...@docs/website@2.5.9) (2026-03-06)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.8](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.7...@docs/website@2.5.8) (2026-03-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.7](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.6...@docs/website@2.5.7) (2026-03-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.6](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.5...@docs/website@2.5.6) (2026-03-04)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.5](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.4...@docs/website@2.5.5) (2026-03-03)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.4](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.3...@docs/website@2.5.4) (2026-03-03)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.3](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.2...@docs/website@2.5.3) (2026-03-02)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.1...@docs/website@2.5.2) (2026-02-25)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.5.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.5.0...@docs/website@2.5.1) (2026-02-24)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.5.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.4.4...@docs/website@2.5.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## 2.4.4 (2026-01-26)
 
 ### Bug Fixes

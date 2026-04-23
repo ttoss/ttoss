@@ -124,6 +124,8 @@ const {
 
 Main authentication flow component.
 
+#### With External Screen State Management
+
 ```tsx
 <Auth
   screen={screen} // Current screen state
@@ -141,6 +143,28 @@ Main authentication flow component.
   }}
 />
 ```
+
+#### With Internal Screen State Management
+
+You can also let the Auth component manage its own screen state by using the `initialScreen` prop instead of `screen`/`setScreen`:
+
+```tsx
+<Auth
+  initialScreen={{ value: 'signUp' }} // Start on sign up screen (optional)
+  onSignIn={handleSignIn}
+  onSignUp={handleSignUp}
+  onForgotPassword={handleForgotPassword}
+/>
+```
+
+This is useful when you don't need to control the screen state externally. The `initialScreen` prop accepts any valid `AuthScreen` value:
+
+- `{ value: 'signIn' }` - Sign in screen (default)
+- `{ value: 'signUp' }` - Sign up screen
+- `{ value: 'forgotPassword' }` - Forgot password screen
+- `{ value: 'confirmSignUpCheckEmail' }` - Email confirmation reminder
+- `{ value: 'confirmSignUpWithCode', context: { email: string } }` - Code confirmation with email context
+- `{ value: 'confirmResetPassword', context: { email: string } }` - Password reset with email context
 
 ### useAuthScreen Hook
 

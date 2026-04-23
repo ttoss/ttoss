@@ -123,3 +123,4 @@ github-app/
 **/i18n/missing/
 **/i18n/unused/
 tsup.config.bundled*.mjs
+.playwright-mcp/

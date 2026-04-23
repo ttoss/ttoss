@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ttoss-challenge/db-dynamodb",
-  "version": "0.2.43",
+  "version": "0.3.9",
   "scripts": {
     "deploy-challenge": "carlin deploy",
     "seed-table": "tsx ./scripts/seedTable.ts"
@@ -11,7 +11,7 @@
     "@aws-sdk/lib-dynamodb": "^3.525.0",
     "@ttoss-challenge/seed": "workspace:^",
     "@ttoss/config": "workspace:^",
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.4.2",
     "tsx": "^4.21.0"
   }
 }

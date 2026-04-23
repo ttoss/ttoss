@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.23.12 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.23.11 (2026-04-09)
+
+### Bug Fixes
+
+- main.sh ([3e8f3f8](https://github.com/ttoss/ttoss/commit/3e8f3f892187bce9f16a21193c9cb2f98bfd448e))
+
+## 0.23.10 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.23.9 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.23.8 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.23.7 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.23.6 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.23.5 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.23.4 (2026-03-31)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.23.3 (2026-03-31)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+
+## [0.23.2](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.23.1...@ttoss/appsync-api@0.23.2) (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## [0.23.1](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.23.0...@ttoss/appsync-api@0.23.1) (2026-03-23)
+
+### Bug Fixes
+
+- issue 900 ([#902](https://github.com/ttoss/ttoss/issues/902)) ([9c2e0a4](https://github.com/ttoss/ttoss/commit/9c2e0a4cafd09cee396845c6f1512fcb92ed7840)), closes [#903](https://github.com/ttoss/ttoss/issues/903)
+
+# [0.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.22.15...@ttoss/appsync-api@0.23.0) (2026-03-20)
+
+### Features
+
+- appsync create context ([#899](https://github.com/ttoss/ttoss/issues/899)) ([7ebb5b2](https://github.com/ttoss/ttoss/commit/7ebb5b278d3604f8348b97c0d5d57abfe21b1d31))
+
+## 0.22.15 (2026-03-20)
+
+**Note:** Version bump only for package @ttoss/appsync-api
+
+## 0.22.14 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## 0.22.13 (2026-01-12)
 
 ### Bug Fixes

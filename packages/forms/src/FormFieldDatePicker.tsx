@@ -19,7 +19,6 @@ export const FormFieldDatePicker = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  disabled,
   ...props
 }: FormFieldDatePickerProps<TFieldValues, TName>) => {
   const {
@@ -33,6 +32,7 @@ export const FormFieldDatePicker = <
     id,
     defaultValue,
     presets,
+    disabled,
     ...datePickerProps
   } = props;
 
@@ -52,6 +52,7 @@ export const FormFieldDatePicker = <
         return (
           <DatePicker
             {...datePickerProps}
+            disabled={disabled}
             value={field.value as DateRange | undefined}
             onChange={(range: DateRange | undefined) => {
               field.onChange(range);

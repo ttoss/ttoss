@@ -2,7 +2,7 @@
 
 ## About
 
-A comprehensive React dashboard module that provides fully customizable dashboard functionality with filters, templates, and responsive grid layouts. This module enables you to create data-rich dashboards with support for multiple card types, filter systems, and template management.
+A comprehensive React dashboard module that provides customizable dashboard functionality with filters, templates, responsive grid layouts, and an edit mode to build and save layouts. This module enables you to create data-rich dashboards with support for multiple card types, filter systems, and template management.
 
 ## Installation
 
@@ -99,6 +99,44 @@ const MyDashboard = () => {
 };
 ```
 
+### Editable Dashboard Usage
+
+Use `editable` mode to let users reorganize cards, remove/add cards from a catalog, save changes to the current template, or save a cloned template.
+
+```tsx
+import { Dashboard, DEFAULT_CARD_CATALOG } from '@ttoss/react-dashboard';
+import type {
+  DashboardTemplate,
+  CardCatalogItem,
+} from '@ttoss/react-dashboard';
+
+const cardCatalog: CardCatalogItem[] = DEFAULT_CARD_CATALOG;
+
+const selectedTemplate: DashboardTemplate = {
+  id: 'default',
+  name: 'Performance Dashboard',
+  editable: true,
+  grid: [],
+};
+
+<Dashboard
+  selectedTemplate={selectedTemplate}
+  templates={[selectedTemplate]}
+  filters={[]}
+  editable
+  cardCatalog={cardCatalog}
+  onSaveLayout={(template) => {
+    // Persist edited layout for current template
+  }}
+  onSaveAsNewTemplate={(template) => {
+    // Persist cloned template
+  }}
+  onCancelEdit={() => {
+    // Optional callback when user cancels edit mode
+  }}
+/>;
+```
+
 ## Components
 
 ### Dashboard
@@ -122,14 +160,21 @@ import { Dashboard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop               | Type                                   | Default | Description                                |
-| ------------------ | -------------------------------------- | ------- | ------------------------------------------ |
-| `selectedTemplate` | `DashboardTemplate \| undefined`       | -       | The template to display in the dashboard   |
-| `templates`        | `DashboardTemplate[]`                  | `[]`    | Array of dashboard templates               |
-| `filters`          | `DashboardFilter[]`                    | `[]`    | Array of dashboard filters                 |
-| `loading`          | `boolean`                              | `false` | Loading state for the dashboard            |
-| `headerChildren`   | `React.ReactNode`                      | -       | Additional content to render in the header |
-| `onFiltersChange`  | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change               |
+| Prop                  | Type                                          | Default         | Description                                                                                                      |
+| --------------------- | --------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display in the dashboard                                                                         |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Array of dashboard templates                                                                                     |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Array of dashboard filters                                                                                       |
+| `loading`             | `boolean`                                     | `false`         | Loading state for the dashboard                                                                                  |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in "Add item" while editing                                                                 |
+| `headerChildren`      | `React.ReactNode`                             | -               | Additional content to render in the header                                                                       |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change                                                                                     |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit mode controls                                                                             |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Called when user saves edits to current template                                                                 |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Called when user saves edited layout as a new template                                                           |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when user cancels edit mode                                                                               |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes; `null` when edit mode exits                                            |
+| `currency`            | `string`                                      | `"BRL"`         | ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence |
 
 ### DashboardProvider
 
@@ -150,13 +195,19 @@ import { DashboardProvider } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop               | Type                                   | Default | Description                  |
-| ------------------ | -------------------------------------- | ------- | ---------------------------- |
-| `children`         | `React.ReactNode`                      | -       | Child components             |
-| `filters`          | `DashboardFilter[]`                    | `[]`    | Filter state                 |
-| `templates`        | `DashboardTemplate[]`                  | `[]`    | Template state               |
-| `selectedTemplate` | `DashboardTemplate \| undefined`       | -       | The template to display      |
-| `onFiltersChange`  | `(filters: DashboardFilter[]) => void` | -       | Callback when filters change |
+| Prop                  | Type                                          | Default         | Description                              |
+| --------------------- | --------------------------------------------- | --------------- | ---------------------------------------- |
+| `children`            | `React.ReactNode`                             | -               | Child components                         |
+| `filters`             | `DashboardFilter[]`                           | `[]`            | Filter state                             |
+| `templates`           | `DashboardTemplate[]`                         | `[]`            | Template state                           |
+| `cardCatalog`         | `CardCatalogItem[]`                           | default catalog | Card types available in edit mode        |
+| `selectedTemplate`    | `DashboardTemplate \| undefined`              | -               | The template to display                  |
+| `onFiltersChange`     | `(filters: DashboardFilter[]) => void`        | -               | Callback when filters change             |
+| `editable`            | `boolean`                                     | `false`         | Enables dashboard edit controls          |
+| `onSaveLayout`        | `(template: DashboardTemplate) => void`       | -               | Saves edits in current template          |
+| `onSaveAsNewTemplate` | `(template: DashboardTemplate) => void`       | -               | Saves edits as a new template            |
+| `onCancelEdit`        | `() => void`                                  | -               | Called when editing is canceled          |
+| `onEditingGridChange` | `(grid: DashboardGridItem[] \| null) => void` | -               | Called whenever the editing grid changes |
 
 ### useDashboard Hook
 
@@ -166,23 +217,53 @@ Hook to access and modify dashboard state.
 import { useDashboard } from '@ttoss/react-dashboard';
 
 const MyComponent = () => {
-  const { filters, updateFilter, templates, selectedTemplate } = useDashboard();
+  const {
+    filters,
+    updateFilter,
+    templates,
+    selectedTemplate,
+    editable,
+    isEditMode,
+    startEdit,
+    cancelEdit,
+    saveEdit,
+    addCard,
+  } = useDashboard();
 
   // Use dashboard state
   const handleFilterChange = (key: string, value: DashboardFilterValue) => {
     updateFilter(key, value);
   };
+
+  if (editable && !isEditMode) {
+    startEdit();
+  }
 };
 ```
 
 **Returns:**
 
-| Property           | Type                                                 | Description                                 |
-| ------------------ | ---------------------------------------------------- | ------------------------------------------- |
-| `filters`          | `DashboardFilter[]`                                  | Current filter state                        |
-| `updateFilter`     | `(key: string, value: DashboardFilterValue) => void` | Function to update a specific filter by key |
-| `templates`        | `DashboardTemplate[]`                                | Current template state                      |
-| `selectedTemplate` | `DashboardTemplate \| undefined`                     | Currently selected template passed as prop  |
+| Property             | Type                                                       | Description                                         |
+| -------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
+| `filters`            | `DashboardFilter[]`                                        | Current filter state                                |
+| `updateFilter`       | `(key: string, value: DashboardFilterValue) => void`       | Updates a specific filter by key                    |
+| `templates`          | `DashboardTemplate[]`                                      | Current template state                              |
+| `selectedTemplate`   | `DashboardTemplate \| undefined`                           | Currently selected template                         |
+| `cardCatalog`        | `CardCatalogItem[]`                                        | Card catalog used by add-card drawer                |
+| `editable`           | `boolean`                                                  | Whether edit controls are enabled                   |
+| `isEditMode`         | `boolean`                                                  | Whether dashboard is currently in edit mode         |
+| `editingGrid`        | `DashboardGridItem[] \| null`                              | Temporary grid while editing                        |
+| `startEdit`          | `() => void`                                               | Starts edit mode                                    |
+| `cancelEdit`         | `() => void`                                               | Cancels edit mode and discards temporary changes    |
+| `saveEdit`           | `() => void`                                               | Saves editing grid into current template callback   |
+| `saveAsNew`          | `() => void`                                               | Opens save-as-new flow                              |
+| `saveAsNewModalOpen` | `boolean`                                                  | Save-as-new drawer state                            |
+| `confirmSaveAsNew`   | `(title: string) => void`                                  | Confirms save-as-new action                         |
+| `cancelSaveAsNew`    | `() => void`                                               | Cancels save-as-new flow                            |
+| `addCard`            | `(item: CardCatalogItem) => void`                          | Adds a card to editing grid                         |
+| `removeCard`         | `(id: string) => void`                                     | Removes card from editing grid                      |
+| `updateCard`         | `(id: string, cardPatch: Record<string, unknown>) => void` | Patches a card in editing grid                      |
+| `onLayoutChange`     | `(layout: Layout[]) => void`                               | Syncs edited card positions/sizes from grid changes |
 
 ### DashboardCard
 
@@ -210,23 +291,25 @@ import { DashboardCard } from '@ttoss/react-dashboard';
 
 **Props:**
 
-| Prop                  | Type                      | Default | Description                                                                                                           |
-| --------------------- | ------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| `title`               | `string`                  | -       | Card title                                                                                                            |
-| `description`         | `string`                  | -       | Optional card description                                                                                             |
-| `icon`                | `string`                  | -       | Optional icon name                                                                                                    |
-| `color`               | `string`                  | -       | Optional color for the card                                                                                           |
-| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                                                 |
-| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                                                     |
-| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                                               |
-| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`)                             |
-| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                                             |
-| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                                                          |
-| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                                                        |
-| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                                              |
-| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                                                  |
-| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                                             |
-| `suffix`              | `string`                  | -       | Optional text appended after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`). Not shown when value is undefined. |
+| Prop                  | Type                      | Default | Description                                                                                                                        |
+| --------------------- | ------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | `string`                  | -       | Card identification                                                                                                                |
+| `title`               | `string`                  | -       | Card title                                                                                                                         |
+| `description`         | `string`                  | -       | Optional card description                                                                                                          |
+| `icon`                | `string`                  | -       | Optional icon name                                                                                                                 |
+| `color`               | `string`                  | -       | Optional color for the card                                                                                                        |
+| `variant`             | `CardVariant`             | -       | Card variant (`'default' \| 'dark' \| 'light-green'`)                                                                              |
+| `numberType`          | `CardNumberType`          | -       | Number formatting type (`'number' \| 'percentage' \| 'currency'`)                                                                  |
+| `numberDecimalPlaces` | `number`                  | `2`     | Optional number of decimal places for number formatting (defaults to 2)                                                            |
+| `currency`            | `string`                  | `"BRL"` | ISO 4217 currency code (e.g. `"USD"`, `"EUR"`). Only used when `numberType` is `"currency"`. Overrides dashboard-level `currency`. |
+| `type`                | `DashboardCardType`       | -       | Card type (`'bigNumber' \| 'pieChart' \| 'barChart' \| 'lineChart' \| 'table' \| 'list'`)                                          |
+| `sourceType`          | `CardSourceType[]`        | -       | Data source configuration                                                                                                          |
+| `labels`              | `Array<string \| number>` | -       | Optional labels for the card                                                                                                       |
+| `data`                | `DashboardCardData`       | -       | Card data from various sources                                                                                                     |
+| `trend`               | `TrendIndicator`          | -       | Optional trend indicator                                                                                                           |
+| `additionalInfo`      | `string`                  | -       | Optional additional information text                                                                                               |
+| `status`              | `StatusIndicator`         | -       | Optional status indicator                                                                                                          |
+| `suffix`              | `string`                  | -       | Optional text appended after the formatted number (e.g. `"kg"`, `"un"`, `"p.p."`). Not shown when value is undefined.              |
 
 ### DashboardFilters
 
@@ -308,6 +391,7 @@ const selectedTemplate: DashboardTemplate = {
       w: 4,
       h: 4,
       card: {
+        id: 'abc-123',
         title: 'Total Revenue',
         type: 'bigNumber',
         // ... other card properties
@@ -331,6 +415,7 @@ const selectedTemplate: DashboardTemplate = {
       w: 4,
       h: 4,
       card: {
+        id: 'def-456',
         title: 'ROAS',
         type: 'bigNumber',
         // ... other card properties
@@ -423,6 +508,7 @@ interface DashboardTemplate {
   name: string;
   description?: string;
   grid: DashboardGridItem[];
+  editable?: boolean;
 }
 ```
 
@@ -474,6 +560,14 @@ enum DashboardFilterType {
 ### DashboardCard
 
 See [DashboardCard](#dashboardcard) section for full interface.
+
+### CardCatalogItem
+
+Serializable card catalog item used by edit mode to add new cards to the layout.
+
+```tsx
+type CardCatalogItem = Pick<DashboardGridItem, 'w' | 'h' | 'card'>;
+```
 
 ### CardNumberType
 
@@ -607,6 +701,7 @@ const App = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-123',
           title: 'Total Revenue',
           numberType: 'currency',
           type: 'bigNumber',
@@ -627,6 +722,7 @@ const App = () => {
         w: 4,
         h: 4,
         card: {
+          id: 'abc-456',
           title: 'ROAS',
           numberType: 'number',
           numberDecimalPlaces: 2,
@@ -687,6 +783,38 @@ const App = () => {
     />
   );
 };
+```
+
+## Utilities
+
+### Card Signature & Catalog Filtering
+
+Utilities for deduplicating cards and filtering catalog items.
+
+```tsx
+import { getCardSignature, filterCatalogForGrid } from '@ttoss/react-dashboard';
+
+// Get a stable string signature for a card (null for sectionDivider)
+const sig = getCardSignature(card);
+
+// Filter catalog removing cards already in the grid, and deduplicate
+const available = filterCatalogForGrid(catalog, currentGrid);
+```
+
+`getCardSignature(card)` returns `null` for `sectionDivider` cards. For other cards it prefers `id`, then `metrics`-based signature, then falls back to `type:title`.
+
+`filterCatalogForGrid(catalog, grid)` excludes catalog items whose signature matches an item already in the grid and deduplicates the catalog. It does not mutate inputs.
+
+### Period Presets
+
+Factory for standard date-range presets. Dates are computed lazily at call time.
+
+```tsx
+import { createDefaultPeriodPresets } from '@ttoss/react-dashboard';
+
+const presets = createDefaultPeriodPresets();
+// Returns: Today, Yesterday, Last 7 days, This month, Last month, Last 30 days, Last quarter
+// Each preset has { label: string; from: Date; to: Date }
 ```
 
 ## License

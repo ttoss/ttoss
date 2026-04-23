@@ -32,6 +32,37 @@ This command:
 
 **Important**: Always run this command before considering your changes complete.
 
+## Running Tests in Packages
+
+When working on packages, you can run tests using the following commands from the package directory:
+
+```bash
+# Run all tests in the package
+pnpm run test
+
+# Run tests matching a specific file path pattern
+pnpm run test --testPathPatterns=<pattern>
+
+# Run tests matching a specific test name pattern
+pnpm run test --testNamePattern=<pattern>
+```
+
+**Command Options**:
+
+- `pnpm run test`: Runs all tests in the package
+- `pnpm run test --testPathPatterns=<pattern>`: An array of regexp pattern strings that are matched against all test paths before executing the test. Useful for running tests in specific files or directories.
+- `pnpm run test --testNamePattern=<pattern>`: Run only tests with a name that matches the regex pattern. Useful for running specific test cases by their descriptions.
+
+**Examples**:
+
+```bash
+# Run all tests in WizardFormIntegration.test.tsx
+pnpm run test --testPathPatterns=WizardFormIntegration
+
+# Run only the test named "prevents navigation from step 2"
+pnpm run test --testNamePattern="prevents navigation from step 2"
+```
+
 ## Internationalization (i18n) Message Updates
 
 **MANDATORY**: If you make any changes to i18n messages (adding, modifying, or removing `defineMessages` content), run the following command before finishing the task:
@@ -116,6 +147,64 @@ function createUser({ name, email, age, isActive }: CreateUserParams) {
 - Single parameter functions
 - Simple utility functions with 1-2 obvious parameters (e.g., `Math.max(a, b)`)
 - Callbacks with standard signatures (e.g., `.map((item, index) => ...)`)
+
+### Jest Mocking
+
+**MANDATORY**: When mocking modules in tests, use `jest.mocked()` for type-safe mocking.
+
+**Examples**:
+
+```typescript
+// ✅ CORRECT: Use jest.mocked for type-safe mocks
+jest.mock('some-module', () => ({
+  someFunction: jest.fn(),
+}));
+
+// In test
+jest.mocked(someFunction).mockReturnValue('mocked value');
+
+// ❌ INCORRECT: Avoid type assertions
+(someFunction as jest.Mock).mockReturnValue('mocked value');
+```
+
+**Benefits of `jest.mocked()`**:
+
+- Type-safe access to mock functions
+- Better IDE support and autocomplete
+- Prevents runtime errors from incorrect mock usage
+- Maintains type information for mocked modules
+
+## JSDoc on React Components
+
+**MANDATORY**: All exported React components must have a JSDoc comment. Storybook's `autodocs` feature reads JSDoc to generate component documentation automatically — without it, stories have no description.
+
+**Rules:**
+
+- Add a JSDoc block above every exported component describing what it does.
+- Document each prop with `@param` on the props type/interface, or use `/** ... */` inline on individual interface properties.
+- Keep descriptions concise and focused on behaviour, not implementation.
+
+**Examples:**
+
+```typescript
+// ✅ Component-level JSDoc
+/**
+ * Displays a pricing plan card with title, subtitle, price, and a CTA button.
+ */
+export const PlanCard = ({ title, price, onSubscribe }: PlanCardProps) => { ... };
+
+// ✅ Props documented on the interface
+interface PlanCardProps {
+  /** The plan name shown as the card heading. */
+  title: string;
+  /** Monthly price in cents. */
+  price: number;
+  /** Called when the user clicks the subscribe button. */
+  onSubscribe: () => void;
+}
+```
+
+**When to skip:** Internal helper components (not exported from the package's public API) do not need JSDoc.
 
 ## Reporting Enhancement Opportunities
 

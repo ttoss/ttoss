@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "2.9.1",
+  "version": "2.11.14",
   "description": "Theme for packages.",
   "license": "MIT",
   "author": "ttoss",
@@ -39,7 +39,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.2.0",
+    "jest": "^30.3.0",
     "theme-ui": "^0.17.2",
     "tsup": "^8.5.1"
   },

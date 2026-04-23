@@ -1,15 +1,30 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Markdown } from '@ttoss/components/Markdown';
 import { Box, Heading, Link } from '@ttoss/ui';
 
 export default {
   title: 'Components/Markdown',
+  component: Markdown,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Markdown renderer with theme integration. Supports GFM (GitHub Flavored Markdown) including tables, strikethrough, and task lists. Custom component overrides allow full styling control.',
+      },
+    },
+  },
 } as Meta;
 
 const Template: StoryFn<typeof Markdown> = (args) => {
   return <Markdown {...args} />;
 };
 
+/**
+ * Markdown rendering with custom component styling.
+ * Demonstrates headings, tables, lists, images, links, and text formatting.
+ * The `components` prop allows overriding default element rendering with custom components.
+ */
 export const Example = Template.bind({});
 
 const INITIAL_MARKDOWN = `

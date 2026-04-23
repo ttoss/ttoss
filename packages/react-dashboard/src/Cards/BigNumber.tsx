@@ -13,22 +13,24 @@ const formatNumber = ({
   type,
   numberDecimalPlaces,
   suffix,
+  currency = 'BRL',
 }: {
   value: number | undefined;
   type: 'number' | 'percentage' | 'currency';
   numberDecimalPlaces?: number;
   suffix?: string;
+  currency?: string;
 }): string => {
   if (value === undefined || value === null) {
     return '-';
   }
 
-  let formatted = '';
+  let formatted: string;
   switch (type) {
     case 'currency':
       formatted = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
-        currency: 'BRL',
+        currency,
       }).format(value);
       break;
     case 'percentage':
@@ -75,7 +77,7 @@ const getTrendColor = (
 ): { color: string; backgroundColor: string } => {
   const colors = {
     positive: {
-      color: '#15803d',
+      color: 'feedback.text.positive.default',
       backgroundColor: 'feedback.background.positive.default',
     },
     negative: {
@@ -126,6 +128,7 @@ export const BigNumber = (props: DashboardCard) => {
     type: props.numberType,
     numberDecimalPlaces: props.numberDecimalPlaces,
     suffix: props.suffix,
+    currency: props.currency,
   });
 
   const valueColor = getValueColor(props.color, props.variant);
@@ -146,9 +149,9 @@ export const BigNumber = (props: DashboardCard) => {
         <Text
           sx={{
             color: valueColor,
-            fontSize: '1.65rem',
-            fontWeight: 'bold',
-            lineHeight: '1.2',
+            fontSize: '2xl',
+            fontWeight: 'semibold',
+            lineHeight: 'shorter',
           }}
         >
           {formattedValue}
@@ -167,7 +170,7 @@ export const BigNumber = (props: DashboardCard) => {
                 backgroundColor: getTrendColor(props.trend).backgroundColor,
                 padding: '1',
                 fontSize: 'xs',
-                fontWeight: 'bold',
+                fontWeight: 'semibold',
                 borderRadius: 'sm',
                 display: 'flex',
                 alignItems: 'center',

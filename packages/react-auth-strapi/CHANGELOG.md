@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.22 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.16...@ttoss/react-auth-strapi@0.4.21) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.16...@ttoss/react-auth-strapi@0.4.20) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.16...@ttoss/react-auth-strapi@0.4.19) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.16...@ttoss/react-auth-strapi@0.4.18) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.16...@ttoss/react-auth-strapi@0.4.17) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.16 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.4.15 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.4.14 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.13 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.12 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.11 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.10 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.4.9 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.7...@ttoss/react-auth-strapi@0.4.8) (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.6...@ttoss/react-auth-strapi@0.4.7) (2026-03-24)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.5...@ttoss/react-auth-strapi@0.4.6) (2026-03-23)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.4...@ttoss/react-auth-strapi@0.4.5) (2026-03-20)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.3...@ttoss/react-auth-strapi@0.4.4) (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## 0.4.3 (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.1...@ttoss/react-auth-strapi@0.4.2) (2026-02-23)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.0...@ttoss/react-auth-strapi@0.4.1) (2026-02-21)
+
+### Bug Fixes
+
+- auth strapi forgot password ([#873](https://github.com/ttoss/ttoss/issues/873)) ([409d6a6](https://github.com/ttoss/ttoss/commit/409d6a60f976fd84444758431a5514389eea77da))
+
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.3.5...@ttoss/react-auth-strapi@0.4.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [0.3.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.3.4...@ttoss/react-auth-strapi@0.3.5) (2026-02-03)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi

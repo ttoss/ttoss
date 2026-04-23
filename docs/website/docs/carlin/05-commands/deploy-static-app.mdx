@@ -12,7 +12,7 @@ carlin deploy static-app
 
 This command:
 
-1. Finds your built static files (`build/`, `dist/`, `.next/`, etc.)
+1. Finds your built static files (`build/`, `out/`, `storybook-static/`, `dist/`)
 2. Creates S3 bucket for hosting
 3. Optionally creates CloudFront distribution
 4. Uploads files to S3
@@ -53,7 +53,7 @@ Specify build output folder.
 carlin deploy static-app --build-folder dist
 ```
 
-**Default**: Auto-detects `build/`, `dist/`, `.next/`, `out/`, or `public/`
+**Default**: Auto-detects `build/`, `out/`, `storybook-static/`, or `dist/`
 
 ### --cloudfront
 
@@ -328,21 +328,7 @@ carlin deploy static-app --skip-upload
 
 ## Cost Considerations
 
-### S3 Only
-
-- **Storage**: ~$0.023/GB/month
-- **Requests**: $0.0004 per 1,000 GET requests
-- **Data transfer**: $0.09/GB (first 10 TB)
-
-**Estimated**: $1-5/month for small apps
-
-### S3 + CloudFront
-
-- **CloudFront requests**: $0.0075 per 10,000 requests
-- **CloudFront data transfer**: $0.085/GB (first 10 TB)
-- **S3 storage**: Same as above
-
-**Estimated**: $5-20/month for small apps
+See [AWS S3 Pricing](https://aws.amazon.com/s3/pricing/) and [CloudFront Pricing](https://aws.amazon.com/cloudfront/pricing/) for current rates.
 
 ## Troubleshooting
 
@@ -392,5 +378,4 @@ carlin deploy static-app --spa
 ## Related Topics
 
 - [Base Stack](/docs/carlin/core-concepts/base-stack) - CloudFront function for `--append-index-html`
-- [Static Websites Guide](/docs/carlin/guides/static-websites) - Complete static app deployment guide
 - [Environments](/docs/carlin/core-concepts/environments) - Multi-environment deployments

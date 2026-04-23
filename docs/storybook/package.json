@@ -1,22 +1,25 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "3.13.0",
+  "version": "3.24.3",
   "author": "ttoss",
   "scripts": {
-    "build": "storybook build --quiet",
+    "build": "storybook build --quiet && pnpm run generate-llms",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm run storybook",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "i18n": "pnpm ttoss-i18n",
     "start": "pnpm run storybook",
     "storybook": "storybook dev -p 6006",
     "update-storybook": "npx storybook@latest upgrade"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.34.0",
     "@iconify-icons/mdi-light": "^1.2.5",
     "@iconify/icons-carbon": "^1.2.20",
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",
@@ -32,17 +35,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@storybook/addon-a11y": "^10.0.6",
-    "@storybook/addon-docs": "^10.0.6",
-    "@storybook/addon-links": "^10.0.6",
-    "@storybook/addon-webpack5-compiler-babel": "^3.0.6",
-    "@storybook/react-webpack5": "^10.0.6",
+    "@fluentui/storybook-llms-extractor": "^0.0.4",
+    "@storybook/addon-a11y": "^10.3.3",
+    "@storybook/addon-docs": "^10.3.3",
+    "@storybook/addon-links": "^10.3.3",
+    "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
+    "@storybook/react-webpack5": "^10.3.3",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
-    "babel-loader": "^9.2.1",
-    "eslint-plugin-storybook": "10.0.6",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "storybook": "^10.0.6"
+    "babel-loader": "^10.1.1",
+    "eslint-plugin-storybook": "10.3.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "storybook": "^10.3.3"
   }
 }

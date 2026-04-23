@@ -4,70 +4,64 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # ttoss Components Storybook
 
-Welcome to the **ttoss ecosystem components library**! This Storybook showcases all React components available in `@ttoss/components`.
+Welcome to the **ttoss ecosystem components library**—production-ready React components that automatically integrate with your application's theme, translations, and notifications.
 
-## Quick Start
+## Installation
 
 ```shell
-pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
+pnpm add @ttoss/components @ttoss/ui @ttoss/theme @ttoss/react-i18n
 ```
 
-## What's Inside
+## Context-Based Architecture
 
-**16 Production-Ready Components** that integrate seamlessly with the ttoss ecosystem:
+All components leverage the [ttoss foundation pattern](https://github.com/ttoss/ttoss/tree/main/.github/instructions/react-packages-architecture.instructions.md): configure your theme, i18n, and notifications once at the application root, and all components automatically inherit these settings without requiring component-level props.
 
-### Layout & Navigation
+```tsx
+import { ThemeProvider } from '@ttoss/ui';
+import { I18nProvider } from '@ttoss/react-i18n';
+import { NotificationsProvider } from '@ttoss/react-notifications';
 
-- **Accordion** - Collapsible content sections with accessibility
-- **Drawer** - Slide-out panels from screen edges
-- **Menu** - Dropdown menus with customizable triggers
-- **Modal** - Theme-aware modals with accessibility features
-- **Tabs** - Tab navigation with content panels
+function App() {
+  return (
+    <ThemeProvider theme={myTheme}>
+      <I18nProvider locale="en-US" loadLocaleData={loadLocaleData}>
+        <NotificationsProvider>
+          {/* All ttoss components automatically inherit configuration */}
+        </NotificationsProvider>
+      </I18nProvider>
+    </ThemeProvider>
+  );
+}
+```
 
-### Content & Display
+## Component Categories
 
-- **List** - Unordered lists with customizable items
-- **Markdown** - Render markdown with theme integration
-- **Table** - Flexible tables with sorting/pagination (TanStack Table)
-- **JsonEditor** - JSON editing with syntax highlighting
-- **JsonView** - JSON viewer component
+**Layout & Navigation**: Accordion, Drawer, Menu, Modal, Tabs  
+**Content & Display**: List, Markdown, Table, JsonEditor, JsonView, EnhancedTitle, MetricCard, NavList, SpotlightCard  
+**Form & Input**: Search, FileUploader, DatePicker  
+**Notifications**: NotificationCard, NotificationsMenu, Toast, LockedOverlay  
+**Utilities**: InstallPwa
 
-### Form & Input
+## Using This Storybook
 
-- **Search** - Debounced search with loading states
-- **FileUploader** - Drag-and-drop file upload with progress
+**Browse**: Explore components in the sidebar organized by category  
+**Interact**: Test components live in the Canvas tab  
+**Learn**: View usage patterns, props, and code examples in the Docs tab  
+**Copy**: Use code examples directly in your projects
 
-### Notifications
+## Key Features
 
-- **NotificationCard** - Display notification messages
-- **NotificationsMenu** - Menu for displaying notifications
-- **Toast** - Toast notification system
+- **Theme-aware**: All components use design tokens from `@ttoss/ui` and support custom themes
+- **Internationalized**: Components display messages in the locale configured via `@ttoss/react-i18n`
+- **Accessible**: Built following WAI-ARIA patterns with semantic HTML and keyboard navigation
+- **TypeScript**: Full type safety with comprehensive type definitions
 
-### Utilities
+## Resources
 
-- **InstallPwa** - PWA installation prompt
-
-## Theme Integration
-
-All components are **theme-aware** and integrate with:
-
-- `@ttoss/ui` design system
-- Emotion CSS-in-JS
-- Theme-UI tokens and responsive values
-
-## How to Use This Storybook
-
-1. **Browse Components** - Navigate through the sidebar to explore each component
-2. **Interactive Examples** - Try out live examples in the Canvas tab
-3. **View Documentation** - Check the Docs tab for usage patterns and API
-4. **Copy Code** - Use the code examples directly in your projects
-
-## Related Links
-
-- **[ttoss Documentation](https://ttoss.dev)** - Complete ecosystem docs
-- **[GitHub Repository](https://github.com/ttoss/ttoss)** - Source code and issues
-- **[@ttoss/components README](https://github.com/ttoss/ttoss/tree/main/packages/components)** - Installation and usage guide
+- [ttoss Documentation](https://ttoss.dev) - Complete ecosystem documentation
+- [GitHub Repository](https://github.com/ttoss/ttoss) - Source code and issues
+- [@ttoss/components README](https://github.com/ttoss/ttoss/tree/main/packages/components) - Package documentation
 
 ---
 
-**ESM Only Package** - This library requires ESM imports due to dependencies like react-markdown.
+**Note**: This is an ESM-only package due to dependencies like react-markdown and TanStack Table.

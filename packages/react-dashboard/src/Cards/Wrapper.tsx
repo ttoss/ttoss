@@ -21,7 +21,7 @@ export const CardWrapper = ({
         return 'feedback.background.positive.default';
       case 'default':
       default:
-        return '#f9fafb';
+        return 'display.background.secondary.default';
     }
   };
 
@@ -68,6 +68,8 @@ export const CardWrapper = ({
             sx={{
               textTransform: 'uppercase',
               color: getTitleColor(),
+              fontSize: 'xs',
+              letterSpacing: 'wider',
               textWrapStyle: 'pretty',
             }}
             title={title}
@@ -81,7 +83,7 @@ export const CardWrapper = ({
               tooltip={{
                 children: description,
                 sx: {
-                  maxWidth: '300px',
+                  maxWidth: 'xs',
                 },
               }}
               sx={{

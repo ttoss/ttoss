@@ -35,9 +35,9 @@ const Template: StoryFn = () => {
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
         <FormFieldCPF name="cpfWarning" label="CPF:" warning={true} />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

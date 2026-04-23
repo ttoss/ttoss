@@ -1,6 +1,6 @@
 import { Markdown } from '@ttoss/components/Markdown';
 import { Auth, useAuth } from '@ttoss/react-auth-cognito';
-import type { DashboardFilter } from '@ttoss/react-dashboard';
+import type { CardCatalogItem, DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
@@ -17,6 +17,7 @@ const templates: DashboardTemplate[] = [
   {
     id: 'default',
     name: 'Padrão',
+    editable: false,
     grid: [
       {
         i: '1',
@@ -27,6 +28,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'bb3e74d3-d970-47ad-b923-fd16767aa6bd',
           title: 'Investimento total',
           description: 'Valor total investido em anúncios na plataforma Meta',
           variant: 'default',
@@ -64,6 +66,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'b57f462f-080d-451f-aa0c-6c2b6d7fe05c',
           title: 'Faturamento Total Rastreado',
           description:
             'Valor total de vendas rastreadas através dos eventos de compra',
@@ -103,6 +106,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '6256081f-842c-43e5-bb82-38e61c8b56c1',
           title: 'ROAS',
           description:
             'Return on Ad Spend - Retorno sobre investimento em publicidade. Representa quantas vezes o valor investido foi recuperado em vendas',
@@ -142,6 +146,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: 'b0511b0d-02bb-4f82-8a31-e9412352f404',
           title: 'Número de compras',
           description:
             'Quantidade total de compras realizadas e rastreadas através dos anúncios',
@@ -181,6 +186,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '298a140a-766e-45e3-a01a-e1830350153a',
           title: 'Impressões',
           description:
             'Número total de vezes que os anúncios foram exibidos aos usuários',
@@ -220,6 +226,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '3281120b-3d20-45f5-8d45-638c66757555',
           title: 'Alcance',
           description:
             'Número de pessoas únicas que viram pelo menos uma vez os anúncios',
@@ -260,6 +267,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '4196180c-4d30-45f5-8d45-638c66757555',
           title: 'Frequência',
           description: 'Número médio de vezes que cada pessoa viu os anúncios',
           variant: 'default',
@@ -298,6 +306,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '50a11e0d-5d40-45f5-8d45-638c66757555',
           title: 'CPM',
           description:
             'Custo por Mil Impressões - Valor gasto para exibir o anúncio mil vezes',
@@ -338,6 +347,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '60b1200e-6d50-45f5-8d45-638c66757555',
           title: 'Cliques',
           description: 'Número total de cliques nos anúncios',
           variant: 'default',
@@ -377,6 +387,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '70c1220f-7d60-45f5-8d45-638c66757555',
           title: 'CTR',
           description:
             'Click-Through Rate - Taxa de cliques. Percentual de pessoas que clicaram no anúncio em relação ao total de impressões',
@@ -417,6 +428,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '80d12410-8d70-45f5-8d45-638c66757555',
           title: 'CPC',
           description: 'Custo por Clique',
           variant: 'default',
@@ -456,6 +468,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '90e12611-9d80-45f5-8d45-638c66757555',
           title: 'Hook Rate Anúncios',
           description:
             'Taxa de engajamento de vídeo. Calculado como: Visualizações de vídeo ÷ Impressões. Mede a porcentagem de pessoas que assistiram ao vídeo em relação ao total de impressões',
@@ -496,6 +509,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '100f2812-af90-45f5-8d45-638c66757555',
           title: 'Checkouts',
           description: 'Número total de checkouts iniciados pelos usuários',
           variant: 'default',
@@ -813,6 +827,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '241f2a13-bfa0-45f5-8d45-638c66757555',
           title: 'Taxa de conversão do site - Compras',
           description:
             'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
@@ -866,6 +881,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '251f2a13-bfa0-45f5-8d45-638c66757555',
           title: 'Taxa de conversão do site - Compras',
           description:
             'Percentual de visitantes da landing page que realizaram uma compra. Calculado como: Compras ÷ Visualizações de landing page',
@@ -912,6 +928,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '261f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'oneclickads' }],
           title: 'Faturamento Bruto',
           variant: 'dark',
@@ -937,6 +954,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '271f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Taxas',
           numberType: 'currency',
@@ -958,6 +976,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '281f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'ROAS',
           variant: 'light-green',
@@ -984,6 +1003,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '291f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Faturamento líquido total',
           description: 'Total de faturamento líquido',
@@ -1006,6 +1026,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '301f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'Lucro Líquido',
           variant: 'default',
@@ -1032,6 +1053,7 @@ const templates: DashboardTemplate[] = [
         isResizable: false,
         isDraggable: false,
         card: {
+          id: '311f2a13-bfa0-45f5-8d45-638c66757555',
           sourceType: [{ source: 'api' }],
           title: 'ROI',
           description: 'Total de ROI',
@@ -1093,6 +1115,190 @@ const subMonths = (date: Date, months: number) => {
 const subQuarters = (date: Date, quarters: number) => {
   return subMonths(date, quarters * 3);
 };
+
+const cardCatalog: CardCatalogItem[] = [
+  {
+    w: 12,
+    h: 2,
+    card: {
+      title: 'Adicionar Divisor de seção',
+      type: 'sectionDivider',
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Faturamento total',
+      description: 'Valor total de faturamento',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Faturamento Total Rastreado',
+      description:
+        'Valor total de vendas rastreadas através dos eventos de compra',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'ROAS',
+      description:
+        'Return on Ad Spend - Retorno sobre investimento em publicidade. Representa quantas vezes o valor investido foi recuperado em vendas',
+      variant: 'default',
+      numberType: 'number',
+      numberDecimalPlaces: 2,
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Total de Vendas',
+      description: 'Valor total de vendas',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'oneclickads',
+        },
+      ],
+      data: {
+        api: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Investimento total',
+      description: 'Valor total investido em anúncios na plataforma Meta',
+      variant: 'default',
+      numberType: 'currency',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Cliques',
+      variant: 'default',
+      numberType: 'number',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'Impressões',
+      variant: 'default',
+      numberType: 'number',
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+  {
+    w: 3,
+    h: 3,
+    card: {
+      title: 'CTR',
+      variant: 'default',
+      numberType: 'percentage',
+      numberDecimalPlaces: 2,
+      type: 'bigNumber',
+      sourceType: [
+        {
+          source: 'meta',
+          level: 'adAccount',
+        },
+      ],
+      data: {
+        meta: {
+          total: 0,
+        },
+      },
+    },
+  },
+];
 
 const filters: DashboardFilter[] = [
   {
@@ -1179,8 +1385,23 @@ export const App = () => {
   const isNiceHiEnabled = useFeatureFlag('nice-hi');
 
   // Manage filters state outside Dashboard
-  const [dashboardFilters, setDashboardFilters] =
+  const [dashboardFilters, setDashboardFiltersState] =
     React.useState<DashboardFilter[]>(filters);
+
+  // Skip the next template filter onChange from SelectFilter when we set it programmatically
+  // (e.g. after "Save as new"), to avoid a loop: SelectFilter's effect can fire with stale
+  // form value and overwrite our update.
+  const skipNextTemplateFilterChangeRef = React.useRef(false);
+  const setDashboardFilters = React.useCallback(
+    (updater: React.SetStateAction<DashboardFilter[]>) => {
+      if (skipNextTemplateFilterChangeRef.current) {
+        skipNextTemplateFilterChangeRef.current = false;
+        return;
+      }
+      setDashboardFiltersState(updater);
+    },
+    []
+  );
 
   // Find initial selected template based on template filter value
   const getSelectedTemplate = React.useCallback(
@@ -1198,6 +1419,10 @@ export const App = () => {
     []
   );
 
+  // Manage templates in state so we can save / save as new
+  const [templatesState, setTemplatesState] =
+    React.useState<DashboardTemplate[]>(templates);
+
   // Manage selectedTemplate state based on template filter
   const [selectedTemplate, setSelectedTemplate] = React.useState<
     DashboardTemplate | undefined
@@ -1205,11 +1430,57 @@ export const App = () => {
     return getSelectedTemplate(dashboardFilters);
   });
 
-  // Update selectedTemplate when template filter changes
+  // Update selectedTemplate when template filter changes (use templatesState)
   React.useEffect(() => {
-    const newSelectedTemplate = getSelectedTemplate(dashboardFilters);
-    setSelectedTemplate(newSelectedTemplate);
-  }, [dashboardFilters, getSelectedTemplate]);
+    const templateFilter = dashboardFilters.find((f) => {
+      return f.key === 'template';
+    });
+    const value = templateFilter?.value;
+    const newSelectedTemplate = value
+      ? templatesState.find((t) => {
+          return t.id === value;
+        })
+      : undefined;
+    setSelectedTemplate(newSelectedTemplate ?? undefined);
+  }, [dashboardFilters, templatesState]);
+
+  // Derive filters with template options from templatesState (avoids sync effect / infinite loop)
+  const filtersWithTemplateOptions = React.useMemo(() => {
+    return dashboardFilters.map((f) => {
+      return f.key === 'template'
+        ? {
+            ...f,
+            options: templatesState.map((t) => {
+              return { label: t.name, value: t.id };
+            }),
+          }
+        : f;
+    });
+  }, [dashboardFilters, templatesState]);
+
+  const handleSaveLayout = React.useCallback((template: DashboardTemplate) => {
+    setTemplatesState((prev) => {
+      return prev.map((t) => {
+        return t.id === template.id ? template : t;
+      });
+    });
+  }, []);
+
+  const handleSaveAsNewTemplate = React.useCallback(
+    (template: DashboardTemplate) => {
+      setTemplatesState((prev) => {
+        return [...prev, template];
+      });
+      setSelectedTemplate(template);
+      skipNextTemplateFilterChangeRef.current = true;
+      setDashboardFiltersState((prev) => {
+        return prev.map((f) => {
+          return f.key === 'template' ? { ...f, value: template.id } : f;
+        });
+      });
+    },
+    []
+  );
 
   const [loading, setLoading] = React.useState(true);
 
@@ -1244,10 +1515,14 @@ export const App = () => {
         <Flex sx={{ width: '60%', height: '100%' }}>
           <Dashboard
             selectedTemplate={selectedTemplate}
-            filters={dashboardFilters}
-            templates={templates}
+            filters={filtersWithTemplateOptions}
+            templates={templatesState}
             onFiltersChange={setDashboardFilters}
             loading={loading}
+            editable
+            onSaveLayout={handleSaveLayout}
+            onSaveAsNewTemplate={handleSaveAsNewTemplate}
+            cardCatalog={cardCatalog}
           />
         </Flex>
       </Flex>

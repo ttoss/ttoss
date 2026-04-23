@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.43.17 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.16](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.11...@ttoss/forms@0.43.16) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.15](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.11...@ttoss/forms@0.43.15) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.14](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.11...@ttoss/forms@0.43.14) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.13](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.11...@ttoss/forms@0.43.13) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.12](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.11...@ttoss/forms@0.43.12) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## 0.43.11 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.43.10 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.43.9 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## 0.43.8 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## 0.43.7 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## 0.43.6 (2026-04-01)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
+## 0.43.5 (2026-03-31)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.43.4 (2026-03-31)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## [0.43.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.2...@ttoss/forms@0.43.3) (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.43.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.1...@ttoss/forms@0.43.2) (2026-03-24)
+
+### Bug Fixes
+
+- cc phone number ([#905](https://github.com/ttoss/ttoss/issues/905)) ([4c27b3f](https://github.com/ttoss/ttoss/commit/4c27b3f214016f9621781b9947664f24d6862cb5)), closes [#906](https://github.com/ttoss/ttoss/issues/906)
+
+## [0.43.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.0...@ttoss/forms@0.43.1) (2026-03-23)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+# [0.43.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.42.0...@ttoss/forms@0.43.0) (2026-03-20)
+
+### Features
+
+- create form actions ([#895](https://github.com/ttoss/ttoss/issues/895)) ([5537ba4](https://github.com/ttoss/ttoss/commit/5537ba40cb44f47804a6b03a8b5e4db561fa059c)), closes [#896](https://github.com/ttoss/ttoss/issues/896)
+
+# [0.42.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.41.2...@ttoss/forms@0.42.0) (2026-03-19)
+
+### Features
+
+- **forms:** generic FormFieldPhone with configurable and editable country code ([#892](https://github.com/ttoss/ttoss/issues/892)) ([0ef9c71](https://github.com/ttoss/ttoss/commit/0ef9c71efbf902ce94312068c5995dcfdb6df4e4))
+
+## 0.41.2 (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.41.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.41.0...@ttoss/forms@0.41.1) (2026-02-23)
+
+**Note:** Version bump only for package @ttoss/forms
+
+# [0.41.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.40.2...@ttoss/forms@0.41.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [0.40.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.40.1...@ttoss/forms@0.40.2) (2026-02-03)
 
 **Note:** Version bump only for package @ttoss/forms

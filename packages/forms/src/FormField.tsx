@@ -194,7 +194,12 @@ export const FormField = <
 
   return (
     <Flex
-      sx={{ flexDirection: 'column', width: '100%', gap: '1', ...sx }}
+      sx={{
+        flexDirection: 'column',
+        width: '100%',
+        gap: '1',
+        ...sx,
+      }}
       css={css}
     >
       {memoizedRender}

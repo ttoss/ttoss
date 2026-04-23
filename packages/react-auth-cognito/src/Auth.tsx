@@ -127,6 +127,14 @@ export const Auth = (props: AuthProps) => {
     React.useCallback<OnForgotPasswordResetPassword>(
       async ({ email, code, newPassword }) => {
         try {
+          if (!email) {
+            throw new Error('Email is required to reset password');
+          }
+
+          if (!code) {
+            throw new Error('Confirmation code is required to reset password');
+          }
+
           await confirmResetPassword({
             confirmationCode: code,
             username: email,
@@ -155,6 +163,7 @@ export const Auth = (props: AuthProps) => {
       signUpTerms={props.signUpTerms}
       logo={props.logo}
       layout={props.layout}
+      maxForgotPasswordCodeLength={6}
     />
   );
 };

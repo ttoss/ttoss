@@ -376,3 +376,87 @@ describe('onError callback', () => {
     });
   });
 });
+
+describe('forgot password code length validation', () => {
+  test('should show error when confirmation code has 7 digits', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    render(
+      <AuthProvider>
+        <Auth />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    });
+
+    // Navigate to forgot password flow
+    await user.click(screen.getByText('Forgot password?'));
+
+    await user.type(screen.getByLabelText('Registered Email'), email);
+    await user.click(screen.getByRole('button', { name: 'Recover Password' }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Confirmation code')).toBeInTheDocument();
+    });
+
+    // Enter a 7-digit code (exceeds maxForgotPasswordCodeLength of 6)
+    const longCode = '1234567';
+    await user.type(screen.getByLabelText('Confirmation code'), longCode);
+    await user.type(screen.getByLabelText('New Password'), password);
+
+    // Should show error message for code exceeding max length
+    await waitFor(() => {
+      expect(screen.getByText('Maximum 6 characters')).toBeInTheDocument();
+    });
+
+    // Submit button should be disabled due to validation error
+    const submitButton = screen.getByRole('button', { name: 'Reset Password' });
+    expect(submitButton).toBeDisabled();
+
+    // confirmResetPassword should not be called
+    expect(amplifyAuth.confirmResetPassword).not.toHaveBeenCalled();
+  });
+
+  test('should show error when confirmation code has 5 digits', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    render(
+      <AuthProvider>
+        <Auth />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    });
+
+    // Navigate to forgot password flow
+    await user.click(screen.getByText('Forgot password?'));
+
+    await user.type(screen.getByLabelText('Registered Email'), email);
+    await user.click(screen.getByRole('button', { name: 'Recover Password' }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Confirmation code')).toBeInTheDocument();
+    });
+
+    // Enter a 5-digit code (below expected length of 6)
+    const shortCode = '12345';
+    await user.type(screen.getByLabelText('Confirmation code'), shortCode);
+    await user.type(screen.getByLabelText('New Password'), password);
+
+    // Should show error message for code below min length
+    await waitFor(() => {
+      expect(screen.getByText('Minimum 6 characters')).toBeInTheDocument();
+    });
+
+    // Submit button should be disabled due to validation error
+    const submitButton = screen.getByRole('button', { name: 'Reset Password' });
+    expect(submitButton).toBeDisabled();
+
+    // confirmResetPassword should not be called
+    expect(amplifyAuth.confirmResetPassword).not.toHaveBeenCalled();
+  });
+});

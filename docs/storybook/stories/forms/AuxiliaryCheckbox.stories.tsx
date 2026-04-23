@@ -45,8 +45,10 @@ const BasicExample: StoryFn = () => {
             label: 'I confirm this is my email address',
           }}
         />
-        <Button type="submit">Submit</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -86,8 +88,10 @@ const ErrorPriorityExample: StoryFn = () => {
             label: 'I confirm this is my email address',
           }}
         />
-        <Button type="submit">Submit</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -123,8 +127,10 @@ const PasswordWithTermsExample: StoryFn = () => {
             label: 'I accept the terms and conditions',
           }}
         />
-        <Button type="submit">Sign Up</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Sign Up</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -160,8 +166,10 @@ const TextareaWithConfirmationExample: StoryFn = () => {
             label: 'I have reviewed my message and it is ready to send',
           }}
         />
-        <Button type="submit">Send Message</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Send Message</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -202,8 +210,10 @@ const NumericFormatWithConfirmationExample: StoryFn = () => {
             label: 'I confirm this transfer amount is correct',
           }}
         />
-        <Button type="submit">Transfer</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Transfer</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -243,8 +253,10 @@ const PatternFormatWithConfirmationExample: StoryFn = () => {
             label: 'I confirm this is my phone number',
           }}
         />
-        <Button type="submit">Verify Phone</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Verify Phone</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -279,8 +291,10 @@ const WithDefaultValueExample: StoryFn = () => {
             defaultValue: true,
           }}
         />
-        <Button type="submit">Subscribe</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Subscribe</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -307,8 +321,10 @@ const DisabledExample: StoryFn = () => {
             label: 'I confirm this is my email address',
           }}
         />
-        <Button type="submit">Submit</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };
@@ -355,8 +371,10 @@ const MultipleFieldsExample: StoryFn = () => {
             label: 'I confirm this is my phone number',
           }}
         />
-        <Button type="submit">Submit</Button>
       </Flex>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

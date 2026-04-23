@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.7.14 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.8...@ttoss/react-notifications@2.7.13) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.8...@ttoss/react-notifications@2.7.12) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.8...@ttoss/react-notifications@2.7.11) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.8...@ttoss/react-notifications@2.7.10) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.8...@ttoss/react-notifications@2.7.9) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 2.7.8 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 2.7.7 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 2.7.6 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 2.7.5 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 2.7.4 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 2.7.3 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## 2.7.2 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 2.7.1 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+# 2.7.0 (2026-03-31)
+
+### Features
+
+- create form actions ([#895](https://github.com/ttoss/ttoss/issues/895)) ([5537ba4](https://github.com/ttoss/ttoss/commit/5537ba40cb44f47804a6b03a8b5e4db561fa059c)), closes [#896](https://github.com/ttoss/ttoss/issues/896)
+
+## 2.6.2 (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.6.0...@ttoss/react-notifications@2.6.1) (2026-02-23)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+# [2.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.15...@ttoss/react-notifications@2.6.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [2.5.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.5.14...@ttoss/react-notifications@2.5.15) (2026-02-03)
 
 **Note:** Version bump only for package @ttoss/react-notifications

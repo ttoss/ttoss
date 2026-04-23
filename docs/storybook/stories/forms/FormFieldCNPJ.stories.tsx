@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import { Form, useForm, yup, yupResolver } from '@ttoss/forms';
 import { FormFieldCNPJ } from '@ttoss/forms/brazil';
 import { Button, Flex } from '@ttoss/ui';
@@ -35,9 +35,9 @@ const Template: StoryFn = () => {
       <Flex sx={{ flexDirection: 'column', gap: 'md' }}>
         <FormFieldCNPJ name="cnpjWarning" label="CNPJ:" warning={true} />
       </Flex>
-      <Button sx={{ marginTop: 'lg' }} type="submit">
-        Submit
-      </Button>
+      <Form.Actions>
+        <Button type="submit">Submit</Button>
+      </Form.Actions>
     </Form>
   );
 };

@@ -51,4 +51,25 @@ describe('DashboardHeader', () => {
     expect(screen.getByText('Search')).toBeInTheDocument();
     expect(screen.getByText('Action Button')).toBeInTheDocument();
   });
+
+  test('should render edit toolbar when dashboard is editable', () => {
+    const selectedTemplate = {
+      id: 'template-1',
+      name: 'Template 1',
+      grid: [],
+    };
+
+    render(
+      <DashboardProvider
+        filters={mockFilters}
+        templates={[selectedTemplate]}
+        selectedTemplate={selectedTemplate}
+        editable
+      >
+        <DashboardHeader />
+      </DashboardProvider>
+    );
+
+    expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
+  });
 });

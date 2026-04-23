@@ -174,7 +174,7 @@ export const App = () => (
 
 - **Design System**: Core part of [ttoss Design System](https://ttoss.dev/docs/design/design-system)
 - **Component Library**: Used by [@ttoss/ui](https://ttoss.dev/docs/modules/packages/ui) components
-- **Design Tokens**: Implements [semantic token](https://ttoss.dev/docs/design/design-system/design-tokens/semantic-tokens) architecture
+- **Design Tokens**: Implements [semantic token](https://ttoss.dev/docs/design/design-system/design-tokens/model) architecture
 - **Theme UI**: Built on [Theme UI](https://theme-ui.com/) specification
 - **TypeScript**: Full type safety and IntelliSense support
 

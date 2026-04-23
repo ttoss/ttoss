@@ -41,6 +41,7 @@ type MetricsRecord = {
   >;
 }[SourceType];
 export interface DashboardCard {
+  id: string;
   title: string;
   description?: string;
   icon?: string;
@@ -48,6 +49,8 @@ export interface DashboardCard {
   variant?: CardVariant;
   numberType: CardNumberType;
   numberDecimalPlaces?: number;
+  /** ISO 4217 currency code (e.g. `"BRL"`, `"USD"`, `"EUR"`). Only used when `numberType` is `"currency"`. Defaults to `"BRL"`. */
+  currency?: string;
   type: DashboardCardType;
   sourceType: CardSourceType[];
   labels?: Array<string | number>;

@@ -42,13 +42,81 @@ export const Example = () => (
 );
 ```
 
-### SubscriptionCard
+### PlansPanel
+
+A higher-level component that renders a grid of `PlanCard` components with optional multi-dimensional `SegmentedControl` filters. Plans are shown only when they match all active filter values.
 
 ```tsx
-import { SubscriptionCard } from '@ttoss/react-billing';
+import { PlansPanel } from '@ttoss/react-billing';
+
+export const PricingPage = () => (
+  <PlansPanel
+    filters={[
+      {
+        id: 'interval',
+        label: 'Billing frequency',
+        options: [
+          { label: 'Monthly', value: 'monthly' },
+          { label: 'Yearly', value: 'yearly' },
+        ],
+        defaultValue: 'monthly',
+      },
+    ]}
+    plans={[
+      {
+        id: 'plan_basic_monthly',
+        filterValues: { interval: 'monthly' },
+        title: 'Basic',
+        price: {
+          value: '$29',
+          interval: '/month',
+          description: 'Billed monthly',
+        },
+        features: ['10 proposals/month'],
+        buttonProps: { label: 'Subscribe' },
+      },
+      {
+        id: 'plan_basic_yearly',
+        filterValues: { interval: 'yearly' },
+        title: 'Basic',
+        price: {
+          value: '$24',
+          interval: '/month',
+          description: 'Billed annually',
+        },
+        features: ['10 proposals/month'],
+        buttonProps: { label: 'Subscribe' },
+      },
+    ]}
+    activePlanId="plan_basic_monthly"
+    onSelectPlan={(planId) => console.log('Selected:', planId)}
+  />
+);
+```
+
+Controlled mode (parent owns filter state):
+
+```tsx
+const [filterValues, setFilterValues] = React.useState({ interval: 'monthly' });
+
+<PlansPanel
+  filters={filters}
+  plans={plans}
+  filterValues={filterValues}
+  onFilterChange={(id, value) =>
+    setFilterValues((prev) => ({ ...prev, [id]: value }))
+  }
+  onSelectPlan={(planId) => checkout(planId)}
+/>;
+```
+
+### SubscriptionPanel
+
+```tsx
+import { SubscriptionPanel } from '@ttoss/react-billing';
 
 export const Example = () => (
-  <SubscriptionCard
+  <SubscriptionPanel
     planName="Pro"
     price={{ value: 'R$ 99,00', interval: 'month' }}
     status={{ status: 'active', interval: 'Monthly' }}
@@ -76,5 +144,6 @@ export const Example = () => (
 ## Exports
 
 - `PlanCard`
-- `SubscriptionCard`
-- Types: `PlanCardProps`, `PlanCardVariant`, `PlanCardPrice`, `PlanCardMetadata`, `PlanCardButtonProps`, `PlanCardMetadataSlotService` (and related slot types)
+- `PlansPanel`
+- `SubscriptionPanel`
+- Types: `PlanCardProps`, `PlanCardVariant`, `PlanCardPrice`, `PlanCardMetadata`, `PlanCardButtonProps`, `PlanCardMetadataSlotService` (and related slot types), `PlansPanelProps`, `PlansPanelPlan`, `PlansPanelFilter`, `PlansPanelFilterOption`

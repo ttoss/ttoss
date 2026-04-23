@@ -13,6 +13,7 @@ interface DateRangePickerProps {
   onChange?: (
     range: { from: Date | undefined; to: Date | undefined } | undefined
   ) => void;
+  disabled?: boolean;
 }
 
 export const DateRangeFilter = ({
@@ -21,6 +22,7 @@ export const DateRangeFilter = ({
   value,
   presets,
   onChange,
+  disabled,
 }: DateRangePickerProps) => {
   const formMethods = useForm<{ dateRange: typeof value }>({
     defaultValues: {
@@ -69,6 +71,7 @@ export const DateRangeFilter = ({
         name="dateRange"
         label={label}
         presets={presets}
+        disabled={disabled}
         sx={sx}
       />
     </FormProvider>

@@ -1,4 +1,8 @@
 export {
+  ChakraProvider,
+  type ChakraThemeProviderProps,
+} from './chakra/ChakraThemeProvider';
+export {
   ActionButton,
   type ActionButtonProps,
 } from './components/ActionButton';

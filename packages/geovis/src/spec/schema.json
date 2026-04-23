@@ -1,0 +1,469 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ttoss.dev/geovis/spec.schema.json",
+  "title": "VisualizationSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "engine", "view", "sources", "layers"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string",
+      "enum": ["maplibre"]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["center", "zoom"],
+      "properties": {
+        "center": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "zoom": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number"
+        },
+        "bearing": {
+          "type": "number"
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["mercator", "vertical-perspective"]
+        }
+      }
+    },
+    "basemap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "styleUrl": {
+          "type": "string"
+        },
+        "attribution": {
+          "type": "string"
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "data"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "geojson"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "URL pointing to a GeoJSON resource (RFC 7946)"
+                  },
+                  { "$ref": "#/$defs/FeatureCollection" },
+                  { "$ref": "#/$defs/Feature" },
+                  { "$ref": "#/$defs/Geometry" }
+                ]
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "tiles"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "vector-tiles"
+              },
+              "tiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "sourceLayer": {
+                "type": "string"
+              },
+              "minzoom": {
+                "type": "number"
+              },
+              "maxzoom": {
+                "type": "number"
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "tiles"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "raster-tiles"
+              },
+              "tiles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "tileSize": {
+                "type": "integer",
+                "enum": [256, 512]
+              },
+              "minzoom": {
+                "type": "number"
+              },
+              "maxzoom": {
+                "type": "number"
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "url", "coordinates"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "image"
+              },
+              "url": {
+                "type": "string"
+              },
+              "coordinates": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type"],
+            "anyOf": [{ "required": ["tiles"] }, { "required": ["url"] }],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "raster-dem"
+              },
+              "tiles": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              },
+              "url": {
+                "type": "string"
+              },
+              "tileSize": {
+                "type": "number"
+              },
+              "minzoom": {
+                "type": "number"
+              },
+              "maxzoom": {
+                "type": "number"
+              },
+              "attribution": {
+                "type": "string"
+              },
+              "encoding": {
+                "type": "string",
+                "enum": ["mapbox", "terrarium", "custom"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "urls", "coordinates"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "video"
+              },
+              "urls": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              },
+              "coordinates": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "array",
+                  "items": { "type": "number" },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "sourceId", "geometry"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "string",
+            "enum": ["point", "line", "polygon", "raster", "symbol", "heatmap"]
+          },
+          "sourceLayer": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "minzoom": {
+            "type": "number"
+          },
+          "maxzoom": {
+            "type": "number"
+          },
+          "paint": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "layers"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "layers": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "adapterHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maplibre": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "styleVersion": {
+              "type": "integer",
+              "const": 8
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Position": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2
+    },
+    "LinearRing": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Position" },
+      "minItems": 4
+    },
+    "Point": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "Point" },
+        "coordinates": { "$ref": "#/$defs/Position" }
+      }
+    },
+    "MultiPoint": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "MultiPoint" },
+        "coordinates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Position" }
+        }
+      }
+    },
+    "LineString": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "LineString" },
+        "coordinates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Position" },
+          "minItems": 2
+        }
+      }
+    },
+    "MultiLineString": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "MultiLineString" },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Position" },
+            "minItems": 2
+          }
+        }
+      }
+    },
+    "Polygon": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "Polygon" },
+        "coordinates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LinearRing" }
+        }
+      }
+    },
+    "MultiPolygon": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "MultiPolygon" },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/LinearRing" }
+          }
+        }
+      }
+    },
+    "GeometryCollection": {
+      "type": "object",
+      "required": ["type", "geometries"],
+      "properties": {
+        "type": { "const": "GeometryCollection" },
+        "geometries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Geometry" }
+        }
+      }
+    },
+    "Geometry": {
+      "oneOf": [
+        { "$ref": "#/$defs/Point" },
+        { "$ref": "#/$defs/MultiPoint" },
+        { "$ref": "#/$defs/LineString" },
+        { "$ref": "#/$defs/MultiLineString" },
+        { "$ref": "#/$defs/Polygon" },
+        { "$ref": "#/$defs/MultiPolygon" },
+        { "$ref": "#/$defs/GeometryCollection" }
+      ]
+    },
+    "Feature": {
+      "type": "object",
+      "required": ["type", "geometry", "properties"],
+      "properties": {
+        "type": { "const": "Feature" },
+        "id": {
+          "oneOf": [{ "type": "string" }, { "type": "number" }]
+        },
+        "geometry": {
+          "oneOf": [{ "$ref": "#/$defs/Geometry" }, { "type": "null" }]
+        },
+        "properties": {
+          "oneOf": [{ "type": "object" }, { "type": "null" }]
+        }
+      }
+    },
+    "FeatureCollection": {
+      "type": "object",
+      "required": ["type", "features"],
+      "properties": {
+        "type": { "const": "FeatureCollection" },
+        "features": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Feature" }
+        }
+      }
+    }
+  }
+}

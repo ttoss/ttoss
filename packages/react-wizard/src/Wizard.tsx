@@ -1,0 +1,265 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
+import { Box, Button, Flex } from '@ttoss/ui';
+import * as React from 'react';
+
+import type { WizardLayout, WizardProps, WizardStepStatus } from './types';
+import {
+  getWizardPrimaryButtonVariant,
+  getWizardShellSx,
+} from './Wizard.styles';
+import { WizardContext } from './WizardContext';
+import { WizardStepList } from './WizardStepList';
+
+const messages = defineMessages({
+  previous: {
+    defaultMessage: 'Previous',
+    description: 'Label for the previous step button in the wizard.',
+  },
+  next: {
+    defaultMessage: 'Next',
+    description: 'Label for the next step button in the wizard.',
+  },
+  finish: {
+    defaultMessage: 'Finish',
+    description: 'Label for the finish button on the last wizard step.',
+  },
+  cancel: {
+    defaultMessage: 'Cancel',
+    description: 'Label for the cancel button in the wizard.',
+  },
+});
+
+const getFlexDirection = (layout: WizardLayout) => {
+  switch (layout) {
+    case 'top':
+      return 'column' as const;
+    case 'bottom':
+      return 'column-reverse' as const;
+    case 'left':
+      return 'row' as const;
+    case 'right':
+      return 'row-reverse' as const;
+  }
+};
+
+/**
+ * Renders a multi-step wizard with step navigation, localized action labels,
+ * and support for completion, cancellation, and step changes.
+ *
+ * @param props - Wizard configuration and step content.
+ * @param props.steps - The ordered steps displayed in the wizard.
+ * @param props.onComplete - Called when the user finishes the last step.
+ * @param props.onCancel - Called when the user cancels the wizard.
+ * @param props.onStepChange - Called when the current step changes.
+ */
+export const Wizard = ({
+  steps,
+  layout = 'top',
+  variant = 'spotlight-accent',
+  onComplete,
+  onCancel,
+  onStepChange,
+  initialStep = 0,
+  allowStepClick = true,
+  labels,
+}: WizardProps) => {
+  const { intl } = useI18n();
+  const [currentStep, setCurrentStep] = React.useState(initialStep);
+  const stepValidationRef = React.useRef<
+    (() => boolean | Promise<boolean>) | null
+  >(null);
+
+  const totalSteps = steps.length;
+  const isFirstStep = currentStep === 0;
+  const isLastStep = currentStep === totalSteps - 1;
+  const buttonLabels = React.useMemo(() => {
+    return {
+      previous: labels?.previous ?? intl.formatMessage(messages.previous),
+      next: labels?.next ?? intl.formatMessage(messages.next),
+      finish: labels?.finish ?? intl.formatMessage(messages.finish),
+      cancel: labels?.cancel ?? intl.formatMessage(messages.cancel),
+    };
+  }, [intl, labels]);
+
+  const getStepStatus = React.useCallback(
+    ({ stepIndex }: { stepIndex: number }): WizardStepStatus => {
+      if (stepIndex < currentStep) {
+        return 'completed';
+      }
+
+      if (stepIndex === currentStep) {
+        return 'active';
+      }
+
+      return 'upcoming';
+    },
+    [currentStep]
+  );
+
+  const goToNext = React.useCallback(async () => {
+    const step = steps[currentStep];
+
+    // Check step validation from setStepValidation first
+    if (stepValidationRef.current) {
+      const canProceed = await stepValidationRef.current();
+
+      if (!canProceed) {
+        return;
+      }
+    }
+
+    // Then check the step's onNext callback
+    if (step.onNext) {
+      const canProceed = await step.onNext();
+
+      if (!canProceed) {
+        return;
+      }
+    }
+
+    if (isLastStep) {
+      onComplete?.();
+    } else {
+      const nextStep = currentStep + 1;
+      // Clear validation before moving to next step
+      stepValidationRef.current = null;
+      setCurrentStep(nextStep);
+      onStepChange?.({ stepIndex: nextStep });
+    }
+  }, [currentStep, steps, isLastStep, onComplete, onStepChange]);
+
+  const goToPrevious = React.useCallback(() => {
+    if (!isFirstStep) {
+      const prevStep = currentStep - 1;
+      // Clear validation before moving to previous step
+      stepValidationRef.current = null;
+      setCurrentStep(prevStep);
+      onStepChange?.({ stepIndex: prevStep });
+    }
+  }, [currentStep, isFirstStep, onStepChange]);
+
+  const goToStep = React.useCallback(
+    ({ stepIndex }: { stepIndex: number }) => {
+      if (
+        stepIndex >= 0 &&
+        stepIndex < totalSteps &&
+        stepIndex <= currentStep
+      ) {
+        // Clear validation before moving to the target step
+        stepValidationRef.current = null;
+        setCurrentStep(stepIndex);
+        onStepChange?.({ stepIndex });
+      }
+    },
+    [currentStep, totalSteps, onStepChange]
+  );
+
+  const setStepValidation = React.useCallback(
+    (validate: () => boolean | Promise<boolean>) => {
+      stepValidationRef.current = validate;
+    },
+    []
+  );
+
+  const contextValue = React.useMemo(() => {
+    return {
+      currentStep,
+      totalSteps,
+      goToNext,
+      goToPrevious,
+      goToStep,
+      isFirstStep,
+      isLastStep,
+      getStepStatus,
+      setStepValidation,
+    };
+  }, [
+    currentStep,
+    totalSteps,
+    goToNext,
+    goToPrevious,
+    goToStep,
+    isFirstStep,
+    isLastStep,
+    getStepStatus,
+    setStepValidation,
+  ]);
+
+  return (
+    <WizardContext.Provider value={contextValue}>
+      <Flex
+        data-variant={variant}
+        sx={{
+          flexDirection: getFlexDirection(layout),
+          ...getWizardShellSx(variant),
+        }}
+      >
+        <WizardStepList
+          steps={steps}
+          currentStep={currentStep}
+          layout={layout}
+          variant={variant}
+          allowStepClick={allowStepClick}
+          getStepStatus={getStepStatus}
+          onStepClick={goToStep}
+        />
+
+        <Flex
+          sx={{
+            flexDirection: 'column',
+            flex: 1,
+            padding: '6',
+          }}
+        >
+          {/* Step content */}
+          <Box sx={{ flex: 1, marginBottom: '4' }}>
+            {steps[currentStep].content}
+          </Box>
+
+          {/* Navigation buttons */}
+          <Flex
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '3',
+            }}
+          >
+            <Flex sx={{ gap: '3' }}>
+              {onCancel && (
+                <Button
+                  variant="secondary"
+                  onClick={onCancel}
+                  aria-label={buttonLabels.cancel}
+                >
+                  {buttonLabels.cancel}
+                </Button>
+              )}
+            </Flex>
+
+            <Flex sx={{ gap: '3' }}>
+              <Button
+                variant="secondary"
+                onClick={goToPrevious}
+                disabled={isFirstStep}
+                aria-label={buttonLabels.previous}
+              >
+                {buttonLabels.previous}
+              </Button>
+              <Button
+                variant={getWizardPrimaryButtonVariant(variant)}
+                onClick={goToNext}
+                aria-label={
+                  isLastStep ? buttonLabels.finish : buttonLabels.next
+                }
+              >
+                {isLastStep ? buttonLabels.finish : buttonLabels.next}
+              </Button>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+    </WizardContext.Provider>
+  );
+};
+
+Wizard.displayName = 'Wizard';

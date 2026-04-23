@@ -1,0 +1,26 @@
+name: closed-branch
+'on':
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  delete:
+jobs:
+  closed-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Configure AWS Credentials
+        uses: ./.github/actions/aws-credentials
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Setup ttoss environment
+        uses: ./.github/actions/setup
+      - name: Run closed-branch command
+        run: sh -e ./.cicd/commands/closed-branch.sh
+        env:
+          CARLIN_BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref }}

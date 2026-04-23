@@ -3,6 +3,96 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.9.14 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.9.13](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.8...@ttoss/ui@6.9.13) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.9.12](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.8...@ttoss/ui@6.9.12) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.9.11](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.8...@ttoss/ui@6.9.11) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.9.10](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.8...@ttoss/ui@6.9.10) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## [6.9.9](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.8...@ttoss/ui@6.9.9) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## 6.9.8 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 6.9.7 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 6.9.6 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## 6.9.5 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## 6.9.4 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## 6.9.3 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/ui
+
+## 6.9.2 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 6.9.1 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/ui
+
+# 6.9.0 (2026-03-31)
+
+### Features
+
+- create form actions ([#895](https://github.com/ttoss/ttoss/issues/895)) ([5537ba4](https://github.com/ttoss/ttoss/commit/5537ba40cb44f47804a6b03a8b5e4db561fa059c)), closes [#896](https://github.com/ttoss/ttoss/issues/896)
+
+# 6.8.0 (2026-03-19)
+
+### Features
+
+- **forms:** generic FormFieldPhone with configurable and editable country code ([#892](https://github.com/ttoss/ttoss/issues/892)) ([0ef9c71](https://github.com/ttoss/ttoss/commit/0ef9c71efbf902ce94312068c5995dcfdb6df4e4))
+
+# [6.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.6.0...@ttoss/ui@6.7.0) (2026-02-23)
+
+### Features
+
+- chakra colors ([#874](https://github.com/ttoss/ttoss/issues/874)) ([043d8d2](https://github.com/ttoss/ttoss/commit/043d8d2e95285d72f5c22d2867297c6e16da0d97))
+
+# 6.6.0 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## [6.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.5.0...@ttoss/ui@6.5.1) (2026-01-12)
 
 ### Bug Fixes

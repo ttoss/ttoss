@@ -10,6 +10,27 @@ export type CloudFormationSub = {
 };
 export type CloudFormationSelect = { 'Fn::Select': [number, string[]] };
 export type CloudFormationSplit = { 'Fn::Split': [string, string] };
+export type CloudFormationImportValue = {
+  'Fn::ImportValue': string | CloudFormationSub;
+};
+
+/**
+ * Returns an `Fn::ImportValue` intrinsic that resolves the export name from
+ * a CloudFormation parameter via `Fn::Sub`.
+ *
+ * @example
+ * importValueFromParameter('MyStackExportName')
+ * // => { 'Fn::ImportValue': { 'Fn::Sub': '${MyStackExportName}' } }
+ */
+export const importValueFromParameter = (
+  parameterName: string
+): CloudFormationImportValue => {
+  return {
+    'Fn::ImportValue': {
+      'Fn::Sub': `\${${parameterName}}`,
+    },
+  };
+};
 
 export type CloudFormationIntrinsic =
   | CloudFormationRef
@@ -17,7 +38,8 @@ export type CloudFormationIntrinsic =
   | CloudFormationJoin
   | CloudFormationSub
   | CloudFormationSelect
-  | CloudFormationSplit;
+  | CloudFormationSplit
+  | CloudFormationImportValue;
 
 export type CloudFormationValue<T = any> = T | CloudFormationIntrinsic;
 

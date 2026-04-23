@@ -6,7 +6,10 @@ import { graphql, type SchemaComposer } from '@ttoss/graphql-api';
  * '@ttoss/appsync-api/node_modules/@ttoss/cloudformation'. This is likely not
  * portable. A type annotation is necessary.ts(2742)
  */
-import type { CloudFormationTemplate } from '../../cloudformation/src/';
+import type {
+  CloudFormationTemplate,
+  CloudFormationValue,
+} from '../../cloudformation/src/';
 
 export const AppSyncGraphQLApiLogicalId = 'AppSyncGraphQLApi';
 
@@ -18,12 +21,6 @@ const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
   'AppSyncLambdaFunctionAppSyncDataSource';
 
 export const AppSyncGraphQLApiKeyLogicalId = 'AppSyncGraphQLApiKey';
-
-type StringOrImport =
-  | string
-  | {
-      'Fn::ImportValue': string;
-    };
 
 /**
  * https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html
@@ -47,28 +44,28 @@ export const createApiTemplate = ({
   additionalAuthenticationProviders?: AuthenticationType[];
   authenticationType?: AuthenticationType;
   customDomain?: {
-    domainName: string;
-    certificateArn: string;
+    domainName: string | { Ref: string };
+    certificateArn: string | { Ref: string };
     hostedZoneName?: string;
   };
   dataSource: {
-    roleArn: StringOrImport;
+    roleArn: CloudFormationValue<string>;
   };
   lambdaFunction: {
     environment?: {
-      variables: Record<string, string>;
+      variables: Record<string, CloudFormationValue<string>>;
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     layers?: any;
-    roleArn: StringOrImport;
+    roleArn: CloudFormationValue<string>;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schemaComposer: SchemaComposer<any>;
   userPoolConfig?: {
-    appIdClientRegex: StringOrImport;
-    awsRegion: StringOrImport;
+    appIdClientRegex: CloudFormationValue<string>;
+    awsRegion: CloudFormationValue<string>;
     defaultAction: 'ALLOW' | 'DENY';
-    userPoolId: StringOrImport;
+    userPoolId: CloudFormationValue<string>;
   };
 }): CloudFormationTemplate => {
   /**
@@ -158,12 +155,15 @@ export const createApiTemplate = ({
           Layers: lambdaFunction.layers,
           MemorySize: 512,
           Role: lambdaFunction.roleArn,
-          Runtime: 'nodejs22.x',
+          /**
+           * https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtimes-supported
+           */
+          Runtime: 'nodejs24.x',
           /**
            * https://docs.aws.amazon.com/general/latest/gr/appsync.html
            * Request execution time for mutations, queries, and subscriptions: 30 seconds
            */
-          Timeout: 29,
+          Timeout: 30,
         },
       },
       [AppSyncLambdaFunctionAppSyncDataSourceLogicalId]: {
@@ -295,12 +295,67 @@ export const createApiTemplate = ({
 
   if (customDomain) {
     const AppSyncDomainNameLogicalId = 'AppSyncDomainName';
+    const HasCustomDomainCondition = 'HasCustomDomain';
+
+    /**
+     * When domainName is a CloudFormation Ref (parameter reference), we add
+     * the parameter with an empty default and a condition so the domain
+     * resources are only created when the parameter has a value. This allows
+     * the same template to be deployed without a custom domain (e.g. Staging)
+     * by leaving the parameter empty.
+     */
+    const domainNameRef =
+      typeof customDomain.domainName === 'object' &&
+      'Ref' in customDomain.domainName
+        ? customDomain.domainName.Ref
+        : null;
+
+    const certificateArnRef =
+      typeof customDomain.certificateArn === 'object' &&
+      'Ref' in customDomain.certificateArn
+        ? customDomain.certificateArn.Ref
+        : null;
+
+    if (domainNameRef || certificateArnRef) {
+      if (!template.Parameters) {
+        template.Parameters = {};
+      }
+    }
+
+    if (domainNameRef && !template.Parameters?.[domainNameRef]) {
+      template.Parameters![domainNameRef] = {
+        Default: '',
+        Type: 'String',
+      };
+    }
+
+    if (certificateArnRef && !template.Parameters?.[certificateArnRef]) {
+      template.Parameters![certificateArnRef] = {
+        Default: '',
+        Type: 'String',
+      };
+    }
+
+    if (domainNameRef) {
+      if (!template.Conditions) {
+        template.Conditions = {};
+      }
+
+      template.Conditions[HasCustomDomainCondition] = {
+        'Fn::Not': [{ 'Fn::Equals': [{ Ref: domainNameRef }, ''] }],
+      };
+    }
+
+    const customDomainCondition = domainNameRef
+      ? { Condition: HasCustomDomainCondition }
+      : {};
 
     /**
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-domainname.html
      */
     template.Resources[AppSyncDomainNameLogicalId] = {
       Type: 'AWS::AppSync::DomainName',
+      ...customDomainCondition,
       Properties: {
         CertificateArn: customDomain.certificateArn,
         Description: 'Custom domain for AppSync API',
@@ -318,6 +373,7 @@ export const createApiTemplate = ({
        */
       template.Resources.AppSyncDomainNameRoute53RecordSet = {
         Type: 'AWS::Route53::RecordSet',
+        ...customDomainCondition,
         Properties: {
           HostedZoneName: hostedZoneName,
           Name: customDomain.domainName,
@@ -334,6 +390,7 @@ export const createApiTemplate = ({
 
     template.Resources.AppSyncDomainNameApiAssociation = {
       Type: 'AWS::AppSync::DomainNameApiAssociation',
+      ...customDomainCondition,
       Properties: {
         ApiId: {
           'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'],
@@ -350,6 +407,7 @@ export const createApiTemplate = ({
 
     template.Outputs.DomainName = {
       Description: 'Custom domain name for AppSync API',
+      ...customDomainCondition,
       Value: {
         'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'DomainName'],
       },
@@ -357,6 +415,7 @@ export const createApiTemplate = ({
 
     template.Outputs.CloudFrontDomainName = {
       Description: 'CloudFront domain name for AppSync API',
+      ...customDomainCondition,
       Value: {
         'Fn::GetAtt': [AppSyncDomainNameLogicalId, 'AppSyncDomainName'],
       },

@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.24 (2026-04-23)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.23 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.4.22 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.4.21 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.20 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.19 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.18 (2026-04-01)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.17 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.4.16 (2026-03-31)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.14...@terezinha-farm/auth@0.4.15) (2026-03-31)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.14 (2026-03-23)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.13 (2026-02-15)
+
+### Bug Fixes
+
+- disabled auxiliary checkbox ([#857](https://github.com/ttoss/ttoss/issues/857)) ([7704df6](https://github.com/ttoss/ttoss/commit/7704df618093dd60d89f8ba1a866840b51e84e9b))
+
 ## 0.4.12 (2026-01-12)
 
 ### Bug Fixes

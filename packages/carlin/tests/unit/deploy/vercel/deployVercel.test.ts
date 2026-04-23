@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable turbo/no-undeclared-env-vars */
+
 import { parseCli } from '../../../testUtils';
 
 jest.mock('../../src/utils', () => {

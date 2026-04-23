@@ -9,6 +9,7 @@ import { deployCloudFormation, destroyCloudFormation } from './cloudformation';
 import { printStackOutputsAfterDeploy } from './cloudformation.core';
 import { deployLambdaLayerCommand } from './lambdaLayer/command';
 import { readDockerfile } from './readDockerfile';
+import { reportToGitHubPR } from './reportToGitHubPR';
 import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
 import { deployVercelCommand } from './vercel/command';
@@ -37,15 +38,30 @@ const checkAwsAccountId = async (awsAccountId: string) => {
   }
 };
 
-const describeDeployCommand: CommandModule = {
-  command: 'describe',
-  describe: 'Print the outputs of the deployment.',
-  handler: async ({ stackName }) => {
+const reportDeployCommand: CommandModule = {
+  command: 'report',
+  describe: 'Report the outputs of the deployment.',
+  builder: (yargs) => {
+    return yargs.options({
+      channel: {
+        choices: ['github-pr'] as const,
+        describe:
+          'Report deploy outputs to the specified channel. Use "github-pr" to post or update a PR comment with all workspace deploy outputs.',
+        type: 'string',
+      },
+    });
+  },
+  handler: async ({ stackName, channel }) => {
     try {
+      if (channel === 'github-pr') {
+        await reportToGitHubPR();
+        return;
+      }
+
       const newStackName = (stackName as string) || (await getStackName());
       await printStackOutputsAfterDeploy({ stackName: newStackName });
     } catch (error: any) {
-      log.info(logPrefix, 'Cannot describe stack. Message: %s', error.message);
+      log.info(logPrefix, 'Cannot report stack. Message: %s', error.message);
     }
   },
 };
@@ -282,7 +298,7 @@ export const deployCommand: CommandModule<
 
     const commands = [
       deployLambdaLayerCommand,
-      describeDeployCommand,
+      reportDeployCommand,
       deployBaseStackCommand,
       deployStaticAppCommand,
       deployCicdCommand,

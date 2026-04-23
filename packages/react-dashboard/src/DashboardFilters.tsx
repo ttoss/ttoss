@@ -33,7 +33,7 @@ export type DashboardFilter = {
 };
 
 export const DashboardFilters = () => {
-  const { filters, updateFilter } = useDashboard();
+  const { filters, updateFilter, isEditMode } = useDashboard();
 
   const onChangeHandlers = React.useMemo(() => {
     const handlers = new Map<string, (value: DashboardFilterValue) => void>();
@@ -50,9 +50,7 @@ export const DashboardFilters = () => {
       sx={{
         gap: '2',
         flexDirection: 'row',
-        '@media (max-width: 768px)': {
-          flexWrap: 'wrap',
-        },
+        flexWrap: ['wrap', null, 'nowrap'],
       }}
     >
       {filters.map((filter) => {
@@ -71,6 +69,7 @@ export const DashboardFilters = () => {
                 value={filter.value}
                 placeholder={filter.placeholder}
                 onChange={onChange}
+                disabled={isEditMode}
               />
             );
           case DashboardFilterType.SELECT:
@@ -84,6 +83,7 @@ export const DashboardFilters = () => {
                 onChange={(value) => {
                   onChange(value as string | number | boolean);
                 }}
+                disabled={isEditMode}
               />
             );
           case DashboardFilterType.DATE_RANGE:
@@ -97,6 +97,7 @@ export const DashboardFilters = () => {
                 onChange={(range) => {
                   onChange(range as DashboardFilterValue);
                 }}
+                disabled={isEditMode}
               />
             );
           default:

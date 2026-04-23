@@ -3,6 +3,126 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.1...@ttoss/react-dashboard@0.7.2) (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.0...@ttoss/react-dashboard@0.7.1) (2026-04-17)
+
+### Bug Fixes
+
+- buttons on dashboard ([#951](https://github.com/ttoss/ttoss/issues/951)) ([c2101e0](https://github.com/ttoss/ttoss/commit/c2101e06ff55597aa3f774e74c30169a516b742b))
+
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.20...@ttoss/react-dashboard@0.7.0) (2026-04-17)
+
+### Features
+
+- **react-dashboard:** add onEditingGridChange, card utils, period presets, currency prop ([#947](https://github.com/ttoss/ttoss/issues/947)) ([8c4d4a2](https://github.com/ttoss/ttoss/commit/8c4d4a206956fd6a2237055dbae7036db1324d9d))
+
+## [0.6.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.20) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.19) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.18) (2026-04-07)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.17) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.15...@ttoss/react-dashboard@0.6.16) (2026-04-04)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.6.15 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 0.6.14 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 0.6.13 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.6.12 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.6.11 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.6.10 (2026-04-01)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.6.9 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+## 0.6.8 (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.6...@ttoss/react-dashboard@0.6.7) (2026-03-31)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.5...@ttoss/react-dashboard@0.6.6) (2026-03-24)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.4...@ttoss/react-dashboard@0.6.5) (2026-03-23)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.3...@ttoss/react-dashboard@0.6.4) (2026-03-20)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.2...@ttoss/react-dashboard@0.6.3) (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.1...@ttoss/react-dashboard@0.6.2) (2026-03-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.6.0...@ttoss/react-dashboard@0.6.1) (2026-03-04)
+
+### Bug Fixes
+
+- dashboard styles ([#882](https://github.com/ttoss/ttoss/issues/882)) ([4c966e0](https://github.com/ttoss/ttoss/commit/4c966e02e4bba4b82032c35fba9f378f922146e4))
+
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.5.1...@ttoss/react-dashboard@0.6.0) (2026-02-26)
+
+### Features
+
+- dashboard cards with id ([#877](https://github.com/ttoss/ttoss/issues/877)) ([1285246](https://github.com/ttoss/ttoss/commit/128524605d51b70d180f551d0b2f092297cf3c34))
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.5.0...@ttoss/react-dashboard@0.5.1) (2026-02-23)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.4.0...@ttoss/react-dashboard@0.5.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 # [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.3.7...@ttoss/react-dashboard@0.4.0) (2026-02-10)
 
 ### Features

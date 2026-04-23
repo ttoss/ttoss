@@ -120,7 +120,7 @@ flowchart TD
 ## Security Best Practices
 
 - **Use SSH Keys**: Prefer key-based authentication over passwords for production deployments
-- **Restrict Key Access**: Set proper file permissions on private keys (`chmod 600`)
+- **Restrict Key Access**: Set proper file permissions on private keys (`chmod 400`)
 - **Principle of Least Privilege**: Use dedicated deployment users with minimal required permissions
 - **Secure Password Storage**: Never hardcode passwords; use environment variables or secure vaults
 - **Audit Logs**: Enable SSH logging on target VMs for security monitoring
@@ -233,6 +233,4 @@ carlin deploy vm \
 
 ## Related Commands
 
-- [deploy cicd](/docs/carlin/commands/deploy-cicd) - Automate deployments using serverless CI/CD
-- [Base Stack](/docs/carlin/commands/deploy-base-stack) - Foundation for cloud infrastructure
 - [generate-env](/docs/carlin/commands/generate-env) - Generate environment files for deployments

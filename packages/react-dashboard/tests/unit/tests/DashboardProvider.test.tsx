@@ -366,4 +366,568 @@ describe('DashboardProvider', () => {
       JSON.stringify(newTemplates)
     );
   });
+
+  test('should enter and cancel edit mode', () => {
+    const onCancelEdit = jest.fn();
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-edit',
+      name: 'Editable Template',
+      editable: true,
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 100 } },
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              onCancelEdit={onCancelEdit}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+
+    expect(result.current.isEditMode).toBe(true);
+    expect(result.current.editingGrid).toHaveLength(1);
+
+    act(() => {
+      result.current.cancelEdit();
+    });
+
+    expect(result.current.isEditMode).toBe(false);
+    expect(result.current.editingGrid).toBeNull();
+    expect(onCancelEdit).toHaveBeenCalledTimes(1);
+  });
+
+  test('should save edited layout', () => {
+    const onSaveLayout = jest.fn();
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-save',
+      name: 'Template Save',
+      editable: true,
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Revenue',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 100 } },
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              onSaveLayout={onSaveLayout}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+    act(() => {
+      result.current.onLayoutChange([
+        { i: 'card-1', x: 3, y: 4, w: 4, h: 2 },
+      ] as never);
+    });
+    act(() => {
+      result.current.saveEdit();
+    });
+
+    expect(onSaveLayout).toHaveBeenCalledTimes(1);
+    expect(onSaveLayout.mock.calls[0][0]).toMatchObject({
+      id: 'template-save',
+      grid: [{ i: 'card-1', x: 3, y: 4, w: 4, h: 2 }],
+    });
+    expect(result.current.isEditMode).toBe(false);
+    expect(result.current.editingGrid).toBeNull();
+  });
+
+  test('should open and confirm save as new template', () => {
+    const onSaveAsNewTemplate = jest.fn();
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(12345);
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-copy',
+      name: 'Template Copy',
+      editable: true,
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Leads',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 25 } },
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              onSaveAsNewTemplate={onSaveAsNewTemplate}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+    act(() => {
+      result.current.saveAsNew();
+    });
+    expect(result.current.saveAsNewModalOpen).toBe(true);
+
+    act(() => {
+      result.current.confirmSaveAsNew('  New Name  ');
+    });
+
+    expect(onSaveAsNewTemplate).toHaveBeenCalledTimes(1);
+    expect(onSaveAsNewTemplate.mock.calls[0][0]).toMatchObject({
+      id: 'copy-12345',
+      name: 'New Name',
+    });
+    expect(result.current.saveAsNewModalOpen).toBe(false);
+    expect(result.current.isEditMode).toBe(false);
+
+    nowSpy.mockRestore();
+  });
+
+  test('should fallback to default copy name when save-as-new title is blank', () => {
+    const onSaveAsNewTemplate = jest.fn();
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-copy-default',
+      name: 'My Template',
+      editable: true,
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Cost',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 10 } },
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              onSaveAsNewTemplate={onSaveAsNewTemplate}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+    act(() => {
+      result.current.confirmSaveAsNew('   ');
+    });
+
+    expect(onSaveAsNewTemplate.mock.calls[0][0]).toMatchObject({
+      name: 'Copy of My Template',
+    });
+  });
+
+  test('should add, update and remove cards while editing', () => {
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-cards',
+      name: 'Template Cards',
+      editable: true,
+      grid: [
+        {
+          i: 'base-card',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Base',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { api: { total: 1 } },
+          },
+        },
+      ],
+    };
+
+    const catalogItem = {
+      w: 4,
+      h: 2,
+      card: {
+        title: 'Catalog Metric',
+        numberType: 'number',
+        type: 'bigNumber' as const,
+        sourceType: [{ source: 'api' as const }],
+        data: {},
+      },
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              cardCatalog={[catalogItem]}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+      result.current.addCard(catalogItem);
+    });
+
+    expect(result.current.editingGrid).toHaveLength(2);
+    const addedCardId = result.current.editingGrid?.find((item) => {
+      return item.i !== 'base-card';
+    })?.i;
+    expect(addedCardId).toBeDefined();
+
+    act(() => {
+      result.current.updateCard(addedCardId as string, {
+        title: 'Updated Title',
+      });
+    });
+    expect(
+      result.current.editingGrid?.find((item) => {
+        return item.i === addedCardId;
+      })?.card
+    ).toMatchObject({ title: 'Updated Title' });
+
+    act(() => {
+      result.current.removeCard(addedCardId as string);
+    });
+    expect(result.current.editingGrid).toHaveLength(1);
+  });
+
+  test('should not start edit without selected template', () => {
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[]}
+              selectedTemplate={undefined}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+
+    expect(result.current.isEditMode).toBe(false);
+    expect(result.current.editingGrid).toBeNull();
+  });
+
+  test('should no-op save actions when not editing', () => {
+    const onSaveLayout = jest.fn();
+    const onSaveAsNewTemplate = jest.fn();
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[]}
+              onSaveLayout={onSaveLayout}
+              onSaveAsNewTemplate={onSaveAsNewTemplate}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.saveEdit();
+      result.current.saveAsNew();
+      result.current.confirmSaveAsNew('New Name');
+      result.current.cancelSaveAsNew();
+    });
+
+    expect(result.current.saveAsNewModalOpen).toBe(false);
+    expect(onSaveLayout).not.toHaveBeenCalled();
+    expect(onSaveAsNewTemplate).not.toHaveBeenCalled();
+  });
+
+  test('should skip add card when item is not present in catalog', () => {
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-catalog',
+      name: 'Catalog',
+      editable: true,
+      grid: [
+        {
+          i: 'base',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Base',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {},
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+              cardCatalog={[
+                {
+                  w: 4,
+                  h: 2,
+                  card: {
+                    title: 'Catalog item',
+                    numberType: 'number',
+                    type: 'bigNumber',
+                    sourceType: [{ source: 'api' }],
+                    data: {},
+                  },
+                },
+              ]}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+      result.current.addCard({
+        w: 4,
+        h: 2,
+        card: {
+          title: 'Unknown item',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {},
+        },
+      });
+    });
+
+    expect(result.current.editingGrid).toHaveLength(1);
+  });
+
+  test('should keep state stable when editing callbacks run outside edit mode', () => {
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider filters={[]} templates={[]}>
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.addCard({
+        w: 4,
+        h: 2,
+        card: {
+          title: 'Ignored',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: {},
+        },
+      });
+      result.current.updateCard('missing', { title: 'No-op' });
+      result.current.removeCard('missing');
+      result.current.onLayoutChange([
+        { i: 'missing', x: 0, y: 0, w: 1, h: 1 },
+      ] as never);
+    });
+
+    expect(result.current.editingGrid).toBeNull();
+    expect(result.current.isEditMode).toBe(false);
+  });
+
+  test('should keep original item when layout update does not contain item id', () => {
+    const selectedTemplate: DashboardTemplate = {
+      id: 'template-layout',
+      name: 'Layout Template',
+      editable: true,
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            title: 'Card 1',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: {},
+          },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useDashboard();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <DashboardProvider
+              filters={[]}
+              templates={[selectedTemplate]}
+              selectedTemplate={selectedTemplate}
+            >
+              {children}
+            </DashboardProvider>
+          );
+        },
+      }
+    );
+
+    act(() => {
+      result.current.startEdit();
+    });
+
+    const beforeLayout = result.current.editingGrid?.[0];
+
+    act(() => {
+      result.current.onLayoutChange([
+        { i: 'unknown', x: 7, y: 9, w: 5, h: 5 },
+      ] as never);
+    });
+
+    expect(result.current.editingGrid?.[0]).toEqual(beforeLayout);
+  });
 });

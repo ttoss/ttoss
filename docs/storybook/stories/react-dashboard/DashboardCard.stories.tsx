@@ -22,6 +22,7 @@ export const CurrencyCard: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-123"
           title="Total Revenue"
           description="Revenue from all sources"
           numberType="currency"
@@ -44,11 +45,137 @@ export const CurrencyCard: StoryObj = {
   },
 };
 
+export const CurrencyCardUSD: StoryObj = {
+  render: () => {
+    return (
+      <Box sx={{ maxWidth: '400px', padding: '4' }}>
+        <DashboardCard
+          id="abc-usd"
+          title="Total Revenue"
+          description="Revenue from all sources (USD)"
+          numberType="currency"
+          currency="USD"
+          type="bigNumber"
+          sourceType={[{ source: 'api' }]}
+          data={{
+            api: { total: 150000 },
+          }}
+        />
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Currency formatted card using USD (US Dollar). Set the `currency` prop to any ISO 4217 code (e.g. `"USD"`, `"EUR"`, `"MXN"`) to change the currency symbol. Defaults to `"BRL"` when omitted.',
+      },
+    },
+  },
+};
+
+export const CurrencyCardEUR: StoryObj = {
+  render: () => {
+    return (
+      <Box sx={{ maxWidth: '400px', padding: '4' }}>
+        <DashboardCard
+          id="abc-eur"
+          title="Total Revenue"
+          description="Revenue from all sources (EUR)"
+          numberType="currency"
+          currency="EUR"
+          type="bigNumber"
+          sourceType={[{ source: 'api' }]}
+          data={{
+            api: { total: 150000 },
+          }}
+        />
+      </Box>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Currency formatted card using EUR (Euro). Demonstrates how the `currency` prop works with European currency formatting.',
+      },
+    },
+  },
+};
+
+export const CurrencyComparison: StoryObj = {
+  render: () => {
+    return (
+      <Stack
+        sx={{
+          gap: '4',
+          padding: '4',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-brl"
+            title="Revenue (BRL)"
+            numberType="currency"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-usd"
+            title="Revenue (USD)"
+            numberType="currency"
+            currency="USD"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-eur"
+            title="Revenue (EUR)"
+            numberType="currency"
+            currency="EUR"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+        <Box sx={{ width: '300px' }}>
+          <DashboardCard
+            id="cmp-mxn"
+            title="Revenue (MXN)"
+            numberType="currency"
+            currency="MXN"
+            type="bigNumber"
+            sourceType={[{ source: 'api' }]}
+            data={{ api: { total: 150000 } }}
+          />
+        </Box>
+      </Stack>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison of the same value formatted in different currencies (BRL, USD, EUR, MXN). The `currency` prop accepts any ISO 4217 currency code.',
+      },
+    },
+  },
+};
+
 export const PercentageCard: StoryObj = {
   render: () => {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-456"
           title="CTR"
           description="Click-through rate"
           numberType="percentage"
@@ -76,6 +203,7 @@ export const NumberCard: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-789"
           title="ROAS"
           description="Return on ad spend"
           numberType="number"
@@ -103,6 +231,7 @@ export const WithPositiveTrend: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-101"
           title="Total Revenue"
           description="Revenue from all sources"
           numberType="currency"
@@ -134,6 +263,7 @@ export const WithNegativeTrend: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-102"
           title="CTR"
           description="Click-through rate"
           numberType="percentage"
@@ -165,6 +295,7 @@ export const WithNeutralTrend: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-103"
           title="Impressions"
           numberType="number"
           type="bigNumber"
@@ -195,6 +326,7 @@ export const WithStatus: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-104"
           title="Campaign Status"
           description="Current campaign status"
           numberType="number"
@@ -226,6 +358,7 @@ export const WithAdditionalInfo: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-105"
           title="Total Revenue"
           description="Revenue from all sources"
           numberType="currency"
@@ -258,6 +391,7 @@ export const DarkVariant: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-106"
           title="CPC"
           description="Cost per click"
           numberType="currency"
@@ -286,6 +420,7 @@ export const LightGreenVariant: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-107"
           title="ROAS"
           description="Return on ad spend"
           numberType="number"
@@ -322,6 +457,7 @@ export const WithSuffix: StoryObj = {
       >
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-108"
             title="Weight"
             description="Total weight"
             numberType="number"
@@ -334,6 +470,7 @@ export const WithSuffix: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-109"
             title="Units"
             description="Quantity in units"
             numberType="currency"
@@ -345,6 +482,7 @@ export const WithSuffix: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-110"
             title="Change (p.p.)"
             description="Percentage points"
             numberType="percentage"
@@ -381,6 +519,7 @@ export const CustomDecimalPlaces: StoryObj = {
       >
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-111"
             title="Precise Metric (0 decimals)"
             description="No decimal places"
             numberType="number"
@@ -394,6 +533,7 @@ export const CustomDecimalPlaces: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-112"
             title="Standard Metric (2 decimals)"
             description="Default 2 decimal places"
             numberType="number"
@@ -407,6 +547,7 @@ export const CustomDecimalPlaces: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-113"
             title="High Precision (4 decimals)"
             description="4 decimal places"
             numberType="number"
@@ -436,6 +577,7 @@ export const CompleteExample: StoryObj = {
     return (
       <Box sx={{ maxWidth: '400px', padding: '4' }}>
         <DashboardCard
+          id="abc-114"
           title="Total Revenue"
           description="Revenue from all sources this month"
           icon="mdi:currency-usd"
@@ -482,6 +624,7 @@ export const CardGrid: StoryObj = {
       >
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-115"
             title="Revenue"
             numberType="currency"
             type="bigNumber"
@@ -492,6 +635,7 @@ export const CardGrid: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-116"
             title="ROAS"
             numberType="number"
             type="bigNumber"
@@ -502,6 +646,7 @@ export const CardGrid: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-117"
             title="CPC"
             numberType="currency"
             type="bigNumber"
@@ -512,6 +657,7 @@ export const CardGrid: StoryObj = {
         </Box>
         <Box sx={{ width: '300px' }}>
           <DashboardCard
+            id="abc-118"
             title="CTR"
             numberType="percentage"
             type="bigNumber"

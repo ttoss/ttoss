@@ -14,3 +14,9 @@ export type { File as MulterFile } from '@koa/multer';
  * Export types to avoid The inferred type of cannot be named without a reference to
  */
 export * from '@koa/router';
+
+/**
+ * Re-export RouterContext with its full generic signature from @koa/router,
+ * allowing usage like RouterContext<StateT, ContextT> for type-safe route handlers.
+ */
+export type { RouterContext } from '@koa/router';

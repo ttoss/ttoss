@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.3](https://github.com/ttoss/ttoss/compare/carlin@1.49.2...carlin@1.49.3) (2026-04-23)
+
+**Note:** Version bump only for package carlin
+
+## [1.49.2](https://github.com/ttoss/ttoss/compare/carlin@1.49.1...carlin@1.49.2) (2026-04-15)
+
+### Bug Fixes
+
+- **carlin:** continue stack deletion when pre-destroy bucket emptying fails ([#950](https://github.com/ttoss/ttoss/issues/950)) ([d07e044](https://github.com/ttoss/ttoss/commit/d07e044d79151718c16476fb135c5899106a24c0))
+
+## [1.49.1](https://github.com/ttoss/ttoss/compare/carlin@1.49.0...carlin@1.49.1) (2026-04-15)
+
+### Bug Fixes
+
+- generate env ([#948](https://github.com/ttoss/ttoss/issues/948)) ([294b436](https://github.com/ttoss/ttoss/commit/294b436aba3eabe14b0399e6eb84d555af2526a3))
+
+# [1.49.0](https://github.com/ttoss/ttoss/compare/carlin@1.48.4...carlin@1.49.0) (2026-04-15)
+
+### Features
+
+- generate env dir ([#945](https://github.com/ttoss/ttoss/issues/945)) ([f5eed4c](https://github.com/ttoss/ttoss/commit/f5eed4c6a3c50cdee1c58db6d440a46e9d860862))
+
+## 1.48.4 (2026-04-15)
+
+### Reverts
+
+- Revert "carlin deploy: add `envExport` to export CloudFormation outputs as env vars to CI/CD runner" (#944) ([ed0b24c](https://github.com/ttoss/ttoss/commit/ed0b24c1c4d23e4125ad6bd62a5994d5566e61ad)), closes [#944](https://github.com/ttoss/ttoss/issues/944)
+
+## 1.48.3 (2026-04-04)
+
+### Bug Fixes
+
+- main sh ([8f99d3c](https://github.com/ttoss/ttoss/commit/8f99d3cc3f9e6a394508a6c91f3c5c80615a9c13))
+
+## 1.48.2 (2026-04-03)
+
+### Bug Fixes
+
+- main sh ([78eedbb](https://github.com/ttoss/ttoss/commit/78eedbb13da832d4725fd3aec6d996ca4de672fd))
+
+## 1.48.1 (2026-04-01)
+
+**Note:** Version bump only for package carlin
+
+# 1.48.0 (2026-04-01)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+# 1.47.0 (2026-04-01)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+# 1.46.0 (2026-04-01)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+# 1.45.0 (2026-03-31)
+
+### Bug Fixes
+
+- phone number ([#904](https://github.com/ttoss/ttoss/issues/904)) ([a1c30bd](https://github.com/ttoss/ttoss/commit/a1c30bd29a56a35e5b105b100d1cd1c35350607a))
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+# 1.44.0 (2026-03-31)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+## [1.43.1](https://github.com/ttoss/ttoss/compare/carlin@1.43.0...carlin@1.43.1) (2026-03-31)
+
+**Note:** Version bump only for package carlin
+
+# [1.43.0](https://github.com/ttoss/ttoss/compare/carlin@1.42.1...carlin@1.43.0) (2026-03-31)
+
+### Features
+
+- **carlin/appsync:** replace redundant AppSyncGraphQLApi output with AppSyncApiArn and AppSyncConsoleUrl ([#914](https://github.com/ttoss/ttoss/issues/914)) ([363fe2d](https://github.com/ttoss/ttoss/commit/363fe2d410a5081daf146add51d4b0fbdd964a6d))
+
+## 1.42.1 (2026-03-23)
+
+**Note:** Version bump only for package carlin
+
+# 1.42.0 (2026-03-09)
+
+### Features
+
+- carlin deploy report ([#888](https://github.com/ttoss/ttoss/issues/888)) ([7f8df3a](https://github.com/ttoss/ttoss/commit/7f8df3abf5a5047848969c416df3e31ba8339caf))
+
+# [1.41.0](https://github.com/ttoss/ttoss/compare/carlin@1.40.2...carlin@1.41.0) (2026-02-15)
+
+### Features
+
+- react wizard ([#870](https://github.com/ttoss/ttoss/issues/870)) ([d309e78](https://github.com/ttoss/ttoss/commit/d309e78f798064c4e4e9a57cef94872c40f94d15))
+
 ## 1.40.2 (2026-01-26)
 
 ### Bug Fixes
