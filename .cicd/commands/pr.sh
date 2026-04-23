@@ -1,14 +1,14 @@
 # Retrieve the latest tag.
 export LATEST_TAG=$(git describe --tags --abbrev=0)
 
+# Build configs to lint and syncpack:lint works properly.
+pnpm turbo run build-config
+
 # Lint all changed files before anything else. If lint auto-fixes anything,
 # that means the committed code was not properly formatted — fail fast and ask
 # the developer to run lint locally and commit the fixes.
 pnpm run lint -- --no-stash --allow-empty
 [ -z "$(git status --porcelain)" ] || { echo "Error: Lint auto-fixed files. Please run 'pnpm run -w lint' locally, commit the changes, and push again."; git status; exit 1; }
-
-# Build configs to syncpack:lint works properly.
-pnpm turbo run build-config
 
 # Check dependencies versions.
 pnpm run syncpack:lint
