@@ -60,6 +60,10 @@
         },
         "attribution": {
           "type": "string"
+        },
+        "none": {
+          "type": "boolean",
+          "description": "When true, no basemap is rendered. Takes precedence over styleUrl."
         }
       }
     },

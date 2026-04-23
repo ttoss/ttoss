@@ -1,9 +1,12 @@
 import { computeBoundsFromSources } from './computeBoundsFromSources';
 import type {
+  BaseMapSpec,
   GeoJSONFeatureCollection,
   GeoJSONObject,
+  GeoJSONUrlData,
   GeoVisDataEntry,
   GeoVisGeometryType,
+  PresentationMode,
   VisualizationLayer,
   VisualizationSpec,
 } from './types';
@@ -60,9 +63,35 @@ const geometryTypesForEntry = (
   if (entry.kind === 'raster-tiles' || entry.kind === 'image') {
     return new Set(['raster']);
   }
-  // `geojson-url`, vector tiles, raster-dem, video and native cannot be
-  // inferred statically — assume polygon as a sensible visual default.
+  // raster-dem sources are intended for hillshade layers; video sources
+  // render as raster — neither maps safely to a GeoVis geometry default,
+  // so no layer is auto-generated for them.
+  if (entry.kind === 'raster-dem' || entry.kind === 'video') {
+    return new Set();
+  }
+  // `geojson-url`: geometry resolved at runtime via fetchUrlGeometryTypes when
+  // applyDefaultsAsync is used. Sync path defaults to polygon.
+  // `vector-tiles` and `native` cannot be inferred — polygon is the fallback.
   return new Set(['polygon']);
+};
+
+/**
+ * Fetches a remote GeoJSON URL and returns the geometry types found by
+ * sampling the first feature(s). Falls back to `polygon` on any network
+ * or parse error so that the spec stays renderable.
+ */
+const fetchUrlGeometryTypes = async (
+  entry: GeoJSONUrlData
+): Promise<Set<GeoVisGeometryType>> => {
+  try {
+    const res = await fetch(entry.url);
+    if (!res.ok) return new Set(['polygon']);
+    const geojson = (await res.json()) as GeoJSONObject;
+    const types = collectInlineGeometryTypes(geojson);
+    return types.size > 0 ? types : new Set(['polygon']);
+  } catch {
+    return new Set(['polygon']);
+  }
 };
 
 const layerSuffix: Record<GeoVisGeometryType, string> = {
@@ -74,12 +103,47 @@ const layerSuffix: Record<GeoVisGeometryType, string> = {
   heatmap: 'heatmap',
 };
 
+/**
+ * Infers a sensible default basemap when the caller did not declare one.
+ *
+ * Decision table (evaluated in order, first match wins):
+ * 1. Any data entry is `raster-tiles`, `raster-dem`, or `image` → `none: true`
+ *    (the data itself is the visual context; a basemap would be hidden anyway).
+ * 2. `presentation` is `'side-by-side'` or `'time-slider'` → neutral `positron`
+ *    (comparison UIs need a low-contrast, identical background across panels).
+ * 3. Default → `bright` (general-purpose basemap with streets and labels).
+ */
+export const inferBasemap = ({
+  data,
+  presentation,
+}: {
+  data: ReadonlyArray<GeoVisDataEntry>;
+  presentation?: PresentationMode;
+}): BaseMapSpec => {
+  const isRasterDominant = data.some((e) => {
+    return (
+      e.kind === 'raster-tiles' || e.kind === 'raster-dem' || e.kind === 'image'
+    );
+  });
+  if (isRasterDominant) return { none: true };
+
+  if (presentation === 'side-by-side' || presentation === 'time-slider') {
+    return { styleUrl: 'https://tiles.openfreemap.org/styles/positron' };
+  }
+
+  return { styleUrl: 'https://tiles.openfreemap.org/styles/bright' };
+};
+
 const autoGenerateLayers = (
-  data: ReadonlyArray<GeoVisDataEntry>
+  data: ReadonlyArray<GeoVisDataEntry>,
+  urlHints: Map<string, Set<GeoVisGeometryType>> = new Map()
 ): VisualizationLayer[] => {
   const layers: VisualizationLayer[] = [];
   for (const entry of data) {
-    const types = geometryTypesForEntry(entry);
+    const types =
+      entry.kind === 'geojson-url' && urlHints.has(entry.id)
+        ? (urlHints.get(entry.id) as Set<GeoVisGeometryType>)
+        : geometryTypesForEntry(entry);
     for (const geometry of types) {
       layers.push({
         id: `${entry.id}-${layerSuffix[geometry]}`,
@@ -107,9 +171,14 @@ const autoGenerateLayers = (
  *
  * Idempotent: calling `applyDefaults` on an already-complete spec returns
  * the same spec unchanged (no fields are overwritten when present).
+ *
+ * For specs with `geojson-url` data entries, use `applyDefaultsAsync` to
+ * infer the correct geometry type by fetching the URL before auto-generating
+ * layers. The sync version defaults to `polygon` for URL entries.
  */
-export const applyDefaults = (
-  partial: PartialVisualizationSpec
+const applyDefaultsCore = (
+  partial: PartialVisualizationSpec,
+  urlHints: Map<string, Set<GeoVisGeometryType>>
 ): VisualizationSpec => {
   const data = partial.data ?? [];
   const id =
@@ -129,7 +198,10 @@ export const applyDefaults = (
       ? partial.layers
       : partial.layerTemplates && partial.layerTemplates.length > 0
         ? []
-        : autoGenerateLayers(data);
+        : autoGenerateLayers(data, urlHints);
+  const basemap =
+    partial.basemap ??
+    inferBasemap({ data, presentation: partial.presentation });
 
   return {
     ...partial,
@@ -138,5 +210,50 @@ export const applyDefaults = (
     view,
     data,
     layers,
+    basemap,
   };
+};
+
+export const applyDefaults = (
+  partial: PartialVisualizationSpec
+): VisualizationSpec => {
+  return applyDefaultsCore(partial, new Map());
+};
+
+/**
+ * Async variant of `applyDefaults` that resolves the geometry type of
+ * `geojson-url` data entries by fetching each URL and sampling its features
+ * before auto-generating layers.
+ *
+ * Only fires URL requests when layers would be auto-generated (i.e. no
+ * explicit `layers` or `layerTemplates` are present). Falls back to
+ * `polygon` on any network or parse failure so the spec stays renderable.
+ *
+ * Entries that still cannot be inferred even after URL fetching:
+ * - `vector-tiles` — geometry is embedded in binary tile content; a
+ *   TileJSON `vector_layers` field could be consulted in a future extension.
+ * - `native`       — opaque engine-specific format, no generic inference path.
+ */
+export const applyDefaultsAsync = async (
+  partial: PartialVisualizationSpec
+): Promise<VisualizationSpec> => {
+  const data = partial.data ?? [];
+  const willAutoGenerate =
+    !partial.layers?.length && !partial.layerTemplates?.length;
+
+  const urlHints = new Map<string, Set<GeoVisGeometryType>>();
+
+  if (willAutoGenerate) {
+    await Promise.all(
+      data
+        .filter((e): e is GeoJSONUrlData => {
+          return e.kind === 'geojson-url';
+        })
+        .map(async (entry) => {
+          urlHints.set(entry.id, await fetchUrlGeometryTypes(entry));
+        })
+    );
+  }
+
+  return applyDefaultsCore(partial, urlHints);
 };

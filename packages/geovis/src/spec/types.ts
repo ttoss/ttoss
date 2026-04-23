@@ -391,6 +391,13 @@ export interface LayerTemplate {
 export interface BaseMapSpec {
   styleUrl?: string;
   attribution?: string;
+  /**
+   * When `true`, no basemap is rendered — the map canvas has a transparent
+   * background. Useful when the data itself is the visual context (e.g.
+   * raster-tiles, satellite imagery, or opaque full-coverage fills).
+   * Takes precedence over `styleUrl` when both are set.
+   */
+  none?: boolean;
 }
 
 /**

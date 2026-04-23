@@ -30,7 +30,17 @@ import type {
 export const DEFAULT_BASEMAP_STYLE =
   'https://tiles.openfreemap.org/styles/bright';
 
-const resolveStyleUrl = (spec: VisualizationSpec): string => {
+/** Empty MapLibre style used when `basemap.none` is true — no background tiles. */
+const EMPTY_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {},
+  layers: [],
+};
+
+const resolveStyle = (
+  spec: VisualizationSpec
+): string | maplibregl.StyleSpecification => {
+  if (spec.basemap?.none) return EMPTY_STYLE;
   return spec.basemap?.styleUrl ?? DEFAULT_BASEMAP_STYLE;
 };
 
@@ -616,10 +626,10 @@ const autoFitBounds = (map: maplibregl.Map, spec: VisualizationSpec): void => {
   const allBounds = new maplibregl.LngLatBounds();
   let fittedOnce = false;
 
-  const tryFit = () => {
+  const tryFit = (animate = false) => {
     if (fittedOnce || allBounds.isEmpty()) return;
     fittedOnce = true;
-    map.fitBounds(allBounds, { padding: 40, animate: false });
+    map.fitBounds(allBounds, { padding: 40, animate });
   };
 
   // Inline sources: walk in-memory GeoJSON immediately (synchronous).
@@ -676,7 +686,7 @@ const autoFitBounds = (map: maplibregl.Map, spec: VisualizationSpec): void => {
       resolvedCount++;
       if (resolvedCount >= totalUrlCount) {
         map.off('sourcedata', handleSourceData);
-        tryFit();
+        tryFit(true);
       }
     };
 
@@ -711,7 +721,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
   interface ViewState {
     map: maplibregl.Map;
     spec: VisualizationSpec;
-    styleUrl: string;
+    styleUrl: string | maplibregl.StyleSpecification;
   }
 
   const _views = new Map<string, ViewState>();
@@ -734,7 +744,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
       viewId: string
     ): MountedView => {
       const { view } = spec;
-      const styleUrl = resolveStyleUrl(spec);
+      const styleUrl = resolveStyle(spec);
 
       const map = new maplibregl.Map({
         container,
@@ -788,7 +798,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
     update: (spec: VisualizationSpec) => {
       for (const [viewId, viewState] of _views) {
         const map = viewState.map;
-        const nextStyleUrl = resolveStyleUrl(spec);
+        const nextStyleUrl = resolveStyle(spec);
         const previousSpec = viewState.spec;
 
         viewState.spec = spec;
