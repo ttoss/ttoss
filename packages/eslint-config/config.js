@@ -102,7 +102,10 @@ export default defineConfig(
       // ── Import organization ───────────────────────────────────────────────
       // Keep imports sorted, explicit, and free of unresolved paths.
       // https://github.com/lydell/eslint-plugin-simple-import-sort
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
       'import/no-default-export': 'off',
+      'import/no-duplicates': 'error',
       'import/no-unresolved': 'off',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',

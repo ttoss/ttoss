@@ -2,6 +2,14 @@
 
 // const putObjectMock = jest.fn().mockReturnValue({ promise: jest.fn() });
 
+import AWS from 'aws-sdk';
+
+import { executeTasks } from './executeTasks';
+import {
+  githubWebhooksApiV1Handler,
+  webhooks,
+} from './githubWebhooksApiV1.handler';
+
 jest.mock('aws-sdk', () => {
   return {
     ECS: jest.fn(),
@@ -19,14 +27,6 @@ jest.mock('./executeTasks', () => {
     shConditionalCommands: jest.fn(),
   };
 });
-
-import AWS from 'aws-sdk';
-
-import { executeTasks } from './executeTasks';
-import {
-  githubWebhooksApiV1Handler,
-  webhooks,
-} from './githubWebhooksApiV1.handler';
 
 const context = {} as any;
 
