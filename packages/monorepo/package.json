@@ -24,7 +24,7 @@
     "test": "echo test"
   },
   "dependencies": {
-    "commander": "^14.0.0"
+    "commander": "^14.0.3"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

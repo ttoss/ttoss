@@ -143,7 +143,7 @@ describe('FormFieldPhoneGeneric', () => {
 
     render(<RenderForm />);
     await user.click(screen.getByText('Submit'));
-    expect(await screen.findByText('Field is required')).toBeInTheDocument();
+    expect(await screen.findByText('Invalid input')).toBeInTheDocument();
   });
 
   test('calls onCountryCodeChange when the user selects a different country code', async () => {

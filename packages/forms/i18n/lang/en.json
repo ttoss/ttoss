@@ -7,10 +7,6 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
-  "UibUNJ": {
-    "defaultMessage": "Invalid Value for Field of type {expected}",
-    "description": "Invalid Value"
-  },
   "ZhaPt0": {
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"

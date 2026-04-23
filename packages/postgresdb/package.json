@@ -28,11 +28,11 @@
   "dependencies": {
     "pg": "^8.20.0",
     "pgvector": "^0.2.1",
-    "sequelize": "^6.37.7",
+    "sequelize": "^6.37.8",
     "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "^11.8.1",
+    "@testcontainers/postgresql": "^11.14.0",
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
