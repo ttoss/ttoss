@@ -43,13 +43,16 @@ export const createRuntime = (
         if (patch.op === 'add' && patch.value != null) {
           currentSpec = {
             ...currentSpec,
-            layers: [...currentSpec.layers, patch.value as VisualizationLayer],
+            layers: [
+              ...(currentSpec.layers ?? []),
+              patch.value as VisualizationLayer,
+            ],
           };
         } else if (patch.op === 'remove') {
           const layerId = patch.value as string;
           currentSpec = {
             ...currentSpec,
-            layers: currentSpec.layers.filter((l) => {
+            layers: (currentSpec.layers ?? []).filter((l) => {
               return l.id !== layerId;
             }),
           };
@@ -62,7 +65,7 @@ export const createRuntime = (
           if (!layerId || !prop) return;
           currentSpec = {
             ...currentSpec,
-            layers: currentSpec.layers.map((layer) => {
+            layers: (currentSpec.layers ?? []).map((layer) => {
               if (layer.id !== layerId) return layer;
               return {
                 ...layer,
@@ -84,7 +87,7 @@ export const createRuntime = (
           const dataId = patch.value as string;
           currentSpec = {
             ...currentSpec,
-            layers: currentSpec.layers.filter((l) => {
+            layers: (currentSpec.layers ?? []).filter((l) => {
               return l.dataId !== dataId;
             }),
             data: currentSpec.data.filter((s) => {

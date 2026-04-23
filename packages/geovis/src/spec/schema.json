@@ -585,7 +585,7 @@
     "LayerTemplate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "dataId", "geometry"],
+      "required": ["geometry"],
       "properties": {
         "id": {
           "type": "string",

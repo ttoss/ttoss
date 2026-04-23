@@ -269,6 +269,58 @@ export type LayerPaint =
   | HeatmapPaint
   | SymbolPaint;
 
+export type QuantitativeColorByScale = 'threshold' | 'quantile' | 'linear';
+
+export interface CategoricalColorBy {
+  type: 'categorical';
+  property: string;
+  palette?: string;
+  colors?: string[];
+  mapping?: Record<string, string>;
+  defaultColor?: string;
+}
+
+export interface QuantitativeColorBy {
+  type: 'quantitative';
+  property: string;
+  scale: QuantitativeColorByScale;
+  bins?: number;
+  thresholds?: number[];
+  palette?: string;
+  colors?: string[];
+  defaultColor?: string;
+}
+
+export type ColorBy = CategoricalColorBy | QuantitativeColorBy;
+
+export interface CategoricalColorByTemplate {
+  type: 'categorical';
+  palette?: string;
+  colors?: string[];
+  mapping?: Record<string, string>;
+  defaultColor?: string;
+}
+
+export interface QuantitativeColorByTemplate {
+  type: 'quantitative';
+  scale: QuantitativeColorByScale;
+  bins?: number;
+  thresholds?: number[];
+  palette?: string;
+  colors?: string[];
+  defaultColor?: string;
+}
+
+export type ColorByTemplate =
+  | CategoricalColorByTemplate
+  | QuantitativeColorByTemplate;
+
+export interface LegendSpec {
+  id: string;
+  label?: string;
+  colorBy: ColorBy;
+}
+
 export interface VisualizationLayer {
   id: string;
   /** References `VisualizationSpec.data[].id`. */
@@ -344,9 +396,9 @@ export interface LayerTemplate {
    */
   properties?: string[];
   /** Label property applied to every expansion (same value for all). */
-  labelProperty: string;
+  labelProperty?: string;
   /** Display properties applied to every expansion (same list for all). */
-  displayProperties: string[];
+  displayProperties?: string[];
   /**
    * Optional template identifier (not a layer id). When omitted, the
    * expander generates one based on the template index (`template${i}`).
@@ -474,11 +526,4 @@ export interface VisualizationSpec {
       styleVersion?: 8;
     };
   };
-}
-
-export interface PolicyViolation {
-  /** Identifies the violated policy rule. */
-  reason: string;
-  /** Human-readable explanation surfaced to the consumer. */
-  message: string;
 }

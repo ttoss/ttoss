@@ -5,7 +5,8 @@
 import { act, render } from '@testing-library/react';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
-import type { PolicyViolation, VisualizationSpec } from 'src/spec/types';
+import { applyDefaultsAsync } from 'src/spec/applyDefaults';
+import type { VisualizationSpec } from 'src/spec/types';
 
 // var is hoisted alongside jest.mock, so the reference is valid inside the factory.
 // eslint-disable-next-line no-var
@@ -37,6 +38,12 @@ jest.mock('src/runtime/createRuntime', () => {
       };
     }),
   };
+});
+
+jest.mock('src/spec/applyDefaults', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const actual = jest.requireActual('src/spec/applyDefaults');
+  return { ...actual, applyDefaultsAsync: jest.fn() };
 });
 
 jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
@@ -150,77 +157,6 @@ describe('GeoVisProvider useGeoVis', () => {
   });
 });
 
-describe('GeoVisProvider policyViolations', () => {
-  test('is empty when spec has no metadata', async () => {
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
-    const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
-      capturedRef.current = useGeoVis().policyViolations;
-      return null;
-    };
-    await act(async () => {
-      render(
-        <GeoVisProvider spec={baseSpec}>
-          <Consumer />
-        </GeoVisProvider>
-      );
-    });
-    expect(capturedRef.current).toEqual([]);
-  });
-
-  test('has one entry when metadata.isPolicyInvalid is true', async () => {
-    const invalidSpec: VisualizationSpec = {
-      ...baseSpec,
-      metadata: {
-        isPolicyInvalid: true,
-        invalidReason: 'raw-count-choropleth',
-        metricField: 'population',
-        normalizedExpression: 'population / sq-km',
-        normalizedLabel: 'hab por km²',
-      },
-    };
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
-    const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
-      capturedRef.current = useGeoVis().policyViolations;
-      return null;
-    };
-    await act(async () => {
-      render(
-        <GeoVisProvider spec={invalidSpec}>
-          <Consumer />
-        </GeoVisProvider>
-      );
-    });
-    expect(capturedRef.current).toHaveLength(1);
-    expect(capturedRef.current![0].reason).toBe('raw-count-choropleth');
-    expect(capturedRef.current![0].message).toContain('population');
-  });
-
-  test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
-    const specNoReason: VisualizationSpec = {
-      ...baseSpec,
-      id: 'no-reason',
-      metadata: { isPolicyInvalid: true },
-    };
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
-    const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
-      capturedRef.current = useGeoVis().policyViolations;
-      return null;
-    };
-    await act(async () => {
-      render(
-        <GeoVisProvider spec={specNoReason}>
-          <Consumer />
-        </GeoVisProvider>
-      );
-    });
-    expect(capturedRef.current).toHaveLength(1);
-    expect(capturedRef.current![0].reason).toBe('policy-invalid');
-  });
-});
-
 describe('GeoVisProvider applyPatch updates context spec', () => {
   test('context spec reflects runtime.spec immediately after applyPatch', async () => {
     const updatedSpec: VisualizationSpec = {
@@ -304,7 +240,15 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     // prevSpecRef starts as null → spec !== null → setEffectiveSpec + runtime.update called.
     // If the init effect had set prevSpecRef = spec, sync would have exited early here.
     expect(mockRuntimeUpdate).toHaveBeenCalledTimes(1);
-    expect(mockRuntimeUpdate).toHaveBeenCalledWith(baseSpec);
+    expect(mockRuntimeUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: baseSpec.id,
+        engine: baseSpec.engine,
+        view: baseSpec.view,
+        data: baseSpec.data,
+        layers: baseSpec.layers,
+      })
+    );
   });
 
   test('context spec (effectiveSpec) tracks spec prop through multiple changes', async () => {
@@ -355,5 +299,47 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
       ref.current?.setSpec(spec3);
     });
     expect(specCaptureRef.current.id).toBe('spec-v3');
+  });
+});
+
+describe('GeoVisProvider async geometry inference', () => {
+  test('applies async-inferred geometry when geojson-url entries have no explicit layers', async () => {
+    const resolvedSpec: VisualizationSpec = {
+      ...baseSpec,
+      layers: [
+        { id: 'places-point', dataId: 'places', geometry: 'point' as const },
+      ],
+    };
+    jest.mocked(applyDefaultsAsync).mockResolvedValue(resolvedSpec);
+
+    const urlSpec = {
+      data: [
+        {
+          id: 'places',
+          kind: 'geojson-url' as const,
+          url: 'https://example.com/places.geojson',
+        },
+      ],
+    };
+
+    const specCaptureRef = {
+      current: null as unknown as { layers?: Array<{ geometry: string }> },
+    };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      specCaptureRef.current = useGeoVis().spec;
+      return null;
+    };
+
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={urlSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+
+    expect(applyDefaultsAsync).toHaveBeenCalledWith(urlSpec);
+    expect(specCaptureRef.current.layers?.[0]?.geometry).toBe('point');
   });
 });

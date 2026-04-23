@@ -11,7 +11,7 @@ export default jestUnitConfig({
       statements: 73,
       branches: 66,
       functions: 77,
-      lines: 76,
+      lines: 77,
     },
   },
 });

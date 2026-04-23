@@ -168,14 +168,14 @@ export const expandLayerTemplates = (
 
   const next: VisualizationSpec = {
     ...spec,
-    layers: [...spec.layers],
+    layers: [...(spec.layers ?? [])],
     views: spec.views ? [...spec.views] : undefined,
   };
 
   let index = 0;
   for (const template of spec.layerTemplates) {
     const { layers, views } = expandTemplate(template, spec, index);
-    next.layers.push(...layers);
+    next.layers = [...(next.layers ?? []), ...layers];
     if (views.length > 0) {
       next.views = [...(next.views ?? []), ...views];
     }

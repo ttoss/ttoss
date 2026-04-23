@@ -58,12 +58,13 @@ const buildSpec = (presentation?: PresentationMode): VisualizationSpec => {
     data: [
       {
         id: 'src',
+        kind: 'geojson-inline' as const,
         geojson: { type: 'FeatureCollection', features: [] },
       },
     ],
     layers: [
-      { id: 'l1', type: 'fill', source: 'src' },
-      { id: 'l2', type: 'fill', source: 'src' },
+      { id: 'l1', dataId: 'src', geometry: 'polygon' as const },
+      { id: 'l2', dataId: 'src', geometry: 'polygon' as const },
     ],
     views: [
       { id: 'v1', label: '2020', layers: ['l1'] },

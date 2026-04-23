@@ -2,11 +2,17 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type {
   GeoJSONFeatureCollection,
   PartialVisualizationSpec,
-  PolicyViolation,
+  ViewState,
   VisualizationLayer,
   VisualizationView,
 } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+
+// Policy violation type defined locally — not part of @ttoss/geovis public API.
+interface PolicyViolation {
+  reason: string;
+  message: string;
+}
 import * as React from 'react';
 
 import choroplethMinimal from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.minimal.json';
@@ -42,7 +48,7 @@ const rwandaChoroplethLayer: VisualizationLayer = {
   geometry: 'polygon',
   paint: { fillColor: '#dbeafe', fillOpacity: 0.85, lineColor: '#94a3b8' },
 };
-const RWANDA_VIEW: VisualizationView = {
+const RWANDA_VIEW: ViewState = {
   center: [30.0222, -1.9596],
   zoom: 7,
   autoFit: true,
@@ -51,7 +57,27 @@ const spec: PartialVisualizationSpec = {
   ...(choroplethMinimal as PartialVisualizationSpec),
   view: RWANDA_VIEW,
   layers: [rwandaChoroplethLayer],
+  metadata: {
+    isPolicyInvalid: true,
+    invalidReason: 'raw-count-choropleth',
+    metricField: 'population',
+    normalizedExpression: 'population / sq-km',
+    normalizedLabel: 'inhabitants per km²',
+  },
 };
+
+// External policy check — reads spec.metadata directly, no lib dependency.
+const specViolations: PolicyViolation[] = spec.metadata?.isPolicyInvalid
+  ? [
+      {
+        reason:
+          typeof spec.metadata.invalidReason === 'string'
+            ? spec.metadata.invalidReason
+            : 'policy-invalid',
+        message: `Field "${spec.metadata.metricField ?? 'unknown'}" violates cartography policy. Normalize by: ${spec.metadata.normalizedExpression ?? 'n/a'}.`,
+      },
+    ]
+  : [];
 
 const fmtPop = (v: number) => {
   return `${(v / 1_000_000).toFixed(1)}M hab.`;
@@ -81,24 +107,6 @@ const densitySteps = [
 
 // MapLibre expression to calculate density at runtime: population / sq-km.
 const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
-
-/**
- * Null component that reads policyViolations from GeoVisContext (via useGeoVis)
- * and lifts them to the parent story via callback.
- * Must be a child of a GeoVisProvider mounted with the same spec.
- * Replaces direct reading of metadata.isPolicyInvalid from the imported JSON.
- */
-const PolicyDetector = ({
-  onViolations,
-}: {
-  onViolations: (v: PolicyViolation[]) => void;
-}) => {
-  const { policyViolations } = useGeoVis();
-  React.useEffect(() => {
-    if (policyViolations.length > 0) onViolations(policyViolations);
-  }, [policyViolations, onViolations]);
-  return null;
-};
 
 const PolicyWarningBanner = ({
   violations,
@@ -173,12 +181,6 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
-  const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
-
-  // Stabilise the callback reference to avoid unnecessary re-renders.
-  const handleViolations = React.useCallback((v: PolicyViolation[]) => {
-    return setViolations(v);
-  }, []);
 
   const recenter = React.useCallback(() => {
     const { center, zoom } = RWANDA_VIEW;
@@ -226,8 +228,8 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
         </button>
       </div>
 
-      {/* Banner triggered via policyViolations from GeoVisContext — does not read metadata directly from JSON */}
-      <PolicyWarningBanner violations={violations} />
+      {/* Banner reads spec.metadata directly — no lib dependency */}
+      <PolicyWarningBanner violations={specViolations} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
         <div
@@ -260,7 +262,6 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
               steps={rawSteps}
             />
             {/* PolicyDetector lifts violations to parent story state */}
-            <PolicyDetector onViolations={handleViolations} />
           </GeoVisProvider>
         </div>
 

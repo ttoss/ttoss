@@ -472,8 +472,8 @@ const syncSourcesAndLayers = (
   previousSpec: VisualizationSpec | null
 ) => {
   if (previousSpec) {
-    for (const layer of previousSpec.layers) {
-      const stillExists = spec.layers.some((nextLayer) => {
+    for (const layer of previousSpec.layers ?? []) {
+      const stillExists = (spec.layers ?? []).some((nextLayer) => {
         return nextLayer.id === layer.id;
       });
       if (!stillExists && map.getLayer(layer.id)) {
@@ -519,7 +519,7 @@ const syncSourcesAndLayers = (
     }
   }
 
-  for (const layer of spec.layers) {
+  for (const layer of spec.layers ?? []) {
     const mapLayer = map.getLayer(layer.id);
     const dataEntry = spec.data.find((e) => {
       return e.id === layer.dataId;
@@ -876,7 +876,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
               map.addLayer(mlLayer);
               viewState.spec = {
                 ...viewState.spec,
-                layers: [...viewState.spec.layers, newLayer],
+                layers: [...(viewState.spec.layers ?? []), newLayer],
               };
             }
           } else if (patch.op === 'remove') {
@@ -885,7 +885,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
               map.removeLayer(layerId);
               viewState.spec = {
                 ...viewState.spec,
-                layers: viewState.spec.layers.filter((l) => {
+                layers: (viewState.spec.layers ?? []).filter((l) => {
                   return l.id !== layerId;
                 }),
               };
@@ -897,7 +897,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
             const layerId = parts[1];
             const specKey = parts[3];
             if (!layerId || !specKey) continue;
-            const layer = viewState.spec.layers.find((l) => {
+            const layer = (viewState.spec.layers ?? []).find((l) => {
               return l.id === layerId;
             });
             if (!layer) continue;
@@ -936,7 +936,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
             if (map.getSource(dataId)) {
               // Remove dependent layers first; MapLibre throws if a layer
               // still references the source when removeSource is called.
-              for (const layer of viewState.spec.layers) {
+              for (const layer of viewState.spec.layers ?? []) {
                 if (layer.dataId === dataId && map.getLayer(layer.id)) {
                   map.removeLayer(layer.id);
                 }
@@ -944,7 +944,7 @@ const createMapLibreAdapter = (): EngineAdapter => {
               map.removeSource(dataId);
               viewState.spec = {
                 ...viewState.spec,
-                layers: viewState.spec.layers.filter((l) => {
+                layers: (viewState.spec.layers ?? []).filter((l) => {
                   return l.dataId !== dataId;
                 }),
                 data: viewState.spec.data.filter((e) => {

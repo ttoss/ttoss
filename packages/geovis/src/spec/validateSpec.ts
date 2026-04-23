@@ -1,5 +1,6 @@
 import Ajv2020 from 'ajv/dist/2020';
 
+import { applyDefaults } from './applyDefaults';
 import schema from './schema.json';
 import type {
   ColorBy,
@@ -77,7 +78,7 @@ const _validatePropertyReferences = (spec: VisualizationSpec): string[] => {
     entryProps.set(entry.id, deriveEntryProperties(entry));
   }
 
-  for (const [layerIndex, layer] of spec.layers.entries()) {
+  for (const [layerIndex, layer] of (spec.layers ?? []).entries()) {
     const allowed = entryProps.get(layer.dataId);
 
     // Cross-check is skipped when the entry's properties cannot be
@@ -170,7 +171,9 @@ export const validateSpec = (input: unknown): ValidationResult => {
     return { valid: false, errors };
   }
 
-  const spec = input as VisualizationSpec;
+  // Run applyDefaults so that optional fields (layers, id, engine, view)
+  // are populated before cross-checking property references.
+  const spec = applyDefaults(input as Parameters<typeof applyDefaults>[0]);
   const crossCheckErrors = _validatePropertyReferences(spec);
   if (crossCheckErrors.length > 0) {
     return { valid: false, errors: crossCheckErrors };

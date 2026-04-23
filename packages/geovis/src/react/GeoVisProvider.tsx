@@ -4,49 +4,14 @@ import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PartialVisualizationSpec } from '../spec/applyDefaults';
-import { applyDefaults } from '../spec/applyDefaults';
+import { applyDefaults, applyDefaultsAsync } from '../spec/applyDefaults';
 import { expandLayerTemplates } from '../spec/expandLayerTemplates';
-import type { PolicyViolation, VisualizationSpec } from '../spec/types';
-
-/**
- * Evaluates spec.metadata for known policy violations.
- * Called once per spec on Provider mount — not on every update,
- * because metadata is treated as static fixture-level contract.
- * Returns an empty array when no violations are found.
- */
-const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
-  const violations: PolicyViolation[] = [];
-  const m = spec.metadata;
-
-  if (!m) return violations;
-
-  if (m.isPolicyInvalid === true) {
-    const reason = (m.invalidReason as string | undefined) ?? 'policy-invalid';
-    const metricField = m.metricField as string | undefined;
-    const normalizedField =
-      (m.normalizedField as string | undefined) ??
-      (m.normalizedExpression as string | undefined);
-    const label = m.normalizedLabel as string | undefined;
-
-    let message = `Spec '${spec.id}' violates cartographic policy: ${reason}.`;
-    if (metricField) message += ` Invalid field: '${metricField}'.`;
-    if (normalizedField)
-      message += ` Correct alternative: '${normalizedField}'`;
-    if (label) message += ` (${label})`;
-    message += '.';
-
-    violations.push({ reason, message });
-  }
-
-  return violations;
-};
+import type { VisualizationSpec } from '../spec/types';
 
 interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
   applyPatch: (patch: SpecPatch) => void;
-  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
-  policyViolations: PolicyViolation[];
 }
 
 export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
@@ -86,18 +51,45 @@ export const GeoVisProvider = ({
   spec: rawSpec,
   children,
 }: GeoVisProviderProps) => {
-  const spec = React.useMemo(() => {
+  // Synchronous initial spec (geojson-url entries default to polygon).
+  const syncSpec = React.useMemo(() => {
     return expandLayerTemplates(applyDefaults(rawSpec));
   }, [rawSpec]);
+
+  // `spec` state starts from the sync baseline and is refined asynchronously
+  // when geojson-url entries need URL-based geometry inference.
+  const [spec, setSpec] = React.useState<VisualizationSpec>(syncSpec);
+
+  React.useEffect(() => {
+    const data = rawSpec.data ?? [];
+    const needsUrlInference =
+      data.some((e) => {
+        return e.kind === 'geojson-url';
+      }) &&
+      !rawSpec.layers?.length &&
+      !rawSpec.layerTemplates?.length;
+
+    if (!needsUrlInference) {
+      setSpec(syncSpec);
+      return;
+    }
+
+    // Show the polygon-defaulted spec immediately while the fetch is in flight.
+    setSpec(syncSpec);
+
+    let cancelled = false;
+    applyDefaultsAsync(rawSpec).then((resolved) => {
+      if (!cancelled) setSpec(expandLayerTemplates(resolved));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [rawSpec, syncSpec]);
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
   const [effectiveSpec, setEffectiveSpec] =
     React.useState<VisualizationSpec>(spec);
   const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
-
-  const policyViolations = React.useMemo(() => {
-    return checkPolicies(spec);
-  }, [spec]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -153,7 +145,7 @@ export const GeoVisProvider = ({
 
   return (
     <GeoVisContext.Provider
-      value={{ runtime, spec: effectiveSpec, applyPatch, policyViolations }}
+      value={{ runtime, spec: effectiveSpec, applyPatch }}
     >
       {children}
     </GeoVisContext.Provider>

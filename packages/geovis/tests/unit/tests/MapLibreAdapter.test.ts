@@ -17,11 +17,19 @@ import type {
 } from 'src/spec/types';
 
 jest.mock('maplibre-gl', () => {
+  const LngLatBoundsMock = jest.fn().mockImplementation(() => {
+    return {
+      isEmpty: jest.fn().mockReturnValue(false),
+      extend: jest.fn().mockReturnThis(),
+    };
+  });
+
   return {
     Map: jest.fn(),
     NavigationControl: jest.fn().mockImplementation(() => {
       return {};
     }),
+    LngLatBounds: LngLatBoundsMock,
   };
 });
 
@@ -50,6 +58,7 @@ const makeMapMock = () => {
   return {
     on: jest.fn(),
     once: jest.fn(),
+    off: jest.fn(),
     remove: jest.fn(),
     addControl: jest.fn(),
     addSource: jest.fn(),
@@ -72,6 +81,7 @@ const makeMapMock = () => {
     setZoom: jest.fn(),
     setPitch: jest.fn(),
     setBearing: jest.fn(),
+    fitBounds: jest.fn(),
   };
 };
 
@@ -885,5 +895,167 @@ describe('syncSourcesAndLayers — colorBy defaults', () => {
       paint?: Record<string, unknown>;
     };
     expect(layer.paint?.['fill-color']).toBe('#123456');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// autoFit — smooth view positioning after URL data loads
+// ---------------------------------------------------------------------------
+
+describe('autoFit — smooth view positioning after URL data loads', () => {
+  const makeSpecWithUrlData = () => {
+    return {
+      id: 'autofit-spec',
+      engine: 'maplibre' as const,
+      view: { center: [0, 0] as [number, number], zoom: 1, autoFit: true },
+      data: [
+        {
+          id: 'geo-url',
+          kind: 'geojson-url' as const,
+          url: 'https://example.com/data.geojson',
+        },
+      ],
+      layers: [
+        { id: 'geo-fill', dataId: 'geo-url', geometry: 'polygon' as const },
+      ],
+    };
+  };
+
+  const mountAndLoad = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpecWithUrlData(), 'v');
+
+    // Trigger the 'load' event registered inside mount().
+    const loadHandler = jest.mocked(map.on).mock.calls.find(([event]) => {
+      return event === 'load';
+    })?.[1] as (() => void) | undefined;
+    loadHandler?.();
+
+    return { adapter, map };
+  };
+
+  test('fitBounds is called with animate:true after URL source finishes loading', async () => {
+    const { map } = mountAndLoad();
+
+    // After load fires, autoFitBounds registers a 'sourcedata' handler.
+    const sourcedataHandler = jest.mocked(map.on).mock.calls.find(([event]) => {
+      return event === 'sourcedata';
+    })?.[1] as ((e: Record<string, unknown>) => void) | undefined;
+    expect(sourcedataHandler).toBeDefined();
+
+    // Mock getSource to return a GeoJSON source with getBounds().
+    const fakeBounds = {
+      isEmpty: jest.fn().mockReturnValue(false),
+      extend: jest.fn(),
+    };
+    jest.mocked(map.getSource).mockReturnValueOnce({
+      getBounds: jest.fn().mockResolvedValue(fakeBounds),
+    } as never);
+
+    // Simulate the sourcedata event for the URL source.
+    sourcedataHandler?.({
+      dataType: 'source',
+      isSourceLoaded: true,
+      sourceId: 'geo-url',
+    });
+
+    // Flush the getBounds() promise chain.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(map.fitBounds).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ animate: true })
+    );
+  });
+
+  test('fitBounds is not called when view.autoFit is false or undefined', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = {
+      ...makeSpecWithUrlData(),
+      view: { center: [0, 0] as [number, number], zoom: 1 },
+    };
+    adapter.mount(makeContainer(), spec, 'v');
+
+    const loadHandler = jest.mocked(map.on).mock.calls.find(([event]) => {
+      return event === 'load';
+    })?.[1] as (() => void) | undefined;
+    loadHandler?.();
+
+    expect(map.fitBounds).not.toHaveBeenCalled();
+    const sourcedataHandler = jest.mocked(map.on).mock.calls.find(([event]) => {
+      return event === 'sourcedata';
+    });
+    expect(sourcedataHandler).toBeUndefined();
+  });
+
+  test('fitBounds is called without animate for inline-only sources (after idle event)', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const specWithInline = {
+      id: 'inline-af',
+      engine: 'maplibre' as const,
+      view: { center: [0, 0] as [number, number], zoom: 1, autoFit: true },
+      data: [
+        {
+          id: 'poly-src',
+          kind: 'geojson-inline' as const,
+          geojson: {
+            type: 'FeatureCollection' as const,
+            features: [
+              {
+                type: 'Feature' as const,
+                geometry: {
+                  type: 'Polygon' as const,
+                  coordinates: [
+                    [
+                      [0, 0],
+                      [1, 0],
+                      [1, 1],
+                      [0, 1],
+                      [0, 0],
+                    ],
+                  ],
+                },
+                properties: null,
+              },
+            ],
+          },
+        },
+      ],
+      layers: [
+        { id: 'poly-fill', dataId: 'poly-src', geometry: 'polygon' as const },
+      ],
+    };
+    adapter.mount(makeContainer(), specWithInline, 'v');
+
+    const loadHandler = jest.mocked(map.on).mock.calls.find(([event]) => {
+      return event === 'load';
+    })?.[1] as (() => void) | undefined;
+    loadHandler?.();
+
+    // For inline-only sources, autoFitBounds uses map.once('idle', ...) instead of sourcedata.
+    const idleHandler = jest.mocked(map.once).mock.calls.find(([event]) => {
+      return event === 'idle';
+    })?.[1] as (() => void) | undefined;
+    expect(idleHandler).toBeDefined();
+
+    idleHandler?.();
+
+    expect(map.fitBounds).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ animate: false })
+    );
   });
 });

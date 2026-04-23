@@ -1,4 +1,4 @@
-import { applyDefaults } from 'src/spec/applyDefaults';
+import { applyDefaults, applyDefaultsAsync } from 'src/spec/applyDefaults';
 import { validateSpec } from 'src/spec/validateSpec';
 
 import distritosMinimal from '../../../src/fixtures/distritos-sp-populacao-idosa.minimal.json';
@@ -463,6 +463,182 @@ describe('validateSpec', () => {
         );
         expect(result.errors.join('\n')).toContain('missing');
       }
+    });
+  });
+
+  describe('applyDefaults auto-layer generation', () => {
+    test('does not auto-generate layers for raster-dem entries', () => {
+      const result = applyDefaults({
+        data: [
+          {
+            id: 'terrain',
+            kind: 'raster-dem',
+            url: 'https://example.com/terrain/{z}/{x}/{y}.png',
+          },
+        ],
+      });
+      expect(result.layers).toEqual([]);
+    });
+
+    test('does not auto-generate layers for video entries', () => {
+      const result = applyDefaults({
+        data: [
+          {
+            id: 'clip',
+            kind: 'video',
+            urls: ['https://example.com/video.mp4'],
+            coordinates: [
+              [0, 0],
+              [1, 0],
+              [1, 1],
+              [0, 1],
+            ],
+          },
+        ],
+      });
+      expect(result.layers).toEqual([]);
+    });
+
+    test('auto-generates a raster layer for raster-tiles entries', () => {
+      const result = applyDefaults({
+        data: [
+          {
+            id: 'tiles',
+            kind: 'raster-tiles',
+            tiles: ['https://example.com/{z}/{x}/{y}.png'],
+          },
+        ],
+      });
+      expect(result.layers).toHaveLength(1);
+      expect(result.layers![0].geometry).toBe('raster');
+    });
+  });
+
+  describe('applyDefaultsAsync URL geometry inference', () => {
+    beforeEach(() => {
+      jest.spyOn(global, 'fetch');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('infers polygon geometry from a remote GeoJSON URL', async () => {
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [] },
+            properties: {},
+          },
+        ],
+      };
+      jest.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => {
+          return geojson;
+        },
+      } as Response);
+
+      const result = await applyDefaultsAsync({
+        data: [
+          {
+            id: 'zones',
+            kind: 'geojson-url',
+            url: 'https://example.com/zones.geojson',
+          },
+        ],
+      });
+
+      expect(result.layers).toHaveLength(1);
+      expect(result.layers![0].geometry).toBe('polygon');
+      expect(result.layers![0].dataId).toBe('zones');
+    });
+
+    test('infers point geometry from a remote GeoJSON URL', async () => {
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+          },
+        ],
+      };
+      jest.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => {
+          return geojson;
+        },
+      } as Response);
+
+      const result = await applyDefaultsAsync({
+        data: [
+          {
+            id: 'pois',
+            kind: 'geojson-url',
+            url: 'https://example.com/pois.geojson',
+          },
+        ],
+      });
+
+      expect(result.layers![0].geometry).toBe('point');
+    });
+
+    test('falls back to polygon when fetch fails', async () => {
+      jest.mocked(global.fetch).mockRejectedValue(new Error('network error'));
+
+      const result = await applyDefaultsAsync({
+        data: [
+          {
+            id: 'remote',
+            kind: 'geojson-url',
+            url: 'https://example.com/data.geojson',
+          },
+        ],
+      });
+
+      expect(result.layers![0].geometry).toBe('polygon');
+    });
+
+    test('falls back to polygon when response is not ok', async () => {
+      jest.mocked(global.fetch).mockResolvedValue({
+        ok: false,
+        json: async () => {
+          return {};
+        },
+      } as Response);
+
+      const result = await applyDefaultsAsync({
+        data: [
+          {
+            id: 'remote',
+            kind: 'geojson-url',
+            url: 'https://example.com/data.geojson',
+          },
+        ],
+      });
+
+      expect(result.layers![0].geometry).toBe('polygon');
+    });
+
+    test('skips URL inference when explicit layers are provided', async () => {
+      const result = await applyDefaultsAsync({
+        data: [
+          {
+            id: 'zones',
+            kind: 'geojson-url',
+            url: 'https://example.com/zones.geojson',
+          },
+        ],
+        layers: [{ id: 'my-layer', dataId: 'zones', geometry: 'line' }],
+      });
+
+      expect(global.fetch).not.toHaveBeenCalled();
+      expect(result.layers).toHaveLength(1);
+      expect(result.layers![0].geometry).toBe('line');
     });
   });
 });

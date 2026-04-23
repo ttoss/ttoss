@@ -64,6 +64,17 @@ const SwitchedView = ({
     return views[0]?.id ?? '';
   });
 
+  React.useEffect(() => {
+    if (
+      views.length > 0 &&
+      !views.some((v) => {
+        return v.id === activeViewId;
+      })
+    ) {
+      setActiveViewId(views[0].id);
+    }
+  }, [views, activeViewId]);
+
   const activeView = views.find((v) => {
     return v.id === activeViewId;
   });
@@ -312,7 +323,7 @@ export const GeoVisViews = ({
 
   const layersById = React.useMemo(() => {
     return new Map<string, VisualizationLayer>(
-      spec.layers.map((l) => {
+      (spec.layers ?? []).map((l) => {
         return [l.id, l];
       })
     );
@@ -323,7 +334,7 @@ export const GeoVisViews = ({
       views.map((view) => {
         const sub: VisualizationSpec = {
           ...spec,
-          layers: spec.layers.filter((l) => {
+          layers: (spec.layers ?? []).filter((l) => {
             return view.layers.includes(l.id);
           }),
         };
