@@ -14,8 +14,8 @@ describe('Zod Integration', () => {
   test('should validate with zod schema', async () => {
     const user = userEvent.setup({ delay: null });
     const schema = z.object({
-      name: z.string().min(1, 'Name is required'),
-      email: z.string().email('Invalid email'),
+      name: z.string().min(1, { error: 'Name is required' }),
+      email: z.string().email({ error: 'Invalid email' }),
     });
 
     const TestComponent = () => {
@@ -43,7 +43,9 @@ describe('Zod Integration', () => {
   test('should validate string minimum length', async () => {
     const user = userEvent.setup({ delay: null });
     const schema = z.object({
-      username: z.string().min(5, 'Username must be at least 5 characters'),
+      username: z
+        .string()
+        .min(5, { error: 'Username must be at least 5 characters' }),
     });
 
     const TestComponent = () => {
@@ -77,7 +79,11 @@ describe('Zod Integration', () => {
   test('should validate invalid type', async () => {
     const user = userEvent.setup({ delay: null });
     const schema = z.object({
-      age: z.number(),
+      age: z.number({
+        error: (issue) => {
+          return `Invalid Value for Field of type ${issue.expected}`;
+        },
+      }),
     });
 
     const TestComponent = () => {

@@ -11,7 +11,7 @@
     "@aws-sdk/lib-dynamodb": "^3.525.0",
     "@ttoss-challenge/seed": "workspace:^",
     "@ttoss/config": "workspace:^",
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.4.2",
     "tsx": "^4.21.0"
   }
 }

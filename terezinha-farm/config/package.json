@@ -9,7 +9,7 @@
     "build": "tsup"
   },
   "dependencies": {
-    "dotenv": "^17.0.1"
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

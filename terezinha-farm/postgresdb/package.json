@@ -16,7 +16,7 @@
     "@ttoss/postgresdb": "workspace:^"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "^11.8.1",
+    "@testcontainers/postgresql": "^11.14.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/postgresdb-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
