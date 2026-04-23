@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/config",
-  "version": "1.37.9",
+  "version": "1.37.10",
   "description": "Default configuration for packages.",
   "license": "MIT",
   "author": "ttoss",

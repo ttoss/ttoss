@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.10](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-cli@0.10.9...@ttoss/graphql-api-cli@0.10.10) (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/graphql-api-cli
+
 ## 0.10.9 (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/graphql-api-cli
