@@ -11,6 +11,7 @@ export default {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
+    'eslint',
   ],
   target: (name) => {
     const minorPackages = ['typescript', '@types/node'];

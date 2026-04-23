@@ -8,7 +8,7 @@ import jestDom from 'eslint-plugin-jest-dom';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import preferArrowFunctions from 'eslint-plugin-prefer-arrow-functions';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-// import reactPlugin from 'eslint-plugin-react';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -31,17 +31,14 @@ export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
-  /**
-   * TODO: uncomment when eslint-plugin-react supports ESLint 10
-   */
-  // {
-  //   files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
-  //   ...reactPlugin.configs.flat.recommended,
-  // },
-  // {
-  //   files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
-  //   ...reactPlugin.configs.flat['jsx-runtime'],
-  // },
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...reactPlugin.configs.flat.recommended,
+  },
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...reactPlugin.configs.flat['jsx-runtime'],
+  },
   relay.configs.recommended,
   reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
@@ -171,7 +168,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['**/*.tsx'],
+    files: ['**/*.{jsx,tsx}'],
     rules: {
       // React components with JSX, hooks, and handlers routinely exceed 80 lines
       // while remaining focused and readable — allow a slightly higher limit.

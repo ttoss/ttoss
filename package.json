@@ -28,22 +28,22 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
-    "@lerna-lite/changed": "^4.11.5",
-    "@lerna-lite/cli": "^4.11.5",
-    "@lerna-lite/list": "^4.11.5",
-    "@lerna-lite/version": "^4.11.5",
+    "@lerna-lite/changed": "^5.1.0",
+    "@lerna-lite/cli": "^5.1.0",
+    "@lerna-lite/list": "^5.1.0",
+    "@lerna-lite/version": "^5.1.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
-    "eslint": "^10.0.0",
+    "eslint": "^9.39.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "playwright": "1.59.0",
-    "prettier": "^3.8.1",
+    "playwright": "1.59.1",
+    "prettier": "^3.8.3",
     "syncpack": "14.3.0",
-    "turbo": "^2.9.3",
-    "typescript": "~6.0.2"
+    "turbo": "^2.9.6",
+    "typescript": "~6.0.3"
   },
   "keywords": [
     "cli",
@@ -56,7 +56,7 @@
     "node": "^24.0.0",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.2",
   "pnpm": {
     "overrides": {
       "@types/parse-path": "7.0.3",
