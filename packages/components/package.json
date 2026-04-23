@@ -41,7 +41,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "postbuild": "pnpm run update-package-json-exports",
     "dev": "pnpm -r --filter=@docs/storybook run dev",
     "i18n": "ttoss-i18n",
@@ -84,7 +84,7 @@
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
     "react": "^19.2.4",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.21.7",
     "tsx": "^4.21.0"
   },
   "keywords": [
@@ -95,92 +95,92 @@
     "access": "public",
     "exports": {
       "./Accordion": {
-        "types": "./dist/Accordion/index.d.ts",
-        "default": "./dist/esm/Accordion/index.js"
+        "types": "./dist/Accordion/index.d.mts",
+        "default": "./dist/Accordion/index.mjs"
       },
       "./DatePicker": {
-        "types": "./dist/DatePicker/index.d.ts",
-        "default": "./dist/esm/DatePicker/index.js"
+        "types": "./dist/DatePicker/index.d.mts",
+        "default": "./dist/DatePicker/index.mjs"
       },
       "./Drawer": {
-        "types": "./dist/Drawer/index.d.ts",
-        "default": "./dist/esm/Drawer/index.js"
+        "types": "./dist/Drawer/index.d.mts",
+        "default": "./dist/Drawer/index.mjs"
       },
       "./EnhancedTitle": {
-        "types": "./dist/EnhancedTitle/index.d.ts",
-        "default": "./dist/esm/EnhancedTitle/index.js"
+        "types": "./dist/EnhancedTitle/index.d.mts",
+        "default": "./dist/EnhancedTitle/index.mjs"
       },
       "./InstallPwa": {
-        "types": "./dist/InstallPwa/index.d.ts",
-        "default": "./dist/esm/InstallPwa/index.js"
+        "types": "./dist/InstallPwa/index.d.mts",
+        "default": "./dist/InstallPwa/index.mjs"
       },
       "./FileUploader": {
-        "types": "./dist/FileUploader/index.d.ts",
-        "default": "./dist/esm/FileUploader/index.js"
+        "types": "./dist/FileUploader/index.d.mts",
+        "default": "./dist/FileUploader/index.mjs"
       },
       "./JsonEditor": {
-        "types": "./dist/JsonEditor/index.d.ts",
-        "default": "./dist/esm/JsonEditor/index.js"
+        "types": "./dist/JsonEditor/index.d.mts",
+        "default": "./dist/JsonEditor/index.mjs"
       },
       "./JsonView": {
-        "types": "./dist/JsonView/index.d.ts",
-        "default": "./dist/esm/JsonView/index.js"
+        "types": "./dist/JsonView/index.d.mts",
+        "default": "./dist/JsonView/index.mjs"
       },
       "./List": {
-        "types": "./dist/List/index.d.ts",
-        "default": "./dist/esm/List/index.js"
+        "types": "./dist/List/index.d.mts",
+        "default": "./dist/List/index.mjs"
       },
       "./LockedOverlay": {
-        "types": "./dist/LockedOverlay/index.d.ts",
-        "default": "./dist/esm/LockedOverlay/index.js"
+        "types": "./dist/LockedOverlay/index.d.mts",
+        "default": "./dist/LockedOverlay/index.mjs"
       },
       "./Markdown": {
-        "types": "./dist/Markdown/index.d.ts",
-        "default": "./dist/esm/Markdown/index.js"
+        "types": "./dist/Markdown/index.d.mts",
+        "default": "./dist/Markdown/index.mjs"
       },
       "./Menu": {
-        "types": "./dist/Menu/index.d.ts",
-        "default": "./dist/esm/Menu/index.js"
+        "types": "./dist/Menu/index.d.mts",
+        "default": "./dist/Menu/index.mjs"
       },
       "./MetricCard": {
-        "types": "./dist/MetricCard/index.d.ts",
-        "default": "./dist/esm/MetricCard/index.js"
+        "types": "./dist/MetricCard/index.d.mts",
+        "default": "./dist/MetricCard/index.mjs"
       },
       "./Modal": {
-        "types": "./dist/Modal/index.d.ts",
-        "default": "./dist/esm/Modal/index.js"
+        "types": "./dist/Modal/index.d.mts",
+        "default": "./dist/Modal/index.mjs"
       },
       "./NavList": {
-        "types": "./dist/NavList/index.d.ts",
-        "default": "./dist/esm/NavList/index.js"
+        "types": "./dist/NavList/index.d.mts",
+        "default": "./dist/NavList/index.mjs"
       },
       "./NotificationCard": {
-        "types": "./dist/NotificationCard/index.d.ts",
-        "default": "./dist/esm/NotificationCard/index.js"
+        "types": "./dist/NotificationCard/index.d.mts",
+        "default": "./dist/NotificationCard/index.mjs"
       },
       "./NotificationsMenu": {
-        "types": "./dist/NotificationsMenu/index.d.ts",
-        "default": "./dist/esm/NotificationsMenu/index.js"
+        "types": "./dist/NotificationsMenu/index.d.mts",
+        "default": "./dist/NotificationsMenu/index.mjs"
       },
       "./SpotlightCard": {
-        "types": "./dist/SpotlightCard/index.d.ts",
-        "default": "./dist/esm/SpotlightCard/index.js"
+        "types": "./dist/SpotlightCard/index.d.mts",
+        "default": "./dist/SpotlightCard/index.mjs"
       },
       "./Search": {
-        "types": "./dist/Search/index.d.ts",
-        "default": "./dist/esm/Search/index.js"
+        "types": "./dist/Search/index.d.mts",
+        "default": "./dist/Search/index.mjs"
       },
       "./Table": {
-        "types": "./dist/Table/index.d.ts",
-        "default": "./dist/esm/Table/index.js"
+        "types": "./dist/Table/index.d.mts",
+        "default": "./dist/Table/index.mjs"
       },
       "./Tabs": {
-        "types": "./dist/Tabs/index.d.ts",
-        "default": "./dist/esm/Tabs/index.js"
+        "types": "./dist/Tabs/index.d.mts",
+        "default": "./dist/Tabs/index.mjs"
       },
       "./Toast": {
-        "types": "./dist/Toast/index.d.ts",
-        "default": "./dist/esm/Toast/index.js"
+        "types": "./dist/Toast/index.d.mts",
+        "default": "./dist/Toast/index.mjs"
       }
     },
     "provenance": true

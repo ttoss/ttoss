@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "test": "echo test"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "publishConfig": {
     "access": "public",

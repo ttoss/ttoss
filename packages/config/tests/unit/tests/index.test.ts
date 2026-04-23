@@ -9,5 +9,6 @@ test('configs should be exported', () => {
   expect(allConfigs.jestUnitConfig).toBeDefined();
   expect(allConfigs.lintstagedConfig).toBeDefined();
   expect(allConfigs.prettierConfig).toBeDefined();
+  expect(allConfigs.tsdownConfig).toBeDefined();
   expect(allConfigs.tsupConfig).toBeDefined();
 });

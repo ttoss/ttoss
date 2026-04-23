@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import pkg from '../package.json';
-import { components } from '../tsup.config';
+import { components } from '../tsdown.config';
 
 // eslint-disable-next-line no-console
 console.log('Updating package.json exports...');
@@ -21,8 +21,8 @@ const newPkg = {
         return [
           `./${component}`,
           {
-            types: `./dist/${component}/index.d.ts`,
-            default: `./dist/esm/${component}/index.js`,
+            types: `./dist/${component}/index.d.mts`,
+            default: `./dist/${component}/index.mjs`,
           },
         ];
       })

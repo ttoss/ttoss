@@ -6,13 +6,13 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsdown"
   },
   "dependencies": {
     "dotenv": "^17.0.1"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   }
 }

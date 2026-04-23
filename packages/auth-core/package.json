@@ -21,7 +21,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "auth",
@@ -43,14 +43,24 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "require": {
+          "default": "./dist/index.cjs",
+          "types": "./dist/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/index.mjs",
+          "types": "./dist/index.d.mts"
+        }
       },
       "./amazon-cognito": {
-        "import": "./dist/esm/AmazonCognito/index.js",
-        "require": "./dist/AmazonCognito/index.js",
-        "types": "./dist/AmazonCognito/index.d.ts"
+        "require": {
+          "default": "./dist/AmazonCognito/index.cjs",
+          "types": "./dist/AmazonCognito/index.d.cts"
+        },
+        "import": {
+          "default": "./dist/AmazonCognito/index.mjs",
+          "types": "./dist/AmazonCognito/index.d.mts"
+        }
       }
     },
     "provenance": true

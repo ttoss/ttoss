@@ -1,3 +1,3 @@
-import { jestRootConfig } from './dist/index.js';
+import { jestRootConfig } from './dist/index.cjs';
 
 export default jestRootConfig();

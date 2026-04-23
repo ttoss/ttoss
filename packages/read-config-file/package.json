@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -35,7 +35,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "config",
@@ -45,8 +45,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

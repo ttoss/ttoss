@@ -20,8 +20,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "pretest": "tsup --config ./tests/tsup.pretest.config.ts",
+    "build": "tsdown",
+    "pretest": "tsdown --config ./tests/tsdown.pretest.config.ts",
     "test": "jest --projects tests/unit"
   },
   "sideEffects": false,
@@ -35,7 +35,7 @@
     "@testcontainers/postgresql": "^11.8.1",
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.21.7"
   },
   "keywords": [
     "database",
@@ -46,8 +46,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true
