@@ -100,6 +100,15 @@ const installDependencies = ({ dir }: { dir: string }) => {
   }
 };
 
+const needsTestScript = (script: string | undefined): boolean => {
+  return (
+    !script ||
+    script.includes('Error: no test specified') ||
+    script.includes('echo') ||
+    script === 'exit 1'
+  );
+};
+
 const updatePackageJson = ({
   dir,
   includeE2E,
@@ -122,12 +131,7 @@ const updatePackageJson = ({
 
   // Always set/update test script to use Jest
   const currentTestScript = packageJson.scripts.test || '';
-  if (
-    !currentTestScript ||
-    currentTestScript.includes('Error: no test specified') ||
-    currentTestScript.includes('echo') ||
-    currentTestScript === 'exit 1'
-  ) {
+  if (needsTestScript(currentTestScript)) {
     packageJson.scripts.test = 'jest --projects tests/unit';
     // eslint-disable-next-line no-console
     console.log('✓ Added "test" script to package.json');
