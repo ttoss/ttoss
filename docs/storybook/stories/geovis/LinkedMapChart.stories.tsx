@@ -45,7 +45,7 @@ const linkedMapChartSpec: PartialVisualizationSpec = {
 type Region = { regionId: string; label: string; value: number };
 
 const REGIONS: Region[] = (
-  linkedMapChartSpec.data[0] as { geojson: GeoJSONFeatureCollection }
+  (linkedMapChartSpec.data ?? [])[0] as { geojson: GeoJSONFeatureCollection }
 ).geojson.features.map((f) => {
   return f.properties as Region;
 });

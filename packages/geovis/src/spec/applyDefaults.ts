@@ -1,12 +1,18 @@
+import { resolveColorBy } from './colorBy';
 import { computeBoundsFromSources } from './computeBoundsFromSources';
 import type {
   BaseMapSpec,
+  ColorBy,
+  ColorByExpression,
+  GeoJSONFeature,
   GeoJSONFeatureCollection,
   GeoJSONObject,
   GeoJSONUrlData,
   GeoVisDataEntry,
   GeoVisGeometryType,
+  LegendSpec,
   PresentationMode,
+  QuantitativeColorBy,
   VisualizationLayer,
   VisualizationSpec,
 } from './types';
@@ -17,6 +23,28 @@ import type {
  * layers when omitted. `data` defaults to an empty array.
  */
 export type PartialVisualizationSpec = Partial<VisualizationSpec>;
+
+/**
+ * Normalises a consumer-provided `ColorBy` so that `type` and `scale` are
+ * always present.  Inference rules:
+ * - `type` defaults to `'categorical'` when `mapping` is provided, otherwise
+ *   `'quantitative'`.
+ * - `scale` defaults to `'quantile'` for quantitative colour-by.
+ */
+export const normalizeColorBy = (colorBy: ColorBy): ColorBy => {
+  const type =
+    colorBy.type ??
+    ('mapping' in colorBy && colorBy.mapping ? 'categorical' : 'quantitative');
+  if (type === 'categorical') {
+    return { ...colorBy, type };
+  }
+  const qColorBy = colorBy as QuantitativeColorBy;
+  return {
+    ...qColorBy,
+    type,
+    scale: qColorBy.scale ?? 'quantile',
+  };
+};
 
 const collectInlineGeometryTypes = (
   obj: GeoJSONObject
@@ -101,6 +129,132 @@ const layerSuffix: Record<GeoVisGeometryType, string> = {
   raster: 'raster',
   symbol: 'symbol',
   heatmap: 'heatmap',
+};
+
+/**
+ * Returns the inline GeoJSON features of a `geojson-inline` data entry, or
+ * `null` for any other kind. URL data is not resolved here — the runtime
+ * adapter and `<GeoVisLegend />` handle that asynchronously.
+ */
+const getInlineFeatures = (
+  entry: GeoVisDataEntry | undefined
+): GeoJSONFeature[] | null => {
+  if (!entry || entry.kind !== 'geojson-inline') return null;
+  const obj = entry.geojson;
+  if (obj.type === 'FeatureCollection') {
+    return (obj as GeoJSONFeatureCollection).features as GeoJSONFeature[];
+  }
+  if (obj.type === 'Feature') return [obj as GeoJSONFeature];
+  return null;
+};
+
+/**
+ * For every layer that declares a `colorBy` against an inline data source,
+ * pre-resolves the palette/thresholds/mapping and writes them back onto the
+ * layer's `colorBy` when not already set. This makes the spec self-describing
+ * (consumers can inspect `layer.colorBy.thresholds` directly) and lets the
+ * adapter and `<GeoVisLegend />` skip their own resolution work.
+/**
+ * Extracts the property name from a simple `['get', '<name>']` expression.
+ * Returns `undefined` for compound/nested expressions.
+ */
+const getPropertyFromExpression = (
+  expr: ColorByExpression
+): string | undefined => {
+  if (Array.isArray(expr) && expr[0] === 'get' && typeof expr[1] === 'string') {
+    return expr[1];
+  }
+  return undefined;
+};
+
+/**
+ * For every layer that declares a `colorBy` against an inline data source,
+ * pre-resolves the palette/thresholds/mapping and writes them back onto the
+ * layer's `colorBy` when not already set. This makes the spec self-describing
+ * (consumers can inspect `layer.colorBy.thresholds` directly) and lets the
+ * adapter and `<GeoVisLegend />` skip their own resolution work.
+ *
+ * When `layer.expression` is provided but `layer.colorBy` is absent, a
+ * quantitative `colorBy` is auto-generated from the expression + colours
+ * (`layer.colors` → `specColors` → built-in default).
+ *
+ * Layers with URL/vector/native data are left untouched — the adapter resolves
+ * those once the source loads (see `MapLibreAdapter.deferredColorByLayers`).
+ */
+const applyColorByDefaults = (
+  layers: VisualizationLayer[],
+  data: ReadonlyArray<GeoVisDataEntry>,
+  specColors?: string[]
+): VisualizationLayer[] => {
+  const dataById = new Map(
+    data.map((d) => {
+      return [d.id, d] as const;
+    })
+  );
+
+  return layers.map((layer) => {
+    // Auto-generate colorBy from layer.expression when no explicit colorBy.
+    let effectiveColorBy = layer.colorBy;
+    if (!effectiveColorBy && layer.expression) {
+      const prop = getPropertyFromExpression(layer.expression);
+      effectiveColorBy = {
+        type: 'quantitative' as const,
+        ...(prop ? { property: prop } : { expression: layer.expression }),
+        colors: layer.colors ?? specColors,
+      };
+    }
+
+    // Propagate spec-level colours into an existing colorBy that lacks its own.
+    if (
+      effectiveColorBy &&
+      !effectiveColorBy.colors &&
+      (layer.colors ?? specColors)
+    ) {
+      effectiveColorBy = {
+        ...effectiveColorBy,
+        colors: layer.colors ?? specColors,
+      };
+    }
+
+    if (!effectiveColorBy) return layer;
+    const colorBy = normalizeColorBy(effectiveColorBy);
+    const features = getInlineFeatures(dataById.get(layer.dataId));
+    if (!features || features.length === 0) {
+      // Even without features, normalise the colorBy so type/scale are set.
+      return { ...layer, colorBy };
+    }
+    const resolved = resolveColorBy(colorBy, features);
+    if (!resolved) return { ...layer, colorBy };
+
+    if (resolved.type === 'quantitative') {
+      const qColorBy = colorBy as QuantitativeColorBy;
+      return {
+        ...layer,
+        colorBy: {
+          ...colorBy,
+          colors: colorBy.colors ?? resolved.palette,
+          defaultColor: colorBy.defaultColor ?? resolved.defaultColor,
+          thresholds:
+            colorBy.type !== 'categorical' && qColorBy.thresholds?.length
+              ? qColorBy.thresholds
+              : resolved.thresholds,
+        },
+      };
+    }
+
+    return {
+      ...layer,
+      colorBy: {
+        ...colorBy,
+        colors: colorBy.colors ?? resolved.palette,
+        defaultColor: colorBy.defaultColor ?? resolved.defaultColor,
+        mapping:
+          colorBy.type === 'categorical' && colorBy.mapping
+            ? { ...resolved.mapping, ...colorBy.mapping }
+            : resolved.mapping,
+      },
+    };
+  });
 };
 
 /**
@@ -193,12 +347,31 @@ const applyDefaultsCore = (
   // When layerTemplates are present, defer layer generation to
   // expandLayerTemplates (called by GeoVisProvider after applyDefaults).
   // Auto-generating layers here would create duplicates.
-  const layers =
+  const baseLayers =
     partial.layers && partial.layers.length > 0
       ? partial.layers
       : partial.layerTemplates && partial.layerTemplates.length > 0
         ? []
         : autoGenerateLayers(data, urlHints);
+  // Pre-resolve colorBy palette/thresholds/mapping against inline data.
+  // spec.colors propagates into layers that don't declare their own palette.
+  const layers = applyColorByDefaults(baseLayers, data, partial.colors);
+
+  // Auto-generate spec.legends from layers when not explicitly provided.
+  const legends: LegendSpec[] =
+    partial.legends ??
+    layers
+      .filter((l) => {
+        return l.colorBy != null;
+      })
+      .map((l) => {
+        return {
+          id: `${l.id}-legend`,
+          label: l.title ?? l.id,
+          colorBy: l.colorBy,
+        };
+      });
+
   const basemap =
     partial.basemap ??
     inferBasemap({ data, presentation: partial.presentation });
@@ -210,6 +383,7 @@ const applyDefaultsCore = (
     view,
     data,
     layers,
+    legends,
     basemap,
   };
 };

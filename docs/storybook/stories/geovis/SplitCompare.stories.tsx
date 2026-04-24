@@ -4,7 +4,12 @@ import type {
   VisualizationLayer,
   VisualizationView,
 } from '@ttoss/geovis';
-import { applyDefaults, GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import {
+  applyDefaults,
+  GeoVisCanvas,
+  GeoVisLegend,
+  GeoVisProvider,
+} from '@ttoss/geovis';
 import * as React from 'react';
 
 import choroplethMinimal from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.minimal.json';
@@ -13,13 +18,12 @@ import {
   applyBasemap,
   BASEMAP_ARG_TYPE,
   type BasemapArgs,
-  ChoroplethPainter,
   ColorSwatchLegend,
+  DEFAULT_AUTO_COLORS,
   DEFAULT_BASEMAP_ARGS,
   GeoVisSplitLayout,
   type LockRef,
   MapLabel,
-  MapOverlayLegend,
   type MapRef,
   MapSync,
 } from './_map-story-helpers';
@@ -58,49 +62,70 @@ const rightSpec: PartialVisualizationSpec = {
 // Auto-derived view used by the recenter button.
 const SP_VIEW = applyDefaults(leftSpec).view;
 
-// Choropleth spec used by Option A — adds layer + views[] to the
+// Green sequential ramp for the density panel. Declared once and fed into
+// `layer.colors` so the adapter, `<GeoVisLegend>`, and the summary
+// `<ColorSwatchLegend>` all share the same palette.
+const DENSITY_COLORS = ['#f0fdf4', '#86efac', '#4ade80', '#16a34a', '#14532d'];
+
+// Choropleth spec used by Option A — adds 2 layers + views[] to the
 // data-only Rwanda fixture. The source is a remote URL, so an explicit
 // view is provided here (the adapter still refines it via `autoFit` once
-// the source loads).
-const rwandaChoroplethLayer: VisualizationLayer = {
-  id: 'rwanda-choropleth',
+// the source loads). Legends are auto-generated from layers by `applyDefaults`.
+const rwandaPopulationLayer: VisualizationLayer = {
+  id: 'rwanda-population',
   dataId: 'rwanda-provinces',
   geometry: 'polygon',
   paint: {
-    fillColor: '#dbeafe',
+    fillColor: DEFAULT_AUTO_COLORS[0],
     fillOpacity: 0.85,
     lineColor: '#94a3b8',
   },
+  title: 'absolute population (auto quantile)',
+  expression: ['get', 'population'],
+};
+const rwandaDensityLayer: VisualizationLayer = {
+  id: 'rwanda-density',
+  dataId: 'rwanda-provinces',
+  geometry: 'polygon',
+  paint: {
+    fillColor: DENSITY_COLORS[0],
+    fillOpacity: 0.85,
+    lineColor: '#94a3b8',
+  },
+  title: 'density (hab/km²)',
+  expression: ['/', ['get', 'population'], ['get', 'sq-km']],
+  colors: DENSITY_COLORS,
 };
 const choroplethSpec: PartialVisualizationSpec = {
   ...(choroplethMinimal as PartialVisualizationSpec),
   view: { center: [30.0222, -1.9596], zoom: 7, autoFit: true },
-  layers: [rwandaChoroplethLayer],
+  layers: [rwandaPopulationLayer, rwandaDensityLayer],
   views: [
     {
       id: 'left',
       label: 'Absolute population count (population) — invalid',
-      layers: ['rwanda-choropleth'],
+      layers: ['rwanda-population'],
     },
     {
       id: 'right',
       label: 'Population density (hab/km²) — correct',
-      layers: ['rwanda-choropleth'],
+      layers: ['rwanda-density'],
     },
   ],
 };
 
-// Blue scale for absolute count (invalid).
-// Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
+// Blue scale for absolute count (invalid) — references DEFAULT_AUTO_COLORS
+// (Blues 5) to stay in sync with the default palette used by `applyDefaults`
+// when a layer has no explicit `colors`. Thresholds are Rwanda-specific
+// quantile approximations for documentation only.
 const rawSteps = [
-  { threshold: 1_300_000, color: '#bfdbfe' },
-  { threshold: 1_700_000, color: '#60a5fa' },
-  { threshold: 2_000_000, color: '#3b82f6' },
-  { threshold: 2_300_000, color: '#1d4ed8' },
+  { threshold: 1_300_000, color: DEFAULT_AUTO_COLORS[1] },
+  { threshold: 1_700_000, color: DEFAULT_AUTO_COLORS[2] },
+  { threshold: 2_000_000, color: DEFAULT_AUTO_COLORS[3] },
+  { threshold: 2_300_000, color: DEFAULT_AUTO_COLORS[4] },
 ];
 
-// Green scale for normalised density (correct).
-// Rwanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
+// Green scale for normalised density (correct) — same role as `rawSteps`.
 const densitySteps = [
   { threshold: 350, color: '#86efac' },
   { threshold: 430, color: '#4ade80' },
@@ -109,14 +134,11 @@ const densitySteps = [
   { threshold: 1300, color: '#14532d' },
 ];
 
-// MapLibre expression: population / sq-km — evaluated at runtime.
-const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
-
 const fmtPop = (v: number) => {
   return `${(v / 1_000_000).toFixed(1)}M hab.`;
 };
 const fmtDensity = (v: number) => {
-  return `${v} hab/km²`;
+  return `${Math.round(v)} hab/km²`;
 };
 
 // Main story
@@ -142,7 +164,7 @@ export const SplitCompare: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
     const { center, zoom } = SP_VIEW;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center, zoom, animate: false });
+      map?.jumpTo({ center, zoom });
     }
     syncLock.current = false;
   };
@@ -267,9 +289,8 @@ export const SplitCompare: StoryFn<BasemapArgs> = ({ basemapStyleUrl }) => {
  * creates one `GeoVisProvider` + `GeoVisCanvas` per panel and manages synchronisation
  * internally. The consumer needs no `MapRef`, `LockRef`, or `MapSync`.
  *
- * The `render` prop is the escape hatch for logic not yet declarable in the spec:
- * `ChoroplethPainter` applies data-driven paint via `getNativeInstance()` because
- * `FillPaint.fillColor` does not support MapLibre expressions in schema v1.
+ * The `render` prop is the escape hatch for overlay logic not yet declarable
+ * in the spec (e.g. positioning `<GeoVisLegend>` on the map panel).
  *
  * Data: Rwanda provinces (official MapLibre dataset — fields `population` and `sq-km`).
  * Demonstrates the classic anti-pattern: Kigali City has 1.1M inhabitants (smallest province)
@@ -279,42 +300,40 @@ export const OptionA_ViewsInSpec: StoryFn<BasemapArgs> = ({
   basemapStyleUrl,
 }) => {
   const activeSpec = React.useMemo(() => {
-    return applyBasemap(choroplethSpec, basemapStyleUrl);
+    return applyDefaults(applyBasemap(choroplethSpec, basemapStyleUrl));
   }, [basemapStyleUrl]);
   const renderView = (view: VisualizationView) => {
     if (view.id === 'left') {
       return (
-        <>
-          <MapOverlayLegend
-            label="absolute population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
+        <div
+          style={{
+            position: 'absolute',
+            top: 40,
+            left: 8,
+            zIndex: 1,
+          }}
+        >
+          <GeoVisLegend
+            legendId="rwanda-population-legend"
             formatValue={fmtPop}
           />
-          <ChoroplethPainter
-            layerId="rwanda-choropleth"
-            field="population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-          />
-        </>
+        </div>
       );
     }
     return (
-      <>
-        <MapOverlayLegend
-          label="density (hab/km²)"
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
+      <div
+        style={{
+          position: 'absolute',
+          top: 40,
+          left: 8,
+          zIndex: 1,
+        }}
+      >
+        <GeoVisLegend
+          legendId="rwanda-density-legend"
           formatValue={fmtDensity}
         />
-        <ChoroplethPainter
-          layerId="rwanda-choropleth"
-          field={densityExpr}
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
-        />
-      </>
+      </div>
     );
   };
 
@@ -339,16 +358,16 @@ export const OptionA_ViewsInSpec: StoryFn<BasemapArgs> = ({
       <div style={{ display: 'flex', gap: 4 }}>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Blue — absolute count (invalid)"
-            defaultColor="#eff6ff"
+            title="Blue — absolute count (auto quantile, invalid)"
+            defaultColor={DEFAULT_AUTO_COLORS[0]}
             steps={rawSteps}
             formatValue={fmtPop}
           />
         </div>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Green — density hab/km² (correct)"
-            defaultColor="#f0fdf4"
+            title="Green — density hab/km² (auto quantile, correct)"
+            defaultColor={DENSITY_COLORS[0]}
             steps={densitySteps}
             formatValue={fmtDensity}
           />
@@ -384,35 +403,26 @@ export const OptionA_ViewsInSpec: StoryFn<BasemapArgs> = ({
 // {
 //   "id": "invalid-raw-count-choropleth",
 //   "sources": [{ "id": "rwanda-provinces", ... }],
-//   "layers": [{ "id": "rwanda-choropleth", ... }],
+//   "layers": [
+//     { "id": "rwanda-population", "expression": ["get", "population"], ... },
+//     { "id": "rwanda-density", "expression": ["/", ["get", "population"], ["get", "sq-km"]], "colors": [...], ... }
+//   ],
 //   "views": [
-//     { "id": "left",  "label": "Absolute population count — invalid", "layers": ["rwanda-choropleth"] },
-//     { "id": "right", "label": "Population density (hab/km²) — correct",  "layers": ["rwanda-choropleth"] }
+//     { "id": "left",  "label": "Absolute population count — invalid", "layers": ["rwanda-population"] },
+//     { "id": "right", "label": "Population density (hab/km²) — correct",  "layers": ["rwanda-density"] }
 //   ]
 // }
 
 import { GeoVisSplitLayout } from './_map-story-helpers';
-import type { VisualizationView } from '@ttoss/geovis';
+import { GeoVisLegend } from '@ttoss/geovis';
 
-// 2. The consumer provides per-view logic via the render prop:
+// 2. The consumer provides per-view legend overlays via the render prop:
 const renderView = (view: VisualizationView) => {
-  if (view.id === 'left') {
-    return (
-      <ChoroplethPainter
-        layerId="rwanda-choropleth"
-        field="population"
-        defaultColor="#eff6ff"
-        steps={rawSteps}
-      />
-    );
-  }
+  const legendId = view.layers[0] + '-legend';
   return (
-    <ChoroplethPainter
-      layerId="rwanda-choropleth"
-      field={['/', ['get', 'population'], ['get', 'sq-km']]}
-      defaultColor="#f0fdf4"
-      steps={densitySteps}
-    />
+    <div style={{ position: 'absolute', top: 40, left: 8, zIndex: 1 }}>
+      <GeoVisLegend legendId={legendId} />
+    </div>
   );
 };
 
@@ -448,7 +458,7 @@ OptionA_ViewsInSpec.parameters = {
   docs: {
     description: {
       story:
-        'Spec-first: `views[]` declares multiple perspectives of the same data in the fixture JSON. `GeoVisSplitLayout` reads the spec from the prop, filters layers per view, creates one `GeoVisProvider` per panel and synchronises automatically — no `MapRef`, `LockRef` or `MapSync` in the consumer. The `render` prop is the _escape hatch_ for logic not yet declarable in the spec (e.g. MapLibre expressions in paint via `ChoroplethPainter`).',
+        'Spec-first: `views[]` declares multiple perspectives of the same data in the fixture JSON. `GeoVisSplitLayout` reads the spec from the prop, filters layers per view, creates one `GeoVisProvider` per panel and synchronises automatically — no `MapRef`, `LockRef` or `MapSync` in the consumer. The `render` prop is the _escape hatch_ for overlay logic (e.g. `<GeoVisLegend>` positioned on the map).',
     },
   },
 };

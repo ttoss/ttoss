@@ -19,7 +19,7 @@ const ajv = new Ajv2020({ strict: false });
 const _validate = ajv.compile(schema);
 
 const collectColorByProperties = (colorBy: ColorBy | undefined): string[] => {
-  if (!colorBy) {
+  if (!colorBy || !colorBy.property) {
     return [];
   }
 
@@ -116,6 +116,7 @@ const _validatePropertyReferences = (spec: VisualizationSpec): string[] => {
 
     if (layer.legends)
       for (const [legendIndex, legend] of layer.legends.entries()) {
+        if (!legend.colorBy) continue;
         for (const property of collectColorByProperties(legend.colorBy)) {
           checks.push({
             path: `/layers/${layerIndex}/legends/${legendIndex}/colorBy/property`,

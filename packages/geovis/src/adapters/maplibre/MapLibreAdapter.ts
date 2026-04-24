@@ -8,6 +8,11 @@ import type {
   MountedView,
   SpecPatch,
 } from '../../runtime/adapter';
+import {
+  buildColorByAccessor,
+  resolveColorBy,
+  resolveQuantitativeColorBy,
+} from '../../spec/colorBy';
 import type {
   CirclePaint,
   ColorBy,
@@ -19,12 +24,13 @@ import type {
   GeoVisGeometryType,
   HeatmapPaint,
   LinePaint,
-  QuantitativeColorBy,
   RasterPaint,
   SymbolPaint,
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
+
+const DEFAULT_PALETTE = ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'];
 
 /** Default MapLibre basemap style URL used when the spec omits `basemap.styleUrl`. */
 export const DEFAULT_BASEMAP_STYLE =
@@ -44,22 +50,6 @@ const resolveStyle = (
   return spec.basemap?.styleUrl ?? DEFAULT_BASEMAP_STYLE;
 };
 
-const DEFAULT_PALETTE = ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'];
-
-const NAMED_PALETTES: Record<string, string[]> = {
-  Blues: DEFAULT_PALETTE,
-};
-
-const resolvePalette = (colorBy: ColorBy): string[] => {
-  if (colorBy.colors && colorBy.colors.length > 0) {
-    return colorBy.colors;
-  }
-  if (colorBy.palette && NAMED_PALETTES[colorBy.palette]) {
-    return NAMED_PALETTES[colorBy.palette];
-  }
-  return DEFAULT_PALETTE;
-};
-
 const getInlineFeatures = (entry: GeoVisDataEntry): GeoJSONFeature[] | null => {
   if (entry.kind !== 'geojson-inline') {
     return null;
@@ -76,112 +66,58 @@ const getInlineFeatures = (entry: GeoVisDataEntry): GeoJSONFeature[] | null => {
   return null;
 };
 
-const toFiniteNumber = (value: unknown): number | null => {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-};
-
-const computeQuantileBreaks = (values: number[], bins: number): number[] => {
-  if (values.length === 0 || bins <= 1) {
-    return [];
-  }
-
-  const sorted = values.slice().sort((a, b) => {
-    return a - b;
-  });
-
-  const breaks: number[] = [];
-  for (let i = 1; i < bins; i++) {
-    const index = Math.floor((i / bins) * sorted.length);
-    breaks.push(sorted[Math.min(index, sorted.length - 1)]);
-  }
-  return breaks;
-};
-
 const buildQuantitativeExpression = (
-  colorBy: QuantitativeColorBy,
+  colorBy: ColorBy,
   features: GeoJSONFeature[]
 ): unknown[] | null => {
-  const property = colorBy.property;
-  const values = features
-    .map((feature) => {
-      return toFiniteNumber(feature.properties?.[property]);
-    })
-    .filter((value): value is number => {
-      return value !== null;
-    });
+  const resolved = resolveQuantitativeColorBy(colorBy, features);
+  if (!resolved) return null;
+  const accessor = buildColorByAccessor(colorBy);
+  if (!accessor) return null;
 
-  if (values.length === 0) {
-    return null;
-  }
+  const expression: unknown[] = ['step', accessor, resolved.defaultColor];
 
-  const palette = resolvePalette(colorBy);
-  const defaultColor = colorBy.defaultColor ?? palette[0];
-
-  let thresholds: number[] = [];
-  if (colorBy.scale === 'threshold' && colorBy.thresholds?.length) {
-    thresholds = colorBy.thresholds;
-  } else if (colorBy.scale === 'quantile') {
-    const bins = Math.max(2, colorBy.bins ?? palette.length);
-    thresholds = computeQuantileBreaks(values, bins);
-  } else {
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const bins = Math.max(2, colorBy.bins ?? palette.length);
-    if (max > min) {
-      const step = (max - min) / bins;
-      thresholds = Array.from({ length: bins - 1 }, (_, index) => {
-        return min + step * (index + 1);
-      });
-    }
-  }
-
-  const expression: unknown[] = [
-    'step',
-    ['to-number', ['get', property]],
-    defaultColor,
-  ];
-
-  for (let i = 0; i < thresholds.length; i++) {
-    const color = palette[Math.min(i + 1, palette.length - 1)] ?? defaultColor;
-    expression.push(thresholds[i], color);
+  for (let i = 0; i < resolved.thresholds.length; i++) {
+    const color =
+      resolved.palette[Math.min(i + 1, resolved.palette.length - 1)] ??
+      resolved.defaultColor;
+    expression.push(resolved.thresholds[i], color);
   }
 
   return expression;
 };
 
 const buildCategoricalExpression = (
-  colorBy: Extract<ColorBy, { type: 'categorical' }>,
+  colorBy: ColorBy,
   features: GeoJSONFeature[]
 ): unknown[] => {
-  const palette = resolvePalette(colorBy);
-  const explicit = colorBy.mapping ?? {};
-  const defaultColor = colorBy.defaultColor ?? palette[0];
-  const values = new Set<string>();
-
-  for (const feature of features) {
-    const raw = feature.properties?.[colorBy.property];
-    if (raw == null) continue;
-    values.add(String(raw));
+  const resolved = resolveColorBy(colorBy, features);
+  if (!resolved || resolved.type !== 'categorical') {
+    // Fallback: use the configured default colour or the first palette entry.
+    return ['literal', colorBy.defaultColor ?? DEFAULT_PALETTE[0]];
+  }
+  const accessor = buildColorByAccessor(colorBy);
+  if (!accessor) {
+    return ['literal', resolved.defaultColor];
   }
 
-  const expression: unknown[] = [
-    'match',
-    ['to-string', ['get', colorBy.property]],
-  ];
-
-  let colorIndex = 0;
-  for (const value of values) {
-    const color =
-      explicit[value] ?? palette[colorIndex % palette.length] ?? defaultColor;
+  const expression: unknown[] = ['match', accessor];
+  for (const [value, color] of Object.entries(resolved.mapping)) {
     expression.push(value, color);
-    if (!explicit[value]) {
-      colorIndex += 1;
-    }
   }
-
-  expression.push(defaultColor);
+  expression.push(resolved.defaultColor);
   return expression;
+};
+
+const getColorByExpressionFromFeatures = (
+  colorBy: ColorBy,
+  features: GeoJSONFeature[]
+): unknown[] | null => {
+  if (features.length === 0) return null;
+  if (colorBy.type === 'categorical') {
+    return buildCategoricalExpression(colorBy, features);
+  }
+  return buildQuantitativeExpression(colorBy, features);
 };
 
 const getColorByExpression = (
@@ -197,11 +133,7 @@ const getColorByExpression = (
     return null;
   }
 
-  if (layer.colorBy.type === 'quantitative') {
-    return buildQuantitativeExpression(layer.colorBy, features);
-  }
-
-  return buildCategoricalExpression(layer.colorBy, features);
+  return getColorByExpressionFromFeatures(layer.colorBy, features);
 };
 
 const applyColorByDefaults = (
@@ -217,23 +149,17 @@ const applyColorByDefaults = (
   const paint = ((desiredLayer as { paint?: Record<string, unknown> }).paint ??
     {}) as Record<string, unknown>;
 
-  const explicitPaint = (layer.paint ?? {}) as Record<string, unknown>;
-
-  if (
-    layer.geometry === 'polygon' &&
-    explicitPaint['fillColor'] === undefined
-  ) {
+  // `colorBy` is a data-driven (more specific) override of the static
+  // `paint.fillColor`/`lineColor`/`circleColor` fallback. When both are
+  // declared, the derived expression always wins \u2014 the static colour acts as
+  // the placeholder for layers that have no `colorBy`.
+  if (layer.geometry === 'polygon') {
     paint['fill-color'] = colorByExpression;
   }
-
-  if (layer.geometry === 'line' && explicitPaint['lineColor'] === undefined) {
+  if (layer.geometry === 'line') {
     paint['line-color'] = colorByExpression;
   }
-
-  if (
-    layer.geometry === 'point' &&
-    explicitPaint['circleColor'] === undefined
-  ) {
+  if (layer.geometry === 'point') {
     paint['circle-color'] = colorByExpression;
   }
 
@@ -519,6 +445,12 @@ const syncSourcesAndLayers = (
     }
   }
 
+  // Track which url-based sources need deferred colorBy application.
+  const deferredColorByLayers: {
+    layer: VisualizationLayer;
+    sourceId: string;
+  }[] = [];
+
   for (const layer of spec.layers ?? []) {
     const mapLayer = map.getLayer(layer.id);
     const dataEntry = spec.data.find((e) => {
@@ -529,6 +461,14 @@ const syncSourcesAndLayers = (
     const desiredLayer = toMaplibreLayer(layer, sourceLayer);
     if (dataEntry) {
       applyColorByDefaults(layer, dataEntry, desiredLayer);
+      // For geojson-url sources with colorBy, defer until data is loaded.
+      if (
+        dataEntry.kind === 'geojson-url' &&
+        layer.colorBy &&
+        !getInlineFeatures(dataEntry)
+      ) {
+        deferredColorByLayers.push({ layer, sourceId: dataEntry.id });
+      }
     }
     const desiredPaint = (desiredLayer as { paint?: Record<string, unknown> })
       .paint;
@@ -563,6 +503,68 @@ const syncSourcesAndLayers = (
         );
       }
     }
+  }
+
+  // Apply colorBy for geojson-url sources once data finishes loading.
+  if (deferredColorByLayers.length > 0) {
+    const resolvedSources = new Set<string>();
+    const handleSourceData = (e: maplibregl.MapSourceDataEvent) => {
+      if (e.dataType !== 'source' || !e.isSourceLoaded) return;
+      if (resolvedSources.has(e.sourceId)) return;
+
+      const pending = deferredColorByLayers.filter((d) => {
+        return d.sourceId === e.sourceId;
+      });
+      if (pending.length === 0) return;
+
+      resolvedSources.add(e.sourceId);
+
+      const source = map.getSource(e.sourceId) as
+        | maplibregl.GeoJSONSource
+        | undefined;
+      if (!source) return;
+
+      // querySourceFeatures returns loaded features from the source.
+      const renderedFeatures = map.querySourceFeatures(e.sourceId);
+      const features = renderedFeatures.map((f) => {
+        return {
+          type: 'Feature' as const,
+          geometry: f.geometry as unknown as GeoJSONGeometry,
+          properties: (f.properties ?? {}) as Record<string, unknown>,
+        };
+      });
+
+      for (const { layer } of pending) {
+        if (!layer.colorBy) continue;
+        const expr = getColorByExpressionFromFeatures(layer.colorBy, features);
+        if (!expr) continue;
+
+        const paintProp =
+          layer.geometry === 'polygon'
+            ? 'fill-color'
+            : layer.geometry === 'line'
+              ? 'line-color'
+              : layer.geometry === 'point'
+                ? 'circle-color'
+                : null;
+        if (paintProp && map.getLayer(layer.id)) {
+          map.setPaintProperty(layer.id, paintProp, expr);
+        }
+      }
+
+      // Clean up listener once all deferred sources are resolved.
+      if (
+        resolvedSources.size >=
+        new Set(
+          deferredColorByLayers.map((d) => {
+            return d.sourceId;
+          })
+        ).size
+      ) {
+        map.off('sourcedata', handleSourceData);
+      }
+    };
+    map.on('sourcedata', handleSourceData);
   }
 };
 

@@ -4,9 +4,10 @@ import type {
   PartialVisualizationSpec,
   ViewState,
   VisualizationLayer,
+  VisualizationSpec,
   VisualizationView,
 } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import { GeoVisCanvas, GeoVisLegend, GeoVisProvider } from '@ttoss/geovis';
 
 // Policy violation type defined locally — not part of @ttoss/geovis public API.
 interface PolicyViolation {
@@ -20,13 +21,12 @@ import {
   applyBasemap,
   BASEMAP_ARG_TYPE,
   type BasemapArgs,
-  ChoroplethPainter,
   ColorSwatchLegend,
+  DEFAULT_AUTO_COLORS,
   DEFAULT_BASEMAP_ARGS,
   GeoVisSplitLayout,
   type LockRef,
   MapLabel,
-  MapOverlayLegend,
   type MapRef,
   MapSync,
 } from './_map-story-helpers';
@@ -38,25 +38,56 @@ export default {
   args: DEFAULT_BASEMAP_ARGS,
 } as Meta<BasemapArgs>;
 
+// Green sequential ramp for the density panel. Declared once and fed into
+// `layer.colors` so the adapter, `<GeoVisLegend>`, and the summary
+// `<ColorSwatchLegend>` all share the same palette.
+const DENSITY_COLORS = ['#f0fdf4', '#86efac', '#4ade80', '#16a34a', '#14532d'];
+
 // Story-level overrides on top of the data-only minimal fixture: a single
 // choropleth layer plus an explicit Rwanda-centred view (the source is a
 // remote URL, so `applyDefaults` cannot derive bounds at spec time — the
 // adapter will still refine the framing once the source loads).
-const rwandaChoroplethLayer: VisualizationLayer = {
+//
+// The layer declares `expression` to specify which property/metric to color
+// by. `applyDefaults` auto-generates `colorBy` and `legends` from the layer.
+const rwandaPopulationLayer: VisualizationLayer = {
   id: 'rwanda-choropleth',
   dataId: 'rwanda-provinces',
   geometry: 'polygon',
-  paint: { fillColor: '#dbeafe', fillOpacity: 0.85, lineColor: '#94a3b8' },
+  paint: {
+    fillColor: DEFAULT_AUTO_COLORS[0],
+    fillOpacity: 0.85,
+    lineColor: '#94a3b8',
+  },
+  title: 'absolute population (auto quantile)',
+  expression: ['get', 'population'],
+};
+
+// Density layer: same data, derived metric via `expression`. The adapter
+// passes the expression verbatim into the MapLibre `step` paint and
+// `<GeoVisLegend>` evaluates it JS-side to compute thresholds.
+const rwandaDensityLayer: VisualizationLayer = {
+  id: 'rwanda-choropleth',
+  dataId: 'rwanda-provinces',
+  geometry: 'polygon',
+  paint: {
+    fillColor: DENSITY_COLORS[0],
+    fillOpacity: 0.85,
+    lineColor: '#94a3b8',
+  },
+  title: 'density (hab/km²)',
+  expression: ['/', ['get', 'population'], ['get', 'sq-km']],
+  colors: DENSITY_COLORS,
 };
 const RWANDA_VIEW: ViewState = {
   center: [30.0222, -1.9596],
   zoom: 7,
   autoFit: true,
 };
-const spec: PartialVisualizationSpec = {
+const populationSpec: PartialVisualizationSpec = {
   ...(choroplethMinimal as PartialVisualizationSpec),
   view: RWANDA_VIEW,
-  layers: [rwandaChoroplethLayer],
+  layers: [rwandaPopulationLayer],
   metadata: {
     isPolicyInvalid: true,
     invalidReason: 'raw-count-choropleth',
@@ -65,6 +96,13 @@ const spec: PartialVisualizationSpec = {
     normalizedLabel: 'inhabitants per km²',
   },
 };
+const densitySpec: PartialVisualizationSpec = {
+  ...(choroplethMinimal as PartialVisualizationSpec),
+  view: RWANDA_VIEW,
+  layers: [rwandaDensityLayer],
+};
+// Backwards-compatibility alias used by other stories in this file.
+const spec = populationSpec;
 
 // External policy check — reads spec.metadata directly, no lib dependency.
 const specViolations: PolicyViolation[] = spec.metadata?.isPolicyInvalid
@@ -83,30 +121,36 @@ const fmtPop = (v: number) => {
   return `${(v / 1_000_000).toFixed(1)}M hab.`;
 };
 const fmtDensity = (v: number) => {
-  return `${v} hab/km²`;
+  return `${Math.round(v)} hab/km²`;
 };
 
-// Blue scale for absolute count (invalid).
-// Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
+// Reference steps for the bottom ColorSwatchLegend summary.
+// Rwanda data (official MapLibre dataset):
+//   Population: Kigali=1.1M (smallest), East/South/West≈2.5-2.6M (largest).
+//   Density:    East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
+// Thresholds match the quantile breaks `applyDefaults` auto-computes from
+// these five provinces — keeping them here makes the summary legend static
+// and independent of network / load timing.
+// rawSteps references DEFAULT_AUTO_COLORS (Blues 5) — the same palette
+// applyDefaults uses when a layer has no explicit `colors`. Thresholds
+// are Rwanda-specific quantile approximations for documentation only.
 const rawSteps = [
-  { threshold: 1_300_000, color: '#bfdbfe' },
-  { threshold: 1_700_000, color: '#60a5fa' },
-  { threshold: 2_000_000, color: '#3b82f6' },
-  { threshold: 2_300_000, color: '#1d4ed8' },
+  { threshold: 1_300_000, color: DEFAULT_AUTO_COLORS[1] },
+  { threshold: 1_700_000, color: DEFAULT_AUTO_COLORS[2] },
+  { threshold: 2_300_000, color: DEFAULT_AUTO_COLORS[3] },
+  { threshold: 2_500_000, color: DEFAULT_AUTO_COLORS[4] },
 ];
-
-// Green scale for normalised density (correct).
-// Rwanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
 const densitySteps = [
-  { threshold: 350, color: '#86efac' },
-  { threshold: 430, color: '#4ade80' },
-  { threshold: 520, color: '#16a34a' },
-  { threshold: 900, color: '#15803d' },
-  { threshold: 1300, color: '#14532d' },
+  { threshold: 350, color: DENSITY_COLORS[1] },
+  { threshold: 430, color: DENSITY_COLORS[2] },
+  { threshold: 530, color: DENSITY_COLORS[3] },
+  { threshold: 1300, color: DENSITY_COLORS[4] },
 ];
 
-// MapLibre expression to calculate density at runtime: population / sq-km.
-const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
+// Density thresholds are auto-computed at runtime (quantile breaks).
+// The green palette is defined by `DENSITY_COLORS` and fed into
+// `colorBy.colors` — the `<GeoVisLegend>` on each panel shows the
+// actual runtime thresholds using those colours.
 
 const PolicyWarningBanner = ({
   violations,
@@ -131,15 +175,16 @@ const PolicyWarningBanner = ({
       <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>⚠️</span>
       <div style={{ fontSize: 13, color: '#78350f', lineHeight: 1.5 }}>
         <strong style={{ display: 'block', marginBottom: 4 }}>
-          Cartographic guardrail: absolute count in choropleth
+          Cartographic guardrail: raw count in choropleth
         </strong>
-        Rwanda provinces encoded by <strong>absolute population count</strong>{' '}
-        (left) vs <strong>density</strong> (hab/km², right). Kigali has only
-        1.1M inhabitants — the smallest count — yet is the densest province
-        (1,551 hab/km²). On the left map Kigali appears almost white; on the
-        right it is the darkest.
+        The left map encodes <strong>absolute population count</strong> via
+        auto-computed quantile breaks — Kigali (1.1M) appears mid-range because
+        it falls in the 2nd quantile. The right map encodes{' '}
+        <strong>population density</strong> (hab/km²), revealing Kigali as the
+        darkest province despite the smallest total count.
         <br />
-        <strong>Correct:</strong> divide by area before encoding in colour.
+        <strong>Key lesson:</strong> a visually plausible choropleth can still
+        mislead. Always normalise by area when encoding population in colour.
         {violations.map((v) => {
           return (
             <span
@@ -175,8 +220,11 @@ const PolicyWarningBanner = ({
 export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
   basemapStyleUrl,
 }) => {
-  const activeSpec = React.useMemo(() => {
-    return applyBasemap(spec, basemapStyleUrl);
+  const activePopulationSpec = React.useMemo(() => {
+    return applyBasemap(populationSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
+  const activeDensitySpec = React.useMemo(() => {
+    return applyBasemap(densitySpec, basemapStyleUrl);
   }, [basemapStyleUrl]);
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
@@ -186,7 +234,7 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
     const { center, zoom } = RWANDA_VIEW;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center, zoom, animate: false });
+      map?.jumpTo({ center, zoom });
     }
     syncLock.current = false;
   }, []);
@@ -205,9 +253,9 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
         <div>
           <strong>Invalid Raw Count Choropleth (Rwanda Provinces)</strong>
           <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            Encoding absolute population counts in colour misleads readers
-            because larger areas naturally accumulate more people. Compare
-            absolute count (left) with density (right).
+            Absolute population count encoded with auto-computed quantile breaks
+            (left) vs population density hab/km² with explicit steps (right).
+            Both look plausible — only density is cartographically correct.
           </p>
         </div>
         <button
@@ -241,27 +289,30 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
             overflow: 'hidden',
           }}
         >
-          <MapLabel>Absolute population count (population) - invalid</MapLabel>
-          <MapOverlayLegend
-            label="absolute population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-            formatValue={fmtPop}
-          />
-          <GeoVisProvider spec={activeSpec}>
+          <MapLabel>
+            Absolute population count (auto quantile) — invalid
+          </MapLabel>
+          <GeoVisProvider spec={activePopulationSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
             <MapSync
               selfRef={leftMapRef}
               peerRef={rightMapRef}
               lockRef={syncLock}
             />
-            <ChoroplethPainter
-              layerId="rwanda-choropleth"
-              field="population"
-              defaultColor="#eff6ff"
-              steps={rawSteps}
-            />
-            {/* PolicyDetector lifts violations to parent story state */}
+            {/* colorBy auto-generated from layer.expression by applyDefaults */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 40,
+                left: 8,
+                zIndex: 1,
+              }}
+            >
+              <GeoVisLegend
+                legendId="rwanda-choropleth-legend"
+                formatValue={fmtPop}
+              />
+            </div>
           </GeoVisProvider>
         </div>
 
@@ -275,25 +326,27 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
           }}
         >
           <MapLabel>Density (population / sq-km) - correct</MapLabel>
-          <MapOverlayLegend
-            label="density (hab/km²)"
-            defaultColor="#f0fdf4"
-            steps={densitySteps}
-            formatValue={fmtDensity}
-          />
-          <GeoVisProvider spec={activeSpec}>
+          <GeoVisProvider spec={activeDensitySpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
             <MapSync
               selfRef={rightMapRef}
               peerRef={leftMapRef}
               lockRef={syncLock}
             />
-            <ChoroplethPainter
-              layerId="rwanda-choropleth"
-              field={densityExpr}
-              defaultColor="#f0fdf4"
-              steps={densitySteps}
-            />
+            {/* colorBy.expression auto-applies the density paint via the adapter */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 40,
+                left: 8,
+                zIndex: 1,
+              }}
+            >
+              <GeoVisLegend
+                legendId="rwanda-choropleth-legend"
+                formatValue={fmtDensity}
+              />
+            </div>
           </GeoVisProvider>
         </div>
       </div>
@@ -302,16 +355,16 @@ export const InvalidRawCountChoropleth: StoryFn<BasemapArgs> = ({
       <div style={{ display: 'flex', gap: 4 }}>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Blue — absolute count (invalid)"
-            defaultColor="#eff6ff"
+            title="Blue — absolute count (auto quantile, invalid)"
+            defaultColor={DEFAULT_AUTO_COLORS[0]}
             steps={rawSteps}
             formatValue={fmtPop}
           />
         </div>
         <div style={{ flex: 1 }}>
           <ColorSwatchLegend
-            title="Green — density hab/km² (correct)"
-            defaultColor="#f0fdf4"
+            title="Green — density hab/km² (auto quantile, correct)"
+            defaultColor={DENSITY_COLORS[0]}
             steps={densitySteps}
             formatValue={fmtDensity}
           />
@@ -478,28 +531,45 @@ const minimalChoroplethSpec: VisualizationSpec = {
   ],
   layers: [
     {
-      id: 'rwanda-choropleth',
+      id: 'rwanda-population',
       dataId: 'rwanda-provinces',
       geometry: 'polygon',
       visible: true,
       paint: {
-        fillColor: '#dbeafe',
+        fillColor: '#eff6ff',
         fillOpacity: 0.85,
         lineColor: '#94a3b8',
         lineWidth: 0.5,
       },
+      title: 'absolute population',
+      expression: ['get', 'population'],
+    },
+    {
+      id: 'rwanda-density',
+      dataId: 'rwanda-provinces',
+      geometry: 'polygon',
+      visible: true,
+      paint: {
+        fillColor: DENSITY_COLORS[0],
+        fillOpacity: 0.85,
+        lineColor: '#94a3b8',
+        lineWidth: 0.5,
+      },
+      title: 'density (hab/km²)',
+      expression: ['/', ['get', 'population'], ['get', 'sq-km']],
+      colors: DENSITY_COLORS,
     },
   ],
   views: [
     {
       id: 'left',
       label: 'Absolute population count (population) \u2014 invalid',
-      layers: ['rwanda-choropleth'],
+      layers: ['rwanda-population'],
     },
     {
       id: 'right',
       label: 'Population density (hab/km\u00b2) \u2014 correct',
-      layers: ['rwanda-choropleth'],
+      layers: ['rwanda-density'],
     },
   ],
   metadata: {
@@ -532,37 +602,35 @@ export const MinimalChoroplethSplitCompare: StoryFn<BasemapArgs> = ({
   const renderView = (view: VisualizationView) => {
     if (view.id === 'left') {
       return (
-        <>
-          <MapOverlayLegend
-            label="absolute population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
+        <div
+          style={{
+            position: 'absolute',
+            top: 40,
+            left: 8,
+            zIndex: 1,
+          }}
+        >
+          <GeoVisLegend
+            legendId="rwanda-population-legend"
             formatValue={fmtPop}
           />
-          <ChoroplethPainter
-            layerId="rwanda-choropleth"
-            field="population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-          />
-        </>
+        </div>
       );
     }
     return (
-      <>
-        <MapOverlayLegend
-          label="density (hab/km\u00b2)"
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
+      <div
+        style={{
+          position: 'absolute',
+          top: 40,
+          left: 8,
+          zIndex: 1,
+        }}
+      >
+        <GeoVisLegend
+          legendId="rwanda-density-legend"
           formatValue={fmtDensity}
         />
-        <ChoroplethPainter
-          layerId="rwanda-choropleth"
-          field={densityExpr}
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
-        />
-      </>
+      </div>
     );
   };
 

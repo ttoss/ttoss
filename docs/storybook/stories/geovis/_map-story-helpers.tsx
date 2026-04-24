@@ -128,10 +128,13 @@ export const MapSync = ({
     if (!runtime) return;
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
-    selfRef.current = map;
-    return () => {
-      selfRef.current = null;
+    const ref = selfRef;
+    ref.current = map;
+    // Teardown: clear the ref so stale instances don't linger.
+    const teardown = (): void => {
+      ref.current = null;
     };
+    return teardown;
   }, [runtime, selfRef]);
 
   React.useEffect(() => {
@@ -147,14 +150,13 @@ export const MapSync = ({
         zoom: self.getZoom(),
         bearing: self.getBearing(),
         pitch: self.getPitch(),
-        animate: false,
       });
       lockRef.current = false;
     };
 
     self.on('move', onMove);
     return () => {
-      return self.off('move', onMove);
+      self.off('move', onMove);
     };
   }, [runtime, peerRef, lockRef]);
 
@@ -188,177 +190,34 @@ export const MapLabel = ({ children }: { children: React.ReactNode }) => {
 };
 
 // ---------------------------------------------------------------------------
-// ChoroplethPainter
-// ---------------------------------------------------------------------------
-
-export interface ColorStep {
-  threshold: number;
-  color: string;
-}
-
-/**
- * Render-less component mounted inside a GeoVisProvider.
- * Applies a data-driven `step` colour expression via getNativeInstance().
- * Required because FillPaint.fillColor does not support MapLibre expressions (string only).
- *
- * `field` can be:
- * - string: uses ['get', field] — direct feature property
- * - array: used as an arbitrary MapLibre expression (e.g. ['/', ['get', 'pop'], ['get', 'area']])
- *
- * Retries on `idle` when the layer does not yet exist, to handle races
- * between React mounting and adapter style loading.
- */
-export const ChoroplethPainter = ({
-  layerId,
-  field,
-  defaultColor,
-  steps,
-}: {
-  layerId: string;
-  field: string | readonly unknown[];
-  defaultColor: string;
-  steps: ColorStep[];
-}) => {
-  const { runtime } = useGeoVis();
-
-  React.useEffect(() => {
-    if (!runtime) return;
-    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
-    if (!map) return;
-
-    let mounted = true;
-
-    const getExpr = typeof field === 'string' ? ['get', field] : field;
-    const expr = [
-      'step',
-      getExpr,
-      defaultColor,
-      ...steps.flatMap(({ threshold, color }) => {
-        return [threshold, color];
-      }),
-    ];
-
-    const applyWhenReady = () => {
-      if (!mounted) return;
-      if (map.getLayer(layerId)) {
-        map.setPaintProperty(layerId, 'fill-color', expr);
-      } else {
-        map.once('idle', applyWhenReady);
-      }
-    };
-
-    if (map.isStyleLoaded()) {
-      applyWhenReady();
-    } else {
-      map.once('load', applyWhenReady);
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [runtime, layerId, field, defaultColor, steps]);
-
-  return null;
-};
-
-// ---------------------------------------------------------------------------
-// MapOverlayLegend
-// ---------------------------------------------------------------------------
-
-/**
- * Gradient overlay positioned below the MapLabel (top-left of the panel).
- * Must be a direct child of a div with `position: relative` (the map panel);
- * does not need to be inside a GeoVisProvider.
- *
- * [cartography] Robinson & Slocum “Thematic Cartography” ch. 18:
- * In side-by-side comparison maps, the legend should be grouped with the
- * corresponding layer label, forming a cohesive informational block that
- * the reader processes BEFORE exploring the data — the pattern followed by
- * ESRI StoryMaps and ArcGIS Dashboards.
- * `top: 40` anchors the overlay immediately below the MapLabel (~32px tall).
- * Bottom-left (ILC) is preferred for isolated maps, but in split-compare
- * top-left groups label + scale and avoids overlap with MapLibre’s
- * attribution bar (bottom-right).
- */
-export const MapOverlayLegend = ({
-  label,
-  defaultColor,
-  steps,
-  formatValue,
-}: {
-  label?: string;
-  defaultColor: string;
-  steps: ColorStep[];
-  formatValue?: (v: number) => string;
-}) => {
-  const colors = [
-    defaultColor,
-    ...steps.map((s) => {
-      return s.color;
-    }),
-  ];
-  const gradient = `linear-gradient(to right, ${colors.join(', ')})`;
-  const fmt =
-    formatValue ??
-    ((v: number) => {
-      return String(v);
-    });
-  const minLabel = `< ${fmt(steps[0].threshold)}`;
-  const maxLabel = `> ${fmt(steps[steps.length - 1].threshold)}`;
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        // Anchored below the MapLabel (top: 8, ~28px tall) — see JSDoc comment.
-        top: 40,
-        left: 8,
-        zIndex: 1,
-        pointerEvents: 'none',
-        background: 'rgba(255,255,255,0.88)',
-        borderRadius: 4,
-        padding: '5px 8px',
-        minWidth: 130,
-      }}
-    >
-      {label && (
-        <div
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            color: '#374151',
-            marginBottom: 3,
-          }}
-        >
-          {label}
-        </div>
-      )}
-      <div style={{ height: 8, background: gradient, borderRadius: 2 }} />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: 2,
-        }}
-      >
-        <span style={{ fontSize: 9, color: '#6b7280' }}>{minLabel}</span>
-        <span style={{ fontSize: 9, color: '#6b7280' }}>{maxLabel}</span>
-      </div>
-    </div>
-  );
-};
-
-// ---------------------------------------------------------------------------
 // ColorSwatchLegend
 // ---------------------------------------------------------------------------
 
 /**
+ * Default colour ramp used when no explicit `colors` are declared on a layer.
+ * Matches the `DEFAULT_PALETTE` in `colorBy.ts` (Blues 5).
+ */
+export const DEFAULT_AUTO_COLORS = [
+  '#eff3ff',
+  '#bdd7e7',
+  '#6baed6',
+  '#3182bd',
+  '#08519c',
+] as const;
+
+/**
+ * A single threshold–colour pair used to build a stepped choropleth ramp.
+ */
+export interface ColorStep {
+  /** Lower bound (inclusive) at which this colour band starts. */
+  threshold: number;
+  /** CSS colour string (hex, rgb, named) applied to features with value ≥ threshold. */
+  color: string;
+}
+
+/**
  * Swatch legend (colour square + value band) for the section below the maps.
  */
-// ---------------------------------------------------------------------------
-// GeoVisSplitLayout
-// ---------------------------------------------------------------------------
-
 /**
  * Renders a two-panel split-compare from a spec that declares `views[]`.
  * Each view produces a `GeoVisProvider` with filtered layers and automatic
@@ -366,8 +225,8 @@ export const MapOverlayLegend = ({
  * `MapRef`, `LockRef`, or `MapSync` directly.
  *
  * The `render` prop receives the current `VisualizationView` and should return
- * children to mount INSIDE that view’s `GeoVisProvider` (e.g. `ChoroplethPainter`,
- * `MapOverlayLegend`). It is the escape hatch for logic not yet declarable in
+ * children to mount INSIDE that view’s `GeoVisProvider` (e.g. legends,
+ * overlays). It is the escape hatch for logic not yet declarable in
  * the spec (e.g. MapLibre expressions in paint).
  *
  * Requires exactly 2 views in `spec.views`. Displays a visual warning if absent.
@@ -404,7 +263,7 @@ export const GeoVisSplitLayout = ({
   }
 
   const filterLayers = (ids: string[]) => {
-    return spec.layers.filter((l) => {
+    return (spec.layers ?? []).filter((l) => {
       return ids.includes(l.id);
     });
   };
@@ -455,31 +314,62 @@ export const GeoVisSplitLayout = ({
 export const ColorSwatchLegend = ({
   title,
   defaultColor,
-  steps,
+  steps = [],
+  colors,
   formatValue,
 }: {
   title: string;
-  defaultColor: string;
-  steps: ColorStep[];
+  defaultColor?: string;
+  /** Explicit threshold–colour steps. When empty and `colors` is set, a gradient bar is rendered instead. */
+  steps?: ColorStep[];
+  /** Palette for gradient-only display (used when `steps` is empty). */
+  colors?: readonly string[];
   formatValue?: (v: number) => string;
 }) => {
+  // Gradient-only mode: no explicit thresholds, just show the colour ramp.
+  if (steps.length === 0 && colors && colors.length > 0) {
+    const gradient = `linear-gradient(to right, ${[...colors].join(', ')})`;
+    return (
+      <div>
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#374151',
+            marginBottom: 6,
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ height: 8, background: gradient, borderRadius: 2 }} />
+        <div style={{ marginTop: 2, fontSize: 9, color: '#6b7280' }}>
+          auto-computed scale
+        </div>
+      </div>
+    );
+  }
+
+  const effectiveDefault = defaultColor ?? (colors ? colors[0] : '#cccccc');
   const fmt =
     formatValue ??
     ((v: number) => {
       return v.toLocaleString('en-US');
     });
-  const entries: { color: string; label: string }[] = [
-    { color: defaultColor, label: `< ${fmt(steps[0].threshold)}` },
-    ...steps.map((s, i) => {
-      return {
-        color: s.color,
-        label:
-          i < steps.length - 1
-            ? `${fmt(s.threshold)} – ${fmt(steps[i + 1].threshold)}`
-            : `\u2265 ${fmt(s.threshold)}`,
-      };
-    }),
-  ];
+  const entries: { color: string; label: string }[] =
+    steps.length > 0
+      ? [
+          { color: effectiveDefault, label: `< ${fmt(steps[0].threshold)}` },
+          ...steps.map((s, i) => {
+            return {
+              color: s.color,
+              label:
+                i < steps.length - 1
+                  ? `${fmt(s.threshold)} – ${fmt(steps[i + 1].threshold)}`
+                  : `\u2265 ${fmt(s.threshold)}`,
+            };
+          }),
+        ]
+      : [];
 
   return (
     <div>

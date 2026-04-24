@@ -20,7 +20,12 @@ import type {
   QuantitativeColorBy,
   VisualizationLayer,
 } from '@ttoss/geovis';
-import { GeoVisProvider, GeoVisViews, useGeoVis } from '@ttoss/geovis';
+import {
+  computeQuantileBreaks,
+  GeoVisProvider,
+  GeoVisViews,
+  useGeoVis,
+} from '@ttoss/geovis';
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import * as React from 'react';
 
@@ -29,6 +34,7 @@ import {
   applyBasemap,
   BASEMAP_ARG_TYPE,
   type BasemapArgs,
+  DEFAULT_AUTO_COLORS,
   DEFAULT_BASEMAP_ARGS,
   DEFAULT_PRESENTATION_ARGS,
   PRESENTATION_ARG_TYPE,
@@ -64,7 +70,8 @@ export default {
 
 // ── Shared constants ──────────────────────────────────────────────────────────
 
-const BLUES_5 = ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'];
+// DEFAULT_AUTO_COLORS (Blues 5) is imported from _map-story-helpers — same
+// palette as the lib's DEFAULT_PALETTE used when no explicit colors are set.
 const YEARS = [
   2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
 ];
@@ -126,43 +133,13 @@ const getFeatureValues = (
   features: Array<{ properties: FeatureProperties }>,
   property: string
 ): number[] => {
-  return features.map((f) => {
-    return Number(f.properties?.[property]);
-  });
-};
-
-const computeQuantileBreaks = (values: number[], bins: number): number[] => {
-  const sorted = values
+  return features
+    .map((f) => {
+      return Number(f.properties?.[property]);
+    })
     .filter((v) => {
       return Number.isFinite(v) && v > 0;
-    })
-    .slice()
-    .sort((a, b) => {
-      return a - b;
     });
-  if (sorted.length === 0) return [];
-  const breaks: number[] = [];
-  for (let i = 1; i < bins; i++) {
-    const idx = Math.floor((i / bins) * sorted.length);
-    breaks.push(sorted[Math.min(idx, sorted.length - 1)]);
-  }
-  return breaks;
-};
-
-const buildStepExpression = (
-  property: string,
-  breaks: number[],
-  palette: string[]
-): unknown[] => {
-  const expr: unknown[] = [
-    'step',
-    ['to-number', ['get', property]],
-    palette[0],
-  ];
-  for (let i = 0; i < breaks.length; i++) {
-    expr.push(breaks[i], palette[i + 1] ?? palette[palette.length - 1]);
-  }
-  return expr;
 };
 
 /** Returns the hovered GeoJSON feature properties for `layer.id`. */
@@ -192,41 +169,6 @@ const useHoveredFeature = (
   }, [runtime, layer.id]);
 
   return hovered;
-};
-
-// ── Shared overlay components ─────────────────────────────────────────────────
-
-/**
- * Render-less: applies a data-driven `step` colour expression to the active
- * layer via the native MapLibre instance. Accepts pre-computed `breaks` so
- * sibling components can reuse the same classification without recomputing.
- */
-const ChoroplethPainter = ({
-  layer,
-  breaks,
-}: {
-  layer: VisualizationLayer;
-  breaks: number[];
-}) => {
-  const { runtime } = useGeoVis();
-
-  React.useEffect(() => {
-    if (!runtime || breaks.length === 0) return;
-    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap;
-    const expr = buildStepExpression(
-      (layer.colorBy as QuantitativeColorBy).property,
-      breaks,
-      BLUES_5
-    );
-    const apply = () => {
-      if (map.getLayer(layer.id))
-        map.setPaintProperty(layer.id, 'fill-color', expr);
-    };
-    if (map.isStyleLoaded()) apply();
-    else map.once('load', apply);
-  }, [runtime, layer, breaks]);
-
-  return null;
 };
 
 // ── AgeBands story components ─────────────────────────────────────────────────
@@ -366,12 +308,14 @@ const timelineSpec: PartialVisualizationSpec = {
 const LegendOverlay = ({ breaks }: { breaks: number[] }) => {
   const bands = [
     {
-      color: BLUES_5[0],
+      color: DEFAULT_AUTO_COLORS[0],
       label: `< ${breaks[0]?.toLocaleString('pt-BR') ?? '—'}`,
     },
     ...breaks.map((threshold, i) => {
       return {
-        color: BLUES_5[i + 1] ?? BLUES_5[BLUES_5.length - 1],
+        color:
+          DEFAULT_AUTO_COLORS[i + 1] ??
+          DEFAULT_AUTO_COLORS[DEFAULT_AUTO_COLORS.length - 1],
         label:
           i < breaks.length - 1
             ? `${threshold.toLocaleString('pt-BR')} – ${breaks[i + 1].toLocaleString('pt-BR')}`
@@ -567,7 +511,7 @@ const TimelineOverlaySet = ({
     return computeQuantileBreaks(
       getFeatureValues(
         features,
-        (layer.colorBy as QuantitativeColorBy).property
+        (layer.colorBy as QuantitativeColorBy).property ?? ''
       ),
       (layer.colorBy as QuantitativeColorBy).bins ?? 5
     );
@@ -575,7 +519,6 @@ const TimelineOverlaySet = ({
 
   return (
     <>
-      <ChoroplethPainter layer={layer} breaks={breaks} />
       {overlayMode !== 'none' && <LegendOverlay breaks={breaks} />}
       {overlayMode === 'sparkline' && (
         <SparklinePanel layer={layer} hovered={hovered} />
@@ -600,7 +543,6 @@ export const AgeBands: StoryFn<StoryArgs> = ({
   basemapStyleUrl,
   presentationMode,
 }) => {
-  const features = useGeoJSONFeatures();
   const spec = React.useMemo(() => {
     return applyBasemap(ageBandsSpec, basemapStyleUrl);
   }, [basemapStyleUrl]);
@@ -619,19 +561,7 @@ export const AgeBands: StoryFn<StoryArgs> = ({
         mode={presentationMode}
         renderView={({ layer }) => {
           if (!layer) return null;
-          const breaks = computeQuantileBreaks(
-            getFeatureValues(
-              features,
-              (layer.colorBy as QuantitativeColorBy).property
-            ),
-            (layer.colorBy as QuantitativeColorBy).bins ?? 5
-          );
-          return (
-            <>
-              <ChoroplethPainter layer={layer} breaks={breaks} />
-              <HoverPanel layer={layer} />
-            </>
-          );
+          return <HoverPanel layer={layer} />;
         }}
       />
     </GeoVisProvider>
@@ -645,6 +575,81 @@ AgeBands.parameters = {
         'Small-multiples choropleth: `layerTemplates` auto-generates one layer per age band. ' +
         'Switch **View mode** between `tabs`, `side-by-side`, `single-filter`, and `time-slider`. ' +
         'Hover a district to inspect all age-band values simultaneously.',
+    },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Spec with `presentation: 'side-by-side'` — all five age-band
+ * choropleths rendered simultaneously in a responsive CSS grid.
+ *
+ * Each panel is a fully independent `GeoVisProvider` scoped to one layer,
+ * so panning / zooming one map does NOT affect the others. Useful for
+ * comparing spatial distributions across bands at a glance.
+ *
+ * The spec is identical to `AgeBands` except for the `presentation` field
+ * and a smaller per-panel height to fit the grid.
+ */
+const ageBandsSideBySideTemplate: LayerTemplate = {
+  ...ageBandsTemplate,
+  presentation: 'side-by-side',
+};
+
+const ageBandsSideBySideSpec: PartialVisualizationSpec = {
+  ...(distritosMinimal as PartialVisualizationSpec),
+  layerTemplates: [ageBandsSideBySideTemplate],
+  metadata: { displayPropertyLabels: ageBandsLabels },
+};
+
+/**
+ * Side-by-side small multiples of the 60+ age bands (60–64, 65–69, 70–74,
+ * 75+, total) rendered simultaneously in a responsive grid.
+ */
+export const AgeBandsSideBySide: StoryFn<BasemapArgs> = ({
+  basemapStyleUrl,
+}) => {
+  const spec = React.useMemo(() => {
+    return applyBasemap(ageBandsSideBySideSpec, basemapStyleUrl);
+  }, [basemapStyleUrl]);
+
+  return (
+    <GeoVisProvider spec={spec}>
+      <div>
+        <strong>
+          Distritos de Sao Paulo — comparativo de faixas etarias 60+
+        </strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          Cada painel exibe uma faixa etaria independente (
+          <code>presentation: &quot;side-by-side&quot;</code>). A escala de cor
+          e os quintis sao calculados separadamente por faixa — compare a
+          distribuicao espacial entre os grupos.
+        </p>
+      </div>
+      <GeoVisViews
+        mode="side-by-side"
+        height={320}
+        renderView={({ layer }) => {
+          if (!layer) return null;
+          return <HoverPanel layer={layer} />;
+        }}
+      />
+    </GeoVisProvider>
+  );
+};
+
+AgeBandsSideBySide.argTypes = BASEMAP_ARG_TYPE;
+AgeBandsSideBySide.args = DEFAULT_BASEMAP_ARGS;
+
+AgeBandsSideBySide.parameters = {
+  docs: {
+    description: {
+      story:
+        'The same `layerTemplates` spec as `AgeBands` with `presentation: "side-by-side"`. ' +
+        '`GeoVisViews` mounts every view at the same time in a `repeat(auto-fit, minmax(280px, 1fr))` CSS grid. ' +
+        'Each panel is an independent `GeoVisProvider` — quantile breaks are computed per layer, ' +
+        "so colours are relative to each band's own distribution rather than a shared scale.",
     },
   },
 };

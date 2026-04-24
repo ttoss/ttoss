@@ -271,9 +271,42 @@ export type LayerPaint =
 
 export type QuantitativeColorByScale = 'threshold' | 'quantile' | 'linear';
 
+/**
+ * Serializable expression accepted by `ColorBy.expression`. Subset of
+ * MapLibre Style Expressions \u2014 enough to express derived metrics such as
+ * `population / area` (density) or `cases / population * 100000` (rates).
+ *
+ * Supported forms:
+ * - `['get', '<propName>']` \u2014 read a feature property
+ * - `['/', a, b]` `['*', a, b]` `['+', a, b]` `['-', a, b]` \u2014 binary maths
+ * - `['to-number', a]` \u2014 explicit numeric coercion
+ * - A literal `number` (numeric constant)
+ *
+ * Both the MapLibre adapter (paint) and `<GeoVisLegend>` (JS evaluator) accept
+ * the exact same shape, so the same expression drives the colour ramp on the
+ * map and the threshold computation in the legend.
+ */
+export type ColorByExpression =
+  | number
+  | readonly ['get', string]
+  | readonly ['to-number', ColorByExpression]
+  | readonly ['/' | '*' | '+' | '-', ColorByExpression, ColorByExpression];
+
 export interface CategoricalColorBy {
-  type: 'categorical';
-  property: string;
+  /**
+   * Discriminant. Defaults to `'quantitative'` when omitted — set to
+   * `'categorical'` explicitly, or provide `mapping` so
+   * `normalizeColorBy` can infer it.
+   */
+  type?: 'categorical';
+  /** Feature property name. Mutually exclusive with `expression`. */
+  property?: string;
+  /**
+   * Serializable expression evaluated per feature \u2014 used when the colouring
+   * dimension is derived (e.g. division of two properties). Mutually exclusive
+   * with `property`.
+   */
+  expression?: ColorByExpression;
   palette?: string;
   colors?: string[];
   mapping?: Record<string, string>;
@@ -281,9 +314,23 @@ export interface CategoricalColorBy {
 }
 
 export interface QuantitativeColorBy {
-  type: 'quantitative';
-  property: string;
-  scale: QuantitativeColorByScale;
+  /**
+   * Discriminant. Defaults to `'quantitative'` when omitted — explicit
+   * `'categorical'` overrides the default.
+   */
+  type?: 'quantitative';
+  /** Feature property name. Mutually exclusive with `expression`. */
+  property?: string;
+  /**
+   * Serializable expression evaluated per feature \u2014 used when the colouring
+   * dimension is derived (e.g. `population / sq-km` for density). Mutually
+   * exclusive with `property`.
+   */
+  expression?: ColorByExpression;
+  /**
+   * Scale type for break computation. Defaults to `'quantile'` when omitted.
+   */
+  scale?: QuantitativeColorByScale;
   bins?: number;
   thresholds?: number[];
   palette?: string;
@@ -318,7 +365,11 @@ export type ColorByTemplate =
 export interface LegendSpec {
   id: string;
   label?: string;
-  colorBy: ColorBy;
+  /**
+   * Resolved `ColorBy` for this legend entry. When omitted, `applyDefaults`
+   * auto-populates it from the corresponding layer's `colorBy`.
+   */
+  colorBy?: ColorBy;
 }
 
 export interface VisualizationLayer {
@@ -349,8 +400,24 @@ export interface VisualizationLayer {
    */
   displayPropertyLabels?: Record<string, string>;
   /**
-   * @description Data-driven color configuration. When provided, the adapter derives
-   * paint colors from feature properties using the declared scheme.
+   * Serializable expression for data-driven colour classification.
+   * When provided without an explicit `colorBy`, the library auto-generates a
+   * quantitative `colorBy` from this expression + `layer.colors` (or
+   * `spec.colors`).
+   *
+   * Use `['get', '<prop>']` for a simple property, or a compound expression
+   * like `['/', ['get', 'population'], ['get', 'sq-km']]` for derived metrics.
+   */
+  expression?: ColorByExpression;
+  /**
+   * Per-layer colour palette override. When present, takes precedence over
+   * `spec.colors`. Fed into the auto-generated `colorBy.colors`.
+   */
+  colors?: string[];
+  /**
+   * @internal Data-driven color configuration. Prefer setting `expression`
+   * and/or `colors` on the layer (or `spec.colors` globally) — the library
+   * auto-generates this field in `applyDefaults`.
    */
   colorBy?: ColorBy;
   /**
@@ -526,4 +593,12 @@ export interface VisualizationSpec {
       styleVersion?: 8;
     };
   };
+  colors?: string[];
+  /**
+   * Optional spec-level legends — referenced by id from `<GeoVisLegend legendId="..." />`.
+   * Each entry pairs a legend label with the `ColorBy` configuration that should
+   * drive its swatches/gradient. Layers may also carry their own `legends[]` for
+   * per-layer encoding switching.
+   */
+  legends?: LegendSpec[];
 }

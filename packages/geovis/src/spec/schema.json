@@ -120,6 +120,15 @@
           "colorBy": {
             "$ref": "#/$defs/ColorBy"
           },
+          "expression": {
+            "description": "Serializable expression for data-driven colour classification. Use ['get', 'propName'] or compound expressions like ['/', ['get', 'population'], ['get', 'sq-km']].",
+            "oneOf": [{ "type": "number" }, { "type": "array" }]
+          },
+          "colors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
           "legends": {
             "type": "array",
             "items": {
@@ -192,6 +201,18 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/DataEntry"
+      }
+    },
+    "legends": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LegendSpec"
+      }
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     }
   },
@@ -489,7 +510,7 @@
     "LegendSpec": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "colorBy"],
+      "required": ["id"],
       "properties": {
         "id": {
           "type": "string",

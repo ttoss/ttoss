@@ -852,7 +852,7 @@ describe('syncSourcesAndLayers — colorBy defaults', () => {
     expect(expression[0]).toBe('match');
   });
 
-  test('keeps explicit fillColor instead of overriding with colorBy defaults', () => {
+  test('overrides explicit fillColor with colorBy expression (data-driven wins over static fallback)', () => {
     const { adapter, map } = mountAdapter();
     const spec = {
       ...makeSpec('explicit-fill'),
@@ -894,7 +894,10 @@ describe('syncSourcesAndLayers — colorBy defaults', () => {
     const layer = jest.mocked(map.addLayer).mock.calls.slice(-1)[0]?.[0] as {
       paint?: Record<string, unknown>;
     };
-    expect(layer.paint?.['fill-color']).toBe('#123456');
+    // colorBy is a data-driven (more specific) override of the static
+    // fillColor fallback, so the resulting paint must be the step expression.
+    expect(Array.isArray(layer.paint?.['fill-color'])).toBe(true);
+    expect((layer.paint?.['fill-color'] as unknown[])[0]).toBe('step');
   });
 });
 

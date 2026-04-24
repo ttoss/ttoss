@@ -282,3 +282,85 @@ describe('applyDefaultsAsync URL loading', () => {
     expect(layer?.geometry).toBe('polygon');
   });
 });
+
+describe('applyDefaults colorBy pre-resolution', () => {
+  const featuresFixture: GeoVisDataEntry = {
+    id: 'regions',
+    kind: 'geojson-inline',
+    geojson: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: { population: 100 },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [1, 1] },
+          properties: { population: 500 },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [2, 2] },
+          properties: { population: 900 },
+        },
+      ],
+    },
+  };
+
+  test('populates thresholds and colors from inline features for quantitative colorBy', () => {
+    const spec = applyDefaults({
+      data: [featuresFixture],
+      layers: [
+        {
+          id: 'regions-layer',
+          dataId: 'regions',
+          geometry: 'point',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'quantile',
+            bins: 3,
+          },
+        },
+      ],
+    });
+
+    const layer = spec.layers[0];
+    expect(layer.colorBy?.type).toBe('quantitative');
+    expect(layer.colorBy?.colors?.length).toBeGreaterThan(0);
+    expect(layer.colorBy?.defaultColor).toBeDefined();
+    if (layer.colorBy?.type === 'quantitative') {
+      expect(layer.colorBy.thresholds?.length).toBe(2);
+    }
+  });
+
+  test('keeps explicit thresholds and colors untouched', () => {
+    const spec = applyDefaults({
+      data: [featuresFixture],
+      layers: [
+        {
+          id: 'regions-layer',
+          dataId: 'regions',
+          geometry: 'point',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [200, 700],
+            colors: ['#aaa', '#bbb', '#ccc'],
+            defaultColor: '#000',
+          },
+        },
+      ],
+    });
+
+    const layer = spec.layers[0];
+    if (layer.colorBy?.type === 'quantitative') {
+      expect(layer.colorBy.thresholds).toEqual([200, 700]);
+      expect(layer.colorBy.colors).toEqual(['#aaa', '#bbb', '#ccc']);
+      expect(layer.colorBy.defaultColor).toBe('#000');
+    }
+  });
+});
