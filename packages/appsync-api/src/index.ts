@@ -1,10 +1,10 @@
+export { type AppSyncInfo, createAppSyncMiddleware } from './appSyncMiddleware';
 export { createApiTemplate } from './createApiTemplate';
-export { createAppSyncMiddleware, type AppSyncInfo } from './appSyncMiddleware';
 export {
   type AppSyncResolverHandler,
   type BaseAppSyncContext,
-  type CreateContext,
   createAppSyncResolverHandler,
+  type CreateContext,
 } from './createAppSyncResolverHandler';
 export {
   AWSDateTC,

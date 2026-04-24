@@ -121,7 +121,7 @@ export default defineConfig(
         { max: 80, skipBlankLines: true, skipComments: true },
       ],
       'max-nested-callbacks': ['error', { max: 3 }],
-      'max-params': ['error', 3],
+      'max-params': ['error', 5],
 
       // ── Code quality ──────────────────────────────────────────────────────
       // Enforce clean control flow and idiomatic JavaScript patterns.

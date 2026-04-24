@@ -1,4 +1,5 @@
-import type { Middleware } from '@ttoss/graphql-api';
+import type { IMiddlewareFunction } from '@ttoss/graphql-api/shield';
+import type { GraphQLResolveInfo } from 'graphql';
 
 /**
  * The shape of the `info` object passed to AppSync resolvers at runtime.
@@ -24,16 +25,16 @@ export type AppSyncInfo = {
 
 type AppSyncMiddlewareFn<TSource, TContext, TArgs> = (
   resolve: (
-    source?: TSource,
-    args?: TArgs,
-    context?: TContext,
-    info?: AppSyncInfo
-  ) => Promise<unknown>,
+    source: TSource,
+    args: TArgs,
+    context: TContext,
+    info: AppSyncInfo
+  ) => unknown | Promise<unknown>,
   source: TSource,
   args: TArgs,
   context: TContext,
   info: AppSyncInfo
-) => Promise<unknown>;
+) => unknown | Promise<unknown>;
 
 /**
  * Creates a properly-typed AppSync middleware function.
@@ -70,6 +71,16 @@ export const createAppSyncMiddleware = <
   TArgs = unknown,
 >(
   fn: AppSyncMiddlewareFn<TSource, TContext, TArgs>
-): Middleware<TSource, TContext, TArgs> => {
-  return fn as unknown as Middleware<TSource, TContext, TArgs>;
+): IMiddlewareFunction<TSource, TContext, TArgs> => {
+  return (resolve, source, args, context, info) => {
+    return fn(
+      (src, a, ctx, i) => {
+        return resolve(src, a, ctx, i as unknown as GraphQLResolveInfo);
+      },
+      source,
+      args,
+      context,
+      info as unknown as AppSyncInfo
+    ) as Promise<unknown>;
+  };
 };
