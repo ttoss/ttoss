@@ -1,4 +1,5 @@
 export { createApiTemplate } from './createApiTemplate';
+export { createAppSyncMiddleware, type AppSyncInfo } from './appSyncMiddleware';
 export {
   type AppSyncResolverHandler,
   type BaseAppSyncContext,
