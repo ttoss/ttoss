@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.23.13...@ttoss/appsync-api@0.24.0) (2026-04-24)
+
+### Features
+
+- **appsync-api:** add AppSyncInfo type and createAppSyncMiddleware helper ([#959](https://github.com/ttoss/ttoss/issues/959)) ([7aade83](https://github.com/ttoss/ttoss/commit/7aade83af812eb9dbd2580204982697546e790ea))
+
 ## [0.23.13](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.23.12...@ttoss/appsync-api@0.23.13) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/appsync-api
