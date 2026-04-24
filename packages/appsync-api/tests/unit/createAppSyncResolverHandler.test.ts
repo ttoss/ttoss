@@ -238,7 +238,6 @@ describe('testing headers', () => {
   const handler = createAppSyncResolverHandler({
     schemaComposer: newSchemaComposer,
     middlewares: [
-      // eslint-disable-next-line max-params
       (resolver, source, args, context, info) => {
         const { headers } = context.request;
         const credentials = decode(headers['x-credentials']);
