@@ -73,14 +73,21 @@ export const createAppSyncMiddleware = <
   fn: AppSyncMiddlewareFn<TSource, TContext, TArgs>
 ): IMiddlewareFunction<TSource, TContext, TArgs> => {
   return (resolve, source, args, context, info) => {
-    return fn(
-      (src, a, ctx, i) => {
-        return resolve(src, a, ctx, i as unknown as GraphQLResolveInfo);
-      },
-      source,
-      args,
-      context,
-      info as unknown as AppSyncInfo
-    ) as Promise<unknown>;
+    return Promise.resolve(
+      fn(
+        (src, innerArgs, ctx, innerInfo) => {
+          return resolve(
+            src,
+            innerArgs,
+            ctx,
+            innerInfo as unknown as GraphQLResolveInfo
+          );
+        },
+        source,
+        args,
+        context,
+        info as unknown as AppSyncInfo
+      )
+    );
   };
 };
