@@ -8,322 +8,399 @@ import type {
   MountedView,
   SpecPatch,
 } from '../../runtime/adapter';
+import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
 import type {
-  CirclePaint,
   DataSource,
-  FillPaint,
   GeoVisGeometryType,
-  HeatmapPaint,
-  LinePaint,
-  RasterPaint,
-  SymbolPaint,
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
+import { toMaplibreLayer } from './layerTranslation';
+import {
+  applyMapDataPatchToMap,
+  reapplyAllMapData,
+  removeMapDataFromSource,
+} from './mapDataFeatureState';
+import { toMaplibreSource } from './sourceTranslation';
+import { syncSourcesAndLayers } from './syncSourcesAndLayers';
+
+// Re-exports preserved for public API and historical test imports.
+export { toMaplibreLayer, toMaplibreSource };
 
 const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
+/** Returns the base map style URL, falling back to the MapLibre demo tiles when `basemap.styleUrl` is absent. */
 const resolveStyleUrl = (spec: VisualizationSpec): string => {
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
 };
 
 // Maps spec-level camelCase paint keys to MapLibre kebab-case paint properties.
-// lineColor is geometry-dependent: polygon uses fill-outline-color, line uses line-color.
+// `lineColor` is geometry-dependent: polygon uses `fill-outline-color`,
+// line uses `line-color`.
+const SPEC_PAINT_KEY_MAP: Record<
+  string,
+  string | ((g: GeoVisGeometryType) => string | undefined)
+> = {
+  fillColor: 'fill-color',
+  fillOpacity: 'fill-opacity',
+  lineColor: (g) => {
+    return g === 'polygon' ? 'fill-outline-color' : 'line-color';
+  },
+  lineWidth: (g) => {
+    return g === 'polygon' ? undefined : 'line-width';
+  },
+  lineOpacity: 'line-opacity',
+  lineDasharray: 'line-dasharray',
+  circleColor: 'circle-color',
+  circleRadius: 'circle-radius',
+  circleOpacity: 'circle-opacity',
+  circleStrokeColor: 'circle-stroke-color',
+  circleStrokeWidth: 'circle-stroke-width',
+  rasterOpacity: 'raster-opacity',
+  heatmapRadius: 'heatmap-radius',
+  heatmapOpacity: 'heatmap-opacity',
+  heatmapIntensity: 'heatmap-intensity',
+  heatmapWeight: 'heatmap-weight',
+  textColor: 'text-color',
+  textOpacity: 'text-opacity',
+  textHaloColor: 'text-halo-color',
+  textHaloWidth: 'text-halo-width',
+  iconColor: 'icon-color',
+  iconOpacity: 'icon-opacity',
+};
+
+/** Translates a GeoVis camelCase paint key to the MapLibre kebab-case property name for the given geometry type. */
 const specPaintKeyToMaplibre = (
   key: string,
   geometry: GeoVisGeometryType
 ): string | undefined => {
-  const map: Record<
-    string,
-    string | ((g: GeoVisGeometryType) => string | undefined)
-  > = {
-    fillColor: 'fill-color',
-    fillOpacity: 'fill-opacity',
-    lineColor: (g) => {
-      return g === 'polygon' ? 'fill-outline-color' : 'line-color';
-    },
-    lineWidth: (g) => {
-      // line-width is not a valid paint property for fill layers (polygon).
-      return g === 'polygon' ? undefined : 'line-width';
-    },
-    lineOpacity: 'line-opacity',
-    lineDasharray: 'line-dasharray',
-    circleColor: 'circle-color',
-    circleRadius: 'circle-radius',
-    circleOpacity: 'circle-opacity',
-    circleStrokeColor: 'circle-stroke-color',
-    circleStrokeWidth: 'circle-stroke-width',
-    rasterOpacity: 'raster-opacity',
-    heatmapRadius: 'heatmap-radius',
-    heatmapOpacity: 'heatmap-opacity',
-    heatmapIntensity: 'heatmap-intensity',
-    heatmapWeight: 'heatmap-weight',
-    textColor: 'text-color',
-    textOpacity: 'text-opacity',
-    textHaloColor: 'text-halo-color',
-    textHaloWidth: 'text-halo-width',
-    iconColor: 'icon-color',
-    iconOpacity: 'icon-opacity',
-  };
-  const entry = map[key];
+  const entry = SPEC_PAINT_KEY_MAP[key];
   if (!entry) return undefined;
   return typeof entry === 'function' ? entry(geometry) : entry;
 };
 
-// Source translation
+interface LayerHostState {
+  spec: VisualizationSpec;
+}
 
-type MaplibreSourceSpec = maplibregl.SourceSpecification;
+/** Strips `undefined` paint values before `map.addLayer` to satisfy MapLibre's strict paint validation. */
+const stripUndefinedPaint = (
+  layer: maplibregl.LayerSpecification
+): maplibregl.LayerSpecification => {
+  const paint = (layer as { paint?: Record<string, unknown> }).paint;
+  if (paint) {
+    (layer as { paint?: Record<string, unknown> }).paint = Object.fromEntries(
+      Object.entries(paint).filter(([, v]) => {
+        return v !== undefined;
+      })
+    );
+  }
+  return layer;
+};
 
-export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
-  switch (source.type) {
-    case 'geojson':
-      return {
-        type: 'geojson',
-        data: source.data as maplibregl.GeoJSONSourceSpecification['data'],
-        attribution: source.attribution,
-      };
-    case 'vector-tiles':
-      return {
-        type: 'vector',
-        tiles: source.tiles,
-        minzoom: source.minzoom,
-        maxzoom: source.maxzoom,
-        attribution: source.attribution,
-      };
-    case 'raster-tiles':
-      return {
-        type: 'raster',
-        tiles: source.tiles,
-        tileSize: source.tileSize ?? 256,
-        minzoom: source.minzoom,
-        maxzoom: source.maxzoom,
-        attribution: source.attribution,
-      };
-    case 'image':
-      return {
-        type: 'image',
-        url: source.url,
-        coordinates: source.coordinates,
-      };
-    case 'raster-dem':
-      return {
-        type: 'raster-dem',
-        tiles: source.tiles,
-        url: source.url,
-        tileSize: source.tileSize ?? 256,
-        encoding: source.encoding,
-        minzoom: source.minzoom,
-        maxzoom: source.maxzoom,
-        attribution: source.attribution,
-      };
-    case 'video':
-      return {
-        type: 'video',
-        urls: source.urls,
-        coordinates: source.coordinates,
-      };
+/** Applies a paint property immediately if the style is loaded, otherwise defers to `style.load`. */
+const setPaintWhenReady = (
+  map: maplibregl.Map,
+  layerId: string,
+  property: string,
+  value: unknown
+): void => {
+  const apply = () => {
+    map.setPaintProperty(
+      layerId,
+      property,
+      value as maplibregl.StyleSpecification
+    );
+  };
+  if (map.isStyleLoaded()) apply();
+  else map.once('style.load', apply);
+};
+
+/** Adds a layer to the map if not already present; resolves sourceLayer from the source when absent on the layer. */
+const applyLayerAdd = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  newLayer: VisualizationLayer
+): void => {
+  if (map.getLayer(newLayer.id)) return;
+  const source = viewState.spec.sources.find((s) => {
+    return s.id === newLayer.sourceId;
+  });
+  const effectiveSourceLayer =
+    newLayer.sourceLayer ??
+    (source && 'sourceLayer' in source
+      ? (source as { sourceLayer?: string }).sourceLayer
+      : undefined);
+  map.addLayer(
+    stripUndefinedPaint(toMaplibreLayer(newLayer, effectiveSourceLayer))
+  );
+  viewState.spec = {
+    ...viewState.spec,
+    layers: [...viewState.spec.layers, newLayer],
+  };
+};
+
+/** Removes a layer from the map if present and updates `viewState.spec`. */
+const applyLayerRemove = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string
+): void => {
+  if (!map.getLayer(layerId)) return;
+  map.removeLayer(layerId);
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.filter((l) => {
+      return l.id !== layerId;
+    }),
+  };
+};
+
+/** Applies a paint-property replacement to a live layer; resolves spec key to MapLibre property via `specPaintKeyToMaplibre`. */
+const applyLayerPaintReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  path: string,
+  value: unknown
+): void => {
+  const parts = path.split('.');
+  if (parts.length < 4 || parts[2] !== 'paint') return;
+  const layerId = parts[1];
+  const specKey = parts[3];
+  const layer = viewState.spec.layers.find((l) => {
+    return l.id === layerId;
+  });
+  if (!layer) return;
+  const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
+  if (!maplibreKey) return;
+  setPaintWhenReady(map, layerId, maplibreKey, value);
+};
+
+/** Dispatches a layer-targeted patch to `applyLayerAdd`, `applyLayerRemove`, or `applyLayerPaintReplace`. */
+const applyLayerPatch = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  patch: SpecPatch & { target: 'layer' }
+): void => {
+  if (patch.op === 'add' && patch.value != null) {
+    applyLayerAdd(map, viewState, patch.value as VisualizationLayer);
+    return;
+  }
+  if (patch.op === 'remove') {
+    applyLayerRemove(map, viewState, patch.value as string);
+    return;
+  }
+  if (patch.op === 'replace' && patch.value !== undefined) {
+    applyLayerPaintReplace(map, viewState, patch.path, patch.value);
   }
 };
 
-// Layer translation
+/** Dispatches a source-targeted patch; on `remove`, also removes layers that reference the source. */
+const applySourcePatch = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  patch: SpecPatch & { target: 'source' }
+): void => {
+  if (patch.op === 'add' && patch.value != null) {
+    const newSource = patch.value as DataSource;
+    if (map.getSource(newSource.id)) return;
+    map.addSource(newSource.id, toMaplibreSource(newSource));
+    viewState.spec = {
+      ...viewState.spec,
+      sources: [...viewState.spec.sources, newSource],
+    };
+    return;
+  }
+  if (patch.op !== 'remove') return;
+  const sourceId = patch.value as string;
+  if (!map.getSource(sourceId)) return;
+  for (const layer of viewState.spec.layers) {
+    if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
+      map.removeLayer(layer.id);
+    }
+  }
+  map.removeSource(sourceId);
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.filter((l) => {
+      return l.sourceId !== sourceId;
+    }),
+    sources: viewState.spec.sources.filter((s) => {
+      return s.id !== sourceId;
+    }),
+  };
+};
 
-export const toMaplibreLayer = (
-  layer: VisualizationLayer,
-  sourceLayer?: string
-): maplibregl.LayerSpecification => {
-  const base: Record<string, unknown> = {
-    id: layer.id,
-    source: layer.sourceId,
-    minzoom: layer.minzoom,
-    maxzoom: layer.maxzoom,
-    layout: {
-      visibility:
-        layer.visible === false ? ('none' as const) : ('visible' as const),
+const syncCenter = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (prev.center[0] === next.center[0] && prev.center[1] === next.center[1]) {
+    return;
+  }
+  map.setCenter(next.center as maplibregl.LngLatLike);
+};
+
+/** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
+const syncMapView = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  syncCenter(map, prev, next);
+  if (prev.zoom !== next.zoom) map.setZoom(next.zoom);
+  const prevPitch = prev.pitch ?? 0;
+  const nextPitch = next.pitch ?? 0;
+  if (prevPitch !== nextPitch) map.setPitch(nextPitch);
+  const prevBearing = prev.bearing ?? 0;
+  const nextBearing = next.bearing ?? 0;
+  if (prevBearing !== nextBearing) map.setBearing(nextBearing);
+};
+
+interface ViewState {
+  map: maplibregl.Map;
+  spec: VisualizationSpec;
+  styleUrl: string;
+}
+
+type ViewMap = Map<string, ViewState>;
+
+/** Instantiates a MapLibre map from the spec's view and basemap fields. */
+const createMap = (
+  spec: VisualizationSpec,
+  container: HTMLElement
+): { map: maplibregl.Map; styleUrl: string } => {
+  const { view } = spec;
+  const styleUrl = resolveStyleUrl(spec);
+  const map = new maplibregl.Map({
+    container,
+    style: styleUrl,
+    center: view.center,
+    zoom: view.zoom,
+    pitch: view.pitch ?? 0,
+    bearing: view.bearing ?? 0,
+  });
+  map.addControl(
+    new maplibregl.NavigationControl({
+      visualizePitch: true,
+      visualizeRoll: true,
+      showZoom: true,
+      showCompass: true,
+    })
+  );
+  return { map, styleUrl };
+};
+
+/** Creates a MapLibre map in the container, registers it in the view registry, and returns a `MountedView` handle. */
+const mountView = (
+  views: ViewMap,
+  container: HTMLElement,
+  spec: VisualizationSpec,
+  viewId: string
+): MountedView => {
+  const { map, styleUrl } = createMap(spec, container);
+  views.set(viewId, { map, spec, styleUrl });
+  map.on('load', () => {
+    const viewState = views.get(viewId);
+    if (!viewState) return;
+    syncSourcesAndLayers(map, viewState.spec, null);
+    reapplyAllMapData(map, viewState.spec);
+  });
+  let _removed = false;
+  return {
+    viewId,
+    container,
+    destroy: () => {
+      if (_removed) return;
+      _removed = true;
+      try {
+        map.remove();
+      } catch {
+        // MapLibre can throw if the map was not fully initialized.
+      }
+      views.delete(viewId);
     },
   };
+};
 
-  const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;
-  if (effectiveSourceLayer) {
-    base['source-layer'] = effectiveSourceLayer;
+/**
+ * Updates a mounted view to reflect a new spec. When the style URL changes,
+ * calls `map.setStyle()` and defers source/layer re-application to `style.load`.
+ */
+const updateView = (
+  views: ViewMap,
+  viewId: string,
+  viewState: ViewState,
+  spec: VisualizationSpec
+): void => {
+  const { map } = viewState;
+  const nextStyleUrl = resolveStyleUrl(spec);
+  const previousSpec = viewState.spec;
+  viewState.spec = spec;
+  syncMapView(map, previousSpec.view, spec.view);
+
+  const onStyleReady = () => {
+    const updated = views.get(viewId);
+    if (!updated) return;
+    syncSourcesAndLayers(map, updated.spec, null);
+    reapplyAllMapData(map, updated.spec);
+  };
+
+  if (nextStyleUrl !== viewState.styleUrl) {
+    viewState.styleUrl = nextStyleUrl;
+    map.once('style.load', onStyleReady);
+    map.setStyle(nextStyleUrl);
+    return;
   }
-
-  const p = layer.paint ?? {};
-
-  switch (layer.geometry) {
-    case 'polygon': {
-      const fp = p as FillPaint;
-      return {
-        ...base,
-        type: 'fill',
-        paint: {
-          'fill-color': fp.fillColor ?? '#3b82f6',
-          'fill-opacity': fp.fillOpacity ?? 0.6,
-          'fill-outline-color': fp.lineColor ?? '#1d4ed8',
-        },
-      } as maplibregl.LayerSpecification;
+  if (map.isStyleLoaded()) {
+    syncSourcesAndLayers(map, spec, previousSpec);
+    if (previousSpec.mapData !== spec.mapData) {
+      for (const prevMd of previousSpec.mapData ?? []) {
+        const nextMd = (spec.mapData ?? []).find((md) => {
+          return md.mapDataId === prevMd.mapDataId;
+        });
+        if (!nextMd || nextMd !== prevMd) {
+          removeMapDataFromSource(map, prevMd);
+        }
+      }
+      reapplyAllMapData(map, spec);
     }
-    case 'line': {
-      const lp = p as LinePaint;
-      return {
-        ...base,
-        type: 'line',
-        paint: {
-          'line-color': lp.lineColor ?? '#3b82f6',
-          'line-width': lp.lineWidth ?? 2,
-          'line-opacity': lp.lineOpacity ?? 1,
-          'line-dasharray': lp.lineDasharray,
-        },
-      } as maplibregl.LayerSpecification;
-    }
-    case 'point': {
-      const cp = p as CirclePaint;
-      return {
-        ...base,
-        type: 'circle',
-        paint: {
-          'circle-color': cp.circleColor ?? '#3b82f6',
-          'circle-radius': cp.circleRadius ?? 6,
-          'circle-opacity': cp.circleOpacity ?? 1,
-          'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
-          'circle-stroke-width': cp.circleStrokeWidth ?? 1,
-        },
-      } as maplibregl.LayerSpecification;
-    }
-    case 'heatmap': {
-      const hp = p as HeatmapPaint;
-      return {
-        ...base,
-        type: 'heatmap',
-        paint: {
-          'heatmap-radius': hp.heatmapRadius ?? 15,
-          'heatmap-opacity': hp.heatmapOpacity ?? 1,
-          'heatmap-intensity': hp.heatmapIntensity ?? 1,
-          'heatmap-weight': hp.heatmapWeight ?? 1,
-        },
-      } as maplibregl.LayerSpecification;
-    }
-    case 'symbol': {
-      const sp = p as SymbolPaint;
-      return {
-        ...base,
-        type: 'symbol',
-        layout: {
-          ...(base.layout as object),
-          'text-field': sp.textField ?? '',
-          'text-size': sp.textSize ?? 12,
-          'icon-image': sp.iconImage,
-        },
-        paint: {
-          'text-color': sp.textColor ?? '#000000',
-          'text-opacity': sp.textOpacity ?? 1,
-          'text-halo-color': sp.textHaloColor ?? '#ffffff',
-          'text-halo-width': sp.textHaloWidth ?? 0,
-          'icon-color': sp.iconColor ?? '#000000',
-          'icon-opacity': sp.iconOpacity ?? 1,
-        },
-      } as maplibregl.LayerSpecification;
-    }
-    case 'raster': {
-      const rp = p as RasterPaint;
-      return {
-        ...base,
-        type: 'raster',
-        paint: {
-          'raster-opacity': rp.rasterOpacity ?? 1,
-        },
-      } as maplibregl.LayerSpecification;
-    }
+  } else {
+    map.once('style.load', onStyleReady);
   }
 };
 
-// Adapter
+/** Routes a `SpecPatch` to the layer, source, or mapData handler for a single view. */
+const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
+  const { map } = viewState;
+  if (patch.target === 'layer') {
+    applyLayerPatch(map, viewState, patch as SpecPatch & { target: 'layer' });
+  } else if (patch.target === 'source') {
+    applySourcePatch(map, viewState, patch as SpecPatch & { target: 'source' });
+  } else if (patch.target === 'mapData') {
+    applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
+    viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
+  }
+};
 
-const syncSourcesAndLayers = (
-  map: maplibregl.Map,
-  spec: VisualizationSpec,
-  previousSpec: VisualizationSpec | null
-) => {
-  if (previousSpec) {
-    for (const layer of previousSpec.layers) {
-      const stillExists = spec.layers.some((nextLayer) => {
-        return nextLayer.id === layer.id;
-      });
-      if (!stillExists && map.getLayer(layer.id)) {
-        map.removeLayer(layer.id);
-      }
-    }
-
-    for (const source of previousSpec.sources) {
-      const stillExists = spec.sources.some((nextSource) => {
-        return nextSource.id === source.id;
-      });
-      if (!stillExists && map.getSource(source.id)) {
-        map.removeSource(source.id);
-      }
+/** Removes all map instances and clears the view registry. */
+const destroyAll = (views: ViewMap): void => {
+  for (const viewState of views.values()) {
+    try {
+      viewState.map.remove();
+    } catch {
+      // ignore partially-initialized maps
     }
   }
+  views.clear();
+};
 
-  for (const source of spec.sources) {
-    if (!map.getSource(source.id)) {
-      map.addSource(source.id, toMaplibreSource(source));
-    } else if (source.type === 'geojson') {
-      const prevSource = previousSpec?.sources.find((s) => {
-        return s.id === source.id;
-      });
-      const prevData =
-        prevSource?.type === 'geojson' ? prevSource.data : undefined;
-      if (prevData !== source.data) {
-        (map.getSource(source.id) as maplibregl.GeoJSONSource).setData(
-          source.data as maplibregl.GeoJSONSourceSpecification['data']
-        );
-      }
-    }
-  }
-
-  for (const layer of spec.layers) {
-    const mapLayer = map.getLayer(layer.id);
-    const source = spec.sources.find((s) => {
-      return s.id === layer.sourceId;
-    });
-    const sourceLayer =
-      source && 'sourceLayer' in source
-        ? (source as { sourceLayer?: string }).sourceLayer
-        : undefined;
-    const desiredLayer = toMaplibreLayer(layer, sourceLayer);
-    const desiredPaint = (desiredLayer as { paint?: Record<string, unknown> })
-      .paint;
-
-    if (desiredPaint) {
-      (desiredLayer as { paint?: Record<string, unknown> }).paint =
-        Object.fromEntries(
-          Object.entries(desiredPaint).filter(([, value]) => {
-            return value !== undefined;
-          })
-        );
-    }
-
-    if (!mapLayer) {
-      map.addLayer(desiredLayer);
-      continue;
-    }
-
-    map.setLayoutProperty(
-      layer.id,
-      'visibility',
-      layer.visible === false ? 'none' : 'visible'
-    );
-
-    const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
-    if (paint) {
-      for (const [property, value] of Object.entries(paint)) {
-        map.setPaintProperty(
-          layer.id,
-          property,
-          value as maplibregl.StyleSpecification
-        );
-      }
-    }
-  }
+const CAPABILITIES: CapabilitySet = {
+  supports3D: false,
+  supportsRaster: true,
+  supportsVectorTiles: true,
+  supportsCustomLayers: true,
 };
 
 /**
@@ -332,248 +409,30 @@ const syncSourcesAndLayers = (
  * allowing multiple maps to coexist without shared mutable state.
  */
 const createMapLibreAdapter = (): EngineAdapter => {
-  interface ViewState {
-    map: maplibregl.Map;
-    spec: VisualizationSpec;
-    styleUrl: string;
-  }
-
-  const _views = new Map<string, ViewState>();
+  const _views: ViewMap = new Map();
 
   return {
     id: 'maplibre',
-
-    getCapabilities: (): CapabilitySet => {
-      return {
-        supports3D: false,
-        supportsRaster: true,
-        supportsVectorTiles: true,
-        supportsCustomLayers: true,
-      };
+    getCapabilities: () => {
+      return CAPABILITIES;
     },
-
-    mount: (
-      container: HTMLElement,
-      spec: VisualizationSpec,
-      viewId: string
-    ): MountedView => {
-      const { view } = spec;
-      const styleUrl = resolveStyleUrl(spec);
-
-      const map = new maplibregl.Map({
-        container,
-        style: styleUrl,
-        center: view.center,
-        zoom: view.zoom,
-        pitch: view.pitch ?? 0,
-        bearing: view.bearing ?? 0,
-      });
-
-      map.addControl(
-        new maplibregl.NavigationControl({
-          visualizePitch: true,
-          visualizeRoll: true,
-          showZoom: true,
-          showCompass: true,
-        })
-      );
-
-      _views.set(viewId, { map, spec, styleUrl });
-
-      map.on('load', () => {
-        const viewState = _views.get(viewId);
-        if (viewState) {
-          syncSourcesAndLayers(map, viewState.spec, null);
-        }
-      });
-
-      let _removed = false;
-
-      return {
-        viewId,
-        container,
-        destroy: () => {
-          if (_removed) return;
-          _removed = true;
-          try {
-            map.remove();
-          } catch {
-            // MapLibre can throw if the map was not fully initialized
-            // (e.g. unmounted before the style loaded).
-          }
-          _views.delete(viewId);
-        },
-      };
+    mount: (container, spec, viewId) => {
+      return mountView(_views, container, spec, viewId);
     },
-
-    update: (spec: VisualizationSpec) => {
+    update: (spec) => {
       for (const [viewId, viewState] of _views) {
-        const map = viewState.map;
-        const nextStyleUrl = resolveStyleUrl(spec);
-        const previousSpec = viewState.spec;
-
-        viewState.spec = spec;
-
-        // Apply view state changes regardless of style changes.
-        const prevView = previousSpec.view;
-        const nextView = spec.view;
-        if (
-          prevView.center[0] !== nextView.center[0] ||
-          prevView.center[1] !== nextView.center[1]
-        ) {
-          map.setCenter(nextView.center as maplibregl.LngLatLike);
-        }
-        if (prevView.zoom !== nextView.zoom) {
-          map.setZoom(nextView.zoom);
-        }
-        if ((prevView.pitch ?? 0) !== (nextView.pitch ?? 0)) {
-          map.setPitch(nextView.pitch ?? 0);
-        }
-        if ((prevView.bearing ?? 0) !== (nextView.bearing ?? 0)) {
-          map.setBearing(nextView.bearing ?? 0);
-        }
-
-        if (nextStyleUrl !== viewState.styleUrl) {
-          viewState.styleUrl = nextStyleUrl;
-          map.once('style.load', () => {
-            const updated = _views.get(viewId);
-            if (updated) {
-              syncSourcesAndLayers(map, updated.spec, null);
-            }
-          });
-          map.setStyle(nextStyleUrl);
-          continue;
-        }
-
-        if (map.isStyleLoaded()) {
-          syncSourcesAndLayers(map, spec, previousSpec);
-        } else {
-          map.once('style.load', () => {
-            const updated = _views.get(viewId);
-            if (updated) {
-              syncSourcesAndLayers(map, updated.spec, null);
-            }
-          });
-        }
+        updateView(_views, viewId, viewState, spec);
       }
     },
-
-    applyPatch: (patch: SpecPatch) => {
+    applyPatch: (patch) => {
       for (const viewState of _views.values()) {
-        const { map } = viewState;
-
-        if (patch.target === 'layer') {
-          if (patch.op === 'add' && patch.value != null) {
-            const newLayer = patch.value as VisualizationLayer;
-            if (!map.getLayer(newLayer.id)) {
-              const mlLayer = toMaplibreLayer(newLayer, newLayer.sourceLayer);
-              // Strip undefined paint values before passing to MapLibre.
-              const paint = (mlLayer as { paint?: Record<string, unknown> })
-                .paint;
-              if (paint) {
-                (mlLayer as { paint?: Record<string, unknown> }).paint =
-                  Object.fromEntries(
-                    Object.entries(paint).filter(([, v]) => {
-                      return v !== undefined;
-                    })
-                  );
-              }
-              map.addLayer(mlLayer);
-              viewState.spec = {
-                ...viewState.spec,
-                layers: [...viewState.spec.layers, newLayer],
-              };
-            }
-          } else if (patch.op === 'remove') {
-            const layerId = patch.value as string;
-            if (map.getLayer(layerId)) {
-              map.removeLayer(layerId);
-              viewState.spec = {
-                ...viewState.spec,
-                layers: viewState.spec.layers.filter((l) => {
-                  return l.id !== layerId;
-                }),
-              };
-            }
-          } else if (patch.op === 'replace') {
-            // Expected path: "layer.<layerId>.paint.<camelCaseKey>"
-            const parts = patch.path.split('.');
-            if (parts.length < 4 || parts[2] !== 'paint') continue;
-            const layerId = parts[1];
-            const specKey = parts[3];
-            if (!layerId || !specKey) continue;
-            const layer = viewState.spec.layers.find((l) => {
-              return l.id === layerId;
-            });
-            if (!layer) continue;
-            const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
-            if (!maplibreKey) continue;
-            if (patch.value !== undefined) {
-              if (map.isStyleLoaded()) {
-                map.setPaintProperty(
-                  layerId,
-                  maplibreKey,
-                  patch.value as maplibregl.StyleSpecification
-                );
-              } else {
-                map.once('style.load', () => {
-                  map.setPaintProperty(
-                    layerId,
-                    maplibreKey,
-                    patch.value as maplibregl.StyleSpecification
-                  );
-                });
-              }
-            }
-          }
-        } else if (patch.target === 'source') {
-          if (patch.op === 'add' && patch.value != null) {
-            const newSource = patch.value as DataSource;
-            if (!map.getSource(newSource.id)) {
-              map.addSource(newSource.id, toMaplibreSource(newSource));
-              viewState.spec = {
-                ...viewState.spec,
-                sources: [...viewState.spec.sources, newSource],
-              };
-            }
-          } else if (patch.op === 'remove') {
-            const sourceId = patch.value as string;
-            if (map.getSource(sourceId)) {
-              // Remove dependent layers first; MapLibre throws if a layer still
-              // references the source when removeSource is called.
-              for (const layer of viewState.spec.layers) {
-                if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
-                  map.removeLayer(layer.id);
-                }
-              }
-              map.removeSource(sourceId);
-              viewState.spec = {
-                ...viewState.spec,
-                layers: viewState.spec.layers.filter((l) => {
-                  return l.sourceId !== sourceId;
-                }),
-                sources: viewState.spec.sources.filter((s) => {
-                  return s.id !== sourceId;
-                }),
-              };
-            }
-          }
-        }
+        dispatchPatch(viewState, patch);
       }
     },
-
     destroy: () => {
-      for (const viewState of _views.values()) {
-        try {
-          viewState.map.remove();
-        } catch {
-          // ignore partially-initialized maps
-        }
-      }
-      _views.clear();
+      destroyAll(_views);
     },
-
-    getNativeInstance: (): unknown => {
+    getNativeInstance: () => {
       return _views.size > 0
         ? (_views.values().next().value?.map ?? null)
         : null;

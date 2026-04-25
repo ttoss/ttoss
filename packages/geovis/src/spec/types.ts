@@ -222,6 +222,42 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
+  /**
+   * Optional reference to an entry in `spec.mapData`.
+   * When present, the layer can be styled/queried by per-feature `value`s
+   * coming from the dataset (joined via `feature.id` or `mapData.joinKey`).
+   */
+  mapDataId?: string;
+}
+
+/**
+ * One row of attribute data joined to a geometry feature.
+ * `geometryId` matches `feature.id` (default) or `feature.properties[joinKey]`
+ * when `joinKey` is declared on the parent `MapData`.
+ */
+export interface MapDataRow {
+  geometryId: string | number;
+  value: number | string | null;
+}
+
+/**
+ * Attribute dataset attached to a geojson source.
+ * Decouples geometry (in `sources[]`) from values, so the same geometry
+ * can be reused with multiple datasets, and values can be mutated
+ * independently from features.
+ */
+export interface MapData {
+  mapDataId: string;
+  /** FK to `sources[].id` of a `geojson` source. */
+  mapId: string;
+  title?: string;
+  description?: string;
+  /**
+   * Property name on each feature used to match `data[].geometryId`.
+   * Defaults to using `feature.id` when omitted.
+   */
+  joinKey?: string;
+  data: MapDataRow[];
 }
 
 export interface BaseMapSpec {
@@ -253,6 +289,12 @@ export interface VisualizationSpec {
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];
+  /**
+   * Optional attribute datasets joined to geojson sources.
+   * Each entry references a source via `mapId` and provides
+   * per-feature `value`s for use in styling, tooltips, charts.
+   */
+  mapData?: MapData[];
   /**
    * Optional array of views for multi-panel layouts.
    * When present, layout components derive one spec per view by

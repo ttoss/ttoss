@@ -293,6 +293,10 @@
           "paint": {
             "type": "object",
             "additionalProperties": true
+          },
+          "mapDataId": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }
@@ -316,6 +320,41 @@
     "metadata": {
       "type": "object",
       "additionalProperties": true
+    },
+    "mapData": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mapDataId", "mapId", "data"],
+        "properties": {
+          "mapDataId": { "type": "string", "minLength": 1 },
+          "mapId": { "type": "string", "minLength": 1 },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "joinKey": { "type": "string", "minLength": 1 },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["geometryId", "value"],
+              "properties": {
+                "geometryId": {
+                  "oneOf": [{ "type": "string" }, { "type": "number" }]
+                },
+                "value": {
+                  "oneOf": [
+                    { "type": "string" },
+                    { "type": "number" },
+                    { "type": "null" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "adapterHints": {
       "type": "object",

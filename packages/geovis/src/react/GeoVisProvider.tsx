@@ -5,12 +5,7 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
-/**
- * Evaluates spec.metadata for known policy violations.
- * Called once per spec on Provider mount — not on every update,
- * because metadata is treated as static fixture-level contract.
- * Returns an empty array when no violations are found.
- */
+/** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
 const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
   const violations: PolicyViolation[] = [];
   const m = spec.metadata;
@@ -77,9 +72,22 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
-  const [effectiveSpec, setEffectiveSpec] =
-    React.useState<VisualizationSpec>(spec);
-  const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
+  const [prevSpecProp, setPrevSpecProp] = React.useState(spec);
+  const [patchedSpec, setPatchedSpec] =
+    React.useState<VisualizationSpec | null>(null);
+
+  // When the parent provides a new spec, clear any in-flight patch override.
+  // The effect runs after render; the `hasSpecPropChanged` guard ensures the
+  // context receives the new spec immediately on the same render.
+  React.useEffect(() => {
+    if (spec !== prevSpecProp) {
+      setPrevSpecProp(spec);
+      setPatchedSpec(null);
+    }
+  }, [prevSpecProp, spec]);
+
+  const hasSpecPropChanged = spec !== prevSpecProp;
+  const effectiveSpec = hasSpecPropChanged ? spec : (patchedSpec ?? spec);
 
   const policyViolations = React.useMemo(() => {
     return checkPolicies(spec);
@@ -89,17 +97,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     let cancelled = false;
     let activeRuntime: GeoVisRuntime | null = null;
 
-    setAdapterError(null);
-
     const init = async () => {
       try {
         const adapter = await resolveAdapter(spec.engine);
         if (cancelled) return;
         activeRuntime = createRuntime(adapter, spec);
-        // Do not set prevSpecRef here: the sync effect below is responsible
-        // for tracking prevSpecRef and calling setEffectiveSpec. If we set it
-        // here, the sync effect exits early (spec === prevSpecRef.current) and
-        // effectiveSpec is never updated after an engine change.
+        setAdapterError(null);
         setRuntime(activeRuntime);
       } catch (error) {
         if (cancelled) return;
@@ -123,16 +126,13 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   React.useEffect(() => {
     if (!runtime) return;
-    if (spec === prevSpecRef.current) return;
-    prevSpecRef.current = spec;
-    setEffectiveSpec(spec);
     runtime.update(spec);
   }, [runtime, spec]);
 
   const applyPatch = (patch: SpecPatch) => {
     if (!runtime) return;
     runtime.applyPatch(patch);
-    setEffectiveSpec(runtime.spec);
+    setPatchedSpec(runtime.spec);
   };
 
   if (adapterError) throw adapterError;
@@ -150,4 +150,45 @@ export const useGeoVis = (): GeoVisContextValue => {
   const ctx = React.useContext(GeoVisContext);
   if (!ctx) throw new Error('useGeoVis must be used inside <GeoVisProvider>');
   return ctx;
+};
+
+export interface UseMapDataResult {
+  mapDataId: string;
+  mapId: string;
+  joinKey?: string;
+  /** Indexed lookup: stringified `geometryId` → `value`. */
+  values: Map<string, number | string | null>;
+  /** The `data` array as declared in the spec, in original order. */
+  rows: ReadonlyArray<{
+    geometryId: string | number;
+    value: number | string | null;
+  }>;
+}
+
+/**
+ * Returns the indexed dataset entry for `mapDataId`, or `undefined` if
+ * the spec has no matching `mapData[]` entry. Re-renders when the spec
+ * changes (including via `applyPatch`).
+ *
+ * Must be used inside a {@link GeoVisProvider}.
+ */
+export const useMapData = (mapDataId: string): UseMapDataResult | undefined => {
+  const { spec } = useGeoVis();
+  return React.useMemo(() => {
+    const md = spec.mapData?.find((entry) => {
+      return entry.mapDataId === mapDataId;
+    });
+    if (!md) return undefined;
+    const values = new Map<string, number | string | null>();
+    for (const row of md.data) {
+      values.set(String(row.geometryId), row.value);
+    }
+    return {
+      mapDataId: md.mapDataId,
+      mapId: md.mapId,
+      joinKey: md.joinKey,
+      values,
+      rows: md.data,
+    };
+  }, [spec, mapDataId]);
 };
