@@ -101,3 +101,78 @@ describe('createRuntime — applyPatch add/remove', () => {
     expect(adapter.applyPatch).not.toHaveBeenCalled();
   });
 });
+
+describe('createRuntime — applyPatch target:mapData', () => {
+  const makeMapDataSpec = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          data: [
+            { geometryId: 'BR', value: 211 },
+            { geometryId: 'AR', value: 45 },
+          ],
+        },
+      ],
+    };
+  };
+
+  // 2.1
+  test('op:add appends the dataset to currentSpec.mapData', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    const newMd = {
+      mapDataId: 'pop',
+      mapId: 'src-1',
+      data: [{ geometryId: 'BR', value: 211 }],
+    };
+    runtime.applyPatch({ target: 'mapData', op: 'add', value: newMd });
+    expect(runtime.spec.mapData).toHaveLength(1);
+    expect(runtime.spec.mapData?.[0]).toEqual(newMd);
+  });
+
+  // 2.2
+  test('op:remove removes the dataset by mapDataId', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'remove',
+      value: 'pop',
+    });
+    expect(runtime.spec.mapData).toHaveLength(0);
+  });
+
+  // 2.3
+  test('op:replace at granular path updates a single row value', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 215,
+    });
+    const updated = runtime.spec.mapData?.[0].data.find((row) => {
+      return String(row.geometryId) === 'BR';
+    });
+    expect(updated?.value).toBe(215);
+  });
+
+  // 2.4
+  test('forwards the patch to the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    const patch = {
+      target: 'mapData' as const,
+      op: 'remove' as const,
+      value: 'pop',
+    };
+    runtime.applyPatch(patch);
+    expect(adapter.applyPatch).toHaveBeenCalledWith(
+      expect.objectContaining({ target: 'mapData', op: 'remove' })
+    );
+  });
+});
