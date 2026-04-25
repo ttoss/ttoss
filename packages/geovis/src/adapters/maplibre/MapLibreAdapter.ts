@@ -28,15 +28,7 @@ export { toMaplibreLayer, toMaplibreSource };
 
 const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
-/**
- * Resolves the base map style URL from the spec, falling back to the MapLibre
- * demo tiles when `spec.basemap.styleUrl` is absent.
- *
- * @remarks
- * The fallback exists so a `VisualizationSpec` without any basemap config
- * still renders a visible map. Production consumers should always set
- * `basemap.styleUrl` to avoid depending on the external demo endpoint.
- */
+/** Returns the base map style URL, falling back to the MapLibre demo tiles when `basemap.styleUrl` is absent. */
 const resolveStyleUrl = (spec: VisualizationSpec): string => {
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
 };
@@ -76,18 +68,7 @@ const SPEC_PAINT_KEY_MAP: Record<
   iconOpacity: 'icon-opacity',
 };
 
-/**
- * Translates a GeoVis spec-level camelCase paint key into the MapLibre
- * kebab-case paint property name for the given geometry type.
- *
- * @remarks
- * Some keys are geometry-dependent: `lineColor` maps to `fill-outline-color`
- * on polygons but to `line-color` on lines. `lineWidth` has no polygon
- * equivalent and returns `undefined`, which callers must treat as "skip".
- *
- * Returns `undefined` for unrecognised keys so callers can silently ignore
- * unknown paint properties instead of forwarding them to MapLibre.
- */
+/** Translates a GeoVis camelCase paint key to the MapLibre kebab-case property name for the given geometry type. */
 const specPaintKeyToMaplibre = (
   key: string,
   geometry: GeoVisGeometryType
@@ -101,16 +82,7 @@ interface LayerHostState {
   spec: VisualizationSpec;
 }
 
-/**
- * Removes paint properties with value `undefined` from a MapLibre layer
- * before registering it with the map.
- *
- * @remarks
- * MapLibre throws at `map.addLayer()` when paint values are `undefined`.
- * The GeoVis spec model intentionally allows optional paint keys to be absent,
- * so this strip step is applied at the translation boundary before every layer
- * registration.
- */
+/** Strips `undefined` paint values before `map.addLayer` to satisfy MapLibre's strict paint validation. */
 const stripUndefinedPaint = (
   layer: maplibregl.LayerSpecification
 ): maplibregl.LayerSpecification => {
@@ -125,15 +97,7 @@ const stripUndefinedPaint = (
   return layer;
 };
 
-/**
- * Applies a paint property update to a live MapLibre layer, deferring the
- * call until the map style is fully loaded if needed.
- *
- * @remarks
- * `setPaintProperty` silently fails when called before the style has loaded.
- * Deferring via `once('style.load', …)` guarantees the property is applied
- * even if the patch fires immediately after a `setStyle` call.
- */
+/** Applies a paint property immediately if the style is loaded, otherwise defers to `style.load`. */
 const setPaintWhenReady = (
   map: maplibregl.Map,
   layerId: string,
@@ -151,16 +115,7 @@ const setPaintWhenReady = (
   else map.once('style.load', apply);
 };
 
-/**
- * Adds a new layer to the map for a given spec layer, guarded by an existence
- * check to make the operation idempotent.
- *
- * @remarks
- * `stripUndefinedPaint` is applied before `map.addLayer` because MapLibre
- * rejects `undefined` paint values at registration time.
- * `viewState.spec` is updated in place so the adapter's local copy stays
- * consistent with the map's state for subsequent patch operations.
- */
+/** Adds a layer to the map if not already present; resolves sourceLayer from the source when absent on the layer. */
 const applyLayerAdd = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -184,14 +139,7 @@ const applyLayerAdd = (
   };
 };
 
-/**
- * Removes a layer from the map, guarded by an existence check to make the
- * operation idempotent.
- *
- * @remarks
- * `viewState.spec` is updated in place after removal so the adapter's local
- * copy stays consistent for subsequent patches.
- */
+/** Removes a layer from the map if present and updates `viewState.spec`. */
 const applyLayerRemove = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -207,18 +155,7 @@ const applyLayerRemove = (
   };
 };
 
-/**
- * Applies a single paint-property replacement to a live MapLibre layer.
- *
- * @remarks
- * Resolves the spec key to the MapLibre paint property via
- * `specPaintKeyToMaplibre`, which is geometry-type–aware. Silently returns
- * without side effects when the path shape is unrecognised or the key has no
- * MapLibre equivalent for the layer's geometry type.
- *
- * Delegates to `setPaintWhenReady` to handle patches that arrive before the
- * style has finished loading (e.g. immediately after a `setStyle` call).
- */
+/** Applies a paint-property replacement to a live layer; resolves spec key to MapLibre property via `specPaintKeyToMaplibre`. */
 const applyLayerPaintReplace = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -238,15 +175,7 @@ const applyLayerPaintReplace = (
   setPaintWhenReady(map, layerId, maplibreKey, value);
 };
 
-/**
- * Top-level dispatcher for layer-targeted patches on a single map view.
- *
- * @remarks
- * Delegates to the specific handler (`applyLayerAdd`, `applyLayerRemove`,
- * `applyLayerPaintReplace`) based on the patch op. Unrecognised shapes are
- * silently ignored to keep the adapter resilient against unknown future
- * patch types.
- */
+/** Dispatches a layer-targeted patch to `applyLayerAdd`, `applyLayerRemove`, or `applyLayerPaintReplace`. */
 const applyLayerPatch = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -265,18 +194,7 @@ const applyLayerPatch = (
   }
 };
 
-/**
- * Top-level dispatcher for source-targeted patches on a single map view.
- *
- * @remarks
- * On `remove`, layers referencing the removed source are also removed from
- * the map and from `viewState.spec.layers` to preserve the invariant that
- * every active layer must have a corresponding source.
- *
- * Existence checks (`map.getSource`, `map.getLayer`) make all operations
- * idempotent, so calling this function more than once with the same patch
- * is safe.
- */
+/** Dispatches a source-targeted patch; on `remove`, also removes layers that reference the source. */
 const applySourcePatch = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -323,15 +241,7 @@ const syncCenter = (
   map.setCenter(next.center as maplibregl.LngLatLike);
 };
 
-/**
- * Synchronises the map's camera properties (center, zoom, pitch, bearing)
- * with the next spec view, skipping unchanged values.
- *
- * @remarks
- * Each property is gated by an equality check because MapLibre animates
- * camera transitions — redundant calls with the same value would produce
- * unwanted visual motion on every spec update.
- */
+/** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
 const syncMapView = (
   map: maplibregl.Map,
   prev: VisualizationSpec['view'],
@@ -355,17 +265,7 @@ interface ViewState {
 
 type ViewMap = Map<string, ViewState>;
 
-/**
- * Instantiates a MapLibre `Map` inside the given container, configured from
- * the spec's `view` and `basemap` fields.
- *
- * @remarks
- * The style URL is resolved once at construction time; subsequent basemap
- * changes are handled by `updateView` via `map.setStyle()`.
- *
- * Returns both `map` and `styleUrl` so the caller can store the initial URL
- * and detect changes on future spec updates to trigger a `setStyle` call.
- */
+/** Instantiates a MapLibre map from the spec's view and basemap fields. */
 const createMap = (
   spec: VisualizationSpec,
   container: HTMLElement
@@ -391,22 +291,7 @@ const createMap = (
   return { map, styleUrl };
 };
 
-/**
- * Mounts a new MapLibre map in `container`, registers initial sources and
- * layers once the `load` event fires, and returns a `MountedView` handle.
- *
- * @remarks
- * Sources and layers are applied inside `map.on('load', …)` because MapLibre
- * requires the style to be ready before `addSource` / `addLayer` calls.
- *
- * `destroy()` on the returned handle is guarded with a `_removed` flag to
- * prevent double-removal errors if called more than once.
- *
- * @param views - The per-adapter registry of active views; the new state is
- *   stored here under `viewId`.
- * @param viewId - A caller-assigned identifier unique within this adapter
- *   instance. Reusing a `viewId` would silently overwrite the previous view.
- */
+/** Creates a MapLibre map in the container, registers it in the view registry, and returns a `MountedView` handle. */
 const mountView = (
   views: ViewMap,
   container: HTMLElement,
@@ -439,16 +324,8 @@ const mountView = (
 };
 
 /**
- * Updates an existing MapLibre view to reflect a new `VisualizationSpec`.
- *
- * @remarks
- * When the basemap style URL changes, `map.setStyle()` destroys all sources
- * and layers. The `style.load` listener re-applies them from
- * `views.get(viewId)` (not the `spec` closure) to capture any intermediate
- * patches that arrive between `setStyle` and the load event.
- *
- * When the style is unchanged, `syncSourcesAndLayers` is called immediately
- * if the style is already loaded; otherwise it is deferred to `style.load`.
+ * Updates a mounted view to reflect a new spec. When the style URL changes,
+ * calls `map.setStyle()` and defers source/layer re-application to `style.load`.
  */
 const updateView = (
   views: ViewMap,
@@ -485,15 +362,7 @@ const updateView = (
   }
 };
 
-/**
- * Routes a `SpecPatch` to the correct handler for a single map view.
- *
- * @remarks
- * This is the innermost dispatch point in the adapter. Each target type
- * (`layer`, `source`, `mapData`) has a dedicated handler. For `mapData`
- * patches, `viewState.spec` is updated here (via `applyMapDataPatchToSpec`)
- * to keep the adapter's local copy in sync with the runtime's `currentSpec`.
- */
+/** Routes a `SpecPatch` to the layer, source, or mapData handler for a single view. */
 const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
   const { map } = viewState;
   if (patch.target === 'layer') {
@@ -506,14 +375,7 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
   }
 };
 
-/**
- * Removes all active MapLibre map instances and clears the view registry.
- *
- * @remarks
- * Each removal is wrapped in try/catch because MapLibre can throw if a map
- * was never fully initialised (e.g. the container was removed from the DOM
- * before the `load` event fired).
- */
+/** Removes all map instances and clears the view registry. */
 const destroyAll = (views: ViewMap): void => {
   for (const viewState of views.values()) {
     try {

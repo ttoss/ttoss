@@ -63,17 +63,8 @@ const sourceConverters: Record<
 };
 
 /**
- * Translates a GeoVis `DataSource` into the corresponding MapLibre
- * `SourceSpecification` object.
- *
- * @remarks
- * This function is the sole translation boundary between the GeoVis source
- * model and the MapLibre API. Each source type has a dedicated converter in
- * `sourceConverters` — adding a new source type only requires a new entry
- * there, with no branching logic needed here.
- *
- * @param source - A source entry from `VisualizationSpec.sources`.
- * @returns A MapLibre-ready `SourceSpecification` for `map.addSource()`.
+ * Translates a GeoVis `DataSource` into the corresponding MapLibre `SourceSpecification`.
+ * Sole translation boundary between the GeoVis source model and MapLibre.
  */
 export const toMaplibreSource = (source: DataSource): MaplibreSourceSpec => {
   const fn = sourceConverters[source.type] as (

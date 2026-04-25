@@ -4,16 +4,7 @@ import type { VisualizationSpec } from '../../spec/types';
 import { toMaplibreLayer } from './layerTranslation';
 import { toMaplibreSource } from './sourceTranslation';
 
-/**
- * Removes layers that were present in `previousSpec` but are absent from
- * `spec`, provided they still exist in the live map.
- *
- * @remarks
- * Guarded by `map.getLayer()` to stay idempotent when the style has already
- * been reset (e.g. after `map.setStyle()`). Must be called before
- * `removeStaleSources` to avoid the MapLibre invariant violation of removing
- * a source that is still referenced by an active layer.
- */
+/** Removes layers from `previousSpec` no longer present in `spec`. */
 const removeStaleLayers = (
   map: maplibregl.Map,
   spec: VisualizationSpec,
@@ -29,14 +20,7 @@ const removeStaleLayers = (
   }
 };
 
-/**
- * Removes sources that were present in `previousSpec` but are absent from
- * `spec`, provided they still exist in the live map.
- *
- * @remarks
- * Must be called after `removeStaleLayers` to avoid the MapLibre constraint
- * that a source cannot be removed while it is still referenced by a layer.
- */
+/** Removes sources from `previousSpec` no longer present in `spec`. Must be called after `removeStaleLayers`. */
 const removeStaleSources = (
   map: maplibregl.Map,
   spec: VisualizationSpec,
@@ -52,18 +36,7 @@ const removeStaleSources = (
   }
 };
 
-/**
- * Adds sources from `spec` that do not yet exist in the map, and updates
- * GeoJSON source data when the data reference has changed.
- *
- * @remarks
- * Only GeoJSON sources support live data updates via `setData`. All other
- * source types are static after construction and must be removed and re-added
- * to be updated (handled by the stale-removal pass in `syncSourcesAndLayers`).
- *
- * Data updates are gated on reference inequality (`prevData !== source.data`)
- * to avoid redundant `setData` calls on every spec update cycle.
- */
+/** Adds new sources and updates GeoJSON source data when the data reference changes. */
 const upsertSources = (
   map: maplibregl.Map,
   spec: VisualizationSpec,
@@ -98,15 +71,7 @@ const stripUndefinedPaint = (layer: maplibregl.LayerSpecification): void => {
   );
 };
 
-/**
- * Adds layers from `spec` that do not yet exist in the map, and updates
- * visibility and paint properties for layers that already do.
- *
- * @remarks
- * Intentionally performs in-place property updates (`setLayoutProperty` /
- * `setPaintProperty`) rather than remove-and-re-add to avoid the visual
- * flicker and interruption of tile downloads that full layer removal causes.
- */
+/** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */
 const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
   for (const layer of spec.layers) {
     const source = spec.sources.find((s) => {
@@ -143,22 +108,9 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
 };
 
 /**
- * Reconciles the live MapLibre map's sources and layers with `spec`, using
- * `previousSpec` to compute the minimal diff.
- *
- * @remarks
- * When `previousSpec` is `null` (first mount or full style reset), only
- * additive operations (`upsertSources`, `upsertLayers`) run — there is
- * nothing stale to remove.
- *
- * Call order enforces MapLibre's dependency invariant:
- * 1. Remove stale layers (before their sources can be removed).
- * 2. Remove stale sources.
- * 3. Upsert sources (before layers that reference them).
- * 4. Upsert layers.
- *
- * @param previousSpec - The last known spec, used to identify stale entries.
- *   Pass `null` on first mount or after a `setStyle` reset.
+ * Reconciles the live MapLibre map's sources and layers with `spec`.
+ * When `previousSpec` is `null` (first mount or style reset), only additive operations run.
+ * Call order enforces MapLibre's dependency invariant: remove layers → remove sources → upsert sources → upsert layers.
  */
 export const syncSourcesAndLayers = (
   map: maplibregl.Map,

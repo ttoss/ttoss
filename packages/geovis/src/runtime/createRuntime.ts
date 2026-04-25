@@ -15,18 +15,7 @@ export interface GeoVisRuntime {
   getAdapter(): EngineAdapter;
 }
 
-/**
- * Applies a layer-targeted patch to the spec, returning a new spec reference.
- *
- * @remarks
- * Only `add`, `remove`, and `replace` on `layer.<layerId>.paint.<prop>` paths
- * are handled. Any unrecognised path shape is treated as a no-op to avoid partial
- * mutations that would leave the spec in an inconsistent state.
- *
- * Paint is shallow-merged (`{ ...layer.paint, [prop]: value }`) because
- * individual paint keys are independent — a deep merge would risk leaking
- * stale values from a previous spec version.
- */
+/** Applies a layer-targeted patch, returning a new spec reference. No-op for unrecognised path shapes. */
 const applyLayerPatchToSpec = (
   spec: VisualizationSpec,
   patch: SpecPatch & { target: 'layer' }
@@ -67,15 +56,7 @@ const applyLayerPatchToSpec = (
   };
 };
 
-/**
- * Applies a source-targeted patch to the spec, returning a new spec reference.
- *
- * @remarks
- * On `remove`, associated layers that reference the removed source are also
- * pruned. This mirrors the invariant enforced by `validateSpec`: every layer's
- * `sourceId` must resolve to an existing source, so removing a source without
- * removing its dependant layers would produce an invalid spec.
- */
+/** Applies a source-targeted patch; on `remove`, prunes layers that reference the removed source. */
 const applySourcePatchToSpec = (
   spec: VisualizationSpec,
   patch: SpecPatch & { target: 'source' }
@@ -100,35 +81,11 @@ const applySourcePatchToSpec = (
 };
 
 /**
- * Creates a new, isolated GeoVis runtime that mediates between a
- * `VisualizationSpec` and a concrete `EngineAdapter`.
- *
- * @remarks
- * The runtime maintains a `currentSpec` closure updated by both `update()` and
- * `applyPatch()`. Updates are applied immutably (spread + replace) so adapter
- * implementations and React hooks can rely on reference equality
- * (`prevSpec !== nextSpec`) as a cheap change-detection signal.
- *
- * `applyPatch` forwards the patch to the adapter **before** updating
- * `currentSpec`. This ensures `runtime.spec` always reflects the last
- * successfully accepted adapter state even if the adapter throws mid-patch.
- *
- * A `replace` patch with `value === undefined` is silently ignored to allow
- * callers to express "clear this property" without special-casing on the
- * call site.
- *
- * @param adapter - The engine adapter to delegate rendering to.
- * @param initialSpec - The starting spec; used to initialise the internal state.
- * @returns A `GeoVisRuntime` handle with `mount`, `update`, `applyPatch`,
- *   and `destroy`.
- *
- * @example
- * ```ts
- * const runtime = createRuntime(createMapLibreAdapter(), mySpec);
- * runtime.mount(containerEl, 'main-view');
- * runtime.applyPatch({ target: 'layer', op: 'add', value: newLayer });
- * runtime.destroy();
- * ```
+ * Creates a new, isolated GeoVis runtime that mediates between a `VisualizationSpec`
+ * and a concrete `EngineAdapter`. Spec updates are immutable (spread + replace) so
+ * adapters and hooks can use reference equality as a cheap change-detection signal.
+ * `applyPatch` forwards to the adapter before updating `currentSpec` so `runtime.spec`
+ * always reflects the last successfully accepted adapter state.
  */
 export const createRuntime = (
   adapter: EngineAdapter,

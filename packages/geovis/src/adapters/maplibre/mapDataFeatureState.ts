@@ -2,13 +2,7 @@ import type maplibregl from 'maplibre-gl';
 
 import type { MapData, MapDataRow, VisualizationSpec } from '../../spec/types';
 
-/**
- * Builds a lookup index from join-key property value → MapLibre feature.id
- * by querying all loaded features from a source.
- *
- * Used by both apply and remove paths when `joinKey` is set, so the
- * iteration and null-check logic lives in one place.
- */
+/** Builds a lookup index from join-key property value to MapLibre feature.id. */
 const buildJoinKeyIndex = (
   features: ReturnType<maplibregl.Map['querySourceFeatures']>,
   joinKey: string
@@ -80,21 +74,10 @@ export const scheduleMapDataApply = (
 };
 
 /**
- * Removes all feature state set by a `MapData` entry from its MapLibre source.
- *
- * @remarks
- * When `joinKey` is absent, removal mirrors the apply path: feature state was
- * set using `row.geometryId` directly as `feature.id`, so the same id is used
- * to remove it.
- *
- * When `joinKey` is set, feature state was applied using the underlying
- * `feature.id` (resolved via `querySourceFeatures`). Removal therefore
- * performs the same join-key lookup to recover the correct `feature.id`s.
- * If the source is not yet loaded, the lookup is skipped and feature state
- * may be left behind — this is acceptable since an unloaded source has not
- * rendered any data-driven styling yet.
- *
- * Silently returns when the source does not exist (already removed).
+ * Removes all feature state set by a `MapData` entry from its source.
+ * When `joinKey` is absent, removes directly by `row.geometryId`.
+ * When `joinKey` is set, resolves `feature.id` via `querySourceFeatures` before removing.
+ * Silently returns when the source does not exist or is not yet loaded (joinKey path).
  */
 export const removeMapDataFromSource = (
   map: maplibregl.Map,
@@ -130,16 +113,7 @@ export const reapplyAllMapData = (
   for (const md of spec.mapData ?? []) scheduleMapDataApply(map, md);
 };
 
-/**
- * Applies a single-row value update to the live MapLibre map via
- * `setFeatureState`.
- *
- * @remarks
- * When `joinKey` is absent, the feature is looked up directly by `geometryId`.
- * When `joinKey` is present, a full source query (`querySourceFeatures`) is
- * performed to resolve the feature's internal `id` — this is more expensive
- * and silently skips if the source is not yet loaded.
- */
+/** Applies a single-row value update to the map via `setFeatureState`. Resolves feature id via joinKey when set. */
 const applyRowReplacement = (
   map: maplibregl.Map,
   mapData: MapData,
@@ -160,16 +134,7 @@ const applyRowReplacement = (
   }
 };
 
-/**
- * Handles a `replace` patch against the live map for `mapData` entries.
- *
- * @remarks
- * Two granularity levels are supported based on `patch.path` depth:
- * - 2 segments (`mapData.<id>`) — full entry replacement: removes old feature
- *   state, then schedules a full `applyMapDataToSource` for the new value.
- * - 4 segments (`mapData.<id>.data.<geometryId>`) — targeted row update via
- *   `applyRowReplacement`, leaving unrelated features untouched.
- */
+/** Handles a replace patch on the live map: full-entry or single-row granularity based on path depth. */
 const handleMapDataReplace = (
   map: maplibregl.Map,
   currentMapData: ReadonlyArray<MapData>,

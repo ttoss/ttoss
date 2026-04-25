@@ -10,12 +10,7 @@ export type ValidationResult =
 const ajv = new Ajv2020({ strict: false });
 const _validate = ajv.compile(schema);
 
-/**
- * Cross-field referential checks not expressible in JSON Schema:
- * - `mapData[].mapDataId` must be unique
- * - `mapData[].mapId` must reference an existing `geojson` source
- * - `layers[].mapDataId` must reference an existing `mapData[]` entry
- */
+/** Checks referential integrity constraints not expressible in JSON Schema (unique mapDataId, FK sources, FK layers). */
 const validateReferences = (spec: VisualizationSpec): string[] => {
   const errors: string[] = [];
   const mapData = spec.mapData ?? [];
@@ -57,23 +52,10 @@ const validateReferences = (spec: VisualizationSpec): string[] => {
 };
 
 /**
- * Validates a raw unknown value against the GeoVis JSON Schema and enforces
- * cross-field referential integrity rules not expressible in the schema.
- *
- * @remarks
- * Two-phase validation:
- * 1. **Structural** — AJV 2020-12 validates the JSON Schema (`schema.json`).
- * 2. **Referential** — `validateReferences` checks constraints such as unique
- *    `mapDataId`s, and that every `mapData[].mapId` resolves to an existing
- *    `geojson` source.
- *
- * Returns a discriminated union so callers can narrow on `result.valid`
- * without throwing. Errors are human-readable strings intended for
- * developer feedback, not end-user display.
- *
- * @param input - The raw value to validate (typically parsed JSON).
- * @returns `{ valid: true, spec }` on success;
- *   `{ valid: false, errors }` with diagnostic messages on failure.
+ * Validates a raw value against the GeoVis JSON Schema and enforces cross-field
+ * referential integrity rules not expressible in the schema.
+ * Returns a discriminated union: `{ valid: true, spec }` on success or
+ * `{ valid: false, errors }` with human-readable diagnostic strings on failure.
  */
 export const validateSpec = (input: unknown): ValidationResult => {
   const valid = _validate(input);

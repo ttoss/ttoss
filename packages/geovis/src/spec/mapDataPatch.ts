@@ -1,13 +1,6 @@
 import type { MapData, MapDataRow, VisualizationSpec } from './types';
 
-/**
- * Returns a new `MapData` object with the row for `geometryId` updated to
- * `value`, appending a new row when `geometryId` is not yet present.
- *
- * @remarks
- * `String(rid) === geometryId` normalises numeric and string IDs so callers
- * do not need to coerce geometry IDs before patching.
- */
+/** Returns a new `MapData` with the matching row updated to `value`, appending a new row when absent. */
 const replaceRow = (
   md: MapData,
   geometryId: string,
@@ -29,16 +22,7 @@ const replaceRow = (
   return { ...md, data };
 };
 
-/**
- * Interprets a `replace` patch against `spec.mapData`, dispatching to the
- * appropriate granularity handler based on `patch.path` depth:
- * - 2 segments (`mapData.<id>`) — full entry replacement.
- * - 4 segments (`mapData.<id>.data.<geometryId>`) — single row update.
- *
- * @remarks
- * Unrecognised path shapes are silently ignored to preserve idempotency;
- * `applyMapDataPatchToSpec` passes through the unchanged spec in those cases.
- */
+/** Dispatches a replace patch by path depth: 2-part = full entry, 4-part = single row update. */
 const applyReplace = (
   spec: VisualizationSpec,
   patch: { path?: string; value?: unknown }

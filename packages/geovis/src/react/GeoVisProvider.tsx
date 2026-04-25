@@ -5,12 +5,7 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
-/**
- * Evaluates spec.metadata for known policy violations.
- * Called once per spec on Provider mount — not on every update,
- * because metadata is treated as static fixture-level contract.
- * Returns an empty array when no violations are found.
- */
+/** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
 const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
   const violations: PolicyViolation[] = [];
   const m = spec.metadata;

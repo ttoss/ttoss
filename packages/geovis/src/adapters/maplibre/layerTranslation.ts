@@ -20,19 +20,7 @@ interface BaseFields {
   ['source-layer']?: string;
 }
 
-/**
- * Builds the fields common to all MapLibre layer types from a GeoVis
- * `VisualizationLayer`.
- *
- * @remarks
- * `sourceLayer` is applied only when present — it is required for
- * vector-tile sources (which carry multiple layers per tile), but must be
- * absent for GeoJSON sources (MapLibre ignores unknown fields for GeoJSON,
- * but keeping the contract explicit prevents confusion).
- *
- * `visible === false` maps to `layout.visibility: 'none'`; any other value
- * (including `undefined`) defaults to `'visible'`.
- */
+/** Builds the common MapLibre layer fields from a GeoVis layer. */
 const buildBase = (
   layer: VisualizationLayer,
   sourceLayer: string | undefined
@@ -161,23 +149,9 @@ const builders: Record<GeoVisGeometryType, Builder> = {
 };
 
 /**
- * Translates a `VisualizationLayer` from the GeoVis spec model into a
- * MapLibre `LayerSpecification`.
- *
- * @remarks
- * This function is the sole translation boundary between the GeoVis layer
- * model and the MapLibre API. Concentrating all field mappings here prevents
- * engine-specific semantics (geometry-type–dependent property names, default
- * values) from leaking into the runtime or higher layers.
- *
+ * Translates a `VisualizationLayer` into a MapLibre `LayerSpecification`.
+ * Sole translation boundary between the GeoVis layer model and MapLibre.
  * Geometry type dispatches to a dedicated builder via the `builders` map.
- * Adding a new geometry type only requires a new builder entry — no branching
- * logic is needed in this function.
- *
- * @param layer - A layer entry from `VisualizationSpec.layers`.
- * @param sourceLayer - Optional source-layer name for vector-tile sources.
- *   When provided it overrides `layer.sourceLayer`.
- * @returns A MapLibre-ready `LayerSpecification` for use with `map.addLayer()`.
  */
 export const toMaplibreLayer = (
   layer: VisualizationLayer,
