@@ -121,7 +121,14 @@ const applyRowReplacement = (
   value: MapDataRow['value']
 ): void => {
   if (!mapData.joinKey) {
-    map.setFeatureState({ source: mapData.mapId, id: geometryId }, { value });
+    // Resolve the original geometryId type from the stored row so numeric
+    // feature ids (e.g. 1) are not coerced to strings ('1'), which would
+    // cause setFeatureState to miss the intended feature.
+    const row = mapData.data.find((r) => {
+      return String(r.geometryId) === geometryId;
+    });
+    const featureId = row?.geometryId ?? geometryId;
+    map.setFeatureState({ source: mapData.mapId, id: featureId }, { value });
     return;
   }
   if (!map.isSourceLoaded(mapData.mapId)) return;

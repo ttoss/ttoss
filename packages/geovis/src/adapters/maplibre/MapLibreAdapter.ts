@@ -19,6 +19,7 @@ import { toMaplibreLayer } from './layerTranslation';
 import {
   applyMapDataPatchToMap,
   reapplyAllMapData,
+  removeMapDataFromSource,
 } from './mapDataFeatureState';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
@@ -355,6 +356,14 @@ const updateView = (
   if (map.isStyleLoaded()) {
     syncSourcesAndLayers(map, spec, previousSpec);
     if (previousSpec.mapData !== spec.mapData) {
+      for (const prevMd of previousSpec.mapData ?? []) {
+        const nextMd = (spec.mapData ?? []).find((md) => {
+          return md.mapDataId === prevMd.mapDataId;
+        });
+        if (!nextMd || nextMd !== prevMd) {
+          removeMapDataFromSource(map, prevMd);
+        }
+      }
       reapplyAllMapData(map, spec);
     }
   } else {
