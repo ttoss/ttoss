@@ -77,9 +77,20 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
-  const [effectiveSpec, setEffectiveSpec] =
-    React.useState<VisualizationSpec>(spec);
-  const prevSpecRef = React.useRef<VisualizationSpec | null>(null);
+  const [prevSpecProp, setPrevSpecProp] = React.useState(spec);
+  const [patchedSpec, setPatchedSpec] =
+    React.useState<VisualizationSpec | null>(null);
+
+  // Derived state during render: when the parent provides a new spec, clear any
+  // in-flight patch override so effectiveSpec tracks the canonical prop.
+  // Using the "derived state during render" pattern avoids calling setState
+  // inside an effect, which can cause cascading renders.
+  if (spec !== prevSpecProp) {
+    setPrevSpecProp(spec);
+    setPatchedSpec(null);
+  }
+
+  const effectiveSpec = patchedSpec ?? spec;
 
   const policyViolations = React.useMemo(() => {
     return checkPolicies(spec);
@@ -96,10 +107,6 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         const adapter = await resolveAdapter(spec.engine);
         if (cancelled) return;
         activeRuntime = createRuntime(adapter, spec);
-        // Do not set prevSpecRef here: the sync effect below is responsible
-        // for tracking prevSpecRef and calling setEffectiveSpec. If we set it
-        // here, the sync effect exits early (spec === prevSpecRef.current) and
-        // effectiveSpec is never updated after an engine change.
         setRuntime(activeRuntime);
       } catch (error) {
         if (cancelled) return;
@@ -123,16 +130,13 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   React.useEffect(() => {
     if (!runtime) return;
-    if (spec === prevSpecRef.current) return;
-    prevSpecRef.current = spec;
-    setEffectiveSpec(spec);
     runtime.update(spec);
   }, [runtime, spec]);
 
   const applyPatch = (patch: SpecPatch) => {
     if (!runtime) return;
     runtime.applyPatch(patch);
-    setEffectiveSpec(runtime.spec);
+    setPatchedSpec(runtime.spec);
   };
 
   if (adapterError) throw adapterError;
