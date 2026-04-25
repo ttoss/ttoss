@@ -167,8 +167,16 @@ const applyLayerAdd = (
   newLayer: VisualizationLayer
 ): void => {
   if (map.getLayer(newLayer.id)) return;
+  const source = viewState.spec.sources.find((s) => {
+    return s.id === newLayer.sourceId;
+  });
+  const effectiveSourceLayer =
+    newLayer.sourceLayer ??
+    (source && 'sourceLayer' in source
+      ? (source as { sourceLayer?: string }).sourceLayer
+      : undefined);
   map.addLayer(
-    stripUndefinedPaint(toMaplibreLayer(newLayer, newLayer.sourceLayer))
+    stripUndefinedPaint(toMaplibreLayer(newLayer, effectiveSourceLayer))
   );
   viewState.spec = {
     ...viewState.spec,
@@ -469,7 +477,9 @@ const updateView = (
   }
   if (map.isStyleLoaded()) {
     syncSourcesAndLayers(map, spec, previousSpec);
-    reapplyAllMapData(map, spec);
+    if (previousSpec.mapData !== spec.mapData) {
+      reapplyAllMapData(map, spec);
+    }
   } else {
     map.once('style.load', onStyleReady);
   }
@@ -487,9 +497,9 @@ const updateView = (
 const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
   const { map } = viewState;
   if (patch.target === 'layer') {
-    applyLayerPatch(map, viewState, patch);
+    applyLayerPatch(map, viewState, patch as SpecPatch & { target: 'layer' });
   } else if (patch.target === 'source') {
-    applySourcePatch(map, viewState, patch);
+    applySourcePatch(map, viewState, patch as SpecPatch & { target: 'source' });
   } else if (patch.target === 'mapData') {
     applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);

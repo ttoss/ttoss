@@ -118,4 +118,24 @@ describe('validateSpec — mapData', () => {
       expect(result.errors.join('\n')).toMatch(/ghost/);
     }
   });
+
+  // 1.6
+  test('rejects duplicate mapData.mapDataId', () => {
+    const dupEntry = {
+      mapDataId: 'pop',
+      mapId: 'src-1',
+      data: [{ geometryId: 'BR', value: 10 }],
+    };
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        dupEntry,
+        { ...dupEntry, data: [{ geometryId: 'AR', value: 5 }] },
+      ],
+    });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/pop/);
+    }
+  });
 });

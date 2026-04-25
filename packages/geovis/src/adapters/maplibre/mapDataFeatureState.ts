@@ -3,6 +3,26 @@ import type maplibregl from 'maplibre-gl';
 import type { MapData, MapDataRow, VisualizationSpec } from '../../spec/types';
 
 /**
+ * Builds a lookup index from join-key property value → MapLibre feature.id
+ * by querying all loaded features from a source.
+ *
+ * Used by both apply and remove paths when `joinKey` is set, so the
+ * iteration and null-check logic lives in one place.
+ */
+const buildJoinKeyIndex = (
+  features: ReturnType<maplibregl.Map['querySourceFeatures']>,
+  joinKey: string
+): Map<string, string | number> => {
+  const index = new Map<string, string | number>();
+  for (const f of features) {
+    const k = f.properties?.[joinKey];
+    if (k == null || f.id == null) continue;
+    index.set(String(k), f.id as string | number);
+  }
+  return index;
+};
+
+/**
  * Applies one MapData entry to a MapLibre source via setFeatureState.
  * - When `joinKey` is omitted, `geometryId` is matched against `feature.id`.
  * - When `joinKey` is set, features are queried and indexed by
@@ -27,12 +47,7 @@ export const applyMapDataToSource = (
   }
 
   const features = map.querySourceFeatures(mapData.mapId);
-  const idByJoinKey = new Map<string, string | number>();
-  for (const f of features) {
-    const k = f.properties?.[mapData.joinKey];
-    if (k == null || f.id == null) continue;
-    idByJoinKey.set(String(k), f.id as string | number);
-  }
+  const idByJoinKey = buildJoinKeyIndex(features, mapData.joinKey);
   for (const row of mapData.data) {
     const fid = idByJoinKey.get(String(row.geometryId));
     if (fid == null) continue;
@@ -68,8 +83,17 @@ export const scheduleMapDataApply = (
  * Removes all feature state set by a `MapData` entry from its MapLibre source.
  *
  * @remarks
- * Used when a `mapData` entry is removed via a `remove` patch so MapLibre
- * stops applying stale data-driven styling to the affected features.
+ * When `joinKey` is absent, removal mirrors the apply path: feature state was
+ * set using `row.geometryId` directly as `feature.id`, so the same id is used
+ * to remove it.
+ *
+ * When `joinKey` is set, feature state was applied using the underlying
+ * `feature.id` (resolved via `querySourceFeatures`). Removal therefore
+ * performs the same join-key lookup to recover the correct `feature.id`s.
+ * If the source is not yet loaded, the lookup is skipped and feature state
+ * may be left behind — this is acceptable since an unloaded source has not
+ * rendered any data-driven styling yet.
+ *
  * Silently returns when the source does not exist (already removed).
  */
 export const removeMapDataFromSource = (
@@ -77,8 +101,21 @@ export const removeMapDataFromSource = (
   mapData: MapData
 ): void => {
   if (!map.getSource(mapData.mapId)) return;
+
+  if (!mapData.joinKey) {
+    for (const row of mapData.data) {
+      map.removeFeatureState({ source: mapData.mapId, id: row.geometryId });
+    }
+    return;
+  }
+
+  if (!map.isSourceLoaded(mapData.mapId)) return;
+  const features = map.querySourceFeatures(mapData.mapId);
+  const idByJoinKey = buildJoinKeyIndex(features, mapData.joinKey);
   for (const row of mapData.data) {
-    map.removeFeatureState({ source: mapData.mapId, id: row.geometryId });
+    const fid = idByJoinKey.get(String(row.geometryId));
+    if (fid == null) continue;
+    map.removeFeatureState({ source: mapData.mapId, id: fid });
   }
 };
 

@@ -85,7 +85,7 @@ export const validateSpec = (input: unknown): ValidationResult => {
     return { valid: false, errors };
   }
 
-  const spec = input as VisualizationSpec;
+  const spec = input as unknown as VisualizationSpec;
   const refErrors = validateReferences(spec);
   if (refErrors.length > 0) {
     return { valid: false, errors: refErrors };

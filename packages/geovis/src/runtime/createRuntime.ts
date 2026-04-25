@@ -19,8 +19,8 @@ export interface GeoVisRuntime {
  * Applies a layer-targeted patch to the spec, returning a new spec reference.
  *
  * @remarks
- * Only `add`, `remove`, and `replace` on `paint.<layerId>.<prop>` paths are
- * handled. Any unrecognised path shape is treated as a no-op to avoid partial
+ * Only `add`, `remove`, and `replace` on `layer.<layerId>.paint.<prop>` paths
+ * are handled. Any unrecognised path shape is treated as a no-op to avoid partial
  * mutations that would leave the spec in an inconsistent state.
  *
  * Paint is shallow-merged (`{ ...layer.paint, [prop]: value }`) because
@@ -152,9 +152,15 @@ export const createRuntime = (
       if (patch.op === 'replace' && patch.value === undefined) return;
       adapter.applyPatch?.(patch);
       if (patch.target === 'layer') {
-        currentSpec = applyLayerPatchToSpec(currentSpec, patch);
+        currentSpec = applyLayerPatchToSpec(
+          currentSpec,
+          patch as SpecPatch & { target: 'layer' }
+        );
       } else if (patch.target === 'source') {
-        currentSpec = applySourcePatchToSpec(currentSpec, patch);
+        currentSpec = applySourcePatchToSpec(
+          currentSpec,
+          patch as SpecPatch & { target: 'source' }
+        );
       } else if (patch.target === 'mapData') {
         currentSpec = applyMapDataPatchToSpec(currentSpec, patch);
       }
