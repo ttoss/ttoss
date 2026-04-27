@@ -195,7 +195,10 @@ export const FeatureStatePainter = ({
   const { runtime } = useGeoVis();
 
   const stepsRef = React.useRef(steps);
-  stepsRef.current = steps;
+
+  React.useEffect(() => {
+    stepsRef.current = steps;
+  }, [steps]);
 
   React.useEffect(() => {
     if (!runtime) return;
