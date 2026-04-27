@@ -105,6 +105,10 @@ export const scheduleMapDataApply = (
 
 /**
  * Removes all feature state set by a `MapData` entry from its source.
+ * Also cancels any pending `sourcedata` listener registered by
+ * `scheduleMapDataApply` for the same `mapDataId` so a late source-load
+ * cannot reapply data that no longer belongs to the current spec.
+ *
  * When `joinKey` is absent, removes directly by `row.geometryId`.
  * When `joinKey` is set, resolves `feature.id` via `querySourceFeatures` before removing.
  * Silently returns when the source does not exist or is not yet loaded (joinKey path).
@@ -113,6 +117,11 @@ export const removeMapDataFromSource = (
   map: maplibregl.Map,
   mapData: MapData
 ): void => {
+  // Cancel a pending apply first: even if the source no longer exists, the
+  // listener would otherwise stay registered on the map until the entry is
+  // explicitly cancelled.
+  cancelPendingListener(map, mapData.mapDataId);
+
   if (!map.getSource(mapData.mapId)) return;
 
   if (!mapData.joinKey) {

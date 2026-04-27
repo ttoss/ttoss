@@ -13,7 +13,7 @@ import {
 } from './_map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/DistritoMunicipalMapData',
+  title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
   tags: ['autodocs'],
 } as Meta;
 
@@ -39,7 +39,7 @@ const AVAILABLE_YEARS = [
 type Year = (typeof AVAILABLE_YEARS)[number];
 
 const fmtPop = (v: number) => {
-  return `${(v / 1_000).toFixed(0)}k hab.`;
+  return `${(v / 1_000).toFixed(0)}k inhabitants`;
 };
 
 /**
@@ -51,11 +51,11 @@ const fmtPop = (v: number) => {
  * (set to `cd_distrit`, an integer 1–96). `geometryId` in each `MapDataRow`
  * matches directly against `feature.id`, no `joinKey` needed.
  *
- * Source: SMUL/GEOINFO — Evolução da população residente, Município de SP.
+ * Source: SMUL/GEOINFO — Resident population evolution, São Paulo Municipality.
  */
 // eslint-disable-next-line react/prop-types -- TypeScript generic on StoryFn already validates props
-export const DistritoMunicipalMapData: StoryFn<{ year: Year }> = ({ year }) => {
-  const [populacaoData, setPopulacaoData] = React.useState<Record<
+export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
+  const [populationData, setPopulationData] = React.useState<Record<
     string,
     Record<string, number>
   > | null>(null);
@@ -66,7 +66,7 @@ export const DistritoMunicipalMapData: StoryFn<{ year: Year }> = ({ year }) => {
         return res.json();
       })
       .then((json: Record<string, Record<string, number>>) => {
-        return setPopulacaoData(json);
+        return setPopulationData(json);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -75,17 +75,17 @@ export const DistritoMunicipalMapData: StoryFn<{ year: Year }> = ({ year }) => {
   }, []);
 
   const mapDataEntries = React.useMemo(() => {
-    if (!populacaoData) return [];
-    const yearData = populacaoData[String(year)];
+    if (!populationData) return [];
+    const yearData = populationData[String(year)];
     if (!yearData) return [];
-    return Object.entries(yearData).map(([cdDistrit, pop]) => {
-      return { geometryId: parseInt(cdDistrit, 10), value: pop };
+    return Object.entries(yearData).map(([districtId, pop]) => {
+      return { geometryId: parseInt(districtId, 10), value: pop };
     });
-  }, [populacaoData, year]);
+  }, [populationData, year]);
 
   const spec = React.useMemo<VisualizationSpec>(() => {
     return {
-      id: 'distrito-municipal-mapdata',
+      id: 'municipal-district-mapdata',
       engine: 'maplibre',
       view: { center: [-46.63, -23.55], zoom: 9 },
       basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
@@ -157,7 +157,7 @@ export const DistritoMunicipalMapData: StoryFn<{ year: Year }> = ({ year }) => {
   );
 };
 
-DistritoMunicipalMapData.argTypes = {
+MunicipalDistrictMapData.argTypes = {
   year: {
     control: { type: 'select' },
     options: AVAILABLE_YEARS,
@@ -165,6 +165,6 @@ DistritoMunicipalMapData.argTypes = {
   },
 };
 
-DistritoMunicipalMapData.args = {
+MunicipalDistrictMapData.args = {
   year: 2020,
 };

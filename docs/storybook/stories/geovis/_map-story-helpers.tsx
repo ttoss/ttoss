@@ -194,12 +194,6 @@ export const FeatureStatePainter = ({
 }) => {
   const { runtime } = useGeoVis();
 
-  const stepsRef = React.useRef(steps);
-
-  React.useEffect(() => {
-    stepsRef.current = steps;
-  }, [steps]);
-
   React.useEffect(() => {
     if (!runtime) return;
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
@@ -207,20 +201,19 @@ export const FeatureStatePainter = ({
 
     let mounted = true;
 
-    // Coalesce null (no feature-state set yet) to 0 so `step` returns
-    // defaultColor instead of null (which would render the feature transparent).
-    const expr = [
-      'step',
-      ['coalesce', ['feature-state', 'value'], 0],
-      defaultColor,
-      ...stepsRef.current.flatMap(({ threshold, color }) => {
-        return [threshold, color];
-      }),
-    ];
-
     const applyWhenReady = () => {
       if (!mounted) return;
       if (map.getLayer(layerId)) {
+        // Coalesce null (no feature-state set yet) to 0 so `step` returns
+        // defaultColor instead of null (which would render the feature transparent).
+        const expr = [
+          'step',
+          ['coalesce', ['feature-state', 'value'], 0],
+          defaultColor,
+          ...steps.flatMap(({ threshold, color }) => {
+            return [threshold, color];
+          }),
+        ];
         map.setPaintProperty(layerId, 'fill-color', expr);
       } else {
         map.once('idle', applyWhenReady);
@@ -236,8 +229,7 @@ export const FeatureStatePainter = ({
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runtime, layerId, defaultColor]);
+  }, [runtime, layerId, defaultColor, steps]);
 
   return null;
 };
