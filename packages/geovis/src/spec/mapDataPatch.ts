@@ -5,7 +5,7 @@ import type { MapData, MapDataRow, VisualizationSpec } from './types';
  * integer or float (e.g. `'1'` → `1`). Preserves string ids like `'BR'`.
  * Prevents `setFeatureState` mismatches when feature ids are numeric.
  */
-const coerceGeometryId = (id: string): string | number => {
+export const coerceGeometryId = (id: string): string | number => {
   const n = Number(id);
   return Number.isFinite(n) && String(n) === id ? n : id;
 };

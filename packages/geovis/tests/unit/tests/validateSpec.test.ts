@@ -123,7 +123,7 @@ describe('validateSpec — mapData', () => {
   test('rejects duplicate mapData.mapDataId', () => {
     const dupEntry = {
       mapDataId: 'pop',
-      mapId: 'src-1',
+      mapId: 'states',
       data: [{ geometryId: 'BR', value: 10 }],
     };
     const result = validateSpec({

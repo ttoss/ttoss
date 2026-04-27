@@ -1,6 +1,29 @@
 import type maplibregl from 'maplibre-gl';
 
+import { coerceGeometryId } from '../../spec/mapDataPatch';
 import type { MapData, MapDataRow, VisualizationSpec } from '../../spec/types';
+
+/**
+ * Tracks pending `sourcedata` listeners keyed by `mapDataId` per map instance.
+ * Allows cancellation of stale listeners when a `mapData` entry is removed or
+ * replaced before its source finishes loading.
+ */
+const pendingListeners = new WeakMap<
+  maplibregl.Map,
+  Map<string, (e: maplibregl.MapSourceDataEvent) => void>
+>();
+
+/** Cancels a pending sourcedata listener for `mapDataId` on `map`, if one exists. */
+const cancelPendingListener = (
+  map: maplibregl.Map,
+  mapDataId: string
+): void => {
+  const byId = pendingListeners.get(map);
+  const listener = byId?.get(mapDataId);
+  if (!listener) return;
+  map.off('sourcedata', listener);
+  byId!.delete(mapDataId);
+};
 
 /** Builds a lookup index from join-key property value to MapLibre feature.id. */
 const buildJoinKeyIndex = (
@@ -54,8 +77,9 @@ export const applyMapDataToSource = (
 
 /**
  * Schedules `applyMapDataToSource` to run as soon as the underlying source
- * is loaded. If already loaded, runs synchronously. Otherwise listens on
- * `sourcedata` and removes itself after the first successful application.
+ * is loaded. If already loaded, runs synchronously. Otherwise registers a
+ * `sourcedata` listener and tracks it so it can be cancelled if the entry
+ * is removed or replaced before the source finishes loading.
  */
 export const scheduleMapDataApply = (
   map: maplibregl.Map,
@@ -65,11 +89,17 @@ export const scheduleMapDataApply = (
     applyMapDataToSource(map, mapData);
     return;
   }
+  // Cancel any previously registered listener for the same mapDataId to avoid
+  // applying stale feature state if this entry was replaced before load.
+  cancelPendingListener(map, mapData.mapDataId);
   const listener = (e: maplibregl.MapSourceDataEvent) => {
     if (e.sourceId !== mapData.mapId || !e.isSourceLoaded) return;
     applyMapDataToSource(map, mapData);
     map.off('sourcedata', listener);
+    pendingListeners.get(map)?.delete(mapData.mapDataId);
   };
+  if (!pendingListeners.has(map)) pendingListeners.set(map, new Map());
+  pendingListeners.get(map)!.set(mapData.mapDataId, listener);
   map.on('sourcedata', listener);
 };
 
@@ -127,7 +157,7 @@ const applyRowReplacement = (
     const row = mapData.data.find((r) => {
       return String(r.geometryId) === geometryId;
     });
-    const featureId = row?.geometryId ?? geometryId;
+    const featureId = row?.geometryId ?? coerceGeometryId(geometryId);
     map.setFeatureState({ source: mapData.mapId, id: featureId }, { value });
     return;
   }
@@ -184,8 +214,10 @@ export const applyMapDataPatchToMap = (
     return;
   }
   if (patch.op === 'remove') {
+    const mapDataId = patch.value as string;
+    cancelPendingListener(map, mapDataId);
     const target = currentMapData.find((md) => {
-      return md.mapDataId === (patch.value as string);
+      return md.mapDataId === mapDataId;
     });
     if (target) removeMapDataFromSource(map, target);
     return;
