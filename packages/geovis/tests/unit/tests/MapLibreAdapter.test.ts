@@ -343,6 +343,9 @@ describe('toMaplibreSource', () => {
 describe('applyPatch — camelCase to MapLibre key translation', () => {
   const mountAdapter = () => {
     const map = makeMapMock();
+    // setPaintWhenReady guards on getLayer — return a truthy stub for all
+    // layers that exist in the test spec so paint patches are applied.
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });

@@ -91,6 +91,7 @@ const setPaintWhenReady = (
   value: unknown
 ): void => {
   const apply = () => {
+    if (!map.getLayer(layerId)) return;
     map.setPaintProperty(
       layerId,
       property,
@@ -125,14 +126,15 @@ const applyLayerAdd = (
   };
 };
 
-/** Removes a layer from the map if present and updates `viewState.spec`. */
+/** Removes a layer from the map if present and updates `viewState.spec`. Spec is always updated to stay in sync even when the map layer was already gone. */
 const applyLayerRemove = (
   map: maplibregl.Map,
   viewState: LayerHostState,
   layerId: string
 ): void => {
-  if (!map.getLayer(layerId)) return;
-  map.removeLayer(layerId);
+  if (map.getLayer(layerId)) {
+    map.removeLayer(layerId);
+  }
   viewState.spec = {
     ...viewState.spec,
     layers: viewState.spec.layers.filter((l) => {
@@ -198,13 +200,14 @@ const applySourcePatch = (
   }
   if (patch.op !== 'remove') return;
   const sourceId = patch.value as string;
-  if (!map.getSource(sourceId)) return;
-  for (const layer of viewState.spec.layers) {
-    if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
-      map.removeLayer(layer.id);
+  if (map.getSource(sourceId)) {
+    for (const layer of viewState.spec.layers) {
+      if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
+        map.removeLayer(layer.id);
+      }
     }
+    map.removeSource(sourceId);
   }
-  map.removeSource(sourceId);
   viewState.spec = {
     ...viewState.spec,
     layers: viewState.spec.layers.filter((l) => {

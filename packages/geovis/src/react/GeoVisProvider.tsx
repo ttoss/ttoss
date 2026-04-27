@@ -72,24 +72,20 @@ interface GeoVisProviderProps {
 export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [runtime, setRuntime] = React.useState<GeoVisRuntime | null>(null);
   const [adapterError, setAdapterError] = React.useState<Error | null>(null);
-  const [prevSpecProp, setPrevSpecProp] = React.useState(spec);
-  const [patchedSpec, setPatchedSpec] =
-    React.useState<VisualizationSpec | null>(null);
+  const [patchState, setPatchState] = React.useState<{
+    forSpec: VisualizationSpec;
+    patchedSpec: VisualizationSpec | null;
+  }>({ forSpec: spec, patchedSpec: null });
 
-  // Derived-state-during-render pattern (getDerivedStateFromProps equivalent).
-  // When the parent provides a new spec reference, clear any in-flight patch
-  // override. React will interrupt and re-render with the updated values.
-  if (spec !== prevSpecProp) {
-    setPrevSpecProp(spec);
-    setPatchedSpec(null);
-  }
-
-  const hasSpecPropChanged = spec !== prevSpecProp;
-  const effectiveSpec = hasSpecPropChanged ? spec : (patchedSpec ?? spec);
+  // Pure derivation — no setState during render. When the parent provides a
+  // new `spec` reference, `patchState.forSpec !== spec` makes `effectiveSpec`
+  // fall through to the fresh prop; stale patches are automatically ignored.
+  const effectiveSpec =
+    patchState.forSpec === spec ? (patchState.patchedSpec ?? spec) : spec;
 
   const policyViolations = React.useMemo(() => {
-    return checkPolicies(spec);
-  }, [spec]);
+    return checkPolicies(effectiveSpec);
+  }, [effectiveSpec]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -130,7 +126,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const applyPatch = (patch: SpecPatch) => {
     if (!runtime) return;
     runtime.applyPatch(patch);
-    setPatchedSpec(runtime.spec);
+    setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
   };
 
   if (adapterError) throw adapterError;
