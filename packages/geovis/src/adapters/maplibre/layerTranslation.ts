@@ -149,6 +149,24 @@ const builders: Record<GeoVisGeometryType, Builder> = {
 };
 
 /**
+ * Strips `undefined` paint values before `map.addLayer` to satisfy MapLibre's strict paint validation.
+ * Shared by `syncSourcesAndLayers` and `MapLibreAdapter` to avoid drift between the two call sites.
+ */
+export const stripUndefinedPaint = (
+  layer: maplibregl.LayerSpecification
+): maplibregl.LayerSpecification => {
+  const paint = (layer as { paint?: Record<string, unknown> }).paint;
+  if (paint) {
+    (layer as { paint?: Record<string, unknown> }).paint = Object.fromEntries(
+      Object.entries(paint).filter(([, v]) => {
+        return v !== undefined;
+      })
+    );
+  }
+  return layer;
+};
+
+/**
  * Translates a `VisualizationLayer` into a MapLibre `LayerSpecification`.
  * Sole translation boundary between the GeoVis layer model and MapLibre.
  * Geometry type dispatches to a dedicated builder via the `builders` map.

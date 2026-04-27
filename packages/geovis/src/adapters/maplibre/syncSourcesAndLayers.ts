@@ -1,7 +1,7 @@
 import type maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
-import { toMaplibreLayer } from './layerTranslation';
+import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
 import { toMaplibreSource } from './sourceTranslation';
 
 /** Removes layers from `previousSpec` no longer present in `spec`. */
@@ -59,16 +59,6 @@ const upsertSources = (
       );
     }
   }
-};
-
-const stripUndefinedPaint = (layer: maplibregl.LayerSpecification): void => {
-  const paint = (layer as { paint?: Record<string, unknown> }).paint;
-  if (!paint) return;
-  (layer as { paint?: Record<string, unknown> }).paint = Object.fromEntries(
-    Object.entries(paint).filter(([, value]) => {
-      return value !== undefined;
-    })
-  );
 };
 
 /** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */

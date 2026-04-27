@@ -15,7 +15,7 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
-import { toMaplibreLayer } from './layerTranslation';
+import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
 import {
   applyMapDataPatchToMap,
   reapplyAllMapData,
@@ -82,21 +82,6 @@ const specPaintKeyToMaplibre = (
 interface LayerHostState {
   spec: VisualizationSpec;
 }
-
-/** Strips `undefined` paint values before `map.addLayer` to satisfy MapLibre's strict paint validation. */
-const stripUndefinedPaint = (
-  layer: maplibregl.LayerSpecification
-): maplibregl.LayerSpecification => {
-  const paint = (layer as { paint?: Record<string, unknown> }).paint;
-  if (paint) {
-    (layer as { paint?: Record<string, unknown> }).paint = Object.fromEntries(
-      Object.entries(paint).filter(([, v]) => {
-        return v !== undefined;
-      })
-    );
-  }
-  return layer;
-};
 
 /** Applies a paint property immediately if the style is loaded, otherwise defers to `style.load`. */
 const setPaintWhenReady = (

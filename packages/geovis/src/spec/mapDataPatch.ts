@@ -1,5 +1,15 @@
 import type { MapData, MapDataRow, VisualizationSpec } from './types';
 
+/**
+ * Coerces a patch-path string id to a number when it represents a finite
+ * integer or float (e.g. `'1'` → `1`). Preserves string ids like `'BR'`.
+ * Prevents `setFeatureState` mismatches when feature ids are numeric.
+ */
+const coerceGeometryId = (id: string): string | number => {
+  const n = Number(id);
+  return Number.isFinite(n) && String(n) === id ? n : id;
+};
+
 /** Returns a new `MapData` with the matching row updated to `value`, appending a new row when absent. */
 const replaceRow = (
   md: MapData,
@@ -18,7 +28,7 @@ const replaceRow = (
           ? { geometryId: row.geometryId, value }
           : row;
       })
-    : [...md.data, { geometryId, value }];
+    : [...md.data, { geometryId: coerceGeometryId(geometryId), value }];
   return { ...md, data };
 };
 
