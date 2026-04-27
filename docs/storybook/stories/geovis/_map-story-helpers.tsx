@@ -169,6 +169,77 @@ export const ChoroplethPainter = ({
 };
 
 // ---------------------------------------------------------------------------
+// FeatureStatePainter
+// ---------------------------------------------------------------------------
+
+/**
+ * Render-less component mounted inside a GeoVisProvider.
+ * Applies a `step` colour expression driven by `['feature-state', 'value']`
+ * instead of a feature property.
+ *
+ * Use this with `mapData` sources where the value is injected at runtime via
+ * `setFeatureState` — it does NOT read from GeoJSON properties.
+ *
+ * The paint expression is set once; the choropleth updates automatically as
+ * the runtime applies new feature-state values when `mapData` changes.
+ */
+export const FeatureStatePainter = ({
+  layerId,
+  defaultColor,
+  steps,
+}: {
+  layerId: string;
+  defaultColor: string;
+  steps: ColorStep[];
+}) => {
+  const { runtime } = useGeoVis();
+
+  const stepsRef = React.useRef(steps);
+  stepsRef.current = steps;
+
+  React.useEffect(() => {
+    if (!runtime) return;
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
+    if (!map) return;
+
+    let mounted = true;
+
+    // Coalesce null (no feature-state set yet) to 0 so `step` returns
+    // defaultColor instead of null (which would render the feature transparent).
+    const expr = [
+      'step',
+      ['coalesce', ['feature-state', 'value'], 0],
+      defaultColor,
+      ...stepsRef.current.flatMap(({ threshold, color }) => {
+        return [threshold, color];
+      }),
+    ];
+
+    const applyWhenReady = () => {
+      if (!mounted) return;
+      if (map.getLayer(layerId)) {
+        map.setPaintProperty(layerId, 'fill-color', expr);
+      } else {
+        map.once('idle', applyWhenReady);
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      applyWhenReady();
+    } else {
+      map.once('load', applyWhenReady);
+    }
+
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runtime, layerId, defaultColor]);
+
+  return null;
+};
+
+// ---------------------------------------------------------------------------
 // MapOverlayLegend
 // ---------------------------------------------------------------------------
 

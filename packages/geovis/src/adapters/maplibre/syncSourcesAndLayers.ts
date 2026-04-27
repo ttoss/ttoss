@@ -61,6 +61,34 @@ const upsertSources = (
   }
 };
 
+/**
+ * Writes one paint property of an existing layer, with one exception:
+ * skips `fill-color` for `mapData`-driven layers when the user did NOT
+ * explicitly declare `fillColor` in the spec paint. In that case the
+ * adapter fallback ('#3b82f6') would overwrite the feature-state step
+ * expression applied externally (e.g. via FeatureStatePainter) on every
+ * spec update. When `fillColor` IS explicit, honour it — the caller
+ * opted out of the choropleth colouring for that layer.
+ */
+const writePaintProperty = (
+  map: maplibregl.Map,
+  layer: VisualizationSpec['layers'][number],
+  property: string,
+  value: unknown
+): void => {
+  if (property === 'fill-color' && layer.mapDataId) {
+    const hasExplicitFillColor = !!(
+      layer.paint as { fillColor?: string } | undefined
+    )?.fillColor;
+    if (!hasExplicitFillColor) return;
+  }
+  map.setPaintProperty(
+    layer.id,
+    property,
+    value as maplibregl.StyleSpecification
+  );
+};
+
 /** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */
 const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
   for (const layer of spec.layers) {
@@ -88,11 +116,7 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
     const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
     if (!paint) continue;
     for (const [property, value] of Object.entries(paint)) {
-      map.setPaintProperty(
-        layer.id,
-        property,
-        value as maplibregl.StyleSpecification
-      );
+      writePaintProperty(map, layer, property, value);
     }
   }
 };
