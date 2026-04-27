@@ -1,5 +1,6 @@
 ---
 title: Agentic Development Principles
+sidebar_position: 2
 ---
 
 import TOCInline from '@theme/TOCInline';
@@ -118,6 +119,20 @@ By instructing AI agents to explicitly indicate when their confidence exceeds a 
 
 High confidence scores are internal probability assessments, not external verifications of truth. Therefore, high confidence should prioritize an output for review, but never bypass validation. Relying blindly on a "99% confident" score often leads to accepting non-existent APIs or logic flaws.
 
+### The Principle of Silent Interpretation
+
+When a prompt is ambiguous, an autoregressive model does not pause—it samples one interpretation from its prior and proceeds as if the choice were given. The architecture exposes no native "halt and ask" primitive: at every step a token must be emitted, and confusion has no output channel of its own. Therefore, unless the output schema explicitly reserves space for assumptions and open questions, the agent collapses ambiguity into a confident answer that is indistinguishable, on the surface, from a confidently correct one. This is the agent-side dual of [The Principle of Signal Entropy](#the-principle-of-signal-entropy): noisy input would be survivable if the agent could stop, but the absence of a back-channel is what turns ambiguity into silent error. It is also why semantic instructions to "ask if unclear" fail under [The Principle of Instructional Shallowness](#the-principle-of-instructional-shallowness)—they ask the model to use a channel that does not structurally exist.
+
+**Failure Scenario:** A developer asks an agent to "refactor this module to be cleaner." Three valid interpretations exist (extract helpers, flatten conditionals, rename for clarity). The agent silently samples one, deletes a guard clause it judges "clutter," and returns a confident diff. No clarifying question is raised because the model never structurally surfaced that there was a choice to make.
+
+#### The Corollary of Externalized Confusion
+
+If you want an agent to surface uncertainty, the _output schema_ must require it. Reserve fields such as `assumptions[]`, `open_questions[]`, and `interpretation_chosen` in the structured response, and reject outputs that leave them empty when ambiguity is detectable. This converts confusion from a behavioral hope into a structural obligation, applying [The Principle of Structural Determinism](#the-principle-of-structural-determinism) to the meta-channel of the agent's own uncertainty.
+
+#### The Corollary of Interpretation Enumeration
+
+For high-risk or ill-structured tasks, force the agent to enumerate at least two viable interpretations _before_ committing to an implementation. This converts silent sampling into an explicit branch a human (or a downstream deterministic check) can adjudicate, and it aligns with [The Corollary of Risk-Structured Delegation](#the-corollary-of-risk-structured-delegation) by raising the cost of commitment in proportion to the cost of being wrong.
+
 ### The Principle of Structural Determinism
 
 Probabilistic systems can only be made deterministic through structural enforcement, not semantic persuasion. In traditional software engineering, the developer's primary role is to write deterministic logic that explicitly defines the system's behavior. In Applied AI, the model generates behavior probabilistically (see [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output)). Therefore, the developer's role shifts from writing the flow to architecting the boundaries—constructing rigid constraints (schemas, validators, type-checks) that force a non-deterministic model to collapse into a reliable, deterministic outcome. This is the primary mitigation for [The Principle of Probabilistic AI Output](#the-principle-of-probabilistic-ai-output) and the only way to override [The Principle of Interpretive Competition](#the-principle-of-interpretive-competition).
@@ -200,6 +215,12 @@ AI models function as statistical pattern matchers that prioritize local consist
 #### The Corollary of Contextual Hygiene
 
 Because AI amplifies existing patterns, the cleanliness of the input context (the code currently in the buffer) determines the quality of the output. Before asking an agent to extend a module, the operator must first ensure the immediate context represents the desired standard, or the agent will scale the dysfunction.
+
+#### The Corollary of Distributional Regression
+
+Pattern Inertia operates not only over the _local_ context window but also over the _global_ training distribution. Asked to solve a small, narrow problem, a model regresses toward what "complete," "production-grade" code statistically looks like in its training data—introducing speculative abstractions, configurability, defensive scaffolding, and error handling for impossible states that were never requested. Inflation is therefore the default; minimalism is the exception that must be structurally enforced (e.g., explicit non-goals per [The Corollary of Explicit Non-Goals](#the-corollary-of-explicit-non-goals), line/complexity budgets enforced via [The Corollary of Evaluative Abstraction](#the-corollary-of-evaluative-abstraction), and rejection per [The Corollary of Deletion Supremacy](#the-corollary-of-deletion-supremacy)).
+
+**Failure Scenario:** A developer asks an agent to add a single boolean flag to a config object. The agent returns a 120-line diff introducing a `ConfigStrategy` interface, three implementations, a factory, and try/catch blocks around every read—because that is what "good config code" looks like in the training distribution. The flag was added; the surrounding inflation now requires verification it never warranted.
 
 ### The Principle of Interpretive Competition
 
@@ -554,6 +575,10 @@ The economics of automation are governed by convexity: the cost of verification 
 
 **Failure Scenario:** An autonomous agent is given write access to the production environment to "fix a small bug." It hallucinates a command that drops a critical table. The $5 saved in developer time results in a \$500,000 outage.
 
+#### The Corollary of Bounded Edit Radius
+
+An agent given write access to a region treats the entire region as eligible for modification; edits diffuse outward from the requested target because each local change is locally plausible. Because blast radius is what governs risk, the agent's _editable surface_—not just its _executable actions_—must be constrained: scoped to specific files, specific functions, or change budgets enforced by tooling. Without this, a one-line bug fix can return as a 200-line PR that is individually defensible and collectively unreviewable, silently expanding the asymmetric downside this principle exists to bound.
+
 ### The Principle of Contextual Authority
 
 An AI agent's effective capability is capped by the operator's ownership and mental model of the system. When the operator has deep knowledge (ownership), AI acts as an extension of will, amplifying intent. When the operator lacks deep knowledge (contracting), AI acts as a temporary shield against complexity, hiding implementation details the operator cannot evaluate.
@@ -636,6 +661,10 @@ Every dollar saved on AI-assisted generation must be matched by investment in au
 
 Unreviewed AI output accumulates as hidden liability—it looks like progress but carries unknown risk. Unlike technical debt (which is visible in code complexity), review debt is invisible until failure. A backlog of "AI-generated but not verified" artifacts represents not value, but deferred risk with compounding interest.
 
+#### The Corollary of Traceable Edits
+
+Because verification cost scales with the number of changed lines, every changed line must trace to an explicit item in the spec or task. Untraceable edits—reformatting, drive-by renames, "while I was here" refactors—inflate review burden without increasing requested value, and they should be rejected by tooling (diff-scope checks, change-budget limits) rather than by human attention. The agent may delete only symbols its own changes orphaned; pre-existing dead code is reported, not removed. This operationalizes [The Corollary of Review Debt](#the-corollary-of-review-debt) by ensuring the review surface stays proportional to the requested change.
+
 #### The Corollary of Evaluative Abstraction
 
 Human oversight of AI-generated code must shift from line-by-line syntax inspection to the evaluation of high-level structural metrics and behavioral invariants.
@@ -703,4 +732,4 @@ Scale AI autonomy not only by risk (per [The Principle of Graduated Agency by St
 
 ---
 
-_These principles are evolving. For implementation strategies, see [Agentic Design Patterns](/docs/ai/agentic-design-patterns). For foundational reasoning, see [Product Development Principles](/docs/product/product-development/principles)._
+_These principles are evolving. For team-level prerequisites, see [Agentic Engineering Foundations](/docs/ai/agentic-engineering-foundations). For implementation strategies, see [Agentic Design Patterns](/docs/ai/agentic-design-patterns). For foundational reasoning, see [Product Development Principles](/docs/product/product-development/principles)._

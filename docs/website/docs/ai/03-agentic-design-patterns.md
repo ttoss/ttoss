@@ -1,10 +1,11 @@
 ---
 title: Agentic Design Patterns
+sidebar_position: 4
 ---
 
 import TOCInline from '@theme/TOCInline';
 
-While [Agentic Development Principles](/docs/ai/agentic-development-principles) define the immutable laws of physics and economics for AI integration, this page defines the Engineering Standards required to build within those laws.
+While [Agentic Development Principles](/docs/ai/agentic-development-principles) define the immutable laws of physics and economics for AI integration, and [Agentic Engineering Foundations](/docs/ai/agentic-engineering-foundations) define what must be true of the team and codebase, this page defines the reusable engineering patterns required to build within those constraints.
 
 These are not theoretical concepts; they are reusable design patterns. They provide specific solutions to the recurring problems of cost, latency, reliability, and risk that every agentic system encounters. Use these patterns to bridge the gap between abstract principles and production code.
 
