@@ -76,15 +76,13 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const [patchedSpec, setPatchedSpec] =
     React.useState<VisualizationSpec | null>(null);
 
-  // When the parent provides a new spec, clear any in-flight patch override.
-  // The effect runs after render; the `hasSpecPropChanged` guard ensures the
-  // context receives the new spec immediately on the same render.
-  React.useEffect(() => {
-    if (spec !== prevSpecProp) {
-      setPrevSpecProp(spec);
-      setPatchedSpec(null);
-    }
-  }, [prevSpecProp, spec]);
+  // Derived-state-during-render pattern (getDerivedStateFromProps equivalent).
+  // When the parent provides a new spec reference, clear any in-flight patch
+  // override. React will interrupt and re-render with the updated values.
+  if (spec !== prevSpecProp) {
+    setPrevSpecProp(spec);
+    setPatchedSpec(null);
+  }
 
   const hasSpecPropChanged = spec !== prevSpecProp;
   const effectiveSpec = hasSpecPropChanged ? spec : (patchedSpec ?? spec);
