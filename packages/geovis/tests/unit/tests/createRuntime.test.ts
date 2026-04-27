@@ -175,4 +175,56 @@ describe('createRuntime — applyPatch target:mapData', () => {
       expect.objectContaining({ target: 'mapData', op: 'remove' })
     );
   });
+
+  // 2.5 — append preserves numeric geometryId type
+  test('op:replace appends new row with numeric geometryId type when id is numeric', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.42',
+      value: 99,
+    });
+    const appended = runtime.spec.mapData?.[0].data.find((row) => {
+      return row.geometryId === 42;
+    });
+    expect(appended?.geometryId).toBe(42);
+    expect(appended?.value).toBe(99);
+  });
+
+  // 2.6 — append preserves string geometryId type when id is not numeric
+  test('op:replace appends new row with string geometryId type when id is not numeric', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.XX',
+      value: 7,
+    });
+    const appended = runtime.spec.mapData?.[0].data.find((row) => {
+      return row.geometryId === 'XX';
+    });
+    expect(appended?.geometryId).toBe('XX');
+    expect(appended?.value).toBe(7);
+  });
+
+  // 2.7 — full-entry replace (path depth 2)
+  test('op:replace at path depth 2 replaces the full MapData entry', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    const replacement = {
+      mapDataId: 'pop',
+      mapId: 'src-1',
+      data: [{ geometryId: 'US', value: 330 }],
+    };
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop',
+      value: replacement,
+    });
+    expect(runtime.spec.mapData?.[0]).toEqual(replacement);
+  });
 });
