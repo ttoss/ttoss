@@ -134,10 +134,9 @@ const config: Config = {
                   .replace('modules/packages/', '')
                   .replace('/index/index.md', '');
                 return `https://github.com/ttoss/ttoss/tree/main/packages/${packageName}/README.md`;
-              } else {
-                // Disable edit for auto-generated API docs
-                return undefined;
               }
+              // Disable edit for auto-generated API docs
+              return undefined;
             }
             return `https://github.com/ttoss/ttoss/tree/main/docs/website/${docPath}`;
           },
