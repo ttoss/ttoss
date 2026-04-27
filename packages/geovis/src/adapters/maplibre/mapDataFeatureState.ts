@@ -20,9 +20,9 @@ const cancelPendingListener = (
 ): void => {
   const byId = pendingListeners.get(map);
   const listener = byId?.get(mapDataId);
-  if (!listener) return;
+  if (!byId || !listener) return;
   map.off('sourcedata', listener);
-  byId!.delete(mapDataId);
+  byId.delete(mapDataId);
 };
 
 /** Builds a lookup index from join-key property value to MapLibre feature.id. */

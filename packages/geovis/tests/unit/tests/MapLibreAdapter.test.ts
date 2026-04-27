@@ -949,4 +949,75 @@ describe('mapData — feature-state application', () => {
 
     expect(map.setFeatureState).not.toHaveBeenCalled();
   });
+
+  // 3.10 — pending listener is cancelled on op:remove before source loads
+  test('op:remove cancels pending sourcedata listener; no setFeatureState when source eventually loads', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isSourceLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 1 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load'); // registers pending sourcedata listener
+
+    adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
+
+    // Source loads after removal — stale listener must NOT apply feature state
+    fire('sourcedata', { sourceId: 'states', isSourceLoaded: true });
+
+    expect(map.setFeatureState).not.toHaveBeenCalled();
+  });
+
+  // 3.11 — pending listener is replaced on full-entry replace before source loads
+  test('full-entry replace cancels stale listener and applies only new data when source loads', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isSourceLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 1 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load'); // registers pending sourcedata listener for old data (value: 1)
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop',
+      value: {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 99 }],
+      },
+    });
+
+    // Source loads — only the replacement data (99) must be applied, not the stale (1)
+    fire('sourcedata', { sourceId: 'states', isSourceLoaded: true });
+
+    expect(map.setFeatureState).toHaveBeenCalledTimes(1);
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 99 }
+    );
+  });
 });
