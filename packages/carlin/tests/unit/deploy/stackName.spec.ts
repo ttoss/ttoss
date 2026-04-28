@@ -1,11 +1,12 @@
-import {
-  STACK_NAME_MAX_LENGTH,
-  getStackName,
-  setPreDefinedStackName,
-} from 'src/deploy/stackName';
 import { faker } from '@ttoss/test-utils/faker';
-import { getCurrentBranch, getEnvironment, getPackageName } from 'src/utils';
 import { kebabCase, pascalCase } from 'change-case';
+import {
+  getStackName,
+  sanitizeStackName,
+  setPreDefinedStackName,
+  STACK_NAME_MAX_LENGTH,
+} from 'src/deploy/stackName';
+import { getCurrentBranch, getEnvironment, getPackageName } from 'src/utils';
 
 const mockMath = Object.create(global.Math);
 const randomNumber = 0.12345;
@@ -37,11 +38,49 @@ jest.mock('src/utils', () => {
 
 test('limit stackName length', async () => {
   const bigName = faker.lorem.words(2 * STACK_NAME_MAX_LENGTH);
-  (getCurrentBranch as jest.Mock).mockReturnValueOnce(bigName);
-  (getEnvironment as jest.Mock).mockReturnValueOnce(bigName);
-  (getPackageName as jest.Mock).mockReturnValueOnce(bigName);
+  jest.mocked(getCurrentBranch).mockReturnValueOnce(bigName);
+  jest.mocked(getEnvironment).mockReturnValueOnce(bigName);
+  jest.mocked(getPackageName).mockReturnValueOnce(bigName);
   const stackName = await getStackName();
   expect(stackName.length).toEqual(STACK_NAME_MAX_LENGTH);
+});
+
+describe('sanitizeStackName', () => {
+  test('replaces accented characters with their ASCII base (e.g. ç → c, ã → a)', () => {
+    expect(sanitizeStackName('configuração')).toEqual('configuracao');
+  });
+
+  test('removes characters that are not letters, digits, or hyphens', () => {
+    expect(sanitizeStackName('hello!world')).toEqual('hello-world');
+  });
+
+  test('collapses consecutive hyphens into a single hyphen', () => {
+    expect(sanitizeStackName('hello--world')).toEqual('hello-world');
+  });
+
+  test('strips leading and trailing hyphens', () => {
+    expect(sanitizeStackName('-hello-world-')).toEqual('hello-world');
+  });
+
+  test('handles the exact branch name from the issue report', () => {
+    const branchName =
+      '1356-adicionar-configuração-para-não-adicionar-os-sufixos-nos-nomes-das-campanha';
+    const result = sanitizeStackName(branchName);
+    expect(result).toEqual(
+      '1356-adicionar-configuracao-para-nao-adicionar-os-sufixos-nos-nomes-das-campanha'
+    );
+  });
+
+  test('stack name with special-char branch satisfies CloudFormation pattern', async () => {
+    const specialBranch =
+      '1356-adicionar-configuração-para-não-adicionar-sufixos';
+    jest.mocked(getCurrentBranch).mockReturnValueOnce(specialBranch);
+    jest.mocked(getEnvironment).mockReturnValueOnce(undefined);
+    jest.mocked(getPackageName).mockReturnValueOnce('@oneclickads/graph-api');
+    setPreDefinedStackName('');
+    const stackName = await getStackName();
+    expect(stackName).toMatch(/^[a-zA-Z][-a-zA-Z0-9]*$/);
+  });
 });
 
 describe('testing getStackName', () => {

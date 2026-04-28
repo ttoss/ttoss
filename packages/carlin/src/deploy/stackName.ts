@@ -26,6 +26,27 @@ export const limitStackName = (stackName: string) => {
 };
 
 /**
+ * Sanitizes a stack name to satisfy the CloudFormation constraint:
+ * `[a-zA-Z][-a-zA-Z0-9]*`
+ *
+ * Steps:
+ * 1. Normalize Unicode (NFKD) to decompose accented characters (e.g. ç → c + combining cedilla).
+ * 2. Strip combining diacritical marks so the base letters remain.
+ * 3. Remove any remaining non-ASCII characters.
+ * 4. Replace characters that are not letters, digits, or hyphens with a hyphen.
+ * 5. Collapse consecutive hyphens into a single hyphen.
+ * 6. Strip leading and trailing hyphens.
+ */
+export const sanitizeStackName = (stackName: string) => {
+  return stackName
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+/**
  * If stack name isn't previously defined, the name will be created accordingly
  * with the following rules:
  *
@@ -93,5 +114,5 @@ export const getStackName = async () => {
     })
     .join('-');
 
-  return limitStackName(name);
+  return limitStackName(sanitizeStackName(name));
 };
