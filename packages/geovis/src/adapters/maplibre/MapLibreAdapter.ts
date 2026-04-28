@@ -15,7 +15,11 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
-import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
+import {
+  resolveLegendFillColorExpression,
+  stripUndefinedPaint,
+  toMaplibreLayer,
+} from './layerTranslation';
 import {
   applyMapDataPatchToMap,
   reapplyAllMapData,
@@ -103,6 +107,19 @@ const setPaintWhenReady = (
   };
   if (map.isStyleLoaded()) apply();
   else map.once('style.load', apply);
+};
+
+/** Re-applies legend-driven polygon fill expressions for layers with active legends. */
+const reapplyLegendDrivenFillPaint = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec
+): void => {
+  for (const layer of spec.layers) {
+    if (layer.geometry !== 'polygon') continue;
+    const expression = resolveLegendFillColorExpression(layer);
+    if (!expression) continue;
+    setPaintWhenReady(map, layer.id, 'fill-color', expression);
+  }
 };
 
 /** Adds a layer to the map if not already present; resolves sourceLayer from the source when absent on the layer. */
@@ -341,6 +358,7 @@ const updateView = (
     if (!updated) return;
     syncSourcesAndLayers(map, updated.spec, null);
     reapplyAllMapData(map, updated.spec);
+    reapplyLegendDrivenFillPaint(map, updated.spec);
   };
 
   if (nextStyleUrl !== viewState.styleUrl) {
@@ -361,6 +379,7 @@ const updateView = (
         }
       }
       reapplyAllMapData(map, spec);
+      reapplyLegendDrivenFillPaint(map, spec);
     }
   } else {
     map.once('style.load', onStyleReady);
@@ -377,6 +396,7 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
   } else if (patch.target === 'mapData') {
     applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
+    reapplyLegendDrivenFillPaint(map, viewState.spec);
   }
 };
 

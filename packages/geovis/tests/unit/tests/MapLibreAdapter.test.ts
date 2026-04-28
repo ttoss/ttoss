@@ -1184,4 +1184,116 @@ describe('mapData — feature-state application', () => {
       { value: 99 }
     );
   });
+
+  test('update() with changed mapData reapplies active legend fill-color expression', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const withLegend = baseSpec([
+      {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 211 }],
+      },
+    ]);
+    withLegend.layers = [
+      {
+        ...withLegend.layers[0],
+        legends: [
+          {
+            id: 'status',
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { high: '#16a34a' },
+              defaultColor: '#6b7280',
+            },
+          },
+        ],
+        activeLegendId: 'status',
+      },
+    ];
+
+    adapter.mount(makeContainer(), withLegend, 'v');
+    fire('load');
+    jest.mocked(map.setPaintProperty).mockClear();
+
+    adapter.update({
+      ...withLegend,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 300 }],
+        },
+      ],
+    });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
+      'match',
+      ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
+      'high',
+      '#16a34a',
+      '#6b7280',
+    ]);
+  });
+
+  test('mapData patch replace reapplies active legend fill-color expression', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const withLegend = baseSpec([
+      {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 211 }],
+      },
+    ]);
+    withLegend.layers = [
+      {
+        ...withLegend.layers[0],
+        legends: [
+          {
+            id: 'status',
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { high: '#16a34a' },
+              defaultColor: '#6b7280',
+            },
+          },
+        ],
+        activeLegendId: 'status',
+      },
+    ];
+
+    adapter.mount(makeContainer(), withLegend, 'v');
+    fire('load');
+    jest.mocked(map.setPaintProperty).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 500,
+    });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
+      'match',
+      ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
+      'high',
+      '#16a34a',
+      '#6b7280',
+    ]);
+  });
 });

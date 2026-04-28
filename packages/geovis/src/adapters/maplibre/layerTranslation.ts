@@ -67,11 +67,10 @@ const resolveThresholdBreaks = (layer: VisualizationLayer): number[] => {
  * Resolves a legend-driven fill expression for polygon layers.
  *
  * @remarks
- * Layer-local legend selection (`activeLegendId`) intentionally takes
- * precedence over static `paint.fillColor` so consumers can switch color
- * semantics without mutating the paint object itself.
+ * Exported so runtime update flows can re-apply the same expression after
+ * mapData mutations, keeping style and feature-state paths in sync.
  */
-const resolveLegendFillColor = (
+export const resolveLegendFillColorExpression = (
   layer: VisualizationLayer
 ): unknown[] | undefined => {
   if (layer.geometry !== 'polygon') return undefined;
@@ -91,7 +90,7 @@ const resolveLegendFillColor = (
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
 const buildPolygon: Builder = (base, layer, paint) => {
   const fp = (paint ?? {}) as FillPaint;
-  const legendFillColor = resolveLegendFillColor(layer);
+  const legendFillColor = resolveLegendFillColorExpression(layer);
   return {
     ...base,
     type: 'fill',
