@@ -1,13 +1,17 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { PolicyViolation, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  MapDataRow,
+  PolicyViolation,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
 import type { LockRef, MapRef } from './_map-story-helpers';
 import {
-  ChoroplethPainter,
   ColorSwatchLegend,
+  FeatureStatePainter,
   MapLabel,
   MapOverlayLegend,
   MapSync,
@@ -21,7 +25,7 @@ export default {
 const spec = fixture as unknown as VisualizationSpec;
 
 const fmtPop = (v: number) => {
-  return `${(v / 1_000_000).toFixed(1)}M hab.`;
+  return `${(v / 1_000_000).toFixed(1)}M inhabitants`;
 };
 const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
@@ -46,8 +50,27 @@ const densitySteps = [
   { threshold: 1300, color: '#14532d' },
 ];
 
-// MapLibre expression to calculate density at runtime: population / sq-km.
-const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
+// Hardcoded Rwanda population per province (joined to rwanda-provinces.geojson
+// via feature.properties['name:en'] — the source has `name` in kinyarwanda,
+// `name:en` in English). Public statistics, snapshot circa 2022.
+const populationData: MapDataRow[] = [
+  { geometryId: 'Kigali City', value: 1_132_686 },
+  { geometryId: 'East Province', value: 2_595_703 },
+  { geometryId: 'Western Province', value: 2_471_239 },
+  { geometryId: 'Southern Province', value: 2_589_975 },
+  { geometryId: 'Northern Province', value: 1_726_370 },
+];
+
+// Pre-computed density (population / sq-km) per province. Encoded as a separate
+// dataset because feature-state stores a single `value` per source/feature; the
+// runtime expression `pop / area` is replaced by a precomputed value here.
+const densityData: MapDataRow[] = [
+  { geometryId: 'Kigali City', value: 1551 },
+  { geometryId: 'East Province', value: 274 },
+  { geometryId: 'Western Province', value: 420 },
+  { geometryId: 'Southern Province', value: 434 },
+  { geometryId: 'Northern Province', value: 527 },
+];
 
 /**
  * Null component that reads policyViolations from GeoVisContext (via useGeoVis)
@@ -125,17 +148,59 @@ const PolicyWarningBanner = ({
  * Intentionally **invalid** fixture — contract artefact for the
  * `cartography.warnOnRawCountChoropleth` policy.
  *
- * Uses official MapLibre data (Rwanda provinces) and a split-compare to
+ * Uses official MapLibre Rwanda provinces geometry and a split-compare to
  * expose the issue: Kigali City has the smallest absolute population (1.1M)
  * but the highest density (1,551 hab/km²). On the left map it appears almost
- * white; on the right it is the darkest. Density is calculated at runtime via
- * the MapLibre expression `['/', ['get', 'population'], ['get', 'sq-km']]`.
+ * white; on the right it is the darkest. Both metrics are supplied via
+ * hardcoded `mapData` joined to the source by `feature.properties.name`.
  */
 export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
   const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
+
+  // Each side renders the same source through a distinct mapData entry.
+  // Cloning the spec keeps the providers independent: feature-state is set
+  // per map instance, so the left map carries `population` values and the
+  // right map carries `density` values without interfering with each other.
+  const leftSpec = React.useMemo<VisualizationSpec>(() => {
+    return {
+      ...spec,
+      layers: spec.layers.map((layer) => {
+        return layer.id === 'rwanda-choropleth'
+          ? { ...layer, mapDataId: 'pop' }
+          : layer;
+      }),
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'rwanda-provinces',
+          joinKey: 'name:en',
+          data: populationData,
+        },
+      ],
+    };
+  }, []);
+
+  const rightSpec = React.useMemo<VisualizationSpec>(() => {
+    return {
+      ...spec,
+      layers: spec.layers.map((layer) => {
+        return layer.id === 'rwanda-choropleth'
+          ? { ...layer, mapDataId: 'density' }
+          : layer;
+      }),
+      mapData: [
+        {
+          mapDataId: 'density',
+          mapId: 'rwanda-provinces',
+          joinKey: 'name:en',
+          data: densityData,
+        },
+      ],
+    };
+  }, []);
 
   // Stabilise the callback reference to avoid unnecessary re-renders.
   const handleViolations = React.useCallback((v: PolicyViolation[]) => {
@@ -206,16 +271,15 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             steps={rawSteps}
             formatValue={fmtPop}
           />
-          <GeoVisProvider spec={spec}>
+          <GeoVisProvider spec={leftSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
             <MapSync
               selfRef={leftMapRef}
               peerRef={rightMapRef}
               lockRef={syncLock}
             />
-            <ChoroplethPainter
+            <FeatureStatePainter
               layerId="rwanda-choropleth"
-              field="population"
               defaultColor="#eff6ff"
               steps={rawSteps}
             />
@@ -240,16 +304,15 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
             steps={densitySteps}
             formatValue={fmtDensity}
           />
-          <GeoVisProvider spec={spec}>
+          <GeoVisProvider spec={rightSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
             <MapSync
               selfRef={rightMapRef}
               peerRef={leftMapRef}
               lockRef={syncLock}
             />
-            <ChoroplethPainter
+            <FeatureStatePainter
               layerId="rwanda-choropleth"
-              field={densityExpr}
               defaultColor="#f0fdf4"
               steps={densitySteps}
             />
