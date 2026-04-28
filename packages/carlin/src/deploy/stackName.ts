@@ -32,10 +32,9 @@ export const limitStackName = (stackName: string) => {
  * Steps:
  * 1. Normalize Unicode (NFKD) to decompose accented characters (e.g. ç → c + combining cedilla).
  * 2. Strip combining diacritical marks so the base letters remain.
- * 3. Remove any remaining non-ASCII characters.
- * 4. Replace characters that are not letters, digits, or hyphens with a hyphen.
- * 5. Collapse consecutive hyphens into a single hyphen.
- * 6. Strip leading and trailing hyphens.
+ * 3. Replace any remaining characters that are not letters, digits, or hyphens with a hyphen.
+ * 4. Collapse consecutive hyphens into a single hyphen.
+ * 5. Strip leading and trailing hyphens.
  */
 export const sanitizeStackName = (stackName: string) => {
   return stackName
@@ -114,5 +113,5 @@ export const getStackName = async () => {
     })
     .join('-');
 
-  return limitStackName(sanitizeStackName(name));
+  return sanitizeStackName(limitStackName(name));
 };
