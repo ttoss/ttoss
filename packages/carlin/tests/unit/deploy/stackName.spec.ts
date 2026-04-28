@@ -42,7 +42,8 @@ test('limit stackName length', async () => {
   jest.mocked(getEnvironment).mockReturnValueOnce(bigName);
   jest.mocked(getPackageName).mockReturnValueOnce(bigName);
   const stackName = await getStackName();
-  expect(stackName.length).toEqual(STACK_NAME_MAX_LENGTH);
+  expect(stackName.length).toBeLessThanOrEqual(STACK_NAME_MAX_LENGTH);
+  expect(stackName).toMatch(/^[a-zA-Z][-a-zA-Z0-9]*$/);
 });
 
 describe('sanitizeStackName', () => {
@@ -62,13 +63,22 @@ describe('sanitizeStackName', () => {
     expect(sanitizeStackName('-hello-world-')).toEqual('hello-world');
   });
 
+  test('returns "Stack" for an input that sanitizes to an empty string', () => {
+    expect(sanitizeStackName('---')).toEqual('Stack');
+  });
+
+  test('prefixes "Stack-" when result starts with a digit', () => {
+    expect(sanitizeStackName('123-foo')).toEqual('Stack-123-foo');
+  });
+
   test('handles the exact branch name from the issue report', () => {
     const branchName =
       '1356-adicionar-configuração-para-não-adicionar-os-sufixos-nos-nomes-das-campanha';
     const result = sanitizeStackName(branchName);
     expect(result).toEqual(
-      '1356-adicionar-configuracao-para-nao-adicionar-os-sufixos-nos-nomes-das-campanha'
+      'Stack-1356-adicionar-configuracao-para-nao-adicionar-os-sufixos-nos-nomes-das-campanha'
     );
+    expect(result).toMatch(/^[a-zA-Z][-a-zA-Z0-9]*$/);
   });
 
   test('stack name with special-char branch satisfies CloudFormation pattern', async () => {

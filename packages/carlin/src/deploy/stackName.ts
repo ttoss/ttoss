@@ -35,14 +35,26 @@ export const limitStackName = (stackName: string) => {
  * 3. Replace any remaining characters that are not letters, digits, or hyphens with a hyphen.
  * 4. Collapse consecutive hyphens into a single hyphen.
  * 5. Strip leading and trailing hyphens.
+ * 6. If the result is empty, use `Stack` as a fallback.
+ * 7. If the result does not start with a letter, prefix it with `Stack-`.
  */
 export const sanitizeStackName = (stackName: string) => {
-  return stackName
+  const sanitizedStackName = stackName
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+  if (!sanitizedStackName) {
+    return 'Stack';
+  }
+
+  if (!/^[a-zA-Z]/.test(sanitizedStackName)) {
+    return `Stack-${sanitizedStackName}`;
+  }
+
+  return sanitizedStackName;
 };
 
 /**
@@ -113,5 +125,5 @@ export const getStackName = async () => {
     })
     .join('-');
 
-  return sanitizeStackName(limitStackName(name));
+  return limitStackName(sanitizeStackName(name));
 };
