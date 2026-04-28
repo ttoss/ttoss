@@ -780,6 +780,69 @@ describe('mapData — feature-state application', () => {
     );
   });
 
+  // 3.2 — numeric geometryId stored as string is coerced to number for setFeatureState
+  test('coerces string geometryId to number when it represents a finite number', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [
+            { geometryId: '1', value: 100 },
+            { geometryId: '2', value: 200 },
+          ],
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setFeatureState).toHaveBeenCalledTimes(2);
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 1 },
+      { value: 100 }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 2 },
+      { value: 200 }
+    );
+  });
+
+  // 3.2b — removeFeatureState also coerces string geometryId to number
+  test('op:remove coerces string geometryId to number for removeFeatureState', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: '1', value: 100 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+
+    adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
+
+    expect(map.removeFeatureState).toHaveBeenCalledWith({
+      source: 'states',
+      id: 1,
+    });
+  });
+
   // 3.3
   test('applyPatch granular replace calls setFeatureState with the right id and value', () => {
     const { map, fire } = makeMapWithEvents();

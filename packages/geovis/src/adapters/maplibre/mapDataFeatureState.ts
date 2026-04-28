@@ -60,7 +60,7 @@ export const applyMapDataToSource = (
           ? 0
           : row.value;
       map.setFeatureState(
-        { source: mapData.mapId, id: row.geometryId },
+        { source: mapData.mapId, id: coerceGeometryId(row.geometryId) },
         { value: safeValue }
       );
     }
@@ -134,7 +134,10 @@ export const removeMapDataFromSource = (
 
   if (!mapData.joinKey) {
     for (const row of mapData.data) {
-      map.removeFeatureState({ source: mapData.mapId, id: row.geometryId });
+      map.removeFeatureState({
+        source: mapData.mapId,
+        id: coerceGeometryId(row.geometryId),
+      });
     }
     return;
   }
