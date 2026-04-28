@@ -30,13 +30,6 @@ const resolvePalette = (colorBy: ColorBy, minimumLength: number): string[] => {
   return palette;
 };
 
-export interface ComputeBreaksParams {
-  values: ReadonlyArray<number | string | null | undefined>;
-  scale: QuantitativeColorBy['scale'];
-  bins?: number;
-  thresholds?: ReadonlyArray<number>;
-}
-
 export interface BuildFillColorExpressionParams {
   legend: LegendSpec;
   breaks?: ReadonlyArray<number>;

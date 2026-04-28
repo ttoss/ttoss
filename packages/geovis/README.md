@@ -240,9 +240,27 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 | `style`     | `React.CSSProperties` | Optional inline styles for the container element.  |
 | `className` | `string`              | Optional CSS class name for the container element. |
 
+### `GeoVisLegend`
+
+Renders a headless legend UI from `spec.legends` (or layer-level legends) by
+`legendId`. Supports categorical swatches and quantitative bins, with local
+hover/disable state for composition.
+
+| Prop          | Type                        | Description                                                  |
+| ------------- | --------------------------- | ------------------------------------------------------------ |
+| `legendId`    | `string`                    | Id of the legend to render.                                  |
+| `breaks`      | `number[]`                  | Quantitative break points provided externally by the caller. |
+| `formatValue` | `(value: number) => string` | Optional numeric label formatter for quantitative bins.      |
+| `className`   | `string`                    | Optional CSS class name for the legend container.            |
+
 ### `useGeoVis`
 
 Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch }`. Must be called inside `GeoVisProvider`.
+
+### `useMapData`
+
+Returns indexed map data for a `mapDataId` as `{ mapDataId, mapId, joinKey, values, rows }`.
+Must be called inside `GeoVisProvider`.
 
 ### `validateSpec`
 
