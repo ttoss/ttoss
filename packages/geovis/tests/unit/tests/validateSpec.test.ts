@@ -140,6 +140,34 @@ describe('validateSpec — mapData', () => {
   });
 
   // 1.7
+  test('rejects layer.mapDataId whose mapId does not match layer.sourceId', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      sources: [
+        ...baseSpec.sources,
+        {
+          id: 'other',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'other',
+          data: [{ geometryId: 'BR', value: 1 }],
+        },
+      ],
+      layers: [{ ...baseSpec.layers[0], mapDataId: 'pop' }],
+      // layer.sourceId = 'states', mapData.mapId = 'other' → mismatch
+    });
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/source-scoped/);
+    }
+  });
+
+  // 1.8
   test('accepts unknown joinKey at schema-validation time (property existence is runtime concern)', () => {
     const result = validateSpec({
       ...baseSpec,

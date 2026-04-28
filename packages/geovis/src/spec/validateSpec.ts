@@ -10,6 +10,31 @@ export type ValidationResult =
 const ajv = new Ajv2020({ strict: false });
 const _validate = ajv.compile(schema);
 
+/** Validates layer-to-mapData referential integrity and source-scope alignment. */
+const validateLayerMapDataRefs = (
+  layers: VisualizationSpec['layers'],
+  seenMapDataIds: Set<string>,
+  mapDataById: Map<string, NonNullable<VisualizationSpec['mapData']>[number]>
+): string[] => {
+  const errors: string[] = [];
+  for (const layer of layers) {
+    if (!layer.mapDataId) continue;
+    if (!seenMapDataIds.has(layer.mapDataId)) {
+      errors.push(
+        `layer '${layer.id}' references unknown mapDataId '${layer.mapDataId}'`
+      );
+      continue;
+    }
+    const md = mapDataById.get(layer.mapDataId);
+    if (md && md.mapId !== layer.sourceId) {
+      errors.push(
+        `layer '${layer.id}' mapDataId '${layer.mapDataId}' points to source '${md.mapId}' but layer uses source '${layer.sourceId}'; feature-state is source-scoped so this dataset can never style this layer`
+      );
+    }
+  }
+  return errors;
+};
+
 /** Checks referential integrity constraints not expressible in JSON Schema (unique mapDataId, FK sources, FK layers). */
 const validateReferences = (spec: VisualizationSpec): string[] => {
   const errors: string[] = [];
@@ -22,6 +47,11 @@ const validateReferences = (spec: VisualizationSpec): string[] => {
   );
 
   const seenMapDataIds = new Set<string>();
+  const mapDataById = new Map(
+    mapData.map((md) => {
+      return [md.mapDataId, md] as const;
+    })
+  );
   for (const md of mapData) {
     if (seenMapDataIds.has(md.mapDataId)) {
       errors.push(`mapData mapDataId '${md.mapDataId}' must be unique`);
@@ -40,13 +70,9 @@ const validateReferences = (spec: VisualizationSpec): string[] => {
     }
   }
 
-  for (const layer of spec.layers) {
-    if (layer.mapDataId && !seenMapDataIds.has(layer.mapDataId)) {
-      errors.push(
-        `layer '${layer.id}' references unknown mapDataId '${layer.mapDataId}'`
-      );
-    }
-  }
+  errors.push(
+    ...validateLayerMapDataRefs(spec.layers, seenMapDataIds, mapDataById)
+  );
 
   return errors;
 };
