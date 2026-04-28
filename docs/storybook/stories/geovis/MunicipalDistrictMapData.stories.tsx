@@ -3,7 +3,7 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
-import distritoGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
+import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
 import type { ColorStep } from './_map-story-helpers';
 import {
   ColorSwatchLegend,
@@ -91,21 +91,21 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
       sources: [
         {
-          id: 'distritos',
+          id: 'districts',
           type: 'geojson',
-          data: distritoGeoJson as unknown as GeoJSON.FeatureCollection,
+          data: districtGeoJson as unknown as GeoJSON.FeatureCollection,
         },
       ],
       layers: [
         {
-          id: 'distritos-fill',
-          sourceId: 'distritos',
+          id: 'districts-fill',
+          sourceId: 'districts',
           geometry: 'polygon',
           mapDataId: 'population',
         },
         {
-          id: 'distritos-outline',
-          sourceId: 'distritos',
+          id: 'districts-outline',
+          sourceId: 'districts',
           geometry: 'line',
           paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
         },
@@ -113,7 +113,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       mapData: [
         {
           mapDataId: 'population',
-          mapId: 'distritos',
+          mapId: 'districts',
           data: mapDataEntries,
         },
       ],
@@ -135,7 +135,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
         <GeoVisProvider spec={spec}>
           <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
           <FeatureStatePainter
-            layerId="distritos-fill"
+            layerId="districts-fill"
             defaultColor={DEFAULT_COLOR}
             steps={populationSteps}
           />

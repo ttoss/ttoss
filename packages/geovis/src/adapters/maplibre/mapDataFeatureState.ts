@@ -170,6 +170,12 @@ const applyRowReplacement = (
   geometryId: string,
   value: MapDataRow['value']
 ): void => {
+  // Mirror the non-finite sanitization used in applyMapDataToSource so
+  // granular op:replace patches do not leak NaN/Infinity into MapLibre
+  // expressions (which would break `step`/comparisons silently).
+  const safeValue =
+    typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
+
   if (!mapData.joinKey) {
     // Resolve the original geometryId type from the stored row so numeric
     // feature ids (e.g. 1) are not coerced to strings ('1'), which would
@@ -178,7 +184,10 @@ const applyRowReplacement = (
       return String(r.geometryId) === geometryId;
     });
     const featureId = row?.geometryId ?? coerceGeometryId(geometryId);
-    map.setFeatureState({ source: mapData.mapId, id: featureId }, { value });
+    map.setFeatureState(
+      { source: mapData.mapId, id: featureId },
+      { value: safeValue }
+    );
     return;
   }
   if (!map.isSourceLoaded(mapData.mapId)) return;
@@ -187,7 +196,10 @@ const applyRowReplacement = (
     return k != null && String(k) === geometryId;
   });
   if (f?.id != null) {
-    map.setFeatureState({ source: mapData.mapId, id: f.id }, { value });
+    map.setFeatureState(
+      { source: mapData.mapId, id: f.id },
+      { value: safeValue }
+    );
   }
 };
 

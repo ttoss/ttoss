@@ -1,9 +1,10 @@
 import type { MapData, MapDataRow, VisualizationSpec } from './types';
 
 /**
- * Coerces a geometry id to a number when it represents a finite integer or
- * float (e.g. `'1'` → `1`). Preserves string ids like `'BR'` and passes
- * numbers through unchanged.
+ * Coerces a geometry id to a number only when a string is already in its
+ * canonical finite numeric form (for example, `'1'` → `1`).
+ * Preserves non-numeric ids like `'BR'`, non-canonical numeric strings like
+ * `'01'` and `'1.0'`, and passes numbers through unchanged.
  * Prevents `setFeatureState` mismatches when feature ids are numeric.
  */
 export const coerceGeometryId = (id: string | number): string | number => {
