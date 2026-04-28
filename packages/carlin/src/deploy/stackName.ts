@@ -39,22 +39,22 @@ export const limitStackName = (stackName: string) => {
  * 7. If the result does not start with a letter, prefix it with `Stack-`.
  */
 export const sanitizeStackName = (stackName: string) => {
-  const sanitizedStackName = stackName
+  const sanitized = stackName
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-  if (!sanitizedStackName) {
+  if (!sanitized) {
     return 'Stack';
   }
 
-  if (!/^[a-zA-Z]/.test(sanitizedStackName)) {
-    return `Stack-${sanitizedStackName}`;
+  if (!/^[a-zA-Z]/.test(sanitized)) {
+    return `Stack-${sanitized}`;
   }
 
-  return sanitizedStackName;
+  return sanitized;
 };
 
 /**

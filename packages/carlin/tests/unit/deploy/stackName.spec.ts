@@ -63,18 +63,20 @@ describe('sanitizeStackName', () => {
     expect(sanitizeStackName('-hello-world-')).toEqual('hello-world');
   });
 
-  test('returns "Stack" for an input that sanitizes to an empty string', () => {
+  test('returns Stack for an empty or all-special-char input', () => {
+    expect(sanitizeStackName('')).toEqual('Stack');
     expect(sanitizeStackName('---')).toEqual('Stack');
   });
 
-  test('prefixes "Stack-" when result starts with a digit', () => {
-    expect(sanitizeStackName('123-foo')).toEqual('Stack-123-foo');
+  test('prefixes Stack- when result starts with a digit', () => {
+    expect(sanitizeStackName('123-feature')).toEqual('Stack-123-feature');
   });
 
   test('handles the exact branch name from the issue report', () => {
-    const branchName =
+    const branchFromIssue =
       '1356-adicionar-configuração-para-não-adicionar-os-sufixos-nos-nomes-das-campanha';
-    const result = sanitizeStackName(branchName);
+    const result = sanitizeStackName(branchFromIssue);
+    // starts with a digit → Stack- prefix is added
     expect(result).toEqual(
       'Stack-1356-adicionar-configuracao-para-nao-adicionar-os-sufixos-nos-nomes-das-campanha'
     );
