@@ -55,9 +55,13 @@ export const applyMapDataToSource = (
 
   if (!mapData.joinKey) {
     for (const row of mapData.data) {
+      const safeValue =
+        typeof row.value === 'number' && !Number.isFinite(row.value)
+          ? 0
+          : row.value;
       map.setFeatureState(
-        { source: mapData.mapId, id: row.geometryId },
-        { value: row.value }
+        { source: mapData.mapId, id: String(row.geometryId) },
+        { value: safeValue }
       );
     }
     return;
@@ -68,9 +72,13 @@ export const applyMapDataToSource = (
   for (const row of mapData.data) {
     const fid = idByJoinKey.get(String(row.geometryId));
     if (fid == null) continue;
+    const safeValue =
+      typeof row.value === 'number' && !Number.isFinite(row.value)
+        ? 0
+        : row.value;
     map.setFeatureState(
       { source: mapData.mapId, id: fid },
-      { value: row.value }
+      { value: safeValue }
     );
   }
 };

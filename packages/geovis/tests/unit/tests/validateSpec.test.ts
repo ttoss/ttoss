@@ -138,4 +138,22 @@ describe('validateSpec — mapData', () => {
       expect(result.errors.join('\n')).toMatch(/pop/);
     }
   });
+
+  // 1.7
+  test('accepts unknown joinKey at schema-validation time (property existence is runtime concern)', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          joinKey: 'does-not-exist-in-properties',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+      layers: [{ ...baseSpec.layers[0], mapDataId: 'pop' }],
+    });
+
+    expect(result.valid).toBe(true);
+  });
 });
