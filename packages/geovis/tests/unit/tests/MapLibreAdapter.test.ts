@@ -525,6 +525,104 @@ describe('toMaplibreLayer', () => {
     });
   });
 
+  test('polygon uses active categorical legend expression as fill-color', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'polygon',
+      paint: { fillColor: '#ff0000' },
+      legends: [
+        {
+          id: 'status',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: {
+              open: '#16a34a',
+              closed: '#dc2626',
+            },
+            defaultColor: '#6b7280',
+          },
+        },
+      ],
+      activeLegendId: 'status',
+    };
+
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      paint: {
+        'fill-color': [
+          'match',
+          [
+            'to-string',
+            ['coalesce', ['feature-state', 'value'], '__missing__'],
+          ],
+          'open',
+          '#16a34a',
+          'closed',
+          '#dc2626',
+          '#6b7280',
+        ],
+      },
+    });
+  });
+
+  test('polygon uses threshold breaks when active legend scale is threshold', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'polygon',
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [30, 10, 10],
+            colors: ['#eff6ff', '#bfdbfe', '#60a5fa'],
+            defaultColor: '#1e3a8a',
+          },
+        },
+      ],
+      activeLegendId: 'population',
+    };
+
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      paint: {
+        'fill-color': [
+          'step',
+          ['coalesce', ['feature-state', 'value'], 0],
+          '#1e3a8a',
+          10,
+          '#bfdbfe',
+          30,
+          '#60a5fa',
+        ],
+      },
+    });
+  });
+
+  test('polygon keeps static fill-color when active legend id does not resolve', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'polygon',
+      paint: { fillColor: '#ff0000' },
+      legends: [
+        {
+          id: 'status',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+      activeLegendId: 'missing-id',
+    };
+
+    expect(toMaplibreLayer(layer)).toMatchObject({
+      paint: { 'fill-color': '#ff0000' },
+    });
+  });
+
   test('line → line with defaults', () => {
     const layer: VisualizationLayer = { ...base, geometry: 'line' };
     expect(toMaplibreLayer(layer)).toMatchObject({

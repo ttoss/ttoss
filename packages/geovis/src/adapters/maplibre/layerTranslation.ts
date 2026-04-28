@@ -10,6 +10,7 @@ import type {
   SymbolPaint,
   VisualizationLayer,
 } from '../../spec/types';
+import { buildFillColorExpression } from './legendTranslation';
 
 interface BaseFields {
   id: string;
@@ -41,17 +42,61 @@ const buildBase = (
 
 type Builder = (
   base: BaseFields,
+  layer: VisualizationLayer,
   paint: VisualizationLayer['paint']
 ) => maplibregl.LayerSpecification;
 
+const resolveThresholdBreaks = (layer: VisualizationLayer): number[] => {
+  const legend = layer.legends?.find((item) => {
+    return item.id === layer.activeLegendId;
+  });
+  if (!legend || legend.colorBy.type !== 'quantitative') return [];
+  if (legend.colorBy.scale !== 'threshold') return [];
+  return Array.from(
+    new Set(
+      (legend.colorBy.thresholds ?? []).filter((value) => {
+        return Number.isFinite(value);
+      })
+    )
+  ).sort((a, b) => {
+    return a - b;
+  });
+};
+
+/**
+ * Resolves a legend-driven fill expression for polygon layers.
+ *
+ * @remarks
+ * Layer-local legend selection (`activeLegendId`) intentionally takes
+ * precedence over static `paint.fillColor` so consumers can switch color
+ * semantics without mutating the paint object itself.
+ */
+const resolveLegendFillColor = (
+  layer: VisualizationLayer
+): unknown[] | undefined => {
+  if (layer.geometry !== 'polygon') return undefined;
+  if (!layer.activeLegendId || !layer.legends?.length) return undefined;
+
+  const activeLegend = layer.legends.find((legend) => {
+    return legend.id === layer.activeLegendId;
+  });
+  if (!activeLegend) return undefined;
+
+  return buildFillColorExpression({
+    legend: activeLegend,
+    breaks: resolveThresholdBreaks(layer),
+  });
+};
+
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
-const buildPolygon: Builder = (base, paint) => {
+const buildPolygon: Builder = (base, layer, paint) => {
   const fp = (paint ?? {}) as FillPaint;
+  const legendFillColor = resolveLegendFillColor(layer);
   return {
     ...base,
     type: 'fill',
     paint: {
-      'fill-color': fp.fillColor ?? '#3b82f6',
+      'fill-color': legendFillColor ?? fp.fillColor ?? '#3b82f6',
       'fill-opacity': fp.fillOpacity ?? 0.6,
       'fill-outline-color': fp.lineColor ?? '#1d4ed8',
     },
@@ -59,7 +104,7 @@ const buildPolygon: Builder = (base, paint) => {
 };
 
 /** Builds a MapLibre `line` layer spec from a GeoVis line layer. */
-const buildLine: Builder = (base, paint) => {
+const buildLine: Builder = (base, _layer, paint) => {
   const lp = (paint ?? {}) as LinePaint;
   return {
     ...base,
@@ -74,7 +119,7 @@ const buildLine: Builder = (base, paint) => {
 };
 
 /** Builds a MapLibre `circle` layer spec from a GeoVis point layer. */
-const buildPoint: Builder = (base, paint) => {
+const buildPoint: Builder = (base, _layer, paint) => {
   const cp = (paint ?? {}) as CirclePaint;
   return {
     ...base,
@@ -90,7 +135,7 @@ const buildPoint: Builder = (base, paint) => {
 };
 
 /** Builds a MapLibre `heatmap` layer spec from a GeoVis heatmap layer. */
-const buildHeatmap: Builder = (base, paint) => {
+const buildHeatmap: Builder = (base, _layer, paint) => {
   const hp = (paint ?? {}) as HeatmapPaint;
   return {
     ...base,
@@ -105,7 +150,7 @@ const buildHeatmap: Builder = (base, paint) => {
 };
 
 /** Builds a MapLibre `symbol` layer spec from a GeoVis symbol layer. */
-const buildSymbol: Builder = (base, paint) => {
+const buildSymbol: Builder = (base, _layer, paint) => {
   const sp = (paint ?? {}) as SymbolPaint;
   return {
     ...base,
@@ -128,7 +173,7 @@ const buildSymbol: Builder = (base, paint) => {
 };
 
 /** Builds a MapLibre `raster` layer spec from a GeoVis raster layer. */
-const buildRaster: Builder = (base, paint) => {
+const buildRaster: Builder = (base, _layer, paint) => {
   const rp = (paint ?? {}) as RasterPaint;
   return {
     ...base,
@@ -176,5 +221,5 @@ export const toMaplibreLayer = (
   sourceLayer?: string
 ): maplibregl.LayerSpecification => {
   const base = buildBase(layer, sourceLayer);
-  return builders[layer.geometry](base, layer.paint);
+  return builders[layer.geometry](base, layer, layer.paint);
 };
