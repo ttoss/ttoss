@@ -142,6 +142,167 @@ const PolicyWarningBanner = ({
   );
 };
 
+const StoryHeader = ({ onRecenter }: { onRecenter: () => void }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>
+        <strong>{fixture.title}</strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          {fixture.description}
+        </p>
+      </div>
+      <button
+        onClick={onRecenter}
+        style={{
+          padding: '6px 14px',
+          borderRadius: 6,
+          border: '1px solid #d4d4d8',
+          background: 'white',
+          cursor: 'pointer',
+          fontSize: 13,
+          color: '#374151',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
+        Recenter
+      </button>
+    </div>
+  );
+};
+
+const MapPanel = ({
+  borderColor,
+  label,
+  legendLabel,
+  defaultColor,
+  steps,
+  formatValue,
+  providerSpec,
+  viewId,
+  selfRef,
+  peerRef,
+  lockRef,
+  showPolicyDetector,
+  onViolations,
+}: {
+  borderColor: string;
+  label: string;
+  legendLabel: string;
+  defaultColor: string;
+  steps: { threshold: number; color: string }[];
+  formatValue: (v: number) => string;
+  providerSpec: VisualizationSpec;
+  viewId: string;
+  selfRef: MapRef;
+  peerRef: MapRef;
+  lockRef: LockRef;
+  showPolicyDetector?: boolean;
+  onViolations?: (v: PolicyViolation[]) => void;
+}) => {
+  const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        flex: 1,
+        border: `2px solid ${borderColor}`,
+        borderRadius: 4,
+        overflow: 'hidden',
+      }}
+    >
+      <MapLabel>{label}</MapLabel>
+      <MapOverlayLegend
+        label={legendLabel}
+        defaultColor={defaultColor}
+        steps={steps}
+        formatValue={formatValue}
+      />
+      <GeoVisProvider spec={providerSpec}>
+        <GeoVisCanvas viewId={viewId} style={canvasStyle} />
+        <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
+        <FeatureStatePainter
+          layerId="rwanda-choropleth"
+          defaultColor={defaultColor}
+          steps={steps}
+        />
+        {showPolicyDetector && onViolations ? (
+          <PolicyDetector onViolations={onViolations} />
+        ) : null}
+      </GeoVisProvider>
+    </div>
+  );
+};
+
+const SwatchLegends = () => {
+  return (
+    <div style={{ display: 'flex', gap: 4 }}>
+      <div style={{ flex: 1 }}>
+        <ColorSwatchLegend
+          title="Blue — absolute count (invalid)"
+          defaultColor="#eff6ff"
+          steps={rawSteps}
+          formatValue={fmtPop}
+        />
+      </div>
+      <div style={{ flex: 1 }}>
+        <ColorSwatchLegend
+          title="Green — density hab/km² (correct)"
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+          formatValue={fmtDensity}
+        />
+      </div>
+    </div>
+  );
+};
+
+const PolicySection = () => {
+  return (
+    <div>
+      <strong>Policy</strong>
+      <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
+        <li>
+          <code>cartography.warnOnRawCountChoropleth: true</code> — this fixture
+          should raise a runtime warning when the policy is enabled.
+        </li>
+        <li>
+          Invalid field: <code>{fixture.metadata.metricField as string}</code>.
+          Correct expression:{' '}
+          <code>{fixture.metadata.normalizedExpression as string}</code> (
+          {fixture.metadata.normalizedLabel as string}).
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+const ReferencesSection = () => {
+  return (
+    <div>
+      <strong>Official references</strong>
+      <ul style={{ fontSize: 13 }}>
+        <li>
+          <a
+            href="https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            MapLibre — Visualize population density (normalized)
+          </a>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
 // Story
 
 /**
@@ -216,160 +377,49 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
     syncLock.current = false;
   }, []);
 
-  const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
-
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div>
-          <strong>{fixture.title}</strong>
-          <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            {fixture.description}
-          </p>
-        </div>
-        <button
-          onClick={recenter}
-          style={{
-            padding: '6px 14px',
-            borderRadius: 6,
-            border: '1px solid #d4d4d8',
-            background: 'white',
-            cursor: 'pointer',
-            fontSize: 13,
-            color: '#374151',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-          }}
-        >
-          Recenter
-        </button>
-      </div>
+      <StoryHeader onRecenter={recenter} />
 
       {/* Banner triggered via policyViolations from GeoVisContext — does not read metadata directly from JSON */}
       <PolicyWarningBanner violations={violations} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
-        <div
-          style={{
-            position: 'relative',
-            flex: 1,
-            border: '2px solid #f59e0b',
-            borderRadius: 4,
-            overflow: 'hidden',
-          }}
-        >
-          <MapLabel>Absolute population count (population) - invalid</MapLabel>
-          <MapOverlayLegend
-            label="absolute population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-            formatValue={fmtPop}
-          />
-          <GeoVisProvider spec={leftSpec}>
-            <GeoVisCanvas viewId="left" style={canvasStyle} />
-            <MapSync
-              selfRef={leftMapRef}
-              peerRef={rightMapRef}
-              lockRef={syncLock}
-            />
-            <FeatureStatePainter
-              layerId="rwanda-choropleth"
-              defaultColor="#eff6ff"
-              steps={rawSteps}
-            />
-            {/* PolicyDetector lifts violations to parent story state */}
-            <PolicyDetector onViolations={handleViolations} />
-          </GeoVisProvider>
-        </div>
+        <MapPanel
+          borderColor="#f59e0b"
+          label="Absolute population count (population) - invalid"
+          legendLabel="absolute population"
+          defaultColor="#eff6ff"
+          steps={rawSteps}
+          formatValue={fmtPop}
+          providerSpec={leftSpec}
+          viewId="left"
+          selfRef={leftMapRef}
+          peerRef={rightMapRef}
+          lockRef={syncLock}
+          showPolicyDetector
+          onViolations={handleViolations}
+        />
 
-        <div
-          style={{
-            position: 'relative',
-            flex: 1,
-            border: '2px solid #16a34a',
-            borderRadius: 4,
-            overflow: 'hidden',
-          }}
-        >
-          <MapLabel>Density (population / sq-km) - correct</MapLabel>
-          <MapOverlayLegend
-            label="density (hab/km²)"
-            defaultColor="#f0fdf4"
-            steps={densitySteps}
-            formatValue={fmtDensity}
-          />
-          <GeoVisProvider spec={rightSpec}>
-            <GeoVisCanvas viewId="right" style={canvasStyle} />
-            <MapSync
-              selfRef={rightMapRef}
-              peerRef={leftMapRef}
-              lockRef={syncLock}
-            />
-            <FeatureStatePainter
-              layerId="rwanda-choropleth"
-              defaultColor="#f0fdf4"
-              steps={densitySteps}
-            />
-          </GeoVisProvider>
-        </div>
+        <MapPanel
+          borderColor="#16a34a"
+          label="Density (population / sq-km) - correct"
+          legendLabel="density (hab/km²)"
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+          formatValue={fmtDensity}
+          providerSpec={rightSpec}
+          viewId="right"
+          selfRef={rightMapRef}
+          peerRef={leftMapRef}
+          lockRef={syncLock}
+        />
       </div>
 
       {/* gap: 4 mirrors the map row layout — each swatch aligns with its corresponding panel */}
-      <div style={{ display: 'flex', gap: 4 }}>
-        <div style={{ flex: 1 }}>
-          <ColorSwatchLegend
-            title="Blue — absolute count (invalid)"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-            formatValue={fmtPop}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <ColorSwatchLegend
-            title="Green — density hab/km² (correct)"
-            defaultColor="#f0fdf4"
-            steps={densitySteps}
-            formatValue={fmtDensity}
-          />
-        </div>
-      </div>
-
-      <div>
-        <strong>Policy</strong>
-        <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
-          <li>
-            <code>cartography.warnOnRawCountChoropleth: true</code> — this
-            fixture should raise a runtime warning when the policy is enabled.
-          </li>
-          <li>
-            Invalid field: <code>{fixture.metadata.metricField as string}</code>
-            . Correct expression:{' '}
-            <code>{fixture.metadata.normalizedExpression as string}</code> (
-            {fixture.metadata.normalizedLabel as string}).
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <strong>Official references</strong>
-        <ul style={{ fontSize: 13 }}>
-          <li>
-            <a
-              href="https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              MapLibre — Visualize population density (normalized)
-            </a>
-          </li>
-        </ul>
-      </div>
+      <SwatchLegends />
+      <PolicySection />
+      <ReferencesSection />
     </div>
   );
 };
