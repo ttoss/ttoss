@@ -60,7 +60,7 @@ export const applyMapDataToSource = (
           ? 0
           : row.value;
       map.setFeatureState(
-        { source: mapData.mapId, id: String(row.geometryId) },
+        { source: mapData.mapId, id: row.geometryId },
         { value: safeValue }
       );
     }
