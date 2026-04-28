@@ -1,5 +1,6 @@
 export * from './react/GeoVisCanvas';
 export * from './react/GeoVisProvider';
+export * from './react/hooks';
 export * from './runtime/adapter';
 export * from './runtime/createRuntime';
 export * from './spec/types';
