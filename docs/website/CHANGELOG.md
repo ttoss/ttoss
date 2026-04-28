@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.8](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.7...@docs/website@2.7.8) (2026-04-28)
+
+### Bug Fixes
+
+- **carlin:** sanitize stack names containing non-ASCII characters ([#967](https://github.com/ttoss/ttoss/issues/967)) ([f2acc38](https://github.com/ttoss/ttoss/commit/f2acc38f220bba111efd229c2ac401af7bc053db))
+
 ## [2.7.7](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.6...@docs/website@2.7.7) (2026-04-27)
 
 **Note:** Version bump only for package @docs/website

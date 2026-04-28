@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.6](https://github.com/ttoss/ttoss/compare/carlin@1.49.5...carlin@1.49.6) (2026-04-28)
+
+### Bug Fixes
+
+- **carlin:** sanitize stack names containing non-ASCII characters ([#967](https://github.com/ttoss/ttoss/issues/967)) ([f2acc38](https://github.com/ttoss/ttoss/commit/f2acc38f220bba111efd229c2ac401af7bc053db))
+
 ## [1.49.5](https://github.com/ttoss/ttoss/compare/carlin@1.49.4...carlin@1.49.5) (2026-04-23)
 
 **Note:** Version bump only for package carlin
