@@ -2,7 +2,10 @@ import type maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
-import { toMaplibreSource } from './sourceTranslation';
+import {
+  resolvePromoteIdForSource,
+  toMaplibreSource,
+} from './sourceTranslation';
 
 /** Removes layers from `previousSpec` no longer present in `spec`. */
 const removeStaleLayers = (
@@ -44,7 +47,12 @@ const upsertSources = (
 ): void => {
   for (const source of spec.sources) {
     if (!map.getSource(source.id)) {
-      map.addSource(source.id, toMaplibreSource(source));
+      map.addSource(
+        source.id,
+        toMaplibreSource(source, {
+          promoteId: resolvePromoteIdForSource(spec, source.id),
+        })
+      );
       continue;
     }
     if (source.type !== 'geojson') continue;

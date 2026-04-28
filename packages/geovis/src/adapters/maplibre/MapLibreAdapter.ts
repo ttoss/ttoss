@@ -21,7 +21,10 @@ import {
   reapplyAllMapData,
   removeMapDataFromSource,
 } from './mapDataFeatureState';
-import { toMaplibreSource } from './sourceTranslation';
+import {
+  resolvePromoteIdForSource,
+  toMaplibreSource,
+} from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 
 // Re-exports preserved for public API and historical test imports.
@@ -191,7 +194,12 @@ const applySourcePatch = (
   if (patch.op === 'add' && patch.value != null) {
     const newSource = patch.value as DataSource;
     if (map.getSource(newSource.id)) return;
-    map.addSource(newSource.id, toMaplibreSource(newSource));
+    map.addSource(
+      newSource.id,
+      toMaplibreSource(newSource, {
+        promoteId: resolvePromoteIdForSource(viewState.spec, newSource.id),
+      })
+    );
     viewState.spec = {
       ...viewState.spec,
       sources: [...viewState.spec.sources, newSource],
