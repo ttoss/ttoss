@@ -1,3 +1,7 @@
+import type { ColorBy, LegendSpec } from './types.legend';
+
+export * from './types.legend';
+
 export type LngLat = [number, number];
 
 export type GeoJSONPosition = [number, number] | [number, number, number];
@@ -222,6 +226,12 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
+  /** Optional color mapping resolved by legend-aware consumers/adapters. */
+  colorBy?: ColorBy;
+  /** Optional alternative legend definitions presented as runtime toggles. */
+  legends?: LegendSpec[];
+  /** Id of the currently active legend from `legends[]`. */
+  activeLegendId?: string;
   /**
    * Optional reference to an entry in `spec.mapData`.
    * When present, the layer can be styled/queried by per-feature `value`s
@@ -289,6 +299,14 @@ export interface VisualizationSpec {
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];
+  /** Optional top-level legend registry used by legend UI components. */
+  legends?: LegendSpec[];
+  /**
+   * Optional attribute datasets joined to geojson sources.
+   * Each entry references a source via `mapId` and provides
+   * per-feature `value`s for use in styling, tooltips, charts.
+   */
+  mapData?: MapData[];
   /**
    * Optional attribute datasets joined to geojson sources.
    * Each entry references a source via `mapId` and provides
