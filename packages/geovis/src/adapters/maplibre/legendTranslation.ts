@@ -1,4 +1,9 @@
-import type { ColorBy, LegendSpec } from '../../spec/types';
+import type {
+  CategoricalColorBy,
+  ColorBy,
+  LegendSpec,
+  QuantitativeColorBy,
+} from '../../spec/types.legend';
 
 const DEFAULT_LEGEND_COLORS = [
   '#dbeafe',
@@ -35,7 +40,9 @@ export interface BuildFillColorExpressionParams {
   breaks?: ReadonlyArray<number>;
 }
 
-const buildCategoricalExpression = (colorBy: ColorBy): unknown[] => {
+const buildCategoricalExpression = (
+  colorBy: CategoricalColorBy
+): unknown[] => {
   const mappingEntries = Object.entries(colorBy.mapping ?? {});
   const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
   // MapLibre's `match` expression requires at least one label/output pair.
@@ -55,7 +62,7 @@ const buildCategoricalExpression = (colorBy: ColorBy): unknown[] => {
 };
 
 const buildQuantitativeExpression = (
-  colorBy: ColorBy,
+  colorBy: QuantitativeColorBy,
   breaks: ReadonlyArray<number>
 ): unknown[] => {
   const sortedBreaks = uniqueAscending(breaks);
