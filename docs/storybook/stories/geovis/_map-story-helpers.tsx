@@ -104,6 +104,59 @@ export interface ColorStep {
 }
 
 /**
+ * Builds the MapLibre `step` paint expression for a property-driven choropleth.
+ *
+ * `field` can be:
+ * - string: wraps as `['get', field]` — reads the value from a feature property.
+ * - array:  used as-is, allowing arbitrary expressions
+ *           (e.g. `['/', ['get', 'pop'], ['get', 'area']]`).
+ *
+ * Pure function (no side effects) so it can be unit-tested without React
+ * or a MapLibre instance — the expression IS the contract: any change to
+ * its shape directly changes which colour each feature gets.
+ */
+export const buildChoroplethPaintExpression = (
+  field: string | readonly unknown[],
+  defaultColor: string,
+  steps: ColorStep[]
+): unknown[] => {
+  const getExpr = typeof field === 'string' ? ['get', field] : field;
+  return [
+    'step',
+    getExpr,
+    defaultColor,
+    ...steps.flatMap(({ threshold, color }) => {
+      return [threshold, color];
+    }),
+  ];
+};
+
+/**
+ * Builds the MapLibre `step` paint expression for a feature-state-driven
+ * choropleth (the `mapData` mechanism).
+ *
+ * `coalesce(['feature-state','value'], 0)` is required so that features
+ * without a feature-state set fall into the `defaultColor` slot. Without
+ * the coalesce, MapLibre returns `null` and the feature renders transparent
+ * — indistinguishable from a missing geometry.
+ *
+ * Pure function for the same reason as `buildChoroplethPaintExpression`.
+ */
+export const buildFeatureStatePaintExpression = (
+  defaultColor: string,
+  steps: ColorStep[]
+): unknown[] => {
+  return [
+    'step',
+    ['coalesce', ['feature-state', 'value'], 0],
+    defaultColor,
+    ...steps.flatMap(({ threshold, color }) => {
+      return [threshold, color];
+    }),
+  ];
+};
+
+/**
  * Render-less component mounted inside a GeoVisProvider.
  * Applies a data-driven `step` colour expression via getNativeInstance().
  * Required because FillPaint.fillColor does not support MapLibre expressions (string only).
@@ -135,15 +188,7 @@ export const ChoroplethPainter = ({
 
     let mounted = true;
 
-    const getExpr = typeof field === 'string' ? ['get', field] : field;
-    const expr = [
-      'step',
-      getExpr,
-      defaultColor,
-      ...steps.flatMap(({ threshold, color }) => {
-        return [threshold, color];
-      }),
-    ];
+    const expr = buildChoroplethPaintExpression(field, defaultColor, steps);
 
     const applyWhenReady = () => {
       if (!mounted) return;
@@ -164,6 +209,63 @@ export const ChoroplethPainter = ({
       mounted = false;
     };
   }, [runtime, layerId, field, defaultColor, steps]);
+
+  return null;
+};
+
+// ---------------------------------------------------------------------------
+// FeatureStatePainter
+// ---------------------------------------------------------------------------
+
+/**
+ * Render-less component mounted inside a GeoVisProvider.
+ * Applies a `step` colour expression driven by `['feature-state', 'value']`
+ * instead of a feature property.
+ *
+ * Use this with `mapData` sources where the value is injected at runtime via
+ * `setFeatureState` — it does NOT read from GeoJSON properties.
+ *
+ * The paint expression is set once; the choropleth updates automatically as
+ * the runtime applies new feature-state values when `mapData` changes.
+ */
+export const FeatureStatePainter = ({
+  layerId,
+  defaultColor,
+  steps,
+}: {
+  layerId: string;
+  defaultColor: string;
+  steps: ColorStep[];
+}) => {
+  const { runtime } = useGeoVis();
+
+  React.useEffect(() => {
+    if (!runtime) return;
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
+    if (!map) return;
+
+    let mounted = true;
+
+    const applyWhenReady = () => {
+      if (!mounted) return;
+      if (map.getLayer(layerId)) {
+        const expr = buildFeatureStatePaintExpression(defaultColor, steps);
+        map.setPaintProperty(layerId, 'fill-color', expr);
+      } else {
+        map.once('idle', applyWhenReady);
+      }
+    };
+
+    if (map.isStyleLoaded()) {
+      applyWhenReady();
+    } else {
+      map.once('load', applyWhenReady);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [runtime, layerId, defaultColor, steps]);
 
   return null;
 };

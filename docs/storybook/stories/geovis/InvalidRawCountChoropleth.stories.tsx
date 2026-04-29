@@ -1,13 +1,17 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { PolicyViolation, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  MapDataRow,
+  PolicyViolation,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
 import type { LockRef, MapRef } from './_map-story-helpers';
 import {
-  ChoroplethPainter,
   ColorSwatchLegend,
+  FeatureStatePainter,
   MapLabel,
   MapOverlayLegend,
   MapSync,
@@ -21,7 +25,7 @@ export default {
 const spec = fixture as unknown as VisualizationSpec;
 
 const fmtPop = (v: number) => {
-  return `${(v / 1_000_000).toFixed(1)}M hab.`;
+  return `${(v / 1_000_000).toFixed(1)}M inhabitants`;
 };
 const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
@@ -46,8 +50,27 @@ const densitySteps = [
   { threshold: 1300, color: '#14532d' },
 ];
 
-// MapLibre expression to calculate density at runtime: population / sq-km.
-const densityExpr = ['/', ['get', 'population'], ['get', 'sq-km']] as const;
+// Hardcoded Rwanda population per province (joined to rwanda-provinces.geojson
+// via feature.properties['name:en'] — the source has `name` in kinyarwanda,
+// `name:en` in English). Public statistics, snapshot circa 2022.
+const populationData: MapDataRow[] = [
+  { geometryId: 'Kigali City', value: 1_132_686 },
+  { geometryId: 'East Province', value: 2_595_703 },
+  { geometryId: 'Western Province', value: 2_471_239 },
+  { geometryId: 'Southern Province', value: 2_589_975 },
+  { geometryId: 'Northern Province', value: 1_726_370 },
+];
+
+// Pre-computed density (population / sq-km) per province. Encoded as a separate
+// dataset because feature-state stores a single `value` per source/feature; the
+// runtime expression `pop / area` is replaced by a precomputed value here.
+const densityData: MapDataRow[] = [
+  { geometryId: 'Kigali City', value: 1551 },
+  { geometryId: 'East Province', value: 274 },
+  { geometryId: 'Western Province', value: 420 },
+  { geometryId: 'Southern Province', value: 434 },
+  { geometryId: 'Northern Province', value: 527 },
+];
 
 /**
  * Null component that reads policyViolations from GeoVisContext (via useGeoVis)
@@ -119,23 +142,226 @@ const PolicyWarningBanner = ({
   );
 };
 
+const StoryHeader = ({ onRecenter }: { onRecenter: () => void }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>
+        <strong>{fixture.title}</strong>
+        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+          {fixture.description}
+        </p>
+      </div>
+      <button
+        onClick={onRecenter}
+        style={{
+          padding: '6px 14px',
+          borderRadius: 6,
+          border: '1px solid #d4d4d8',
+          background: 'white',
+          cursor: 'pointer',
+          fontSize: 13,
+          color: '#374151',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
+        Recenter
+      </button>
+    </div>
+  );
+};
+
+const MapPanel = ({
+  borderColor,
+  label,
+  legendLabel,
+  defaultColor,
+  steps,
+  formatValue,
+  providerSpec,
+  viewId,
+  selfRef,
+  peerRef,
+  lockRef,
+  showPolicyDetector,
+  onViolations,
+}: {
+  borderColor: string;
+  label: string;
+  legendLabel: string;
+  defaultColor: string;
+  steps: { threshold: number; color: string }[];
+  formatValue: (v: number) => string;
+  providerSpec: VisualizationSpec;
+  viewId: string;
+  selfRef: MapRef;
+  peerRef: MapRef;
+  lockRef: LockRef;
+  showPolicyDetector?: boolean;
+  onViolations?: (v: PolicyViolation[]) => void;
+}) => {
+  const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        flex: 1,
+        border: `2px solid ${borderColor}`,
+        borderRadius: 4,
+        overflow: 'hidden',
+      }}
+    >
+      <MapLabel>{label}</MapLabel>
+      <MapOverlayLegend
+        label={legendLabel}
+        defaultColor={defaultColor}
+        steps={steps}
+        formatValue={formatValue}
+      />
+      <GeoVisProvider spec={providerSpec}>
+        <GeoVisCanvas viewId={viewId} style={canvasStyle} />
+        <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
+        <FeatureStatePainter
+          layerId="rwanda-choropleth"
+          defaultColor={defaultColor}
+          steps={steps}
+        />
+        {showPolicyDetector && onViolations ? (
+          <PolicyDetector onViolations={onViolations} />
+        ) : null}
+      </GeoVisProvider>
+    </div>
+  );
+};
+
+const SwatchLegends = () => {
+  return (
+    <div style={{ display: 'flex', gap: 4 }}>
+      <div style={{ flex: 1 }}>
+        <ColorSwatchLegend
+          title="Blue — absolute count (invalid)"
+          defaultColor="#eff6ff"
+          steps={rawSteps}
+          formatValue={fmtPop}
+        />
+      </div>
+      <div style={{ flex: 1 }}>
+        <ColorSwatchLegend
+          title="Green — density hab/km² (correct)"
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+          formatValue={fmtDensity}
+        />
+      </div>
+    </div>
+  );
+};
+
+const PolicySection = () => {
+  return (
+    <div>
+      <strong>Policy</strong>
+      <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
+        <li>
+          <code>cartography.warnOnRawCountChoropleth: true</code> — this fixture
+          should raise a runtime warning when the policy is enabled.
+        </li>
+        <li>
+          Invalid field: <code>{fixture.metadata.metricField as string}</code>.
+          Correct expression:{' '}
+          <code>{fixture.metadata.normalizedExpression as string}</code> (
+          {fixture.metadata.normalizedLabel as string}).
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+const ReferencesSection = () => {
+  return (
+    <div>
+      <strong>Official references</strong>
+      <ul style={{ fontSize: 13 }}>
+        <li>
+          <a
+            href="https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            MapLibre — Visualize population density (normalized)
+          </a>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
 // Story
 
 /**
  * Intentionally **invalid** fixture — contract artefact for the
  * `cartography.warnOnRawCountChoropleth` policy.
  *
- * Uses official MapLibre data (Rwanda provinces) and a split-compare to
+ * Uses official MapLibre Rwanda provinces geometry and a split-compare to
  * expose the issue: Kigali City has the smallest absolute population (1.1M)
  * but the highest density (1,551 hab/km²). On the left map it appears almost
- * white; on the right it is the darkest. Density is calculated at runtime via
- * the MapLibre expression `['/', ['get', 'population'], ['get', 'sq-km']]`.
+ * white; on the right it is the darkest. Both metrics are supplied via
+ * hardcoded `mapData` joined to the source by `feature.properties['name:en']`.
  */
 export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
   const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
+
+  // Each side renders the same source through a distinct mapData entry.
+  // Cloning the spec keeps the providers independent: feature-state is set
+  // per map instance, so the left map carries `population` values and the
+  // right map carries `density` values without interfering with each other.
+  const leftSpec = React.useMemo<VisualizationSpec>(() => {
+    return {
+      ...spec,
+      layers: spec.layers.map((layer) => {
+        return layer.id === 'rwanda-choropleth'
+          ? { ...layer, mapDataId: 'pop' }
+          : layer;
+      }),
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'rwanda-provinces',
+          joinKey: 'name:en',
+          data: populationData,
+        },
+      ],
+    };
+  }, []);
+
+  const rightSpec = React.useMemo<VisualizationSpec>(() => {
+    return {
+      ...spec,
+      layers: spec.layers.map((layer) => {
+        return layer.id === 'rwanda-choropleth'
+          ? { ...layer, mapDataId: 'density' }
+          : layer;
+      }),
+      mapData: [
+        {
+          mapDataId: 'density',
+          mapId: 'rwanda-provinces',
+          joinKey: 'name:en',
+          data: densityData,
+        },
+      ],
+    };
+  }, []);
 
   // Stabilise the callback reference to avoid unnecessary re-renders.
   const handleViolations = React.useCallback((v: PolicyViolation[]) => {
@@ -151,162 +377,49 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
     syncLock.current = false;
   }, []);
 
-  const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
-
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div>
-          <strong>{fixture.title}</strong>
-          <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            {fixture.description}
-          </p>
-        </div>
-        <button
-          onClick={recenter}
-          style={{
-            padding: '6px 14px',
-            borderRadius: 6,
-            border: '1px solid #d4d4d8',
-            background: 'white',
-            cursor: 'pointer',
-            fontSize: 13,
-            color: '#374151',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-          }}
-        >
-          Recenter
-        </button>
-      </div>
+      <StoryHeader onRecenter={recenter} />
 
       {/* Banner triggered via policyViolations from GeoVisContext — does not read metadata directly from JSON */}
       <PolicyWarningBanner violations={violations} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
-        <div
-          style={{
-            position: 'relative',
-            flex: 1,
-            border: '2px solid #f59e0b',
-            borderRadius: 4,
-            overflow: 'hidden',
-          }}
-        >
-          <MapLabel>Absolute population count (population) - invalid</MapLabel>
-          <MapOverlayLegend
-            label="absolute population"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-            formatValue={fmtPop}
-          />
-          <GeoVisProvider spec={spec}>
-            <GeoVisCanvas viewId="left" style={canvasStyle} />
-            <MapSync
-              selfRef={leftMapRef}
-              peerRef={rightMapRef}
-              lockRef={syncLock}
-            />
-            <ChoroplethPainter
-              layerId="rwanda-choropleth"
-              field="population"
-              defaultColor="#eff6ff"
-              steps={rawSteps}
-            />
-            {/* PolicyDetector lifts violations to parent story state */}
-            <PolicyDetector onViolations={handleViolations} />
-          </GeoVisProvider>
-        </div>
+        <MapPanel
+          borderColor="#f59e0b"
+          label="Absolute population count (population) - invalid"
+          legendLabel="absolute population"
+          defaultColor="#eff6ff"
+          steps={rawSteps}
+          formatValue={fmtPop}
+          providerSpec={leftSpec}
+          viewId="left"
+          selfRef={leftMapRef}
+          peerRef={rightMapRef}
+          lockRef={syncLock}
+          showPolicyDetector
+          onViolations={handleViolations}
+        />
 
-        <div
-          style={{
-            position: 'relative',
-            flex: 1,
-            border: '2px solid #16a34a',
-            borderRadius: 4,
-            overflow: 'hidden',
-          }}
-        >
-          <MapLabel>Density (population / sq-km) - correct</MapLabel>
-          <MapOverlayLegend
-            label="density (hab/km²)"
-            defaultColor="#f0fdf4"
-            steps={densitySteps}
-            formatValue={fmtDensity}
-          />
-          <GeoVisProvider spec={spec}>
-            <GeoVisCanvas viewId="right" style={canvasStyle} />
-            <MapSync
-              selfRef={rightMapRef}
-              peerRef={leftMapRef}
-              lockRef={syncLock}
-            />
-            <ChoroplethPainter
-              layerId="rwanda-choropleth"
-              field={densityExpr}
-              defaultColor="#f0fdf4"
-              steps={densitySteps}
-            />
-          </GeoVisProvider>
-        </div>
+        <MapPanel
+          borderColor="#16a34a"
+          label="Density (population / sq-km) - correct"
+          legendLabel="density (people/km²)"
+          defaultColor="#f0fdf4"
+          steps={densitySteps}
+          formatValue={fmtDensity}
+          providerSpec={rightSpec}
+          viewId="right"
+          selfRef={rightMapRef}
+          peerRef={leftMapRef}
+          lockRef={syncLock}
+        />
       </div>
 
       {/* gap: 4 mirrors the map row layout — each swatch aligns with its corresponding panel */}
-      <div style={{ display: 'flex', gap: 4 }}>
-        <div style={{ flex: 1 }}>
-          <ColorSwatchLegend
-            title="Blue — absolute count (invalid)"
-            defaultColor="#eff6ff"
-            steps={rawSteps}
-            formatValue={fmtPop}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <ColorSwatchLegend
-            title="Green — density hab/km² (correct)"
-            defaultColor="#f0fdf4"
-            steps={densitySteps}
-            formatValue={fmtDensity}
-          />
-        </div>
-      </div>
-
-      <div>
-        <strong>Policy</strong>
-        <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
-          <li>
-            <code>cartography.warnOnRawCountChoropleth: true</code> — this
-            fixture should raise a runtime warning when the policy is enabled.
-          </li>
-          <li>
-            Invalid field: <code>{fixture.metadata.metricField as string}</code>
-            . Correct expression:{' '}
-            <code>{fixture.metadata.normalizedExpression as string}</code> (
-            {fixture.metadata.normalizedLabel as string}).
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <strong>Official references</strong>
-        <ul style={{ fontSize: 13 }}>
-          <li>
-            <a
-              href="https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              MapLibre — Visualize population density (normalized)
-            </a>
-          </li>
-        </ul>
-      </div>
+      <SwatchLegends />
+      <PolicySection />
+      <ReferencesSection />
     </div>
   );
 };

@@ -29,14 +29,14 @@ export interface CapabilitySet {
 
 export type SpecPatch =
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'view' | 'style' | 'mapData';
       op: 'replace';
       path: string;
       value?: unknown;
       rationale?: string;
     }
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'view' | 'style' | 'mapData';
       op: 'add' | 'remove';
       path?: string;
       value?: unknown;

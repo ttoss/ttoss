@@ -101,3 +101,130 @@ describe('createRuntime — applyPatch add/remove', () => {
     expect(adapter.applyPatch).not.toHaveBeenCalled();
   });
 });
+
+describe('createRuntime — applyPatch target:mapData', () => {
+  const makeMapDataSpec = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          data: [
+            { geometryId: 'BR', value: 211 },
+            { geometryId: 'AR', value: 45 },
+          ],
+        },
+      ],
+    };
+  };
+
+  // 2.1
+  test('op:add appends the dataset to currentSpec.mapData', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    const newMd = {
+      mapDataId: 'pop',
+      mapId: 'src-1',
+      data: [{ geometryId: 'BR', value: 211 }],
+    };
+    runtime.applyPatch({ target: 'mapData', op: 'add', value: newMd });
+    expect(runtime.spec.mapData).toHaveLength(1);
+    expect(runtime.spec.mapData?.[0]).toEqual(newMd);
+  });
+
+  // 2.2
+  test('op:remove removes the dataset by mapDataId', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'remove',
+      value: 'pop',
+    });
+    expect(runtime.spec.mapData).toHaveLength(0);
+  });
+
+  // 2.3
+  test('op:replace at granular path updates a single row value', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 215,
+    });
+    const updated = runtime.spec.mapData?.[0].data.find((row) => {
+      return String(row.geometryId) === 'BR';
+    });
+    expect(updated?.value).toBe(215);
+  });
+
+  // 2.4
+  test('forwards the patch to the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    const patch = {
+      target: 'mapData' as const,
+      op: 'remove' as const,
+      value: 'pop',
+    };
+    runtime.applyPatch(patch);
+    expect(adapter.applyPatch).toHaveBeenCalledWith(
+      expect.objectContaining({ target: 'mapData', op: 'remove' })
+    );
+  });
+
+  // 2.5 — append preserves numeric geometryId type
+  test('op:replace appends new row with numeric geometryId type when id is numeric', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.42',
+      value: 99,
+    });
+    const appended = runtime.spec.mapData?.[0].data.find((row) => {
+      return row.geometryId === 42;
+    });
+    expect(appended?.geometryId).toBe(42);
+    expect(appended?.value).toBe(99);
+  });
+
+  // 2.6 — append preserves string geometryId type when id is not numeric
+  test('op:replace appends new row with string geometryId type when id is not numeric', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.XX',
+      value: 7,
+    });
+    const appended = runtime.spec.mapData?.[0].data.find((row) => {
+      return row.geometryId === 'XX';
+    });
+    expect(appended?.geometryId).toBe('XX');
+    expect(appended?.value).toBe(7);
+  });
+
+  // 2.7 — full-entry replace (path depth 2)
+  test('op:replace at path depth 2 replaces the full MapData entry', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeMapDataSpec());
+    const replacement = {
+      mapDataId: 'pop',
+      mapId: 'src-1',
+      data: [{ geometryId: 'US', value: 330 }],
+    };
+    runtime.applyPatch({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop',
+      value: replacement,
+    });
+    expect(runtime.spec.mapData?.[0]).toEqual(replacement);
+  });
+});

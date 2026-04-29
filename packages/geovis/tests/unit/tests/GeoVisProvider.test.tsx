@@ -272,28 +272,19 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
 
 describe('GeoVisProvider effectiveSpec synchronization', () => {
   /**
-   * Regression test for: "When spec.engine changes, the runtime is re-created
-   * but effectiveSpec is not updated. Because prevSpecRef.current is set to spec
-   * in the init effect, the sync effect exits early (spec === prevSpecRef.current),
-   * leaving the context serving the previous spec."
+   * GeoVisProvider derives `effectiveSpec` directly during render using a
+   * `patchState` object: `{ forSpec, patchedSpec }`.
    *
-   * The init effect MUST NOT set prevSpecRef.current. Only the sync effect
-   * manages prevSpecRef so that after every runtime re-creation (engine change),
-   * the sync effect correctly sees spec !== prevSpecRef.current and calls
-   * setEffectiveSpec(spec) + runtime.update(spec).
+   * - When `spec` prop matches `patchState.forSpec`, the context serves
+   *   `patchedSpec` (the post-patch view of the spec).
+   * - When the parent provides a new `spec` reference, `patchState.forSpec !==
+   *   spec` and the context falls through to the fresh prop, automatically
+   *   discarding stale patch state.
    *
-   * Observable in unit tests (single engine):
-   *   - Fixed code: sync effect runs after init → runtime.update IS called once.
-   *   - Buggy code: init sets prevSpecRef → sync exits early → runtime.update NOT called.
-   *
-   * Full engine-change scenario (requires multiple engine support / integration test):
-   *   1. Mount with spec1  → effectiveSpec = spec1
-   *   2. Change to spec2 (same engine) → effectiveSpec = spec2 (sync path)
-   *   3. Change to spec3 (different engine) → runtime re-created
-   *      Fixed: sync sees spec3 !== prevSpecRef(=spec2) → effectiveSpec = spec3
-   *      Buggy: init sets prevSpecRef=spec3 → sync exits → effectiveSpec = spec2 (stale)
+   * `runtime.update(spec)` is called by a dedicated `useEffect([runtime, spec])`
+   * whenever either the runtime or the spec prop changes.
    */
-  test('runtime.update is called once after initial mount (init must not set prevSpecRef)', async () => {
+  test('runtime.update is called once after initial mount', async () => {
     await act(async () => {
       render(
         <GeoVisProvider spec={baseSpec}>
@@ -302,9 +293,8 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
       );
     });
 
-    // The sync effect fires after the async init completes and setRuntime is called.
-    // prevSpecRef starts as null → spec !== null → setEffectiveSpec + runtime.update called.
-    // If the init effect had set prevSpecRef = spec, sync would have exited early here.
+    // The sync effect fires after the async init resolves and setRuntime is
+    // called. runtime.update(spec) must be called exactly once with baseSpec.
     expect(mockRuntimeUpdate).toHaveBeenCalledTimes(1);
     expect(mockRuntimeUpdate).toHaveBeenCalledWith(baseSpec);
   });

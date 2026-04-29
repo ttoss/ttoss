@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 
-import geojsonUrlMapSpec from '../../../../packages/geovis/src/fixtures/source-geojson-url-map.json';
+import geojsonUrlMapSpec from '../../../../packages/geovis/src/fixtures/geojson-url-map.json';
 import { GeoVisFixtureStory } from './GeoVisFixtureStory';
 
 export default {

@@ -343,6 +343,9 @@ describe('toMaplibreSource', () => {
 describe('applyPatch — camelCase to MapLibre key translation', () => {
   const mountAdapter = () => {
     const map = makeMapMock();
+    // setPaintWhenReady guards on getLayer — return a truthy stub for all
+    // layers that exist in the test spec so paint patches are applied.
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
@@ -687,5 +690,400 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
     adapter.update({ ...initialSpec });
 
     expect(setData).not.toHaveBeenCalled();
+  });
+});
+
+describe('mapData — feature-state application', () => {
+  const makeMapWithEvents = () => {
+    const handlers: Record<string, Array<(...a: unknown[]) => void>> = {};
+    const map = {
+      ...makeMapMock(),
+      on: jest.fn((evt: string, cb: (...a: unknown[]) => void) => {
+        handlers[evt] = handlers[evt] ?? [];
+        handlers[evt].push(cb);
+      }),
+      off: jest.fn((evt: string, cb: (...a: unknown[]) => void) => {
+        handlers[evt] = (handlers[evt] ?? []).filter((h) => {
+          return h !== cb;
+        });
+      }),
+      // Source treated as already registered so applyMapDataToSource proceeds.
+      getSource: jest.fn(() => {
+        return { setData: jest.fn() } as unknown as ReturnType<
+          typeof maplibregl.Map.prototype.getSource
+        >;
+      }),
+      isSourceLoaded: jest.fn(() => {
+        return true;
+      }),
+      setFeatureState: jest.fn(),
+      removeFeatureState: jest.fn(),
+      querySourceFeatures: jest.fn(() => {
+        return [];
+      }),
+    };
+    const fire = (evt: string, ...args: unknown[]) => {
+      for (const cb of handlers[evt] ?? []) cb(...args);
+    };
+    return { map, fire };
+  };
+
+  const baseSpec = (mapData?: unknown) => {
+    return {
+      ...makeSpec('md'),
+      sources: [
+        {
+          id: 'states',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      layers: [
+        { id: 'fill', sourceId: 'states', geometry: 'polygon' as const },
+      ],
+      ...(mapData ? { mapData } : {}),
+    };
+  };
+
+  // 3.1
+  test('applies setFeatureState for each row after load (no joinKey → uses feature.id)', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [
+            { geometryId: 'BR', value: 211 },
+            { geometryId: 'AR', value: 45 },
+          ],
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setFeatureState).toHaveBeenCalledTimes(2);
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 211 }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'AR' },
+      { value: 45 }
+    );
+  });
+
+  // 3.2 — numeric geometryId stored as string is coerced to number for setFeatureState
+  test('coerces string geometryId to number when it represents a finite number', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [
+            { geometryId: '1', value: 100 },
+            { geometryId: '2', value: 200 },
+          ],
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setFeatureState).toHaveBeenCalledTimes(2);
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 1 },
+      { value: 100 }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 2 },
+      { value: 200 }
+    );
+  });
+
+  // 3.2b — removeFeatureState also coerces string geometryId to number
+  test('op:remove coerces string geometryId to number for removeFeatureState', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: '1', value: 100 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+
+    adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
+
+    expect(map.removeFeatureState).toHaveBeenCalledWith({
+      source: 'states',
+      id: 1,
+    });
+  });
+
+  // 3.3
+  test('applyPatch granular replace calls setFeatureState with the right id and value', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+    jest.mocked(map.setFeatureState).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 215,
+    });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 215 }
+    );
+  });
+
+  // 3.6
+  test('mounting without mapData never calls setFeatureState (V1 no-regression)', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), baseSpec(), 'v');
+
+    fire('load');
+
+    expect(map.setFeatureState).not.toHaveBeenCalled();
+  });
+
+  // 3.7 — joinKey: applies setFeatureState using feature.id resolved via querySourceFeatures
+  test('joinKey: applies setFeatureState using resolved feature.id', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.querySourceFeatures).mockReturnValue([
+      {
+        id: 42,
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: { name: 'BR' },
+      },
+      {
+        id: 99,
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [1, 1] },
+        properties: { name: 'AR' },
+      },
+    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          joinKey: 'name',
+          data: [
+            { geometryId: 'BR', value: 211 },
+            { geometryId: 'AR', value: 45 },
+          ],
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 42 },
+      { value: 211 }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 99 },
+      { value: 45 }
+    );
+  });
+
+  // 3.8 — joinKey: granular replace resolves feature.id via querySourceFeatures
+  test('joinKey: granular replace patch resolves feature.id and calls setFeatureState', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.querySourceFeatures).mockReturnValue([
+      {
+        id: 42,
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: { name: 'BR' },
+      },
+    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          joinKey: 'name',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+    jest.mocked(map.setFeatureState).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 999,
+    });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 42 },
+      { value: 999 }
+    );
+  });
+
+  // 3.9 — joinKey: granular replace is a no-op when source is not loaded
+  test('joinKey: granular replace is a no-op when source is not loaded', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isSourceLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          joinKey: 'name',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+    jest.mocked(map.setFeatureState).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 999,
+    });
+
+    expect(map.setFeatureState).not.toHaveBeenCalled();
+  });
+
+  // 3.10 — pending listener is cancelled on op:remove before source loads
+  test('op:remove cancels pending sourcedata listener; no setFeatureState when source eventually loads', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isSourceLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 1 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load'); // registers pending sourcedata listener
+
+    adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
+
+    // Source loads after removal — stale listener must NOT apply feature state
+    fire('sourcedata', { sourceId: 'states', isSourceLoaded: true });
+
+    expect(map.setFeatureState).not.toHaveBeenCalled();
+  });
+
+  // 3.11 — pending listener is replaced on full-entry replace before source loads
+  test('full-entry replace cancels stale listener and applies only new data when source loads', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isSourceLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 1 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load'); // registers pending sourcedata listener for old data (value: 1)
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop',
+      value: {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 99 }],
+      },
+    });
+
+    // Source loads — only the replacement data (99) must be applied, not the stale (1)
+    fire('sourcedata', { sourceId: 'states', isSourceLoaded: true });
+
+    expect(map.setFeatureState).toHaveBeenCalledTimes(1);
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 99 }
+    );
   });
 });

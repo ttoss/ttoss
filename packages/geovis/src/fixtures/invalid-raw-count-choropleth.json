@@ -24,7 +24,6 @@
       "geometry": "polygon",
       "visible": true,
       "paint": {
-        "fillColor": "#dbeafe",
         "fillOpacity": 0.85,
         "lineColor": "#94a3b8",
         "lineWidth": 0.5
