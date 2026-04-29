@@ -4,6 +4,8 @@ import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import type { MapHoverInfo } from './hooks';
+import { useMapHover } from './hooks';
 
 export { useMapData } from './hooks';
 
@@ -41,6 +43,11 @@ interface GeoVisContextValue {
   applyPatch: (patch: SpecPatch) => void;
   /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
   policyViolations: PolicyViolation[];
+  /**
+   * Snapshot of the feature currently hovered on the map (only tracked for
+   * polygon layers with `activeLegendId`). `null` when no feature is hovered.
+   */
+  hoveredMapFeature: MapHoverInfo | null;
 }
 
 export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
@@ -131,11 +138,19 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
   };
 
+  const hoveredMapFeature = useMapHover({ runtime, spec: effectiveSpec });
+
   if (adapterError) throw adapterError;
 
   return (
     <GeoVisContext.Provider
-      value={{ runtime, spec: effectiveSpec, applyPatch, policyViolations }}
+      value={{
+        runtime,
+        spec: effectiveSpec,
+        applyPatch,
+        policyViolations,
+        hoveredMapFeature,
+      }}
     >
       {children}
     </GeoVisContext.Provider>
