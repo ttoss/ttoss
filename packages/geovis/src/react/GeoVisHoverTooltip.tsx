@@ -3,7 +3,7 @@ import type * as React from 'react';
 import { useGeoVisHover } from './GeoVisProvider';
 import type { MapHoverInfo } from './hooks';
 
-const defaultFormatValue = (value: number): string => {
+const defaultFormatValue = (value: number | string): string => {
   return String(value);
 };
 
@@ -28,7 +28,7 @@ export interface GeoVisHoverTooltipProps {
    */
   render?: (info: MapHoverInfo) => React.ReactNode;
   /** Formatter applied to `info.value` when no `render` prop is provided. */
-  formatValue?: (value: number) => string;
+  formatValue?: (value: number | string) => string;
   /** Optional class for the tooltip container. */
   className?: string;
   /** Optional inline style overrides merged on top of the default tooltip style. */

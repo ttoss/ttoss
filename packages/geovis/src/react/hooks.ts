@@ -17,8 +17,12 @@ export interface MapHoverInfo {
   sourceId: string;
   /** Hovered feature's id (typically `geometryId` from `mapData`). */
   featureId: string | number;
-  /** `feature-state.value` (set by `mapData`); `null` when the feature has no value bound. */
-  value: number | null;
+  /**
+   * `feature-state.value` (set by `mapData`); supports the same value types
+   * as `MapDataRow.value` (`number | string | null`). `null` when the feature
+   * has no value bound or when the bound value is a non-finite number.
+   */
+  value: number | string | null;
   /** Pixel coordinates relative to the map canvas. */
   point: { x: number; y: number };
 }
@@ -52,6 +56,9 @@ export const useMapHover = ({
   // Identify polygon layers that participate in legend-driven interactions.
   // Stored as a string key so the effect's dependency array stays stable when
   // the spec object reference changes but the relevant subset does not.
+  // Depends on `spec.layers` (not the whole `spec`) so high-frequency spec
+  // updates such as `mapData` patches do NOT detach/reattach the MapLibre
+  // event handlers below.
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
@@ -61,7 +68,7 @@ export const useMapHover = ({
         return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}`;
       })
       .join(TRACKED_RECORD_SEP);
-  }, [spec]);
+  }, [spec.layers]);
 
   React.useEffect(() => {
     if (!runtime) return;
@@ -100,10 +107,14 @@ export const useMapHover = ({
         source: sourceId,
         id: feature.id,
       }) as { value?: unknown };
-      const value =
-        typeof state.value === 'number' && Number.isFinite(state.value)
-          ? state.value
-          : null;
+      let value: number | string | null;
+      if (typeof state.value === 'number') {
+        value = Number.isFinite(state.value) ? state.value : null;
+      } else if (typeof state.value === 'string') {
+        value = state.value;
+      } else {
+        value = null;
+      }
 
       map.getCanvas().style.cursor = 'pointer';
       setHover({
