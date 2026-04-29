@@ -67,7 +67,7 @@ carlin deploy
 # Creates: my-app-main
 ```
 
-Branch names are automatically converted to param-case (lowercase with hyphens).
+Branch names are automatically converted to param-case (lowercase with hyphens). Non-ASCII characters (e.g. accented letters like `ç`, `ã`) are normalized to their closest ASCII equivalents before the stack name is used.
 
 ### Override Branch Detection
 
@@ -108,6 +108,23 @@ Environment-based stacks also enable:
 - **Environment-specific configurations**
 - **Clearer deployment separation**
 
+## Stack Name Sanitization
+
+Branch names (and other inputs) may contain characters that are not allowed in CloudFormation stack names. carlin automatically sanitizes the generated name to ensure it satisfies the CloudFormation constraint `[a-zA-Z][-a-zA-Z0-9]*`:
+
+1. **Unicode normalization**: Accented characters are decomposed and their diacritical marks are stripped, mapping them to ASCII equivalents (e.g. `configuração` → `configuracao`, `não` → `nao`).
+2. **Invalid character replacement**: Any remaining character that is not a letter, digit, or hyphen is replaced with a hyphen.
+3. **Hyphen collapsing**: Consecutive hyphens are collapsed into a single hyphen, and leading/trailing hyphens are removed.
+4. **Digit-start fix**: If the resulting name starts with a digit, a `Stack-` prefix is added to satisfy the CloudFormation requirement that names begin with a letter.
+
+### Example with non-ASCII branch name
+
+```bash
+# On branch: 1356-adicionar-configuração-para-não-adicionar-sufixos
+carlin deploy
+# Stack name becomes: OneclickadsGraphApi-1356-adicionar-configuracao-para-nao-adicionar-sufixos
+```
+
 ## Stack Name Constraints
 
 CloudFormation stack names must:
@@ -118,6 +135,26 @@ CloudFormation stack names must:
 - Start with an alphabetic character
 
 carlin enforces a **100-character limit** for AppSync API compatibility (AWS AppSync uses stack names for API names).
+
+### Non-ASCII Character Normalization
+
+Branch names containing non-ASCII characters (e.g. accented letters in Portuguese or Spanish) are automatically normalized so the resulting stack name satisfies the CloudFormation `[a-zA-Z][-a-zA-Z0-9]*` constraint:
+
+1. Unicode characters are decomposed using NFKD normalization (e.g. `ç` → `c` + combining cedilla).
+2. Combining diacritical marks are removed, leaving the base ASCII letter.
+3. Any remaining characters that are not letters, digits, or hyphens are replaced with a hyphen.
+4. Consecutive hyphens are collapsed into a single hyphen and leading/trailing hyphens are stripped.
+5. If the name would start with a digit after normalization, it is prefixed with `Stack-`.
+6. If normalization produces an empty string, `Stack` is used as a fallback.
+
+**Example** (branch names with Portuguese characters):
+
+```bash
+# Branch: 1356-adicionar-configuração-para-não-adicionar-os-sufixos
+# Package: @oneclickads/graph-api
+carlin deploy
+# Stack: OneclickadsGraphApi-1356-adicionar-configuracao-para-nao-adicionar-os-sufixos
+```
 
 :::caution
 
