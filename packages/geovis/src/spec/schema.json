@@ -368,22 +368,6 @@
           }
         }
       }
-    },
-    "adapterHints": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "maplibre": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "styleVersion": {
-              "type": "integer",
-              "const": 8
-            }
-          }
-        }
-      }
     }
   },
   "$defs": {
