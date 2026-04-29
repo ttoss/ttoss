@@ -1,6 +1,5 @@
 export * from './react/GeoVisCanvas';
 export * from './react/GeoVisHoverTooltip';
-export * from './react/GeoVisLegend';
 export * from './react/GeoVisProvider';
 export * from './react/hooks';
 export * from './runtime/adapter';
