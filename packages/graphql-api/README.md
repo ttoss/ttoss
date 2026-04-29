@@ -549,6 +549,40 @@ The resolver `connection` has the following arguments based on the [Relay Connec
   });
   ```
 
+#### `ConnectionArgs` type
+
+To type a connection resolver in TypeScript, import the generic `ConnectionArgs<TFilter, TSort>` helper. It captures all of the standard pagination arguments (`first`, `after`, `last`, `before`, `limit`, `skip`, `sort`, `filter`) and lets you specify only the connection-specific parts:
+
+```ts
+import {
+  type ConnectionArgs,
+  type ResolverResolveParams,
+} from '@ttoss/graphql-api';
+
+type NotificationFilter = {
+  isRead?: boolean | null;
+  kind?: string | null;
+};
+
+NotificationTC.addResolver({
+  name: 'findMany',
+  type: [NotificationTC.NonNull],
+  resolve: async ({
+    args,
+  }: ResolverResolveParams<
+    unknown,
+    ResolverContext,
+    ConnectionArgs<NotificationFilter>
+  >) => {
+    return findManyNotifications({
+      first: args.first,
+      after: args.after,
+      filter: args.filter,
+    });
+  },
+});
+```
+
 To configure `composeWithConnection`, you need to provide the following options:
 
 #### `findManyResolver`
