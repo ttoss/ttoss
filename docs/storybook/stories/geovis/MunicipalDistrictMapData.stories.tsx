@@ -33,6 +33,10 @@ const populationSteps: ColorStep[] = [
   { threshold: 250_000, color: '#1e3a8a' },
 ];
 
+const populationBreaks = populationSteps.map((step) => {
+  return step.threshold;
+});
+
 const DEFAULT_COLOR = '#f0f9ff';
 
 const AVAILABLE_YEARS = [
@@ -85,12 +89,6 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       return { geometryId: parseInt(districtId, 10), value: pop };
     });
   }, [populationData, year]);
-
-  const populationBreaks = React.useMemo(() => {
-    return populationSteps.map((step) => {
-      return step.threshold;
-    });
-  }, []);
 
   const spec = React.useMemo<VisualizationSpec>(() => {
     return {
@@ -149,7 +147,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
         },
       ],
     };
-  }, [mapDataEntries, populationBreaks, year]);
+  }, [mapDataEntries, year]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
