@@ -53,10 +53,14 @@ export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
  *
  * Lives in a dedicated context so high-frequency `mousemove` updates do not
  * re-render `useGeoVis()` consumers (which only need the stable runtime/spec).
+ *
+ * Default value is `undefined` (the "no provider" sentinel) so
+ * `useGeoVisHover()` can distinguish "consumed outside `GeoVisProvider`"
+ * from the valid "no feature hovered" state (`null`).
  */
-export const GeoVisHoverContext = React.createContext<MapHoverInfo | null>(
-  null
-);
+export const GeoVisHoverContext = React.createContext<
+  MapHoverInfo | null | undefined
+>(undefined);
 
 const resolveAdapter = async (
   engine: VisualizationSpec['engine']
@@ -212,5 +216,9 @@ export const useGeoVis = (): GeoVisContextValue => {
  * Must be called inside `GeoVisProvider`.
  */
 export const useGeoVisHover = (): MapHoverInfo | null => {
-  return React.useContext(GeoVisHoverContext);
+  const ctx = React.useContext(GeoVisHoverContext);
+  if (ctx === undefined) {
+    throw new Error('useGeoVisHover must be used inside <GeoVisProvider>');
+  }
+  return ctx;
 };
