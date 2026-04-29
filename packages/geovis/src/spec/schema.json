@@ -294,7 +294,6 @@
             "type": "object",
             "additionalProperties": true
           },
-          "colorBy": { "$ref": "#/$defs/ColorBy" },
           "legends": {
             "type": "array",
             "items": { "$ref": "#/$defs/LegendSpec" }

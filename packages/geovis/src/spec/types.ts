@@ -226,8 +226,6 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
-  /** Optional color mapping resolved by legend-aware consumers/adapters. */
-  colorBy?: ColorBy;
   /** Optional alternative legend definitions presented as runtime toggles. */
   legends?: LegendSpec[];
   /** Id of the currently active legend from `legends[]`. */
