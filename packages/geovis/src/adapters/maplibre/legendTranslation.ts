@@ -35,37 +35,29 @@ export interface BuildFillColorExpressionParams {
   breaks?: ReadonlyArray<number>;
 }
 
-/**
- * Builds a MapLibre `fill-color` expression from a legend definition.
- *
- * @remarks
- * The expression always reads from `feature-state.value` so it remains
- * compatible with the current `mapData` write-path (`setFeatureState`).
- * Quantitative legends are translated to `step` and categorical legends to
- * `match` to keep parity with MapLibre's native branching semantics.
- *
- * @param params - Legend configuration and optional precomputed breaks.
- * @returns A MapLibre expression array suitable for `setPaintProperty`.
- */
-export const buildFillColorExpression = ({
-  legend,
-  breaks = [],
-}: BuildFillColorExpressionParams): unknown[] => {
-  const colorBy = legend.colorBy;
-
-  if (colorBy.type === 'categorical') {
-    const mappingEntries = Object.entries(colorBy.mapping ?? {});
-    const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
-    return [
-      'match',
-      ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
-      ...mappingEntries.flatMap(([key, color]) => {
-        return [key, color];
-      }),
-      fallbackColor,
-    ];
+const buildCategoricalExpression = (colorBy: ColorBy): unknown[] => {
+  const mappingEntries = Object.entries(colorBy.mapping ?? {});
+  const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
+  // MapLibre's `match` expression requires at least one label/output pair.
+  // When the categorical mapping is empty, fall back to a constant color
+  // expression to avoid a runtime error from `setPaintProperty`.
+  if (mappingEntries.length === 0) {
+    return ['literal', fallbackColor];
   }
+  return [
+    'match',
+    ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
+    ...mappingEntries.flatMap(([key, color]) => {
+      return [key, color];
+    }),
+    fallbackColor,
+  ];
+};
 
+const buildQuantitativeExpression = (
+  colorBy: ColorBy,
+  breaks: ReadonlyArray<number>
+): unknown[] => {
   const sortedBreaks = uniqueAscending(breaks);
   const palette = resolvePalette(colorBy, sortedBreaks.length + 1);
   const fallbackColor =
@@ -85,4 +77,27 @@ export const buildFillColorExpression = ({
   }
 
   return stepExpression;
+};
+
+/**
+ * Builds a MapLibre `fill-color` expression from a legend definition.
+ *
+ * @remarks
+ * The expression always reads from `feature-state.value` so it remains
+ * compatible with the current `mapData` write-path (`setFeatureState`).
+ * Quantitative legends are translated to `step` and categorical legends to
+ * `match` to keep parity with MapLibre's native branching semantics.
+ *
+ * @param params - Legend configuration and optional precomputed breaks.
+ * @returns A MapLibre expression array suitable for `setPaintProperty`.
+ */
+export const buildFillColorExpression = ({
+  legend,
+  breaks = [],
+}: BuildFillColorExpressionParams): unknown[] => {
+  const colorBy = legend.colorBy;
+  if (colorBy.type === 'categorical') {
+    return buildCategoricalExpression(colorBy);
+  }
+  return buildQuantitativeExpression(colorBy, breaks);
 };
