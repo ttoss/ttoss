@@ -1,5 +1,6 @@
 export * from './react/GeoVisCanvas';
 export * from './react/GeoVisHoverTooltip';
+export * from './react/GeoVisLegend';
 export * from './react/GeoVisProvider';
 export type { UseMapDataResult } from './react/hooks';
 export { useMapData } from './react/hooks';

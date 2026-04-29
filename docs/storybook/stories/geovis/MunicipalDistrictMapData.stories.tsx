@@ -3,17 +3,14 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import {
   GeoVisCanvas,
   GeoVisHoverTooltip,
+  GeoVisLegend,
   GeoVisProvider,
 } from '@ttoss/geovis';
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
 import type { ColorStep } from './_map-story-helpers';
-import {
-  ColorSwatchLegend,
-  MapLabel,
-  MapOverlayLegend,
-} from './_map-story-helpers';
+import { MapLabel, MapOverlayLegend } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
@@ -185,10 +182,9 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
             formatValue={fmtPop}
           />
         </div>
-        <ColorSwatchLegend
-          title={`Population by district \u2014 ${year}`}
-          defaultColor={DEFAULT_COLOR}
-          steps={populationSteps}
+        <GeoVisLegend
+          legendId="population"
+          breaks={populationBreaks}
           formatValue={fmtPop}
         />
       </GeoVisProvider>
