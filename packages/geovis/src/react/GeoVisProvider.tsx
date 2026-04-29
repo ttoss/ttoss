@@ -138,29 +138,67 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     runtime.update(spec);
   }, [runtime, spec]);
 
-  const applyPatch = (patch: SpecPatch) => {
-    if (!runtime) return;
-    runtime.applyPatch(patch);
-    setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
-  };
-
-  const hoveredMapFeature = useMapHover({ runtime, spec: effectiveSpec });
+  const applyPatch = React.useCallback(
+    (patch: SpecPatch) => {
+      if (!runtime) return;
+      runtime.applyPatch(patch);
+      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+    },
+    [runtime, spec]
+  );
 
   if (adapterError) throw adapterError;
 
+  // Memoize the context value so that high-frequency hover updates inside
+  // `HoverProvider` (a child component) cannot cascade into re-renders of
+  // `useGeoVis()` consumers. Reference equality of `value` is the signal
+  // React uses to notify context subscribers — keeping it stable when
+  // runtime/spec/applyPatch/violations are unchanged is critical here.
+  const ctxValue = React.useMemo(() => {
+    return {
+      runtime,
+      spec: effectiveSpec,
+      applyPatch,
+      policyViolations,
+    };
+  }, [runtime, effectiveSpec, applyPatch, policyViolations]);
+
   return (
-    <GeoVisContext.Provider
-      value={{
-        runtime,
-        spec: effectiveSpec,
-        applyPatch,
-        policyViolations,
-      }}
-    >
-      <GeoVisHoverContext.Provider value={hoveredMapFeature}>
+    <GeoVisContext.Provider value={ctxValue}>
+      <HoverProvider runtime={runtime} spec={effectiveSpec}>
         {children}
-      </GeoVisHoverContext.Provider>
+      </HoverProvider>
     </GeoVisContext.Provider>
+  );
+};
+
+/**
+ * Isolates `useMapHover` (which fires on every `mousemove`) into a child
+ * component so that its state updates do NOT re-render `GeoVisProvider`.
+ *
+ * @remarks
+ * Defined at module scope so its component identity is stable across
+ * re-renders of `GeoVisProvider` (defining it inside would remount the
+ * subtree on every render and defeat the optimization). Without this
+ * boundary, every hover event would re-execute the parent's render body —
+ * recomputing `effectiveSpec`, `policyViolations`, and the memoized context
+ * value. By moving the hover state down, only this small component and the
+ * consumers of `useGeoVisHover()` re-render on hover.
+ */
+const HoverProvider = ({
+  runtime,
+  spec,
+  children,
+}: {
+  runtime: GeoVisRuntime | null;
+  spec: VisualizationSpec;
+  children: React.ReactNode;
+}) => {
+  const hoveredMapFeature = useMapHover({ runtime, spec });
+  return (
+    <GeoVisHoverContext.Provider value={hoveredMapFeature}>
+      {children}
+    </GeoVisHoverContext.Provider>
   );
 };
 
