@@ -7,8 +7,6 @@ import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 import type { MapHoverInfo } from './hooks';
 import { useMapHover } from './hooks';
 
-export { useMapData } from './hooks';
-
 /** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
 const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
   const violations: PolicyViolation[] = [];
