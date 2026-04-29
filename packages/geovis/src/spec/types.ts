@@ -1,4 +1,4 @@
-import type { ColorBy, LegendSpec } from './types.legend';
+import type { LegendSpec } from './types.legend';
 
 export * from './types.legend';
 

@@ -39,6 +39,61 @@ const TRACKED_FIELD_SEP = '\x1f'; // Unit Separator
 const TRACKED_RECORD_SEP = '\x1e'; // Record Separator
 
 /**
+ * Normalises a `feature-state.value` read from MapLibre to the public
+ * `MapHoverInfo.value` shape: numbers must be finite, strings pass through,
+ * everything else collapses to `null`.
+ */
+const coerceFeatureStateValue = (raw: unknown): number | string | null => {
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) ? raw : null;
+  }
+  if (typeof raw === 'string') return raw;
+  return null;
+};
+
+interface BuildHandleMoveParams {
+  map: MapLibreMap;
+  layerIds: string[];
+  sourceByLayerId: Map<string, string>;
+  setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
+}
+
+const buildHandleMove = ({
+  map,
+  layerIds,
+  sourceByLayerId,
+  setHover,
+}: BuildHandleMoveParams) => {
+  return (event: MapMouseEvent) => {
+    const features = map.queryRenderedFeatures(event.point, {
+      layers: layerIds,
+    });
+    const feature = features[0];
+    if (!feature || feature.id == null || !feature.layer) {
+      map.getCanvas().style.cursor = '';
+      setHover(null);
+      return;
+    }
+    const sourceId = sourceByLayerId.get(feature.layer.id);
+    if (!sourceId) return;
+
+    const state = map.getFeatureState({
+      source: sourceId,
+      id: feature.id,
+    }) as { value?: unknown };
+
+    map.getCanvas().style.cursor = 'pointer';
+    setHover({
+      layerId: feature.layer.id,
+      sourceId,
+      featureId: feature.id,
+      value: coerceFeatureStateValue(state.value),
+      point: { x: event.point.x, y: event.point.y },
+    });
+  };
+};
+
+/**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
  * declared. The hook centralises the MapLibre `mousemove`/`mouseleave` wiring
  * so consumers can render hover-driven UI (`GeoVisHoverTooltip`, custom panels)
@@ -90,41 +145,12 @@ export const useMapHover = ({
       })
     );
 
-    const handleMove = (event: MapMouseEvent) => {
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: layerIds,
-      });
-      const feature = features[0];
-      if (!feature || feature.id == null || !feature.layer) {
-        map.getCanvas().style.cursor = '';
-        setHover(null);
-        return;
-      }
-      const sourceId = sourceByLayerId.get(feature.layer.id);
-      if (!sourceId) return;
-
-      const state = map.getFeatureState({
-        source: sourceId,
-        id: feature.id,
-      }) as { value?: unknown };
-      let value: number | string | null;
-      if (typeof state.value === 'number') {
-        value = Number.isFinite(state.value) ? state.value : null;
-      } else if (typeof state.value === 'string') {
-        value = state.value;
-      } else {
-        value = null;
-      }
-
-      map.getCanvas().style.cursor = 'pointer';
-      setHover({
-        layerId: feature.layer.id,
-        sourceId,
-        featureId: feature.id,
-        value,
-        point: { x: event.point.x, y: event.point.y },
-      });
-    };
+    const handleMove = buildHandleMove({
+      map,
+      layerIds,
+      sourceByLayerId,
+      setHover,
+    });
 
     const handleLeave = () => {
       map.getCanvas().style.cursor = '';
