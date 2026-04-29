@@ -1,11 +1,11 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
-import * as geovis from 'src/index';
 import type {
   ColorBy,
   LegendSpec,
   VisualizationLayer,
   VisualizationSpec,
-} from 'src/spec/types';
+} from 'src/index';
+import * as geovis from 'src/index';
 
 test('package exports expected public symbols', () => {
   expect(typeof geovis.GeoVisProvider).toBe('function');

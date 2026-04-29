@@ -242,7 +242,7 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 ### `useGeoVis`
 
-Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch }`. Must be called inside `GeoVisProvider`.
+Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations, hoveredMapFeature }`. Must be called inside `GeoVisProvider`.
 
 ### `useMapData`
 

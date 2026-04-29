@@ -35,7 +35,7 @@ describe('buildFillColorExpression', () => {
       colorBy: {
         type: 'quantitative',
         property: 'population',
-        scale: 'quantile',
+        scale: 'threshold',
         colors: ['#eff6ff', '#bfdbfe', '#60a5fa'],
         defaultColor: '#1e3a8a',
       },

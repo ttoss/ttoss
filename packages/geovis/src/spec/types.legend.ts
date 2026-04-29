@@ -1,35 +1,35 @@
 /**
- * Categorical color mapping from a discrete feature property to a palette.
- * Values are resolved in this order: explicit `mapping` entry -> next color
- * in `colors` or `palette` -> `defaultColor`.
+ * Categorical color mapping from a discrete feature property.
+ * Explicit color assignment is defined by `mapping`. Other fields such as
+ * `colors` and `palette` are adapter-specific hints and are not guaranteed to
+ * participate in categorical value resolution. Values not covered by
+ * `mapping` may fall back to `defaultColor`, depending on the consumer.
  */
 export interface CategoricalColorBy {
   type: 'categorical';
   /** Feature property whose value drives the color assignment. */
   property: string;
-  /** Named palette key (resolved by the adapter/consumer). */
+  /** Named palette key available for adapter-specific categorical handling. */
   palette?: string;
-  /** Explicit ordered list of colors; overrides `palette` when provided. */
+  /** Explicit color list available for adapter-specific categorical handling. */
   colors?: string[];
   /** Explicit value-to-color overrides. */
   mapping?: Record<string, string>;
-  /** Fallback color for values not covered by `mapping`, `colors`, or `palette`. */
+  /** Fallback color for values not covered by `mapping`. */
   defaultColor?: string;
 }
 
 /**
  * Quantitative color mapping from a numeric feature property to a palette
- * via a scale. `bins` applies to bucketed scales (quantile/quantize), while
- * `thresholds` applies to explicit threshold scales.
+ * via a scale. Currently only the explicit `'threshold'` scale is supported;
+ * `thresholds` defines the break points used to bucket feature values.
  */
 export interface QuantitativeColorBy {
   type: 'quantitative';
   /** Feature property whose numeric value drives the color assignment. */
   property: string;
   /** Scale used to map numeric values into discrete color buckets. */
-  scale: 'quantile' | 'quantize' | 'linear' | 'threshold';
-  /** Number of buckets for quantile/quantize scales. */
-  bins?: number;
+  scale: 'threshold';
   /** Explicit break points for the `threshold` scale. */
   thresholds?: number[];
   /** Named palette key (resolved by the adapter/consumer). */

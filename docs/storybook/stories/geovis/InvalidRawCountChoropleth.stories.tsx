@@ -404,7 +404,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         <MapPanel
           borderColor="#16a34a"
           label="Density (population / sq-km) - correct"
-          legendLabel="density (hab/km²)"
+          legendLabel="density (people/km²)"
           defaultColor="#f0fdf4"
           steps={densitySteps}
           formatValue={fmtDensity}
