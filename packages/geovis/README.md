@@ -242,7 +242,11 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 ### `useGeoVis`
 
-Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations, hoveredMapFeature }`. Must be called inside `GeoVisProvider`.
+Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations }`. Must be called inside `GeoVisProvider`.
+
+### `useGeoVisHover`
+
+Returns the live `MapHoverInfo | null` snapshot for the feature currently hovered on a polygon layer with `activeLegendId`. Lives in a dedicated context so high-frequency hover updates do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
 
 ### `useMapData`
 

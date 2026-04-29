@@ -11,6 +11,7 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.GeoVisProvider).toBe('function');
   expect(typeof geovis.GeoVisCanvas).toBe('function');
   expect(typeof geovis.useGeoVis).toBe('function');
+  expect(typeof geovis.useGeoVisHover).toBe('function');
   expect(typeof geovis.validateSpec).toBe('function');
   // 5.1: useMapData is part of the public contract
   expect(typeof geovis.useMapData).toBe('function');

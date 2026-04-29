@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-import { useGeoVis } from './GeoVisProvider';
+import { useGeoVisHover } from './GeoVisProvider';
 import type { MapHoverInfo } from './hooks';
 
 const defaultFormatValue = (value: number): string => {
@@ -47,8 +47,9 @@ export interface GeoVisHoverTooltipProps {
  *
  * The hover tracking (mousemove/leave wiring, cursor changes, feature-state
  * lookup) lives in `useMapHover`, set up by `<GeoVisProvider>`. This component
- * is a thin presentational layer that consumes `hoveredMapFeature` from the
- * GeoVis context.
+ * is a thin presentational layer that consumes the live hover snapshot from
+ * the dedicated `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency
+ * hover updates do not re-render `useGeoVis()` consumers.
  */
 export const GeoVisHoverTooltip = ({
   render,
@@ -58,7 +59,7 @@ export const GeoVisHoverTooltip = ({
   offset = { x: 12, y: 12 },
   emptyValueLabel = 'No data',
 }: GeoVisHoverTooltipProps) => {
-  const { hoveredMapFeature } = useGeoVis();
+  const hoveredMapFeature = useGeoVisHover();
   if (!hoveredMapFeature) return null;
 
   const mergedStyle: React.CSSProperties = {

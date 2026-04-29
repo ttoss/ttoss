@@ -43,14 +43,20 @@ interface GeoVisContextValue {
   applyPatch: (patch: SpecPatch) => void;
   /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
   policyViolations: PolicyViolation[];
-  /**
-   * Snapshot of the feature currently hovered on the map (only tracked for
-   * polygon layers with `activeLegendId`). `null` when no feature is hovered.
-   */
-  hoveredMapFeature: MapHoverInfo | null;
 }
 
 export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
+  null
+);
+
+/**
+ * Snapshot of the feature currently hovered on the map (only tracked for
+ * polygon layers with `activeLegendId`). `null` when no feature is hovered.
+ *
+ * Lives in a dedicated context so high-frequency `mousemove` updates do not
+ * re-render `useGeoVis()` consumers (which only need the stable runtime/spec).
+ */
+export const GeoVisHoverContext = React.createContext<MapHoverInfo | null>(
   null
 );
 
@@ -149,10 +155,11 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         spec: effectiveSpec,
         applyPatch,
         policyViolations,
-        hoveredMapFeature,
       }}
     >
-      {children}
+      <GeoVisHoverContext.Provider value={hoveredMapFeature}>
+        {children}
+      </GeoVisHoverContext.Provider>
     </GeoVisContext.Provider>
   );
 };
@@ -161,4 +168,13 @@ export const useGeoVis = (): GeoVisContextValue => {
   const ctx = React.useContext(GeoVisContext);
   if (!ctx) throw new Error('useGeoVis must be used inside <GeoVisProvider>');
   return ctx;
+};
+
+/**
+ * Returns the live hover snapshot for the active map. Updates on every
+ * `mousemove`/`mouseleave` over polygon layers with `activeLegendId`.
+ * Must be called inside `GeoVisProvider`.
+ */
+export const useGeoVisHover = (): MapHoverInfo | null => {
+  return React.useContext(GeoVisHoverContext);
 };
