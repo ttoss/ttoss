@@ -10,6 +10,7 @@ import type {
   SymbolPaint,
   VisualizationLayer,
 } from '../../spec/types';
+import type { LegendSpec } from '../../spec/types.legend';
 import { buildFillColorExpression } from './legendTranslation';
 
 interface BaseFields {
@@ -43,13 +44,21 @@ const buildBase = (
 type Builder = (
   base: BaseFields,
   layer: VisualizationLayer,
-  paint: VisualizationLayer['paint']
+  paint: VisualizationLayer['paint'],
+  specLegends?: LegendSpec[]
 ) => maplibregl.LayerSpecification;
 
-const resolveThresholdBreaks = (layer: VisualizationLayer): number[] => {
-  const legend = layer.legends?.find((item) => {
-    return item.id === layer.activeLegendId;
-  });
+const resolveThresholdBreaks = (
+  layer: VisualizationLayer,
+  specLegends?: LegendSpec[]
+): number[] => {
+  const legend =
+    layer.legends?.find((item) => {
+      return item.id === layer.activeLegendId;
+    }) ??
+    specLegends?.find((item) => {
+      return item.id === layer.activeLegendId;
+    });
   if (!legend || legend.colorBy.type !== 'quantitative') return [];
   if (legend.colorBy.scale !== 'threshold') return [];
   return Array.from(
@@ -71,26 +80,31 @@ const resolveThresholdBreaks = (layer: VisualizationLayer): number[] => {
  * mapData mutations, keeping style and feature-state paths in sync.
  */
 export const resolveLegendFillColorExpression = (
-  layer: VisualizationLayer
+  layer: VisualizationLayer,
+  specLegends?: LegendSpec[]
 ): unknown[] | undefined => {
   if (layer.geometry !== 'polygon') return undefined;
-  if (!layer.activeLegendId || !layer.legends?.length) return undefined;
+  if (!layer.activeLegendId) return undefined;
 
-  const activeLegend = layer.legends.find((legend) => {
-    return legend.id === layer.activeLegendId;
-  });
+  const activeLegend =
+    layer.legends?.find((legend) => {
+      return legend.id === layer.activeLegendId;
+    }) ??
+    specLegends?.find((legend) => {
+      return legend.id === layer.activeLegendId;
+    });
   if (!activeLegend) return undefined;
 
   return buildFillColorExpression({
     legend: activeLegend,
-    breaks: resolveThresholdBreaks(layer),
+    breaks: resolveThresholdBreaks(layer, specLegends),
   });
 };
 
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
-const buildPolygon: Builder = (base, layer, paint) => {
+const buildPolygon: Builder = (base, layer, paint, specLegends) => {
   const fp = (paint ?? {}) as FillPaint;
-  const legendFillColor = resolveLegendFillColorExpression(layer);
+  const legendFillColor = resolveLegendFillColorExpression(layer, specLegends);
   return {
     ...base,
     type: 'fill',
@@ -217,8 +231,9 @@ export const stripUndefinedPaint = (
  */
 export const toMaplibreLayer = (
   layer: VisualizationLayer,
-  sourceLayer?: string
+  sourceLayer?: string,
+  specLegends?: LegendSpec[]
 ): maplibregl.LayerSpecification => {
   const base = buildBase(layer, sourceLayer);
-  return builders[layer.geometry](base, layer, layer.paint);
+  return builders[layer.geometry](base, layer, layer.paint, specLegends);
 };

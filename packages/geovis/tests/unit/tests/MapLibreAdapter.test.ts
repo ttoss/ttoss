@@ -1243,6 +1243,75 @@ describe('mapData — feature-state application', () => {
     ]);
   });
 
+  test('update() keeps adapter-managed legend fill-color for mapData layers', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const withLegend = baseSpec([
+      {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 211 }],
+      },
+    ]);
+    withLegend.layers = [
+      {
+        ...withLegend.layers[0],
+        mapDataId: 'pop',
+        activeLegendId: 'population',
+      },
+    ];
+    withLegend.legends = [
+      {
+        id: 'population',
+        colorBy: {
+          type: 'quantitative',
+          property: 'population',
+          scale: 'threshold',
+          thresholds: [50, 100],
+          colors: ['#f0f9ff', '#bfdbfe', '#60a5fa'],
+          defaultColor: '#f0f9ff',
+        },
+      },
+    ];
+
+    adapter.mount(makeContainer(), withLegend, 'v');
+    fire('load');
+    jest.mocked(map.setPaintProperty).mockClear();
+
+    adapter.update({
+      ...withLegend,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [50, 100],
+            colors: ['#eff6ff', '#93c5fd', '#3b82f6'],
+            defaultColor: '#eff6ff',
+          },
+        },
+      ],
+    });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
+      'step',
+      ['coalesce', ['feature-state', 'value'], 0],
+      '#eff6ff',
+      50,
+      '#93c5fd',
+      100,
+      '#3b82f6',
+    ]);
+  });
+
   test('mapData patch replace reapplies active legend fill-color expression', () => {
     const { map, fire } = makeMapWithEvents();
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
