@@ -40,9 +40,7 @@ export interface BuildFillColorExpressionParams {
   breaks?: ReadonlyArray<number>;
 }
 
-const buildCategoricalExpression = (
-  colorBy: CategoricalColorBy
-): unknown[] => {
+const buildCategoricalExpression = (colorBy: CategoricalColorBy): unknown[] => {
   const mappingEntries = Object.entries(colorBy.mapping ?? {});
   const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
   // MapLibre's `match` expression requires at least one label/output pair.

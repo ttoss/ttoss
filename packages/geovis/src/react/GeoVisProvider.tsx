@@ -77,6 +77,36 @@ interface GeoVisProviderProps {
 }
 
 /**
+ * Isolates `useMapHover` (which fires on every `mousemove`) into a child
+ * component so that its state updates do NOT re-render `GeoVisProvider`.
+ *
+ * @remarks
+ * Defined at module scope so its component identity is stable across
+ * re-renders of `GeoVisProvider` (defining it inside would remount the
+ * subtree on every render and defeat the optimization). Without this
+ * boundary, every hover event would re-execute the parent's render body —
+ * recomputing `effectiveSpec`, `policyViolations`, and the memoized context
+ * value. By moving the hover state down, only this small component and the
+ * consumers of `useGeoVisHover()` re-render on hover.
+ */
+const HoverProvider = ({
+  runtime,
+  spec,
+  children,
+}: {
+  runtime: GeoVisRuntime | null;
+  spec: VisualizationSpec;
+  children: React.ReactNode;
+}) => {
+  const hoveredMapFeature = useMapHover({ runtime, spec });
+  return (
+    <GeoVisHoverContext.Provider value={hoveredMapFeature}>
+      {children}
+    </GeoVisHoverContext.Provider>
+  );
+};
+
+/**
  * Provides a GeoVis runtime context for child components.
  * Resolves the appropriate engine adapter based on the spec's engine field,
  * initializes the runtime, and keeps it in sync with spec updates.
@@ -167,36 +197,6 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
         {children}
       </HoverProvider>
     </GeoVisContext.Provider>
-  );
-};
-
-/**
- * Isolates `useMapHover` (which fires on every `mousemove`) into a child
- * component so that its state updates do NOT re-render `GeoVisProvider`.
- *
- * @remarks
- * Defined at module scope so its component identity is stable across
- * re-renders of `GeoVisProvider` (defining it inside would remount the
- * subtree on every render and defeat the optimization). Without this
- * boundary, every hover event would re-execute the parent's render body —
- * recomputing `effectiveSpec`, `policyViolations`, and the memoized context
- * value. By moving the hover state down, only this small component and the
- * consumers of `useGeoVisHover()` re-render on hover.
- */
-const HoverProvider = ({
-  runtime,
-  spec,
-  children,
-}: {
-  runtime: GeoVisRuntime | null;
-  spec: VisualizationSpec;
-  children: React.ReactNode;
-}) => {
-  const hoveredMapFeature = useMapHover({ runtime, spec });
-  return (
-    <GeoVisHoverContext.Provider value={hoveredMapFeature}>
-      {children}
-    </GeoVisHoverContext.Provider>
   );
 };
 
