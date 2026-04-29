@@ -314,11 +314,6 @@ export interface VisualizationSpec {
    */
   views?: VisualizationView[];
   metadata?: Record<string, unknown>;
-  adapterHints?: {
-    maplibre?: {
-      styleVersion?: 8;
-    };
-  };
 }
 
 export type GeovisSpec = VisualizationSpec;
