@@ -28,6 +28,12 @@ interface UseMapHoverParams {
   spec: VisualizationSpec;
 }
 
+// ASCII control characters chosen as internal separators so arbitrary
+// characters in layer/source IDs (e.g. ':' in URL-based IDs) cannot corrupt
+// the encode/decode roundtrip used to build `trackedKey`.
+const TRACKED_FIELD_SEP = '\x1f'; // Unit Separator
+const TRACKED_RECORD_SEP = '\x1e'; // Record Separator
+
 /**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
  * declared. The hook centralises the MapLibre `mousemove`/`mouseleave` wiring
@@ -52,9 +58,9 @@ export const useMapHover = ({
         return layer.geometry === 'polygon' && layer.activeLegendId != null;
       })
       .map((layer) => {
-        return `${layer.id}:${layer.sourceId}`;
+        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}`;
       })
-      .join('|');
+      .join(TRACKED_RECORD_SEP);
   }, [spec]);
 
   React.useEffect(() => {
@@ -64,8 +70,8 @@ export const useMapHover = ({
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    const tracked = trackedKey.split('|').map((entry) => {
-      const [layerId, sourceId] = entry.split(':');
+    const tracked = trackedKey.split(TRACKED_RECORD_SEP).map((entry) => {
+      const [layerId, sourceId] = entry.split(TRACKED_FIELD_SEP);
       return { layerId, sourceId };
     });
     const layerIds = tracked.map((t) => {
