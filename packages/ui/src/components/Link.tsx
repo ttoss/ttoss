@@ -6,7 +6,7 @@ import {
 } from 'theme-ui';
 
 const defaultVisitedLinkStyles: ThemeUIStyleObject = {
-  color: 'navigation.text.primary.default',
+  color: 'navigation.text.muted.default',
 };
 
 const defaultWarningVisitedLinkStyles: ThemeUIStyleObject = {
