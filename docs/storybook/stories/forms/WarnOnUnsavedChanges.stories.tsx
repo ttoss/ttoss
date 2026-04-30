@@ -3,6 +3,12 @@ import { Form, FormFieldInput, useForm } from '@ttoss/forms';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { Button, Flex, Text } from '@ttoss/ui';
 import type * as React from 'react';
+import {
+  createMemoryRouter,
+  Outlet,
+  RouterProvider,
+  useNavigate,
+} from 'react-router-dom';
 import { action } from 'storybook/actions';
 
 const loadLocaleData = async (locale: string) => {
@@ -28,8 +34,7 @@ When enabled and the form is dirty (\`formState.isDirty === true\`):
 - **In-app navigation** (React Router) is intercepted with a confirmation modal.
 - **Browser refresh / tab close** triggers the native \`beforeunload\` prompt.
 
-Type in any field below, then try refreshing the page to see the browser prompt.
-In a real app with React Router, navigating to another route would show the themed modal.`,
+Type in any field below, then click **Navigate Away** to see the confirmation modal.`,
       },
     },
   },
@@ -45,12 +50,41 @@ In a real app with React Router, navigating to another route would show the them
   ],
 } as Meta;
 
-/**
- * Type in a field and try refreshing the browser tab to see
- * the native `beforeunload` prompt. In a React Router app,
- * navigating to another route would show a themed confirmation modal.
- */
-export const Default: StoryFn = () => {
+const NavigateButton = () => {
+  const navigate = useNavigate();
+  return (
+    <Button
+      type="button"
+      variant="accent"
+      onClick={() => {
+        navigate('/other');
+      }}
+    >
+      Navigate Away
+    </Button>
+  );
+};
+
+const OtherPage = () => {
+  const navigate = useNavigate();
+  return (
+    <Flex sx={{ flexDirection: 'column', gap: '4', maxWidth: '400px' }}>
+      <Text sx={{ fontSize: '3', fontWeight: 'bold' }}>
+        ✅ You navigated away successfully!
+      </Text>
+      <Button
+        type="button"
+        onClick={() => {
+          navigate('/');
+        }}
+      >
+        Go back to form
+      </Button>
+    </Flex>
+  );
+};
+
+const FormPage = () => {
   const formMethods = useForm({
     defaultValues: { firstName: '', lastName: '' },
   });
@@ -67,7 +101,7 @@ export const Default: StoryFn = () => {
             backgroundColor: isDirty ? 'highlight' : 'muted',
           }}
         >
-          Form is {isDirty ? 'dirty — navigation would be blocked' : 'clean'}
+          Form is {isDirty ? 'dirty — navigation will be blocked' : 'clean'}
         </Text>
         <FormFieldInput name="firstName" label="First Name" />
         <FormFieldInput name="lastName" label="Last Name" />
@@ -82,8 +116,35 @@ export const Default: StoryFn = () => {
           >
             Reset
           </Button>
+          <NavigateButton />
         </Flex>
       </Flex>
     </Form>
   );
+};
+
+const Layout = () => {
+  return <Outlet />;
+};
+
+/**
+ * Type in a field, then click **Navigate Away** to see the confirmation modal.
+ * Choose "Discard" to navigate or "Keep editing" to stay on the form.
+ */
+export const Default: StoryFn = () => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/',
+        element: <Layout />,
+        children: [
+          { index: true, element: <FormPage /> },
+          { path: 'other', element: <OtherPage /> },
+        ],
+      },
+    ],
+    { initialEntries: ['/'] }
+  );
+
+  return <RouterProvider router={router} />;
 };
