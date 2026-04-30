@@ -4,8 +4,19 @@ import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
-import type { MapHoverInfo } from './hooks';
+import { GeoVisContext, GeoVisHoverContext } from './contexts';
 import { useMapHover } from './hooks';
+
+// Re-export the contexts and hooks so existing public-API consumers
+// (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
+// the contexts module was extracted to break the hooks/provider cycle.
+export type { GeoVisContextValue, MapHoverInfo } from './contexts';
+export {
+  GeoVisContext,
+  GeoVisHoverContext,
+  useGeoVis,
+  useGeoVisHover,
+} from './contexts';
 
 /** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
 const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
@@ -34,33 +45,6 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
 
   return violations;
 };
-
-interface GeoVisContextValue {
-  runtime: GeoVisRuntime | null;
-  spec: VisualizationSpec;
-  applyPatch: (patch: SpecPatch) => void;
-  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
-  policyViolations: PolicyViolation[];
-}
-
-export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
-  null
-);
-
-/**
- * Snapshot of the feature currently hovered on the map (only tracked for
- * polygon layers with `activeLegendId`). `null` when no feature is hovered.
- *
- * Lives in a dedicated context so high-frequency `mousemove` updates do not
- * re-render `useGeoVis()` consumers (which only need the stable runtime/spec).
- *
- * Default value is `undefined` (the "no provider" sentinel) so
- * `useGeoVisHover()` can distinguish "consumed outside `GeoVisProvider`"
- * from the valid "no feature hovered" state (`null`).
- */
-export const GeoVisHoverContext = React.createContext<
-  MapHoverInfo | null | undefined
->(undefined);
 
 const resolveAdapter = async (
   engine: VisualizationSpec['engine']
@@ -202,23 +186,4 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       </HoverProvider>
     </GeoVisContext.Provider>
   );
-};
-
-export const useGeoVis = (): GeoVisContextValue => {
-  const ctx = React.useContext(GeoVisContext);
-  if (!ctx) throw new Error('useGeoVis must be used inside <GeoVisProvider>');
-  return ctx;
-};
-
-/**
- * Returns the live hover snapshot for the active map. Updates on every
- * `mousemove`/`mouseleave` over polygon layers with `activeLegendId`.
- * Must be called inside `GeoVisProvider`.
- */
-export const useGeoVisHover = (): MapHoverInfo | null => {
-  const ctx = React.useContext(GeoVisHoverContext);
-  if (ctx === undefined) {
-    throw new Error('useGeoVisHover must be used inside <GeoVisProvider>');
-  }
-  return ctx;
 };

@@ -1,38 +1,22 @@
 import * as React from 'react';
 
+import {
+  resolveCategoricalFallbackColor,
+  resolvePalette,
+  resolveQuantitativeFallbackColor,
+} from '../adapters/maplibre/legendTranslation';
 import type {
   LegendSpec,
   VisualizationLayer,
   VisualizationSpec,
 } from '../spec/types';
-import { useGeoVis } from './GeoVisProvider';
-
-const DEFAULT_LEGEND_COLORS = [
-  '#dbeafe',
-  '#93c5fd',
-  '#60a5fa',
-  '#3b82f6',
-  '#1d4ed8',
-];
-
-const DEFAULT_MISSING_COLOR = '#9ca3af';
+import { useGeoVis } from './contexts';
 
 interface LegendItem {
   binIndex: number;
   label: string;
   color: string;
 }
-
-const ensurePalette = (
-  colors: string[] | undefined,
-  length: number
-): string[] => {
-  const palette = [...(colors?.length ? colors : DEFAULT_LEGEND_COLORS)];
-  while (palette.length < length) {
-    palette.push(palette[palette.length - 1] ?? DEFAULT_MISSING_COLOR);
-  }
-  return palette;
-};
 
 const findLegendInLayer = (
   layer: VisualizationLayer,
@@ -69,19 +53,21 @@ const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
   if (colorBy.type !== 'categorical') return [];
 
   const mapping = Object.entries(colorBy.mapping ?? {});
-  if (mapping.length) {
-    return mapping.map(([label, color], index) => {
-      return { binIndex: index, label, color };
-    });
+  // Empty mapping ⇒ adapter paints `['literal', fallbackColor]` (one solid
+  // colour for every feature). Render a single "All" swatch so the legend
+  // never disagrees with the painted layer.
+  if (!mapping.length) {
+    return [
+      {
+        binIndex: 0,
+        label: 'All',
+        color: resolveCategoricalFallbackColor(colorBy),
+      },
+    ];
   }
 
-  const palette = ensurePalette(colorBy.colors, colorBy.colors?.length ?? 1);
-  return palette.map((color, index) => {
-    return {
-      binIndex: index,
-      label: `Category ${index + 1}`,
-      color,
-    };
+  return mapping.map(([label, color], index) => {
+    return { binIndex: index, label, color };
   });
 };
 
@@ -97,7 +83,8 @@ const buildQuantitativeItems = ({
   const colorBy = legend.colorBy;
   if (colorBy.type !== 'quantitative') return [];
 
-  const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
+  const fallbackColor = resolveQuantitativeFallbackColor(colorBy, breaks);
+
   if (!breaks.length) {
     return [
       {
@@ -108,7 +95,7 @@ const buildQuantitativeItems = ({
     ];
   }
 
-  const palette = ensurePalette(colorBy.colors, breaks.length + 1);
+  const palette = resolvePalette(colorBy, breaks.length + 1);
   const items: LegendItem[] = [
     {
       binIndex: 0,

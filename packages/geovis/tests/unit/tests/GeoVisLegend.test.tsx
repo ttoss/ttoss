@@ -176,4 +176,71 @@ describe('GeoVisLegend', () => {
 
     expect(getByText('a')).toBeTruthy();
   });
+
+  test('renders a single "All" swatch with the adapter fallback color when categorical mapping is empty', () => {
+    // Adapter compiles `['literal', fallbackColor]` for empty mappings; the
+    // legend must reflect that single solid colour instead of inventing
+    // synthetic categories from the palette.
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'kind',
+          colorBy: {
+            type: 'categorical',
+            property: 'kind',
+            mapping: {},
+            defaultColor: '#abcdef',
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="kind" />
+      </GeoVisProvider>
+    );
+
+    const items = getAllByRole('listitem');
+    expect(items).toHaveLength(1);
+    expect(getByText('All')).toBeTruthy();
+    const swatch = items[0].querySelector('span[aria-hidden="true"]');
+    expect(swatch).not.toBeNull();
+    expect((swatch as HTMLElement).style.backgroundColor).toBe(
+      'rgb(171, 205, 239)'
+    );
+  });
+
+  test('quantitative fallback follows the adapter chain (defaultColor ?? palette[0])', () => {
+    // No `defaultColor` and no breaks ⇒ legend should fall back to the first
+    // palette colour, matching `resolveQuantitativeFallbackColor`.
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            colors: ['#112233', '#445566'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="population" />
+      </GeoVisProvider>
+    );
+
+    const items = getAllByRole('listitem');
+    expect(items).toHaveLength(1);
+    const swatch = items[0].querySelector('span[aria-hidden="true"]');
+    expect((swatch as HTMLElement).style.backgroundColor).toBe(
+      'rgb(17, 34, 51)'
+    );
+  });
 });

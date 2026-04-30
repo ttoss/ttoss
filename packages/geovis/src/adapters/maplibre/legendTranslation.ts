@@ -5,7 +5,12 @@ import type {
   QuantitativeColorBy,
 } from '../../spec/types.legend';
 
-const DEFAULT_LEGEND_COLORS = [
+/**
+ * Default 5-stop blue ramp used when a legend declares no `colors` array.
+ * Exported so React-side renderers (e.g. `GeoVisLegend`) can present the
+ * exact same swatches the adapter paints on the map.
+ */
+export const DEFAULT_LEGEND_COLORS = [
   '#dbeafe',
   '#93c5fd',
   '#60a5fa',
@@ -13,7 +18,11 @@ const DEFAULT_LEGEND_COLORS = [
   '#1d4ed8',
 ];
 
-const DEFAULT_MISSING_COLOR = '#9ca3af';
+/**
+ * Neutral fallback colour used when a legend has no usable palette/default
+ * colour at all. Matches the adapter's `__missing__` paint output.
+ */
+export const DEFAULT_MISSING_COLOR = '#9ca3af';
 
 const uniqueAscending = (values: ReadonlyArray<number>): number[] => {
   const deduped = new Set<number>();
@@ -26,13 +35,48 @@ const uniqueAscending = (values: ReadonlyArray<number>): number[] => {
   });
 };
 
-const resolvePalette = (colorBy: ColorBy, minimumLength: number): string[] => {
+/**
+ * Resolves the colour palette for a legend, padding it with the trailing
+ * colour (or {@link DEFAULT_MISSING_COLOR}) until it reaches `minimumLength`.
+ * Exported so legend renderers can derive swatches consistent with the
+ * MapLibre paint expression produced by {@link buildFillColorExpression}.
+ */
+export const resolvePalette = (
+  colorBy: ColorBy,
+  minimumLength: number
+): string[] => {
   const seed = colorBy.colors?.length ? colorBy.colors : DEFAULT_LEGEND_COLORS;
   const palette = [...seed];
   while (palette.length < minimumLength) {
     palette.push(palette[palette.length - 1] ?? DEFAULT_MISSING_COLOR);
   }
   return palette;
+};
+
+/**
+ * Returns the single fallback colour the adapter emits for a categorical
+ * legend whose `mapping` is empty (`['literal', fallbackColor]`). Reused by
+ * `GeoVisLegend` to keep the swatch in lockstep with the painted layer.
+ */
+export const resolveCategoricalFallbackColor = (
+  colorBy: CategoricalColorBy
+): string => {
+  return colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
+};
+
+/**
+ * Returns the colour used for the "below first break" bin of a quantitative
+ * legend — the same value the adapter places as the `step` expression's
+ * default output. Mirrors the adapter's resolution chain
+ * (`defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR`) so legend swatches
+ * never disagree with the painted map.
+ */
+export const resolveQuantitativeFallbackColor = (
+  colorBy: QuantitativeColorBy,
+  breaks: ReadonlyArray<number>
+): string => {
+  const palette = resolvePalette(colorBy, breaks.length + 1);
+  return colorBy.defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR;
 };
 
 export interface BuildFillColorExpressionParams {
@@ -42,7 +86,7 @@ export interface BuildFillColorExpressionParams {
 
 const buildCategoricalExpression = (colorBy: CategoricalColorBy): unknown[] => {
   const mappingEntries = Object.entries(colorBy.mapping ?? {});
-  const fallbackColor = colorBy.defaultColor ?? DEFAULT_MISSING_COLOR;
+  const fallbackColor = resolveCategoricalFallbackColor(colorBy);
   // MapLibre's `match` expression requires at least one label/output pair.
   // When the categorical mapping is empty, fall back to a constant color
   // expression to avoid a runtime error from `setPaintProperty`.
@@ -65,8 +109,7 @@ const buildQuantitativeExpression = (
 ): unknown[] => {
   const sortedBreaks = uniqueAscending(breaks);
   const palette = resolvePalette(colorBy, sortedBreaks.length + 1);
-  const fallbackColor =
-    colorBy.defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR;
+  const fallbackColor = resolveQuantitativeFallbackColor(colorBy, sortedBreaks);
 
   const stepExpression: unknown[] = [
     'step',

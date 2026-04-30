@@ -3,29 +3,10 @@ import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { VisualizationSpec } from '../spec/types';
-import { useGeoVis } from './GeoVisProvider';
+import type { MapHoverInfo } from './contexts';
+import { useGeoVis } from './contexts';
 
-/**
- * Snapshot of a feature currently hovered on the map. Coordinates are pixel
- * offsets relative to the map canvas, so consumers can render overlays inside
- * the same `position: relative` container that hosts `<GeoVisCanvas>`.
- */
-export interface MapHoverInfo {
-  /** Layer id under the cursor. */
-  layerId: string;
-  /** Source id backing the layer (kept so consumers can re-query feature-state). */
-  sourceId: string;
-  /** Hovered feature's id (typically `geometryId` from `mapData`). */
-  featureId: string | number;
-  /**
-   * `feature-state.value` (set by `mapData`); supports the same value types
-   * as `MapDataRow.value` (`number | string | null`). `null` when the feature
-   * has no value bound or when the bound value is a non-finite number.
-   */
-  value: number | string | null;
-  /** Pixel coordinates relative to the map canvas. */
-  point: { x: number; y: number };
-}
+export type { MapHoverInfo } from './contexts';
 
 interface UseMapHoverParams {
   runtime: GeoVisRuntime | null;

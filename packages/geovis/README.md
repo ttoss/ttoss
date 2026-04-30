@@ -253,6 +253,17 @@ Returns the live `MapHoverInfo | null` snapshot for the feature currently hovere
 Returns indexed map data for a `mapDataId` as `{ mapDataId, mapId, joinKey, values, rows }`.
 Must be called inside `GeoVisProvider`.
 
+### `GeoVisLegend`
+
+Renders a static, non-interactive legend resolved from the active spec. Resolution looks up `legendId` in `spec.legends` first, then in each `layer.legends`. Categorical legends emit one swatch per `mapping` entry (or a single fallback swatch when `mapping` is empty, mirroring the adapter's `['literal', fallbackColor]` paint output). Quantitative legends emit one swatch per `breaks[]` bin and use the same fallback chain as the adapter (`defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR`). Must be rendered inside `GeoVisProvider`.
+
+| Prop          | Type                        | Description                                                           |
+| ------------- | --------------------------- | --------------------------------------------------------------------- |
+| `legendId`    | `string`                    | Id of the legend entry to render.                                     |
+| `breaks`      | `number[]`                  | Externally computed thresholds for quantitative legends. Optional.    |
+| `formatValue` | `(value: number) => string` | Formatter for quantitative break labels. Defaults to `String(value)`. |
+| `className`   | `string`                    | Optional CSS class for the legend container.                          |
+
 ### `validateSpec`
 
 Validates a plain object against the `@ttoss/geovis` JSON schema.
@@ -261,8 +272,8 @@ Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: s
 
 ## Legend Type Surface
 
-`VisualizationLayer` exposes optional `colorBy`, `legends`, and `activeLegendId`
-fields, and `VisualizationSpec` exposes optional `legends` for shared legend
+`VisualizationLayer` exposes optional `legends` and `activeLegendId` fields,
+and `VisualizationSpec` exposes optional `legends` for shared legend
 registries. The color and legend types are part of the public `spec/types`
 contract, so consumers can type legend-aware specs without reaching into
 internal files.

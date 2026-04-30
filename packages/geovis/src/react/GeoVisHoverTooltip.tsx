@@ -1,7 +1,7 @@
 import type * as React from 'react';
 
-import { useGeoVisHover } from './GeoVisProvider';
-import type { MapHoverInfo } from './hooks';
+import type { MapHoverInfo } from './contexts';
+import { useGeoVisHover } from './contexts';
 
 const defaultFormatValue = (value: number | string): string => {
   return String(value);
