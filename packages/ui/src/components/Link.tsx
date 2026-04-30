@@ -18,6 +18,13 @@ const defaultVisitedStyles: ThemeUIStyleObject = {
   '&.warning:visited': defaultWarningVisitedLinkStyles,
 };
 
+const isThemeUIStyleObject = (value: unknown): value is ThemeUIStyleObject => {
+  return typeof value === 'object' && value !== null;
+};
+
+/**
+ * Extracts selector-specific styles from a theme-ui sx object when present.
+ */
 const getSelectorStyles = ({
   selector,
   sx,
@@ -25,16 +32,22 @@ const getSelectorStyles = ({
   selector: string;
   sx?: LinkPropsUi['sx'];
 }): ThemeUIStyleObject => {
-  if (!sx || typeof sx !== 'object') {
+  if (!isThemeUIStyleObject(sx)) {
     return {};
   }
 
-  return ((sx as Record<string, ThemeUIStyleObject | undefined>)[selector] ??
-    {}) as ThemeUIStyleObject;
+  const selectorStyles = Object.entries(sx).find(([key]) => {
+    return key === selector;
+  })?.[1];
+
+  return isThemeUIStyleObject(selectorStyles) ? selectorStyles : {};
 };
 
+/**
+ * Merges the default visited-link styles with any caller-provided sx overrides.
+ */
 const getLinkSx = ({ sx }: { sx?: LinkPropsUi['sx'] }): LinkPropsUi['sx'] => {
-  if (!sx || typeof sx !== 'object') {
+  if (!isThemeUIStyleObject(sx)) {
     return defaultVisitedStyles;
   }
 

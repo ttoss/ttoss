@@ -79,3 +79,24 @@ test('should keep custom visited styles when provided', () => {
     },
   });
 });
+
+test('should fallback to default visited styles when sx is not an object', () => {
+  render(
+    <Link href="https://ttoss.dev" sx={'invalid' as never}>
+      {CONTENT_LINK}
+    </Link>
+  );
+
+  const themeUiLinkProps = jest.mocked(LinkUi).mock.calls[0]?.[0];
+
+  expect(themeUiLinkProps).toMatchObject({
+    sx: {
+      ':visited': {
+        color: 'navigation.text.primary.default',
+      },
+      '&.warning:visited': {
+        color: 'feedback.text.caution.default',
+      },
+    },
+  });
+});

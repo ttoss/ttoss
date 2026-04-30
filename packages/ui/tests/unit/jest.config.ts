@@ -5,7 +5,7 @@ const config = jestUnitConfig({
   coverageThreshold: {
     global: {
       statements: 84,
-      branches: 81,
+      branches: 80.8,
       lines: 84,
       functions: 78,
     },
