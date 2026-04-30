@@ -6,6 +6,7 @@ import { FormProvider } from 'react-hook-form';
 
 import { FormActions } from './FormActions';
 import { FormGroup } from './FormGroup';
+import { UnsavedChangesBlocker } from './UnsavedChangesBlocker';
 
 const FormBase = <
   TFieldValues extends FieldValues,
@@ -16,11 +17,19 @@ const FormBase = <
   children,
   onSubmit,
   sx,
+  warnOnUnsavedChanges,
   ...formMethods
 }: {
   children?: React.ReactNode;
   onSubmit?: (data: TTransformedValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
+  /**
+   * When `true`, blocks in-app navigation and shows a confirmation modal
+   * if the form has unsaved changes (`formState.isDirty`). Also triggers
+   * the browser's native `beforeunload` prompt on page refresh / tab close.
+   * @default false
+   */
+  warnOnUnsavedChanges?: boolean;
 } & FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
   return (
     <FormProvider {...formMethods}>
@@ -34,6 +43,7 @@ const FormBase = <
       >
         {children}
       </Box>
+      {warnOnUnsavedChanges && <UnsavedChangesBlocker />}
     </FormProvider>
   );
 };

@@ -205,3 +205,27 @@ import { MultistepForm } from '@ttoss/forms/multistep-form';
 **`header` variants:** `{ variant: 'logo', src, onClose }` or `{ variant: 'titled', title, leftIcon, rightIcon, onLeftIconClick, onRightIconClick }`.
 
 See [Storybook](https://storybook.ttoss.dev/?path=/story/forms-multistepform) for an interactive example.
+
+## Warn on Unsaved Changes
+
+Use the `warnOnUnsavedChanges` prop to block navigation when the form has unsaved changes. When enabled and the form is dirty (`formState.isDirty === true`):
+
+- **In-app navigation** (React Router) is intercepted and a confirmation modal is shown with "Discard" and "Keep editing" actions.
+- **Browser refresh / tab close** triggers the native `beforeunload` prompt.
+
+```tsx
+<Form {...formMethods} onSubmit={onSubmit} warnOnUnsavedChanges>
+  <FormFieldInput name="firstName" label="First Name" />
+  <Button type="submit">Save</Button>
+</Form>
+```
+
+| State           | `warnOnUnsavedChanges` | Navigation                  | Result        |
+| --------------- | ---------------------- | --------------------------- | ------------- |
+| Pristine        | `true`                 | Any                         | Allowed       |
+| Dirty           | `false` / omitted      | Any                         | Allowed       |
+| Dirty           | `true`                 | In-app (React Router)       | Modal shown   |
+| Dirty           | `true`                 | Browser refresh / tab close | Native prompt |
+| After `reset()` | `true`                 | Any                         | Allowed       |
+
+**Requirements:** `react-router-dom` ≥ 6.9 is an optional peer dependency. In-app blocking needs `react-router-dom` and a Router context; `beforeunload` works without it.
