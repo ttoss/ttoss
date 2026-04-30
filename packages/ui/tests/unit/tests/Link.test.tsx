@@ -41,7 +41,7 @@ test('should use a more visible visited color by default', () => {
   expect(themeUiLinkProps).toMatchObject({
     sx: {
       ':visited': {
-        color: 'navigation.text.primary.default',
+        color: 'navigation.text.muted.default',
       },
       '&.warning:visited': {
         color: 'feedback.text.caution.default',
@@ -92,7 +92,7 @@ test('should fallback to default visited styles when sx is not an object', () =>
   expect(themeUiLinkProps).toMatchObject({
     sx: {
       ':visited': {
-        color: 'navigation.text.primary.default',
+        color: 'navigation.text.muted.default',
       },
       '&.warning:visited': {
         color: 'feedback.text.caution.default',
