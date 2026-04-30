@@ -274,8 +274,8 @@ Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: s
 
 `VisualizationLayer` exposes optional `legends` and `activeLegendId` fields,
 and `VisualizationSpec` exposes optional `legends` for shared legend
-registries. The color and legend types are part of the public `spec/types`
-contract, so consumers can type legend-aware specs without reaching into
-internal files.
+registries. `colorBy` lives on `LegendSpec` (not on the layer), and the
+color and legend types are part of the public `spec/types` contract, so
+consumers can type legend-aware specs without reaching into internal files.
 
 _For more on product development principles that guide our approach, see [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles)._

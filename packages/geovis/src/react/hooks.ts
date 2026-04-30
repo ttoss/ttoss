@@ -34,29 +34,55 @@ const coerceFeatureStateValue = (raw: unknown): number | string | null => {
 
 interface BuildHandleMoveParams {
   map: MapLibreMap;
-  layerIds: string[];
+  layerId: string;
   sourceByLayerId: Map<string, string>;
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
 }
 
+/**
+ * MapLibre fills `event.features` with features hit on the *delegated* layer
+ * for layer-bound handlers. Typed locally because `MapMouseEvent` does not
+ * expose this field in `@types/maplibre-gl` even though it is documented.
+ */
+type DelegatedMouseEvent = MapMouseEvent & {
+  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>;
+};
+
+const clearHover = (
+  map: MapLibreMap,
+  setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>
+) => {
+  map.getCanvas().style.cursor = '';
+  setHover(null);
+};
+
 const buildHandleMove = ({
   map,
-  layerIds,
+  layerId,
   sourceByLayerId,
   setHover,
 }: BuildHandleMoveParams) => {
   return (event: MapMouseEvent) => {
-    const features = map.queryRenderedFeatures(event.point, {
-      layers: layerIds,
-    });
-    const feature = features[0];
-    if (!feature || feature.id == null || !feature.layer) {
-      map.getCanvas().style.cursor = '';
-      setHover(null);
+    // Prefer the delegated `features` payload (already scoped to `layerId`)
+    // to avoid an extra `queryRenderedFeatures` call on every mousemove and
+    // to disambiguate when multiple tracked layers overlap at the cursor.
+    const delegatedFeature = (event as DelegatedMouseEvent).features?.[0];
+    const feature =
+      delegatedFeature ??
+      map.queryRenderedFeatures(event.point, { layers: [layerId] })[0];
+    if (!feature || feature.id == null) {
+      clearHover(map, setHover);
       return;
     }
-    const sourceId = sourceByLayerId.get(feature.layer.id);
-    if (!sourceId) return;
+    const resolvedLayerId = feature.layer?.id ?? layerId;
+    const sourceId = sourceByLayerId.get(resolvedLayerId);
+    // Defensive: if the source mapping is missing for any reason, treat the
+    // hover as cleared so the cursor/tooltip do not stay stuck on a stale
+    // value from a previous valid hover.
+    if (!sourceId) {
+      clearHover(map, setHover);
+      return;
+    }
 
     const state = map.getFeatureState({
       source: sourceId,
@@ -65,7 +91,7 @@ const buildHandleMove = ({
 
     map.getCanvas().style.cursor = 'pointer';
     setHover({
-      layerId: feature.layer.id,
+      layerId: resolvedLayerId,
       sourceId,
       featureId: feature.id,
       value: coerceFeatureStateValue(state.value),
@@ -117,39 +143,42 @@ export const useMapHover = ({
       const [layerId, sourceId] = entry.split(TRACKED_FIELD_SEP);
       return { layerId, sourceId };
     });
-    const layerIds = tracked.map((t) => {
-      return t.layerId;
-    });
     const sourceByLayerId = new Map(
       tracked.map((t) => {
         return [t.layerId, t.sourceId] as const;
       })
     );
 
-    const handleMove = buildHandleMove({
-      map,
-      layerIds,
-      sourceByLayerId,
-      setHover,
+    // One `mousemove` handler per layer so each handler can scope its
+    // (fallback) `queryRenderedFeatures` call to its own layer and consume
+    // `event.features` reliably (delegated payload is per-layer).
+    const handlers = tracked.map(({ layerId }) => {
+      return {
+        layerId,
+        handleMove: buildHandleMove({
+          map,
+          layerId,
+          sourceByLayerId,
+          setHover,
+        }),
+      };
     });
 
     const handleLeave = () => {
-      map.getCanvas().style.cursor = '';
-      setHover(null);
+      clearHover(map, setHover);
     };
 
-    for (const id of layerIds) {
-      map.on('mousemove', id, handleMove);
-      map.on('mouseleave', id, handleLeave);
+    for (const { layerId, handleMove } of handlers) {
+      map.on('mousemove', layerId, handleMove);
+      map.on('mouseleave', layerId, handleLeave);
     }
 
     return () => {
-      for (const id of layerIds) {
-        map.off('mousemove', id, handleMove);
-        map.off('mouseleave', id, handleLeave);
+      for (const { layerId, handleMove } of handlers) {
+        map.off('mousemove', layerId, handleMove);
+        map.off('mouseleave', layerId, handleLeave);
       }
-      map.getCanvas().style.cursor = '';
-      setHover(null);
+      clearHover(map, setHover);
     };
   }, [runtime, trackedKey]);
 

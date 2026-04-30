@@ -8,7 +8,10 @@ import { GeoVisHoverTooltip } from 'src/react/GeoVisHoverTooltip';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
-type MapMouseHandler = (event: { point: { x: number; y: number } }) => void;
+type MapMouseHandler = (event: {
+  point: { x: number; y: number };
+  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>;
+}) => void;
 type MapLeaveHandler = () => void;
 
 interface MockMap {
@@ -120,14 +123,15 @@ const buildSpec = (): VisualizationSpec => {
 const triggerMove = (
   map: MockMap,
   layerId: string,
-  point: { x: number; y: number }
+  point: { x: number; y: number },
+  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>
 ) => {
   const handler = map.__handlers.get(`mousemove:${layerId}`) as
     | MapMouseHandler
     | undefined;
   if (!handler) throw new Error(`mousemove handler missing for ${layerId}`);
   act(() => {
-    handler({ point });
+    handler({ point, features });
   });
 };
 
@@ -300,5 +304,66 @@ describe('GeoVisHoverTooltip', () => {
     });
 
     expect(mockCurrentMap.on).not.toHaveBeenCalled();
+  });
+
+  test('uses delegated event.features and skips queryRenderedFeatures', async () => {
+    const onReady = jest.fn();
+    const { container } = render(
+      <GeoVisProvider spec={buildSpec()}>
+        <ExposeRuntime onReady={onReady} />
+        <GeoVisHoverTooltip />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 77 });
+    triggerMove(mockCurrentMap, 'districts-fill', { x: 5, y: 5 }, [
+      { id: 'd1', layer: { id: 'districts-fill' } },
+    ]);
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+    });
+    // Adapter should never fall back to queryRenderedFeatures when MapLibre
+    // already delivers the hit feature in `event.features`.
+    expect(mockCurrentMap.queryRenderedFeatures).not.toHaveBeenCalled();
+    const tooltip = container.querySelector('[role="tooltip"]') as HTMLElement;
+    expect(tooltip.textContent).toContain('Feature #d1');
+  });
+
+  test('clears cursor and tooltip when hovered feature has no source mapping', async () => {
+    const onReady = jest.fn();
+    const { container } = render(
+      <GeoVisProvider spec={buildSpec()}>
+        <ExposeRuntime onReady={onReady} />
+        <GeoVisHoverTooltip />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    // Prime a valid hover so cursor=pointer and tooltip is visible.
+    mockCurrentMap.queryRenderedFeatures.mockReturnValue([
+      { id: 1, layer: { id: 'districts-fill' } },
+    ]);
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 1 });
+    triggerMove(mockCurrentMap, 'districts-fill', { x: 1, y: 1 });
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+    });
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+
+    // Now hit a feature whose `layer.id` is unknown to `sourceByLayerId`.
+    triggerMove(mockCurrentMap, 'districts-fill', { x: 2, y: 2 }, [
+      { id: 2, layer: { id: 'ghost-layer' } },
+    ]);
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).toBeNull();
+    });
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
 });
