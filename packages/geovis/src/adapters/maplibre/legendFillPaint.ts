@@ -15,15 +15,34 @@ export const setPaintWhenReady = (
   value: unknown
 ): void => {
   const apply = () => {
-    if (!map.getLayer(layerId)) return;
+    if (!map.getLayer(layerId)) return false;
     map.setPaintProperty(
       layerId,
       property,
       value as maplibregl.StyleSpecification
     );
+    return true;
   };
-  if (map.isStyleLoaded()) apply();
-  else map.once('style.load', apply);
+
+  const applyWhenLayerAppears = () => {
+    const onStyleData = () => {
+      const applied = apply();
+      if (!applied) return;
+      map.off('styledata', onStyleData);
+    };
+    map.on('styledata', onStyleData);
+  };
+
+  if (map.isStyleLoaded()) {
+    const applied = apply();
+    if (!applied) applyWhenLayerAppears();
+    return;
+  }
+
+  map.once('style.load', () => {
+    const applied = apply();
+    if (!applied) applyWhenLayerAppears();
+  });
 };
 
 /** Re-applies legend-driven polygon fill expressions for layers with active legends. */

@@ -77,6 +77,61 @@ const validateReferences = (spec: VisualizationSpec): string[] => {
   return errors;
 };
 
+const isStrictlyAscending = (values: ReadonlyArray<number>): boolean => {
+  for (let i = 1; i < values.length; i += 1) {
+    if (values[i - 1] >= values[i]) return false;
+  }
+  return true;
+};
+
+const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
+  const errors: string[] = [];
+
+  const validateThresholdLegend = (
+    legend:
+      | NonNullable<VisualizationSpec['legends']>[number]
+      | NonNullable<VisualizationSpec['layers'][number]['legends']>[number],
+    scope: string
+  ) => {
+    if (legend.colorBy.type !== 'quantitative') return;
+    if (legend.colorBy.scale !== 'threshold') return;
+
+    const thresholds = legend.colorBy.thresholds ?? [];
+    if (thresholds.length <= 1) return;
+
+    const finiteThresholds = thresholds.filter((value) => {
+      return Number.isFinite(value);
+    });
+    if (finiteThresholds.length !== thresholds.length) {
+      errors.push(
+        `${scope} has non-finite threshold values; use finite numeric values only`
+      );
+      return;
+    }
+
+    if (!isStrictlyAscending(thresholds)) {
+      errors.push(
+        `${scope} must declare thresholds in strictly ascending order`
+      );
+    }
+  };
+
+  for (const legend of spec.legends ?? []) {
+    validateThresholdLegend(legend, `legend '${legend.id}'`);
+  }
+
+  for (const layer of spec.layers) {
+    for (const legend of layer.legends ?? []) {
+      validateThresholdLegend(
+        legend,
+        `layer '${layer.id}' legend '${legend.id}'`
+      );
+    }
+  }
+
+  return errors;
+};
+
 /**
  * Validates a raw value against the GeoVis JSON Schema and enforces cross-field
  * referential integrity rules not expressible in the schema.
@@ -95,8 +150,13 @@ export const validateSpec = (input: unknown): ValidationResult => {
 
   const spec = input as unknown as VisualizationSpec;
   const refErrors = validateReferences(spec);
+  const thresholdErrors = validateLegendThresholdOrder(spec);
   if (refErrors.length > 0) {
     return { valid: false, errors: refErrors };
+  }
+
+  if (thresholdErrors.length > 0) {
+    return { valid: false, errors: thresholdErrors };
   }
 
   return { valid: true, spec };
