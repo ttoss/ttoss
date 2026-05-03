@@ -72,10 +72,6 @@ const buildDistrictSpec = ({
   return {
     id: 'municipal-district-mapdata',
     engine: 'maplibre',
-    view: {
-      center: [-46.6333, -23.5505],
-      zoom: 10,
-    },
     basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
     sources: [
       {

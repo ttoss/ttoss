@@ -85,8 +85,8 @@ export type GeoVisGeometryType =
   | 'heatmap';
 
 export interface ViewState {
-  center: LngLat;
-  zoom: number;
+  center?: LngLat;
+  zoom?: number;
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
@@ -285,7 +285,7 @@ export interface VisualizationSpec {
   title?: string;
   description?: string;
   engine: 'maplibre';
-  view: ViewState;
+  view?: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];

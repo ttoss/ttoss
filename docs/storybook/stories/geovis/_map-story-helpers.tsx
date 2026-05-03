@@ -185,15 +185,27 @@ export const FitBoundsToBbox = ({
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    const apply = () => {
+    const computePadding = () => {
+      const container = map.getContainer();
+      return (
+        overlayInsets ?? {
+          top: Math.round(container.clientHeight * 0.06),
+          bottom: Math.round(container.clientHeight * 0.06),
+          left: Math.round(container.clientWidth * 0.06),
+          right: Math.round(container.clientWidth * 0.06),
+        }
+      );
+    };
+
+    /**
+     * Initial fit — called once after the map reports idle.
+     * Uses `animate: true` (no `duration` override) so MapLibre performs a
+     * smooth flyTo-style transition from the default [0,0]/zoom=1 position
+     * to the computed bbox camera.
+     */
+    const applyAnimated = () => {
       const container = map.getContainer();
       if (container.clientWidth === 0 || container.clientHeight === 0) return;
-      const padding = overlayInsets ?? {
-        top: Math.round(container.clientHeight * 0.06),
-        bottom: Math.round(container.clientHeight * 0.06),
-        left: Math.round(container.clientWidth * 0.06),
-        right: Math.round(container.clientWidth * 0.06),
-      };
       map.resize();
       map.fitBounds(
         [
@@ -201,25 +213,49 @@ export const FitBoundsToBbox = ({
           [bbox[2], bbox[3]],
         ],
         {
-          padding,
-          animate: false,
-          duration: 0,
+          padding: computePadding(),
+          animate: true,
           maxZoom: estimateMaxZoom(bbox),
         }
       );
     };
 
-    map.once('idle', apply);
-
-    const observer = new ResizeObserver((entries) => {
+    /**
+     * Refit on container resize — instant to avoid re-triggering the animation
+     * every time the user resizes the Storybook panel.
+     */
+    const applyInstant = (entries: ResizeObserverEntry[]) => {
       const rect = entries[0]?.contentRect;
       if (!rect || rect.width === 0 || rect.height === 0) return;
-      apply();
-    });
+      map.resize();
+      map.fitBounds(
+        [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ],
+        {
+          padding: computePadding(),
+          animate: false,
+          maxZoom: estimateMaxZoom(bbox),
+        }
+      );
+    };
+
+    map.once('idle', applyAnimated);
+
+    // When bbox arrives after the map's initial idle (e.g. from a URL fetch),
+    // `once('idle', ...)` would wait indefinitely — the event already fired.
+    // Calling `applyAnimated` directly handles that case.
+    if (map.loaded()) {
+      map.off('idle', applyAnimated);
+      applyAnimated();
+    }
+
+    const observer = new ResizeObserver(applyInstant);
     observer.observe(map.getContainer());
 
     return () => {
-      map.off('idle', apply);
+      map.off('idle', applyAnimated);
       observer.disconnect();
     };
   }, [runtime, bbox, overlayInsets]);

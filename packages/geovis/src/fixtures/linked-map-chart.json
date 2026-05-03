@@ -4,8 +4,6 @@
   "description": "Hovering a region on the map highlights it in the bar chart and vice-versa. Uses queryRenderedFeatures to sync map hover state with an external chart — based on the MapLibre 'Get features under the mouse pointer' example.",
   "engine": "maplibre",
   "view": {
-    "center": [-46.6333, -23.5505],
-    "zoom": 10,
     "pitch": 30,
     "bearing": 15
   },

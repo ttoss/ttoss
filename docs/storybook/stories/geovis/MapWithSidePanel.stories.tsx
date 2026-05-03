@@ -13,13 +13,8 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
-// No inline GeoJSON source — bbox hardcoded from the fixture view coordinates.
-const MAP_BBOX: Bbox = [
-  mapWithSidePanelSpec.view.center[0] - 2.5,
-  mapWithSidePanelSpec.view.center[1] - 2.5,
-  mapWithSidePanelSpec.view.center[0] + 2.5,
-  mapWithSidePanelSpec.view.center[1] + 2.5,
-];
+// Washington D.C. area — bbox hardcoded because the fixture has no inline GeoJSON.
+const MAP_BBOX: Bbox = [-79.52, 36.39, -74.52, 41.39];
 
 const SIDEBAR_WIDTH = 300;
 

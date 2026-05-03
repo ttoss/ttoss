@@ -372,10 +372,14 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
   }, []);
 
   const recenter = React.useCallback(() => {
-    const { center, zoom } = fixture.view;
+    // Rwanda approximate bbox — used when no center/zoom is present in the fixture.
+    const rwandaBbox: [[number, number], [number, number]] = [
+      [28.85, -2.84],
+      [30.9, -1.05],
+    ];
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.fitBounds(rwandaBbox, { animate: false });
     }
     syncLock.current = false;
   }, []);

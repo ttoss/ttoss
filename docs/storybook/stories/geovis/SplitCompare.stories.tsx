@@ -52,10 +52,16 @@ export const SplitCompare: StoryFn = () => {
   const syncLock = React.useRef(false) as LockRef;
 
   const recenter = () => {
-    const { center, zoom } = fixture.view;
+    if (!splitCompareBbox) return;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.fitBounds(
+        [
+          [splitCompareBbox[0], splitCompareBbox[1]],
+          [splitCompareBbox[2], splitCompareBbox[3]],
+        ],
+        { animate: false }
+      );
     }
     syncLock.current = false;
   };

@@ -232,7 +232,12 @@ const syncCenter = (
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
-  if (prev.center[0] === next.center[0] && prev.center[1] === next.center[1]) {
+  if (!next?.center) return;
+  if (
+    prev?.center &&
+    prev.center[0] === next.center[0] &&
+    prev.center[1] === next.center[1]
+  ) {
     return;
   }
   map.setCenter(next.center as maplibregl.LngLatLike);
@@ -244,12 +249,14 @@ const syncMapView = (
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
+  if (!next) return;
+  const p = prev ?? {};
   syncCenter(map, prev, next);
-  if (prev.zoom !== next.zoom) map.setZoom(next.zoom);
-  const prevPitch = prev.pitch ?? 0;
+  if (next.zoom !== undefined) map.setZoom(next.zoom);
+  const prevPitch = p.pitch ?? 0;
   const nextPitch = next.pitch ?? 0;
   if (prevPitch !== nextPitch) map.setPitch(nextPitch);
-  const prevBearing = prev.bearing ?? 0;
+  const prevBearing = p.bearing ?? 0;
   const nextBearing = next.bearing ?? 0;
   if (prevBearing !== nextBearing) map.setBearing(nextBearing);
 };
@@ -272,10 +279,10 @@ const createMap = (
   const map = new maplibregl.Map({
     container,
     style: styleUrl,
-    center: view.center,
-    zoom: view.zoom,
-    pitch: view.pitch ?? 0,
-    bearing: view.bearing ?? 0,
+    center: (view?.center ?? [0, 0]) as maplibregl.LngLatLike,
+    zoom: view?.zoom ?? 1,
+    pitch: view?.pitch ?? 0,
+    bearing: view?.bearing ?? 0,
   });
   map.addControl(
     new maplibregl.NavigationControl({
