@@ -9,13 +9,9 @@ import {
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
-import type { ColorStep } from './_map-story-helpers';
-import {
-  computeBbox,
-  FitBoundsToBbox,
-  MapLabel,
-  MapOverlayLegend,
-} from './_map-story-helpers';
+import type { ColorStep } from './_choropleth-helpers';
+import { MapOverlayLegend } from './_choropleth-helpers';
+import { computeBbox, FitBoundsToBbox, MapLabel } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',

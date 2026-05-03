@@ -8,14 +8,13 @@ import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
-import type { LockRef, MapRef } from './_map-story-helpers';
 import {
   ColorSwatchLegend,
   FeatureStatePainter,
-  MapLabel,
   MapOverlayLegend,
-  MapSync,
-} from './_map-story-helpers';
+} from './_choropleth-helpers';
+import type { LockRef, MapRef } from './_map-story-helpers';
+import { MapLabel, MapSync } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
