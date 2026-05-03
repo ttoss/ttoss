@@ -142,6 +142,19 @@ export const computeBbox = (fc: GeoJSON.FeatureCollection): Bbox | null => {
 };
 
 /**
+ * Estimates a sensible `maxZoom` ceiling for `fitBounds` based on the
+ * approximate area of the bounding box in km².
+ * Prevents over-zoom on small geometries that would lose geographic context.
+ */
+export const estimateMaxZoom = (bbox: Bbox): number => {
+  const areaKm2 = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) * 111 * 111;
+  if (areaKm2 > 100_000) return 8; // country
+  if (areaKm2 > 5_000) return 10; // state / large region
+  if (areaKm2 > 100) return 13; // municipality
+  return 15; // neighbourhood / district
+};
+
+/**
  * Render-less component that imperatively fits the camera so the supplied bbox
  * is centered inside the **useful area** of the map (viewport minus insets),
  * maximising the rendered geometry while clearing fixed UI overlays.
@@ -162,7 +175,7 @@ export const FitBoundsToBbox = ({
   overlayInsets,
 }: {
   bbox: Bbox | null;
-  overlayInsets: { top: number; bottom: number; left: number; right: number };
+  overlayInsets?: { top: number; bottom: number; left: number; right: number };
 }) => {
   const { runtime } = useGeoVis();
 
@@ -175,13 +188,24 @@ export const FitBoundsToBbox = ({
     const apply = () => {
       const container = map.getContainer();
       if (container.clientWidth === 0 || container.clientHeight === 0) return;
+      const padding = overlayInsets ?? {
+        top: Math.round(container.clientHeight * 0.06),
+        bottom: Math.round(container.clientHeight * 0.06),
+        left: Math.round(container.clientWidth * 0.06),
+        right: Math.round(container.clientWidth * 0.06),
+      };
       map.resize();
       map.fitBounds(
         [
           [bbox[0], bbox[1]],
           [bbox[2], bbox[3]],
         ],
-        { padding: overlayInsets, animate: false, duration: 0 }
+        {
+          padding,
+          animate: false,
+          duration: 0,
+          maxZoom: estimateMaxZoom(bbox),
+        }
       );
     };
 
@@ -201,6 +225,47 @@ export const FitBoundsToBbox = ({
   }, [runtime, bbox, overlayInsets]);
 
   return null;
+};
+
+// ---------------------------------------------------------------------------
+// FitBoundsToUrlSource
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetches a remote GeoJSON URL, computes its bbox once the data arrives, then
+ * fits the camera via `FitBoundsToBbox`. The fit fires as soon as both the
+ * fetch resolves and the map reports idle — whichever comes last.
+ *
+ * Must be placed AFTER `GeoVisCanvas` in the JSX tree.
+ * Silently ignores fetch errors (story utility).
+ */
+export const FitBoundsToUrlSource = ({
+  url,
+  overlayInsets,
+}: {
+  url: string;
+  overlayInsets?: { top: number; bottom: number; left: number; right: number };
+}) => {
+  const [bbox, setBbox] = React.useState<Bbox | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch(url)
+      .then((r) => {
+        return r.json();
+      })
+      .then((fc: GeoJSON.FeatureCollection) => {
+        if (!cancelled) setBbox(computeBbox(fc));
+      })
+      .catch(() => {
+        // silently ignore errors in story context
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return <FitBoundsToBbox bbox={bbox} overlayInsets={overlayInsets} />;
 };
 
 // ---------------------------------------------------------------------------

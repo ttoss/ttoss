@@ -14,12 +14,15 @@ import {
   MapOverlayLegend,
 } from './_choropleth-helpers';
 import type { LockRef, MapRef } from './_map-story-helpers';
-import { MapLabel, MapSync } from './_map-story-helpers';
+import { FitBoundsToUrlSource, MapLabel, MapSync } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
   tags: ['autodocs'],
 } as Meta;
+
+// Rwanda provinces are fetched from a remote URL — bbox is computed after load.
+const RWANDA_SOURCE_URL = fixture.sources[0].data as string;
 
 const spec = fixture as unknown as VisualizationSpec;
 
@@ -226,6 +229,7 @@ const MapPanel = ({
       />
       <GeoVisProvider spec={providerSpec}>
         <GeoVisCanvas viewId={viewId} style={canvasStyle} />
+        <FitBoundsToUrlSource url={RWANDA_SOURCE_URL} />
         <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
         <FeatureStatePainter
           layerId="rwanda-choropleth"

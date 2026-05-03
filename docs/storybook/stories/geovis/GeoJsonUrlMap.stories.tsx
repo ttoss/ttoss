@@ -9,10 +9,13 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
+const SOURCE_URL = geojsonUrlMapSpec.sources[0].data as string;
+
 export const GeoJsonUrlMap: StoryFn = () => {
   return (
     <GeoVisFixtureStory
       spec={geojsonUrlMapSpec as unknown as VisualizationSpec}
+      sourceUrl={SOURCE_URL}
     />
   );
 };

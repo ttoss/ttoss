@@ -5,11 +5,21 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 
 import mapWithSidePanelSpec from '../../../../packages/geovis/src/fixtures/map-with-side-panel.json';
+import type { Bbox } from './_map-story-helpers';
+import { FitBoundsToBbox } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MapWithSidePanel',
   tags: ['autodocs'],
 } as Meta;
+
+// No inline GeoJSON source — bbox hardcoded from the fixture view coordinates.
+const MAP_BBOX: Bbox = [
+  mapWithSidePanelSpec.view.center[0] - 2.5,
+  mapWithSidePanelSpec.view.center[1] - 2.5,
+  mapWithSidePanelSpec.view.center[0] + 2.5,
+  mapWithSidePanelSpec.view.center[1] + 2.5,
+];
 
 const SIDEBAR_WIDTH = 300;
 
@@ -93,9 +103,15 @@ const SidePanels = () => {
       >
         Left Panel
         <div
+          role="button"
+          tabIndex={0}
           style={{ ...toggleButtonStyle, right: '-1.5em' }}
           onClick={() => {
             return toggle('left', leftOpen, setLeftOpen);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ')
+              toggle('left', leftOpen, setLeftOpen);
           }}
         >
           {leftOpen ? '←' : '→'}
@@ -110,9 +126,15 @@ const SidePanels = () => {
       >
         Right Panel
         <div
+          role="button"
+          tabIndex={0}
           style={{ ...toggleButtonStyle, left: '-1.5em' }}
           onClick={() => {
             return toggle('right', rightOpen, setRightOpen);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ')
+              toggle('right', rightOpen, setRightOpen);
           }}
         >
           {rightOpen ? '→' : '←'}
@@ -145,6 +167,7 @@ export const MapWithSidePanel: StoryFn = () => {
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
+          <FitBoundsToBbox bbox={MAP_BBOX} />
           <SidePanels />
         </GeoVisProvider>
       </div>

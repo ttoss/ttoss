@@ -5,11 +5,16 @@ import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import * as React from 'react';
 
 import linkedMapChartSpec from '../../../../packages/geovis/src/fixtures/linked-map-chart.json';
+import { computeBbox, FitBoundsToBbox } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/LinkedMapChart',
   tags: ['autodocs'],
 } as Meta;
+
+const linkedBbox = computeBbox(
+  linkedMapChartSpec.sources[0].data as GeoJSON.FeatureCollection
+);
 
 type Region = { regionId: string; label: string; value: number };
 
@@ -159,6 +164,7 @@ export const LinkedMapChart: StoryFn = () => {
           spec={linkedMapChartSpec as unknown as VisualizationSpec}
         >
           <GeoVisCanvas viewId="primary" style={{ flex: 1, height: '100%' }} />
+          <FitBoundsToBbox bbox={linkedBbox} />
           <LinkedChart hoveredId={hoveredId} onHover={handleHover} />
         </GeoVisProvider>
         <BarChart hoveredId={hoveredId} onHover={handleHover} />
