@@ -1,13 +1,18 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import {
+  GeoVisCanvas,
+  // GeoVisHoverTooltip,
+  // GeoVisLegend,
+  GeoVisProvider,
+} from '@ttoss/geovis';
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
 import type { ColorStep } from './_map-story-helpers';
 import {
-  ColorSwatchLegend,
-  FeatureStatePainter,
+  computeBbox,
+  FitBoundsToBbox,
   MapLabel,
   MapOverlayLegend,
 } from './_map-story-helpers';
@@ -15,6 +20,12 @@ import {
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
   tags: ['autodocs'],
+  parameters: {
+    // Removes the 16px body padding Storybook 'padded' layout adds by default.
+    // Without this, fitBounds measures the wrong container size and clips
+    // the geometry at the north/south edges.
+    layout: 'fullscreen',
+  },
 } as Meta;
 
 const DATA_URL =
@@ -30,6 +41,10 @@ const populationSteps: ColorStep[] = [
   { threshold: 250_000, color: '#1e3a8a' },
 ];
 
+const populationBreaks = populationSteps.map((step) => {
+  return step.threshold;
+});
+
 const DEFAULT_COLOR = '#f0f9ff';
 
 const AVAILABLE_YEARS = [
@@ -40,6 +55,80 @@ type Year = (typeof AVAILABLE_YEARS)[number];
 
 const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
+};
+
+// Visual size of the in-map overlays (top-left column).
+const MAP_OVERLAY_INSETS = {
+  top: 8,
+  left: 152, // MapOverlayLegend width (~130) + side gap.
+  right: 8,
+  bottom: 8,
+} as const;
+
+/** Pure spec builder — extracted so the component body stays within max-lines-per-function. */
+const buildDistrictSpec = ({
+  year,
+  mapDataEntries,
+}: {
+  year: Year;
+  mapDataEntries: { geometryId: number; value: number }[];
+}): VisualizationSpec => {
+  return {
+    id: 'municipal-district-mapdata',
+    engine: 'maplibre',
+    view: {
+      center: [-46.6333, -23.5505],
+      zoom: 10,
+    },
+    basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
+    sources: [
+      {
+        id: 'districts',
+        type: 'geojson',
+        data: districtGeoJson as unknown as GeoJSON.FeatureCollection,
+      },
+    ],
+    layers: [
+      {
+        id: 'districts-fill',
+        sourceId: 'districts',
+        geometry: 'polygon',
+        mapDataId: 'population',
+      },
+      {
+        id: 'districts-outline',
+        sourceId: 'districts',
+        geometry: 'line',
+        paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
+      },
+    ],
+    legends: [
+      {
+        id: 'population',
+        label: `Population by district \u2014 ${year}`,
+        colorBy: {
+          type: 'quantitative',
+          property: 'population',
+          scale: 'threshold',
+          thresholds: populationBreaks,
+          colors: [
+            DEFAULT_COLOR,
+            ...populationSteps.map((step) => {
+              return step.color;
+            }),
+          ],
+          defaultColor: DEFAULT_COLOR,
+        },
+      },
+    ],
+    mapData: [
+      {
+        mapDataId: 'population',
+        mapId: 'districts',
+        data: mapDataEntries,
+      },
+    ],
+  };
 };
 
 /**
@@ -83,76 +172,63 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
     });
   }, [populationData, year]);
 
-  const spec = React.useMemo<VisualizationSpec>(() => {
-    return {
-      id: 'municipal-district-mapdata',
-      engine: 'maplibre',
-      view: { center: [-46.63, -23.55], zoom: 9 },
-      basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
-      sources: [
-        {
-          id: 'districts',
-          type: 'geojson',
-          data: districtGeoJson as unknown as GeoJSON.FeatureCollection,
-        },
-      ],
-      layers: [
-        {
-          id: 'districts-fill',
-          sourceId: 'districts',
-          geometry: 'polygon',
-          mapDataId: 'population',
-        },
-        {
-          id: 'districts-outline',
-          sourceId: 'districts',
-          geometry: 'line',
-          paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
-        },
-      ],
-      mapData: [
-        {
-          mapDataId: 'population',
-          mapId: 'districts',
-          data: mapDataEntries,
-        },
-      ],
-    };
-  }, [mapDataEntries]);
+  const districtsBbox = React.useMemo(() => {
+    return computeBbox(districtGeoJson as unknown as GeoJSON.FeatureCollection);
+  }, []);
+
+  const spec = React.useMemo(() => {
+    return buildDistrictSpec({
+      year,
+      mapDataEntries,
+    });
+  }, [mapDataEntries, year]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div
-        style={{
-          position: 'relative',
-          height: 520,
-          borderRadius: 6,
-          overflow: 'hidden',
-          border: '1px solid #d4d4d8',
-        }}
-      >
-        <MapLabel>São Paulo — population {year}</MapLabel>
-        <GeoVisProvider spec={spec}>
+      <GeoVisProvider spec={spec}>
+        <div
+          style={{
+            position: 'relative',
+            height: 520,
+            borderRadius: 6,
+            overflow: 'hidden',
+            border: '1px solid #d4d4d8',
+          }}
+        >
           <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
-          <FeatureStatePainter
-            layerId="districts-fill"
-            defaultColor={DEFAULT_COLOR}
-            steps={populationSteps}
+          <FitBoundsToBbox
+            bbox={districtsBbox}
+            overlayInsets={MAP_OVERLAY_INSETS}
           />
+          <MapLabel>São Paulo — population {year}</MapLabel>
+          {/* <GeoVisHoverTooltip
+            formatValue={fmtPop}
+            render={(info) => {
+              return (
+                <>
+                  <div style={{ fontWeight: 600 }}>
+                    District #{String(info.featureId)}
+                  </div>
+                  <div>
+                    {info.value == null ? 'No data' : fmtPop(info.value)}
+                  </div>
+                </>
+              );
+            }}
+          /> */}
           <MapOverlayLegend
             label="Total population"
             defaultColor={DEFAULT_COLOR}
             steps={populationSteps}
             formatValue={fmtPop}
           />
-        </GeoVisProvider>
-      </div>
-      <ColorSwatchLegend
-        title={`Population by district — ${year}`}
-        defaultColor={DEFAULT_COLOR}
-        steps={populationSteps}
-        formatValue={fmtPop}
-      />
+        </div>
+        {/* <GeoVisLegend
+          legendId="population"
+          breaks={populationBreaks}
+          formatValue={fmtPop}
+        /> */}
+      </GeoVisProvider>
     </div>
   );
 };

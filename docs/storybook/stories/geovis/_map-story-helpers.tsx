@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * Internal helpers shared across GeoVis stories.
  * Not public package artefacts — story utilities only.
@@ -364,6 +365,113 @@ export const MapOverlayLegend = ({
 /**
  * Swatch legend (colour square + value band) for the section below the maps.
  */
+// ---------------------------------------------------------------------------
+// Bbox / FitBoundsToBbox
+// ---------------------------------------------------------------------------
+
+export type Bbox = [number, number, number, number];
+
+/**
+ * Walks every coordinate in a GeoJSON FeatureCollection and returns the
+ * axis-aligned bounding box `[minLng, minLat, maxLng, maxLat]`. Returns null
+ * when the collection has no usable coordinates.
+ */
+export const computeBbox = (fc: GeoJSON.FeatureCollection): Bbox | null => {
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+
+  const visit = (coords: unknown): void => {
+    if (!Array.isArray(coords)) return;
+    if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+      const [lng, lat] = coords as [number, number];
+      if (lng < minLng) minLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lng > maxLng) maxLng = lng;
+      if (lat > maxLat) maxLat = lat;
+      return;
+    }
+    for (const c of coords) visit(c);
+  };
+
+  for (const feature of fc.features) {
+    if (!feature.geometry) continue;
+    if (feature.geometry.type === 'GeometryCollection') {
+      for (const g of feature.geometry.geometries) {
+        visit((g as { coordinates?: unknown }).coordinates);
+      }
+    } else {
+      visit(feature.geometry.coordinates);
+    }
+  }
+
+  if (!Number.isFinite(minLng) || !Number.isFinite(minLat)) return null;
+  return [minLng, minLat, maxLng, maxLat];
+};
+
+/**
+ * Render-less component that imperatively fits the camera so the supplied bbox
+ * is centered inside the **useful area** of the map (viewport minus insets),
+ * maximising the rendered geometry while clearing fixed UI overlays.
+ *
+ * MapLibre `fitBounds(bbox, { padding })` guarantees:
+ *   center( bbox )  ===  center( viewport − padding )
+ *
+ * `overlayInsets` mirrors `PaddingOptions`. Set sides where overlays sit:
+ *   - top/left for in-map labels and legends
+ *   - leave bottom/right at 0 for overlays that sit on top of the map
+ *     (e.g. MapLibre’s `AttributionControl` at bottom-right)
+ *
+ * Must be placed AFTER `GeoVisCanvas` in the JSX tree so that the MapLibre map
+ * is already mounted when this component’s effect fires.
+ */
+export const FitBoundsToBbox = ({
+  bbox,
+  overlayInsets,
+}: {
+  bbox: Bbox | null;
+  overlayInsets: { top: number; bottom: number; left: number; right: number };
+}) => {
+  const { runtime } = useGeoVis();
+
+  React.useEffect(() => {
+    if (!runtime || !bbox) return;
+
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
+    if (!map) return;
+
+    const apply = () => {
+      const container = map.getContainer();
+      if (container.clientWidth === 0 || container.clientHeight === 0) return;
+      map.resize();
+      map.fitBounds(
+        [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ],
+        { padding: overlayInsets, animate: false, duration: 0 }
+      );
+    };
+
+    map.once('idle', apply);
+
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect;
+      if (!rect || rect.width === 0 || rect.height === 0) return;
+      apply();
+    });
+    observer.observe(map.getContainer());
+
+    return () => {
+      map.off('idle', apply);
+      observer.disconnect();
+    };
+  }, [runtime, bbox, overlayInsets]);
+
+  return null;
+};
+
 // ---------------------------------------------------------------------------
 // GeoVisSplitLayout
 // ---------------------------------------------------------------------------
