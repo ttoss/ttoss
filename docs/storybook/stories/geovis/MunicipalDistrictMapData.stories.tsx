@@ -46,6 +46,48 @@ const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
 };
 
+/** Raw shape returned by the external API (Portuguese field names). */
+interface ApiDistrictEntry {
+  total: number;
+  nome_distr: string;
+  Homens: Record<string, number>;
+  Mulheres: Record<string, number>;
+}
+
+/** Normalised internal shape with English identifiers. */
+interface DistrictEntry {
+  total: number;
+  districtName: string;
+  men: Record<string, number>;
+  women: Record<string, number>;
+}
+
+const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
+  return {
+    total: e.total,
+    districtName: e.nome_distr,
+    men: e.Homens,
+    women: e.Mulheres,
+  };
+};
+
+const normalizePopulationData = (
+  raw: Record<string, Record<string, ApiDistrictEntry>>
+): Record<string, Record<string, DistrictEntry>> => {
+  return Object.fromEntries(
+    Object.entries(raw).map(([yr, districts]) => {
+      return [
+        yr,
+        Object.fromEntries(
+          Object.entries(districts).map(([id, e]) => {
+            return [id, normalizeEntry(e)];
+          })
+        ),
+      ];
+    })
+  );
+};
+
 /**
  * Choropleth of São Paulo municipal districts coloured by total population
  * for a selected census year (2000–2050, projected past 2025).
@@ -59,13 +101,6 @@ const fmtPop = (v: number) => {
  */
 // eslint-disable-next-line react/prop-types -- TypeScript generic on StoryFn already validates props
 export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
-  interface DistrictEntry {
-    total: number;
-    nome_distr: string;
-    Homens: Record<string, number>;
-    Mulheres: Record<string, number>;
-  }
-
   const [populationData, setPopulationData] = React.useState<Record<
     string,
     Record<string, DistrictEntry>
@@ -76,8 +111,8 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       .then((res) => {
         return res.json();
       })
-      .then((json: Record<string, Record<string, DistrictEntry>>) => {
-        return setPopulationData(json);
+      .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
+        return setPopulationData(normalizePopulationData(json));
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -174,7 +209,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
               return (
                 <>
                   <div style={{ fontWeight: 600 }}>
-                    {district?.nome_distr ??
+                    {district?.districtName ??
                       `District #${String(info.featureId)}`}
                   </div>
                   <div>

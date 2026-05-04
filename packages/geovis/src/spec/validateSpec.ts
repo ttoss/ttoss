@@ -97,7 +97,7 @@ const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
     if (legend.colorBy.scale !== 'threshold') return;
 
     const thresholds = legend.colorBy.thresholds ?? [];
-    if (thresholds.length <= 1) return;
+    if (thresholds.length === 0) return;
 
     const finiteThresholds = thresholds.filter((value) => {
       return Number.isFinite(value);
@@ -109,7 +109,7 @@ const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
       return;
     }
 
-    if (!isStrictlyAscending(thresholds)) {
+    if (thresholds.length > 1 && !isStrictlyAscending(thresholds)) {
       errors.push(
         `${scope} must declare thresholds in strictly ascending order`
       );
