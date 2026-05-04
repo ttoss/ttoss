@@ -312,6 +312,12 @@ export interface VisualizationSpec {
    */
   views?: VisualizationView[];
   metadata?: Record<string, unknown>;
+  /**
+   * @deprecated No longer used by the adapter. Kept for backward compatibility
+   * so existing specs continue to pass `validateSpec()`. Will be removed in a
+   * future breaking-change release.
+   */
+  adapterHints?: unknown;
 }
 
 export type GeovisSpec = VisualizationSpec;

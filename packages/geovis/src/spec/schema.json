@@ -329,6 +329,7 @@
       "type": "object",
       "additionalProperties": true
     },
+    "adapterHints": {},
     "legends": {
       "type": "array",
       "items": { "$ref": "#/$defs/LegendSpec" }
