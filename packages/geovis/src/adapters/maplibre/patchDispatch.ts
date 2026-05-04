@@ -124,8 +124,10 @@ export const applySourcePatch = (
   const sourceId = patch.value as string;
   if (map.getSource(sourceId)) {
     for (const layer of viewState.spec.layers) {
-      if (layer.sourceId === sourceId && map.getLayer(layer.id))
+      if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
+        cancelPendingStyleListenersForLayer(map, layer.id);
         map.removeLayer(layer.id);
+      }
     }
     map.removeSource(sourceId);
   }
