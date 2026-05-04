@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import maplibregl from 'maplibre-gl';
@@ -32,8 +33,26 @@ export { toMaplibreLayer, toMaplibreSource };
 
 const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
-/** Returns the base map style URL, falling back to the MapLibre demo tiles when `basemap.styleUrl` is absent. */
-const resolveStyleUrl = (spec: VisualizationSpec): string => {
+/**
+ * A valid MapLibre style with no sources and no layers, producing a blank canvas.
+ * Used when `spec.basemap.visible === false`.
+ */
+const BLANK_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {},
+  layers: [],
+};
+
+/**
+ * Returns the MapLibre style to use for this spec.
+ * When `basemap.visible` is explicitly `false`, returns a blank style so that
+ * GeoJSON layers render over a transparent/white canvas with no tile imagery.
+ * Otherwise falls back to `basemap.styleUrl` or the MapLibre demo tiles.
+ */
+const resolveStyle = (
+  spec: VisualizationSpec
+): string | maplibregl.StyleSpecification => {
+  if (spec.basemap?.visible === false) return BLANK_STYLE;
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
 };
 
@@ -265,10 +284,12 @@ const syncMapView = (
   if (pb !== nb) map.setBearing(nb);
 };
 
+type MapLibreStyle = string | maplibregl.StyleSpecification;
+
 interface ViewState {
   map: maplibregl.Map;
   spec: VisualizationSpec;
-  styleUrl: string;
+  style: MapLibreStyle;
 }
 
 type ViewMap = Map<string, ViewState>;
@@ -277,12 +298,12 @@ type ViewMap = Map<string, ViewState>;
 const createMap = (
   spec: VisualizationSpec,
   container: HTMLElement
-): { map: maplibregl.Map; styleUrl: string } => {
+): { map: maplibregl.Map; style: MapLibreStyle } => {
   const { view } = spec;
-  const styleUrl = resolveStyleUrl(spec);
+  const style = resolveStyle(spec);
   const map = new maplibregl.Map({
     container,
-    style: styleUrl,
+    style,
     center: (view?.center ?? [0, 0]) as maplibregl.LngLatLike,
     zoom: view?.zoom ?? 1,
     pitch: view?.pitch ?? 0,
@@ -296,7 +317,7 @@ const createMap = (
       showCompass: true,
     })
   );
-  return { map, styleUrl };
+  return { map, style };
 };
 
 /** Creates a MapLibre map in the container, registers it in the view registry, and returns a `MountedView` handle. */
@@ -306,8 +327,8 @@ const mountView = (
   spec: VisualizationSpec,
   viewId: string
 ): MountedView => {
-  const { map, styleUrl } = createMap(spec, container);
-  views.set(viewId, { map, spec, styleUrl });
+  const { map, style } = createMap(spec, container);
+  views.set(viewId, { map, spec, style });
   map.on('load', () => {
     const viewState = views.get(viewId);
     if (!viewState) return;
@@ -342,7 +363,7 @@ const updateView = (
   spec: VisualizationSpec
 ): void => {
   const { map } = viewState;
-  const nextStyleUrl = resolveStyleUrl(spec);
+  const nextStyle = resolveStyle(spec);
   const previousSpec = viewState.spec;
   viewState.spec = spec;
   syncMapView(map, previousSpec.view, spec.view);
@@ -354,10 +375,10 @@ const updateView = (
     reapplyAllMapData(map, updated.spec);
   };
 
-  if (nextStyleUrl !== viewState.styleUrl) {
-    viewState.styleUrl = nextStyleUrl;
+  if (nextStyle !== viewState.style) {
+    viewState.style = nextStyle;
     map.once('style.load', onStyleReady);
-    map.setStyle(nextStyleUrl);
+    map.setStyle(nextStyle);
     return;
   }
   if (map.isStyleLoaded()) {

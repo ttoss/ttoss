@@ -263,6 +263,12 @@ export interface MapData {
 export interface BaseMapSpec {
   styleUrl?: string;
   attribution?: string;
+  /**
+   * When `false`, the basemap tiles are hidden — the map renders with a blank
+   * background. GeoJSON layers remain fully interactive.
+   * Defaults to `true`.
+   */
+  visible?: boolean;
 }
 
 /**
