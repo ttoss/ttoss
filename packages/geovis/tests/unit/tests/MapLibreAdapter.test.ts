@@ -589,7 +589,7 @@ describe('toMaplibreLayer', () => {
       paint: {
         'fill-color': [
           'step',
-          ['coalesce', ['feature-state', 'value'], 0],
+          ['to-number', ['coalesce', ['feature-state', 'value'], 0], 0],
           '#1e3a8a',
           10,
           '#bfdbfe',
@@ -1303,7 +1303,7 @@ describe('mapData — feature-state application', () => {
 
     expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
       'step',
-      ['coalesce', ['feature-state', 'value'], 0],
+      ['to-number', ['coalesce', ['feature-state', 'value'], 0], 0],
       '#eff6ff',
       50,
       '#93c5fd',

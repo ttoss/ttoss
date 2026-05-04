@@ -113,7 +113,7 @@ const buildQuantitativeExpression = (
 
   const stepExpression: unknown[] = [
     'step',
-    ['coalesce', ['feature-state', 'value'], 0],
+    ['to-number', ['coalesce', ['feature-state', 'value'], 0], 0],
     fallbackColor,
   ];
 
