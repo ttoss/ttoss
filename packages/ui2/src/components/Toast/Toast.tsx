@@ -23,8 +23,7 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 //   sizing: `hit.base` (close trigger), spacing: `inset.surface`,
 //   typography: `label.md` (title) + `body.md` (description),
 //   elevation: `raised` — first component in the system to consume it,
-//   motion: `transition.{enter,exit}`,
-//   interaction: `dismiss` (close trigger inside the toast).
+//   motion: `transition.{enter,exit}`.
 //
 // ENTITY_EVALUATION.Feedback = ['primary','positive','caution','negative'] —
 // no `muted` for this entity; a muted toast would defeat the purpose of
@@ -36,7 +35,6 @@ export const toastMeta = {
   displayName: 'Toast',
   entity: 'Feedback',
   structure: 'root',
-  interaction: 'dismiss',
 } as const satisfies ComponentMeta<'Feedback'>;
 
 /** Formal semantic identity — ToastRegion (Feedback entity, root host). */
@@ -125,7 +123,7 @@ export const Toast = ({ toast }: ToastProps) => {
     <RACToast<ToastContent>
       toast={toast}
       data-scope="toast"
-      data-part="surface"
+      data-part="root"
       data-evaluation={evaluation}
       style={
         {
@@ -259,7 +257,7 @@ export const ToastRegion = (props: ToastRegionProps) => {
   return (
     <RACToastRegion<ToastContent>
       {...props}
-      data-scope="toast"
+      data-scope="toast-region"
       data-part="root"
       style={
         {

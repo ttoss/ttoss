@@ -15,8 +15,7 @@ import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 //   radii: `control` (track), border: `outline.surface` (track outline),
 //   sizing: `hit.base` is not used (non-interactive), spacing: `inset.control`,
 //   typography: `label.md` (label + value), elevation: `flat`
-//   motion: `transition.enter` (value easing; ProgressBar has no dismissal),
-//   interaction: — (Feedback may carry `dismiss` but ProgressBar does not).
+//   motion: `transition.enter` (value easing; ProgressBar has no dismissal).
 //
 // Feedback carries no interactive States; the only State surface is `default`
 // and `disabled`. Evaluations `primary|positive|caution|negative` rotate the
@@ -82,7 +81,7 @@ export const ProgressBar = ({
   return (
     <RACProgressBar
       {...props}
-      data-scope="progressBar"
+      data-scope="progress-bar"
       data-part="root"
       data-evaluation={evaluation}
       style={
@@ -99,7 +98,7 @@ export const ProgressBar = ({
           <>
             {(label || showValueLabel) && (
               <div
-                data-scope="progressBar"
+                data-scope="progress-bar"
                 data-part="labelRow"
                 style={
                   {
@@ -111,11 +110,15 @@ export const ProgressBar = ({
                   } as React.CSSProperties
                 }
               >
-                <span data-scope="progressBar" data-part="title">
+                <span data-scope="progress-bar" data-part="title">
                   {label}
                 </span>
                 {showValueLabel && !isIndeterminate && (
-                  <span data-scope="progressBar" data-part="status" aria-hidden>
+                  <span
+                    data-scope="progress-bar"
+                    data-part="status"
+                    aria-hidden
+                  >
                     {valueText ?? `${Math.round(percentage ?? 0)}%`}
                   </span>
                 )}
@@ -124,7 +127,7 @@ export const ProgressBar = ({
 
             {/* Track */}
             <div
-              data-scope="progressBar"
+              data-scope="progress-bar"
               data-part="body"
               style={
                 {
@@ -142,7 +145,7 @@ export const ProgressBar = ({
             >
               {/* Fill */}
               <div
-                data-scope="progressBar"
+                data-scope="progress-bar"
                 data-part="content"
                 style={
                   {

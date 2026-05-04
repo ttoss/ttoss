@@ -27,12 +27,11 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 // `isInvalid` render-prop on each Radio child.
 // ---------------------------------------------------------------------------
 
-/** Formal semantic identity — RadioGroup root (Selection entity, select.single). */
+/** Formal semantic identity — RadioGroup root (Selection entity, single-choice). */
 export const radioGroupMeta = {
   displayName: 'RadioGroup',
   entity: 'Selection',
   structure: 'root',
-  interaction: 'select.single',
 } as const satisfies ComponentMeta<'Selection'>;
 
 /** Formal semantic identity — Radio item (Selection entity, selectionControl + label). */
@@ -41,7 +40,6 @@ export const radioMeta = {
   entity: 'Selection',
   structure: 'selectionControl',
   composition: 'selection',
-  interaction: 'select.single',
 } as const satisfies ComponentMeta<'Selection'>;
 
 // ---------------------------------------------------------------------------

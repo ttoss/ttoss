@@ -23,22 +23,65 @@ type ThemeKey = keyof typeof themes;
 
 /**
  * Syncs the Storybook toolbar `colorMode` into the active ThemeProvider
- * runtime imperatively, so switching modes does not require remounting the
- * provider or juggling per-mode storage keys.
+ * via `setMode()` — the documented, public way to switch modes at runtime.
+ *
+ * Why not `key={colorMode}` on the provider?
+ * - `defaultMode` is init-only on the provider, so toggling via remount
+ *   only works while localStorage is empty. The moment anything persists
+ *   a mode, the toolbar and the provider drift apart.
+ * - Remounting also blows away every `useColorMode()` consumer's state.
+ *
+ * This mirrors what a real app does: a toggle button calls `setMode('dark')`.
+ * The toolbar is that button, relocated to the Storybook toolbar.
  */
-const ColorModeSync = ({
-  colorMode,
-  children,
-}: {
-  colorMode: ThemeMode;
-  children: React.ReactNode;
-}) => {
-  const { mode, setMode } = useColorMode();
+const ColorModeSync = ({ mode }: { mode: ThemeMode }) => {
+  const { setMode } = useColorMode();
   React.useEffect(() => {
-    if (mode !== colorMode) setMode(colorMode);
-  }, [colorMode, mode, setMode]);
-  return <>{children}</>;
+    setMode(mode);
+  }, [mode, setMode]);
+  return null;
 };
+
+/**
+ * Dark-mode chrome override.
+ *
+ * WHY `Canvas` / `CanvasText` instead of theme tokens:
+ * The theme-v2 semantic layer (`action.*`, `input.*`, `navigation.*`, …)
+ * does not define a page-level `content.*` or `surface.*` family — themes
+ * only tokenize interactive / informational surfaces. There is no canonical
+ * "page background" token. Using an undefined `var()` would resolve to
+ * transparent and do nothing, which is exactly what happened in prior
+ * attempts.
+ *
+ * `Canvas` and `CanvasText` are CSS system colors that follow the element's
+ * active `color-scheme`. `createThemeRuntime()` already sets
+ * `root.style.colorScheme = resolvedMode` on `<html>`, so these system
+ * colors automatically flip to dark when mode flips — no extra state to
+ * keep in sync.
+ *
+ * Scope: only Storybook's autodocs chrome (the preview wrappers, the
+ * zoom toolbar, and the ArgsTable cells) — not the story canvas itself.
+ * Story content continues to paint through the theme's own tokens
+ * (buttons, inputs, etc.), and individual components (e.g. `Button`) are
+ * never touched because the selectors never reach inside `.docs-story`'s
+ * story root.
+ *
+ * Injected per render via React 19 style hoisting (`precedence` attribute
+ * → placed in `<head>`).
+ */
+const darkChromeCss = `
+  html[data-tt-mode="dark"] .sbdocs,
+  html[data-tt-mode="dark"] .sbdocs-wrapper,
+  html[data-tt-mode="dark"] .sbdocs-content,
+  html[data-tt-mode="dark"] .sbdocs-preview,
+  html[data-tt-mode="dark"] .docblock-argstable,
+  html[data-tt-mode="dark"] .docblock-argstable th,
+  html[data-tt-mode="dark"] .docblock-argstable td {
+    background: Canvas;
+    color: CanvasText;
+    border-color: color-mix(in srgb, CanvasText 20%, transparent);
+  }
+`;
 
 const preview: Preview = {
   globalTypes: {
@@ -54,6 +97,7 @@ const preview: Preview = {
           { value: 'oca', title: 'Oca' },
           { value: 'ventures', title: 'Ventures' },
         ],
+        dynamicTitle: true,
       },
     },
     colorMode: {
@@ -73,31 +117,27 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const themeKey = (context.globals.theme as ThemeKey) || 'base';
-      const theme = themes[themeKey] || themes.base;
       const colorMode = (context.globals.colorMode as ThemeMode) || 'light';
+      // `key={themeKey}` forces a fresh ThemeProvider only when the THEME
+      // changes — not on every mode toggle. Mode is driven through the
+      // provider's public `setMode()` API via <ColorModeSync />, so
+      // `useColorMode()` consumers keep their state across mode changes.
+      //
+      // No inner wrapper div — the story canvas must stay free of our
+      // background paint so components that set their own inline
+      // `background-color` (e.g. every `Button evaluation`) keep the
+      // contrast the theme designed for them. The `darkChromeCss` rule
+      // handles dark-mode chrome at the `html[data-tt-mode="dark"]` layer
+      // instead.
       return (
-        // themeId scopes each theme's CSS to [data-tt-theme="<key>"] so all
-        // 5 theme stylesheets coexist cleanly; the runtime writes the matching
-        // data-tt-theme attribute to activate the right one.
-        // ColorModeSync forwards toolbar changes to the runtime imperatively,
-        // avoiding provider remounts on every mode flip.
         <ThemeProvider
-          theme={theme}
-          themeId={themeKey}
+          key={themeKey}
+          theme={themes[themeKey]}
           defaultMode={colorMode}
-          storageKey={`storybook-${themeKey}`}
         >
-          <ColorModeSync colorMode={colorMode}>
-            <div
-              style={{
-                background:
-                  'var(--tt-colors-content-primary-background-default)',
-                color: 'var(--tt-colors-content-primary-text-default)',
-              }}
-            >
-              <Story />
-            </div>
-          </ColorModeSync>
+          <ColorModeSync mode={colorMode} />
+          <style precedence="tt-storybook-chrome">{darkChromeCss}</style>
+          <Story />
         </ThemeProvider>
       );
     },

@@ -13,8 +13,8 @@
 
 import type {
   CompositionsFor,
+  ConsequencesFor,
   Entity,
-  InteractionsFor,
   StructuresFor,
 } from './taxonomy';
 
@@ -32,11 +32,6 @@ export interface ComponentMeta<E extends Entity = Entity> {
    */
   structure: StructuresFor<E>;
   /**
-   * Interaction kind expressed by the component (if interactive).
-   * @see ../tokens/CONTRACT.md §2 — Colors path uses interaction to derive state
-   */
-  interaction?: InteractionsFor<E>;
-  /**
    * Slot this component plays inside a parent composition (FSL §4 / §5.4).
    * Present on sub-parts of a composite (e.g. DialogHeading → 'heading',
    * TextFieldLabel → 'label') and on leaf entities participating in a slot
@@ -44,4 +39,12 @@ export interface ComponentMeta<E extends Entity = Entity> {
    * Legality is enforced by `ENTITY_COMPOSITION[entity]`.
    */
   composition?: CompositionsFor<E>;
+  /**
+   * Effect on state produced by the interaction (FSL §6).
+   * Orthogonal to `evaluation` — this is *what the act does*, not *how it
+   * is voiced*. A `destructive` Action is expressed here, not via
+   * `evaluation: 'negative'` (which is not legal on Action anyway).
+   * Legality is enforced by `ENTITY_CONSEQUENCE[entity]`.
+   */
+  consequence?: ConsequencesFor<E>;
 }

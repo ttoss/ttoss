@@ -14,20 +14,24 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
-// Evaluation propagation
+// Composite scope — host-presence guard + evaluation propagation.
 //
-// Accordion is a composite: the evaluation set on the group propagates to
-// every AccordionItem child via React Context — same pattern used by
-// RadioGroup before the Selection refactor. The evaluation determines which
-// `vars.colors.navigation.{primary|muted}` subtree is consumed.
+// `Accordion` is the host and seeds `evaluation`. `AccordionItem`,
+// `AccordionTrigger`, and `AccordionPanel` consume the same value (so
+// every sub-part renders coherent chrome) AND assert host presence —
+// rendered standalone they throw with a clear message.
 // ---------------------------------------------------------------------------
 
 type AccordionEvaluation = EvaluationsFor<'Disclosure'>;
-const AccordionEvaluationContext = React.createContext<
-  AccordionEvaluation | undefined
->(undefined);
+
+interface AccordionScopeValue {
+  evaluation: AccordionEvaluation;
+}
+
+const accordionScope = createCompositeScope<AccordionScopeValue>('Accordion');
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1
@@ -41,10 +45,10 @@ const AccordionEvaluationContext = React.createContext<
 //   motion: `transition.{enter,exit}` (NOT `feedback` — disclosure animates
 //   container affordances, not micro-feedback on a control).
 //
-// State surface for `disclose.toggle`: default · hover · focused · disabled ·
-// expanded (taxonomy.ts INTERACTION_STATE). The `expanded` State is driven
-// by React Aria's `isExpanded` render-prop and surfaces via the canonical
-// `expanded` token state on `vars.colors.navigation.{role}.{dimension}`.
+// State surface for Disclosure: default · hover · focused · disabled ·
+// expanded. The `expanded` token state is driven by React Aria's
+// `isExpanded` render-prop and surfaces on
+// `vars.colors.navigation.{role}.{dimension}`.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — Accordion root (Disclosure entity, group host). */
@@ -52,16 +56,23 @@ export const accordionMeta = {
   displayName: 'Accordion',
   entity: 'Disclosure',
   structure: 'root',
-  interaction: 'disclose.toggle',
 } as const satisfies ComponentMeta<'Disclosure'>;
 
-/** Formal semantic identity — AccordionItem (Disclosure entity, single item). */
+/** Formal semantic identity — AccordionItem (Disclosure entity, single item).
+ *
+ * Intentionally has no `composition` field. Per the §2.3 evidence rule,
+ * `composition` is declared only when a runtime dispatches on it (DOM
+ * reorder, behavior selection, or coloring). The Accordion host does not
+ * dispatch on composition — items are not reordered, selected, or styled
+ * by it — so attaching a value here would be dead weight. The disclosure's
+ * interactive `'control'` is the trigger button, not the item container,
+ * and even on `accordionTriggerMeta` the value would be unused today; if
+ * a future runtime starts dispatching on it, declare it then.
+ */
 export const accordionItemMeta = {
   displayName: 'AccordionItem',
   entity: 'Disclosure',
   structure: 'root',
-  composition: 'control',
-  interaction: 'disclose.toggle',
 } as const satisfies ComponentMeta<'Disclosure'>;
 
 /** Formal semantic identity — AccordionTrigger (header button). */
@@ -69,7 +80,6 @@ export const accordionTriggerMeta = {
   displayName: 'AccordionTrigger',
   entity: 'Disclosure',
   structure: 'trigger',
-  interaction: 'disclose.toggle',
 } as const satisfies ComponentMeta<'Disclosure'>;
 
 /** Formal semantic identity — AccordionPanel (collapsible content region). */
@@ -88,6 +98,9 @@ const CHEVRON = String.fromCharCode(0x25b8); // ▸ — rotates 90° when expand
 
 /**
  * Props for the Accordion component.
+ *
+ * The composite owns its layout; pass `style`/`className` on a wrapping
+ * element rather than on the composite root. See CONTRIBUTING §4.
  */
 export interface AccordionProps extends Omit<
   RACDisclosureGroupProps,
@@ -134,7 +147,7 @@ export const Accordion = ({
   ...props
 }: AccordionProps) => {
   return (
-    <AccordionEvaluationContext.Provider value={evaluation}>
+    <accordionScope.Provider value={{ evaluation }}>
       <RACDisclosureGroup
         {...props}
         data-scope="accordion"
@@ -157,7 +170,7 @@ export const Accordion = ({
       >
         {children}
       </RACDisclosureGroup>
-    </AccordionEvaluationContext.Provider>
+    </accordionScope.Provider>
   );
 };
 Accordion.displayName = accordionMeta.displayName;
@@ -193,7 +206,7 @@ export interface AccordionItemProps extends Omit<
  * ```
  */
 export const AccordionItem = ({ children, ...props }: AccordionItemProps) => {
-  const evaluation = React.useContext(AccordionEvaluationContext) ?? 'primary';
+  const { evaluation } = accordionScope.use(accordionItemMeta.displayName);
 
   return (
     <RACDisclosure
@@ -242,7 +255,7 @@ export interface AccordionTriggerProps {
  * cascade in [`resolveInteractiveStyle`](../../tokens/resolveInteractiveStyle.ts).
  */
 export const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
-  const evaluation = React.useContext(AccordionEvaluationContext) ?? 'primary';
+  const { evaluation } = accordionScope.use(accordionTriggerMeta.displayName);
   const c = vars.colors.navigation[evaluation];
   // RAC propagates the live Disclosure state to descendants via this context.
   // We read `isExpanded` here to fold it into the canonical state cascade
@@ -359,7 +372,7 @@ export type AccordionPanelProps = Omit<
  * ```
  */
 export const AccordionPanel = ({ children, ...props }: AccordionPanelProps) => {
-  const evaluation = React.useContext(AccordionEvaluationContext) ?? 'primary';
+  const { evaluation } = accordionScope.use(accordionPanelMeta.displayName);
   const c = vars.colors.navigation[evaluation];
 
   return (

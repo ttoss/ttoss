@@ -223,3 +223,76 @@ export const SurfaceEvaluations: Story = {
     );
   },
 };
+
+/**
+ * Platform-ordered action buttons.
+ *
+ * `DialogActions` reads each child's `composition` prop at runtime and
+ * reorders the DOM per the selected `platform` convention. Source order
+ * below is identical in both dialogs — the platform prop is what flips
+ * the rendered order.
+ *
+ * - **iOS / macOS / Web default** — cancel on the left, confirm on the right.
+ * - **Windows / Fluent** — confirm on the left, cancel on the right.
+ *
+ * This is the canonical example of `composition` as a behavior-driving
+ * FSL dimension (see CONTRIBUTING.md §2.3).
+ */
+export const PlatformOrdering: Story = {
+  parameters: { layout: 'padded' },
+  render: () => {
+    return (
+      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+        <DialogTrigger>
+          <Button>iOS convention</Button>
+          <DialogModal>
+            <Dialog>
+              <DialogHeading>Save changes?</DialogHeading>
+              <DialogBody>
+                Source order: Save, Cancel. Rendered order on iOS: Cancel |
+                Save.
+              </DialogBody>
+              <DialogActions platform="ios">
+                <Button composition="primaryAction" evaluation="primary">
+                  Save
+                </Button>
+                <Button
+                  composition="dismissAction"
+                  slot="close"
+                  evaluation="muted"
+                >
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </DialogModal>
+        </DialogTrigger>
+
+        <DialogTrigger>
+          <Button>Windows convention</Button>
+          <DialogModal>
+            <Dialog>
+              <DialogHeading>Save changes?</DialogHeading>
+              <DialogBody>
+                Source order: Save, Cancel. Rendered order on Windows: Save |
+                Cancel.
+              </DialogBody>
+              <DialogActions platform="windows">
+                <Button composition="primaryAction" evaluation="primary">
+                  Save
+                </Button>
+                <Button
+                  composition="dismissAction"
+                  slot="close"
+                  evaluation="muted"
+                >
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </DialogModal>
+        </DialogTrigger>
+      </div>
+    );
+  },
+};

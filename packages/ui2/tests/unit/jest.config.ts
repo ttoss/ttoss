@@ -12,11 +12,18 @@ export default jestUnitConfig({
     'src/tokens/index.ts',
     // pure `as const` data — no branches to cover
     'src/semantics/taxonomy.ts',
-    // Components are structurally enforced by contract tests; their render
-    // surface is covered visually (Storybook) rather than via unit tests.
-    // Unit coverage here would force per-state render tests that duplicate
-    // what the contract + Storybook matrix already verify.
+    // Components and composite *render* surfaces are structurally enforced
+    // by contract tests and visually covered by Storybook. Unit coverage
+    // here would force per-state render tests that duplicate what the
+    // contract + Storybook matrix already verify.
+    //
+    // The `src/composites/` regex matches only sub-directories (e.g.
+    // `src/composites/Dialog/Dialog.tsx`); top-level files in `composites/`
+    // — notably `scope.ts` — remain in the coverage scope and are
+    // exercised by `compositeScope.test.tsx` and the existing behaviour
+    // suites (`Wizard`, `DialogActions`, `ConfirmationDialog`).
     'src/components/',
+    'src/composites/[A-Z]',
   ],
   coverageThreshold: {
     global: {

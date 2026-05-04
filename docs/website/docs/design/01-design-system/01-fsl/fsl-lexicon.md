@@ -273,6 +273,30 @@ Consequence exists because some meanings materially shape user experience and ri
 - **safeDefaultRequired** is not a styling concern.
   It is a semantic constraint on interaction policy.
 
+### Profile narrowing (per FSL §13.3)
+
+A component-semantics profile may codify a narrower subset of this vocabulary
+when the broader terms collapse into one of the narrower ones or into another
+dimension. The `@ttoss/ui2` profile codifies three values — **neutral**,
+**committing**, **destructive** — and rejects the others with explicit
+rationale:
+
+- **reversible** is the logical complement of `committing`; carrying both
+  doubles the vocabulary without adding an expressible distinction.
+- **interruptive** is absorbed by the Entity `Overlay` — an Overlay is
+  interruptive by kind, and non-overlay interruption has no component
+  prototype to justify separate vocabulary.
+- **recoverable** describes a runtime outcome of failure, not an authorial
+  meta; recovery support belongs in component API (e.g. an `onRetry` prop),
+  not in `ComponentMeta`.
+- **safeDefaultRequired** is a derived policy: `destructive` already implies
+  the need for a safe default, so codifying the policy separately would
+  create a second source of truth for the same constraint.
+
+The rejections are invariants of the profile, not of FSL — a different
+profile may legitimately codify more of the vocabulary if its component
+prototypes create new distinctions.
+
 ---
 
 # 7. State

@@ -30,7 +30,6 @@ export const checkboxMeta = {
   displayName: 'Checkbox',
   entity: 'Selection',
   structure: 'root',
-  interaction: 'toggle.binary',
 } as const satisfies ComponentMeta<'Selection'>;
 
 /**

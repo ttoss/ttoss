@@ -1,10 +1,13 @@
 /**
  * Resolves a single style value from a semantic interactive state object
- * using the canonical cascade:
+ * using the canonical cascade defined by `STATE_PRIORITY` in
+ * `../semantics/taxonomy`.
  *
- *     disabled > isInvalid > isExpanded > isIndeterminate > isSelected > focusVisible > pressed > hovered > default
- *
- * (The cascade mirrors `src/tokens/CONTRACT.md` — Layer 4 state semantics.)
+ * `STATE_PRIORITY` is the single source of truth for both the **order** of
+ * the cascade and the **flag → state-key** mapping. `CONTRACT.md §3`
+ * references it by name; this helper iterates it. Order and mapping cannot
+ * drift between the contract doc and the implementation because they are
+ * derived from the same tuple.
  *
  * The helper is **strict**: when a flag is set, the corresponding state's
  * value is returned as-is (even when `undefined`). Two authoring knobs keep
@@ -18,23 +21,11 @@
  *   resting state is desired (e.g. Button text, where `action.*.text.active`
  *   and `action.*.text.hover` are not always defined on every evaluation).
  *
- * Selection flags (`isSelected`, `isIndeterminate`) map to the `checked` and
- * `indeterminate` states defined in `InputColorStates` — consumed by
- * Checkbox, Radio, Switch, and Select components (entity = Selection).
- *
- * Validation flag (`isInvalid`) maps to the `invalid` token state. It sits
- * just below `isDisabled` in the cascade because validation feedback must
- * dominate normal interaction states, but a disabled control by definition
- * is not asking for input and so cannot be "invalid" in a user-facing sense.
- *
- * Expansion flag (`isExpanded`) maps to the `expanded` token state — used
- * by Disclosure entity components (Accordion). It sits just below `isInvalid`
- * because an open disclosure surface should win over hover/focus on the
- * trigger but never over an explicit invalid signal.
- *
  * Consumed by `Button`, `Link`, `Checkbox`, `Switch`, `RadioGroup`, `Select`,
  * `TextField`, and `Accordion`.
  */
+
+import { STATE_PRIORITY } from '../semantics/taxonomy';
 
 export interface InteractiveFlags {
   readonly isHovered?: boolean;
@@ -78,13 +69,10 @@ export const resolveInteractiveStyle = (
   flags: InteractiveFlags
 ): string | undefined => {
   if (!states) return undefined;
-  if (flags.isDisabled) return states.disabled;
-  if (flags.isInvalid) return states.invalid;
-  if (flags.isExpanded) return states.expanded;
-  if (flags.isIndeterminate) return states.indeterminate;
-  if (flags.isSelected) return states.checked;
-  if (flags.isFocusVisible) return states.focused;
-  if (flags.isPressed) return states.active;
-  if (flags.isHovered) return states.hover;
+  for (const { flag, state } of STATE_PRIORITY) {
+    if (flags[flag]) {
+      return states[state];
+    }
+  }
   return states.default;
 };

@@ -15,6 +15,19 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { createPresenceScope } from '../scope';
+
+// ---------------------------------------------------------------------------
+// Composite scope — presence-only host guard.
+//
+// `TextField` is the host. `TextFieldLabel`, `TextFieldControl`,
+// `TextFieldDescription`, and `TextFieldError` assert this scope at render
+// time — rendered standalone they throw with a clear message instead of
+// silently producing a detached label/input/error that is not wired into
+// any field's a11y tree.
+// ---------------------------------------------------------------------------
+
+const textFieldScope = createPresenceScope('TextField');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -40,7 +53,6 @@ export const textFieldMeta = {
   displayName: 'TextField',
   entity: 'Input',
   structure: 'root',
-  interaction: 'entry.text',
 } as const satisfies ComponentMeta<'Input'>;
 
 /** Formal semantic identity — label slot. */
@@ -56,7 +68,6 @@ export const textFieldControlMeta = {
   displayName: 'TextFieldControl',
   entity: 'Input',
   structure: 'control',
-  interaction: 'entry.text',
   composition: 'control',
 } as const satisfies ComponentMeta<'Input'>;
 
@@ -80,8 +91,13 @@ export const textFieldErrorMeta = {
 // TextField — root (orchestrator + container)
 // ---------------------------------------------------------------------------
 
-/** Props for the TextField root. */
-export type TextFieldProps = Omit<RACTextFieldProps, 'style'>;
+/**
+ * Props for the TextField root.
+ *
+ * The composite owns its layout; pass `style`/`className` on a wrapping
+ * element rather than on the composite root. See CONTRIBUTING §4.
+ */
+export type TextFieldProps = Omit<RACTextFieldProps, 'style' | 'className'>;
 
 /**
  * A semantic text input composite built on React Aria's `TextField`.
@@ -119,7 +135,13 @@ export const TextField = ({ children, ...props }: TextFieldProps) => {
         } as React.CSSProperties
       }
     >
-      {children}
+      {(values) => {
+        return (
+          <textFieldScope.Provider>
+            {typeof children === 'function' ? children(values) : children}
+          </textFieldScope.Provider>
+        );
+      }}
     </RACTextField>
   );
 };
@@ -134,6 +156,7 @@ export type TextFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
 
 /** The label slot of a TextField. Wired to React Aria for a11y linkage. */
 export const TextFieldLabel = (props: TextFieldLabelProps) => {
+  textFieldScope.use(textFieldLabelMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
@@ -157,7 +180,7 @@ TextFieldLabel.displayName = textFieldLabelMeta.displayName;
 // ---------------------------------------------------------------------------
 
 /** Props for the TextField control. */
-export type TextFieldControlProps = Omit<RACInputProps, 'style'>;
+export type TextFieldControlProps = Omit<RACInputProps, 'style' | 'className'>;
 
 /**
  * The control slot of a TextField — the actual `<input>` element. Reads
@@ -165,6 +188,7 @@ export type TextFieldControlProps = Omit<RACInputProps, 'style'>;
  * State via `vars.colors.input.primary.*`.
  */
 export const TextFieldControl = (props: TextFieldControlProps) => {
+  textFieldScope.use(textFieldControlMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
@@ -223,6 +247,7 @@ export type TextFieldDescriptionProps = Omit<
 
 /** Helper/description text linked to the control via React Aria's slot. */
 export const TextFieldDescription = (props: TextFieldDescriptionProps) => {
+  textFieldScope.use(textFieldDescriptionMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
@@ -258,6 +283,7 @@ export type TextFieldErrorProps = Omit<
  * subtree (mirroring the control's invalid coloring).
  */
 export const TextFieldError = (props: TextFieldErrorProps) => {
+  textFieldScope.use(textFieldErrorMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (

@@ -1,5 +1,5 @@
 import { vars } from '@ttoss/theme2/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Dialog as RACDialog,
   type DialogProps as RACDialogProps,
@@ -12,6 +12,21 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { createPresenceScope } from '../scope';
+
+// ---------------------------------------------------------------------------
+// Composite scope — presence-only guard.
+//
+// `Dialog` (the surface) is the host. `DialogHeading`, `DialogBody`, and
+// `DialogActions` assert this scope at render time; rendered outside a
+// `<Dialog>` they throw with a clear message instead of silently producing
+// an unmounted heading or detached actions row.
+//
+// `DialogModal` is intentionally *not* scoped — it is a low-level wrapper
+// that React Aria itself constrains (must live under `DialogTrigger`).
+// ---------------------------------------------------------------------------
+
+const dialogScope = createPresenceScope('Dialog');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -21,7 +36,7 @@ import type { ComponentMeta, EvaluationsFor } from '../../semantics';
  * Formal semantic identity — what this component *is* (Layer 1).
  *
  * Entity = Overlay → CONTRACT.md §1 row:
- *   colors: `content`, radii: `surface`, border: `outline.surface`,
+ *   colors: `informational`, radii: `surface`, border: `outline.surface`,
  *   sizing: — (none), spacing: `inset.surface`, typography: `title + body + label`,
  *   motion: `transition`, elevation: `overlay`.
  */
@@ -55,8 +70,14 @@ DialogTrigger.displayName = 'DialogTrigger';
 
 /**
  * Props for the Dialog content surface.
+ *
+ * The composite owns its layout; pass `style`/`className` on a wrapping
+ * element rather than on the composite root. See CONTRIBUTING §4.
  */
-export interface DialogProps extends Omit<RACDialogProps, 'style'> {
+export interface DialogProps extends Omit<
+  RACDialogProps,
+  'style' | 'className'
+> {
   /**
    * Semantic emphasis.
    * @default 'primary'
@@ -74,13 +95,18 @@ export interface DialogProps extends Omit<RACDialogProps, 'style'> {
  * border: `outline.surface`, spacing: `inset.surface.md`,
  * typography: `title.md`, `body.md`, `label.md`.
  */
-export const Dialog = ({ evaluation = 'primary', ...props }: DialogProps) => {
+export const Dialog = ({
+  evaluation = 'primary',
+  'data-scope': dataScope = 'dialog',
+  children,
+  ...props
+}: DialogProps) => {
   const colors = vars.colors.informational[evaluation];
 
   return (
     <RACDialog
       {...props}
-      data-scope="dialog"
+      data-scope={dataScope}
       data-part="root"
       data-evaluation={evaluation}
       style={
@@ -91,7 +117,15 @@ export const Dialog = ({ evaluation = 'primary', ...props }: DialogProps) => {
           color: colors?.text?.default,
         } as React.CSSProperties
       }
-    />
+    >
+      {(state) => {
+        return (
+          <dialogScope.Provider>
+            {typeof children === 'function' ? children(state) : children}
+          </dialogScope.Provider>
+        );
+      }}
+    </RACDialog>
   );
 };
 Dialog.displayName = dialogMeta.displayName;
@@ -237,7 +271,7 @@ export const dialogHeadingMeta = {
  */
 export interface DialogHeadingProps extends Omit<
   React.HTMLAttributes<HTMLHeadingElement>,
-  'style'
+  'style' | 'className'
 > {
   /**
    * HTML heading level.
@@ -249,8 +283,11 @@ export interface DialogHeadingProps extends Omit<
 /**
  * The title part of a Dialog, using `title.md` typography tokens.
  * Wired to React Aria's `slot="title"` for accessibility.
+ *
+ * Must be rendered inside a `<Dialog>` — throws otherwise.
  */
 export const DialogHeading = ({ level = 2, ...props }: DialogHeadingProps) => {
+  dialogScope.use(dialogHeadingMeta.displayName);
   return (
     <RACHeading
       slot="title"
@@ -265,7 +302,7 @@ export const DialogHeading = ({ level = 2, ...props }: DialogHeadingProps) => {
     />
   );
 };
-DialogHeading.displayName = 'DialogHeading';
+DialogHeading.displayName = dialogHeadingMeta.displayName;
 
 // ---------------------------------------------------------------------------
 // DialogBody — body structural part
@@ -286,13 +323,16 @@ export const dialogBodyMeta = {
  */
 export type DialogBodyProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  'style'
+  'style' | 'className'
 >;
 
 /**
  * The body content area of a Dialog, using `body.md` typography tokens.
+ *
+ * Must be rendered inside a `<Dialog>` — throws otherwise.
  */
 export const DialogBody = (props: DialogBodyProps) => {
+  dialogScope.use(dialogBodyMeta.displayName);
   return (
     <div
       {...props}
@@ -305,7 +345,7 @@ export const DialogBody = (props: DialogBodyProps) => {
     />
   );
 };
-DialogBody.displayName = 'DialogBody';
+DialogBody.displayName = dialogBodyMeta.displayName;
 
 // ---------------------------------------------------------------------------
 // DialogActions — actions structural part
@@ -326,30 +366,122 @@ export const dialogActionsMeta = {
 } as const satisfies ComponentMeta<'Overlay'>;
 
 /**
+ * Platform convention for action-button ordering inside `DialogActions`.
+ *
+ * - `ios` (macOS / iOS / Web default) — cancel (`dismissAction`) on the
+ *   left, confirm (`primaryAction`) on the right. Matches Apple HIG and
+ *   most web design systems.
+ * - `windows` — confirm (`primaryAction`) on the left, cancel
+ *   (`dismissAction`) on the right. Matches the Windows/Fluent convention.
+ */
+export type DialogActionsPlatform = 'ios' | 'windows';
+
+/**
+ * Logical positions for each action composition role, per platform.
+ * Lower number = closer to the start of the flex row (left, when LTR).
+ *
+ * `justifyContent: 'flex-end'` pushes the row to the right; the platform
+ * mapping controls the *relative* order of actions within that row.
+ */
+const ACTION_ORDER: Record<DialogActionsPlatform, Record<string, number>> = {
+  ios: {
+    dismissAction: 0,
+    secondaryAction: 1,
+    primaryAction: 2,
+  },
+  windows: {
+    primaryAction: 0,
+    secondaryAction: 1,
+    dismissAction: 2,
+  },
+};
+
+/** Unknown / unclassified children preserve their source order after the ranked ones. */
+const UNRANKED = Number.POSITIVE_INFINITY;
+
+const getChildComposition = (child: React.ReactNode): string | undefined => {
+  if (!React.isValidElement(child)) return undefined;
+  const props = child.props as { composition?: unknown };
+  return typeof props.composition === 'string' ? props.composition : undefined;
+};
+
+/**
  * Props for the DialogActions component.
  */
-export type DialogActionsProps = Omit<
+export interface DialogActionsProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  'style'
->;
+  'style' | 'className'
+> {
+  /**
+   * Platform convention for ordering action children by their
+   * `composition` prop. Children without a `composition` keep their
+   * source order after the ranked ones.
+   *
+   * @default 'ios'
+   */
+  platform?: DialogActionsPlatform;
+}
 
 /**
  * The actions area of a Dialog (buttons, links).
- * Renders as a flex row with gap using gap.inline tokens.
+ *
+ * Runtime behavior: sorts children by their `composition` prop per the
+ * selected `platform` convention — this is what makes `composition` a
+ * behavior-driving FSL dimension and not mere decoration.
+ *
+ * @example
+ * ```tsx
+ * // Defaults to iOS: Cancel | Save
+ * <DialogActions>
+ *   <Button composition="dismissAction" slot="close">Cancel</Button>
+ *   <Button composition="primaryAction">Save</Button>
+ * </DialogActions>
+ *
+ * // Windows convention: Save | Cancel
+ * <DialogActions platform="windows">
+ *   <Button composition="dismissAction" slot="close">Cancel</Button>
+ *   <Button composition="primaryAction">Save</Button>
+ * </DialogActions>
+ * ```
  */
-export const DialogActions = (props: DialogActionsProps) => {
+export const DialogActions = ({
+  platform = 'ios',
+  children,
+  ...props
+}: DialogActionsProps) => {
+  dialogScope.use(dialogActionsMeta.displayName);
+  const table = ACTION_ORDER[platform];
+
+  const sorted = React.Children.toArray(children)
+    .map((child, index) => {
+      const composition = getChildComposition(child);
+      const rank =
+        composition !== undefined ? (table[composition] ?? UNRANKED) : UNRANKED;
+      return { child, rank, index };
+    })
+    .sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return a.index - b.index;
+    })
+    .map(({ child }) => {
+      return child;
+    });
+
   return (
     <div
       {...props}
       data-scope="dialog"
       data-part="actions"
+      data-platform={platform}
       style={{
         display: 'flex',
         justifyContent: 'flex-end',
         gap: vars.spacing.gap.inline.md,
         marginBlockStart: vars.spacing.gap.stack.lg,
       }}
-    />
+    >
+      {sorted}
+    </div>
   );
 };
-DialogActions.displayName = 'DialogActions';
+DialogActions.displayName = dialogActionsMeta.displayName;

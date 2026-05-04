@@ -196,6 +196,58 @@ describe('ThemeProvider prop reactivity', () => {
 
     expect(document.documentElement.getAttribute('data-tt-theme')).toBe('beta');
   });
+
+  // Regression: the provider used to inject CSS scoped to `:root` regardless of
+  // `themeId`, breaking the documented MFE / Storybook-harmony contract — the
+  // `data-tt-theme` attribute was written to the DOM but no CSS selector used it.
+  test('injected <style> is scoped to [data-tt-theme="<id>"] when themeId is provided', () => {
+    renderHook(
+      () => {
+        return null;
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider theme={defaultBundle} themeId="corporate">
+              {children}
+            </ThemeProvider>
+          );
+        },
+      }
+    );
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((s) => {
+        return s.textContent ?? '';
+      })
+      .join('\n');
+
+    expect(styles).toContain('[data-tt-theme="corporate"]');
+  });
+
+  test('injected <style> targets :root when themeId is omitted (canonical case)', () => {
+    renderHook(
+      () => {
+        return null;
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <ThemeProvider theme={defaultBundle}>{children}</ThemeProvider>
+          );
+        },
+      }
+    );
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((s) => {
+        return s.textContent ?? '';
+      })
+      .join('\n');
+
+    expect(styles).toMatch(/:root\s*\{/);
+    expect(styles).not.toContain('[data-tt-theme=');
+  });
 });
 
 // ---------------------------------------------------------------------------

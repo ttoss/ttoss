@@ -35,7 +35,6 @@ export const selectMeta = {
   displayName: 'Select',
   entity: 'Selection',
   structure: 'root',
-  interaction: 'select.single',
 } as const satisfies ComponentMeta<'Selection'>;
 
 // eslint-disable-next-line react-refresh/only-export-components

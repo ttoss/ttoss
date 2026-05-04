@@ -30,7 +30,6 @@ export const switchMeta = {
   displayName: 'Switch',
   entity: 'Selection',
   structure: 'root',
-  interaction: 'toggle.binary',
 } as const satisfies ComponentMeta<'Selection'>;
 
 // Track and thumb geometry (layout constants — not semantic tokens).

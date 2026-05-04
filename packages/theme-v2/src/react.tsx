@@ -250,10 +250,12 @@ export const ThemeProvider = ({
   }, [theme, semanticTokens]);
 
   // CSS content for the theme bundle — memoized to avoid recomputing on
-  // every render. Only recalculated when theme reference changes.
+  // every render. Recalculated when theme or themeId changes so the injected
+  // <style> stays in sync with the `data-tt-theme` attribute the runtime
+  // writes to the DOM (scoped selector matches the active theme).
   const cssContent = React.useMemo(() => {
-    return theme ? getThemeStylesContent(theme) : null;
-  }, [theme]);
+    return theme ? getThemeStylesContent(theme, themeId) : null;
+  }, [theme, themeId]);
 
   // onModeChange: fires on subsequent mode transitions only (not on mount).
   // Use a ref for the callback to avoid stale-closure issues with inline fns.

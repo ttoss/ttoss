@@ -15,7 +15,6 @@ export const linkMeta = {
   displayName: 'Link',
   entity: 'Navigation',
   structure: 'root',
-  interaction: 'navigate.link',
 } as const satisfies ComponentMeta<'Navigation'>;
 
 /**

@@ -5,6 +5,7 @@ import { bruttal } from '@ttoss/theme2/themes/bruttal';
 import { corporate } from '@ttoss/theme2/themes/corporate';
 import { oca } from '@ttoss/theme2/themes/oca';
 import { ventures } from '@ttoss/theme2/themes/ventures';
+import * as React from 'react';
 
 import {
   Code,
@@ -61,6 +62,47 @@ const RoleLabel = ({ role }: { role: string }) => {
     >
       {role}
     </span>
+  );
+};
+
+/**
+ * Renders a single swatch scoped to its own `<ThemeProvider>` via the
+ * documented `root` + `themeId` pattern. Each cell gets its own wrapper
+ * `<div>` as the runtime root, so `data-tt-theme` and the scoped CSS
+ * (`[data-tt-theme="<id>"]`) are written locally — never to `<html>`.
+ * This prevents the nested providers from wiping each other's attributes
+ * on `<html>` when many themes coexist on the same page.
+ */
+const HarmonyCell = ({
+  theme,
+  themeId,
+  cssVar,
+}: {
+  theme: Parameters<typeof ThemeProvider>[0]['theme'];
+  themeId: string;
+  cssVar: string;
+}) => {
+  const [rootEl, setRootEl] = React.useState<HTMLDivElement | null>(null);
+  return (
+    <div ref={setRootEl} style={{ display: 'inline-block' }}>
+      <ThemeProvider
+        theme={theme}
+        themeId={themeId}
+        root={rootEl ?? undefined}
+        defaultMode="light"
+      >
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 8,
+            background: `var(${cssVar})`,
+            border: '1px solid rgba(128,128,128,0.15)',
+            margin: '0 auto',
+          }}
+        />
+      </ThemeProvider>
+    </div>
   );
 };
 
@@ -383,22 +425,11 @@ export const ThemeHarmony: StoryObj = {
                         key={themeLabel}
                         style={{ ...tdStyle, textAlign: 'center' }}
                       >
-                        <ThemeProvider
+                        <HarmonyCell
                           theme={theme}
-                          defaultMode="light"
-                          storageKey={`harmony-${themeLabel}`}
-                        >
-                          <div
-                            style={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: 8,
-                              background: `var(${cssVar})`,
-                              border: '1px solid rgba(128,128,128,0.15)',
-                              margin: '0 auto',
-                            }}
-                          />
-                        </ThemeProvider>
+                          themeId={themeLabel.toLowerCase()}
+                          cssVar={cssVar}
+                        />
                       </td>
                     );
                   })}

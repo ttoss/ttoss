@@ -1,7 +1,5 @@
-import {
-  DescribeStacksCommand,
-  DescribeStacksOutput,
-} from '@aws-sdk/client-cloudformation';
+import type { DescribeStacksOutput } from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { faker } from '@ttoss/test-utils/faker';
 
 const MockDescribeStacksCommand = DescribeStacksCommand;

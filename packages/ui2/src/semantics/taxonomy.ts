@@ -14,60 +14,61 @@
 // ---------------------------------------------------------------------------
 // FSL Dimension Coverage
 //
-// The FSL Structural Language defines 9 foundational dimensions.
-// This taxonomy codifies 6. The remaining 3 have explicit dispositions
-// documented below so the gap is intentional, not accidental.
+// The FSL Structural Language defines 9 foundational dimensions. FSL §13.3
+// authorises a Projection Profile to place each dimension in exactly one of
+// three dispositions: CODIFIED, ABSORBED, or DEFERRED. This block documents
+// that placement for every dimension so the gap is intentional, not
+// accidental.
 //
 //   Dimension     │ Status   │ Mechanism / Rationale
 //   ──────────────┼──────────┼──────────────────────────────────────────────
 //   Entity        │ CODIFIED │ ENTITIES, ENTITY_* matrices
 //   Structure     │ CODIFIED │ STRUCTURAL_ROLES, ENTITY_STRUCTURE matrix
-//   Interaction   │ CODIFIED │ INTERACTION_KINDS, ENTITY_INTERACTION matrix
 //   Evaluation    │ CODIFIED │ EVALUATIONS, ENTITY_EVALUATION matrix
 //   Composition   │ CODIFIED │ COMPOSITION_ROLES, ENTITY_COMPOSITION matrix
-//   State         │ CODIFIED │ STATES, INTERACTION_STATE matrix
-//   Consequence   │ DEFERRED │ Not codified. Will be added (vocabulary +
-//                 │          │ ENTITY_CONSEQUENCE matrix + ComponentMeta
-//                 │          │ slot + validation) when destructive action
-//                 │          │ patterns are prototyped (e.g. DeleteButton,
-//                 │          │ ConfirmDialog). Kept out of SemanticExpression
-//                 │          │ to avoid phantom vocabulary.
+//                 │          │ — behavior-driving (DialogActions reorders
+//                 │          │ children by composition per platform).
+//   Consequence   │ CODIFIED │ CONSEQUENCES, ENTITY_CONSEQUENCE matrix.
+//                 │          │ Profile narrows FSL §6 to { neutral,
+//                 │          │ committing, destructive }; see
+//                 │          │ fsl-lexicon.md Profile narrowing note.
+//                 │          │ — behavior-driving (ConfirmationDialog
+//                 │          │ selects confirm mechanism from consequence).
+//   State         │ CODIFIED │ STATES tuple enumerates the valid names that
+//                 │          │ React Aria render props expose. No
+//                 │          │ per-entity matrix — legality is
+//                 │          │ runtime-resolved by RAC, not authorially
+//                 │          │ declared.
 //   Layer         │ ABSORBED │ Fully captured by two existing mechanisms:
-//                 │          │   1. ENTITY_TOKEN_MAPPING.surfaceType →
+//                 │          │   1. Token projection's surfaceType →
 //                 │          │      control | surface (radii, border, spacing)
+//                 │          │      See ../tokens/projection.ts.
 //                 │          │   2. CONTRACT.md §1 Elevation column →
 //                 │          │      flat | raised | overlay | blocking
 //                 │          │ An independent Layer dimension would be
 //                 │          │ redundant — elevation tokens already encode
 //                 │          │ layer semantics per entity.
+//   Interaction   │ DEFERRED │ Previously codified; removed after 13
+//                 │          │ components declared it and zero dispatched
+//                 │          │ behavior, coloring, or DOM attributes from
+//                 │          │ it.
+//                 │          │ Readmission criterion: a component that
+//                 │          │ actually dispatches on `InteractionKind` at
+//                 │          │ runtime (e.g. Wizard step progression vs.
+//                 │          │ Link navigation).
 //   Context       │ DEFERRED │ Refinement dimension (density, mode, a11y
 //                 │          │ preferences). No prototype exercises it yet.
-//                 │          │ Will stabilize after mode switching is
-//                 │          │ validated end-to-end via theme-v2.
+//                 │          │ Readmission criterion: stabilisation of mode
+//                 │          │ switching validated end-to-end via theme-v2.
 //
-// Status key:
-//   CODIFIED — Dimension is implemented with constants and legality matrices.
-//   ABSORBED — Semantic content is captured by existing mechanisms.
-//              No dedicated dimension needed.
-//   DEFERRED — Valid dimension, not yet stabilized. Will be added when
-//              sufficient prototypes prove the pattern.
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Cognitive Mode → UX Context Mapping (CONTRACT.md §1.1)
-//
-// Each Entity maps to a UX color context via the user's primary cognitive mode:
-//
-//   Cognitive Mode  │ UX Context      │ Entities
-//   ────────────────┼─────────────────┼────────────────────────
-//   Deciding        │ action          │ Action
-//   Providing       │ input           │ Input, Selection
-//   Orienting       │ navigation      │ Navigation, Disclosure
-//   Receiving       │ feedback        │ Feedback
-//   Reading         │ informational   │ Overlay, Collection, Structure
-//
-// Surface type (control vs surface) derives all non-color token columns.
-// See CONTRACT.md §1.1 for the full derivation rules.
+// Status key (FSL §13.3):
+//   CODIFIED — Dimension is part of this profile's authorial vocabulary.
+//              Legality may be matrix-based or runtime-resolved.
+//   ABSORBED — Semantic content is fully captured by other mechanisms in
+//              this profile; no independent dimension is needed.
+//   DEFERRED — Valid FSL dimension not yet in this profile. Each entry
+//              states the readmission criterion that would re-promote it
+//              to CODIFIED.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -124,27 +125,6 @@ export const STRUCTURAL_ROLES = [
 export type StructuralRole = (typeof STRUCTURAL_ROLES)[number];
 
 // ---------------------------------------------------------------------------
-// Interaction Kind — §3
-// "What kind of interaction is being expressed?"
-// ---------------------------------------------------------------------------
-
-export const INTERACTION_KINDS = [
-  'command',
-  'confirm',
-  'dismiss',
-  'entry.text',
-  'entry.value',
-  'select.single',
-  'select.multi',
-  'toggle.binary',
-  'toggle.tristate',
-  'navigate.link',
-  'navigate.step',
-  'disclose.toggle',
-] as const;
-export type InteractionKind = (typeof INTERACTION_KINDS)[number];
-
-// ---------------------------------------------------------------------------
 // Evaluation — §5
 // "What evaluative or emphatic meaning is carried?"
 // ---------------------------------------------------------------------------
@@ -182,13 +162,25 @@ export const COMPOSITION_ROLES = [
   'description',
   'supporting',
   'selection',
+  'step',
+  'summary',
+  'navigation',
 ] as const;
 export type CompositionRole = (typeof COMPOSITION_ROLES)[number];
 
 // ---------------------------------------------------------------------------
-// Consequence — §6 (DEFERRED — see FSL Dimension Coverage table above)
-// Intentionally not codified until a destructive-action prototype exists.
+// Consequence — §6
+// "What effect on state does this interaction produce?"
+//
+// Profile-narrowed subset of FSL §6. The full lexicon lists
+// `reversible` / `interruptive` / `recoverable` / `safeDefaultRequired`; see
+// `fsl-lexicon.md` "Profile narrowing" for why `@ttoss/ui2` codifies only
+// the three values below. The narrowing is an invariant of *this* profile
+// — a different profile may readmit the rejected values.
 // ---------------------------------------------------------------------------
+
+export const CONSEQUENCES = ['neutral', 'committing', 'destructive'] as const;
+export type Consequence = (typeof CONSEQUENCES)[number];
 
 // ---------------------------------------------------------------------------
 // State — §7
@@ -219,6 +211,60 @@ export const STATES = [
   'invalid',
 ] as const;
 export type State = (typeof STATES)[number];
+
+// ---------------------------------------------------------------------------
+// State Priority — the canonical cascade
+//
+// Authoritative order for resolving state-dependent tokens, highest priority
+// first. Single source of truth for:
+//
+//   - `src/tokens/resolveInteractiveStyle.ts` (iterates this tuple)
+//   - `src/tokens/CONTRACT.md §3` (references it by name)
+//   - Contract tests that assert cascade behavior
+//
+// Each entry binds a React Aria render-prop **flag** to the token-state
+// **key** it selects. The flag/state name split is intentional: RAC exposes
+// `isHovered` / `isPressed` / `isSelected` / …, while token trees expose
+// `hover` / `active` / `checked` / …. The mapping here is the only place
+// that knows both vocabularies.
+//
+// Cascade rationale (each entry dominates everything below it):
+//   1. `isDisabled`       — availability overrides every other signal.
+//   2. `isInvalid`        — validation outcome (FSL §7, §10.5 parallel);
+//                           cannot be surfaced on a disabled control.
+//   3. `isExpanded`       — Disclosure state; dominates selection/focus
+//                           chrome so an open disclosure wins over hover.
+//   4. `isIndeterminate`  — tri-state supersedes plain `checked`.
+//   5. `isSelected`       — Selection entity's persistent chosen state.
+//   6. `isFocusVisible`   — keyboard-focus ring must beat transient
+//                           pointer states.
+//   7. `isPressed`        — transient press beats hover.
+//   8. `isHovered`        — pointer proximity.
+//   9. (default)          — implicit fallback when no flag is active.
+//
+// `default` is not an entry because it has no flag — it is the resting
+// value returned when the cascade exhausts. The helper reads `states.default`
+// after iterating.
+// ---------------------------------------------------------------------------
+
+export const STATE_PRIORITY = [
+  { flag: 'isDisabled', state: 'disabled' },
+  { flag: 'isInvalid', state: 'invalid' },
+  { flag: 'isExpanded', state: 'expanded' },
+  { flag: 'isIndeterminate', state: 'indeterminate' },
+  { flag: 'isSelected', state: 'checked' },
+  { flag: 'isFocusVisible', state: 'focused' },
+  { flag: 'isPressed', state: 'active' },
+  { flag: 'isHovered', state: 'hover' },
+] as const;
+
+/** React Aria render-prop flag names driven by the cascade. */
+export type InteractiveFlag = (typeof STATE_PRIORITY)[number]['flag'];
+
+/** Token-state keys the cascade maps flags into (plus `default` fallback). */
+export type InteractiveStateKey =
+  | (typeof STATE_PRIORITY)[number]['state']
+  | 'default';
 
 // ---------------------------------------------------------------------------
 // Legality Matrices
@@ -281,6 +327,7 @@ export const ENTITY_STRUCTURE = {
     'label',
     'description',
     'icon',
+    'actions',
   ],
 } as const satisfies Record<Entity, ReadonlyArray<StructuralRole>>;
 
@@ -341,212 +388,45 @@ export const ENTITY_COMPOSITION = {
   Collection: [],
   Overlay: ['heading', 'body'],
   Navigation: [],
-  Disclosure: ['control'],
+  // Disclosure entities (Accordion + items) carry no composition today —
+  // no runtime in `Accordion` dispatches on composition (no DOM reorder,
+  // no slot-based selection). The vocabulary stays empty per the evidence
+  // rule (CONTRIBUTING §2.3 / docs comment above): readmit `'control'`
+  // here only when a concrete Disclosure component exercises the slot.
+  Disclosure: [],
   Feedback: ['status'],
-  Structure: ['heading', 'body', 'label', 'description', 'supporting'],
+  Structure: [
+    'heading',
+    'body',
+    'label',
+    'description',
+    'supporting',
+    'step',
+    'summary',
+    'navigation',
+  ],
 } as const satisfies Record<Entity, ReadonlyArray<CompositionRole>>;
 
-// ---------------------------------------------------------------------------
-// Cognitive Mode → UX Context → Entity (CONTRACT.md §1.1)
-//
-// This constant codifies the mapping rationale. It is the single source of
-// truth for which UX color context an Entity belongs to.
-// The discriminant question: "What is the user's primary cognitive mode?"
-// ---------------------------------------------------------------------------
-
 /**
- * User cognitive modes — the discriminant for Entity → UX context grouping.
- * @see CONTRACT.md §1.1 — Mapping Rationale
- */
-export const COGNITIVE_MODES = [
-  'deciding',
-  'providing',
-  'orienting',
-  'receiving',
-  'reading',
-] as const;
-export type CognitiveMode = (typeof COGNITIVE_MODES)[number];
-
-/**
- * UX color contexts — the Colors column of CONTRACT.md §1.
- * Each context corresponds to a `vars.colors.{ux}` subtree in theme-v2.
- */
-export const UX_CONTEXTS = [
-  'action',
-  'input',
-  'navigation',
-  'feedback',
-  'informational',
-] as const;
-export type UxContext = (typeof UX_CONTEXTS)[number];
-
-/**
- * Surface types — derives all non-color token columns (Radii, Border, Sizing, Spacing).
+ * Which consequence values are legal for each entity.
  *
- * - `control`: user operates this directly (hit targets, control radii)
- * - `surface`: carries content for the user (surface radii, no hit sizing)
+ * `Action` is the only entity whose interactions produce authorial effect-
+ * on-state today (`committing` submits, `destructive` deletes, `neutral`
+ * everything else). Other entities' interactions — input entry, navigation
+ * — do not carry the same authorial "what does this do" meta and are
+ * intentionally left empty.
  */
-export const SURFACE_TYPES = ['control', 'surface'] as const;
-export type SurfaceType = (typeof SURFACE_TYPES)[number];
-
-/**
- * The full Entity → token derivation record.
- *
- * Given an Entity, this tells you:
- * - `cognitiveMode`: *why* this entity belongs to its UX context
- * - `uxContext`: which `vars.colors.{ux}` subtree to use
- * - `surfaceType`: which non-color token family to use (control vs surface)
- */
-export const ENTITY_TOKEN_MAPPING = {
-  Action: {
-    cognitiveMode: 'deciding',
-    uxContext: 'action',
-    surfaceType: 'control',
-    intent: 'Triggers an effect; user weighs consequence before committing.',
-  },
-  Input: {
-    cognitiveMode: 'providing',
-    uxContext: 'input',
-    surfaceType: 'control',
-    intent: 'Accepts freeform data the user supplies to the system.',
-  },
-  Selection: {
-    cognitiveMode: 'providing',
-    uxContext: 'input',
-    surfaceType: 'control',
-    intent: 'Accepts a constrained choice from a predefined set.',
-  },
-  Navigation: {
-    cognitiveMode: 'orienting',
-    uxContext: 'navigation',
-    surfaceType: 'control',
-    intent: 'Moves the user across destinations in an information space.',
-  },
-  Disclosure: {
-    cognitiveMode: 'orienting',
-    uxContext: 'navigation',
-    surfaceType: 'control',
-    intent: 'Reveals or hides structure in place without navigating away.',
-  },
-  Overlay: {
-    cognitiveMode: 'reading',
-    uxContext: 'informational',
-    surfaceType: 'surface',
-    intent: 'Temporary content elevated above the page for focused reading.',
-  },
-  Feedback: {
-    cognitiveMode: 'receiving',
-    uxContext: 'feedback',
-    surfaceType: 'surface',
-    intent: 'Communicates a system-initiated status or outcome to the user.',
-  },
-  Collection: {
-    cognitiveMode: 'reading',
-    uxContext: 'informational',
-    surfaceType: 'surface',
-    intent: 'Groups related items into a scannable set.',
-  },
-  Structure: {
-    cognitiveMode: 'reading',
-    uxContext: 'informational',
-    surfaceType: 'surface',
-    intent: 'Organizational frame that carries other content.',
-  },
-} as const satisfies Record<
-  Entity,
-  {
-    cognitiveMode: CognitiveMode;
-    uxContext: UxContext;
-    surfaceType: SurfaceType;
-    /** One-line rationale — why this Entity belongs to its cognitive mode. */
-    intent: string;
-  }
->;
-
-/** UX color context for a given Entity. */
-export type UxContextFor<E extends Entity> =
-  (typeof ENTITY_TOKEN_MAPPING)[E]['uxContext'];
-
-/** Surface type for a given Entity. */
-export type SurfaceTypeFor<E extends Entity> =
-  (typeof ENTITY_TOKEN_MAPPING)[E]['surfaceType'];
-
-/** Which interaction kinds are legal for each entity. */
-export const ENTITY_INTERACTION = {
-  Action: ['command', 'confirm', 'dismiss'],
-  Input: ['entry.text', 'entry.value'],
-  Selection: [
-    'select.single',
-    'select.multi',
-    'toggle.binary',
-    'toggle.tristate',
-  ],
+export const ENTITY_CONSEQUENCE = {
+  Action: ['neutral', 'committing', 'destructive'],
+  Input: [],
+  Selection: [],
   Collection: [],
   Overlay: [],
-  Navigation: ['navigate.link', 'navigate.step'],
-  Disclosure: ['disclose.toggle'],
-  Feedback: ['dismiss'],
+  Navigation: [],
+  Disclosure: [],
+  Feedback: [],
   Structure: [],
-} as const satisfies Record<Entity, ReadonlyArray<InteractionKind>>;
-
-/** Which states are legal for each interaction kind. */
-export const INTERACTION_STATE = {
-  command: ['default', 'hover', 'active', 'focused', 'disabled', 'pressed'],
-  confirm: ['default', 'hover', 'active', 'focused', 'disabled'],
-  dismiss: ['default', 'hover', 'active', 'focused', 'disabled'],
-  'entry.text': ['default', 'hover', 'focused', 'disabled', 'invalid'],
-  'entry.value': ['default', 'hover', 'focused', 'disabled', 'invalid'],
-  'select.single': [
-    'default',
-    'hover',
-    'focused',
-    'disabled',
-    'selected',
-    'expanded',
-    'invalid',
-  ],
-  'select.multi': [
-    'default',
-    'hover',
-    'focused',
-    'disabled',
-    'selected',
-    'checked',
-    'indeterminate',
-    'invalid',
-  ],
-  'toggle.binary': [
-    'default',
-    'hover',
-    'active',
-    'focused',
-    'disabled',
-    'checked',
-    'pressed',
-    'invalid',
-  ],
-  'toggle.tristate': [
-    'default',
-    'hover',
-    'active',
-    'focused',
-    'disabled',
-    'checked',
-    'indeterminate',
-    'invalid',
-  ],
-  'navigate.link': [
-    'default',
-    'hover',
-    'active',
-    'focused',
-    'disabled',
-    'current',
-    'visited',
-  ],
-  'navigate.step': ['default', 'hover', 'focused', 'disabled', 'current'],
-  'disclose.toggle': ['default', 'hover', 'focused', 'disabled', 'expanded'],
-} as const satisfies Record<InteractionKind, ReadonlyArray<State>>;
+} as const satisfies Record<Entity, ReadonlyArray<Consequence>>;
 
 // ---------------------------------------------------------------------------
 // Derived type utilities
@@ -556,14 +436,6 @@ export const INTERACTION_STATE = {
 export type StructuresFor<E extends Entity> =
   (typeof ENTITY_STRUCTURE)[E][number];
 
-/** Interaction kinds that are legal for entity E. */
-export type InteractionsFor<E extends Entity> =
-  (typeof ENTITY_INTERACTION)[E][number];
-
-/** States that are legal for interaction kind K. */
-export type StatesFor<K extends InteractionKind> =
-  (typeof INTERACTION_STATE)[K][number];
-
 /** Evaluations that are legal for entity E. */
 export type EvaluationsFor<E extends Entity> =
   (typeof ENTITY_EVALUATION)[E][number];
@@ -572,89 +444,6 @@ export type EvaluationsFor<E extends Entity> =
 export type CompositionsFor<E extends Entity> =
   (typeof ENTITY_COMPOSITION)[E][number];
 
-// ---------------------------------------------------------------------------
-// Semantic Expression — §8
-// Discriminated union: entity narrows structure and interaction at compile time.
-// ---------------------------------------------------------------------------
-
-export type SemanticExpression = {
-  [E in Entity]: {
-    /** What kind of interactive thing is this? (FSL §1) */
-    entity: E;
-    /** What structural function does the root part play? (FSL §2) */
-    structure: StructuresFor<E>;
-    /** What kind of interaction does it express? (FSL §3 — optional) */
-    interaction?: InteractionsFor<E>;
-    /** Semantic emphasis or valence. (FSL §5 — optional) */
-    evaluation?: EvaluationsFor<E>;
-    /** Slot played inside a parent composition. (FSL §4 — optional) */
-    composition?: CompositionsFor<E>;
-  };
-}[Entity];
-
-/**
- * Validates a SemanticExpression against the legality matrices.
- * Returns an array of error messages. Empty array means the expression is valid.
- *
- * Covers every dimension present in the expression: `structure` against
- * `ENTITY_STRUCTURE`, `interaction` against `ENTITY_INTERACTION`,
- * `evaluation` against `ENTITY_EVALUATION`, and `composition` against
- * `ENTITY_COMPOSITION`.
- */
-export const validateExpression = (expr: SemanticExpression): string[] => {
-  const errors: string[] = [];
-
-  const legalStructures = ENTITY_STRUCTURE[
-    expr.entity
-  ] as ReadonlyArray<string>;
-  if (!legalStructures.includes(expr.structure)) {
-    errors.push(
-      `"${expr.structure}" is not a legal structure for "${expr.entity}" ` +
-        `(legal: ${legalStructures.join(', ')})`
-    );
-  }
-
-  if (expr.interaction !== undefined) {
-    const legalInteractions = ENTITY_INTERACTION[
-      expr.entity
-    ] as ReadonlyArray<string>;
-    if (!legalInteractions.includes(expr.interaction)) {
-      const hint =
-        legalInteractions.length > 0
-          ? legalInteractions.join(', ')
-          : 'none — this entity has no interaction semantics';
-      errors.push(
-        `"${expr.interaction}" is not a legal interaction for "${expr.entity}" (legal: ${hint})`
-      );
-    }
-  }
-
-  if (expr.evaluation !== undefined) {
-    const legalEvaluations = ENTITY_EVALUATION[
-      expr.entity
-    ] as ReadonlyArray<string>;
-    if (!legalEvaluations.includes(expr.evaluation)) {
-      errors.push(
-        `"${expr.evaluation}" is not a legal evaluation for "${expr.entity}" ` +
-          `(legal: ${legalEvaluations.join(', ')})`
-      );
-    }
-  }
-
-  if (expr.composition !== undefined) {
-    const legalCompositions = ENTITY_COMPOSITION[
-      expr.entity
-    ] as ReadonlyArray<string>;
-    if (!legalCompositions.includes(expr.composition)) {
-      const hint =
-        legalCompositions.length > 0
-          ? legalCompositions.join(', ')
-          : 'none — this entity does not play a composition slot';
-      errors.push(
-        `"${expr.composition}" is not a legal composition for "${expr.entity}" (legal: ${hint})`
-      );
-    }
-  }
-
-  return errors;
-};
+/** Consequence values that are legal for entity E. */
+export type ConsequencesFor<E extends Entity> =
+  (typeof ENTITY_CONSEQUENCE)[E][number];

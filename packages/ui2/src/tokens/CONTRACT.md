@@ -27,7 +27,6 @@ export const fooMeta = {
   displayName: 'Foo',
   entity: 'Action', // Entity from taxonomy.ts — drives everything below
   structure: 'root', // StructuresFor<'Action'>
-  interaction: 'command', // InteractionsFor<'Action'>
 } as const satisfies ComponentMeta<'Action'>;
 ```
 
@@ -41,8 +40,12 @@ import type { EvaluationsFor } from '../../semantics';
 // Type is derived — no manual union to maintain.
 // Source of truth: ENTITY_EVALUATION in taxonomy.ts.
 type FooEvaluation = EvaluationsFor<(typeof fooMeta)['entity']>;
-// → 'primary' | 'secondary' | 'accent' | 'muted' | 'negative'
+// → 'primary' | 'secondary' | 'accent' | 'muted'
 ```
+
+Destructive Actions are expressed via `consequence: 'destructive'`
+(FSL §6), not via an evaluation slot. `negative` is a Feedback-only
+evaluation — see §6 and ENTITY_CONSEQUENCE in `taxonomy.ts`.
 
 ### Step 3 — Read token paths from §1
 
@@ -130,7 +133,7 @@ vars.colors.{Colors}[evaluation][dimension][state]
 - `{Colors}` — the value from the Colors column (e.g. `action`, `navigation`)
 - `evaluation` — `EvaluationsFor<E>` from `taxonomy.ts` → `ENTITY_EVALUATION[entity]`
 - `dimension` — `background` | `border` | `text`
-- `state` — `StatesFor<I>` from `taxonomy.ts` → `INTERACTION_STATE[interaction]`
+- `state` — one of the names listed in `STATES` (e.g. `default`, `hover`, `focused`, `disabled`, `pressed`, `selected`, `invalid`); resolved at runtime by React Aria render props, not authorially declared.
 
 Example:
 
@@ -216,32 +219,29 @@ Example: `vars.elevation.surface.flat`, `vars.elevation.surface.overlay`
 
 ## §3 — State Priority Rule
 
-When wiring state-dependent colors, evaluate conditions in this order (highest priority first):
+When wiring state-dependent colors, evaluate conditions in the canonical
+order defined by `STATE_PRIORITY` in
+[`src/semantics/taxonomy.ts`](../semantics/taxonomy.ts). Highest priority
+first:
 
 ```
-disabled > focusVisible > pressed > hovered > default
+disabled > invalid > expanded > indeterminate > selected
+        > focusVisible > pressed > hovered > default
 ```
 
-Template (React Aria pattern):
+`STATE_PRIORITY` is the single source of truth for this cascade. Do **not**
+duplicate the order in component code — use `resolveInteractiveStyle` (§3.1).
+The tuple also binds each React Aria flag to the token-state key it selects
+(e.g. `isSelected → checked`, `isPressed → active`, `isHovered → hover`).
+
+Template (React Aria pattern, background / border / text dimensions):
 
 ```typescript
 style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => ({
-  // Background
-  backgroundColor: isDisabled    ? c?.background?.disabled
-                 : isPressed     ? c?.background?.active
-                 : isHovered     ? c?.background?.hover
-                 : /* default */ c?.background?.default,
-
-  // Border color
-  borderColor: isFocusVisible ? c?.border?.focused
-             : isDisabled     ? c?.border?.disabled
-             :                  c?.border?.default,
-
-  // Text color
-  color: isDisabled ? c?.text?.disabled
-       : isPressed  ? (c?.text?.active ?? c?.text?.default)
-       : isHovered  ? (c?.text?.hover  ?? c?.text?.default)
-       :               c?.text?.default,
+  backgroundColor: resolveInteractiveStyle(c?.background, { isHovered, isPressed, isDisabled }),
+  borderColor:     resolveInteractiveStyle(c?.border,     { isDisabled, isFocusVisible }),
+  color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, isDisabled })
+                 ?? c?.text?.default,
 
   // Focus ring (always via outline, never via border — avoids layout shift)
   outline: isFocusVisible
@@ -252,11 +252,13 @@ style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => ({
 
 ### §3.1 — `resolveInteractiveStyle` helper
 
-Interactive components MUST use `resolveInteractiveStyle` (in `src/tokens/`) to
-apply the cascade above **per color dimension**. Pass only the flags the
-dimension respects — e.g. `background` usually ignores `isFocusVisible`,
-`border` usually ignores `isHovered`/`isPressed`. The helper is the single
-canonical implementation of §3; no component re-implements the ternary chain.
+Interactive components MUST use `resolveInteractiveStyle` (in `src/tokens/`)
+to apply the `STATE_PRIORITY` cascade **per color dimension**. The helper
+iterates the tuple — no component re-implements the ternary chain.
+
+Pass only the flags the dimension respects — e.g. `background` usually
+ignores `isFocusVisible`, `border` usually ignores `isHovered` /
+`isPressed`. Omitted flags short-circuit that level of the cascade.
 
 Structural tokens (`radii`, `border.*.width/style`, `sizing`, `spacing`,
 `typography`, `motion`) are read as literals from `vars.*` following the
@@ -291,20 +293,27 @@ Is it a toolbar action? A chip? A compact selection control? Name it, give it an
 
 ## §5 — data-\* Attribute Convention
 
-Every component root element MUST carry these attributes for styling, testing, and debugging:
+Every component root MUST carry the identity attributes (`data-scope`, `data-part`); other attributes are emitted only when the dimension applies.
 
-```typescript
-data-scope="foo"            // = fooMeta.displayName in kebab-case
-data-part="root"            // Structural role of this DOM element
-data-evaluation={evaluation} // Current evaluation value
+| Attribute          | Where                                       | Type / value                                                        | When emitted                                                                                                                                          |
+| ------------------ | ------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-scope`       | every element                               | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                               |
+| `data-part`        | every element                               | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                               |
+| `data-evaluation`  | parts that consume evaluation tokens        | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                    |
+| `data-consequence` | leaf Action elements that declare an effect | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                 |
+| `data-composition` | leaves that play a parent slot              | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                 |
+| `data-platform`    | `DialogActions` only                        | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                   |
+| `data-pending`     | `FormSubmit` only                           | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                    |
+| `data-arming`      | `ConfirmationDialog` confirm button only    | `"true"` (omitted otherwise)                                        | While a `destructive` confirmation is awaiting its second click. Selected at runtime from `consequence` — the proof that Consequence drives behavior. |
+
+**Sub-part identity convention** — composites reuse the host's `data-scope` and pin the per-part `data-part`:
+
+```tsx
+<div data-scope="dialog" data-part="actions">…</div>
+<button data-scope="button" data-part="root" data-composition="primaryAction">…</button>
 ```
 
-Sub-parts (label, icon, control) use:
-
-```typescript
-data-scope="foo"
-data-part="label"   // or "icon", "control", etc.
-```
+The contract test [`components.contract.test.tsx`](../../tests/unit/tests/components.contract.test.tsx) auto-discovers every `*Meta` and asserts each attribute value is legal per the matrices in `taxonomy.ts`.
 
 ---
 
@@ -318,7 +327,11 @@ import { ENTITY_EVALUATION } from '@ttoss/ui2/semantics/taxonomy';
 
 // Which evaluations are valid for a given entity:
 const valid = ENTITY_EVALUATION['Action'];
-// → ['primary', 'secondary', 'accent', 'muted', 'negative']
+// → ['primary', 'secondary', 'accent', 'muted']
+//
+// Note: 'negative' is NOT legal on Action. Destructive Actions express
+// effect-on-state through `consequence: 'destructive'` (see
+// ENTITY_CONSEQUENCE), keeping Evaluation for authorial voice only.
 ```
 
 ---
@@ -337,7 +350,6 @@ export const buttonMeta = {
   displayName: 'Button',
   entity: 'Action',
   structure: 'root',
-  interaction: 'command',
 } as const satisfies ComponentMeta<'Action'>;
 
 // Step 2 — valid evaluations, derived from taxonomy
