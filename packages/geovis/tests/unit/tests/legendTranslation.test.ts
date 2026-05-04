@@ -48,7 +48,7 @@ describe('buildFillColorExpression', () => {
 
     expect(expression).toEqual([
       'step',
-      ['coalesce', ['feature-state', 'value'], 0],
+      ['to-number', ['coalesce', ['feature-state', 'value'], 0], 0],
       '#1e3a8a',
       100,
       '#bfdbfe',

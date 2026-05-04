@@ -7,7 +7,12 @@
  */
 export interface CategoricalColorBy {
   type: 'categorical';
-  /** Feature property whose value drives the color assignment. */
+  /**
+   * Key identifying the column in the `mapData` dataset whose value drives
+   * the color assignment. The adapter reads this value from
+   * `feature-state.value` (written by `setFeatureState` during data join),
+   * not directly from a GeoJSON feature property.
+   */
   property: string;
   /** Named palette key available for adapter-specific categorical handling. */
   palette?: string;
@@ -26,7 +31,12 @@ export interface CategoricalColorBy {
  */
 export interface QuantitativeColorBy {
   type: 'quantitative';
-  /** Feature property whose numeric value drives the color assignment. */
+  /**
+   * Key identifying the column in the `mapData` dataset whose numeric value
+   * drives the color assignment. The adapter reads this value from
+   * `feature-state.value` (written by `setFeatureState` during data join),
+   * not directly from a GeoJSON feature property.
+   */
   property: string;
   /** Scale used to map numeric values into discrete color buckets. */
   scale: 'threshold';
