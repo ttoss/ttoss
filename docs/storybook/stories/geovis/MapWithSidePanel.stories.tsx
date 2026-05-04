@@ -97,22 +97,16 @@ const SidePanels = () => {
         }}
       >
         Left Panel
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          aria-label={leftOpen ? 'Collapse left panel' : 'Expand left panel'}
+          type="button"
           style={{ ...toggleButtonStyle, right: '-1.5em' }}
           onClick={() => {
             return toggle('left', leftOpen, setLeftOpen);
           }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              toggle('left', leftOpen, setLeftOpen);
-            }
-          }}
         >
           {leftOpen ? '←' : '→'}
-        </div>
+        </button>
       </div>
       <div
         style={{
@@ -122,22 +116,16 @@ const SidePanels = () => {
         }}
       >
         Right Panel
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          aria-label={rightOpen ? 'Collapse right panel' : 'Expand right panel'}
+          type="button"
           style={{ ...toggleButtonStyle, left: '-1.5em' }}
           onClick={() => {
             return toggle('right', rightOpen, setRightOpen);
           }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              toggle('right', rightOpen, setRightOpen);
-            }
-          }}
         >
           {rightOpen ? '→' : '←'}
-        </div>
+        </button>
       </div>
     </>
   );
