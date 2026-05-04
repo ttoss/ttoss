@@ -233,14 +233,18 @@ const syncCenter = (
   next: VisualizationSpec['view']
 ): void => {
   if (!next?.center) return;
-  if (
-    prev?.center &&
-    prev.center[0] === next.center[0] &&
-    prev.center[1] === next.center[1]
-  ) {
-    return;
-  }
+  const [lng, lat] = next.center;
+  if (prev?.center?.[0] === lng && prev?.center?.[1] === lat) return;
   map.setCenter(next.center as maplibregl.LngLatLike);
+};
+
+const syncZoom = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (next?.zoom === undefined || next.zoom === prev?.zoom) return;
+  map.setZoom(next.zoom);
 };
 
 /** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
@@ -252,13 +256,13 @@ const syncMapView = (
   if (!next) return;
   const p = prev ?? {};
   syncCenter(map, prev, next);
-  if (next.zoom !== undefined) map.setZoom(next.zoom);
-  const prevPitch = p.pitch ?? 0;
-  const nextPitch = next.pitch ?? 0;
-  if (prevPitch !== nextPitch) map.setPitch(nextPitch);
-  const prevBearing = p.bearing ?? 0;
-  const nextBearing = next.bearing ?? 0;
-  if (prevBearing !== nextBearing) map.setBearing(nextBearing);
+  syncZoom(map, prev, next);
+  const pp = p.pitch ?? 0;
+  const np = next.pitch ?? 0;
+  if (pp !== np) map.setPitch(np);
+  const pb = p.bearing ?? 0;
+  const nb = next.bearing ?? 0;
+  if (pb !== nb) map.setBearing(nb);
 };
 
 interface ViewState {
