@@ -4,13 +4,20 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../spec/types';
-import type { EngineAdapter, MountedView, SpecPatch } from './adapter';
+import type {
+  EngineAdapter,
+  MountedView,
+  SetViewOptions,
+  SpecPatch,
+} from './adapter';
 
 export interface GeoVisRuntime {
   readonly spec: VisualizationSpec;
   mount(container: HTMLElement, viewId: string): MountedView;
   update(spec: VisualizationSpec): void;
   applyPatch(patch: SpecPatch): void;
+  /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
+  setView(options: SetViewOptions): void;
   destroy(): void;
   getAdapter(): EngineAdapter;
 }
@@ -121,6 +128,13 @@ export const createRuntime = (
       } else if (patch.target === 'mapData') {
         currentSpec = applyMapDataPatchToSpec(currentSpec, patch);
       }
+    },
+    setView: (options) => {
+      adapter.setView(options);
+      const { animate: _a, ...cameraFields } = options;
+      const prevView = currentSpec.view ?? {};
+      const nextView = { ...prevView, ...cameraFields };
+      currentSpec = { ...currentSpec, view: nextView };
     },
     destroy: () => {
       adapter.destroy();

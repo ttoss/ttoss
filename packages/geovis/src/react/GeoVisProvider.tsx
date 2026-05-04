@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
+import type {
+  EngineAdapter,
+  SetViewOptions,
+  SpecPatch,
+} from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
@@ -37,6 +41,8 @@ interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
   applyPatch: (patch: SpecPatch) => void;
+  /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
+  setView: (options: SetViewOptions) => void;
   /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
   policyViolations: PolicyViolation[];
 }
@@ -129,11 +135,23 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
   };
 
+  const setView = (options: SetViewOptions) => {
+    if (!runtime) return;
+    runtime.setView(options);
+    setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+  };
+
   if (adapterError) throw adapterError;
 
   return (
     <GeoVisContext.Provider
-      value={{ runtime, spec: effectiveSpec, applyPatch, policyViolations }}
+      value={{
+        runtime,
+        spec: effectiveSpec,
+        applyPatch,
+        setView,
+        policyViolations,
+      }}
     >
       {children}
     </GeoVisContext.Provider>

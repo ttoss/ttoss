@@ -1,4 +1,19 @@
-import type { VisualizationSpec } from '../spec/types';
+import type { LngLat, VisualizationSpec } from '../spec/types';
+
+/**
+ * Options accepted by `EngineAdapter.setView` and `GeoVisRuntime.setView`.
+ * All camera fields are optional — only provided values are applied.
+ * When `animate` is true (default) the adapter uses a smooth flyTo transition;
+ * when false it uses an instant jumpTo.
+ */
+export interface SetViewOptions {
+  center?: LngLat;
+  zoom?: number;
+  pitch?: number;
+  bearing?: number;
+  /** Whether to animate the transition. Defaults to `true`. */
+  animate?: boolean;
+}
 
 export interface EngineAdapter {
   id: 'maplibre' | 'deckgl';
@@ -10,6 +25,8 @@ export interface EngineAdapter {
   ): MountedView;
   update(spec: VisualizationSpec): void;
   applyPatch?(patch: SpecPatch): void;
+  /** Imperatively moves the camera. Animated by default. */
+  setView(options: SetViewOptions): void;
   destroy(): void;
   getNativeInstance(): unknown;
 }
