@@ -86,7 +86,7 @@ describe('GeoVisCanvas', () => {
     await act(async () => {
       render(
         <GeoVisProvider spec={baseSpec}>
-          {/* @ts-expect-error -- intentionally omitting viewId to reproduce the broken story pattern */}
+          {/* viewId is optional — defaults to 'default' */}
           <GeoVisCanvas />
         </GeoVisProvider>
       );
