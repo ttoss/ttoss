@@ -105,8 +105,10 @@ const SidePanels = () => {
             return toggle('left', leftOpen, setLeftOpen);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ')
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
               toggle('left', leftOpen, setLeftOpen);
+            }
           }}
         >
           {leftOpen ? '←' : '→'}
@@ -128,8 +130,10 @@ const SidePanels = () => {
             return toggle('right', rightOpen, setRightOpen);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ')
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
               toggle('right', rightOpen, setRightOpen);
+            }
           }}
         >
           {rightOpen ? '→' : '←'}
