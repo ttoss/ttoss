@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.43.20](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.19...@ttoss/forms@0.43.20) (2026-05-04)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.43.19](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.18...@ttoss/forms@0.43.19) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/forms
