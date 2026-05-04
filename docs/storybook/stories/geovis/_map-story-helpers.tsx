@@ -198,6 +198,15 @@ export const FitBoundsToBbox = ({
     };
 
     /**
+     * Guards applyInstant so it only runs AFTER the initial animated fit
+     * completes.  Without this, ResizeObserver fires ~1s after mount
+     * (container gets dimensions), but MapLibre's `idle` only fires ~3s
+     * later (after tiles load).  The instant fit pre-positions the camera
+     * at the target, leaving nothing for the flyTo to animate.
+     */
+    let initialFitDone = false;
+
+    /**
      * Initial fit — called once after the map reports idle.
      * Uses `animate: true` (no `duration` override) so MapLibre performs a
      * smooth flyTo-style transition from the default [0,0]/zoom=1 position
@@ -205,7 +214,10 @@ export const FitBoundsToBbox = ({
      */
     const applyAnimated = () => {
       const container = map.getContainer();
-      if (container.clientWidth === 0 || container.clientHeight === 0) return;
+      if (container.clientWidth === 0 || container.clientHeight === 0) {
+        initialFitDone = true;
+        return;
+      }
       map.resize();
       map.fitBounds(
         [
@@ -218,13 +230,19 @@ export const FitBoundsToBbox = ({
           maxZoom: estimateMaxZoom(bbox),
         }
       );
+      map.once('moveend', () => {
+        initialFitDone = true;
+      });
     };
 
     /**
      * Refit on container resize — instant to avoid re-triggering the animation
      * every time the user resizes the Storybook panel.
+     * Skipped until the initial animated fit completes so the flyTo is not
+     * pre-empted by the ResizeObserver's first callback.
      */
     const applyInstant = (entries: ResizeObserverEntry[]) => {
+      if (!initialFitDone) return;
       const rect = entries[0]?.contentRect;
       if (!rect || rect.width === 0 || rect.height === 0) return;
       map.resize();
