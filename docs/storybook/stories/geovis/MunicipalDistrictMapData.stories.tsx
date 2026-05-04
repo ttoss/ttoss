@@ -213,9 +213,9 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
                       `District #${String(info.featureId)}`}
                   </div>
                   <div>
-                    {info.value == null
-                      ? 'No data'
-                      : fmtPop(info.value as number)}
+                    {typeof info.value === 'number'
+                      ? fmtPop(info.value)
+                      : 'No data'}
                   </div>
                 </>
               );
