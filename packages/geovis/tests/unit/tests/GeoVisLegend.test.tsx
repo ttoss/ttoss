@@ -122,6 +122,7 @@ describe('GeoVisLegend', () => {
   });
 
   test('renders single quantitative bin when no breaks are provided', () => {
+    // `breaks` omitted AND no spec thresholds → falls back to [] → "All values".
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -142,6 +143,38 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    expect(getAllByRole('listitem')).toHaveLength(1);
+    expect(getByText('All values')).toBeTruthy();
+  });
+
+  test('renders single quantitative bin when breaks={[]} is explicitly passed even if spec has thresholds', () => {
+    // An explicit empty `breaks` prop forces the "All values" single-bin
+    // rendering, bypassing any thresholds declared in the spec.  This lets
+    // callers distinguish "breaks not yet computed" from "omit prop to use
+    // spec thresholds".
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [100, 200, 300],
+            colors: ['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="population" breaks={[]} />
+      </GeoVisProvider>
+    );
+
+    // Explicit [] bypasses the 3 spec thresholds → single "All values" bin.
     expect(getAllByRole('listitem')).toHaveLength(1);
     expect(getByText('All values')).toBeTruthy();
   });

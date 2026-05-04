@@ -124,7 +124,14 @@ const buildQuantitativeItems = ({
 export interface GeoVisLegendProps {
   /** Id of the legend entry to render (resolved from `spec.legends` or `layer.legends`). */
   legendId: string;
-  /** Quantitative legend breaks provided by the caller (already computed externally). */
+  /**
+   * Quantitative legend breaks provided by the caller (already computed externally).
+   * When omitted, the component falls back to `colorBy.thresholds` from the spec so
+   * the legend stays in sync with the painted map without duplicating the threshold
+   * list at the call site.
+   * Pass an explicit empty array (`[]`) to force the single-bin "All values" rendering
+   * regardless of any thresholds declared in the spec.
+   */
   breaks?: number[];
   /** Optional formatter for quantitative break labels. */
   formatValue?: (value: number) => string;
@@ -143,7 +150,7 @@ export interface GeoVisLegendProps {
  */
 export const GeoVisLegend = ({
   legendId,
-  breaks = [],
+  breaks,
   formatValue = defaultFormatValue,
   className,
 }: GeoVisLegendProps) => {
@@ -154,11 +161,12 @@ export const GeoVisLegend = ({
   }, [spec, legendId]);
 
   const normalizedBreaks = React.useMemo(() => {
-    // Prefer the explicit `breaks` prop; fall back to `colorBy.thresholds` so
-    // callers do not have to duplicate the break list that is already declared
-    // in the spec and used by the adapter for the map expression.
+    // `undefined` means the caller did not provide breaks → fall back to
+    // `colorBy.thresholds` so the legend stays in sync with the adapter.
+    // An explicitly provided empty array (`[]`) means the caller intentionally
+    // wants the single-bin "All values" rendering, bypassing the thresholds.
     const source =
-      breaks.length > 0
+      breaks !== undefined
         ? breaks
         : legend?.colorBy.type === 'quantitative'
           ? (legend.colorBy.thresholds ?? [])
