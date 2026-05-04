@@ -6,7 +6,10 @@ import { FormProvider } from 'react-hook-form';
 
 import { FormActions } from './FormActions';
 import { FormGroup } from './FormGroup';
-import { UnsavedChangesBlocker } from './UnsavedChangesBlocker';
+import {
+  UnsavedChangesBlocker,
+  type WarnOnUnsavedChangesOptions,
+} from './UnsavedChangesBlocker';
 
 const FormBase = <
   TFieldValues extends FieldValues,
@@ -27,10 +30,18 @@ const FormBase = <
    * When `true`, blocks in-app navigation and shows a confirmation modal
    * if the form has unsaved changes (`formState.isDirty`). Also triggers
    * the browser's native `beforeunload` prompt on page refresh / tab close.
+   *
+   * You can also pass an object to override the modal title, description,
+   * and action labels.
    * @default false
    */
-  warnOnUnsavedChanges?: boolean;
+  warnOnUnsavedChanges?: boolean | WarnOnUnsavedChangesOptions;
 } & FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
+  const unsavedChangesOptions =
+    typeof warnOnUnsavedChanges === 'object' && warnOnUnsavedChanges !== null
+      ? warnOnUnsavedChanges
+      : undefined;
+
   return (
     <FormProvider {...formMethods}>
       <Box
@@ -43,7 +54,9 @@ const FormBase = <
       >
         {children}
       </Box>
-      {warnOnUnsavedChanges && <UnsavedChangesBlocker />}
+      {warnOnUnsavedChanges && (
+        <UnsavedChangesBlocker {...unsavedChangesOptions} />
+      )}
     </FormProvider>
   );
 };

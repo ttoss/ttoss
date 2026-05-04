@@ -28,6 +28,7 @@ export {
   COMMON_PHONE_COUNTRY_CODES,
   MANUAL_PHONE_COUNTRY_CODE,
 } from './phoneCountryCodes';
+export type { WarnOnUnsavedChangesOptions } from './UnsavedChangesBlocker';
 export { yup } from './yup/yup';
 export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';

@@ -7,6 +7,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import type { WarnOnUnsavedChangesOptions } from '../../../src';
 import { Form, FormFieldInput, useForm } from '../../../src';
 
 // react-router-dom v6 requires Request/Response globals which jsdom lacks
@@ -57,7 +58,7 @@ const OtherPage = () => {
 const FormWithBlocker = ({
   warnOnUnsavedChanges = true,
 }: {
-  warnOnUnsavedChanges?: boolean;
+  warnOnUnsavedChanges?: boolean | WarnOnUnsavedChangesOptions;
 }) => {
   const formMethods = useForm({
     defaultValues: { firstName: '' },
@@ -75,7 +76,9 @@ const FormWithBlocker = ({
   );
 };
 
-const renderWithRouter = (warnOnUnsavedChanges = true) => {
+const renderWithRouter = (
+  warnOnUnsavedChanges: boolean | WarnOnUnsavedChangesOptions = true
+) => {
   const router = createMemoryRouter(
     [
       {
@@ -131,6 +134,30 @@ describe('warnOnUnsavedChanges', () => {
         'You have unsaved changes. If you leave now, they will be discarded.'
       )
     ).toBeInTheDocument();
+  });
+
+  test('renders custom modal copy when warnOnUnsavedChanges receives overrides', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    renderWithRouter({
+      title: 'Leave this profile form?',
+      description: 'Your current draft will be lost if you continue.',
+      confirmLabel: 'Leave without saving',
+      cancelLabel: 'Continue editing',
+    });
+
+    await user.type(screen.getByLabelText('First Name'), 'John');
+    await user.click(screen.getByText('Leave'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Leave this profile form?')).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText('Your current draft will be lost if you continue.')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Leave without saving')).toBeInTheDocument();
+    expect(screen.getByText('Continue editing')).toBeInTheDocument();
   });
 
   test('allows navigation when user confirms discard', async () => {

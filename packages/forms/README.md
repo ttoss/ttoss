@@ -220,6 +220,24 @@ Use the `warnOnUnsavedChanges` prop to block navigation when the form has unsave
 </Form>
 ```
 
+You can also customize the modal copy by passing an object:
+
+```tsx
+<Form
+  {...formMethods}
+  onSubmit={onSubmit}
+  warnOnUnsavedChanges={{
+    title: 'Leave this draft?',
+    description: 'Changes in this form have not been saved yet.',
+    confirmLabel: 'Leave without saving',
+    cancelLabel: 'Continue editing',
+  }}
+>
+  <FormFieldInput name="firstName" label="First Name" />
+  <Button type="submit">Save</Button>
+</Form>
+```
+
 | State           | `warnOnUnsavedChanges` | Navigation                  | Result        |
 | --------------- | ---------------------- | --------------------------- | ------------- |
 | Pristine        | `true`                 | Any                         | Allowed       |

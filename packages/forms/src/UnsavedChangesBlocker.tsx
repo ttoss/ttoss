@@ -1,6 +1,6 @@
 import { Modal } from '@ttoss/components/Modal';
 import { defineMessages, useI18n } from '@ttoss/react-i18n';
-import { Button, Flex, Heading, Text } from '@ttoss/ui';
+import { Button, Card, Flex, Heading, Text } from '@ttoss/ui';
 import * as React from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -26,38 +26,69 @@ const messages = defineMessages({
   },
 });
 
+/**
+ * Allows overriding the default copy shown in the unsaved changes modal.
+ */
+export interface WarnOnUnsavedChangesOptions {
+  /** Custom modal title. */
+  title?: React.ReactNode;
+  /** Custom modal description. */
+  description?: React.ReactNode;
+  /** Custom confirm button label. */
+  confirmLabel?: React.ReactNode;
+  /** Custom cancel button label. */
+  cancelLabel?: React.ReactNode;
+}
+
 const UnsavedChangesModal = ({
   onConfirm,
   onCancel,
+  title,
+  description,
+  confirmLabel,
+  cancelLabel,
 }: {
   onConfirm: () => void;
   onCancel: () => void;
-}) => {
+} & WarnOnUnsavedChangesOptions) => {
   const {
     intl: { formatMessage },
   } = useI18n();
 
   return (
-    <Modal isOpen ariaHideApp={false} onRequestClose={onCancel}>
-      <Flex
+    <Modal
+      isOpen
+      ariaHideApp={false}
+      onRequestClose={onCancel}
+      style={{
+        content: {
+          overflow: 'visible',
+        },
+      }}
+    >
+      <Card
         sx={{
+          boxShadow: 'none',
+          alignItems: 'stretch',
           flexDirection: 'column',
           gap: '4',
           minWidth: '300px',
           maxWidth: '480px',
+          paddingX: '5',
+          paddingY: '5',
         }}
       >
-        <Heading as="h3">{formatMessage(messages.title)}</Heading>
-        <Text>{formatMessage(messages.description)}</Text>
+        <Heading as="h3">{title ?? formatMessage(messages.title)}</Heading>
+        <Text>{description ?? formatMessage(messages.description)}</Text>
         <Flex sx={{ justifyContent: 'flex-end', gap: '3' }}>
           <Button variant="secondary" type="button" onClick={onCancel}>
-            {formatMessage(messages.cancel)}
+            {cancelLabel ?? formatMessage(messages.cancel)}
           </Button>
           <Button variant="primary" type="button" onClick={onConfirm}>
-            {formatMessage(messages.confirm)}
+            {confirmLabel ?? formatMessage(messages.confirm)}
           </Button>
         </Flex>
-      </Flex>
+      </Card>
     </Modal>
   );
 };
@@ -173,7 +204,12 @@ const RouterBlocker = ({
  * Uses `useBlocker` from `react-router-dom` to intercept in-app navigation
  * and `beforeunload` to warn on browser refresh / tab close.
  */
-export const UnsavedChangesBlocker = () => {
+export const UnsavedChangesBlocker = ({
+  title,
+  description,
+  confirmLabel,
+  cancelLabel,
+}: WarnOnUnsavedChangesOptions = {}) => {
   const {
     formState: { isDirty },
   } = useFormContext();
@@ -198,6 +234,10 @@ export const UnsavedChangesBlocker = () => {
       <BeforeUnloadBlocker isDirty={isDirty} />
       {pendingBlocker && (
         <UnsavedChangesModal
+          title={title}
+          description={description}
+          confirmLabel={confirmLabel}
+          cancelLabel={cancelLabel}
           onConfirm={() => {
             pendingBlocker.proceed();
             setPendingBlocker(null);
