@@ -106,6 +106,26 @@ test('should toggle when clicking anywhere in the switch container', async () =>
   expect(onSubmit).toHaveBeenCalledWith({ switch1: true });
 });
 
+test('should reflect defaultValues boolean true as checked state', async () => {
+  const RenderForm = () => {
+    const formMethods = useForm({ defaultValues: { switch1: true } });
+
+    return (
+      <Form {...formMethods} onSubmit={jest.fn()}>
+        <FormFieldSwitch name="switch1" label="Switch 1" />
+      </Form>
+    );
+  };
+
+  render(<RenderForm />);
+
+  const switchElement = screen.getByRole('switch', {
+    name: 'Switch 1',
+  }) as HTMLInputElement;
+
+  expect(switchElement.checked).toBe(true);
+});
+
 describe('FormFieldSwitch custom onBlur and onChange', () => {
   test('should call custom onChange handler while still updating form state', async () => {
     const user = userEvent.setup({ delay: null });

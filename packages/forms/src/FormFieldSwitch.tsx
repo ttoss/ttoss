@@ -47,6 +47,7 @@ export const FormFieldSwitch = <
           <Switch
             {...switchProps}
             {...field}
+            checked={field.value}
             onBlur={(e) => {
               field.onBlur();
               onBlur?.(e);
