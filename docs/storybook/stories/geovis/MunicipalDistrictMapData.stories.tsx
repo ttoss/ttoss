@@ -18,7 +18,7 @@ export default {
 } as Meta;
 
 const DATA_URL =
-  'https://api-forja.triangulos.tech/v1/files/518d1169-0cb5-4ef6-b499-2d98bf281030/download';
+  'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
 
 // Population ranges for São Paulo districts (estimated from census data).
 // Most districts: 30k–250k. Outliers: Marsilac ~8k, Grajaú/Campo Limpo ~240k+.
@@ -59,9 +59,16 @@ const fmtPop = (v: number) => {
  */
 // eslint-disable-next-line react/prop-types -- TypeScript generic on StoryFn already validates props
 export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
+  interface DistrictEntry {
+    total: number;
+    nome_distr: string;
+    Homens: Record<string, number>;
+    Mulheres: Record<string, number>;
+  }
+
   const [populationData, setPopulationData] = React.useState<Record<
     string,
-    Record<string, number>
+    Record<string, DistrictEntry>
   > | null>(null);
 
   React.useEffect(() => {
@@ -69,7 +76,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       .then((res) => {
         return res.json();
       })
-      .then((json: Record<string, Record<string, number>>) => {
+      .then((json: Record<string, Record<string, DistrictEntry>>) => {
         return setPopulationData(json);
       })
       .catch((error) => {
@@ -82,8 +89,8 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
     if (!yearData) return [];
-    return Object.entries(yearData).map(([districtId, pop]) => {
-      return { geometryId: parseInt(districtId, 10), value: pop };
+    return Object.entries(yearData).map(([districtId, entry]) => {
+      return { geometryId: parseInt(districtId, 10), value: entry.total };
     });
   }, [populationData, year]);
 
@@ -161,15 +168,19 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
           <MapLabel>São Paulo — population {year}</MapLabel>
           <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
           <GeoVisHoverTooltip
-            formatValue={fmtPop}
             render={(info) => {
+              const district =
+                populationData?.[String(year)]?.[String(info.featureId)];
               return (
                 <>
                   <div style={{ fontWeight: 600 }}>
-                    District #{String(info.featureId)}
+                    {district?.nome_distr ??
+                      `District #${String(info.featureId)}`}
                   </div>
                   <div>
-                    {info.value == null ? 'No data' : fmtPop(info.value)}
+                    {info.value == null
+                      ? 'No data'
+                      : fmtPop(info.value as number)}
                   </div>
                 </>
               );
