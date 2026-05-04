@@ -1038,6 +1038,124 @@ describe('mapData — feature-state application', () => {
     );
   });
 
+  // 3.7b — joinKey: matches mixed property value types (number/string)
+  test('joinKey: resolves feature.id when feature property and geometryId use mixed primitive types', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.querySourceFeatures).mockReturnValue([
+      {
+        id: 67,
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: { district_code: 67 },
+      },
+      {
+        id: 88,
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [1, 1] },
+        properties: { district_code: '88' },
+      },
+    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          joinKey: 'district_code',
+          data: [
+            { geometryId: '67', value: 211 },
+            { geometryId: '88', value: 45 },
+          ],
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 67 },
+      { value: 211 }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 88 },
+      { value: 45 }
+    );
+  });
+
+  // 3.4 — NaN/Infinity row values are sanitized to 0 before setFeatureState
+  test.each([
+    ['NaN', Number.NaN],
+    ['Infinity', Number.POSITIVE_INFINITY],
+    ['-Infinity', Number.NEGATIVE_INFINITY],
+  ])(
+    'non-finite value (%s) is sanitized to 0 before setFeatureState (no joinKey)',
+    (_label, badValue) => {
+      const { map, fire } = makeMapWithEvents();
+      jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+        return map as never;
+      });
+      const adapter = createMapLibreAdapter();
+      adapter.mount(
+        makeContainer(),
+        baseSpec([
+          {
+            mapDataId: 'pop',
+            mapId: 'states',
+            data: [{ geometryId: 'BR', value: badValue }],
+          },
+        ]),
+        'v'
+      );
+
+      fire('load');
+
+      expect(map.setFeatureState).toHaveBeenCalledWith(
+        { source: 'states', id: 'BR' },
+        { value: 0 }
+      );
+    }
+  );
+
+  // 3.4b — granular replace also sanitizes NaN/Infinity
+  test('granular replace patch sanitizes non-finite value to 0', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      baseSpec([
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 100 }],
+        },
+      ]),
+      'v'
+    );
+    fire('load');
+    jest.mocked(map.setFeatureState).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: Number.NaN,
+    });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 0 }
+    );
+  });
+
   // 3.8 — joinKey: granular replace resolves feature.id via querySourceFeatures
   test('joinKey: granular replace patch resolves feature.id and calls setFeatureState', () => {
     const { map, fire } = makeMapWithEvents();
@@ -1356,6 +1474,65 @@ describe('mapData — feature-state application', () => {
       path: 'mapData.pop.data.BR',
       value: 500,
     });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
+      'match',
+      ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
+      'high',
+      '#16a34a',
+      '#6b7280',
+    ]);
+  });
+
+  test('mapData patch replace reapplies legend fill-color when layer appears after initial pass', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(true);
+    jest.mocked(map.getLayer).mockReturnValue(null);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const withLegend = baseSpec([
+      {
+        mapDataId: 'pop',
+        mapId: 'states',
+        data: [{ geometryId: 'BR', value: 211 }],
+      },
+    ]);
+    withLegend.layers = [
+      {
+        ...withLegend.layers[0],
+        legends: [
+          {
+            id: 'status',
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { high: '#16a34a' },
+              defaultColor: '#6b7280',
+            },
+          },
+        ],
+        activeLegendId: 'status',
+      },
+    ];
+
+    adapter.mount(makeContainer(), withLegend, 'v');
+    fire('load');
+    jest.mocked(map.setPaintProperty).mockClear();
+
+    adapter.applyPatch?.({
+      target: 'mapData',
+      op: 'replace',
+      path: 'mapData.pop.data.BR',
+      value: 500,
+    });
+
+    expect(map.setPaintProperty).not.toHaveBeenCalled();
+
+    jest.mocked(map.getLayer).mockReturnValue({} as never);
+    fire('styledata', { dataType: 'style' });
 
     expect(map.setPaintProperty).toHaveBeenCalledWith('fill', 'fill-color', [
       'match',

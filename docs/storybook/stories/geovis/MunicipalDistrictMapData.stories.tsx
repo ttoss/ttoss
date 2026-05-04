@@ -18,7 +18,7 @@ export default {
 } as Meta;
 
 const DATA_URL =
-  'https://api-forja.triangulos.tech/v1/files/518d1169-0cb5-4ef6-b499-2d98bf281030/download';
+  'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
 
 // Population ranges for São Paulo districts (estimated from census data).
 // Most districts: 30k–250k. Outliers: Marsilac ~8k, Grajaú/Campo Limpo ~240k+.
@@ -46,6 +46,48 @@ const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
 };
 
+/** Raw shape returned by the external API (Portuguese field names). */
+interface ApiDistrictEntry {
+  total: number;
+  nome_distr: string;
+  Homens: Record<string, number>;
+  Mulheres: Record<string, number>;
+}
+
+/** Normalised internal shape with English identifiers. */
+interface DistrictEntry {
+  total: number;
+  districtName: string;
+  men: Record<string, number>;
+  women: Record<string, number>;
+}
+
+const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
+  return {
+    total: e.total,
+    districtName: e.nome_distr,
+    men: e.Homens,
+    women: e.Mulheres,
+  };
+};
+
+const normalizePopulationData = (
+  raw: Record<string, Record<string, ApiDistrictEntry>>
+): Record<string, Record<string, DistrictEntry>> => {
+  return Object.fromEntries(
+    Object.entries(raw).map(([yr, districts]) => {
+      return [
+        yr,
+        Object.fromEntries(
+          Object.entries(districts).map(([id, e]) => {
+            return [id, normalizeEntry(e)];
+          })
+        ),
+      ];
+    })
+  );
+};
+
 /**
  * Choropleth of São Paulo municipal districts coloured by total population
  * for a selected census year (2000–2050, projected past 2025).
@@ -61,7 +103,7 @@ const fmtPop = (v: number) => {
 export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
   const [populationData, setPopulationData] = React.useState<Record<
     string,
-    Record<string, number>
+    Record<string, DistrictEntry>
   > | null>(null);
 
   React.useEffect(() => {
@@ -69,8 +111,8 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
       .then((res) => {
         return res.json();
       })
-      .then((json: Record<string, Record<string, number>>) => {
-        return setPopulationData(json);
+      .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
+        return setPopulationData(normalizePopulationData(json));
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -82,8 +124,8 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
     if (!yearData) return [];
-    return Object.entries(yearData).map(([districtId, pop]) => {
-      return { geometryId: parseInt(districtId, 10), value: pop };
+    return Object.entries(yearData).map(([districtId, entry]) => {
+      return { geometryId: parseInt(districtId, 10), value: entry.total };
     });
   }, [populationData, year]);
 
@@ -161,15 +203,19 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
           <MapLabel>São Paulo — population {year}</MapLabel>
           <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
           <GeoVisHoverTooltip
-            formatValue={fmtPop}
             render={(info) => {
+              const district =
+                populationData?.[String(year)]?.[String(info.featureId)];
               return (
                 <>
                   <div style={{ fontWeight: 600 }}>
-                    District #{String(info.featureId)}
+                    {district?.districtName ??
+                      `District #${String(info.featureId)}`}
                   </div>
                   <div>
-                    {info.value == null ? 'No data' : fmtPop(info.value)}
+                    {typeof info.value === 'number'
+                      ? fmtPop(info.value)
+                      : 'No data'}
                   </div>
                 </>
               );
