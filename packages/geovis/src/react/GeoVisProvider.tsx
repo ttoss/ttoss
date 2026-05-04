@@ -8,6 +8,19 @@ import type {
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import { GeoVisContext, GeoVisHoverContext } from './contexts';
+import { useMapHover } from './hooks';
+
+// Re-export the contexts and hooks so existing public-API consumers
+// (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
+// the contexts module was extracted to break the hooks/provider cycle.
+export type { GeoVisContextValue, MapHoverInfo } from './contexts';
+export {
+  GeoVisContext,
+  GeoVisHoverContext,
+  useGeoVis,
+  useGeoVisHover,
+} from './contexts';
 
 /** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
 const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
@@ -37,20 +50,6 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
   return violations;
 };
 
-interface GeoVisContextValue {
-  runtime: GeoVisRuntime | null;
-  spec: VisualizationSpec;
-  applyPatch: (patch: SpecPatch) => void;
-  /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
-  setView: (options: SetViewOptions) => void;
-  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
-  policyViolations: PolicyViolation[];
-}
-
-export const GeoVisContext = React.createContext<GeoVisContextValue | null>(
-  null
-);
-
 const resolveAdapter = async (
   engine: VisualizationSpec['engine']
 ): Promise<EngineAdapter> => {
@@ -68,6 +67,36 @@ interface GeoVisProviderProps {
   spec: VisualizationSpec;
   children: React.ReactNode;
 }
+
+/**
+ * Isolates `useMapHover` (which fires on every `mousemove`) into a child
+ * component so that its state updates do NOT re-render `GeoVisProvider`.
+ *
+ * @remarks
+ * Defined at module scope so its component identity is stable across
+ * re-renders of `GeoVisProvider` (defining it inside would remount the
+ * subtree on every render and defeat the optimization). Without this
+ * boundary, every hover event would re-execute the parent's render body —
+ * recomputing `effectiveSpec`, `policyViolations`, and the memoized context
+ * value. By moving the hover state down, only this small component and the
+ * consumers of `useGeoVisHover()` re-render on hover.
+ */
+const HoverProvider = ({
+  runtime,
+  spec,
+  children,
+}: {
+  runtime: GeoVisRuntime | null;
+  spec: VisualizationSpec;
+  children: React.ReactNode;
+}) => {
+  const hoveredMapFeature = useMapHover({ runtime, spec });
+  return (
+    <GeoVisHoverContext.Provider value={hoveredMapFeature}>
+      {children}
+    </GeoVisHoverContext.Provider>
+  );
+};
 
 /**
  * Provides a GeoVis runtime context for child components.
@@ -129,78 +158,46 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     runtime.update(spec);
   }, [runtime, spec]);
 
-  const applyPatch = (patch: SpecPatch) => {
-    if (!runtime) return;
-    runtime.applyPatch(patch);
-    setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
-  };
+  const applyPatch = React.useCallback(
+    (patch: SpecPatch) => {
+      if (!runtime) return;
+      runtime.applyPatch(patch);
+      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+    },
+    [runtime, spec]
+  );
 
-  const setView = (options: SetViewOptions) => {
-    if (!runtime) return;
-    runtime.setView(options);
-    setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
-  };
+  const setView = React.useCallback(
+    (options: SetViewOptions) => {
+      if (!runtime) return;
+      runtime.setView(options);
+      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+    },
+    [runtime, spec]
+  );
 
   if (adapterError) throw adapterError;
 
+  // Memoize the context value so that high-frequency hover updates inside
+  // `HoverProvider` (a child component) cannot cascade into re-renders of
+  // `useGeoVis()` consumers. Reference equality of `value` is the signal
+  // React uses to notify context subscribers — keeping it stable when
+  // runtime/spec/applyPatch/violations are unchanged is critical here.
+  const ctxValue = React.useMemo(() => {
+    return {
+      runtime,
+      spec: effectiveSpec,
+      applyPatch,
+      setView,
+      policyViolations,
+    };
+  }, [runtime, effectiveSpec, applyPatch, setView, policyViolations]);
+
   return (
-    <GeoVisContext.Provider
-      value={{
-        runtime,
-        spec: effectiveSpec,
-        applyPatch,
-        setView,
-        policyViolations,
-      }}
-    >
-      {children}
+    <GeoVisContext.Provider value={ctxValue}>
+      <HoverProvider runtime={runtime} spec={effectiveSpec}>
+        {children}
+      </HoverProvider>
     </GeoVisContext.Provider>
   );
-};
-
-export const useGeoVis = (): GeoVisContextValue => {
-  const ctx = React.useContext(GeoVisContext);
-  if (!ctx) throw new Error('useGeoVis must be used inside <GeoVisProvider>');
-  return ctx;
-};
-
-export interface UseMapDataResult {
-  mapDataId: string;
-  mapId: string;
-  joinKey?: string;
-  /** Indexed lookup: stringified `geometryId` → `value`. */
-  values: Map<string, number | string | null>;
-  /** The `data` array as declared in the spec, in original order. */
-  rows: ReadonlyArray<{
-    geometryId: string | number;
-    value: number | string | null;
-  }>;
-}
-
-/**
- * Returns the indexed dataset entry for `mapDataId`, or `undefined` if
- * the spec has no matching `mapData[]` entry. Re-renders when the spec
- * changes (including via `applyPatch`).
- *
- * Must be used inside a {@link GeoVisProvider}.
- */
-export const useMapData = (mapDataId: string): UseMapDataResult | undefined => {
-  const { spec } = useGeoVis();
-  return React.useMemo(() => {
-    const md = spec.mapData?.find((entry) => {
-      return entry.mapDataId === mapDataId;
-    });
-    if (!md) return undefined;
-    const values = new Map<string, number | string | null>();
-    for (const row of md.data) {
-      values.set(String(row.geometryId), row.value);
-    }
-    return {
-      mapDataId: md.mapDataId,
-      mapId: md.mapId,
-      joinKey: md.joinKey,
-      values,
-      rows: md.data,
-    };
-  }, [spec, mapDataId]);
 };

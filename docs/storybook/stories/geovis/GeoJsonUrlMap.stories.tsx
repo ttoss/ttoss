@@ -22,14 +22,6 @@ const PRESETS: { label: string; options: SetViewOptions }[] = [
     label: 'Zoom out',
     options: { zoom: 3, animate: true },
   },
-  {
-    label: 'Tilt',
-    options: { pitch: 60, bearing: -30, animate: true },
-  },
-  {
-    label: 'Reset tilt',
-    options: { pitch: 0, bearing: 0, animate: true },
-  },
 ];
 
 /**

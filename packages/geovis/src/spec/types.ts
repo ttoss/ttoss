@@ -1,3 +1,7 @@
+import type { LegendSpec } from './types.legend';
+
+export * from './types.legend';
+
 export type LngLat = [number, number];
 
 export type GeoJSONPosition = [number, number] | [number, number, number];
@@ -222,6 +226,10 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
+  /** Optional alternative legend definitions presented as runtime toggles. */
+  legends?: LegendSpec[];
+  /** Id of the currently active legend from `legends[]`. */
+  activeLegendId?: string;
   /**
    * Optional reference to an entry in `spec.mapData`.
    * When present, the layer can be styled/queried by per-feature `value`s
@@ -295,6 +303,8 @@ export interface VisualizationSpec {
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];
+  /** Optional top-level legend registry used by legend UI components. */
+  legends?: LegendSpec[];
   /**
    * Optional attribute datasets joined to geojson sources.
    * Each entry references a source via `mapId` and provides
@@ -308,11 +318,12 @@ export interface VisualizationSpec {
    */
   views?: VisualizationView[];
   metadata?: Record<string, unknown>;
-  adapterHints?: {
-    maplibre?: {
-      styleVersion?: 8;
-    };
-  };
+  /**
+   * @deprecated No longer used by the adapter. Kept for backward compatibility
+   * so existing specs continue to pass `validateSpec()`. Will be removed in a
+   * future breaking-change release.
+   */
+  adapterHints?: unknown;
 }
 
 export type GeovisSpec = VisualizationSpec;

@@ -1,5 +1,8 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoJSONFeatureCollection,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import {
   GeoVisCanvas,
   GeoVisHoverTooltip,
@@ -9,8 +12,13 @@ import {
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
-import type { ColorStep } from './_map-story-helpers';
-import { MapLabel, MapOverlayLegend } from './_map-story-helpers';
+import type { ColorStep } from './_choropleth-helpers';
+import { MapOverlayLegend } from './_choropleth-helpers';
+import { computeBbox, FitBoundsToBbox, MapLabel } from './_map-story-helpers';
+
+const DISTRICT_BBOX = computeBbox(
+  districtGeoJson as unknown as GeoJSON.FeatureCollection
+);
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
@@ -133,13 +141,12 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
     return {
       id: 'municipal-district-mapdata',
       engine: 'maplibre',
-      view: { center: [-46.63, -23.55], zoom: 9 },
       basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
       sources: [
         {
           id: 'districts',
           type: 'geojson',
-          data: districtGeoJson as unknown as GeoJSON.FeatureCollection,
+          data: districtGeoJson as unknown as GeoJSONFeatureCollection,
         },
       ],
       layers: [
@@ -201,7 +208,11 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
           }}
         >
           <MapLabel>São Paulo — population {year}</MapLabel>
-          <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
+          <GeoVisCanvas
+            viewId="primary"
+            style={{ width: '100%', height: '100%' }}
+          />
+          <FitBoundsToBbox bbox={DISTRICT_BBOX} />
           <GeoVisHoverTooltip
             render={(info) => {
               const district =
