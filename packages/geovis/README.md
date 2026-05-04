@@ -264,6 +264,19 @@ Renders a static, non-interactive legend resolved from the active spec. Resoluti
 | `formatValue` | `(value: number) => string` | Formatter for quantitative break labels. Defaults to `String(value)`. |
 | `className`   | `string`                    | Optional CSS class for the legend container.                          |
 
+### `GeoVisHoverTooltip`
+
+Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Must be rendered inside the same `position: relative` container as `<GeoVisCanvas>` so its absolute positioning anchors to the map area. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
+
+| Prop              | Type                                      | Description                                                                                      |
+| ----------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `render`          | `(info: MapHoverInfo) => React.ReactNode` | Custom tooltip renderer. When omitted, a default two-line layout is used.                        |
+| `formatValue`     | `(value: number \| string) => string`     | Formatter applied to `info.value` when no `render` prop is provided.                             |
+| `className`       | `string`                                  | Optional CSS class for the tooltip container.                                                    |
+| `style`           | `React.CSSProperties`                     | Optional inline style overrides merged on top of the default tooltip style.                      |
+| `offset`          | `{ x: number; y: number }`                | Pixel offset from the cursor. Defaults to `{ x: 12, y: 12 }`.                                    |
+| `emptyValueLabel` | `string`                                  | Label shown when `info.value` is `null` (no `mapData` for the feature). Defaults to `'No data'`. |
+
 ### `validateSpec`
 
 Validates a plain object against the `@ttoss/geovis` JSON schema.
