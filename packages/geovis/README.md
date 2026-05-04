@@ -242,12 +242,53 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 ### `useGeoVis`
 
-Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch }`. Must be called inside `GeoVisProvider`.
+Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations }`. Must be called inside `GeoVisProvider`.
+
+### `useGeoVisHover`
+
+Returns the live `MapHoverInfo | null` snapshot for the feature currently hovered on a polygon layer with `activeLegendId`. Lives in a dedicated context so high-frequency hover updates do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+### `useMapData`
+
+Returns indexed map data for a `mapDataId` as `{ mapDataId, mapId, joinKey, values, rows }`.
+Must be called inside `GeoVisProvider`.
+
+### `GeoVisLegend`
+
+Renders a static, non-interactive legend resolved from the active spec. Resolution looks up `legendId` in `spec.legends` first, then in each `layer.legends`. Categorical legends emit one swatch per `mapping` entry (or a single fallback swatch when `mapping` is empty, mirroring the adapter's `['literal', fallbackColor]` paint output). Quantitative legends emit one swatch per `breaks[]` bin and use the same fallback chain as the adapter (`defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR`). Must be rendered inside `GeoVisProvider`.
+
+| Prop          | Type                        | Description                                                           |
+| ------------- | --------------------------- | --------------------------------------------------------------------- |
+| `legendId`    | `string`                    | Id of the legend entry to render.                                     |
+| `breaks`      | `number[]`                  | Externally computed thresholds for quantitative legends. Optional.    |
+| `formatValue` | `(value: number) => string` | Formatter for quantitative break labels. Defaults to `String(value)`. |
+| `className`   | `string`                    | Optional CSS class for the legend container.                          |
+
+### `GeoVisHoverTooltip`
+
+Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Must be rendered inside the same `position: relative` container as `<GeoVisCanvas>` so its absolute positioning anchors to the map area. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
+
+| Prop              | Type                                      | Description                                                                                      |
+| ----------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `render`          | `(info: MapHoverInfo) => React.ReactNode` | Custom tooltip renderer. When omitted, a default two-line layout is used.                        |
+| `formatValue`     | `(value: number \| string) => string`     | Formatter applied to `info.value` when no `render` prop is provided.                             |
+| `className`       | `string`                                  | Optional CSS class for the tooltip container.                                                    |
+| `style`           | `React.CSSProperties`                     | Optional inline style overrides merged on top of the default tooltip style.                      |
+| `offset`          | `{ x: number; y: number }`                | Pixel offset from the cursor. Defaults to `{ x: 12, y: 12 }`.                                    |
+| `emptyValueLabel` | `string`                                  | Label shown when `info.value` is `null` (no `mapData` for the feature). Defaults to `'No data'`. |
 
 ### `validateSpec`
 
 Validates a plain object against the `@ttoss/geovis` JSON schema.
 
 Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: string[] }`.
+
+## Legend Type Surface
+
+`VisualizationLayer` exposes optional `legends` and `activeLegendId` fields,
+and `VisualizationSpec` exposes optional `legends` for shared legend
+registries. `colorBy` lives on `LegendSpec` (not on the layer), and the
+color and legend types are part of the public `spec/types` contract, so
+consumers can type legend-aware specs without reaching into internal files.
 
 _For more on product development principles that guide our approach, see [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles)._

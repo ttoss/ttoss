@@ -1,7 +1,11 @@
 import type maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
-import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
+import {
+  resolveLegendFillColorExpression,
+  stripUndefinedPaint,
+  toMaplibreLayer,
+} from './layerTranslation';
 import {
   resolvePromoteIdForSource,
   toMaplibreSource,
@@ -70,16 +74,17 @@ const upsertSources = (
 };
 
 /**
- * Writes one paint property of an existing layer, with one exception:
- * skips `fill-color` for `mapData`-driven layers when the user did NOT
- * explicitly declare `fillColor` in the spec paint. In that case the
- * adapter fallback ('#3b82f6') would overwrite the feature-state step
- * expression applied externally (e.g. via FeatureStatePainter) on every
- * spec update. When `fillColor` IS explicit, honour it — the caller
- * opted out of the choropleth colouring for that layer.
+ * Writes one paint property of an existing layer.
+ *
+ * For `mapData` polygon layers without explicit `fillColor`, legacy callers may
+ * still inject a custom `fill-color` expression externally. Preserve that old
+ * behaviour only when the layer has no active legend expression of its own.
+ * When an active legend resolves, the adapter owns the choropleth colour and
+ * must update `fill-color` on spec changes so the declared legend colours win.
  */
 const writePaintProperty = (
   map: maplibregl.Map,
+  spec: VisualizationSpec,
   layer: VisualizationSpec['layers'][number],
   property: string,
   value: unknown
@@ -88,7 +93,9 @@ const writePaintProperty = (
     const hasExplicitFillColor = !!(
       layer.paint as { fillColor?: string } | undefined
     )?.fillColor;
-    if (!hasExplicitFillColor) return;
+    const hasLegendFillColor =
+      resolveLegendFillColorExpression(layer, spec.legends) !== undefined;
+    if (!hasExplicitFillColor && !hasLegendFillColor) return;
   }
   map.setPaintProperty(
     layer.id,
@@ -107,7 +114,7 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
       source && 'sourceLayer' in source
         ? (source as { sourceLayer?: string }).sourceLayer
         : undefined;
-    const desiredLayer = toMaplibreLayer(layer, sourceLayer);
+    const desiredLayer = toMaplibreLayer(layer, sourceLayer, spec.legends);
     stripUndefinedPaint(desiredLayer);
 
     if (!map.getLayer(layer.id)) {
@@ -124,7 +131,7 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
     const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
     if (!paint) continue;
     for (const [property, value] of Object.entries(paint)) {
-      writePaintProperty(map, layer, property, value);
+      writePaintProperty(map, spec, layer, property, value);
     }
   }
 };
