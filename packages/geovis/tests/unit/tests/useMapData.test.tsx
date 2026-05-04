@@ -3,7 +3,8 @@
  */
 
 import { render } from '@testing-library/react';
-import { GeoVisProvider, useMapData } from 'src/react/GeoVisProvider';
+import { GeoVisProvider } from 'src/react/GeoVisProvider';
+import { useMapData } from 'src/react/hooks';
 import type { VisualizationSpec } from 'src/spec/types';
 
 // Avoid touching the real adapter — Provider lazy-imports it but never finishes

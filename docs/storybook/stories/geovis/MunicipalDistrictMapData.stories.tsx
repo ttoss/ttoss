@@ -1,16 +1,16 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import {
+  GeoVisCanvas,
+  GeoVisHoverTooltip,
+  GeoVisLegend,
+  GeoVisProvider,
+} from '@ttoss/geovis';
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
 import type { ColorStep } from './_map-story-helpers';
-import {
-  ColorSwatchLegend,
-  FeatureStatePainter,
-  MapLabel,
-  MapOverlayLegend,
-} from './_map-story-helpers';
+import { MapLabel, MapOverlayLegend } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
@@ -29,6 +29,10 @@ const populationSteps: ColorStep[] = [
   { threshold: 200_000, color: '#1d4ed8' },
   { threshold: 250_000, color: '#1e3a8a' },
 ];
+
+const populationBreaks = populationSteps.map((step) => {
+  return step.threshold;
+});
 
 const DEFAULT_COLOR = '#f0f9ff';
 
@@ -102,12 +106,34 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
           sourceId: 'districts',
           geometry: 'polygon',
           mapDataId: 'population',
+          activeLegendId: 'population',
         },
         {
           id: 'districts-outline',
           sourceId: 'districts',
           geometry: 'line',
           paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
+        },
+      ],
+      legends: [
+        {
+          id: 'population',
+          label: `Population by district \u2014 ${year}`,
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: populationBreaks,
+            // First color matches `defaultColor` so the legend swatch for the
+            // "< first threshold" bin lines up with the in-map fill.
+            colors: [
+              DEFAULT_COLOR,
+              ...populationSteps.map((step) => {
+                return step.color;
+              }),
+            ],
+            defaultColor: DEFAULT_COLOR,
+          },
         },
       ],
       mapData: [
@@ -118,26 +144,36 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
         },
       ],
     };
-  }, [mapDataEntries]);
+  }, [mapDataEntries, year]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div
-        style={{
-          position: 'relative',
-          height: 520,
-          borderRadius: 6,
-          overflow: 'hidden',
-          border: '1px solid #d4d4d8',
-        }}
-      >
-        <MapLabel>São Paulo — population {year}</MapLabel>
-        <GeoVisProvider spec={spec}>
+      <GeoVisProvider spec={spec}>
+        <div
+          style={{
+            position: 'relative',
+            height: 520,
+            borderRadius: 6,
+            overflow: 'hidden',
+            border: '1px solid #d4d4d8',
+          }}
+        >
+          <MapLabel>São Paulo — population {year}</MapLabel>
           <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
-          <FeatureStatePainter
-            layerId="districts-fill"
-            defaultColor={DEFAULT_COLOR}
-            steps={populationSteps}
+          <GeoVisHoverTooltip
+            formatValue={fmtPop}
+            render={(info) => {
+              return (
+                <>
+                  <div style={{ fontWeight: 600 }}>
+                    District #{String(info.featureId)}
+                  </div>
+                  <div>
+                    {info.value == null ? 'No data' : fmtPop(info.value)}
+                  </div>
+                </>
+              );
+            }}
           />
           <MapOverlayLegend
             label="Total population"
@@ -145,14 +181,13 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
             steps={populationSteps}
             formatValue={fmtPop}
           />
-        </GeoVisProvider>
-      </div>
-      <ColorSwatchLegend
-        title={`Population by district — ${year}`}
-        defaultColor={DEFAULT_COLOR}
-        steps={populationSteps}
-        formatValue={fmtPop}
-      />
+        </div>
+        <GeoVisLegend
+          legendId="population"
+          breaks={populationBreaks}
+          formatValue={fmtPop}
+        />
+      </GeoVisProvider>
     </div>
   );
 };

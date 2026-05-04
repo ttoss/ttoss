@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useGeoVis } from './GeoVisProvider';
+import { useGeoVis } from './contexts';
 
 interface GeoVisCanvasProps {
   viewId: string;

@@ -294,6 +294,14 @@
             "type": "object",
             "additionalProperties": true
           },
+          "legends": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/LegendSpec" }
+          },
+          "activeLegendId": {
+            "type": "string",
+            "minLength": 1
+          },
           "mapDataId": {
             "type": "string",
             "minLength": 1
@@ -320,6 +328,11 @@
     "metadata": {
       "type": "object",
       "additionalProperties": true
+    },
+    "adapterHints": {},
+    "legends": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/LegendSpec" }
     },
     "mapData": {
       "type": "array",
@@ -355,25 +368,64 @@
           }
         }
       }
-    },
-    "adapterHints": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "maplibre": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "styleVersion": {
-              "type": "integer",
-              "const": 8
-            }
-          }
-        }
-      }
     }
   },
   "$defs": {
+    "CategoricalColorBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "property"],
+      "properties": {
+        "type": { "const": "categorical" },
+        "property": { "type": "string", "minLength": 1 },
+        "palette": { "type": "string" },
+        "colors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "defaultColor": { "type": "string" }
+      }
+    },
+    "QuantitativeColorBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "property", "scale"],
+      "properties": {
+        "type": { "const": "quantitative" },
+        "property": { "type": "string", "minLength": 1 },
+        "scale": { "const": "threshold" },
+        "thresholds": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "palette": { "type": "string" },
+        "colors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "defaultColor": { "type": "string" }
+      }
+    },
+    "ColorBy": {
+      "oneOf": [
+        { "$ref": "#/$defs/CategoricalColorBy" },
+        { "$ref": "#/$defs/QuantitativeColorBy" }
+      ]
+    },
+    "LegendSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "colorBy"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "colorBy": { "$ref": "#/$defs/ColorBy" }
+      }
+    },
     "Position": {
       "type": "array",
       "items": { "type": "number" },

@@ -313,7 +313,7 @@ const ReferencesSection = () => {
  * expose the issue: Kigali City has the smallest absolute population (1.1M)
  * but the highest density (1,551 hab/km²). On the left map it appears almost
  * white; on the right it is the darkest. Both metrics are supplied via
- * hardcoded `mapData` joined to the source by `feature.properties['name:en']`.
+ * hardcoded `mapData` joined to the source by `feature.properties.name`.
  */
 export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
