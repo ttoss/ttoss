@@ -7,7 +7,10 @@ import type {
   VisualizationSpec,
 } from '../../spec/types';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
-import { setPaintWhenReady } from './legendFillPaint';
+import {
+  cancelPendingStyleListenersForLayer,
+  setPaintWhenReady,
+} from './legendFillPaint';
 import { specPaintKeyToMaplibre } from './paintKeyMap';
 import {
   resolvePromoteIdForSource,
@@ -48,6 +51,7 @@ const applyLayerRemove = (
   viewState: LayerHostState,
   layerId: string
 ): void => {
+  cancelPendingStyleListenersForLayer(map, layerId);
   if (map.getLayer(layerId)) map.removeLayer(layerId);
   viewState.spec = {
     ...viewState.spec,
@@ -120,8 +124,10 @@ export const applySourcePatch = (
   const sourceId = patch.value as string;
   if (map.getSource(sourceId)) {
     for (const layer of viewState.spec.layers) {
-      if (layer.sourceId === sourceId && map.getLayer(layer.id))
+      if (layer.sourceId === sourceId && map.getLayer(layer.id)) {
+        cancelPendingStyleListenersForLayer(map, layer.id);
         map.removeLayer(layer.id);
+      }
     }
     map.removeSource(sourceId);
   }

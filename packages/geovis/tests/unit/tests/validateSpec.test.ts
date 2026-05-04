@@ -184,4 +184,91 @@ describe('validateSpec — mapData', () => {
 
     expect(result.valid).toBe(true);
   });
+
+  test('rejects threshold legends with out-of-order breakpoints', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [100, 50],
+            colors: ['#eff6ff', '#93c5fd', '#3b82f6'],
+          },
+        },
+      ],
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          activeLegendId: 'population',
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/ascending order/);
+    }
+  });
+
+  test('rejects threshold legends with non-finite threshold values (NaN)', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [Number.NaN],
+            colors: ['#eff6ff', '#93c5fd'],
+          },
+        },
+      ],
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          activeLegendId: 'population',
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    }
+  });
+
+  test('rejects threshold legends with non-finite threshold values (Infinity)', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [Infinity],
+            colors: ['#eff6ff', '#93c5fd'],
+          },
+        },
+      ],
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          activeLegendId: 'population',
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    }
+  });
 });
