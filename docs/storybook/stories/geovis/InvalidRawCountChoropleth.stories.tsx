@@ -8,19 +8,21 @@ import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
-import type { LockRef, MapRef } from './_map-story-helpers';
 import {
   ColorSwatchLegend,
   FeatureStatePainter,
-  MapLabel,
   MapOverlayLegend,
-  MapSync,
-} from './_map-story-helpers';
+} from './_choropleth-helpers';
+import type { LockRef, MapRef } from './_map-story-helpers';
+import { FitBoundsToUrlSource, MapLabel, MapSync } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
   tags: ['autodocs'],
 } as Meta;
+
+// Rwanda provinces are fetched from a remote URL — bbox is computed after load.
+const RWANDA_SOURCE_URL = fixture.sources[0].data as string;
 
 const spec = fixture as unknown as VisualizationSpec;
 
@@ -227,6 +229,7 @@ const MapPanel = ({
       />
       <GeoVisProvider spec={providerSpec}>
         <GeoVisCanvas viewId={viewId} style={canvasStyle} />
+        <FitBoundsToUrlSource url={RWANDA_SOURCE_URL} />
         <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
         <FeatureStatePainter
           layerId="rwanda-choropleth"
@@ -369,10 +372,14 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
   }, []);
 
   const recenter = React.useCallback(() => {
-    const { center, zoom } = fixture.view;
+    // Rwanda approximate bbox — used when no center/zoom is present in the fixture.
+    const rwandaBbox: [[number, number], [number, number]] = [
+      [28.85, -2.84],
+      [30.9, -1.05],
+    ];
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.fitBounds(rwandaBbox, { animate: false });
     }
     syncLock.current = false;
   }, []);

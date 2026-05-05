@@ -1,12 +1,26 @@
 import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
+import type { Bbox } from './_map-story-helpers';
+import { FitBoundsToBbox, FitBoundsToUrlSource } from './_map-story-helpers';
+
+/**
+ * Generic fixture story shell.
+ * - Pass `bbox` for inline GeoJSON sources (bbox pre-computed at module load).
+ * - Pass `sourceUrl` for remote GeoJSON sources (bbox computed after fetch).
+ */
 export const GeoVisFixtureStory = ({
   spec,
   references,
+  bbox,
+  sourceUrl,
 }: {
   spec: VisualizationSpec;
   references?: { label: string; url: string }[];
+  /** Pre-computed bounding box for inline GeoJSON sources. */
+  bbox?: Bbox | null;
+  /** URL of a remote GeoJSON source; bbox is computed after the fetch resolves. */
+  sourceUrl?: string;
 }) => {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
@@ -17,6 +31,11 @@ export const GeoVisFixtureStory = ({
       <div style={{ width: '100%', height: 560, border: '1px solid #d4d4d8' }}>
         <GeoVisProvider spec={spec}>
           <GeoVisCanvas viewId="primary" />
+          {sourceUrl != null ? (
+            <FitBoundsToUrlSource url={sourceUrl} />
+          ) : bbox != null ? (
+            <FitBoundsToBbox bbox={bbox} />
+          ) : null}
         </GeoVisProvider>
       </div>
       {references && references.length > 0 ? (

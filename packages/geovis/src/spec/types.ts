@@ -89,8 +89,8 @@ export type GeoVisGeometryType =
   | 'heatmap';
 
 export interface ViewState {
-  center: LngLat;
-  zoom: number;
+  center?: LngLat;
+  zoom?: number;
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
@@ -271,6 +271,12 @@ export interface MapData {
 export interface BaseMapSpec {
   styleUrl?: string;
   attribution?: string;
+  /**
+   * When `false`, the basemap tiles are hidden — the map renders with a blank
+   * background. GeoJSON layers remain fully interactive.
+   * Defaults to `true`.
+   */
+  visible?: boolean;
 }
 
 /**
@@ -293,7 +299,7 @@ export interface VisualizationSpec {
   title?: string;
   description?: string;
   engine: 'maplibre';
-  view: ViewState;
+  view?: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];
   layers: VisualizationLayer[];

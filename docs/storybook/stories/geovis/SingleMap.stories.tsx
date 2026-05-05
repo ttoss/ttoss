@@ -2,6 +2,7 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 
 import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.json';
+import { computeBbox } from './_map-story-helpers';
 import { GeoVisFixtureStory } from './GeoVisFixtureStory';
 
 export default {
@@ -9,10 +10,15 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
+const singleMapBbox = computeBbox(
+  singleMapSpec.sources[0].data as GeoJSON.FeatureCollection
+);
+
 export const SingleMap: StoryFn = () => {
   return (
     <GeoVisFixtureStory
       spec={singleMapSpec as unknown as VisualizationSpec}
+      bbox={singleMapBbox}
       references={[
         {
           label: 'MapLibre official example (source)',

@@ -17,4 +17,10 @@ export {
   AWSTimeTC,
   AWSURLTC,
 } from './scalars';
-export type { AppSyncIdentityCognito } from 'aws-lambda';
+export type {
+  AppSyncIdentity,
+  AppSyncIdentityCognito,
+  AppSyncIdentityIAM,
+  AppSyncIdentityLambda,
+  AppSyncIdentityOIDC,
+} from 'aws-lambda';

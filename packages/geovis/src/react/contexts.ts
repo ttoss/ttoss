@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { SpecPatch } from '../runtime/adapter';
+import type { SetViewOptions, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
@@ -30,6 +30,8 @@ export interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
   applyPatch: (patch: SpecPatch) => void;
+  /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
+  setView: (options: SetViewOptions) => void;
   /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
   policyViolations: PolicyViolation[];
 }

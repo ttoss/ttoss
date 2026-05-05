@@ -4,7 +4,7 @@
   "title": "VisualizationSpec",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "engine", "view", "sources", "layers"],
+  "required": ["id", "engine", "sources", "layers"],
   "properties": {
     "id": {
       "type": "string",
@@ -23,7 +23,7 @@
     "view": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["center", "zoom"],
+      "required": [],
       "properties": {
         "center": {
           "type": "array",
@@ -57,6 +57,10 @@
         },
         "attribution": {
           "type": "string"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "When false, basemap tiles are hidden. GeoJSON layers remain interactive."
         }
       }
     },

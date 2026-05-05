@@ -5,12 +5,21 @@ import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/split-compare.json';
 import type { LockRef, MapRef } from './_map-story-helpers';
-import { MapLabel, MapSync } from './_map-story-helpers';
+import {
+  computeBbox,
+  FitBoundsToBbox,
+  MapLabel,
+  MapSync,
+} from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/SplitCompare',
   tags: ['autodocs'],
 } as Meta;
+
+const splitCompareBbox = computeBbox(
+  fixture.sources[0].data as GeoJSON.FeatureCollection
+);
 
 // Specs derived from the same fixture.
 // Both share source, view and basemap. Only the layers differ.
@@ -43,10 +52,16 @@ export const SplitCompare: StoryFn = () => {
   const syncLock = React.useRef(false) as LockRef;
 
   const recenter = () => {
-    const { center, zoom } = fixture.view;
+    if (!splitCompareBbox) return;
     syncLock.current = true;
     for (const map of [leftMapRef.current, rightMapRef.current]) {
-      map?.jumpTo({ center: center as [number, number], zoom, animate: false });
+      map?.fitBounds(
+        [
+          [splitCompareBbox[0], splitCompareBbox[1]],
+          [splitCompareBbox[2], splitCompareBbox[3]],
+        ],
+        { animate: false }
+      );
     }
     syncLock.current = false;
   };
@@ -96,6 +111,7 @@ export const SplitCompare: StoryFn = () => {
           <MapLabel>Territorial coverage (fill)</MapLabel>
           <GeoVisProvider spec={leftSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
+            <FitBoundsToBbox bbox={splitCompareBbox} />
             <MapSync
               selfRef={leftMapRef}
               peerRef={rightMapRef}
@@ -108,6 +124,7 @@ export const SplitCompare: StoryFn = () => {
           <MapLabel>Zone perimeters (line)</MapLabel>
           <GeoVisProvider spec={rightSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
+            <FitBoundsToBbox bbox={splitCompareBbox} />
             <MapSync
               selfRef={rightMapRef}
               peerRef={leftMapRef}

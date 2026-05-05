@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-import type { EngineAdapter, SpecPatch } from '../runtime/adapter';
+import type {
+  EngineAdapter,
+  SetViewOptions,
+  SpecPatch,
+} from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
@@ -163,6 +167,15 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     [runtime, spec]
   );
 
+  const setView = React.useCallback(
+    (options: SetViewOptions) => {
+      if (!runtime) return;
+      runtime.setView(options);
+      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+    },
+    [runtime, spec]
+  );
+
   if (adapterError) throw adapterError;
 
   // Memoize the context value so that high-frequency hover updates inside
@@ -175,9 +188,10 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       runtime,
       spec: effectiveSpec,
       applyPatch,
+      setView,
       policyViolations,
     };
-  }, [runtime, effectiveSpec, applyPatch, policyViolations]);
+  }, [runtime, effectiveSpec, applyPatch, setView, policyViolations]);
 
   return (
     <GeoVisContext.Provider value={ctxValue}>

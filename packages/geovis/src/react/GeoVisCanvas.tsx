@@ -2,8 +2,14 @@ import * as React from 'react';
 
 import { useGeoVis } from './contexts';
 
-interface GeoVisCanvasProps {
-  viewId: string;
+export interface GeoVisCanvasProps {
+  /**
+   * Identifier for this canvas within the adapter's ViewMap.
+   * Must be unique when multiple `GeoVisCanvas` elements share one
+   * `GeoVisProvider` (e.g. split-compare layouts). Defaults to `'default'`
+   * so single-map stories do not need to supply this prop.
+   */
+  viewId?: string;
   style?: React.CSSProperties;
   className?: string;
 }
@@ -15,7 +21,7 @@ interface GeoVisCanvasProps {
  * unmounts it automatically when removed from the tree.
  */
 export const GeoVisCanvas = ({
-  viewId,
+  viewId = 'default',
   style,
   className,
 }: GeoVisCanvasProps) => {

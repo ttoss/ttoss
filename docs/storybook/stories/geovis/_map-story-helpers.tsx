@@ -95,275 +95,233 @@ export const MapLabel = ({ children }: { children: React.ReactNode }) => {
 };
 
 // ---------------------------------------------------------------------------
-// ChoroplethPainter
+
+// ---------------------------------------------------------------------------
+// Bbox / FitBoundsToBbox
 // ---------------------------------------------------------------------------
 
-export interface ColorStep {
-  threshold: number;
-  color: string;
-}
+export type Bbox = [number, number, number, number];
 
 /**
- * Builds the MapLibre `step` paint expression for a property-driven choropleth.
- *
- * `field` can be:
- * - string: wraps as `['get', field]` — reads the value from a feature property.
- * - array:  used as-is, allowing arbitrary expressions
- *           (e.g. `['/', ['get', 'pop'], ['get', 'area']]`).
- *
- * Pure function (no side effects) so it can be unit-tested without React
- * or a MapLibre instance — the expression IS the contract: any change to
- * its shape directly changes which colour each feature gets.
+ * Walks every coordinate in a GeoJSON FeatureCollection and returns the
+ * axis-aligned bounding box `[minLng, minLat, maxLng, maxLat]`. Returns null
+ * when the collection has no usable coordinates.
  */
-export const buildChoroplethPaintExpression = (
-  field: string | readonly unknown[],
-  defaultColor: string,
-  steps: ColorStep[]
-): unknown[] => {
-  const getExpr = typeof field === 'string' ? ['get', field] : field;
-  return [
-    'step',
-    getExpr,
-    defaultColor,
-    ...steps.flatMap(({ threshold, color }) => {
-      return [threshold, color];
-    }),
-  ];
+export const computeBbox = (fc: GeoJSON.FeatureCollection): Bbox | null => {
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+
+  const visit = (coords: unknown): void => {
+    if (!Array.isArray(coords)) return;
+    if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+      const [lng, lat] = coords as [number, number];
+      if (lng < minLng) minLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lng > maxLng) maxLng = lng;
+      if (lat > maxLat) maxLat = lat;
+      return;
+    }
+    for (const c of coords) visit(c);
+  };
+
+  for (const feature of fc.features) {
+    if (!feature.geometry) continue;
+    if (feature.geometry.type === 'GeometryCollection') {
+      for (const g of feature.geometry.geometries) {
+        visit((g as { coordinates?: unknown }).coordinates);
+      }
+    } else {
+      visit(feature.geometry.coordinates);
+    }
+  }
+
+  if (!Number.isFinite(minLng) || !Number.isFinite(minLat)) return null;
+  return [minLng, minLat, maxLng, maxLat];
 };
 
 /**
- * Builds the MapLibre `step` paint expression for a feature-state-driven
- * choropleth (the `mapData` mechanism).
- *
- * `coalesce(['feature-state','value'], 0)` is required so that features
- * without a feature-state set fall into the `defaultColor` slot. Without
- * the coalesce, MapLibre returns `null` and the feature renders transparent
- * — indistinguishable from a missing geometry.
- *
- * Pure function for the same reason as `buildChoroplethPaintExpression`.
+ * Estimates a sensible `maxZoom` ceiling for `fitBounds` based on the
+ * approximate area of the bounding box in km².
+ * Prevents over-zoom on small geometries that would lose geographic context.
  */
-export const buildFeatureStatePaintExpression = (
-  defaultColor: string,
-  steps: ColorStep[]
-): unknown[] => {
-  return [
-    'step',
-    ['coalesce', ['feature-state', 'value'], 0],
-    defaultColor,
-    ...steps.flatMap(({ threshold, color }) => {
-      return [threshold, color];
-    }),
-  ];
+export const estimateMaxZoom = (bbox: Bbox): number => {
+  const areaKm2 = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) * 111 * 111;
+  if (areaKm2 > 100_000) return 8; // country
+  if (areaKm2 > 5_000) return 10; // state / large region
+  if (areaKm2 > 100) return 13; // municipality
+  return 15; // neighbourhood / district
 };
 
 /**
- * Render-less component mounted inside a GeoVisProvider.
- * Applies a data-driven `step` colour expression via getNativeInstance().
- * Required because FillPaint.fillColor does not support MapLibre expressions (string only).
+ * Render-less component that imperatively fits the camera so the supplied bbox
+ * is centered inside the **useful area** of the map (viewport minus insets),
+ * maximising the rendered geometry while clearing fixed UI overlays.
  *
- * `field` can be:
- * - string: uses ['get', field] — direct feature property
- * - array: used as an arbitrary MapLibre expression (e.g. ['/', ['get', 'pop'], ['get', 'area']])
+ * MapLibre `fitBounds(bbox, { padding })` guarantees:
+ *   center( bbox )  ===  center( viewport − padding )
  *
- * Retries on `idle` when the layer does not yet exist, to handle races
- * between React mounting and adapter style loading.
+ * `overlayInsets` mirrors `PaddingOptions`. Set sides where overlays sit:
+ *   - top/left for in-map labels and legends
+ *   - leave bottom/right at 0 for overlays that sit on top of the map
+ *     (e.g. MapLibre’s `AttributionControl` at bottom-right)
+ *
+ * Must be placed AFTER `GeoVisCanvas` in the JSX tree so that the MapLibre map
+ * is already mounted when this component’s effect fires.
  */
-export const ChoroplethPainter = ({
-  layerId,
-  field,
-  defaultColor,
-  steps,
+export const FitBoundsToBbox = ({
+  bbox,
+  overlayInsets,
 }: {
-  layerId: string;
-  field: string | readonly unknown[];
-  defaultColor: string;
-  steps: ColorStep[];
+  bbox: Bbox | null;
+  overlayInsets?: { top: number; bottom: number; left: number; right: number };
 }) => {
   const { runtime } = useGeoVis();
 
   React.useEffect(() => {
-    if (!runtime) return;
+    if (!runtime || !bbox) return;
+
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    let mounted = true;
-
-    const expr = buildChoroplethPaintExpression(field, defaultColor, steps);
-
-    const applyWhenReady = () => {
-      if (!mounted) return;
-      if (map.getLayer(layerId)) {
-        map.setPaintProperty(layerId, 'fill-color', expr);
-      } else {
-        map.once('idle', applyWhenReady);
-      }
+    const computePadding = () => {
+      const container = map.getContainer();
+      return (
+        overlayInsets ?? {
+          top: Math.round(container.clientHeight * 0.06),
+          bottom: Math.round(container.clientHeight * 0.06),
+          left: Math.round(container.clientWidth * 0.06),
+          right: Math.round(container.clientWidth * 0.06),
+        }
+      );
     };
 
-    if (map.isStyleLoaded()) {
-      applyWhenReady();
-    } else {
-      map.once('load', applyWhenReady);
+    /**
+     * Guards applyInstant so it only runs AFTER the initial animated fit
+     * completes.  Without this, ResizeObserver fires ~1s after mount
+     * (container gets dimensions), but MapLibre's `idle` only fires ~3s
+     * later (after tiles load).  The instant fit pre-positions the camera
+     * at the target, leaving nothing for the flyTo to animate.
+     */
+    let initialFitDone = false;
+
+    /**
+     * Initial fit — called once after the map reports idle.
+     * Uses `animate: true` (no `duration` override) so MapLibre performs a
+     * smooth flyTo-style transition from the default [0,0]/zoom=1 position
+     * to the computed bbox camera.
+     */
+    const applyAnimated = () => {
+      const container = map.getContainer();
+      if (container.clientWidth === 0 || container.clientHeight === 0) {
+        initialFitDone = true;
+        return;
+      }
+      map.resize();
+      map.fitBounds(
+        [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ],
+        {
+          padding: computePadding(),
+          animate: true,
+          maxZoom: estimateMaxZoom(bbox),
+        }
+      );
+      map.once('moveend', () => {
+        initialFitDone = true;
+      });
+    };
+
+    /**
+     * Refit on container resize — instant to avoid re-triggering the animation
+     * every time the user resizes the Storybook panel.
+     * Skipped until the initial animated fit completes so the flyTo is not
+     * pre-empted by the ResizeObserver's first callback.
+     */
+    const applyInstant = (entries: ResizeObserverEntry[]) => {
+      if (!initialFitDone) return;
+      const rect = entries[0]?.contentRect;
+      if (!rect || rect.width === 0 || rect.height === 0) return;
+      map.resize();
+      map.fitBounds(
+        [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ],
+        {
+          padding: computePadding(),
+          animate: false,
+          maxZoom: estimateMaxZoom(bbox),
+        }
+      );
+    };
+
+    map.once('idle', applyAnimated);
+
+    // When bbox arrives after the map's initial idle (e.g. from a URL fetch),
+    // `once('idle', ...)` would wait indefinitely — the event already fired.
+    // Calling `applyAnimated` directly handles that case.
+    if (map.loaded()) {
+      map.off('idle', applyAnimated);
+      applyAnimated();
     }
 
+    const observer = new ResizeObserver(applyInstant);
+    observer.observe(map.getContainer());
+
     return () => {
-      mounted = false;
+      map.off('idle', applyAnimated);
+      observer.disconnect();
     };
-  }, [runtime, layerId, field, defaultColor, steps]);
+  }, [runtime, bbox, overlayInsets]);
 
   return null;
 };
 
 // ---------------------------------------------------------------------------
-// FeatureStatePainter
+// FitBoundsToUrlSource
 // ---------------------------------------------------------------------------
 
 /**
- * Render-less component mounted inside a GeoVisProvider.
- * Applies a `step` colour expression driven by `['feature-state', 'value']`
- * instead of a feature property.
+ * Fetches a remote GeoJSON URL, computes its bbox once the data arrives, then
+ * fits the camera via `FitBoundsToBbox`. The fit fires as soon as both the
+ * fetch resolves and the map reports idle — whichever comes last.
  *
- * Use this with `mapData` sources where the value is injected at runtime via
- * `setFeatureState` — it does NOT read from GeoJSON properties.
- *
- * The paint expression is set once; the choropleth updates automatically as
- * the runtime applies new feature-state values when `mapData` changes.
+ * Must be placed AFTER `GeoVisCanvas` in the JSX tree.
+ * Silently ignores fetch errors (story utility).
  */
-export const FeatureStatePainter = ({
-  layerId,
-  defaultColor,
-  steps,
+export const FitBoundsToUrlSource = ({
+  url,
+  overlayInsets,
 }: {
-  layerId: string;
-  defaultColor: string;
-  steps: ColorStep[];
+  url: string;
+  overlayInsets?: { top: number; bottom: number; left: number; right: number };
 }) => {
-  const { runtime } = useGeoVis();
+  const [bbox, setBbox] = React.useState<Bbox | null>(null);
 
   React.useEffect(() => {
-    if (!runtime) return;
-    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
-    if (!map) return;
-
-    let mounted = true;
-
-    const applyWhenReady = () => {
-      if (!mounted) return;
-      if (map.getLayer(layerId)) {
-        const expr = buildFeatureStatePaintExpression(defaultColor, steps);
-        map.setPaintProperty(layerId, 'fill-color', expr);
-      } else {
-        map.once('idle', applyWhenReady);
-      }
-    };
-
-    if (map.isStyleLoaded()) {
-      applyWhenReady();
-    } else {
-      map.once('load', applyWhenReady);
-    }
-
+    let cancelled = false;
+    fetch(url)
+      .then((r) => {
+        return r.json();
+      })
+      .then((fc: GeoJSON.FeatureCollection) => {
+        if (!cancelled) setBbox(computeBbox(fc));
+      })
+      .catch(() => {
+        // silently ignore errors in story context
+      });
     return () => {
-      mounted = false;
+      cancelled = true;
     };
-  }, [runtime, layerId, defaultColor, steps]);
+  }, [url]);
 
-  return null;
+  return <FitBoundsToBbox bbox={bbox} overlayInsets={overlayInsets} />;
 };
 
-// ---------------------------------------------------------------------------
-// MapOverlayLegend
-// ---------------------------------------------------------------------------
-
-/**
- * Gradient overlay positioned below the MapLabel (top-left of the panel).
- * Must be a direct child of a div with `position: relative` (the map panel);
- * does not need to be inside a GeoVisProvider.
- *
- * [cartography] Robinson & Slocum “Thematic Cartography” ch. 18:
- * In side-by-side comparison maps, the legend should be grouped with the
- * corresponding layer label, forming a cohesive informational block that
- * the reader processes BEFORE exploring the data — the pattern followed by
- * ESRI StoryMaps and ArcGIS Dashboards.
- * `top: 40` anchors the overlay immediately below the MapLabel (~32px tall).
- * Bottom-left (ILC) is preferred for isolated maps, but in split-compare
- * top-left groups label + scale and avoids overlap with MapLibre’s
- * attribution bar (bottom-right).
- */
-export const MapOverlayLegend = ({
-  label,
-  defaultColor,
-  steps,
-  formatValue,
-}: {
-  label?: string;
-  defaultColor: string;
-  steps: ColorStep[];
-  formatValue?: (v: number) => string;
-}) => {
-  const colors = [
-    defaultColor,
-    ...steps.map((s) => {
-      return s.color;
-    }),
-  ];
-  const gradient = `linear-gradient(to right, ${colors.join(', ')})`;
-  const fmt =
-    formatValue ??
-    ((v: number) => {
-      return String(v);
-    });
-  const minLabel = `< ${fmt(steps[0].threshold)}`;
-  const maxLabel = `> ${fmt(steps[steps.length - 1].threshold)}`;
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        // Anchored below the MapLabel (top: 8, ~28px tall) — see JSDoc comment.
-        top: 40,
-        left: 8,
-        zIndex: 1,
-        pointerEvents: 'none',
-        background: 'rgba(255,255,255,0.88)',
-        borderRadius: 4,
-        padding: '5px 8px',
-        minWidth: 130,
-      }}
-    >
-      {label && (
-        <div
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            color: '#374151',
-            marginBottom: 3,
-          }}
-        >
-          {label}
-        </div>
-      )}
-      <div style={{ height: 8, background: gradient, borderRadius: 2 }} />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: 2,
-        }}
-      >
-        <span style={{ fontSize: 9, color: '#6b7280' }}>{minLabel}</span>
-        <span style={{ fontSize: 9, color: '#6b7280' }}>{maxLabel}</span>
-      </div>
-    </div>
-  );
-};
-
-// ---------------------------------------------------------------------------
-// ColorSwatchLegend
-// ---------------------------------------------------------------------------
-
-/**
- * Swatch legend (colour square + value band) for the section below the maps.
- */
 // ---------------------------------------------------------------------------
 // GeoVisSplitLayout
 // ---------------------------------------------------------------------------
@@ -457,76 +415,6 @@ export const GeoVisSplitLayout = ({
           {render?.(right)}
         </GeoVisProvider>
       </div>
-    </div>
-  );
-};
-
-export const ColorSwatchLegend = ({
-  title,
-  defaultColor,
-  steps,
-  formatValue,
-}: {
-  title: string;
-  defaultColor: string;
-  steps: ColorStep[];
-  formatValue?: (v: number) => string;
-}) => {
-  const fmt =
-    formatValue ??
-    ((v: number) => {
-      return v.toLocaleString('en-US');
-    });
-  const entries: { color: string; label: string }[] = [
-    { color: defaultColor, label: `< ${fmt(steps[0].threshold)}` },
-    ...steps.map((s, i) => {
-      return {
-        color: s.color,
-        label:
-          i < steps.length - 1
-            ? `${fmt(s.threshold)} – ${fmt(steps[i + 1].threshold)}`
-            : `\u2265 ${fmt(s.threshold)}`,
-      };
-    }),
-  ];
-
-  return (
-    <div>
-      <div
-        style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: '#374151',
-          marginBottom: 6,
-        }}
-      >
-        {title}
-      </div>
-      {entries.map((e, i) => {
-        return (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginBottom: 3,
-            }}
-          >
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                background: e.color,
-                borderRadius: 2,
-                border: '1px solid rgba(0,0,0,0.12)',
-                flexShrink: 0,
-              }}
-            />
-            <span style={{ fontSize: 11, color: '#4b5563' }}>{e.label}</span>
-          </div>
-        );
-      })}
     </div>
   );
 };
