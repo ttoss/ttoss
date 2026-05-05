@@ -51,6 +51,81 @@ const MyMap = () => (
 );
 ```
 
+## Spec reference
+
+### `VisualizationSpec`
+
+Top-level spec object passed to `GeoVisProvider`.
+
+| Field         | Type                      | Required | Description                                                                                                                                |
+| ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                    |
+| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                           |
+| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`. |
+| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                          |
+| `title`       | `string`                  |          | Human-readable title.                                                                                                                      |
+| `description` | `string`                  |          | Human-readable description.                                                                                                                |
+| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                  |
+| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers.                                                      |
+| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries by `legendId`.                                                                            |
+| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                         |
+| `views`       | `VisualizationView[]`     |          | Multi-panel layout config. **Not yet implemented** — the adapter ignores this field at runtime.                                            |
+| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                      |
+
+### `VisualizationLayer`
+
+Each entry in `spec.layers` describes one rendered layer.
+
+| Field            | Type                 | Required | Description                                                                            |
+| ---------------- | -------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `id`             | `string`             | ✓        | Unique layer identifier.                                                               |
+| `sourceId`       | `string`             | ✓        | References a `DataSource.id` from `spec.sources`.                                      |
+| `geometry`       | `GeoVisGeometryType` | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.    |
+| `sourceLayer`    | `string`             |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.        |
+| `title`          | `string`             |          | Human-readable layer name.                                                             |
+| `visible`        | `boolean`            |          | Whether the layer is rendered. Defaults to `true`.                                     |
+| `minzoom`        | `number`             |          | Minimum zoom level (0–24) at which the layer is visible.                               |
+| `maxzoom`        | `number`             |          | Maximum zoom level (0–24) at which the layer is visible.                               |
+| `paint`          | `LayerPaint`         |          | Per-geometry paint properties. See examples below.                                     |
+| `legends`        | `LegendSpec[]`       |          | Alternative legend definitions exposed as runtime toggles.                             |
+| `activeLegendId` | `string`             |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.      |
+| `mapDataId`      | `string`             |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). |
+
+### Paint properties
+
+The `paint` field accepts different shapes depending on `geometry`. The three most common:
+
+**Polygon (`geometry: 'polygon'`) — `FillPaint`**
+
+```typescript
+paint: {
+  fillColor: '#3b82f6',   // fill-color
+  fillOpacity: 0.6,       // fill-opacity
+  lineColor: '#1d4ed8',   // outline color (fill-outline-color)
+}
+```
+
+**Line (`geometry: 'line'`) — `LinePaint`**
+
+```typescript
+paint: {
+  lineColor: '#ef4444',   // line-color
+  lineWidth: 2,           // line-width (pixels)
+  lineOpacity: 0.8,       // line-opacity
+}
+```
+
+**Point (`geometry: 'point'`) — `CirclePaint`**
+
+```typescript
+paint: {
+  circleColor: '#10b981',       // circle-color
+  circleRadius: 6,              // circle-radius (pixels)
+  circleStrokeColor: '#065f46', // circle-stroke-color
+  circleStrokeWidth: 1,         // circle-stroke-width (pixels)
+}
+```
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:
