@@ -287,20 +287,21 @@ if (!result.valid) {
 
 ## Applying Patches
 
-Use `useGeoVis` to access `applyPatch` for efficient paint updates without re-rendering the full spec. A `SpecPatch` has the shape:
+Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec. A `SpecPatch` has the shape:
 
 ```ts
-// Replace an existing paint property on a layer:
 type SpecPatch =
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData' | 'view' | 'style';
       op: 'replace';
       path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
+      //                "mapData.<mapDataId>"
+      //                "mapData.<mapDataId>.data.<geometryId>"
       value?: unknown; // required for 'replace'
       rationale?: string;
     }
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData' | 'view' | 'style';
       op: 'add' | 'remove';
       path?: string; // unused for layer/source add and remove ops
       value?: unknown;
@@ -448,6 +449,16 @@ Provides a GeoVis runtime context for child components. Resolves the appropriate
 | `spec`     | `VisualizationSpec` | The visualization spec (memoize with `useMemo` to avoid redundant updates). |
 | `children` | `React.ReactNode`   | Child components, typically `GeoVisCanvas`.                                 |
 
+> **Error handling:** if the engine adapter throws during initialization, `GeoVisProvider` re-throws the error. Wrap it with an `<ErrorBoundary>` to catch adapter errors and display a fallback UI instead of a blank screen.
+>
+> ```tsx
+> <ErrorBoundary fallback={<p>Map failed to load.</p>}>
+>   <GeoVisProvider spec={spec}>
+>     <GeoVisCanvas viewId="main" style={{ width: '100%', height: '400px' }} />
+>   </GeoVisProvider>
+> </ErrorBoundary>
+> ```
+
 ### `GeoVisCanvas`
 
 Renders the map inside a `div` container mounted by the active engine. Must be used inside `GeoVisProvider`.
@@ -460,7 +471,29 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 ### `useGeoVis`
 
-Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations }`. Must be called inside `GeoVisProvider`.
+Returns the current `GeoVisContextValue`. Must be called inside `GeoVisProvider`.
+
+| Return value       | Type                                | Description                                                     |
+| ------------------ | ----------------------------------- | --------------------------------------------------------------- |
+| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).       |
+| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                   |
+| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).    |
+| `policyViolations` | `string[]`                          | Active policy violation messages derived from the current spec. |
+| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.    |
+
+`SetViewOptions` fields: `center?: LngLat`, `zoom?: number`, `pitch?: number`, `bearing?: number`, `animate?: boolean` (defaults `true` — smooth flyTo).
+
+```tsx
+const { setView } = useGeoVis();
+
+// Fly to a new center/zoom
+setView({ center: [-46.6, -23.5], zoom: 12 });
+
+// Instant jump (no animation)
+setView({ center: [-43.1, -22.9], zoom: 10, animate: false });
+```
+
+> `setView` is a no-op before the map has mounted. Calls during the initial render are silently ignored.
 
 ### `useGeoVisHover`
 
@@ -484,7 +517,7 @@ Renders a static, non-interactive legend resolved from the active spec. Resoluti
 
 ### `GeoVisHoverTooltip`
 
-Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Must be rendered inside the same `position: relative` container as `<GeoVisCanvas>` so its absolute positioning anchors to the map area. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
+Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Uses `position: fixed` and viewport-relative coordinates internally, so it can be placed anywhere in the React tree — no shared container with `<GeoVisCanvas>` required. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
 
 | Prop              | Type                                      | Description                                                                                      |
 | ----------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
