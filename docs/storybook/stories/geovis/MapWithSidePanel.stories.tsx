@@ -5,11 +5,16 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 
 import mapWithSidePanelSpec from '../../../../packages/geovis/src/fixtures/map-with-side-panel.json';
+import type { Bbox } from './_map-story-helpers';
+import { FitBoundsToBbox } from './_map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MapWithSidePanel',
   tags: ['autodocs'],
 } as Meta;
+
+// Washington D.C. area — bbox hardcoded because the fixture has no inline GeoJSON.
+const MAP_BBOX: Bbox = [-79.52, 36.39, -74.52, 41.39];
 
 const SIDEBAR_WIDTH = 300;
 
@@ -92,14 +97,16 @@ const SidePanels = () => {
         }}
       >
         Left Panel
-        <div
+        <button
+          aria-label={leftOpen ? 'Collapse left panel' : 'Expand left panel'}
+          type="button"
           style={{ ...toggleButtonStyle, right: '-1.5em' }}
           onClick={() => {
             return toggle('left', leftOpen, setLeftOpen);
           }}
         >
           {leftOpen ? '←' : '→'}
-        </div>
+        </button>
       </div>
       <div
         style={{
@@ -109,14 +116,16 @@ const SidePanels = () => {
         }}
       >
         Right Panel
-        <div
+        <button
+          aria-label={rightOpen ? 'Collapse right panel' : 'Expand right panel'}
+          type="button"
           style={{ ...toggleButtonStyle, left: '-1.5em' }}
           onClick={() => {
             return toggle('right', rightOpen, setRightOpen);
           }}
         >
           {rightOpen ? '→' : '←'}
-        </div>
+        </button>
       </div>
     </>
   );
@@ -145,6 +154,7 @@ export const MapWithSidePanel: StoryFn = () => {
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
+          <FitBoundsToBbox bbox={MAP_BBOX} />
           <SidePanels />
         </GeoVisProvider>
       </div>

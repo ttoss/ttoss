@@ -3,10 +3,6 @@
   "title": "GeoJSON URL Map",
   "description": "Map using a remote GeoJSON URL as source.",
   "engine": "maplibre",
-  "view": {
-    "center": [-47.9292, -15.7801],
-    "zoom": 10
-  },
   "basemap": {
     "styleUrl": "https://tiles.openfreemap.org/styles/bright"
   },

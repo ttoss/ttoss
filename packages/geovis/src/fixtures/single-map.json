@@ -3,10 +3,6 @@
   "title": "Single Map",
   "description": "Single map using the official MapLibre example with one polygon and point features.",
   "engine": "maplibre",
-  "view": {
-    "center": [-121.403732, 40.492392],
-    "zoom": 10
-  },
   "basemap": {
     "styleUrl": "https://tiles.openfreemap.org/styles/bright"
   },

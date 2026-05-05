@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import maplibregl from 'maplibre-gl';
@@ -6,6 +7,7 @@ import type {
   CapabilitySet,
   EngineAdapter,
   MountedView,
+  SetViewOptions,
   SpecPatch,
 } from '../../runtime/adapter';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
@@ -17,7 +19,6 @@ import {
   reapplyAllMapData,
   removeMapDataFromSource,
 } from './mapDataFeatureState';
-import type { LayerHostState } from './patchDispatch';
 import { applyLayerPatch, applySourcePatch } from './patchDispatch';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
@@ -27,7 +28,26 @@ export { toMaplibreLayer, toMaplibreSource };
 
 const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
 
-const resolveStyleUrl = (spec: VisualizationSpec): string => {
+/**
+ * A valid MapLibre style with no sources and no layers, producing a blank canvas.
+ * Used when `spec.basemap.visible === false`.
+ */
+const BLANK_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {},
+  layers: [],
+};
+
+/**
+ * Returns the MapLibre style to use for this spec.
+ * When `basemap.visible` is explicitly `false`, returns a blank style so that
+ * GeoJSON layers render over a transparent/white canvas with no tile imagery.
+ * Otherwise falls back to `basemap.styleUrl` or the MapLibre demo tiles.
+ */
+const resolveStyle = (
+  spec: VisualizationSpec
+): string | maplibregl.StyleSpecification => {
+  if (spec.basemap?.visible === false) return BLANK_STYLE;
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
 };
 
@@ -36,29 +56,45 @@ const syncCenter = (
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
-  if (prev.center[0] === next.center[0] && prev.center[1] === next.center[1])
-    return;
+  if (!next?.center || next.center.length !== 2) return;
+  const [lng, lat] = next.center;
+  if (prev?.center?.[0] === lng && prev?.center?.[1] === lat) return;
   map.setCenter(next.center as maplibregl.LngLatLike);
 };
 
+const syncZoom = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (next?.zoom === undefined || next.zoom === prev?.zoom) return;
+  map.setZoom(next.zoom);
+};
+
+/** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
 const syncMapView = (
   map: maplibregl.Map,
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
+  if (!next) return;
+  const p = prev ?? {};
   syncCenter(map, prev, next);
-  if (prev.zoom !== next.zoom) map.setZoom(next.zoom);
-  const prevPitch = prev.pitch ?? 0;
-  const nextPitch = next.pitch ?? 0;
-  if (prevPitch !== nextPitch) map.setPitch(nextPitch);
-  const prevBearing = prev.bearing ?? 0;
-  const nextBearing = next.bearing ?? 0;
-  if (prevBearing !== nextBearing) map.setBearing(nextBearing);
+  syncZoom(map, prev, next);
+  const pp = p.pitch ?? 0;
+  const np = next.pitch ?? 0;
+  if (pp !== np) map.setPitch(np);
+  const pb = p.bearing ?? 0;
+  const nb = next.bearing ?? 0;
+  if (pb !== nb) map.setBearing(nb);
 };
 
-interface ViewState extends LayerHostState {
+type MapLibreStyle = string | maplibregl.StyleSpecification;
+
+interface ViewState {
   map: maplibregl.Map;
-  styleUrl: string;
+  spec: VisualizationSpec;
+  style: MapLibreStyle;
 }
 
 type ViewMap = Map<string, ViewState>;
@@ -66,16 +102,16 @@ type ViewMap = Map<string, ViewState>;
 const createMap = (
   spec: VisualizationSpec,
   container: HTMLElement
-): { map: maplibregl.Map; styleUrl: string } => {
+): { map: maplibregl.Map; style: MapLibreStyle } => {
   const { view } = spec;
-  const styleUrl = resolveStyleUrl(spec);
+  const style = resolveStyle(spec);
   const map = new maplibregl.Map({
     container,
-    style: styleUrl,
-    center: view.center,
-    zoom: view.zoom,
-    pitch: view.pitch ?? 0,
-    bearing: view.bearing ?? 0,
+    style,
+    center: (view?.center ?? [0, 0]) as maplibregl.LngLatLike,
+    zoom: view?.zoom ?? 1,
+    pitch: view?.pitch ?? 0,
+    bearing: view?.bearing ?? 0,
   });
   map.addControl(
     new maplibregl.NavigationControl({
@@ -85,7 +121,7 @@ const createMap = (
       showCompass: true,
     })
   );
-  return { map, styleUrl };
+  return { map, style };
 };
 
 const mountView = (
@@ -94,8 +130,8 @@ const mountView = (
   spec: VisualizationSpec,
   viewId: string
 ): MountedView => {
-  const { map, styleUrl } = createMap(spec, container);
-  views.set(viewId, { map, spec, styleUrl });
+  const { map, style } = createMap(spec, container);
+  views.set(viewId, { map, spec, style });
   map.on('load', () => {
     const viewState = views.get(viewId);
     if (!viewState) return;
@@ -126,7 +162,7 @@ const updateView = (
   spec: VisualizationSpec
 ): void => {
   const { map } = viewState;
-  const nextStyleUrl = resolveStyleUrl(spec);
+  const nextStyle = resolveStyle(spec);
   const previousSpec = viewState.spec;
   viewState.spec = spec;
   syncMapView(map, previousSpec.view, spec.view);
@@ -139,10 +175,10 @@ const updateView = (
     reapplyLegendDrivenFillPaint(map, updated.spec);
   };
 
-  if (nextStyleUrl !== viewState.styleUrl) {
-    viewState.styleUrl = nextStyleUrl;
+  if (nextStyle !== viewState.style) {
+    viewState.style = nextStyle;
     map.once('style.load', onStyleReady);
-    map.setStyle(nextStyleUrl);
+    map.setStyle(nextStyle);
     return;
   }
   if (map.isStyleLoaded()) {
@@ -172,6 +208,28 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
     applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
     reapplyLegendDrivenFillPaint(map, viewState.spec);
+  }
+};
+
+/**
+ * Applies an imperative camera move to a single map instance.
+ * Uses `flyTo` for animated transitions and `jumpTo` for instant ones.
+ * Only camera fields explicitly provided in `options` are applied —
+ * `undefined` values are omitted so MapLibre keeps the current camera
+ * state for those axes.
+ */
+const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
+  const { center, zoom, pitch, bearing, animate = true } = options;
+  const camera: maplibregl.CameraOptions = {};
+  if (center !== undefined) camera.center = center as maplibregl.LngLatLike;
+  if (zoom !== undefined) camera.zoom = zoom;
+  if (pitch !== undefined) camera.pitch = pitch;
+  if (bearing !== undefined) camera.bearing = bearing;
+  if (Object.keys(camera).length === 0) return;
+  if (animate) {
+    map.flyTo(camera);
+  } else {
+    map.jumpTo(camera);
   }
 };
 
@@ -209,6 +267,11 @@ const createMapLibreAdapter = (): EngineAdapter => {
     },
     applyPatch: (patch) => {
       for (const viewState of _views.values()) dispatchPatch(viewState, patch);
+    },
+    setView: (options) => {
+      for (const viewState of _views.values()) {
+        applySetView(viewState.map, options);
+      }
     },
     destroy: () => {
       destroyAll(_views);
