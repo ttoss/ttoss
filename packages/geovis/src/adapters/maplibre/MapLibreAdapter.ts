@@ -56,7 +56,7 @@ const syncCenter = (
   prev: VisualizationSpec['view'],
   next: VisualizationSpec['view']
 ): void => {
-  if (!next?.center) return;
+  if (!next?.center || next.center.length !== 2) return;
   const [lng, lat] = next.center;
   if (prev?.center?.[0] === lng && prev?.center?.[1] === lat) return;
   map.setCenter(next.center as maplibregl.LngLatLike);
@@ -225,6 +225,7 @@ const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
   if (zoom !== undefined) camera.zoom = zoom;
   if (pitch !== undefined) camera.pitch = pitch;
   if (bearing !== undefined) camera.bearing = bearing;
+  if (Object.keys(camera).length === 0) return;
   if (animate) {
     map.flyTo(camera);
   } else {

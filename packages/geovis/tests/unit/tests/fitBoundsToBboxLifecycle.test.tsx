@@ -30,7 +30,7 @@
  * map method calls are tracked via `jest.fn()`.
  */
 
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { GeoVisCanvas } from 'src/react/GeoVisCanvas';
@@ -257,9 +257,11 @@ beforeEach(() => {
 
   mapMock = makeMapMock();
 
-  // `once('idle', cb)` fires synchronously so fitBounds runs inside act().
+  // `once('idle', cb)` fires asynchronously (deferred via setTimeout) to
+  // simulate the real MapLibre behaviour where `idle` fires after the style
+  // loads, which is always async. Assertions use `waitFor` accordingly.
   mapMock.once.mockImplementation((event: string, cb: () => void) => {
-    if (event === 'idle') cb();
+    if (event === 'idle') setTimeout(cb, 0);
   });
 
   jest.mocked(maplibregl.Map).mockImplementation(() => {
@@ -277,7 +279,9 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
       render(<MinimalMap ref={React.createRef()} />);
     });
 
-    expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
+    });
     expect(mapMock.fitBounds).toHaveBeenCalledWith(SP_BOUNDS, {
       padding: INSETS,
       animate: false,
@@ -290,6 +294,11 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
 
     await act(async () => {
       render(<MinimalMap ref={ref} />);
+    });
+
+    // Wait for the async idle callback to fire and fitBounds to be called.
+    await waitFor(() => {
+      expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
     });
 
     // Camera is now positioned by fitBounds. Clear tracking before the update.
@@ -311,6 +320,11 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
 
     await act(async () => {
       render(<MinimalMap ref={ref} />);
+    });
+
+    // Wait for the initial async idle callback to fire.
+    await waitFor(() => {
+      expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
     });
 
     // fitBounds was called on mount. Clear so the next assertion is isolated.
