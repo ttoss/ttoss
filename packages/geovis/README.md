@@ -126,6 +126,149 @@ paint: {
 }
 ```
 
+## Data-driven maps
+
+`mapData` decouples attribute values from geometry: the GeoJSON source holds
+shapes while `mapData` holds per-feature values. The adapter joins them at
+runtime via `setFeatureState`, enabling choropleth coloring and hover tooltips
+without modifying source features.
+
+### Choropleth example
+
+Declare `mapData` in the spec, reference it on the layer with `mapDataId`, and
+connect a legend via `activeLegendId`.
+
+```tsx
+import {
+  GeoVisCanvas,
+  GeoVisHoverTooltip,
+  GeoVisLegend,
+  GeoVisProvider,
+} from '@ttoss/geovis';
+import districtsGeoJSON from './districts.geojson';
+
+const spec = {
+  id: 'population-map',
+  engine: 'maplibre',
+  view: { center: [-46.6, -23.5], zoom: 10 },
+  sources: [{ id: 'districts', type: 'geojson', data: districtsGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'districts', // references sources[].id
+      // joinKey: 'cd_district' — set when features lack a numeric .id
+      data: [
+        { geometryId: 1, value: 87_000 },
+        { geometryId: 2, value: 143_000 },
+        { geometryId: 3, value: 210_000 },
+      ],
+    },
+  ],
+  legends: [
+    {
+      id: 'population-legend',
+      label: 'Population',
+      colorBy: {
+        type: 'quantitative',
+        property: 'value',
+        scale: 'threshold',
+        thresholds: [100_000, 200_000],
+        colors: ['#bfdbfe', '#3b82f6', '#1d4ed8'],
+        defaultColor: '#e2e8f0', // features with no joined value
+      },
+    },
+  ],
+  layers: [
+    {
+      id: 'districts-layer',
+      sourceId: 'districts',
+      geometry: 'polygon',
+      mapDataId: 'population', // drives setFeatureState
+      activeLegendId: 'population-legend', // enables coloring + hover
+    },
+  ],
+};
+
+const PopulationMap = () => (
+  <GeoVisProvider spec={spec}>
+    <div style={{ width: '100%', height: '500px' }}>
+      <GeoVisCanvas viewId="main" style={{ width: '100%', height: '100%' }} />
+    </div>
+    {/* GeoVisHoverTooltip can be placed anywhere in the tree — */}
+    {/* it uses position:fixed and viewport coordinates internally. */}
+    <GeoVisHoverTooltip />
+    <GeoVisLegend legendId="population-legend" />
+  </GeoVisProvider>
+);
+```
+
+### Joining by property instead of feature id
+
+When GeoJSON features do not have a numeric or string `.id`, use `joinKey` to
+match by a feature property instead:
+
+```tsx
+mapData: [
+  {
+    mapDataId: 'population',
+    mapId: 'districts',
+    joinKey: 'cd_district', // matches feature.properties.cd_district
+    data: [
+      { geometryId: 'CAMPO_LIMPO', value: 143_000 },
+      { geometryId: 'BUTANTA',     value: 87_000 },
+    ],
+  },
+],
+```
+
+### Accessing data in React
+
+`useMapData` exposes the joined dataset in React without touching MapLibre:
+
+```tsx
+import { useMapData } from '@ttoss/geovis';
+
+const DataTable = () => {
+  const { rows } = useMapData('population');
+  return (
+    <ul>
+      {rows.map((row) => (
+        <li key={row.geometryId}>
+          {row.geometryId}: {row.value}
+        </li>
+      ))}
+    </ul>
+  );
+};
+```
+
+Must be called inside `GeoVisProvider`.
+
+### Updating data at runtime
+
+Use `applyPatch` with `target: 'mapData'` to replace the full dataset or upsert
+a single row without re-mounting the spec:
+
+```tsx
+const { applyPatch } = useGeoVis();
+
+// Replace the full dataset
+applyPatch({
+  target: 'mapData',
+  op: 'replace',
+  path: 'mapData.population',
+  value: newRows, // MapDataRow[]
+});
+
+// Upsert a single row — path: 'mapData.<mapDataId>.data.<geometryId>'
+applyPatch({
+  target: 'mapData',
+  op: 'replace',
+  path: 'mapData.population.data.1',
+  value: 210_000,
+});
+```
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:
