@@ -38,6 +38,7 @@ const SetViewControls = () => {
         return (
           <button
             key={label}
+            type="button"
             onClick={() => {
               return setView(options);
             }}

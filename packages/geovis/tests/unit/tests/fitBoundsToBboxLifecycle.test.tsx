@@ -56,14 +56,25 @@ jest.mock('maplibre-gl', () => {
 
 // ---------------------------------------------------------------------------
 // ResizeObserver stub — not available in jsdom
+//
+// Stored and restored around the suite so the stub does not leak into other
+// test files running in the same Jest worker.
 // ---------------------------------------------------------------------------
 
-global.ResizeObserver = jest.fn().mockImplementation(() => {
-  return {
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
-  };
+const originalResizeObserver = global.ResizeObserver;
+
+beforeAll(() => {
+  global.ResizeObserver = jest.fn().mockImplementation(() => {
+    return {
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    };
+  });
+});
+
+afterAll(() => {
+  global.ResizeObserver = originalResizeObserver;
 });
 
 // ---------------------------------------------------------------------------
