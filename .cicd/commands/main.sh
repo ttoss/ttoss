@@ -43,7 +43,13 @@ pnpm run syncpack:lint
 if pnpm lerna changed; then
   echo "Changes detected on packages, publishing them..."
 
-  # Version before publish to rebuild all packages that Lerna will publish.
+  # Run i18n, build, and test BEFORE lerna version so turbo cache is warm.
+  # If we ran these after lerna version, every versioned package.json change
+  # would bust the turbo input hash, causing all affected packages to rebuild
+  # from scratch even when their source code hasn't changed.
+  # https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
+  pnpm turbo run i18n build test --filter=[$LATEST_TAG_SHA]
+
   # Capture existing tags before versioning so we can delete only them afterward,
   # preserving the new tags created by lerna version. Tags are re-pushed via
   # git push --follow-tags below.
@@ -51,10 +57,11 @@ if pnpm lerna changed; then
   pnpm lerna version --yes --no-push
   echo "$OLD_TAGS" | xargs -r git tag -d
 
-  # Test and build all packages since $LATEST_TAG
-  # and all the workspaces that depends on them.
-  # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-  pnpm turbo run i18n build test --filter=[$LATEST_TAG_SHA]
+  # Re-run build only (not tests) after version bump so that published dist
+  # files reflect the new package versions if any package embeds its own version.
+  # Tests are skipped here because they already passed above and version bumps
+  # do not affect test outcomes.
+  pnpm turbo run i18n build --filter=[$LATEST_TAG_SHA]
 
   # Undo all files that were changed by the build command—this happens because
   # the build can change files with different linting rules and `pnpm run lint`
