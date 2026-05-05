@@ -130,13 +130,14 @@ export const createRuntime = (
       }
     },
     setView: (options) => {
-      adapter.setView(options);
       const { animate: _a, ...cameraFields } = options;
       const definedFields = Object.fromEntries(
         Object.entries(cameraFields).filter(([, v]) => {
           return v !== undefined;
         })
       );
+      if (Object.keys(definedFields).length === 0) return;
+      adapter.setView(options);
       const prevView = currentSpec.view ?? {};
       const nextView = { ...prevView, ...definedFields };
       currentSpec = { ...currentSpec, view: nextView };
