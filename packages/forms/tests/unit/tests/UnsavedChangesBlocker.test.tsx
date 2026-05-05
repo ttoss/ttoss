@@ -4,10 +4,14 @@ import {
   createMemoryRouter,
   Outlet,
   RouterProvider,
+  useBlocker,
   useNavigate,
 } from 'react-router-dom';
 
-import type { WarnOnUnsavedChangesOptions } from '../../../src';
+import type {
+  UseRouterBlockerFn,
+  WarnOnUnsavedChangesOptions,
+} from '../../../src';
 import { Form, FormFieldInput, useForm } from '../../../src';
 
 // react-router-dom v6 requires Request/Response globals which jsdom lacks
@@ -31,6 +35,13 @@ if (typeof globalThis.Response === 'undefined') {
   } as unknown as typeof globalThis.Response;
 }
 
+const reactRouterWarnOnUnsavedChanges = {
+  useRouterBlocker: useBlocker as unknown as UseRouterBlockerFn,
+} satisfies WarnOnUnsavedChangesOptions;
+
+const leaveLabel = 'Leave';
+const otherPageLabel = 'Other Page';
+
 const onSubmit = jest.fn();
 
 const NavigateButton = ({ to }: { to: string }) => {
@@ -42,7 +53,7 @@ const NavigateButton = ({ to }: { to: string }) => {
         navigate(to);
       }}
     >
-      Leave
+      {leaveLabel}
     </Button>
   );
 };
@@ -52,7 +63,7 @@ const Layout = () => {
 };
 
 const OtherPage = () => {
-  return <div>Other Page</div>;
+  return <div>{otherPageLabel}</div>;
 };
 
 const FormWithBlocker = ({
@@ -109,21 +120,21 @@ describe('warnOnUnsavedChanges', () => {
   test('does not block navigation when form is pristine', async () => {
     const user = userEvent.setup({ delay: null });
 
-    renderWithRouter(true);
+    renderWithRouter(reactRouterWarnOnUnsavedChanges);
 
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
-    expect(screen.getByText('Other Page')).toBeInTheDocument();
+    expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
   });
 
   test('blocks navigation and shows modal when form is dirty', async () => {
     const user = userEvent.setup({ delay: null });
 
-    renderWithRouter(true);
+    renderWithRouter(reactRouterWarnOnUnsavedChanges);
 
     await user.type(screen.getByLabelText('First Name'), 'John');
 
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
     await waitFor(() => {
       expect(screen.getByText('Discard changes?')).toBeInTheDocument();
@@ -140,6 +151,7 @@ describe('warnOnUnsavedChanges', () => {
     const user = userEvent.setup({ delay: null });
 
     renderWithRouter({
+      ...reactRouterWarnOnUnsavedChanges,
       title: 'Leave this profile form?',
       description: 'Your current draft will be lost if you continue.',
       confirmLabel: 'Leave without saving',
@@ -147,7 +159,7 @@ describe('warnOnUnsavedChanges', () => {
     });
 
     await user.type(screen.getByLabelText('First Name'), 'John');
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
     await waitFor(() => {
       expect(screen.getByText('Leave this profile form?')).toBeInTheDocument();
@@ -163,10 +175,10 @@ describe('warnOnUnsavedChanges', () => {
   test('allows navigation when user confirms discard', async () => {
     const user = userEvent.setup({ delay: null });
 
-    renderWithRouter(true);
+    renderWithRouter(reactRouterWarnOnUnsavedChanges);
 
     await user.type(screen.getByLabelText('First Name'), 'John');
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
     await waitFor(() => {
       expect(screen.getByText('Discard changes?')).toBeInTheDocument();
@@ -175,17 +187,17 @@ describe('warnOnUnsavedChanges', () => {
     await user.click(screen.getByText('Discard'));
 
     await waitFor(() => {
-      expect(screen.getByText('Other Page')).toBeInTheDocument();
+      expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
     });
   });
 
   test('stays on page when user chooses keep editing', async () => {
     const user = userEvent.setup({ delay: null });
 
-    renderWithRouter(true);
+    renderWithRouter(reactRouterWarnOnUnsavedChanges);
 
     await user.type(screen.getByLabelText('First Name'), 'John');
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
     await waitFor(() => {
       expect(screen.getByText('Discard changes?')).toBeInTheDocument();
@@ -198,7 +210,7 @@ describe('warnOnUnsavedChanges', () => {
     });
 
     expect(screen.getByLabelText('First Name')).toBeInTheDocument();
-    expect(screen.queryByText('Other Page')).not.toBeInTheDocument();
+    expect(screen.queryByText(otherPageLabel)).not.toBeInTheDocument();
   });
 
   test('does not block when warnOnUnsavedChanges is false', async () => {
@@ -207,10 +219,41 @@ describe('warnOnUnsavedChanges', () => {
     renderWithRouter(false);
 
     await user.type(screen.getByLabelText('First Name'), 'John');
-    await user.click(screen.getByText('Leave'));
+    await user.click(screen.getByText(leaveLabel));
 
-    expect(screen.getByText('Other Page')).toBeInTheDocument();
+    expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
     expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
+  });
+
+  test('does not block in-app navigation without a router blocker hook', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    renderWithRouter(true);
+
+    await user.type(screen.getByLabelText('First Name'), 'John');
+    await user.click(screen.getByText(leaveLabel));
+
+    expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
+    expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
+  });
+
+  test('fails open when the injected router blocker throws', async () => {
+    const user = userEvent.setup({ delay: null });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    renderWithRouter({
+      useRouterBlocker: () => {
+        throw new Error('router unavailable');
+      },
+    });
+
+    await user.type(screen.getByLabelText('First Name'), 'John');
+    await user.click(screen.getByText(leaveLabel));
+
+    expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
+    expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
+
+    consoleErrorSpy.mockRestore();
   });
 
   test('registers beforeunload listener when dirty', async () => {
@@ -218,7 +261,7 @@ describe('warnOnUnsavedChanges', () => {
     const addSpy = jest.spyOn(window, 'addEventListener');
     const removeSpy = jest.spyOn(window, 'removeEventListener');
 
-    renderWithRouter(true);
+    renderWithRouter(reactRouterWarnOnUnsavedChanges);
 
     expect(addSpy).not.toHaveBeenCalledWith(
       'beforeunload',
@@ -230,6 +273,24 @@ describe('warnOnUnsavedChanges', () => {
     await waitFor(() => {
       expect(addSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
     });
+
+    const beforeUnloadCall = addSpy.mock.calls.find(([eventName]) => {
+      return eventName === 'beforeunload';
+    });
+    expect(beforeUnloadCall).toBeDefined();
+
+    const beforeUnloadHandler = beforeUnloadCall?.[1];
+    expect(typeof beforeUnloadHandler).toBe('function');
+
+    if (typeof beforeUnloadHandler === 'function') {
+      const event = {
+        preventDefault: jest.fn(),
+      } as unknown as BeforeUnloadEvent;
+
+      beforeUnloadHandler(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+    }
 
     addSpy.mockRestore();
     removeSpy.mockRestore();

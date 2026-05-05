@@ -27,12 +27,14 @@ const FormBase = <
   onSubmit?: (data: TTransformedValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
   /**
-   * When `true`, blocks in-app navigation and shows a confirmation modal
-   * if the form has unsaved changes (`formState.isDirty`). Also triggers
-   * the browser's native `beforeunload` prompt on page refresh / tab close.
+   * When enabled, warns before losing unsaved changes.
    *
-   * You can also pass an object to override the modal title, description,
-   * and action labels.
+   * - `true`: enables the browser's native `beforeunload` prompt on refresh / tab close.
+   * - object: also allows overriding the modal copy and injecting a router-specific
+   *   blocker hook for in-app navigation.
+   *
+   * In-app navigation blocking is router-agnostic and depends on the
+   * provided `useRouterBlocker` hook.
    * @default false
    */
   warnOnUnsavedChanges?: boolean | WarnOnUnsavedChangesOptions;

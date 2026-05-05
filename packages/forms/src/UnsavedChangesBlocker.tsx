@@ -26,6 +26,14 @@ const messages = defineMessages({
   },
 });
 
+export type BlockerResult = {
+  state: string;
+  proceed: () => void;
+  reset: () => void;
+};
+
+export type UseRouterBlockerFn = (shouldBlock: boolean) => BlockerResult;
+
 /**
  * Allows overriding the default copy shown in the unsaved changes modal.
  */
@@ -38,6 +46,12 @@ export interface WarnOnUnsavedChangesOptions {
   confirmLabel?: React.ReactNode;
   /** Custom cancel button label. */
   cancelLabel?: React.ReactNode;
+  /**
+   * Optional hook used to block in-app navigation for the router in use.
+   *
+   * Example with React Router: `useRouterBlocker: useBlocker`
+   */
+  useRouterBlocker?: UseRouterBlockerFn;
 }
 
 const UnsavedChangesModal = ({
@@ -115,7 +129,7 @@ const BeforeUnloadBlocker = ({ isDirty }: { isDirty: boolean }) => {
 
 /**
  * Error boundary that silently catches errors from RouterBlocker
- * (e.g. when react-router-dom is not installed or not in a Router context).
+ * (e.g. when the injected blocker hook requires a router context).
  */
 class RouterBlockerErrorBoundary extends React.Component<{
   children: React.ReactNode;
@@ -134,26 +148,6 @@ class RouterBlockerErrorBoundary extends React.Component<{
   }
 }
 
-type BlockerResult = {
-  state: string;
-  proceed: () => void;
-  reset: () => void;
-};
-
-type UseBlockerFn = (shouldBlock: boolean) => BlockerResult;
-
-let useBlockerFn: UseBlockerFn | null = null;
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mod = require('react-router-dom') as { useBlocker?: UseBlockerFn };
-  if (mod.useBlocker) {
-    useBlockerFn = mod.useBlocker;
-  }
-} catch {
-  // react-router-dom not installed — in-app blocking unavailable
-}
-
 const RouterBlockerInner = ({
   isDirty,
   onBlocked,
@@ -163,7 +157,7 @@ const RouterBlockerInner = ({
   onBlocked: (
     blocker: { proceed: () => void; reset: () => void } | null
   ) => void;
-  useBlocker: UseBlockerFn;
+  useBlocker: UseRouterBlockerFn;
 }) => {
   const blocker = useBlocker(isDirty);
 
@@ -179,13 +173,15 @@ const RouterBlockerInner = ({
 const RouterBlocker = ({
   isDirty,
   onBlocked,
+  useRouterBlocker,
 }: {
   isDirty: boolean;
   onBlocked: (
     blocker: { proceed: () => void; reset: () => void } | null
   ) => void;
+  useRouterBlocker?: UseRouterBlockerFn;
 }) => {
-  if (!useBlockerFn) {
+  if (!useRouterBlocker) {
     return null;
   }
 
@@ -193,7 +189,7 @@ const RouterBlocker = ({
     <RouterBlockerInner
       isDirty={isDirty}
       onBlocked={onBlocked}
-      useBlocker={useBlockerFn}
+      useBlocker={useRouterBlocker}
     />
   );
 };
@@ -201,7 +197,7 @@ const RouterBlocker = ({
 /**
  * Internal component that blocks navigation when a form has unsaved changes.
  *
- * Uses `useBlocker` from `react-router-dom` to intercept in-app navigation
+ * Uses an injected navigation blocker hook to intercept in-app navigation
  * and `beforeunload` to warn on browser refresh / tab close.
  */
 export const UnsavedChangesBlocker = ({
@@ -209,6 +205,7 @@ export const UnsavedChangesBlocker = ({
   description,
   confirmLabel,
   cancelLabel,
+  useRouterBlocker,
 }: WarnOnUnsavedChangesOptions = {}) => {
   const {
     formState: { isDirty },
@@ -229,7 +226,11 @@ export const UnsavedChangesBlocker = ({
   return (
     <>
       <RouterBlockerErrorBoundary>
-        <RouterBlocker isDirty={isDirty} onBlocked={handleBlocked} />
+        <RouterBlocker
+          isDirty={isDirty}
+          onBlocked={handleBlocked}
+          useRouterBlocker={useRouterBlocker}
+        />
       </RouterBlockerErrorBoundary>
       <BeforeUnloadBlocker isDirty={isDirty} />
       {pendingBlocker && (

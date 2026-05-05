@@ -210,7 +210,6 @@ See [Storybook](https://storybook.ttoss.dev/?path=/story/forms-multistepform) fo
 
 Use the `warnOnUnsavedChanges` prop to block navigation when the form has unsaved changes. When enabled and the form is dirty (`formState.isDirty === true`):
 
-- **In-app navigation** (React Router) is intercepted and a confirmation modal is shown with "Discard" and "Keep editing" actions.
 - **Browser refresh / tab close** triggers the native `beforeunload` prompt.
 
 ```tsx
@@ -220,13 +219,16 @@ Use the `warnOnUnsavedChanges` prop to block navigation when the form has unsave
 </Form>
 ```
 
-You can also customize the modal copy by passing an object:
+You can also customize the modal copy and inject an in-app navigation blocker from your router library:
 
 ```tsx
+import { useBlocker } from 'react-router-dom';
+
 <Form
   {...formMethods}
   onSubmit={onSubmit}
   warnOnUnsavedChanges={{
+    useRouterBlocker: useBlocker,
     title: 'Leave this draft?',
     description: 'Changes in this form have not been saved yet.',
     confirmLabel: 'Leave without saving',
@@ -235,15 +237,15 @@ You can also customize the modal copy by passing an object:
 >
   <FormFieldInput name="firstName" label="First Name" />
   <Button type="submit">Save</Button>
-</Form>
+</Form>;
 ```
 
-| State           | `warnOnUnsavedChanges` | Navigation                  | Result        |
-| --------------- | ---------------------- | --------------------------- | ------------- |
-| Pristine        | `true`                 | Any                         | Allowed       |
-| Dirty           | `false` / omitted      | Any                         | Allowed       |
-| Dirty           | `true`                 | In-app (React Router)       | Modal shown   |
-| Dirty           | `true`                 | Browser refresh / tab close | Native prompt |
-| After `reset()` | `true`                 | Any                         | Allowed       |
+| State           | `warnOnUnsavedChanges`      | Navigation                  | Result        |
+| --------------- | --------------------------- | --------------------------- | ------------- |
+| Pristine        | `true`                      | Any                         | Allowed       |
+| Dirty           | `false` / omitted           | Any                         | Allowed       |
+| Dirty           | `true`                      | Browser refresh / tab close | Native prompt |
+| Dirty           | object + `useRouterBlocker` | In-app navigation           | Modal shown   |
+| After `reset()` | `true`                      | Any                         | Allowed       |
 
-**Requirements:** `react-router-dom` ≥ 6.9 is an optional peer dependency. In-app blocking needs `react-router-dom` and a Router context; `beforeunload` works without it.
+**Requirements:** no router library is required by `@ttoss/forms`. In-app blocking only depends on the blocker hook you pass through `warnOnUnsavedChanges.useRouterBlocker`; `beforeunload` works without any router integration.

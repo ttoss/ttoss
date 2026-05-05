@@ -1,20 +1,24 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { UseRouterBlockerFn } from '@ttoss/forms';
 import {
   Form,
   FormFieldInput,
   FormFieldSegmentedControl,
   useForm,
 } from '@ttoss/forms';
-import { defineMessages, I18nProvider, useI18n } from '@ttoss/react-i18n';
+import { I18nProvider, useI18n } from '@ttoss/react-i18n';
 import { Button, Flex, Text } from '@ttoss/ui';
 import type * as React from 'react';
 import {
   createMemoryRouter,
   Outlet,
   RouterProvider,
+  useBlocker,
   useNavigate,
 } from 'react-router-dom';
 import { action } from 'storybook/actions';
+
+import { messages } from './WarnOnUnsavedChanges.messages';
 
 const loadLocaleData = async (locale: string) => {
   switch (locale) {
@@ -27,99 +31,9 @@ const loadLocaleData = async (locale: string) => {
   }
 };
 
-const messages = defineMessages({
-  navigateAway: {
-    defaultMessage: 'Navigate Away',
-    description: 'Button label to navigate away from the form story.',
-  },
-  navigatedAway: {
-    defaultMessage: 'You navigated away successfully!',
-    description: 'Success message shown after navigating away from the form.',
-  },
-  goBackToForm: {
-    defaultMessage: 'Go back to form',
-    description: 'Button label to return to the form page in the story.',
-  },
-  formStatus: {
-    defaultMessage: 'Form is {state}',
-    description: 'Status label that indicates whether the form is dirty.',
-  },
-  formDirty: {
-    defaultMessage: 'dirty - navigation will be blocked',
-    description: 'Status text shown when the form has unsaved changes.',
-  },
-  formClean: {
-    defaultMessage: 'clean',
-    description: 'Status text shown when the form has no unsaved changes.',
-  },
-  firstName: {
-    defaultMessage: 'First Name',
-    description: 'Label for the first name input field in the story.',
-  },
-  lastName: {
-    defaultMessage: 'Last Name',
-    description: 'Label for the last name input field in the story.',
-  },
-  save: {
-    defaultMessage: 'Save',
-    description: 'Submit button label in the story forms.',
-  },
-  reset: {
-    defaultMessage: 'Reset',
-    description: 'Reset button label in the story forms.',
-  },
-  contactPreference: {
-    defaultMessage: 'Contact preference',
-    description: 'Label for the contact preference segmented control.',
-  },
-  billingCycle: {
-    defaultMessage: 'Billing cycle',
-    description: 'Label for the billing cycle segmented control.',
-  },
-  email: {
-    defaultMessage: 'Email',
-    description: 'Email option label in the segmented control.',
-  },
-  whatsapp: {
-    defaultMessage: 'WhatsApp',
-    description: 'WhatsApp option label in the segmented control.',
-  },
-  phone: {
-    defaultMessage: 'Phone',
-    description: 'Phone option label in the segmented control.',
-  },
-  monthly: {
-    defaultMessage: 'Monthly',
-    description: 'Monthly option label in the segmented control.',
-  },
-  yearly: {
-    defaultMessage: 'Yearly',
-    description: 'Yearly option label in the segmented control.',
-  },
-  customStoryDescription: {
-    defaultMessage:
-      'This example overrides the modal copy through warnOnUnsavedChanges.',
-    description: 'Helper text shown in the custom modal story.',
-  },
-  customModalTitle: {
-    defaultMessage: 'Leave this preferences draft?',
-    description: 'Custom title for the unsaved changes modal story variant.',
-  },
-  customModalBody: {
-    defaultMessage:
-      'You changed the preferences in this form. Leaving now will discard this draft.',
-    description:
-      'Custom description for the unsaved changes modal story variant.',
-  },
-  customModalConfirm: {
-    defaultMessage: 'Leave without saving',
-    description: 'Custom confirm button label for the modal story variant.',
-  },
-  customModalCancel: {
-    defaultMessage: 'Continue editing',
-    description: 'Custom cancel button label for the modal story variant.',
-  },
-});
+const reactRouterWarnOnUnsavedChanges = {
+  useRouterBlocker: useBlocker as unknown as UseRouterBlockerFn,
+};
 
 export default {
   title: 'Forms/WarnOnUnsavedChanges',
@@ -130,8 +44,10 @@ export default {
         component: `Demonstrates the \`warnOnUnsavedChanges\` prop on \`<Form>\`.
 
 When enabled and the form is dirty (\`formState.isDirty === true\`):
-- **In-app navigation** (React Router) is intercepted with a confirmation modal.
+- **In-app navigation** can be intercepted by passing a router blocker hook.
 - **Browser refresh / tab close** triggers the native \`beforeunload\` prompt.
+
+This story uses React Router by passing \`useBlocker\` through \`warnOnUnsavedChanges\`.
 
 Use the default story for text inputs, the segmented control story for selection changes, or the custom modal story to see overridden modal copy.`,
       },
@@ -197,7 +113,11 @@ const FormPage = () => {
   const { isDirty } = formMethods.formState;
 
   return (
-    <Form {...formMethods} onSubmit={action('onSubmit')} warnOnUnsavedChanges>
+    <Form
+      {...formMethods}
+      onSubmit={action('onSubmit')}
+      warnOnUnsavedChanges={reactRouterWarnOnUnsavedChanges}
+    >
       <Flex sx={{ flexDirection: 'column', gap: '4', maxWidth: '400px' }}>
         <Text
           sx={{
@@ -250,7 +170,11 @@ const SegmentedControlFormPage = () => {
   const { isDirty } = formMethods.formState;
 
   return (
-    <Form {...formMethods} onSubmit={action('onSubmit')} warnOnUnsavedChanges>
+    <Form
+      {...formMethods}
+      onSubmit={action('onSubmit')}
+      warnOnUnsavedChanges={reactRouterWarnOnUnsavedChanges}
+    >
       <Flex sx={{ flexDirection: 'column', gap: '4', maxWidth: '400px' }}>
         <Text
           sx={{
@@ -319,6 +243,7 @@ const CustomModalFormPage = () => {
       {...formMethods}
       onSubmit={action('onSubmit')}
       warnOnUnsavedChanges={{
+        ...reactRouterWarnOnUnsavedChanges,
         title: intl.formatMessage(messages.customModalTitle),
         description: intl.formatMessage(messages.customModalBody),
         confirmLabel: intl.formatMessage(messages.customModalConfirm),
@@ -392,31 +317,16 @@ const renderWarnOnUnsavedChangesStory = ({
   return <RouterProvider router={router} />;
 };
 
-/**
- * Type in a field, then click **Navigate Away** to see the confirmation modal.
- * Choose "Discard" to navigate or "Keep editing" to stay on the form.
- */
 export const Default: StoryFn = () => {
   return renderWarnOnUnsavedChangesStory({ formPage: <FormPage /> });
 };
 
-/**
- * Change a segmented control option, then click **Navigate Away** to see the
- * confirmation modal. Choose "Discard" to navigate or "Keep editing" to stay
- * on the form.
- */
 export const SegmentedControl: StoryFn = () => {
   return renderWarnOnUnsavedChangesStory({
     formPage: <SegmentedControlFormPage />,
   });
 };
 
-/**
- * Type in a field, then click **Navigate Away** to see a custom confirmation
- * modal rendered from `warnOnUnsavedChanges` message overrides.
- */
 export const CustomModal: StoryFn = () => {
-  return renderWarnOnUnsavedChangesStory({
-    formPage: <CustomModalFormPage />,
-  });
+  return renderWarnOnUnsavedChangesStory({ formPage: <CustomModalFormPage /> });
 };
