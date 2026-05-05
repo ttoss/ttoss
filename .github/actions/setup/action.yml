@@ -37,8 +37,10 @@ runs:
       uses: actions/cache@v5
       with:
         path: .turbo
-        key: ${{ runner.os }}-turbo-${{ hashFiles('pnpm-lock.yaml', 'turbo.json') }}
-        restore-keys: ${{ runner.os }}-turbo-
+        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ github.ref_name }}-
+          ${{ runner.os }}-turbo-
 
     - name: Install dependencies
       shell: bash
