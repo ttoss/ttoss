@@ -237,11 +237,11 @@ describe('createRuntime — applyPatch unknown target', () => {
 
     expect(() => {
       runtime.applyPatch({
-        target: 'view' as 'layer',
+        target: 'view',
         op: 'replace',
         path: 'view.zoom',
         value: 5,
-      });
+      } as unknown as SpecPatch);
     }).not.toThrow();
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -259,11 +259,11 @@ describe('createRuntime — applyPatch unknown target', () => {
 
     const before = runtime.spec;
     runtime.applyPatch({
-      target: 'style' as 'layer',
+      target: 'style',
       op: 'replace',
       path: 'style.url',
       value: 'https://example.com/style.json',
-    });
+    } as unknown as SpecPatch);
 
     expect(runtime.spec).toBe(before);
     warnSpy.mockRestore();
