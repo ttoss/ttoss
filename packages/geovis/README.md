@@ -69,7 +69,6 @@ Top-level spec object passed to `GeoVisProvider`.
 | `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers.                                                      |
 | `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries by `legendId`.                                                                            |
 | `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                         |
-| `views`       | `VisualizationView[]`     |          | Multi-panel layout config. **Not yet implemented** — the adapter ignores this field at runtime.                                            |
 | `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                      |
 
 ### `VisualizationLayer`
