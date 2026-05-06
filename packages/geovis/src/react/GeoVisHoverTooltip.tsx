@@ -62,6 +62,7 @@ export const GeoVisHoverTooltip = ({
 }: GeoVisHoverTooltipProps) => {
   const hoveredMapFeature = useGeoVisHover();
   if (!hoveredMapFeature) return null;
+  if (typeof document === 'undefined' || !document.body) return null;
 
   const mergedStyle: React.CSSProperties = {
     ...baseTooltipStyle,
@@ -86,6 +87,7 @@ export const GeoVisHoverTooltip = ({
           </div>
         </>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };
