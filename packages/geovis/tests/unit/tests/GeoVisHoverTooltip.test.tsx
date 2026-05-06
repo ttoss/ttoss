@@ -25,12 +25,17 @@ interface MockMap {
   setPaintProperty: jest.Mock;
   once: jest.Mock;
   __handlers: Map<string, MapMouseHandler | MapLeaveHandler>;
-  __canvas: { style: { cursor: string } };
+  __canvas: { style: { cursor: string }; getBoundingClientRect: () => DOMRect };
 }
 
 const buildMockMap = (): MockMap => {
   const handlers = new Map<string, MapMouseHandler | MapLeaveHandler>();
-  const canvas = { style: { cursor: '' } };
+  const canvas = {
+    style: { cursor: '' },
+    getBoundingClientRect: () => {
+      return { left: 0, top: 0 } as DOMRect;
+    },
+  };
   const map: MockMap = {
     on: jest.fn((event: string, layerOrHandler, maybeHandler) => {
       const layerId = typeof layerOrHandler === 'string' ? layerOrHandler : '*';
