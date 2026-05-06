@@ -67,7 +67,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `description` | `string`                  |          | Human-readable description.                                                                                                                |
 | `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                  |
 | `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers.                                                      |
-| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries by `legendId`.                                                                            |
+| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                     |
 | `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                         |
 | `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                      |
 
@@ -228,7 +228,9 @@ mapData: [
 import { useMapData } from '@ttoss/geovis';
 
 const DataTable = () => {
-  const { rows } = useMapData('population');
+  const result = useMapData('population');
+  if (!result) return null;
+  const { rows } = result;
   return (
     <ul>
       {rows.map((row) => (
@@ -251,12 +253,12 @@ a single row without re-mounting the spec:
 ```tsx
 const { applyPatch } = useGeoVis();
 
-// Replace the full dataset
+// Replace the full dataset — value must be a complete MapData object
 applyPatch({
   target: 'mapData',
   op: 'replace',
   path: 'mapData.population',
-  value: newRows, // MapDataRow[]
+  value: { mapDataId: 'population', mapId: 'states-source', data: newRows }, // MapData
 });
 
 // Upsert a single row — path: 'mapData.<mapDataId>.data.<geometryId>'
@@ -291,7 +293,7 @@ Use `useGeoVis` to access `applyPatch` for efficient updates without re-renderin
 ```ts
 type SpecPatch =
   | {
-      target: 'layer' | 'source' | 'mapData' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData';
       op: 'replace';
       path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
       //                "mapData.<mapDataId>"
@@ -300,7 +302,7 @@ type SpecPatch =
       rationale?: string;
     }
   | {
-      target: 'layer' | 'source' | 'mapData' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData';
       op: 'add' | 'remove';
       path?: string; // unused for layer/source add and remove ops
       value?: unknown;
@@ -426,7 +428,7 @@ const LayerControls = () => {
             target: 'layer',
             op: 'replace',
             path: 'layer.points-layer.paint.circleStrokeColor',
-            value: undefined,
+            value: undefined, // undefined is treated as a no-op — use op:'remove' to remove a paint property
           })
         }
       >
@@ -472,13 +474,13 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 Returns the current `GeoVisContextValue`. Must be called inside `GeoVisProvider`.
 
-| Return value       | Type                                | Description                                                     |
-| ------------------ | ----------------------------------- | --------------------------------------------------------------- |
-| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).       |
-| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                   |
-| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).    |
-| `policyViolations` | `string[]`                          | Active policy violation messages derived from the current spec. |
-| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.    |
+| Return value       | Type                                | Description                                                                                                    |
+| ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).                                                      |
+| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                  |
+| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                   |
+| `policyViolations` | `PolicyViolation[]`                 | Active policy violations derived from the current spec. Each entry has `reason: string` and `message: string`. |
+| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                   |
 
 `SetViewOptions` fields: `center?: LngLat`, `zoom?: number`, `pitch?: number`, `bearing?: number`, `animate?: boolean` (defaults `true` — smooth flyTo).
 
@@ -492,7 +494,7 @@ setView({ center: [-46.6, -23.5], zoom: 12 });
 setView({ center: [-43.1, -22.9], zoom: 10, animate: false });
 ```
 
-> `setView` is a no-op before the map has mounted. Calls during the initial render are silently ignored.
+> Before the map has mounted, `setView` has no effect on the rendered map but still updates `spec.view` in the runtime. The camera will not move until a view is mounted.
 
 ### `useGeoVisHover`
 
