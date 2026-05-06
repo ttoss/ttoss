@@ -349,3 +349,55 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     expect(specCaptureRef.current.id).toBe('spec-v3');
   });
 });
+
+describe('GeoVisProvider adapter error', () => {
+  // A minimal class-based ErrorBoundary — React only supports class components
+  // as error boundaries; function components cannot use getDerivedStateFromError.
+  class ErrorBoundary extends React.Component<
+    { children: React.ReactNode; fallback: React.ReactNode },
+    { caught: boolean }
+  > {
+    state = { caught: false };
+
+    static getDerivedStateFromError() {
+      return { caught: true };
+    }
+
+    render() {
+      return this.state.caught ? this.props.fallback : this.props.children;
+    }
+  }
+
+  test('ErrorBoundary catches adapter initialization error', async () => {
+    // Make the MapLibreAdapter factory throw on this one invocation.
+    // The dynamic import in resolveAdapter() resolves the same jest mock.
+    const adapterMock = jest.requireMock(
+      'src/adapters/maplibre/MapLibreAdapter'
+    ) as { default: jest.MockedFunction<() => unknown> };
+    adapterMock.default.mockImplementationOnce(() => {
+      throw new Error('WebGL not supported');
+    });
+
+    // React logs uncaught errors to console.error during error boundary tests;
+    // suppress to keep test output clean.
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+      return undefined;
+    });
+
+    const { getByText, queryByText } = await act(async () => {
+      return render(
+        <ErrorBoundary fallback={<p>Map failed to load</p>}>
+          <GeoVisProvider spec={baseSpec}>
+            <p>Map loaded</p>
+          </GeoVisProvider>
+        </ErrorBoundary>
+      );
+    });
+
+    consoleSpy.mockRestore();
+
+    expect(getByText('Map failed to load').tagName).toBe('P');
+
+    expect(queryByText('Map loaded')).toBeNull();
+  });
+});
