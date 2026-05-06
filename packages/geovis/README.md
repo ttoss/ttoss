@@ -288,7 +288,19 @@ if (!result.valid) {
 
 ## Applying Patches
 
-Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec. A `SpecPatch` has the shape:
+Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec.
+
+**Supported `target` values:**
+
+| Target      | Description                                |
+| ----------- | ------------------------------------------ |
+| `'layer'`   | Add, remove, or update a layer             |
+| `'source'`  | Add, remove, or update a source            |
+| `'mapData'` | Update feature-state data bound to the map |
+
+> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`.
+
+A `SpecPatch` has the shape:
 
 ```ts
 type SpecPatch =
