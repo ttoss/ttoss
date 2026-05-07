@@ -86,3 +86,55 @@ export const useGeoVisHover = (): MapHoverInfo | null => {
   }
   return ctx;
 };
+
+/**
+ * Snapshot of a feature clicked on the map. Unlike {@link MapHoverInfo}, this
+ * persists until dismissed (another click or Escape). Includes `lngLat` (the
+ * geographic coordinates of the click) so consumers can anchor popups to a
+ * stable map position instead of tracking the cursor.
+ */
+export interface MapClickInfo {
+  /** Layer id that received the click. */
+  layerId: string;
+  /** Source id backing the layer. */
+  sourceId: string;
+  /** Clicked feature's id (typically `geometryId` from `mapData`). */
+  featureId: string | number;
+  /**
+   * `feature-state.value` at click time; same semantics as
+   * {@link MapHoverInfo.value}.
+   */
+  value: number | string | null;
+  /** Geographic coordinates `[lng, lat]` of the click. */
+  lngLat: [number, number];
+  /** Canvas-relative pixel coordinates of the click. */
+  point: { x: number; y: number };
+}
+
+/**
+ * Persistent click snapshot context.
+ *
+ * @remarks
+ * Default value is `undefined` (the "no provider" sentinel) so
+ * {@link useGeoVisClick} can distinguish "consumed outside `GeoVisProvider`"
+ * from the valid "no feature clicked" state (`null`). Kept separate from
+ * {@link GeoVisHoverContext} because click frequency is much lower and the
+ * two states are independent.
+ */
+export const GeoVisClickContext = React.createContext<
+  MapClickInfo | null | undefined
+>(undefined);
+
+/**
+ * Returns the last clicked feature on the active map, or `null` when no
+ * feature is selected. Clears to `null` when the user presses Escape or
+ * clicks outside all tracked layers.
+ * Must be called inside `<GeoVisProvider>`.
+ */
+export const useGeoVisClick = (): MapClickInfo | null => {
+  const ctx = React.useContext(GeoVisClickContext);
+  if (ctx === undefined) {
+    throw new Error('useGeoVisClick must be used inside <GeoVisProvider>');
+  }
+  return ctx;
+};
