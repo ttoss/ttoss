@@ -8,17 +8,27 @@ import type {
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
-import { GeoVisContext, GeoVisHoverContext } from './contexts';
-import { useMapHover } from './hooks';
+import {
+  GeoVisClickContext,
+  GeoVisContext,
+  GeoVisHoverContext,
+} from './contexts';
+import { useMapClick, useMapHover } from './hooks';
 
 // Re-export the contexts and hooks so existing public-API consumers
 // (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
 // the contexts module was extracted to break the hooks/provider cycle.
-export type { GeoVisContextValue, MapHoverInfo } from './contexts';
+export type {
+  GeoVisContextValue,
+  MapClickInfo,
+  MapHoverInfo,
+} from './contexts';
 export {
+  GeoVisClickContext,
   GeoVisContext,
   GeoVisHoverContext,
   useGeoVis,
+  useGeoVisClick,
   useGeoVisHover,
 } from './contexts';
 
@@ -67,6 +77,30 @@ interface GeoVisProviderProps {
   spec: VisualizationSpec;
   children: React.ReactNode;
 }
+
+/**
+ * Isolates `useMapClick` into a child component so that click-state updates
+ * do NOT re-render `GeoVisProvider` or `HoverProvider` consumers.
+ *
+ * @remarks
+ * Defined at module scope for the same stability reason as `HoverProvider`.
+ */
+const ClickProvider = ({
+  runtime,
+  spec,
+  children,
+}: {
+  runtime: GeoVisRuntime | null;
+  spec: VisualizationSpec;
+  children: React.ReactNode;
+}) => {
+  const clickedMapFeature = useMapClick({ runtime, spec });
+  return (
+    <GeoVisClickContext.Provider value={clickedMapFeature}>
+      {children}
+    </GeoVisClickContext.Provider>
+  );
+};
 
 /**
  * Isolates `useMapHover` (which fires on every `mousemove`) into a child
@@ -195,9 +229,11 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   return (
     <GeoVisContext.Provider value={ctxValue}>
-      <HoverProvider runtime={runtime} spec={effectiveSpec}>
-        {children}
-      </HoverProvider>
+      <ClickProvider runtime={runtime} spec={effectiveSpec}>
+        <HoverProvider runtime={runtime} spec={effectiveSpec}>
+          {children}
+        </HoverProvider>
+      </ClickProvider>
     </GeoVisContext.Provider>
   );
 };
