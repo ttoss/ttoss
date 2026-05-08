@@ -245,8 +245,10 @@ interface UseMapClickParams {
 }
 
 /**
- * Tracks the last clicked feature on every polygon layer that has an
- * `activeLegendId` declared.
+ * Tracks the last clicked feature on every layer (any geometry type) that has
+ * an `activeLegendId` declared. Supports point, line, polygon, symbol, and
+ * heatmap geometries — the geometry filter is intentionally absent so
+ * consumers can wire click-to-center (or any click reaction) on any layer.
  *
  * @returns The last clicked {@link MapClickInfo}, or `null` when no feature
  * is selected.
@@ -260,7 +262,7 @@ export const useMapClick = ({
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
-        return layer.geometry === 'polygon' && layer.activeLegendId != null;
+        return layer.activeLegendId != null;
       })
       .map((layer) => {
         return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}`;
@@ -301,10 +303,19 @@ export const useMapClick = ({
       map.on('click', layerId, handleClick as never);
     }
 
-    const handleOutsideClick = (event: {
-      features?: ReadonlyArray<unknown>;
-    }) => {
-      if (!event.features || event.features.length === 0) setClick(null);
+    // Map-level handler: deselects when the user clicks on empty space.
+    // `event.features` is NEVER populated for generic map.on('click') handlers
+    // in MapLibre — only layer-bound handlers receive features. Instead, we use
+    // queryRenderedFeatures to check whether any tracked layer was hit at the
+    // clicked point, making this independent of event-dispatch order.
+    const trackedLayerIds = tracked.map((t) => {
+      return t.layerId;
+    });
+    const handleOutsideClick = (event: { point: { x: number; y: number } }) => {
+      const hits = map.queryRenderedFeatures(event.point, {
+        layers: trackedLayerIds,
+      });
+      if (!hits || hits.length === 0) setClick(null);
     };
     map.on('click', handleOutsideClick as never);
 
