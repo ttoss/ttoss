@@ -53,9 +53,33 @@ const ClickBadge = ({ info }: { info: MapClickInfo }) => {
 const CUSTOM_MARKER_URL =
   'https://maplibre.org/maplibre-gl-js/docs/assets/custom_marker.png';
 
+/**
+ * Draws a plain red circle into an ImageData and registers it as
+ * `'custom-marker'` on the map — used when the remote icon URL is
+ * unreachable.
+ */
+const addFallbackMarkerImage = (map: MapLibreMap) => {
+  if (map.hasImage('custom-marker')) return;
+  const size = 24;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+  ctx.fillStyle = '#e74c3c';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  map.addImage('custom-marker', ctx.getImageData(0, 0, size, size));
+};
+
 const CenterOnClick = () => {
   const { runtime, setView } = useGeoVis();
   const clickInfo = useGeoVisClick();
+  const [imageLoadFailed, setImageLoadFailed] = React.useState(false);
 
   React.useEffect(() => {
     if (!runtime) return;
@@ -65,8 +89,13 @@ const CenterOnClick = () => {
 
     const loadImage = async () => {
       if (map.hasImage('custom-marker')) return;
-      const { data } = await map.loadImage(CUSTOM_MARKER_URL);
-      map.addImage('custom-marker', data);
+      try {
+        const { data } = await map.loadImage(CUSTOM_MARKER_URL);
+        map.addImage('custom-marker', data);
+      } catch {
+        addFallbackMarkerImage(map);
+        setImageLoadFailed(true);
+      }
     };
 
     const canvas = map.getCanvas();
@@ -81,9 +110,11 @@ const CenterOnClick = () => {
     map.on('mouseleave', 'markers-layer', resetCursor);
 
     if (map.isStyleLoaded()) {
-      loadImage();
+      void loadImage();
     } else {
-      map.once('load', loadImage);
+      map.once('load', () => {
+        return void loadImage();
+      });
     }
 
     return () => {
@@ -101,6 +132,24 @@ const CenterOnClick = () => {
     <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
       <GeoVisCanvas viewId="primary" />
       {clickInfo && <ClickBadge info={clickInfo} />}
+      {imageLoadFailed && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            background: 'rgba(231,76,60,0.9)',
+            color: '#fff',
+            padding: '6px 12px',
+            borderRadius: 6,
+            fontSize: 12,
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        >
+          Custom marker image failed to load — using fallback icon
+        </div>
+      )}
     </div>
   );
 };
