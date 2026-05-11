@@ -514,11 +514,11 @@ Returns the live `MapHoverInfo | null` snapshot for the feature currently hovere
 
 ### `useGeoVisClick`
 
-Returns the last clicked feature on the active map as `MapClickInfo | null`. Returns `null` when no feature is selected. Unlike hover state, click state persists until dismissed — it clears to `null` when the user presses `Escape` or clicks outside a tracked layer/feature.
+Returns the last clicked feature on the active map as `MapClickInfo | null` (`null` when no feature is selected). Unlike hover state, click state persists until dismissed — it clears to `null` when the user presses `Escape` or clicks outside a tracked layer/feature.
 
 **Tracking:** `useGeoVisClick` only populates when the user clicks a feature on a layer configured with `activeLegendId` **and** the feature has an id (numeric or string). Clicks on untracked layers or features without ids are treated as outside-clicks and clear the selection.
 
-Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVisHover` consumers. Must be called inside `GeoVisProvider`.
+Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
 
 #### `MapClickInfo` fields
 
