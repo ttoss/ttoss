@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.7](https://github.com/ttoss/ttoss/compare/carlin@1.49.6...carlin@1.49.7) (2026-05-11)
+
+### Bug Fixes
+
+- carlin build lambda folder ([#989](https://github.com/ttoss/ttoss/issues/989)) ([bc55f49](https://github.com/ttoss/ttoss/commit/bc55f497c86c97d686e8538946b61084173b1415))
+
 ## [1.49.6](https://github.com/ttoss/ttoss/compare/carlin@1.49.5...carlin@1.49.6) (2026-04-28)
 
 ### Bug Fixes
