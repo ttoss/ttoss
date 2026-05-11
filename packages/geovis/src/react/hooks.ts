@@ -1,4 +1,8 @@
-import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  MapLayerMouseEvent,
+  MapMouseEvent,
+} from 'maplibre-gl';
 import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
@@ -39,33 +43,12 @@ interface BuildHandleMoveParams {
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
 }
 
-/**
- * MapLibre fills `event.features` with features hit on the *delegated* layer
- * for layer-bound handlers. Typed locally because `MapMouseEvent` does not
- * expose this field in `@types/maplibre-gl` even though it is documented.
- */
-type DelegatedMouseEvent = MapMouseEvent & {
-  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>;
-};
-
 const clearHover = (
   map: MapLibreMap,
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>
 ) => {
   map.getCanvas().style.cursor = '';
   setHover(null);
-};
-
-/**
- * Typed click event shape. MapLibre layer-bound click handlers receive
- * `lngLat` (geographic coordinates) and `features` (delegated payload) in
- * addition to the base `MapMouseEvent`, but these fields are not exposed by
- * the upstream type definitions.
- */
-type ClickEvent = {
-  point: { x: number; y: number };
-  lngLat: { lng: number; lat: number };
-  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>;
 };
 
 interface BuildHandleClickParams {
@@ -87,7 +70,7 @@ const buildHandleClick = ({
   sourceByLayerId,
   setClick,
 }: BuildHandleClickParams) => {
-  return (event: ClickEvent) => {
+  return (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
     if (!feature || feature.id == null) {
       setClick(null);
@@ -122,11 +105,11 @@ const buildHandleMove = ({
   sourceByLayerId,
   setHover,
 }: BuildHandleMoveParams) => {
-  return (event: MapMouseEvent) => {
+  return (event: MapLayerMouseEvent) => {
     // Prefer the delegated `features` payload (already scoped to `layerId`)
     // to avoid an extra `queryRenderedFeatures` call on every mousemove and
     // to disambiguate when multiple tracked layers overlap at the cursor.
-    const delegatedFeature = (event as DelegatedMouseEvent).features?.[0];
+    const delegatedFeature = event.features?.[0];
     const feature =
       delegatedFeature ??
       map.queryRenderedFeatures(event.point, { layers: [layerId] })[0];
@@ -332,9 +315,9 @@ export const useMapClick = ({
 
     return () => {
       for (const { layerId, handleClick } of handlers) {
-        map.off('click', layerId, handleClick as never);
+        map.off('click', layerId, handleClick);
       }
-      map.off('click', handleOutsideClick as never);
+      map.off('click', handleOutsideClick);
       window.removeEventListener('keydown', handleEscape);
       setClick(null);
     };

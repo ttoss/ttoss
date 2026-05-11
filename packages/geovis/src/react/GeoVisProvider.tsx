@@ -83,9 +83,10 @@ interface GeoVisProviderProps {
  * do NOT re-render `GeoVisProvider`.
  *
  * @remarks
- * Because `ClickProvider` currently wraps part of the provider subtree, nested
- * consumers such as `HoverProvider` consumers may still re-render when click
- * state changes. Defined at module scope for the same stability reason as
+ * Wraps `HoverProvider` in the tree. When click state changes, `HoverProvider`
+ * re-executes, but because `hover` state is a stable reference until a
+ * `mousemove` fires, `GeoVisHoverContext` consumers will not re-render on
+ * click events. Defined at module scope for the same stability reason as
  * `HoverProvider`.
  */
 const ClickProvider = ({
