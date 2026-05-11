@@ -26,18 +26,6 @@
       }
     }
   ],
-  "views": [
-    {
-      "id": "left",
-      "label": "Absolute population count (population) — invalid",
-      "layers": ["rwanda-choropleth"]
-    },
-    {
-      "id": "right",
-      "label": "Population density (hab/km²) — correct",
-      "layers": ["rwanda-choropleth"]
-    }
-  ],
   "metadata": {
     "isPolicyInvalid": true,
     "invalidReason": "raw-count-choropleth",

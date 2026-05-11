@@ -127,6 +127,11 @@ export const createRuntime = (
         );
       } else if (patch.target === 'mapData') {
         currentSpec = applyMapDataPatchToSpec(currentSpec, patch);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[GeoVis] applyPatch: unknown target "${patch.target as string}" - patch ignored.`
+        );
       }
     },
     setView: (options) => {

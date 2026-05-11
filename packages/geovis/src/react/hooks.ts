@@ -133,12 +133,13 @@ const buildHandleMove = ({
     }) as { value?: unknown };
 
     map.getCanvas().style.cursor = 'pointer';
+    const rect = map.getCanvas().getBoundingClientRect();
     setHover({
       layerId: resolvedLayerId,
       sourceId,
       featureId: feature.id,
       value: coerceFeatureStateValue(state.value),
-      point: { x: event.point.x, y: event.point.y },
+      point: { x: rect.left + event.point.x, y: rect.top + event.point.y },
     });
   };
 };
