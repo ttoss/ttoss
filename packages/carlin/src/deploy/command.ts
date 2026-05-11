@@ -113,7 +113,7 @@ export const options = {
     type: 'string',
   },
   'lambda-outdir': {
-    default: 'dist',
+    default: 'out',
     describe: 'Output directory for built Lambda code.',
     type: 'string',
   },
