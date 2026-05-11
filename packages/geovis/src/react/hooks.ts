@@ -1,12 +1,16 @@
-import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  MapLayerMouseEvent,
+  MapMouseEvent,
+} from 'maplibre-gl';
 import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { VisualizationSpec } from '../spec/types';
-import type { MapHoverInfo } from './contexts';
+import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
 
-export type { MapHoverInfo } from './contexts';
+export type { MapClickInfo, MapHoverInfo } from './contexts';
 
 interface UseMapHoverParams {
   runtime: GeoVisRuntime | null;
@@ -39,15 +43,6 @@ interface BuildHandleMoveParams {
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
 }
 
-/**
- * MapLibre fills `event.features` with features hit on the *delegated* layer
- * for layer-bound handlers. Typed locally because `MapMouseEvent` does not
- * expose this field in `@types/maplibre-gl` even though it is documented.
- */
-type DelegatedMouseEvent = MapMouseEvent & {
-  features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>;
-};
-
 const clearHover = (
   map: MapLibreMap,
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>
@@ -56,17 +51,65 @@ const clearHover = (
   setHover(null);
 };
 
+interface BuildHandleClickParams {
+  map: MapLibreMap;
+  layerId: string;
+  sourceByLayerId: Map<string, string>;
+  setClick: React.Dispatch<React.SetStateAction<MapClickInfo | null>>;
+}
+
+/**
+ * Builds the per-layer click handler that reads the clicked feature's
+ * `feature-state` and calls `setClick` with the resulting {@link MapClickInfo}.
+ * Extracted at module scope (mirrors `buildHandleMove`) so `useMapClick`
+ * stays under the `max-lines-per-function` threshold.
+ */
+const buildHandleClick = ({
+  map,
+  layerId,
+  sourceByLayerId,
+  setClick,
+}: BuildHandleClickParams) => {
+  return (event: MapLayerMouseEvent) => {
+    const feature = event.features?.[0];
+    if (!feature || feature.id == null) {
+      setClick(null);
+      return;
+    }
+    const resolvedLayerId = feature.layer?.id ?? layerId;
+    const sourceId = sourceByLayerId.get(resolvedLayerId);
+    if (!sourceId) {
+      setClick(null);
+      return;
+    }
+
+    const state = map.getFeatureState({
+      source: sourceId,
+      id: feature.id,
+    }) as { value?: unknown };
+
+    setClick({
+      layerId: resolvedLayerId,
+      sourceId,
+      featureId: feature.id,
+      value: coerceFeatureStateValue(state.value),
+      lngLat: [event.lngLat.lng, event.lngLat.lat],
+      point: { x: event.point.x, y: event.point.y },
+    });
+  };
+};
+
 const buildHandleMove = ({
   map,
   layerId,
   sourceByLayerId,
   setHover,
 }: BuildHandleMoveParams) => {
-  return (event: MapMouseEvent) => {
+  return (event: MapLayerMouseEvent) => {
     // Prefer the delegated `features` payload (already scoped to `layerId`)
     // to avoid an extra `queryRenderedFeatures` call on every mousemove and
     // to disambiguate when multiple tracked layers overlap at the cursor.
-    const delegatedFeature = (event as DelegatedMouseEvent).features?.[0];
+    const delegatedFeature = event.features?.[0];
     const feature =
       delegatedFeature ??
       map.queryRenderedFeatures(event.point, { layers: [layerId] })[0];
@@ -184,6 +227,104 @@ export const useMapHover = ({
   }, [runtime, trackedKey]);
 
   return hover;
+};
+
+interface UseMapClickParams {
+  runtime: GeoVisRuntime | null;
+  spec: VisualizationSpec;
+}
+
+/**
+ * Tracks the last clicked feature on every layer (any geometry type) that has
+ * an `activeLegendId` declared. Supports point, line, polygon, symbol, and
+ * heatmap geometries — the geometry filter is intentionally absent so
+ * consumers can wire click-to-center (or any click reaction) on any layer.
+ *
+ * @returns The last clicked {@link MapClickInfo}, or `null` when no feature
+ * is selected.
+ */
+export const useMapClick = ({
+  runtime,
+  spec,
+}: UseMapClickParams): MapClickInfo | null => {
+  const [click, setClick] = React.useState<MapClickInfo | null>(null);
+
+  const trackedKey = React.useMemo(() => {
+    return spec.layers
+      .filter((layer) => {
+        return layer.activeLegendId != null;
+      })
+      .map((layer) => {
+        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}`;
+      })
+      .join(TRACKED_RECORD_SEP);
+  }, [spec.layers]);
+
+  React.useEffect(() => {
+    if (!runtime) return;
+    if (!trackedKey) return;
+
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
+    if (!map) return;
+
+    const tracked = trackedKey.split(TRACKED_RECORD_SEP).map((entry) => {
+      const [layerId, sourceId] = entry.split(TRACKED_FIELD_SEP);
+      return { layerId, sourceId };
+    });
+    const sourceByLayerId = new Map(
+      tracked.map((t) => {
+        return [t.layerId, t.sourceId] as const;
+      })
+    );
+
+    const handlers = tracked.map(({ layerId }) => {
+      return {
+        layerId,
+        handleClick: buildHandleClick({
+          map,
+          layerId,
+          sourceByLayerId,
+          setClick,
+        }),
+      };
+    });
+
+    for (const { layerId, handleClick } of handlers) {
+      map.on('click', layerId, handleClick);
+    }
+
+    // Map-level handler: deselects when the user clicks on empty space.
+    // `event.features` is NEVER populated for generic map.on('click') handlers
+    // in MapLibre — only layer-bound handlers receive features. Instead, we use
+    // queryRenderedFeatures to check whether any tracked layer was hit at the
+    // clicked point, making this independent of event-dispatch order.
+    const trackedLayerIds = tracked.map((t) => {
+      return t.layerId;
+    });
+    const handleOutsideClick = (event: MapMouseEvent) => {
+      const hits = map.queryRenderedFeatures(event.point, {
+        layers: trackedLayerIds,
+      });
+      if (!hits || hits.length === 0) setClick(null);
+    };
+    map.on('click', handleOutsideClick);
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setClick(null);
+    };
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      for (const { layerId, handleClick } of handlers) {
+        map.off('click', layerId, handleClick);
+      }
+      map.off('click', handleOutsideClick);
+      window.removeEventListener('keydown', handleEscape);
+      setClick(null);
+    };
+  }, [runtime, trackedKey]);
+
+  return click;
 };
 
 export interface UseMapDataResult {

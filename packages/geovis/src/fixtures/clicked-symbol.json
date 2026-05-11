@@ -1,0 +1,73 @@
+{
+  "id": "clicked-symbol",
+  "title": "Center on Clicked Symbol",
+  "description": "Click any marker to fly the map to that location. Uses useGeoVisClick + setView.",
+  "engine": "maplibre",
+  "view": {
+    "center": [-90.86, -0.47],
+    "zoom": 8
+  },
+  "basemap": {
+    "styleUrl": "https://tiles.openfreemap.org/styles/bright"
+  },
+  "sources": [
+    {
+      "id": "markers",
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "id": 1,
+            "properties": { "label": "A" },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-91.395263671875, -0.9145729757782163]
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 2,
+            "properties": { "label": "B" },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-90.32958984375, -0.6344474832838974]
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 3,
+            "properties": { "label": "C" },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [-91.34033203125, 0.01647949196029245]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "markers-layer",
+      "sourceId": "markers",
+      "geometry": "symbol",
+      "activeLegendId": "marker-color",
+      "legends": [
+        {
+          "id": "marker-color",
+          "label": "Markers",
+          "colorBy": {
+            "type": "categorical",
+            "property": "label",
+            "defaultColor": "#e74c3c"
+          }
+        }
+      ],
+      "paint": {
+        "iconImage": "custom-marker"
+      }
+    }
+  ]
+}

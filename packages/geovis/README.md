@@ -512,6 +512,47 @@ setView({ center: [-43.1, -22.9], zoom: 10, animate: false });
 
 Returns the live `MapHoverInfo | null` snapshot for the feature currently hovered on a polygon layer with `activeLegendId`. Lives in a dedicated context so high-frequency hover updates do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
 
+### `useGeoVisClick`
+
+Returns the last clicked feature on the active map as `MapClickInfo | null` (`null` when no feature is selected). Unlike hover state, click state persists until dismissed — it clears to `null` when the user presses `Escape` or clicks outside a tracked layer/feature.
+
+**Tracking:** `useGeoVisClick` only populates when the user clicks a feature on a layer configured with `activeLegendId` **and** the feature has an id (numeric or string). Clicks on untracked layers or features without ids are treated as outside-clicks and clear the selection.
+
+Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+#### `MapClickInfo` fields
+
+| Field       | Type                       | Description                                                                    |
+| ----------- | -------------------------- | ------------------------------------------------------------------------------ |
+| `layerId`   | `string`                   | Layer id that received the click.                                              |
+| `sourceId`  | `string`                   | Source id backing the layer.                                                   |
+| `featureId` | `string \| number`         | Clicked feature's id (typically `geometryId` from `mapData`).                  |
+| `value`     | `number \| string \| null` | `feature-state.value` at click time; same semantics as `MapHoverInfo.value`.   |
+| `lngLat`    | `[number, number]`         | Geographic coordinates `[lng, lat]` of the click. Useful for anchoring popups. |
+| `point`     | `{ x: number; y: number }` | Canvas-relative pixel coordinates of the click.                                |
+
+#### Example — center map on clicked feature
+
+```tsx
+import { useGeoVis, useGeoVisClick } from '@ttoss/geovis';
+import { useEffect } from 'react';
+
+const CenterOnClick = () => {
+  const { setView } = useGeoVis();
+  const click = useGeoVisClick();
+
+  useEffect(() => {
+    if (click) {
+      setView({ center: click.lngLat, zoom: 14 });
+    }
+  }, [click, setView]);
+
+  return null;
+};
+
+// Place <CenterOnClick /> anywhere inside <GeoVisProvider>
+```
+
 ### `useMapData`
 
 Returns indexed map data for a `mapDataId` as `{ mapDataId, mapId, joinKey, values, rows }`.
