@@ -17,7 +17,7 @@ export const deployLambdaCode = async ({
   lambdaEntryPoints,
   lambdaEntryPointsBaseDir = 'src',
   lambdaFormat,
-  lambdaOutdir = 'dist',
+  lambdaOutdir = 'out',
   stackName,
 }: {
   lambdaDockerfile?: string;
