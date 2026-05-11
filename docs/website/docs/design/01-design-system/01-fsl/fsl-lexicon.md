@@ -225,15 +225,20 @@ Evaluation answers:
 Evaluation is not styling and not token choice.
 It is semantic emphasis or valence.
 
-| Term          | Meaning                                                                                                    | Distinguish from                                                                                 |
-| ------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **primary**   | The main intended emphasis in a semantic context.                                                          | Not “blue”, “bold”, or any visual style.                                                         |
-| **secondary** | A secondary but still intentional emphasis relative to the same context.                                   | Not equivalent to dismiss, muted, or less important in every case.                               |
-| **accent**    | A deliberately differentiated emphasis used to highlight meaningful distinction from the default emphasis. | Not just “more colorful”; accent is semantic divergence.                                         |
-| **muted**     | A de-emphasized but still meaningful evaluation.                                                           | Not “disabled”, not “inactive”, not “secondary” in general.                                      |
-| **positive**  | An affirming, successful, healthy, or favorable evaluation.                                                | Not the same as “success UI token”; this is foundational meaning.                                |
-| **caution**   | A warning or careful-attention evaluation.                                                                 | Not the same as “negative”; caution signals risk, not necessarily harmful outcome.               |
-| **negative**  | A harmful, erroneous, destructive, or adverse evaluation.                                                  | Not necessarily **destructive** consequence; evaluation and consequence are distinct dimensions. |
+Evaluation is a **discriminated union** of two decision classes — an expression carries one or the other, never both:
+
+- **Emphasis** (`primary`, `secondary`, `accent`, `muted`) — intensity within the default semantic context.
+- **Valence** (`positive`, `caution`, `negative`) — semantic outcome meaning. A valence implies its own emphasis; intensity within a valence is expressed by other dimensions (e.g. Structural Role), not by combining emphasis with valence.
+
+| Class    | Term          | Meaning                                                                                                    | Distinguish from                                                                                 |
+| -------- | ------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Emphasis | **primary**   | The main intended emphasis in a semantic context.                                                          | Not “blue”, “bold”, or any visual style.                                                         |
+| Emphasis | **secondary** | A secondary but still intentional emphasis relative to the same context.                                   | Not equivalent to dismiss, muted, or less important in every case.                               |
+| Emphasis | **accent**    | A deliberately differentiated emphasis used to highlight meaningful distinction from the default emphasis. | Not just “more colorful”; accent is semantic divergence.                                         |
+| Emphasis | **muted**     | A de-emphasized but still meaningful evaluation.                                                           | Not “disabled”, not “inactive”, not “secondary” in general.                                      |
+| Valence  | **positive**  | An affirming, successful, healthy, or favorable evaluation.                                                | Not the same as “success UI token”; this is foundational meaning.                                |
+| Valence  | **caution**   | A warning or careful-attention evaluation.                                                                 | Not the same as “negative”; caution signals risk, not necessarily harmful outcome.               |
+| Valence  | **negative**  | A harmful, erroneous, destructive, or adverse evaluation.                                                  | Not necessarily **destructive** consequence; evaluation and consequence are distinct dimensions. |
 
 ### Critical disambiguations
 

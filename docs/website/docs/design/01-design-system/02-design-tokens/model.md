@@ -84,12 +84,12 @@ Applications must **never**:
 
 The semantic color token grammar `{ux}.{role}.{dimension}.{state}` is a formal FSL Structural Language §17.1 projection that renames and subsets FSL dimensions. The mapping is normative:
 
-| Token grammar axis | FSL dimension   | Notes                                                                                                                                                                                                                                                  |
-| :----------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ux`               | Entity Kind     | Projection-scoped subset of FSL Entity Kinds: `action`, `input`, `navigation`, `feedback`, `informational`. `Collection`/`Overlay`/`Structure` all project to `informational`; `Selection` projects to `input`; `Disclosure` projects to `navigation`. |
-| `role`             | Evaluation      | Projection-scoped name for the FSL `Evaluation` dimension. Values are identical (`primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative`).                                                                                        |
-| `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                                                                                  |
-| `state`            | State           | Values identical, no renaming.                                                                                                                                                                                                                         |
+| Token grammar axis | FSL dimension   | Notes                                                                                                                                                                                                                                                                                                                         |
+| :----------------- | :-------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ux`               | Entity Kind     | Projection-scoped subset of FSL Entity Kinds: `action`, `input`, `navigation`, `feedback`, `informational`. Four kinds project to `informational` (`Collection`, `Overlay`, `Structure`, `Disclosure` — all presentational by FSL §1); `Selection` projects to `input`; `Action`/`Input`/`Navigation`/`Feedback` project 1:1. |
+| `role`             | Evaluation      | Projection-scoped name for the FSL `Evaluation` dimension. Values are identical (`primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative`).                                                                                                                                                               |
+| `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                                                                                                                                                         |
+| `state`            | State           | Values identical, no renaming.                                                                                                                                                                                                                                                                                                |
 
 For the full Entity Kind → UX context mapping (covering all nine FSL Entity Kinds), see the [Colors family](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
 
@@ -109,6 +109,8 @@ Core must not encode:
 - component names
 - modes
 - implementation-specific meaning
+
+> **Naming distinction:** "UI intent" means names that are component-specific or context-specific (`core.border.width.button`, `core.color.card-background`). It does not prohibit canonical use-site names in a small, closed scale when those names encode a constraint that an ordinal scheme cannot (e.g., `core.border.width.selected` encodes `selected > default` in the name itself). See [borders.md](./02-families/borders.md) for the canonical example.
 
 ### 2. Semantic is meaning-only
 
@@ -157,6 +159,8 @@ Do not introduce new tokens that duplicate existing meaning.
 
 Prefer reuse before creation.
 
+> **Cross-cutting infrastructure exception.** A token is _not_ parallel vocabulary when it answers a question that the principal grammar cannot ask in a single token — typically a system-wide default that no `{ux}` owns. Canonical examples: `semantic.focus.ring.color` (system focus indicator color, used by components without an obvious `{ux}`), `semantic.overlay.scrim` (modal backdrop). They live as siblings of `semantic.colors.*`, not inside it. They **coexist with** per-context counterparts (`{ux}.{role}.border.focused`, etc.) — per-context tokens answer "how does _this_ `{ux}` vary?", cross-cutting tokens answer "what is the _system_ default?". Adding a new cross-cutting token requires the same gate as a `RawValue` exception (§8): technical necessity, JSDoc, registration.
+
 ### 7. Families own their grammar, not their architecture
 
 Each family may define its own semantic grammar.
@@ -196,8 +200,28 @@ Approval criteria — a semantic `RawValue` must satisfy all three:
 | `semantic.spacing.gutter.section`             | same as above                                                                                                                 |
 | `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference |
 | `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                             |
+| `semantic.overlay.scrim`                      | `rgba()` composing `{semantic.opacity.scrim}` — no single `TokenRef` can express a partial-opacity overlay color              |
 
 Any new `RawValue` in the semantic layer requires an entry in this table before merging.
+
+#### CSS-coupled core tokens
+
+A separate, narrower exception applies to the **core** layer: a small set of core tokens carry CSS-only constructs (`clamp()`, container-query units, or in-string `var(--tt-…)` self-references) because their behaviour is only meaningful through the CSS cascade. `toCssVars` emits the necessary viewport fallbacks and media-query overrides for these tokens; consumers reading them via `useResolvedTokens` will see the unprocessed expression.
+
+Two patterns appear in this category:
+
+1. **Fluid primitives** — `clamp()` + `cqi` expressions that need `@supports (width: 1cqi)` gating with viewport fallbacks emitted by `toCssVars` (`extractContainerQueryVars` + `toViewportFallback`).
+2. **Cascade-preserving aliases** — values that reference their own group via `var(--tt-…)` rather than `{token.path}`. This is intentional: it keeps the family a **single point of override**. Replacing `var()` with a token ref would inline the underlying expression into every step, duplicating CQ-units across the `@supports` block and breaking single-source semantics.
+
+| Token path                       | Pattern                                                                   | Reason                                                                                                                                             |
+| :------------------------------- | :------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core.spacing.engine.unit`       | Fluid primitive (`clamp()` + `cqi`)                                       | Single fluid base unit driving the spacing scale; viewport fallback emitted by `toCssVars`                                                         |
+| `core.spacing.{1..16}`           | Cascade-preserving alias (`calc(N * var(--tt-core-spacing-engine-unit))`) | Each step multiplies the engine unit; using `var()` keeps `engine.unit` as the single override surface                                             |
+| `core.font.scale.*`              | Fluid primitive                                                           | Fluid type scale; viewport fallback emitted by `toCssVars`                                                                                         |
+| `core.sizing.ramp.{ui,layout}.*` | Fluid primitive                                                           | Fluid sizing ramps; viewport fallback emitted by `toCssVars`                                                                                       |
+| `core.sizing.hit.coarse.*`       | Media-query override target                                               | Surfaced via `@media (any-pointer: coarse)` against `semantic.sizing.hit.*`; `useResolvedTokens` substitutes them when `isCoarsePointer` is `true` |
+
+Approval criteria mirror §8: technical necessity, JSDoc on the token, registration in this table. Non-CSS consumers (`useResolvedTokens`) receive the unresolved expression for these paths — that is the trade-off in exchange for a CSS-native cascade. When a non-CSS consumer of one of these tokens emerges, evaluate a per-token fallback strategy at that point rather than preemptively.
 
 ### 9. ThemeTokens plural keys are intentional
 
@@ -214,6 +238,16 @@ Tokens do not define:
 - application behavior
 
 Those concerns belong to components, patterns, and implementation.
+
+### 11. Source-of-truth hierarchy
+
+When the three artefacts disagree, resolve in this order:
+
+1. **FSL Lexicon / Structural Language** — authority over _vocabulary and identity_ (what each term means; which Entity Kinds are disjoint).
+2. **`Types.ts`** — authority over _contract enforcement_ (which tokens exist and with what shape).
+3. **Family docs** (this folder) — authority over _consumer guidance_ (how to pick a token in a real case).
+
+Identity wins over enforcement wins over guidance when the conflict is about _meaning_. Enforcement wins over guidance whenever the conflict is about _what exists_. A divergence is a defect in the lower-priority artefact unless the higher-priority artefact is itself wrong by its own rules — in which case fix it there first.
 
 ---
 

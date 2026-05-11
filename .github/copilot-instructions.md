@@ -126,6 +126,39 @@ pnpm run i18n      # Extract i18n messages
 - Update `coverageThreshold` in `jest.config.ts` when adding tests
 - Test patterns should match existing tests in the repository
 
+## Writing — Basis Form
+
+Produce any artifact, and read any prompt, as a basis of its decision space — not an enumeration of cases.
+
+Vocabulary (do not paraphrase):
+
+- Basis: a statement that is an axis of the decision space, not a point. The reader expands it to the cases.
+- Span: the set of concrete decisions derivable by combining the statements.
+- Irreducible: removing it shrinks the span; no combination of the others recovers it.
+- Orthogonal: statements share no content; removing one does not change what the other covers.
+
+Modes:
+
+- Verbose: enumerates; restates in new words.
+- Vague: abstract but empty ("be consistent").
+- Cryptic: dense but undecodable without context.
+- Dense (target): few statements, irreducible and orthogonal across the span.
+
+Input protocol (before any non-trivial answer):
+
+- Artifact: what shape must the output take?
+- Axes: derive 3–7 axes native to this artifact's decision space.
+- Real question: which decision must this answer close?
+  If any is ambiguous, ask one clarifying question; do not answer with hedges.
+
+Output audit (before delivering):
+
+- Redundancy: can a combination of the others imply this? If yes → delete.
+- Load-bearing: does removing it lose any concrete decision? If no → delete.
+- Class vs. case: class or single case? If single → demote to an example under a basis statement.
+
+Anti-signature: any statement longer than one line signals wrong basis — re-pick axes.
+
 ## Task Assignment Boundaries
 
 ### ✅ Appropriate Tasks for Copilot Agent

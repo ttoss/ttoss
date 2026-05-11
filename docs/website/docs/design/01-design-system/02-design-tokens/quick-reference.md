@@ -22,27 +22,28 @@ Grammar reminder:
 
 ## Colors — by intent
 
-| I want…                                    | Token                                                               |
-| :----------------------------------------- | :------------------------------------------------------------------ |
-| Primary button (filled, strongest CTA)     | `semantic.colors.action.primary.{background,border,text}`           |
-| Secondary button (neutral chrome)          | `semantic.colors.action.secondary.{background,border,text}`         |
-| Accent button (brand color, high emphasis) | `semantic.colors.action.accent.{background,border,text}`            |
-| Destructive button                         | `semantic.colors.action.negative.{background,border,text}`          |
-| Ghost / low-emphasis button                | `semantic.colors.action.muted.{background,border,text}`             |
-| Text input (default)                       | `semantic.colors.input.primary.{background,border,text}`            |
-| Text input (error)                         | `semantic.colors.input.negative.{background,border,text}`           |
-| Text input (success / validated)           | `semantic.colors.input.positive.{background,border,text}`           |
-| Text input (warning)                       | `semantic.colors.input.caution.{background,border,text}`            |
-| Nav link (default / current / visited)     | `semantic.colors.navigation.primary.text.{default,current,visited}` |
-| Toast / alert — info                       | `semantic.colors.feedback.primary.{background,border,text}`         |
-| Toast / alert — success                    | `semantic.colors.feedback.positive.{background,border,text}`        |
-| Toast / alert — warning                    | `semantic.colors.feedback.caution.{background,border,text}`         |
-| Toast / alert — error                      | `semantic.colors.feedback.negative.{background,border,text}`        |
-| Page / content body text                   | `semantic.colors.informational.primary.text`                        |
-| Muted / helper text                        | `semantic.colors.informational.muted.text`                          |
-| Page background                            | `semantic.colors.informational.primary.background`                  |
-| Divider line                               | `semantic.colors.informational.muted.border`                        |
-| Focus ring color                           | `semantic.focus.ring.color`                                         |
+| I want…                                                                                   | Token                                                               |
+| :---------------------------------------------------------------------------------------- | :------------------------------------------------------------------ |
+| Primary button (filled, strongest CTA)                                                    | `semantic.colors.action.primary.{background,border,text}`           |
+| Secondary button (neutral chrome)                                                         | `semantic.colors.action.secondary.{background,border,text}`         |
+| Accent button (brand color, high emphasis)                                                | `semantic.colors.action.accent.{background,border,text}`            |
+| Destructive button                                                                        | `semantic.colors.action.negative.{background,border,text}`          |
+| Ghost / low-emphasis button                                                               | `semantic.colors.action.muted.{background,border,text}`             |
+| Text input (default)                                                                      | `semantic.colors.input.primary.{background,border,text}`            |
+| Text input (error)                                                                        | `semantic.colors.input.negative.{background,border,text}`           |
+| Text input (success / validated)                                                          | `semantic.colors.input.positive.{background,border,text}`           |
+| Text input (warning)                                                                      | `semantic.colors.input.caution.{background,border,text}`            |
+| Nav link (default / current / visited)                                                    | `semantic.colors.navigation.primary.text.{default,current,visited}` |
+| Toast / alert — info                                                                      | `semantic.colors.feedback.primary.{background,border,text}`         |
+| Toast / alert — success                                                                   | `semantic.colors.feedback.positive.{background,border,text}`        |
+| Toast / alert — warning                                                                   | `semantic.colors.feedback.caution.{background,border,text}`         |
+| Toast / alert — error                                                                     | `semantic.colors.feedback.negative.{background,border,text}`        |
+| Page / content body text                                                                  | `semantic.colors.informational.primary.text`                        |
+| Muted / helper text                                                                       | `semantic.colors.informational.muted.text`                          |
+| Page background                                                                           | `semantic.colors.informational.primary.background`                  |
+| Divider line                                                                              | `semantic.colors.informational.muted.border`                        |
+| Focus ring color (system default — use when no `{ux}` applies)                            | `semantic.focus.ring.color`                                         |
+| Focus ring color (per-context — `{ux}` is `Action` / `Input` / `Navigation` / `Feedback`) | `semantic.colors.{ux}.{role}.border.focused`                        |
 
 Full grammar + role decision table: [Colors](./02-families/colors.md).
 
@@ -99,20 +100,21 @@ See [Typography](./02-families/typography.md).
 
 ## Borders, radii, elevation — by intent
 
-| I want…                                 | Token                                           |
-| :-------------------------------------- | :---------------------------------------------- |
-| 1px divider (width + style)             | `semantic.border.divider.{width,style}`         |
-| Control outline (button, input)         | `semantic.border.outline.control.{width,style}` |
-| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}` |
-| Selected-state line                     | `semantic.border.selected.{width,style}`        |
-| Focus ring (width + style + color)      | `semantic.focus.ring.{width,style,color}`       |
-| Control corner radius (buttons, inputs) | `semantic.radii.control`                        |
-| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                        |
-| Pill / fully round                      | `semantic.radii.round`                          |
-| Resting surface (no shadow)             | `semantic.elevation.surface.flat`               |
-| Card shadow                             | `semantic.elevation.surface.raised`             |
-| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`            |
-| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`           |
+| I want…                                 | Token                                                                           |
+| :-------------------------------------- | :------------------------------------------------------------------------------ |
+| 1px divider (width + style)             | `semantic.border.divider.{width,style}`                                         |
+| Control outline (button, input)         | `semantic.border.outline.control.{width,style}`                                 |
+| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}`                                 |
+| Selected-state line                     | `semantic.border.outline.selected.{width,style}`                                |
+| Focus ring (width + style)              | `semantic.focus.ring.{width,style}`                                             |
+| Focus ring color                        | see [Borders § Which focus colour](./02-families/borders.md#which-focus-colour) |
+| Control corner radius (buttons, inputs) | `semantic.radii.control`                                                        |
+| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                                                        |
+| Pill / fully round                      | `semantic.radii.round`                                                          |
+| Resting surface (no shadow)             | `semantic.elevation.surface.flat`                                               |
+| Card shadow                             | `semantic.elevation.surface.raised`                                             |
+| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`                                            |
+| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`                                           |
 
 See [Borders](./02-families/borders.md), [Radii](./02-families/radii.md), [Elevation](./02-families/elevation.md).
 

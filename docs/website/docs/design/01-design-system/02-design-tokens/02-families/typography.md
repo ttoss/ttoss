@@ -89,14 +89,14 @@ Core typography is composed of **two groups**:
 
 #### Font Primitives
 
-| Category                          | Tokens                                                                                                                              | Notes                                                                                                            |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
-| **Font families**                 | `core.font.family.sans`, `core.font.family.serif` _(optional)_, `core.font.family.mono`                                             | Defines the font stacks used across the system.                                                                  |
-| **Font weights**                  | `core.font.weight.regular` (400), `core.font.weight.medium` (500), `core.font.weight.semibold` (600), `core.font.weight.bold` (700) | If using variable fonts, weights may be tuned at the theme level. Components still consume semantic styles only. |
-| **Leading (line-height)**         | `core.font.leading.tight`, `core.font.leading.snug`, `core.font.leading.normal`, `core.font.leading.relaxed`                        | Unitless multipliers for scalable line-height.                                                                   |
-| **Tracking (letter-spacing)**     | `core.font.tracking.tight`, `core.font.tracking.normal`, `core.font.tracking.wide`                                                  | `tight` may be used for large headings. `wide` is intended for short labels; avoid for body text.                |
-| **Optical sizing** _(optional)_   | `core.font.optical.auto`, `core.font.optical.none`                                                                                  | Enables optical adjustments for variable fonts when supported.                                                   |
-| **Numeric features** _(optional)_ | `core.font.numeric.proportional`, `core.font.numeric.tabular`                                                                       | `tabular` is recommended for dashboards or frequently updating numeric values.                                   |
+| Category                          | Tokens                                                                                                                                                                                                            | Notes                                                                                                                                                                                    |
+| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Font families**                 | `core.font.family.sans`, `core.font.family.serif` _(optional)_, `core.font.family.mono`                                                                                                                           | Defines the font stacks used across the system.                                                                                                                                          |
+| **Font weights**                  | `core.font.weight.regular` (400), `core.font.weight.medium` (500), `core.font.weight.semibold` (600), `core.font.weight.bold` (700)                                                                               | If using variable fonts, weights may be tuned at the theme level. Components still consume semantic styles only.                                                                         |
+| **Leading (line-height)**         | `core.font.leading.tight`, `core.font.leading.snug`, `core.font.leading.normal`, `core.font.leading.relaxed`                                                                                                      | Unitless multipliers for scalable line-height.                                                                                                                                           |
+| **Tracking (letter-spacing)**     | `core.font.tracking.tight`, `core.font.tracking.normal`, `core.font.tracking.wide`                                                                                                                                | `tight` may be used for large headings. `wide` is intended for short labels; avoid for body text.                                                                                        |
+| **Optical sizing** _(optional)_   | `core.font.optical.auto`, `core.font.optical.none`                                                                                                                                                                | Exhaustive `font-optical-sizing` keyword set (closed by CSS spec).                                                                                                                       |
+| **Numeric features** _(optional)_ | `core.font.numeric.proportional`, `core.font.numeric.tabular`, `core.font.numeric.lining`, `core.font.numeric.oldstyle`, `core.font.numeric.slashedZero`, `core.font.numeric.ordinal`, `core.font.numeric.normal` | Standalone `font-variant-numeric` keywords. `tabular` for dashboards; `slashedZero` for financial/code contexts; combine values at the consumer site (e.g. `tabular-nums slashed-zero`). |
 
 #### Size Ramps (Responsive Engine)
 
@@ -149,6 +149,11 @@ const coreTypography = {
     numeric: {
       proportional: 'proportional-nums',
       tabular: 'tabular-nums',
+      lining: 'lining-nums',
+      oldstyle: 'oldstyle-nums',
+      slashedZero: 'slashed-zero',
+      ordinal: 'ordinal',
+      normal: 'normal',
     },
 
     /**
@@ -448,6 +453,8 @@ Semantic token names **never change across themes**.
   - `semibold > bold`
 
 - any emitted `fontOpticalSizing` value is not `auto` or `none`
+
+- any emitted `fontVariantNumeric` value is not one of the standalone keywords (`proportional-nums`, `tabular-nums`, `lining-nums`, `oldstyle-nums`, `slashed-zero`, `ordinal`, `normal`) or a space-separated combination of them
 
 - generated output does not emit a viewport-safe fallback before container-based overrides
 
