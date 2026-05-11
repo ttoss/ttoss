@@ -1,6 +1,6 @@
 import eslint from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
-import turboConfig from 'eslint-config-turbo/flat';
+import { defineConfig } from 'eslint/config';
 import formatjs from 'eslint-plugin-formatjs';
 import importPlugin from 'eslint-plugin-import';
 import jest from 'eslint-plugin-jest';
@@ -18,7 +18,7 @@ import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config([
+export default defineConfig(
   {
     ignores: [
       '**/node_modules/**',
@@ -28,19 +28,24 @@ export default tseslint.config([
       '**/coverage/**',
     ],
   },
-  ...turboConfig,
   eslint.configs.recommended,
   tseslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
-  reactPlugin.configs.flat.recommended,
-  reactPlugin.configs.flat['jsx-runtime'],
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...reactPlugin.configs.flat.recommended,
+  },
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...reactPlugin.configs.flat['jsx-runtime'],
+  },
   relay.configs.recommended,
   reactHooks.configs.flat.recommended,
+  jsxA11y.flatConfigs.recommended,
   {
     plugins: {
       relay,
       formatjs,
-      'jsx-a11y': jsxA11y,
       'prefer-arrow-functions': preferArrowFunctions,
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
@@ -64,6 +69,9 @@ export default tseslint.config([
       },
     },
     rules: {
+      // ── TypeScript ────────────────────────────────────────────────────────
+      // Enforce type safety and TypeScript idioms across the codebase.
+      // https://typescript-eslint.io/rules/
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports' },
@@ -73,7 +81,10 @@ export default tseslint.config([
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-use-before-define': ['error'],
-      curly: 'error',
+
+      // ── Internationalization (FormatJS) ───────────────────────────────────
+      // Keep i18n message definitions correct, consistent, and translator-friendly.
+      // https://formatjs.io/docs/tooling/linter/
       'formatjs/enforce-default-message': ['error', 'literal'],
       'formatjs/enforce-placeholders': ['error'],
       'formatjs/no-camel-case': ['error'],
@@ -84,19 +95,57 @@ export default tseslint.config([
       'formatjs/no-offset': 'error',
       'formatjs/no-id': 'error',
       'formatjs/no-complex-selectors': 'error',
+
+      // ── Import organization ───────────────────────────────────────────────
+      // Keep imports sorted, explicit, and free of unresolved paths.
+      // https://github.com/lydell/eslint-plugin-simple-import-sort
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
       'import/no-default-export': 'off',
+      'import/no-duplicates': 'error',
       'import/no-unresolved': 'off',
-      'max-params': ['error', 3],
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+
+      // ── Complexity and code size ──────────────────────────────────────────
+      // Prevent functions and files from growing too large to understand or test.
+      // https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/
+      complexity: ['error', { max: 10 }],
+      'max-depth': ['error', { max: 4 }],
+      'max-lines': [
+        'error',
+        { max: 400, skipBlankLines: true, skipComments: true },
+      ],
+      'max-lines-per-function': [
+        'error',
+        { max: 80, skipBlankLines: true, skipComments: true },
+      ],
+      'max-nested-callbacks': ['error', { max: 3 }],
+      'max-params': ['error', 5],
+
+      // ── Code quality ──────────────────────────────────────────────────────
+      // Enforce clean control flow and idiomatic JavaScript patterns.
+      // https://eslint.org/docs/latest/rules/
+      curly: 'error',
       'no-console': 'error',
+      'no-else-return': 'error',
       'no-use-before-define': 'off',
       'object-shorthand': ['error', 'always'],
       'prefer-arrow-callback': 'error',
+
+      // ── Arrow functions ───────────────────────────────────────────────────
+      // Enforce consistent use of arrow functions over function declarations.
+      // https://github.com/nicolo-ribaudo/eslint-plugin-prefer-arrow-functions
       'prefer-arrow-functions/prefer-arrow-functions': [
         'error',
         {
           returnStyle: 'explicit',
         },
       ],
+
+      // ── React ─────────────────────────────────────────────────────────────
+      // Enforce React best practices, including component purity and refresh safety.
+      // https://react.dev/learn/keeping-components-pure
       'react-namespace-import/no-namespace-import': 'error',
       'react-refresh/only-export-components': [
         'warn',
@@ -104,12 +153,29 @@ export default tseslint.config([
           allowConstantExport: true,
         },
       ],
+
+      // ── Relay ─────────────────────────────────────────────────────────────
+      // GraphQL Relay framework rules.
+      // https://relay.dev/
       'relay/generated-flow-types': 'off',
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
+
+      // ── Unicorn ───────────────────────────────────────────────────────────
+      // Enforce modern JavaScript best practices and Node.js idioms.
+      // https://github.com/sindresorhus/eslint-plugin-unicorn
       'unicorn/no-array-for-each': 'error',
       'unicorn/catch-error-name': 'error',
       'unicorn/prefer-node-protocol': 'error',
+    },
+  },
+  {
+    files: ['**/*.{jsx,tsx}'],
+    rules: {
+      // React components with JSX, hooks, and handlers routinely exceed 80 lines
+      // while remaining focused and readable — allow a slightly higher limit.
+      'max-lines-per-function': [
+        'error',
+        { max: 150, skipBlankLines: true, skipComments: true },
+      ],
     },
   },
   {
@@ -119,6 +185,12 @@ export default tseslint.config([
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-use-before-define': 'off',
+    },
+  },
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      globals: globals.commonjs,
     },
   },
   {
@@ -145,7 +217,16 @@ export default tseslint.config([
           withinDescribe: 'test',
         },
       ],
+
+      // Test files legitimately have many test cases, long setup blocks, and
+      // deeply nested assertions — complexity/size rules add noise without value.
+      complexity: 'off',
+      'max-depth': 'off',
+      'max-lines': 'off',
+      'max-lines-per-function': 'off',
+      'max-nested-callbacks': 'off',
+      'max-params': 'off',
     },
   },
-  eslintPluginPrettierRecommended,
-]);
+  eslintPluginPrettierRecommended
+);

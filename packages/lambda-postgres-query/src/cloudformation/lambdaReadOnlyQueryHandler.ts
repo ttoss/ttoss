@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import type { Handler } from 'aws-lambda';
 import { Client } from 'pg';
 
@@ -9,6 +8,21 @@ const usernameReadOnly = process.env.DATABASE_USERNAME_READ_ONLY;
 const passwordReadOnly = process.env.DATABASE_PASSWORD_READ_ONLY;
 const hostReadOnly = process.env.DATABASE_HOST_READ_ONLY;
 const portReadOnly = process.env.DATABASE_PORT_READ_ONLY;
+
+// Partial overrides are intentional: each connection parameter can be
+// independently overridden via its _READ_ONLY variant. Any parameter without
+// a _READ_ONLY override falls back to the corresponding non-read-only env var.
+// This allows, for example, pointing only the host to a read replica while
+// reusing the same credentials as the primary database.
+const getConnectionConfig = () => {
+  return {
+    database: databaseReadOnly || process.env.DATABASE_NAME,
+    username: usernameReadOnly || process.env.DATABASE_USERNAME,
+    password: passwordReadOnly || process.env.DATABASE_PASSWORD,
+    host: hostReadOnly || process.env.DATABASE_HOST,
+    port: portReadOnly || process.env.DATABASE_PORT,
+  };
+};
 
 export const readOnlyHandler: Handler<QueryParams> = async (event) => {
   if (
@@ -23,16 +37,7 @@ export const readOnlyHandler: Handler<QueryParams> = async (event) => {
     );
   }
 
-  // Partial overrides are intentional: each connection parameter can be
-  // independently overridden via its _READ_ONLY variant. Any parameter without
-  // a _READ_ONLY override falls back to the corresponding non-read-only env var.
-  // This allows, for example, pointing only the host to a read replica while
-  // reusing the same credentials as the primary database.
-  const database = databaseReadOnly || process.env.DATABASE_NAME;
-  const username = usernameReadOnly || process.env.DATABASE_USERNAME;
-  const password = passwordReadOnly || process.env.DATABASE_PASSWORD;
-  const host = hostReadOnly || process.env.DATABASE_HOST;
-  const port = portReadOnly || process.env.DATABASE_PORT;
+  const { database, username, password, host, port } = getConnectionConfig();
 
   try {
     const client = new Client({

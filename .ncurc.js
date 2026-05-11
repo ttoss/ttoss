@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-undef
-module.exports = {
+export default {
   reject: [
     /**
      * It breaks carlin build.
@@ -12,6 +11,7 @@ module.exports = {
      * `graphql` packages that are commonjs.
      */
     'camelcase-keys',
+    'eslint',
   ],
   target: (name) => {
     const minorPackages = ['typescript', '@types/node'];

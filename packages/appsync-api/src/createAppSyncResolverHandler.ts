@@ -26,31 +26,33 @@ export type BaseAppSyncContext = {
   identity: AppSyncIdentity | null | undefined;
 };
 
+/**
+ * Optional async function called once per request to enrich the resolver
+ * context. The returned object is shallow-merged into the base context and
+ * made available to every resolver.
+ *
+ * Use this for per-request setup such as resolving a `userId` from Cognito.
+ * For authorization rules or before/after resolver logic, prefer `middlewares`.
+ *
+ * @example
+ * ```ts
+ * createAppSyncResolverHandler({
+ *   schemaComposer,
+ *   createContext: async ({ identity }) => ({
+ *     userId: await getUserIdFromCognitoSub(identity?.sub),
+ *   }),
+ * });
+ * ```
+ */
+export type CreateContext = (
+  baseContext: BaseAppSyncContext
+) => Promise<Record<string, any>> | Record<string, any>;
+
 export const createAppSyncResolverHandler = ({
   createContext,
   ...buildSchemaInput
 }: BuildSchemaInput & {
-  /**
-   * Optional async function called once per request to enrich the resolver
-   * context. The returned object is shallow-merged into the base context and
-   * made available to every resolver.
-   *
-   * Use this for per-request setup such as resolving a `userId` from Cognito.
-   * For authorization rules or before/after resolver logic, prefer `middlewares`.
-   *
-   * @example
-   * ```ts
-   * createAppSyncResolverHandler({
-   *   schemaComposer,
-   *   createContext: async ({ identity }) => ({
-   *     userId: await getUserIdFromCognitoSub(identity?.sub),
-   *   }),
-   * });
-   * ```
-   */
-  createContext?: (
-    baseContext: BaseAppSyncContext
-  ) => Promise<Record<string, any>> | Record<string, any>;
+  createContext?: CreateContext;
 }): AppSyncResolverHandler<any, any, any> => {
   return async (event, appSyncHandlerContext) => {
     const { schemaComposer } = buildSchemaInput;

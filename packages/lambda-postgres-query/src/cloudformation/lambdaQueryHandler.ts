@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import type { Handler } from 'aws-lambda';
 import { Client } from 'pg';
 

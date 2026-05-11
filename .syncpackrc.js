@@ -1,3 +1,3 @@
-const { syncpackConfig } = require('@ttoss/config');
+import { syncpackConfig } from '@ttoss/config';
 
-module.exports = syncpackConfig();
+export default syncpackConfig();

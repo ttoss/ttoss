@@ -65,18 +65,9 @@ export const passwordSchema = (options?: { required?: boolean }) => {
 
 // Extend ZodString prototype with custom validation methods
 z.ZodString.prototype.cnpj = function (message = 'Invalid CNPJ') {
-  return this.refine(cnpjRefinement, { message });
+  return this.refine(cnpjRefinement, { error: message });
 };
 
 z.ZodString.prototype.cpf = function (message = 'Invalid CPF') {
-  return this.refine(cpfRefinement, { message });
-};
-
-// Extend ZodEffects prototype for chainability
-z.ZodEffects.prototype.cnpj = function (message = 'Invalid CNPJ') {
-  return this.refine(cnpjRefinement, { message });
-};
-
-z.ZodEffects.prototype.cpf = function (message = 'Invalid CPF') {
-  return this.refine(cpfRefinement, { message });
+  return this.refine(cpfRefinement, { error: message });
 };

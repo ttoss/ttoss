@@ -1,8 +1,8 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
-import { Handler } from 'aws-lambda';
 import { IncomingWebhook } from '@slack/webhook';
-import { putApprovalResultManualTask } from './putApprovalResultManualTask';
+import type { Handler } from 'aws-lambda';
 import AWS from 'aws-sdk';
+
+import { putApprovalResultManualTask } from './putApprovalResultManualTask';
 
 const ecs = new AWS.ECS({ apiVersion: '2014-11-13' });
 
@@ -80,7 +80,7 @@ export const getEcsTaskTags = async ({
     }
 
     return task.tags;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

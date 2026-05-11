@@ -27,7 +27,6 @@ export const query = async <Rows extends QueryResultRow = any>(
 ) => {
   try {
     const {
-      // eslint-disable-next-line turbo/no-undeclared-env-vars
       lambdaPostgresQueryFunction = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
       camelCaseKeys = true,
       ...pgParams

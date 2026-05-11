@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.9.11...@ttoss/graphql-api@0.10.0) (2026-04-28)
+
+### Features
+
+- **@ttoss/graphql-api:** export generic ConnectionArgs type ([#965](https://github.com/ttoss/ttoss/issues/965)) ([8a15299](https://github.com/ttoss/ttoss/commit/8a1529943e2324c21d0c966601e4142a85ff7a73))
+
+## [0.9.11](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.9.10...@ttoss/graphql-api@0.9.11) (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
+## 0.9.10 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
 ## 0.9.9 (2026-04-09)
 
 ### Bug Fixes

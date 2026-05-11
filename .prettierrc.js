@@ -1,3 +1,3 @@
-const { prettierConfig } = require('@ttoss/config');
+import { prettierConfig } from '@ttoss/config';
 
-module.exports = prettierConfig();
+export default prettierConfig();

@@ -4,9 +4,38 @@ import { Box, Flex, Text } from '@ttoss/ui';
 import type {
   CardVariant,
   DashboardCard,
+  StatusIndicator,
   TrendIndicator,
 } from '../DashboardCard';
 import { CardWrapper } from './Wrapper';
+
+const formatByType = ({
+  value,
+  type,
+  numberDecimalPlaces,
+  currency,
+}: {
+  value: number;
+  type: 'number' | 'percentage' | 'currency';
+  numberDecimalPlaces?: number;
+  currency: string;
+}): string => {
+  switch (type) {
+    case 'currency':
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency,
+      }).format(value);
+    case 'percentage':
+      return `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
+    case 'number':
+    default:
+      return new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: numberDecimalPlaces ?? 2,
+        maximumFractionDigits: numberDecimalPlaces ?? 2,
+      }).format(value);
+  }
+};
 
 const formatNumber = ({
   value,
@@ -25,26 +54,7 @@ const formatNumber = ({
     return '-';
   }
 
-  let formatted = '';
-  switch (type) {
-    case 'currency':
-      formatted = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency,
-      }).format(value);
-      break;
-    case 'percentage':
-      formatted = `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
-      break;
-    case 'number':
-    default: {
-      formatted = new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: numberDecimalPlaces ?? 2,
-        maximumFractionDigits: numberDecimalPlaces ?? 2,
-      }).format(value);
-      break;
-    }
-  }
+  let formatted = formatByType({ value, type, numberDecimalPlaces, currency });
   if (suffix) {
     formatted += ` ${suffix}`;
   }
@@ -121,8 +131,87 @@ const TrendIcon = ({ trend }: { trend: TrendIndicator }) => {
   return <Icon icon={icon} width={12} />;
 };
 
+const TrendDisplay = ({ trend }: { trend: TrendIndicator }) => {
+  const trendColors = getTrendColor(trend);
+  return (
+    <Flex sx={{ alignItems: 'center', gap: '1' }}>
+      <Box
+        sx={{
+          color: trendColors.color,
+          backgroundColor: trendColors.backgroundColor,
+          padding: '1',
+          fontSize: 'xs',
+          fontWeight: 'semibold',
+          borderRadius: 'sm',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <TrendIcon trend={trend} />
+        {trend.value.toFixed(1)}%{' '}
+      </Box>
+      <Text
+        sx={{
+          color: 'input.background.muted.disabled',
+          fontSize: 'xs',
+          fontWeight: 'medium',
+        }}
+      >
+        vs. anterior
+      </Text>
+    </Flex>
+  );
+};
+
+const StatusDisplay = ({
+  status,
+  hasPrevSection,
+}: {
+  status: StatusIndicator;
+  hasPrevSection: boolean;
+}) => {
+  return (
+    <Flex
+      sx={{
+        alignItems: 'center',
+        gap: '1',
+        mt: hasPrevSection ? '2' : '1',
+      }}
+    >
+      {status.icon && (
+        <Box
+          sx={{
+            color: 'feedback.text.positive.default',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Icon icon={status.icon} width={16} />
+        </Box>
+      )}
+      <Text
+        sx={{
+          color: 'feedback.text.positive.default',
+          fontSize: 'sm',
+          fontWeight: 'medium',
+        }}
+      >
+        {status.text}
+      </Text>
+    </Flex>
+  );
+};
+
+const getBigNumberTotal = (data: DashboardCard['data']): number | undefined => {
+  return data.meta?.total ?? data.api?.total;
+};
+
+/**
+ * Displays a single key metric as a large formatted number with optional trend indicator,
+ * additional info text, and status badge.
+ */
 export const BigNumber = (props: DashboardCard) => {
-  const total = props.data.meta?.total ?? props.data.api?.total ?? undefined;
+  const total = getBigNumberTotal(props.data);
   const formattedValue = formatNumber({
     value: total,
     type: props.numberType,
@@ -133,19 +222,17 @@ export const BigNumber = (props: DashboardCard) => {
 
   const valueColor = getValueColor(props.color, props.variant);
   const variant = props.variant || 'default';
+  const description = props.description || '';
+  const hasTrendValue = typeof props.trend?.value === 'number';
+  const hasPrevSection = hasTrendValue || Boolean(props.additionalInfo);
 
   return (
     <CardWrapper
       title={props.title}
-      description={props.description || ''}
+      description={description}
       variant={variant}
     >
-      <Flex
-        sx={{
-          flexDirection: 'column',
-          gap: '2',
-        }}
-      >
+      <Flex sx={{ flexDirection: 'column', gap: '2' }}>
         <Text
           sx={{
             color: valueColor,
@@ -157,39 +244,7 @@ export const BigNumber = (props: DashboardCard) => {
           {formattedValue}
         </Text>
 
-        {typeof props.trend?.value === 'number' && (
-          <Flex
-            sx={{
-              alignItems: 'center',
-              gap: '1',
-            }}
-          >
-            <Box
-              sx={{
-                color: getTrendColor(props.trend).color,
-                backgroundColor: getTrendColor(props.trend).backgroundColor,
-                padding: '1',
-                fontSize: 'xs',
-                fontWeight: 'semibold',
-                borderRadius: 'sm',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <TrendIcon trend={props.trend} />
-              {props.trend.value.toFixed(1)}%{' '}
-            </Box>
-            <Text
-              sx={{
-                color: 'input.background.muted.disabled',
-                fontSize: 'xs',
-                fontWeight: 'medium',
-              }}
-            >
-              {props.trend ? 'vs. anterior' : ''}
-            </Text>
-          </Flex>
-        )}
+        {hasTrendValue && <TrendDisplay trend={props.trend!} />}
 
         {props.additionalInfo && (
           <Text
@@ -204,34 +259,10 @@ export const BigNumber = (props: DashboardCard) => {
         )}
 
         {props.status && (
-          <Flex
-            sx={{
-              alignItems: 'center',
-              gap: '1',
-              mt: props.trend || props.additionalInfo ? '2' : '1',
-            }}
-          >
-            {props.status.icon && (
-              <Box
-                sx={{
-                  color: 'feedback.text.positive.default',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Icon icon={props.status.icon} width={16} />
-              </Box>
-            )}
-            <Text
-              sx={{
-                color: 'feedback.text.positive.default',
-                fontSize: 'sm',
-                fontWeight: 'medium',
-              }}
-            >
-              {props.status.text}
-            </Text>
-          </Flex>
+          <StatusDisplay
+            status={props.status}
+            hasPrevSection={hasPrevSection}
+          />
         )}
       </Flex>
     </CardWrapper>

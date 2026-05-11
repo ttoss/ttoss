@@ -1,0 +1,403 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { act, render } from '@testing-library/react';
+import * as React from 'react';
+import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
+import type { PolicyViolation, VisualizationSpec } from 'src/spec/types';
+
+// var is hoisted alongside jest.mock, so the reference is valid inside the factory.
+// eslint-disable-next-line no-var
+var mockRuntimeUpdate = jest.fn();
+// eslint-disable-next-line no-var
+var mockRuntimeApplyPatch = jest.fn();
+// Holds the spec that runtime.spec getter returns; tests can mutate this.
+// eslint-disable-next-line no-var
+var mockRuntimeSpec: unknown = {};
+
+jest.mock('src/runtime/createRuntime', () => {
+  return {
+    createRuntime: jest.fn(() => {
+      return {
+        get spec() {
+          return mockRuntimeSpec;
+        },
+        mount: jest.fn(() => {
+          return {
+            viewId: 'v',
+            container: {},
+            destroy: jest.fn(),
+          };
+        }),
+        update: mockRuntimeUpdate,
+        applyPatch: mockRuntimeApplyPatch,
+        destroy: jest.fn(),
+        getAdapter: jest.fn(),
+      };
+    }),
+  };
+});
+
+jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => {
+      return {
+        id: 'maplibre',
+        getCapabilities: jest.fn(),
+        mount: jest.fn(),
+        update: jest.fn(),
+        destroy: jest.fn(),
+        getNativeInstance: jest.fn(() => {
+          return null;
+        }),
+      };
+    }),
+  };
+});
+
+const baseSpec: VisualizationSpec = {
+  id: 'test',
+  engine: 'maplibre',
+  view: { center: [-46.6, -23.5], zoom: 10 },
+  sources: [],
+  layers: [],
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockRuntimeSpec = {};
+});
+
+describe('GeoVisProvider spec memoization', () => {
+  test('does not call runtime.update when the same spec reference is passed again', async () => {
+    type SpecController = { setSpec: (s: VisualizationSpec) => void };
+    const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
+      const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);
+      React.useImperativeHandle(ref, () => {
+        return { setSpec };
+      }, [setSpec]);
+      return (
+        <GeoVisProvider spec={spec}>
+          <div />
+        </GeoVisProvider>
+      );
+    });
+    Wrapper.displayName = 'Wrapper';
+
+    const ref = React.createRef<SpecController>();
+    await act(async () => {
+      render(<Wrapper ref={ref} />);
+    });
+
+    const callsBefore = mockRuntimeUpdate.mock.calls.length;
+
+    // Pass the same object reference — must NOT trigger update
+    await act(async () => {
+      ref.current?.setSpec(baseSpec);
+    });
+
+    expect(mockRuntimeUpdate.mock.calls.length).toBe(callsBefore);
+  });
+
+  test('calls runtime.update when a new spec reference is passed', async () => {
+    type SpecController = { setSpec: (s: VisualizationSpec) => void };
+    const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
+      const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);
+      React.useImperativeHandle(ref, () => {
+        return { setSpec };
+      }, [setSpec]);
+      return (
+        <GeoVisProvider spec={spec}>
+          <div />
+        </GeoVisProvider>
+      );
+    });
+    Wrapper.displayName = 'Wrapper';
+
+    const ref = React.createRef<SpecController>();
+    await act(async () => {
+      render(<Wrapper ref={ref} />);
+    });
+
+    const callsBefore = mockRuntimeUpdate.mock.calls.length;
+
+    await act(async () => {
+      ref.current?.setSpec({
+        ...baseSpec,
+        view: { ...baseSpec.view, zoom: 14 },
+      });
+    });
+
+    expect(mockRuntimeUpdate.mock.calls.length).toBeGreaterThan(callsBefore);
+  });
+});
+
+describe('GeoVisProvider useGeoVis', () => {
+  test('useGeoVis throws when used outside GeoVisProvider', () => {
+    const BrokenConsumer = () => {
+      useGeoVis();
+      return null;
+    };
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {
+      return undefined;
+    });
+    expect(() => {
+      return render(<BrokenConsumer />);
+    }).toThrow('useGeoVis must be used inside <GeoVisProvider>');
+    spy.mockRestore();
+  });
+});
+
+describe('GeoVisProvider policyViolations', () => {
+  test('is empty when spec has no metadata', async () => {
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toEqual([]);
+  });
+
+  test('has one entry when metadata.isPolicyInvalid is true', async () => {
+    const invalidSpec: VisualizationSpec = {
+      ...baseSpec,
+      metadata: {
+        isPolicyInvalid: true,
+        invalidReason: 'raw-count-choropleth',
+        metricField: 'population',
+        normalizedExpression: 'population / sq-km',
+        normalizedLabel: 'hab por km²',
+      },
+    };
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={invalidSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toHaveLength(1);
+    expect(capturedRef.current![0].reason).toBe('raw-count-choropleth');
+    expect(capturedRef.current![0].message).toContain('population');
+  });
+
+  test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
+    const specNoReason: VisualizationSpec = {
+      ...baseSpec,
+      id: 'no-reason',
+      metadata: { isPolicyInvalid: true },
+    };
+    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      capturedRef.current = useGeoVis().policyViolations;
+      return null;
+    };
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={specNoReason}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    expect(capturedRef.current).toHaveLength(1);
+    expect(capturedRef.current![0].reason).toBe('policy-invalid');
+  });
+});
+
+describe('GeoVisProvider applyPatch updates context spec', () => {
+  test('context spec reflects runtime.spec immediately after applyPatch', async () => {
+    const updatedSpec: VisualizationSpec = {
+      ...baseSpec,
+      layers: [
+        { id: 'patched', sourceId: 'src', geometry: 'polygon' as const },
+      ],
+    };
+
+    // Make mockRuntimeApplyPatch update the runtime spec when called.
+    mockRuntimeApplyPatch.mockImplementation(() => {
+      mockRuntimeSpec = updatedSpec;
+    });
+
+    const latestSpecRef = { current: baseSpec as VisualizationSpec };
+    const triggerPatchRef = { current: () => {} };
+
+    const Consumer = () => {
+      const { spec, applyPatch } = useGeoVis();
+      // eslint-disable-next-line react-hooks/immutability
+      latestSpecRef.current = spec as VisualizationSpec;
+      // eslint-disable-next-line react-hooks/immutability
+      triggerPatchRef.current = () => {
+        applyPatch({
+          target: 'layer',
+          op: 'add',
+          value: updatedSpec.layers[0],
+        });
+      };
+      return null;
+    };
+
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+
+    await act(async () => {
+      triggerPatchRef.current();
+    });
+
+    expect(latestSpecRef.current.layers).toHaveLength(1);
+    expect(latestSpecRef.current.layers[0].id).toBe('patched');
+  });
+});
+
+describe('GeoVisProvider effectiveSpec synchronization', () => {
+  /**
+   * GeoVisProvider derives `effectiveSpec` directly during render using a
+   * `patchState` object: `{ forSpec, patchedSpec }`.
+   *
+   * - When `spec` prop matches `patchState.forSpec`, the context serves
+   *   `patchedSpec` (the post-patch view of the spec).
+   * - When the parent provides a new `spec` reference, `patchState.forSpec !==
+   *   spec` and the context falls through to the fresh prop, automatically
+   *   discarding stale patch state.
+   *
+   * `runtime.update(spec)` is called by a dedicated `useEffect([runtime, spec])`
+   * whenever either the runtime or the spec prop changes.
+   */
+  test('runtime.update is called once after initial mount', async () => {
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <div />
+        </GeoVisProvider>
+      );
+    });
+
+    // The sync effect fires after the async init resolves and setRuntime is
+    // called. runtime.update(spec) must be called exactly once with baseSpec.
+    expect(mockRuntimeUpdate).toHaveBeenCalledTimes(1);
+    expect(mockRuntimeUpdate).toHaveBeenCalledWith(baseSpec);
+  });
+
+  test('context spec (effectiveSpec) tracks spec prop through multiple changes', async () => {
+    type SpecController = { setSpec: (s: VisualizationSpec) => void };
+    const specCaptureRef = { current: baseSpec as VisualizationSpec };
+
+    const Consumer = () => {
+      // eslint-disable-next-line react-hooks/immutability
+      specCaptureRef.current = useGeoVis().spec as VisualizationSpec;
+      return null;
+    };
+
+    const Wrapper = React.forwardRef<SpecController, object>((_, ref) => {
+      const [spec, setSpec] = React.useState<VisualizationSpec>(baseSpec);
+      React.useImperativeHandle(ref, () => {
+        return { setSpec };
+      }, [setSpec]);
+      return (
+        <GeoVisProvider spec={spec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+    Wrapper.displayName = 'Wrapper';
+
+    const ref = React.createRef<SpecController>();
+    await act(async () => {
+      render(<Wrapper ref={ref} />);
+    });
+    expect(specCaptureRef.current.id).toBe(baseSpec.id);
+
+    const spec2: VisualizationSpec = {
+      ...baseSpec,
+      id: 'spec-v2',
+      view: { ...baseSpec.view, zoom: 14 },
+    };
+    await act(async () => {
+      ref.current?.setSpec(spec2);
+    });
+    expect(specCaptureRef.current.id).toBe('spec-v2');
+
+    const spec3: VisualizationSpec = {
+      ...baseSpec,
+      id: 'spec-v3',
+      view: { ...baseSpec.view, zoom: 8 },
+    };
+    await act(async () => {
+      ref.current?.setSpec(spec3);
+    });
+    expect(specCaptureRef.current.id).toBe('spec-v3');
+  });
+});
+
+describe('GeoVisProvider adapter error', () => {
+  // A minimal class-based ErrorBoundary — React only supports class components
+  // as error boundaries; function components cannot use getDerivedStateFromError.
+  class ErrorBoundary extends React.Component<
+    { children: React.ReactNode; fallback: React.ReactNode },
+    { caught: boolean }
+  > {
+    state = { caught: false };
+
+    static getDerivedStateFromError() {
+      return { caught: true };
+    }
+
+    render() {
+      return this.state.caught ? this.props.fallback : this.props.children;
+    }
+  }
+
+  test('ErrorBoundary catches adapter initialization error', async () => {
+    // Make the MapLibreAdapter factory throw on this one invocation.
+    // The dynamic import in resolveAdapter() resolves the same jest mock.
+    const adapterMock = jest.requireMock(
+      'src/adapters/maplibre/MapLibreAdapter'
+    ) as { default: jest.MockedFunction<() => unknown> };
+    adapterMock.default.mockImplementationOnce(() => {
+      throw new Error('WebGL not supported');
+    });
+
+    // React logs uncaught errors to console.error during error boundary tests;
+    // suppress to keep test output clean.
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {
+      return undefined;
+    });
+
+    const { getByText, queryByText } = await act(async () => {
+      return render(
+        <ErrorBoundary fallback={<p>Map failed to load</p>}>
+          <GeoVisProvider spec={baseSpec}>
+            <p>Map loaded</p>
+          </GeoVisProvider>
+        </ErrorBoundary>
+      );
+    });
+
+    consoleSpy.mockRestore();
+
+    expect(getByText('Map failed to load').tagName).toBe('P');
+
+    expect(queryByText('Map loaded')).toBeNull();
+  });
+});

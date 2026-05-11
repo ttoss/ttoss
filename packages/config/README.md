@@ -12,13 +12,29 @@ pnpm add -Dw @ttoss/config
 
 Use the configs of this section on the root of your monorepo.
 
+### Quick Setup (Recommended)
+
+The easiest way to set up all monorepo configurations at once is using the `@ttoss/monorepo` command:
+
+```shell
+pnpm add -Dw @ttoss/monorepo
+npx @ttoss/monorepo setup-monorepo
+```
+
+This command will automatically create all configuration files and install all necessary dependencies for ESLint, Prettier, Husky, commitlint, lint-staged, Lerna, Syncpack, and pnpm workspace.
+
+For more details, see [@ttoss/monorepo documentation](https://github.com/ttoss/ttoss/tree/main/packages/monorepo).
+
+### Manual Setup
+
+Alternatively, you can set up each tool manually:
+
 ### ESLint and Prettier
 
 Install the following packages:
 
 ```shell
-pnpm add -Dw eslint prettier @ttoss/eslint-config
-
+pnpm add -Dw eslint prettier @ttoss/eslint-config @ttoss/config
 ```
 
 Create the `.prettierrc.js` file and add the following configuration:
@@ -69,7 +85,125 @@ Finally, configure Husky:
 npm set-script prepare "husky install"
 pnpm run prepare
 pnpm husky add .husky/commit-msg "pnpm commitlint --edit"
-pnpm husky add .husky/pre-commit "pnpm lint-staged"
+pnpm husky add .husky/pre-commit "pnpm lint-staged && pnpm syncpack:list"
+```
+
+### Lerna (optional)
+
+[Lerna](https://lerna.js.org/) helps manage versioning and publishing of packages in a monorepo.
+
+Install lerna-lite packages:
+
+```shell
+pnpm add -Dw @lerna-lite/cli @lerna-lite/version @lerna-lite/changed @lerna-lite/list
+```
+
+Create the `lerna.json` file and configure it according to your monorepo structure:
+
+```json title="lerna.json"
+{
+  "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
+  "version": "independent",
+  "npmClient": "pnpm",
+  "stream": true,
+  "command": {
+    "publish": {
+      "allowBranch": "main",
+      "noPrivate": true
+    },
+    "version": {
+      "conventionalCommits": true,
+      "createRelease": "github",
+      "message": "chore(release): publish packages",
+      "syncWorkspaceLock": true,
+      "allowPeerDependenciesUpdate": true
+    }
+  },
+  "ignoreChanges": ["**/__fixtures__/**", "**/tests/**"],
+  "packages": ["packages/*"]
+}
+```
+
+### Syncpack (optional)
+
+[Syncpack](https://jamiemason.github.io/syncpack/) ensures consistent versions of dependencies across all packages in your monorepo.
+
+Install syncpack:
+
+```shell
+pnpm add -Dw syncpack
+```
+
+Create the `.syncpackrc.js` file:
+
+```js title=".syncpackrc.js"
+const { syncpackConfig } = require('@ttoss/config');
+
+module.exports = syncpackConfig();
+```
+
+Add syncpack scripts to your root `package.json`:
+
+```json title="package.json"
+{
+  "scripts": {
+    "syncpack:fix": "syncpack fix-mismatches",
+    "syncpack:list": "syncpack list-mismatches"
+  }
+}
+```
+
+### pnpm workspace (required for pnpm monorepos)
+
+Create a `pnpm-workspace.yaml` file to define which directories contain packages:
+
+```yaml title="pnpm-workspace.yaml"
+packages:
+  - 'packages/*'
+```
+
+Adjust the `packages` array to match your monorepo structure. For example:
+
+```yaml title="pnpm-workspace.yaml"
+packages:
+  - 'packages/*'
+  - 'examples/*'
+  - 'apps/*'
+```
+
+### .gitignore (recommended)
+
+Create a `.gitignore` file in the monorepo root to exclude common build artifacts and dependencies:
+
+```gitignore title=".gitignore"
+node_modules/
+dist/
+build/
+.build/
+coverage/
+*.log
+.env
+.env.test
+.cache/
+.turbo
+**/i18n/compiled/
+**/i18n/missing/
+**/i18n/unused/
+tsup.config.bundled*.mjs
+package-lock.json
+yarn.lock
+```
+
+### .npmrc (recommended for pnpm)
+
+Create an `.npmrc` file to configure pnpm behavior:
+
+```ini title=".npmrc"
+enable-pre-post-scripts=true
+engine-strict=true
+public-hoist-pattern[]=*eslint*
+public-hoist-pattern[]=*prettier*
+public-hoist-pattern[]=@types*
 ```
 
 ## Packages

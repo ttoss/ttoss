@@ -1,5 +1,5 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import { faker } from '@ttoss/test-utils/faker';
+
 import { getEcsTaskLogsUrl } from './ecsTaskReport.handler';
 
 const region = 'us-east-1';

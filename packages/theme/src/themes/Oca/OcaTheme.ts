@@ -179,6 +179,11 @@ export const OcaTheme: Theme = createTheme(
             borderColor: 'display.border.muted.default',
           },
         },
+        a: {
+          ':visited': {
+            color: 'navigation.text.secondary.default',
+          },
+        },
       },
     },
     /**

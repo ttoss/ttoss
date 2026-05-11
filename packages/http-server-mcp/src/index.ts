@@ -479,7 +479,7 @@ export const registerToolFromSchema = (
     name,
     {
       description,
-      inputSchema: z.record(z.unknown()),
+      inputSchema: z.record(z.string(), z.unknown()),
     },
     async (args) => {
       return handler(args as Record<string, unknown>);

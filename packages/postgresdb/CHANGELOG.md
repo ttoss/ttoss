@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.8.2...@ttoss/postgresdb@0.9.0) (2026-05-02)
+
+### Features
+
+- **postgresdb:** re-export DatabaseError from sequelize ([#978](https://github.com/ttoss/ttoss/issues/978)) ([a05a200](https://github.com/ttoss/ttoss/commit/a05a20034f5d8535cb2d369c927850c48be41513))
+
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.8.1...@ttoss/postgresdb@0.8.2) (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
+## 0.8.1 (2026-04-23)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
 # [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.5.8...@ttoss/postgresdb@0.8.0) (2026-04-07)
 
 ### Features

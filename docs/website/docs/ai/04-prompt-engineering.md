@@ -1,5 +1,6 @@
 ---
 title: Prompt Engineering
+sidebar_position: 5
 ---
 
 # Prompt Engineering

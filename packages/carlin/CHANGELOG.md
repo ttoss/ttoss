@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.8](https://github.com/ttoss/ttoss/compare/carlin@1.49.7...carlin@1.49.8) (2026-05-11)
+
+### Bug Fixes
+
+- carlin lambda out dir ([beab56b](https://github.com/ttoss/ttoss/commit/beab56badb9a2a05e97c7e2c733acf1b3a08cc4c))
+
+## [1.49.7](https://github.com/ttoss/ttoss/compare/carlin@1.49.6...carlin@1.49.7) (2026-05-11)
+
+### Bug Fixes
+
+- carlin build lambda folder ([#989](https://github.com/ttoss/ttoss/issues/989)) ([bc55f49](https://github.com/ttoss/ttoss/commit/bc55f497c86c97d686e8538946b61084173b1415))
+
+## [1.49.6](https://github.com/ttoss/ttoss/compare/carlin@1.49.5...carlin@1.49.6) (2026-04-28)
+
+### Bug Fixes
+
+- **carlin:** sanitize stack names containing non-ASCII characters ([#967](https://github.com/ttoss/ttoss/issues/967)) ([f2acc38](https://github.com/ttoss/ttoss/commit/f2acc38f220bba111efd229c2ac401af7bc053db))
+
+## [1.49.5](https://github.com/ttoss/ttoss/compare/carlin@1.49.4...carlin@1.49.5) (2026-04-23)
+
+**Note:** Version bump only for package carlin
+
+## [1.49.4](https://github.com/ttoss/ttoss/compare/carlin@1.49.3...carlin@1.49.4) (2026-04-23)
+
+**Note:** Version bump only for package carlin
+
+## [1.49.3](https://github.com/ttoss/ttoss/compare/carlin@1.49.2...carlin@1.49.3) (2026-04-23)
+
+**Note:** Version bump only for package carlin
+
 ## [1.49.2](https://github.com/ttoss/ttoss/compare/carlin@1.49.1...carlin@1.49.2) (2026-04-15)
 
 ### Bug Fixes

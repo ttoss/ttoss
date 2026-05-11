@@ -274,24 +274,11 @@ Before considering work complete, verify:
 - [ ] **`coverageThreshold` was updated in `jest.config.ts`** (MANDATORY for every code change)
 - [ ] README was updated with the changes
 - [ ] README was completely reviewed
-      <<<<<<< HEAD
-- [ ] # **Storybook stories created/updated for ALL user-facing components** (run `pnpm storybook` to verify)
 - [ ] Storybook stories created/updated if changes are user-facing
 - [ ] React components documented with JSDoc (MANDATORY for user-facing components)
-  > > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 - [ ] No commented code or pending TODOs
 - [ ] Code follows project standards
 - [ ] Linting applied: `pnpm run -w lint` (MANDATORY before finalizing)
-
-<<<<<<< HEAD
-
-## 6. Internationalization (i18n) Pattern
-
-When adding user-facing text or locale-specific values (like number formats, date formats, separators):
-
-### 6.1 Using defineMessages
-
-=======
 
 ## 6. Workflow Example
 
@@ -336,8 +323,6 @@ When adding user-facing text or locale-specific values (like number formats, dat
 
 ### 7.1 Using defineMessages
 
-> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
-
 **MANDATORY**: Use `defineMessages` from `@ttoss/react-i18n` for all translatable content:
 
 ```typescript
@@ -360,27 +345,13 @@ const text = intl.formatMessage(messages.myMessage);
 const separator = intl.formatMessage(messages.decimalSeparator);
 ```
 
-<<<<<<< HEAD
-
-### 6.2 i18n Workflow
-
-=======
-
 ### 7.2 i18n Workflow
-
-> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 1. **Define messages in English**: Always use English as the default message
 2. **Add clear descriptions**: Help translators understand the context
 3. **Run i18n-cli locally**: Execute `pnpm run i18n` in your package directory to extract messages
 4. **Update all packages**: After modifying i18n messages, run `pnpm turbo run i18n --cache local:` from the monorepo root to update i18n in all other packages
 5. **Translate in apps**: Each application can define locale-specific values in their i18n files
-
-<<<<<<< HEAD
-
-### 6.3 When to Use i18n
-
-# Use `defineMessages` for user-facing text, labels, error messages, validations, and locale-specific formatting values. Do NOT use for internal code constants or technical identifiers.
 
 ### 7.3 When to Use i18n
 
@@ -414,8 +385,6 @@ const separator = intl.formatMessage(messages.decimalSeparator);
 // ❌ INCORRECT: Hardcoding locale-specific values
 const separator = ','; // Don't hardcode locale-specific values
 ```
-
-> > > > > > > 93f7eae5fc0cc5b00d44273f7eacd85074307849
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@docs/storybook",
-  "version": "3.24.1",
+  "version": "3.24.10",
   "author": "ttoss",
   "scripts": {
     "build": "storybook build --quiet && pnpm run generate-llms",
@@ -19,6 +19,7 @@
     "@iconify/icons-carbon": "^1.2.20",
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",
@@ -28,6 +29,7 @@
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/react-wizard": "workspace:^",
     "@ttoss/theme": "workspace:^",
     "@ttoss/ui": "workspace:^"
   },
