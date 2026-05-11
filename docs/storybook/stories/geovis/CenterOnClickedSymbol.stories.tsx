@@ -13,7 +13,6 @@ import clickedSymbolSpec from '../../../../packages/geovis/src/fixtures/clicked-
 
 export default {
   title: 'GeoVis/Fixtures/CenterOnClickedSymbol',
-  parameters: { layout: 'fullscreen' },
   tags: ['autodocs'],
 } as Meta;
 
