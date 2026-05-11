@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.8](https://github.com/ttoss/ttoss/compare/carlin@1.49.7...carlin@1.49.8) (2026-05-11)
+
+### Bug Fixes
+
+- carlin lambda out dir ([beab56b](https://github.com/ttoss/ttoss/commit/beab56badb9a2a05e97c7e2c733acf1b3a08cc4c))
+
 ## [1.49.7](https://github.com/ttoss/ttoss/compare/carlin@1.49.6...carlin@1.49.7) (2026-05-11)
 
 ### Bug Fixes
