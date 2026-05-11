@@ -50,19 +50,6 @@ if pnpm lerna changed; then
   # https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
   pnpm turbo run i18n build test --filter=[$LATEST_TAG_SHA]
 
-  # Capture existing tags before versioning so we can delete only them afterward,
-  # preserving the new tags created by lerna version. Tags are re-pushed via
-  # git push --follow-tags below.
-  OLD_TAGS=$(git tag -l)
-  pnpm lerna version --yes --no-push
-  echo "$OLD_TAGS" | xargs -r git tag -d
-
-  # Re-run build only (not tests) after version bump so that published dist
-  # files reflect the new package versions if any package embeds its own version.
-  # Tests are skipped here because they already passed above and version bumps
-  # do not affect test outcomes.
-  pnpm turbo run i18n build --filter=[$LATEST_TAG_SHA]
-
   # Undo all files that were changed by the build command—this happens because
   # the build can change files with different linting rules and `pnpm run lint`
   # fix them.
@@ -75,6 +62,19 @@ if pnpm lerna changed; then
   # of the command is not empty (-z checks for empty output), it means there are changed files.
   pnpm run lint -- --no-stash --allow-empty
   [ -z "$(git status --porcelain)" ] || { echo "Error: There are changes after build. Please, commit them locally and push again"; git status; exit 1; }
+
+  # Capture existing tags before versioning so we can delete only them afterward,
+  # preserving the new tags created by lerna version. Tags are re-pushed via
+  # git push --follow-tags below.
+  OLD_TAGS=$(git tag -l)
+  pnpm lerna version --yes --no-push
+  echo "$OLD_TAGS" | xargs -r git tag -d
+
+  # Re-run build only (not tests) after version bump so that published dist
+  # files reflect the new package versions if any package embeds its own version.
+  # Tests are skipped here because they already passed above and version bumps
+  # do not affect test outcomes.
+  pnpm turbo run build --filter=[$LATEST_TAG_SHA]
 
   # Use Git to check for changes in the origin repository. If there are any
   # changes, "git push --follow-tags" will fail. The error message will be:
