@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Geovisualization components for React applications.",
   "license": "MIT",
   "author": "ttoss",
