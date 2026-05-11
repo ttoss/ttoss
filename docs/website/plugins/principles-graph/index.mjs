@@ -101,7 +101,7 @@ const parsePrinciples = (markdownContent) => {
   }
 
   // Second pass: extract references between principles/corollaries
-  const refRegex = /\[([^\]]+)\]\(#([^)]+)\)/g;
+  const refRegex = /\[([^\]]+)\]\((?:[^)#]+)?#([^)]+)\)/g;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -174,13 +174,24 @@ export default function principlesGraphPlugin(context, _options) {
     contentLoaded: async ({ actions }) => {
       const { setGlobalData } = actions;
 
-      // Read the markdown file
-      const markdownPath = path.join(
+      // Read the principle chapter files.
+      const principlesDir = path.join(
         context.siteDir,
-        'docs/ai/02-agentic-development-principles.md'
+        'docs/ai/02-agentic-development-principles'
       );
 
-      const markdownContent = fs.readFileSync(markdownPath, 'utf-8');
+      const markdownContent = fs
+        .readdirSync(principlesDir)
+        .filter((fileName) => {
+          return fileName.endsWith('.md') && fileName !== 'index.md';
+        })
+        .sort()
+        .map((fileName) => {
+          const markdownPath = path.join(principlesDir, fileName);
+
+          return fs.readFileSync(markdownPath, 'utf-8');
+        })
+        .join('\n\n');
 
       // Parse the principles
       const graphData = parsePrinciples(markdownContent);
