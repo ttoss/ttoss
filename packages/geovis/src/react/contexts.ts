@@ -127,8 +127,10 @@ export const GeoVisClickContext = React.createContext<
 
 /**
  * Returns the last clicked feature on the active map, or `null` when no
- * feature is selected. Clears to `null` when the user presses Escape or
- * clicks outside all tracked layers.
+ * feature is selected. This hook only populates when the user clicks a
+ * feature on a layer configured with `activeLegendId`, and the clicked
+ * feature has an id. Clears to `null` when the user presses Escape or
+ * clicks outside those layers/features.
  * Must be called inside `<GeoVisProvider>`.
  */
 export const useGeoVisClick = (): MapClickInfo | null => {
