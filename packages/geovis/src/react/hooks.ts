@@ -89,10 +89,16 @@ const buildHandleClick = ({
 }: BuildHandleClickParams) => {
   return (event: ClickEvent) => {
     const feature = event.features?.[0];
-    if (!feature || feature.id == null) return;
+    if (!feature || feature.id == null) {
+      setClick(null);
+      return;
+    }
     const resolvedLayerId = feature.layer?.id ?? layerId;
     const sourceId = sourceByLayerId.get(resolvedLayerId);
-    if (!sourceId) return;
+    if (!sourceId) {
+      setClick(null);
+      return;
+    }
 
     const state = map.getFeatureState({
       source: sourceId,
@@ -300,7 +306,7 @@ export const useMapClick = ({
     });
 
     for (const { layerId, handleClick } of handlers) {
-      map.on('click', layerId, handleClick as never);
+      map.on('click', layerId, handleClick);
     }
 
     // Map-level handler: deselects when the user clicks on empty space.
@@ -311,13 +317,13 @@ export const useMapClick = ({
     const trackedLayerIds = tracked.map((t) => {
       return t.layerId;
     });
-    const handleOutsideClick = (event: { point: { x: number; y: number } }) => {
+    const handleOutsideClick = (event: MapMouseEvent) => {
       const hits = map.queryRenderedFeatures(event.point, {
         layers: trackedLayerIds,
       });
       if (!hits || hits.length === 0) setClick(null);
     };
-    map.on('click', handleOutsideClick as never);
+    map.on('click', handleOutsideClick);
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setClick(null);

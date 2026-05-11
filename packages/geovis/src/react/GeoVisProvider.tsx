@@ -80,10 +80,13 @@ interface GeoVisProviderProps {
 
 /**
  * Isolates `useMapClick` into a child component so that click-state updates
- * do NOT re-render `GeoVisProvider` or `HoverProvider` consumers.
+ * do NOT re-render `GeoVisProvider`.
  *
  * @remarks
- * Defined at module scope for the same stability reason as `HoverProvider`.
+ * Because `ClickProvider` currently wraps part of the provider subtree, nested
+ * consumers such as `HoverProvider` consumers may still re-render when click
+ * state changes. Defined at module scope for the same stability reason as
+ * `HoverProvider`.
  */
 const ClickProvider = ({
   runtime,
