@@ -2,8 +2,7 @@
  * Internal helpers shared across GeoVis stories.
  * Not public package artefacts — story utilities only.
  */
-import type { VisualizationSpec, VisualizationView } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import { useGeoVis } from '@ttoss/geovis';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 
@@ -320,101 +319,4 @@ export const FitBoundsToUrlSource = ({
   }, [url]);
 
   return <FitBoundsToBbox bbox={bbox} overlayInsets={overlayInsets} />;
-};
-
-// ---------------------------------------------------------------------------
-// GeoVisSplitLayout
-// ---------------------------------------------------------------------------
-
-/**
- * Renders a two-panel split-compare from a spec that declares `views[]`.
- * Each view produces a `GeoVisProvider` with filtered layers and automatic
- * movement synchronisation — the consumer does not need to manage
- * `MapRef`, `LockRef`, or `MapSync` directly.
- *
- * The `render` prop receives the current `VisualizationView` and should return
- * children to mount INSIDE that view’s `GeoVisProvider` (e.g. `ChoroplethPainter`,
- * `MapOverlayLegend`). It is the escape hatch for logic not yet declarable in
- * the spec (e.g. MapLibre expressions in paint).
- *
- * Requires exactly 2 views in `spec.views`. Displays a visual warning if absent.
- */
-export const GeoVisSplitLayout = ({
-  spec,
-  height = 480,
-  leftBorder,
-  rightBorder,
-  render,
-}: {
-  spec: VisualizationSpec;
-  height?: number;
-  leftBorder?: string;
-  rightBorder?: string;
-  render?: (view: VisualizationView) => React.ReactNode;
-}) => {
-  const views = spec.views ?? [];
-  const [left, right] = views as [
-    VisualizationView | undefined,
-    VisualizationView | undefined,
-  ];
-
-  const leftRef = React.useRef<MapRef['current']>(null);
-  const rightRef = React.useRef<MapRef['current']>(null);
-  const lockRef = React.useRef(false) as LockRef;
-
-  if (!left || !right) {
-    return (
-      <div style={{ padding: 12, color: '#ef4444', fontSize: 13 }}>
-        GeoVisSplitLayout: spec.views must contain exactly 2 views.
-      </div>
-    );
-  }
-
-  const filterLayers = (ids: string[]) => {
-    return spec.layers.filter((l) => {
-      return ids.includes(l.id);
-    });
-  };
-
-  const leftSpec: VisualizationSpec = {
-    ...spec,
-    id: `${spec.id}--left`,
-    layers: filterLayers(left.layers),
-    views: undefined,
-  };
-  const rightSpec: VisualizationSpec = {
-    ...spec,
-    id: `${spec.id}--right`,
-    layers: filterLayers(right.layers),
-    views: undefined,
-  };
-
-  const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
-  const panelBase: React.CSSProperties = {
-    position: 'relative',
-    flex: 1,
-    overflow: 'hidden',
-    borderRadius: 4,
-  };
-
-  return (
-    <div style={{ display: 'flex', gap: 4, height }}>
-      <div style={{ ...panelBase, border: leftBorder ?? '1px solid #d4d4d8' }}>
-        <MapLabel>{left.label}</MapLabel>
-        <GeoVisProvider spec={leftSpec}>
-          <GeoVisCanvas viewId={left.id} style={canvasStyle} />
-          <MapSync selfRef={leftRef} peerRef={rightRef} lockRef={lockRef} />
-          {render?.(left)}
-        </GeoVisProvider>
-      </div>
-      <div style={{ ...panelBase, border: rightBorder ?? '1px solid #d4d4d8' }}>
-        <MapLabel>{right.label}</MapLabel>
-        <GeoVisProvider spec={rightSpec}>
-          <GeoVisCanvas viewId={right.id} style={canvasStyle} />
-          <MapSync selfRef={rightRef} peerRef={leftRef} lockRef={lockRef} />
-          {render?.(right)}
-        </GeoVisProvider>
-      </div>
-    </div>
-  );
 };

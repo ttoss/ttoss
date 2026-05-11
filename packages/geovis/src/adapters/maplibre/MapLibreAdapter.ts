@@ -208,6 +208,11 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
     applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
     reapplyLegendDrivenFillPaint(map, viewState.spec);
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[GeoVis] dispatchPatch: unknown target "${patch.target as string}" — patch ignored.`
+    );
   }
 };
 
