@@ -148,7 +148,7 @@ Interaction patterns that do not correspond to an Entity Kind (tooltips, helper 
 
 ## Role Coverage
 
-`role` is a **discriminated union** of two decision classes (see [FSL Lexicon §5](../../01-fsl/fsl-lexicon.md#5-evaluation)) — a token carries one or the other, never both:
+`role` is a **discriminated union** of two decision classes (see [FSL Lexicon §5](../../01-fsl/fsl-lexicon.md)) — a token carries one or the other, never both:
 
 - **Emphasis**: `primary`, `secondary`, `accent`, `muted`
 - **Valence**: `positive`, `caution`, `negative`
