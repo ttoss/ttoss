@@ -91,7 +91,7 @@ The semantic color token grammar `{ux}.{role}.{dimension}.{state}` is a formal F
 | `dimension`        | Structural Role | Subset of FSL Structural Role values: `background`, `border`, `text`.                                                                                                                                                                                                                                                         |
 | `state`            | State           | Values identical, no renaming.                                                                                                                                                                                                                                                                                                |
 
-For the full Entity Kind → UX context mapping (covering all nine FSL Entity Kinds), see the [Colors family](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
+For the full Entity Kind → UX context mapping (covering all nine FSL Entity Kinds), see the [Colors family](/docs/design/design-system/design-tokens/families/colors#fsl-entity-kind-mapping).
 
 ---
 

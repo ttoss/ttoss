@@ -44,7 +44,7 @@ authoring reference; when the two disagree, `projection.ts` wins.
 | **Disclosure** | `navigation`       | Disclosure triggers colored as `navigation.*` when acting as location anchors     |
 | **Structure**  | `informational`    | Structural surfaces consume `informational.*`                                     |
 
-For the full `ux` role and state grammar, see the [Colors family — FSL Entity Kind Mapping](/docs/design/design-system/design-tokens/colors#fsl-entity-kind-mapping).
+For the full `ux` role and state grammar, see the [Colors family — FSL Entity Kind Mapping](/docs/design/design-system/design-tokens/families/colors#fsl-entity-kind-mapping).
 
 ## ComponentExpression
 
