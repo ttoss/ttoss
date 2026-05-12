@@ -62,18 +62,32 @@ Core elevation tokens are shadow recipes.
 
 They are intent-free and exist only to provide the physical shadow definitions used by semantic elevation tokens.
 
-### Core set
+### Core ramps
 
-| Token                    | Meaning                              |
-| :----------------------- | :----------------------------------- |
-| `core.elevation.level.0` | no elevation                         |
-| `core.elevation.level.1` | subtle depth                         |
-| `core.elevation.level.2` | default raised surface               |
-| `core.elevation.level.3` | strong overlay depth                 |
-| `core.elevation.level.4` | highest application-controlled depth |
+Core elevation has two optional ramps. The levels below are the default reference implementation.
 
-> Keep the number of levels small.  
-> Elevation should remain easy to reason about.
+**`level` ramp** — standard-opacity recipes, used by default in light themes:
+
+| Token                    | Default meaning                                            |
+| :----------------------- | :--------------------------------------------------------- |
+| `core.elevation.level.0` | no elevation                                               |
+| `core.elevation.level.1` | subtle depth (not mapped to a semantic stratum by default) |
+| `core.elevation.level.2` | default raised surface                                     |
+| `core.elevation.level.3` | strong overlay depth                                       |
+| `core.elevation.level.4` | highest application-controlled depth                       |
+
+**`emphatic` ramp** (optional) — high-opacity recipes for surfaces needing stronger depth contrast (e.g., on dark or heavily-colored backgrounds). Mode-agnostic: expresses shadow weight, not a mode label. Themes include this ramp when a dark alternate requires higher-opacity recipes.
+
+| Token                       | Default meaning                                       |
+| :-------------------------- | :---------------------------------------------------- |
+| `core.elevation.emphatic.0` | no elevation                                          |
+| `core.elevation.emphatic.1` | subtle depth — higher opacity                         |
+| `core.elevation.emphatic.2` | raised surface — higher opacity                       |
+| `core.elevation.emphatic.3` | overlay depth — higher opacity                        |
+| `core.elevation.emphatic.4` | highest application-controlled depth — higher opacity |
+
+> Keep the number of levels small — elevation should remain easy to reason about.
+> Every `{core.elevation.level.X}` or `{core.elevation.emphatic.X}` ref declared in semantic tokens must resolve to a defined key in the theme.
 
 ### Example
 
@@ -86,6 +100,14 @@ const coreElevation = {
       2: '0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06)',
       3: '0 8px 16px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.08)',
       4: '0 16px 32px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.10)',
+    },
+    // Optional — include when the theme supports a dark alternate
+    emphatic: {
+      0: 'none',
+      1: '0 1px 2px rgba(0, 0, 0, 0.20), 0 1px 1px rgba(0, 0, 0, 0.14)',
+      2: '0 4px 8px rgba(0, 0, 0, 0.24), 0 2px 4px rgba(0, 0, 0, 0.18)',
+      3: '0 8px 16px rgba(0, 0, 0, 0.28), 0 4px 8px rgba(0, 0, 0, 0.22)',
+      4: '0 16px 32px rgba(0, 0, 0, 0.34), 0 8px 16px rgba(0, 0, 0, 0.28)',
     },
   },
 };
@@ -109,13 +131,16 @@ elevation.surface.{stratum}
 
 ### Canonical semantic set
 
+`elevation.surface.*` defines shadow-based depth contracts:
+
 - `elevation.surface.flat`
 - `elevation.surface.raised`
 - `elevation.surface.overlay`
 - `elevation.surface.blocking`
 
-> Keep this set stable.
-> Do not create component-specific elevation tokens by default.
+`elevation.tonal.*` is an optional sibling for surface color overlays that pair with shadows to preserve depth in dark or heavily-colored themes. Omit when not needed.
+
+> Keep the `surface.*` set stable. Do not create component-specific elevation tokens.
 
 ### Semantic Tokens Summary Table
 
@@ -125,6 +150,8 @@ elevation.surface.{stratum}
 | `elevation.surface.raised`   | cards, panels, raised surfaces              | surface sits above the page but below overlays | `core.elevation.level.2` |
 | `elevation.surface.overlay`  | dropdowns, popovers, floating surfaces      | surface floats above raised content            | `core.elevation.level.3` |
 | `elevation.surface.blocking` | dialogs, blocking sheets, blocking surfaces | highest surface depth in the normal app flow   | `core.elevation.level.4` |
+
+In a dark-mode alternate, `surface.*` tokens remap to `core.elevation.emphatic.*` recipes for proper contrast.
 
 ### Example
 
@@ -137,6 +164,13 @@ const semanticElevation = {
       overlay: '{core.elevation.level.3}',
       blocking: '{core.elevation.level.4}',
     },
+    // Optional — include when the product uses tonal elevation overlays.
+    // Each token resolves to a color overlay (e.g., color-mix, rgba surface).
+    // tonal: {
+    //   raised: '{core.colors.brand.50at8}',
+    //   overlay: '{core.colors.brand.50at12}',
+    //   blocking: '{core.colors.brand.50at16}',
+    // },
   },
 };
 ```
@@ -249,7 +283,9 @@ Semantic token names **never change across themes**.
   - `raised = overlay`
   - `overlay = blocking`
 
-- adjacent core elevation levels resolve to the same effective shadow recipe
+- adjacent `level` ramp entries resolve to the same effective shadow recipe
+
+- adjacent `emphatic` ramp entries resolve to the same effective shadow recipe (when `emphatic` is defined)
 
 ---
 

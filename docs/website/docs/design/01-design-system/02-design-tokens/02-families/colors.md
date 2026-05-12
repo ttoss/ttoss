@@ -4,62 +4,43 @@ title: Colors
 
 # Colors
 
-Colors define the **semantic color language** of ttoss.
+Colors define the **semantic color language** of ttoss — brand identity, hierarchy, interaction meaning, contrast, state.
 
-They express:
-
-- brand identity
-- interface hierarchy
-- interaction meaning
-- readability and contrast
-- state communication
-
-This system is built on **two explicit layers**:
-
-1. **Core Colors** — intent-free color primitives
-2. **Semantic Colors** — stable color contracts consumed by UI code
-
-Components must always consume **semantic colors**, never core colors directly.
-
-> **Rule:** Core colors are never referenced in components.
+The system has **two layers**: **Core Colors** (intent-free palette primitives) and **Semantic Colors** (stable contracts consumed by UI code). Components consume semantic colors only — never core directly.
 
 ---
 
-## Scope: Colors vs Other Families
+## UX contexts in 60 seconds
 
-Colors define **meaning and visual contrast**.
+Every semantic color token starts with a **UX context** — a plain description of _what kind of UI_ the color is for. There are five, and they cover the whole surface area of a UI:
 
-They do **not** define:
+| UX context      | Use it for                                                                                             | Typical components                                                                   |
+| :-------------- | :----------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| `action`        | anything the user **triggers**                                                                         | buttons, toggles, menu items, action icons                                           |
+| `input`         | anything the user **enters or selects data into**                                                      | text fields, selects, checkboxes, radios                                             |
+| `navigation`    | anything that **moves the user** between views or sections                                             | links, tabs, breadcrumbs, pagination                                                 |
+| `feedback`      | surfaces that **report the outcome** of an action or system event                                      | toasts, alerts, banners, inline validation                                           |
+| `informational` | **presentational surfaces** — hold, group, layer, frame, or display content; never drive a transaction | body text, page backgrounds, cards, panels, dialogs, dividers, list rows, accordions |
 
-- depth (`elevation`)
-- layering order (`z-index`)
-- line width or style (`borders`)
-- whole-element transparency (`opacity`)
-- chart or data palettes (data visualization)
+Picking a context is usually trivial: _"is the user about to act, type, move, hear back, or just **see/contain** something?"_
 
-Use:
+> **Interactivity is not a tiebreaker.** A focusable Card, clickable panel, or expandable accordion is still `informational` — its _purpose_ is presentational. Focusability and disclosure are orthogonal capabilities (covered by `focus.ring.color` and the `expanded` state).
 
-- **Colors** for semantic meaning and foreground/background relationships
-- **Elevation** for perceived depth
-- **Borders** for line geometry
-- **Opacity** for controlled transparency
-- **Data visualization tokens** for charts and quantitative encodings
+> **Advanced.** The five contexts are a formal projection of the nine FSL Entity Kinds — see [FSL Entity Kind Mapping](#fsl-entity-kind-mapping) below. Most component authors never need to read the FSL layer.
 
-> Key principle: **color names express intent, not appearance.**
+---
+
+## Scope
+
+Colors carry **meaning and visual contrast** — nothing else. Depth lives in `elevation`, line geometry in `borders`, whole-element transparency in `opacity`, charts in data visualization tokens. Color may pair with those families; it does not replace them.
+
+> **Color names express intent, not appearance.**
 
 ---
 
 ## Core Colors
 
-Core colors are **intent-free primitives**.
-They define which colors exist in a theme, but not where they are used.
-
-Core colors exist to:
-
-- define the brand palette
-- define the neutral surface/contrast scale
-- provide hue scales for semantic mapping
-- provide sufficient palette depth for semantic remapping across modes
+Core colors are **intent-free primitives** — they define which colors exist in a theme (brand, neutral, hue scales) at sufficient depth for semantic remapping across modes, but not where they are used.
 
 ### Core token structure
 
@@ -72,66 +53,15 @@ core.colors.{family}.{scale}
 
 ### Core groups
 
-#### 1. Brand scale
+A theme MUST define `brand` and `neutral`; hue families are open. Add a hue family only when needed to support a concrete semantic mapping.
 
-Brand defines the identity color family of the theme.
+| Family                                                                            | Role in the palette                                                                                                                        | Required steps                    |
+| :-------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------- |
+| `brand`                                                                           | Identity hue. Depth allows light/dark remapping without new values.                                                                        | open subset across `100..900`     |
+| `neutral`                                                                         | Zero-saturation anchor for surfaces, text contrast, dividers, subdued UI. Step `0` = white-end, `1000` = black-end, `500` = canonical mid. | step `500` mandatory; others open |
+| Hue scales (`red`, `orange`, `green`, `yellow`, `teal`, `purple`, `pink`, \u2026) | Optional palette families used as semantic mapping sources.                                                                                | open                              |
 
-Examples:
-
-- `core.colors.brand.100`
-- `core.colors.brand.300`
-- `core.colors.brand.500`
-- `core.colors.brand.700`
-- `core.colors.brand.900`
-
-> `brand` is a palette family, not a semantic role.
-> Do not encode usage in the core layer (`main`, `cta`, `danger`, `link`, etc.).
-
-#### 2. Neutral scale
-
-Neutral defines the base surface and contrast scale.
-
-Examples:
-
-- `core.colors.neutral.0`
-- `core.colors.neutral.50`
-- `core.colors.neutral.100`
-- `core.colors.neutral.200`
-- `core.colors.neutral.300`
-- `core.colors.neutral.500`
-- `core.colors.neutral.700`
-- `core.colors.neutral.900`
-- `core.colors.neutral.1000`
-
-> `neutral` is the zero-saturation anchor scale (greyscale/slate). It is the primary source for surfaces, text contrast, dividers, and subdued UI. The name `neutral` is a palette-layer convention, not a semantic role — functionally equivalent to "gray" in other design systems. Use step `0` for the white-end and step `1000` for the black-end.
-
-#### 3. Hue scales
-
-Hue scales provide additional semantic mapping options.
-
-Examples:
-
-- `core.colors.red.100..900`
-- `core.colors.green.100..900`
-- `core.colors.yellow.100..900`
-- `core.colors.blue.100..900`
-- `core.colors.purple.100..900`
-
-Hue families are fully open — a theme decides which families it includes. No fixed set is required beyond `brand` and `neutral`. Add a hue family only when it is needed to support a concrete semantic or brand requirement.
-
-### Core rules (non-negotiable)
-
-1. **Core is value-only**
-   Core names define palette families and scale positions, never usage.
-
-2. **No semantic naming in core**
-   Avoid names like `danger`, `warning`, `primaryButton`, `link`, `surface`, or `focus`.
-
-3. **No mode naming in core**
-   Core values are immutable across modes. Modes remap semantic references, not core token names.
-
-4. **No component naming in core**
-   Avoid names like `cardBg`, `inputBorder`, or `buttonBlue`.
+> `brand` and `neutral` are palette-layer conventions, not semantic roles \u2014 do not encode usage (`main`, `cta`, `danger`, `link`, `surface`, `focus`) in core names. `neutral` is functionally equivalent to "gray" in other systems.\n\n> **Why `CoreColorRef` is open.** It is typed as `'{core.colors.${string}}'` \u2014 a template literal, not a closed union derived from the concrete theme. Type safety for color usage lives at the _semantic_ layer (legal `ux \u00d7 role \u00d7 dimension \u00d7 state` and contrast pairings), not the palette-ref level. A closed union would break extensibility for derived themes and create a circular dependency between `Types.ts` and `baseTheme.ts`.
 
 ### Example (Core Color Definition)
 
@@ -152,6 +82,7 @@ const coreColors = {
       100: '#F1F5F9',
       200: '#E2E8F0',
       300: '#CBD5E1',
+      400: '#94A3B8',
       500: '#64748B',
       700: '#334155',
       900: '#0F172A',
@@ -183,16 +114,7 @@ const coreColors = {
 
 ## Semantic Colors
 
-Semantic colors define the **public color API** of the system.
-
-They translate raw palettes into stable UI meaning.
-
-Semantic colors answer:
-
-- where in the experience the color is used
-- what role the color plays
-- which visual dimension it affects
-- which state it represents
+Semantic colors are the **public color API** — stable contracts that translate raw palettes into UI meaning along four axes: where in the experience (`ux`), what role (`role`), which visual layer (`dimension`), which state (`state`).
 
 ### Token structure
 
@@ -200,56 +122,91 @@ Semantic colors answer:
 {ux}.{role}.{dimension}.{state?}
 ```
 
-- `ux`: functional UX area
-- `role`: semantic emphasis or meaning
-- `dimension`: what visual layer receives the color
-- `state`: optional interaction or system state
-
-### Examples
-
-- `action.primary.background.default`
-- `action.primary.text.default`
-- `input.negative.border.focused`
-- `navigation.primary.text.current`
-- `content.muted.text.default`
-- `feedback.positive.background.default`
+See [Usage Examples](#usage-examples) below for concrete tokens.
 
 ---
 
-## Canonical Registry
+## FSL Entity Kind Mapping
 
-The foundation color system keeps a **small canonical registry**.
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). The resolver uses this normative table to translate `ComponentExpression.responsibility` → token UX context:
 
-### UX level
+| FSL Entity Kind | Token `ux`      | Notes                                                                                                                |
+| :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `Action`        | `action`        | 1:1                                                                                                                  |
+| `Input`         | `input`         | 1:1                                                                                                                  |
+| `Selection`     | `input`         | checkbox, radio, picker — no separate `selection` UX context                                                         |
+| `Navigation`    | `navigation`    | 1:1                                                                                                                  |
+| `Feedback`      | `feedback`      | 1:1                                                                                                                  |
+| `Collection`    | `informational` | menu, list, table                                                                                                    |
+| `Overlay`       | `informational` | dialog, popover                                                                                                      |
+| `Disclosure`    | `informational` | accordion, collapsible panel, `<details>` — in-place reveal (FSL §1); uses `expanded` state for open/closed contract |
+| `Structure`     | `informational` | panel, shell, frame                                                                                                  |
 
-| `ux`         | Meaning                                             |
-| :----------- | :-------------------------------------------------- |
-| `action`     | Triggers actions or changes state                   |
-| `input`      | Data entry, selection, and form controls            |
-| `navigation` | Movement and orientation through the product        |
-| `feedback`   | Reactive system or user-result messages             |
-| `guidance`   | Preventive or instructional guidance                |
-| `discovery`  | Search, filter, refine, and exploratory interaction |
-| `content`    | Informational surfaces and readable content         |
+Interaction patterns that do not correspond to an Entity Kind (tooltips, helper banners, search/filter widgets) are expressed through existing kinds — typically `Overlay` for guidance and `Input` for discovery.
 
-> Keep this set stable.
-> Domain-specific semantics such as `social`, `commerce`, or `gamification` do **not** belong to the foundation by default.
-> Model those at the pattern/application layer unless they are promoted through governance.
+---
 
-### Role level
+## Role Coverage
 
-| `role`      | Meaning                             |
-| :---------- | :---------------------------------- |
-| `primary`   | highest emphasis in that UX context |
-| `secondary` | supporting emphasis                 |
-| `accent`    | highlight emphasis                  |
-| `muted`     | subdued or low-emphasis treatment   |
-| `positive`  | success / confirmation meaning      |
-| `caution`   | warning / attention without failure |
-| `negative`  | error / destructive meaning         |
+`role` is a **discriminated union** of two decision classes (see [FSL Lexicon §5](../../01-fsl/fsl-lexicon.md#5-evaluation)) — a token carries one or the other, never both:
 
-> Roles express intent, not color family.
-> `primary` does not mean “brand blue,” and `negative` does not mean “red.”
+- **Emphasis**: `primary`, `secondary`, `accent`, `muted`
+- **Valence**: `positive`, `caution`, `negative`
+
+A valence implies its own emphasis. Intensity within a valence is expressed by `dimension` (e.g. `negative.background` is louder than `negative.text`), not by combining emphasis with valence. Each UX context enables only the subset that has stable meaning in it:
+
+| Class    | Role        | `action` | `input` | `navigation` | `feedback` | `informational` |
+| :------- | :---------- | :------: | :-----: | :----------: | :--------: | :-------------: |
+| Emphasis | `primary`   |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
+| Emphasis | `secondary` |    ✓     |    ✓    |      ✓       |     —      |        ✓        |
+| Emphasis | `accent`    |    ✓     |    —    |      ✓       |     —      |        ✓        |
+| Emphasis | `muted`     |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
+| Valence  | `positive`  |    —     |    ✓    |      —       |     ✓      |        ✓        |
+| Valence  | `caution`   |    —     |    ✓    |      —       |     ✓      |        ✓        |
+| Valence  | `negative`  |    ✓     |    ✓    |      —       |     ✓      |        ✓        |
+
+**Why some cells are empty:**
+
+- `action.positive / action.caution` — Outcome and risk live in `feedback.*`; an Action's own colour expresses only `negative` evaluation (FSL §5). Destructive consequence (FSL §6) is a frequent driver of that choice, but the two dimensions are distinct — `negative` may also encode adverse-but-non-destructive intent (cancel paid subscription).
+- `navigation.*` valences — Navigation communicates location (`current`, `visited`), not health state.
+- `feedback.secondary / accent` — Feedback is direct: `primary` and `muted` cover its emphasis range.
+- `input.accent` — Inputs use `primary` for the brand-influenced active state; `accent` creates hierarchy ambiguity.
+
+### Picking a role
+
+Valence dominates emphasis: if the token communicates **outcome or validity** (success / warning / error / destructive), pick the valence first — emphasis is implicit. Otherwise pick the emphasis that matches **hierarchy weight in the current view**.
+
+**Emphasis (no outcome to communicate):**
+
+| You want to communicate…                                            | Role        |
+| :------------------------------------------------------------------ | :---------- |
+| the single most important element on this view                      | `primary`   |
+| an alternative coexisting with the primary one                      | `secondary` |
+| a highlight that draws attention without being the main path        | `accent`    |
+| presence with low priority (helper text, divider, optional control) | `muted`     |
+
+> Only one `primary` per view per `{ux}`. If two candidates compete for `primary`, one of them is `secondary`.
+
+**Valence (outcome / validity to communicate):**
+
+| The token reports…                                                            | Role                     |
+| :---------------------------------------------------------------------------- | :----------------------- |
+| success, completion, validity confirmed                                       | `positive`               |
+| risk that needs attention but the user is not blocked                         | `caution`                |
+| failure, invalid state, or adverse intent (including destructive consequence) | `negative`               |
+| no outcome — just hierarchy                                                   | use **emphasis** instead |
+
+> Intensity _within_ a valence is expressed by `dimension`, not by combining with emphasis.
+>
+> ❌ `feedback.negative.primary.background.default` — combining valence + emphasis is forbidden.
+> ✅ `feedback.negative.text.default` — quiet error (foreground only).
+> ✅ `feedback.negative.background.default` — loud error (filled surface).
+
+---
+
+## Dimension and State Registry
+
+The foundation keeps a **small canonical registry**. `ux` is defined in [UX contexts](#ux-contexts-in-60-seconds); `role` in [Role Coverage](#role-coverage). Domain-specific semantics (`social`, `commerce`, `gamification`) do not belong to the foundation \u2014 model them at the pattern/application layer unless promoted through governance.
 
 ### Dimension level
 
@@ -280,25 +237,51 @@ The foundation color system keeps a **small canonical registry**.
 > Keep the state set stable.
 > Add a new state only when the meaning cannot be expressed by an existing one.
 
+#### Picking a state (disambiguation)
+
+Several states sound interchangeable but answer different questions. Pick by **what the state asserts about the element**, not by the verb in the component name.
+
+| The state asserts…                                                                          | State           |
+| :------------------------------------------------------------------------------------------ | :-------------- |
+| pointer is currently over the element                                                       | `hover`         |
+| pointer/key is currently down on the element (transient, lasts only while held)             | `active`        |
+| element has keyboard or programmatic focus                                                  | `focused`       |
+| element is non-interactive                                                                  | `disabled`      |
+| element is **one of many** in a set and the user picked it (tab, list row, segment)         | `selected`      |
+| element is a **two-state control** that is currently on (checkbox, radio, switch)           | `checked`       |
+| element is a **toggle button** that is currently engaged (persistent, not transient)        | `pressed`       |
+| disclosure / accordion / details is currently open                                          | `expanded`      |
+| element is the user's **current location** in a navigation set (active route, current step) | `current`       |
+| link points to a URL the user has visited                                                   | `visited`       |
+| boolean control is in a mixed/unknown state (parent checkbox over partial children)         | `indeterminate` |
+| element is a **valid drop destination** during an active drag                               | `droptarget`    |
+
+**Common confusions resolved:**
+
+- **Tab in a tablist** → `selected` (one of many) and, when it represents the live route, also `current`. Not `active`, not `pressed`.
+- **Toggle button ("Bold" in a toolbar)** → `pressed` (persistent). `active` is the brief moment of clicking.
+- **Checkbox / Switch / Radio** → `checked`. Not `selected`, not `pressed`.
+- **Open accordion section** → `expanded`. Not `active`, not `selected`.
+- **Currently viewed nav item** → `current`. Not `selected`, not `active`.
+- **Button mid-click** → `active`. Releases back to `default` / `hover`.
+
 ---
 
 ## Legal Combinations
 
-The semantic grammar is stable, but not every combination is valid. The tables below are the complete reference.
+Not every `{ux} × role × state` is valid. Allowed **roles** per context are in [Role Coverage](#role-coverage); allowed **states** per context are below. Both are enforced by `Types.ts` — a token outside its row will not type-check.
 
-### UX, roles, and context-specific states
+### Legal states per context
 
-| `ux`         | Allowed roles                                                                | Context-specific states                           |
-| :----------- | :--------------------------------------------------------------------------- | :------------------------------------------------ |
-| `action`     | `primary`, `secondary`, `accent`, `muted`, `negative`                        | `pressed`                                         |
-| `input`      | `primary`, `secondary`, `muted`, `positive`, `caution`, `negative`           | `checked`, `indeterminate`, `pressed`, `expanded` |
-| `navigation` | `primary`, `secondary`, `accent`, `muted`                                    | `current`, `visited`, `expanded`                  |
-| `feedback`   | `primary`, `muted`, `positive`, `caution`, `negative`                        | —                                                 |
-| `guidance`   | `primary`, `secondary`, `accent`, `muted`, `caution`                         | —                                                 |
-| `discovery`  | `primary`, `secondary`, `accent`, `muted`                                    | `expanded`, `droptarget`                          |
-| `content`    | `primary`, `secondary`, `accent`, `muted`, `positive`, `caution`, `negative` | `visited`                                         |
+Most contexts share an **interactive base**: `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`. `feedback` is the exception — feedback is communicative, not interactive (FSL §3), so only `default`, `focused` (focusable wrapper / close button), and `disabled` apply.
 
-> Context-specific states extend the base set available in every context: `default`, `hover`, `active`, `focused`, `disabled`, `selected`.
+| `ux`            | Allowed states (full, no implicit base)                                                                                          |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                         |
+| `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded` |
+| `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                  |
+| `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                              |
+| `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                             |
 
 ### Dimension expectations
 
@@ -315,100 +298,70 @@ Not every implementation needs all three dimensions. Components choose which the
 
 ## Relationship to Modes
 
-Core palette values are **immutable across modes**. Modes remap which core tokens semantic color tokens reference.
-
-When light/dark mode changes:
-
-- core palette values do **not** change
-- semantic token names do **not** change
-- semantic token **references** may point to different positions in the palette
-- components continue consuming the same semantic tokens
+Core palette values are **immutable across modes**; modes remap which core tokens the semantic layer references. Token names and component code never change. If a semantic color works in one mode but fails in another, remap the semantic reference to a different core token — do not mutate the core value or rename the semantic token.
 
 > Modes remap references, not values.
 
-If a semantic color works in one mode but fails in another, remap the semantic reference to a different core token — do not mutate the core value or rename the semantic token.
-
 ---
 
-## Relationship to Borders, Elevation, and Opacity
+## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Color meaning stays in the color system.
+Two tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
-This means:
+- `semantic.focus.ring.color` — system focus indicator color
+- `semantic.overlay.scrim` — modal backdrop
 
-- border width/style belong to `borders`
-- shadows belong to `elevation`
-- whole-element transparency belongs to `opacity`
-- color tokens may pair with those families, but they do not replace them
+They are **not** parallel vocabulary: per-context tokens (`{ux}.{role}.border.focused`) answer _"how does this `{ux}` look when focused?"_; cross-cutting tokens answer _"what is the system default when no `{ux}` applies?"_.
+
+### Focus color — which token to pick
+
+| The component is…                                                                                                | Use                                                                       |
+| :--------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------ |
+| an `Action` / `Input` / `Navigation` / `Feedback` (clear FSL Entity Kind)                                        | `{ux}.{role}.border.focused` from `semantic.colors.*`                     |
+| an `Informational` surface made interactive (focusable Card, profile chip, custom widget with no obvious `{ux}`) | `semantic.focus.ring.color`                                               |
+| an `Input` with validation valence (`negative`, `caution`) where focus must inherit the valence colour           | `input.{negative\|caution}.border.focused` (overrides the system default) |
+
+The two paths are not duplicates — they answer different questions and are picked by _which question the component is asking_.
 
 ### Example
 
-A focus ring may combine:
+A focusable profile card (no obvious `{ux}`):
 
-- line geometry from `focus.ring`
-- color from `input.primary.border.focused`
+- line geometry from `semantic.border.outline.surface` + `semantic.focus.ring.{width,style}` on `:focus-visible`
+- focus colour from `semantic.focus.ring.color` (system default)
+
+A text input in error:
+
+- line geometry from `semantic.border.outline.control` + `semantic.focus.ring.{width,style}` on `:focus-visible`
+- focus colour from `input.negative.border.focused` (per-context override; the negative valence outranks the system default)
 
 A raised card may combine:
 
-- surface color from `content.primary.background.default`
-- outline color from `content.muted.border.default`
+- surface color from `informational.primary.background.default`
+- outline color from `informational.muted.border.default`
 - shadow from `elevation.surface.raised`
+
+### Stacking informational surfaces
+
+Multiple `informational` surfaces commonly overlap in the visual hierarchy — a Dialog (`Overlay`) over a page, a Card (`Structure`) over a panel, a row inside a List (`Collection`). They share the same UX context by design (see [FSL Entity Kind Mapping](#fsl-entity-kind-mapping)) and may resolve to the **same** `informational.*.background` value, especially in dark modes where the available `core.colors.neutral` range is compressed.
+
+Differentiation between stacked `informational` surfaces is paid in this order — **never in colour**:
+
+1. **`elevation`** is the primary separator. `Overlay → elevation.surface.overlay`, `Structure`/`Collection` → `elevation.surface.flat | raised`. Drop shadows are local to each level, so the rule survives arbitrary nesting (Card inside Dialog inside Drawer): each level paints its own shadow over whatever sits beneath it.
+2. **`border.outline.surface`** is the secondary separator. A 1px outline at ≥ 3:1 contrast against the adjacent background guarantees a perceptual edge even when shadow is suppressed (high-contrast preferences, print).
+3. **Theme-side step displacement** is the optional reinforcement. A theme MAY map the page background and `informational.primary.background.default` to _different_ `core.colors.neutral` steps (for example page = `neutral.1000`, surface = `neutral.900`). This is a mode/mapping decision (see [Modes](#relationship-to-modes)), not a vocabulary change.
+
+This is the operational form of [Rules of Engagement #4](#rules-of-engagement-non-negotiable): colour expresses intent, not depth. If two stacked surfaces still feel indistinguishable after applying (1) + (2) + (3), the answer is to strengthen elevation/border or remap a step — never to introduce a new colour bucket.
 
 ---
 
 ## Rules of Engagement (non-negotiable)
 
-1. **Semantic-only consumption**
-   Components use semantic colors only.
-
-2. **Core is value-only**
-   Core colors define palettes and scales, never usage intent.
-
-3. **Keep the canonical registry small**
-   Do not expand `ux`, `role`, or `state` casually.
-
-4. **Do not invent ad-hoc names**
-   Avoid local names like `buttonBlue`, `dangerBg`, `cardBorderSoft`, or `heroTextLight`.
-
-5. **Do not encode component names in foundation tokens**
-   Avoid `button.primary.background.default` in the foundation layer.
-
-6. **Do not encode mode in semantic names**
-   Avoid `textOnDark`, `darkBorder`, `lightSurface`, etc.
-
-7. **Do not use color to model depth**
-   Use elevation for depth, not extra semantic color roles.
-
-8. **Validate pairings, not isolated swatches**
-   A color is only valid when the intended semantic pairing is valid.
-
----
-
-## Decision Matrix (pick fast)
-
-1. **Is this triggering something?**
-   → `action.*`
-
-2. **Is this for data entry or selection?**
-   → `input.*`
-
-3. **Is this moving the user through the product?**
-   → `navigation.*`
-
-4. **Is this reactive status or outcome?**
-   → `feedback.*`
-
-5. **Is this preventive help or instruction?**
-   → `guidance.*`
-
-6. **Is this search/filter/refine/explore?**
-   → `discovery.*`
-
-7. **Is this informational content or a content surface?**
-   → `content.*`
-
-8. **Are you inventing a new top-level UX domain?**
-   → solve above the foundation first; promote only through governance
+1. **Semantic-only consumption.** Components consume semantic colors only; core never directly.
+2. **Intent, not appearance.** Names express role and meaning — forbid `buttonBlue`, `dangerBg`, `darkBorder`, `cardBorderSoft`, `textOnDark`. No component or mode names in foundation tokens.
+3. **Keep the registry small.** Do not expand `ux`, `role`, or `state` casually; promote new entries only through governance.
+4. **Color does not model depth.** Use `elevation` for depth, `borders` for line geometry; do not invent extra color roles to encode them.
+5. **Validate pairings, not swatches.** A color is only valid when its intended `text ↔ background` or `border ↔ adjacent surface` pairing is valid.
 
 ---
 
@@ -421,7 +374,7 @@ A raised card may combine:
 | Input border at rest             | `input.primary.border.default`         |
 | Input border on focus            | `input.primary.border.focused`         |
 | Current nav item text            | `navigation.primary.text.current`      |
-| Muted body copy                  | `content.muted.text.default`           |
+| Muted body copy                  | `informational.muted.text.default`     |
 | Negative feedback surface        | `feedback.negative.background.default` |
 | Positive feedback text           | `feedback.positive.text.default`       |
 
@@ -449,7 +402,7 @@ const semanticColors = {
     },
   },
 
-  content: {
+  informational: {
     muted: {
       text: {
         default: '{core.colors.neutral.500}',
@@ -480,15 +433,7 @@ const semanticColors = {
 
 ## Theming
 
-Themes may tune:
-
-- core palette values (the immutable palette for that theme)
-- which core tokens semantic tokens reference
-- alternate semantic mappings for each supported mode
-
-Semantic token names **never change across themes**.
-
-A theme may become more muted, more vivid, more angular, more enterprise, or more playful by changing core values and semantic mappings — not by inventing a parallel semantic vocabulary.
+Themes tune **core palette values**, **which core tokens semantic tokens reference**, and **alternate semantic mappings per mode**. Semantic token names never change across themes. A theme becomes more muted, vivid, angular, enterprise, or playful by changing core values and semantic mappings — not by inventing parallel semantic vocabulary.
 
 ---
 
@@ -528,19 +473,4 @@ Validation must check at least these pairings:
    - the selected or current color against the adjacent background
    - and, when distinction depends on color, against the prior state
 
-### Note
-
-- Validate pairings, not isolated swatches.
-- Color tokens define the semantic contrast contract.
-- Meaning that depends on more than color alone is validated at the pattern, component, and final output layers.
-
----
-
-## Summary
-
-- Core colors define **palette families and scales**
-- Semantic colors define a **small, stable color contract**
-- Components consume **semantic colors only**
-- Modes remap **semantic references**, not core values or semantic names
-- Validation checks **legal combinations and contrast pairings**
-- The system stays small, consistent, and scalable by protecting semantic meaning
+> Color tokens define the semantic contrast contract. Meaning that depends on more than color alone is validated at the pattern, component, and final output layers.

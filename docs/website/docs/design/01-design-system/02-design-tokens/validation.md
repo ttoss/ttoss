@@ -1,5 +1,6 @@
 ---
 title: Validation and Build
+sidebar_position: 6
 ---
 
 # Validation and Build
