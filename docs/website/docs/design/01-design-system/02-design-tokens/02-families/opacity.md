@@ -103,18 +103,18 @@ opacity.{role}
 
 - `opacity.scrim`
 - `opacity.loading`
-- `opacity.disabledMedia`
+- `opacity.disabled`
 
 > Keep this set stable.
 > Do not use opacity tokens as a generic replacement for semantic color or state tokens.
 
 ### Semantic Tokens Summary Table
 
-| token                   | use when you are building…                  | contract (must be true)                           | default mapping   |
-| :---------------------- | :------------------------------------------ | :------------------------------------------------ | :---------------- |
-| `opacity.scrim`         | modal backdrops, blocking dim layers        | dims content behind a foreground layer            | `core.opacity.50` |
-| `opacity.loading`       | loading veils over content or media         | content remains visible but clearly de-emphasized | `core.opacity.50` |
-| `opacity.disabledMedia` | disabled visual media or image-like content | whole visual asset may be dimmed safely           | `core.opacity.50` |
+| token              | use when you are building…                  | contract (must be true)                           | default mapping   |
+| :----------------- | :------------------------------------------ | :------------------------------------------------ | :---------------- |
+| `opacity.scrim`    | modal backdrops, blocking dim layers        | dims content behind a foreground layer            | `core.opacity.50` |
+| `opacity.loading`  | loading veils over content or media         | content remains visible but clearly de-emphasized | `core.opacity.50` |
+| `opacity.disabled` | disabled visual media or image-like content | whole visual asset may be dimmed safely           | `core.opacity.50` |
 
 ### Example
 
@@ -123,7 +123,7 @@ const semanticOpacity = {
   opacity: {
     scrim: '{core.opacity.50}',
     loading: '{core.opacity.50}',
-    disabledMedia: '{core.opacity.50}',
+    disabled: '{core.opacity.50}',
   },
 };
 ```
@@ -188,11 +188,11 @@ Those concerns should usually be solved by:
 
 ## Usage Examples
 
-| Usage                                   | Token                   |
-| :-------------------------------------- | :---------------------- |
-| Modal backdrop                          | `opacity.scrim`         |
-| Loading veil over a card or media block | `opacity.loading`       |
-| Disabled avatar or image-like element   | `opacity.disabledMedia` |
+| Usage                                   | Token              |
+| :-------------------------------------- | :----------------- |
+| Modal backdrop                          | `opacity.scrim`    |
+| Loading veil over a card or media block | `opacity.loading`  |
+| Disabled avatar or image-like element   | `opacity.disabled` |
 
 ### Example
 
@@ -235,7 +235,7 @@ Use opacity carefully, and always validate:
 Themes may tune:
 
 - the core opacity values
-- the mapping of `opacity.scrim`, `opacity.loading`, and `opacity.disabledMedia`
+- the mapping of `opacity.scrim`, `opacity.loading`, and `opacity.disabled`
 
 Semantic token names **never change across themes**.
 
@@ -258,7 +258,7 @@ Semantic token names **never change across themes**.
 - any of these tokens resolves to `0`, `1`, or an equivalent non-translucent value:
   - `opacity.scrim`
   - `opacity.loading`
-  - `opacity.disabledMedia`
+  - `opacity.disabled`
 
 ### Warning (validation should warn when)
 

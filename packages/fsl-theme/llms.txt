@@ -1,0 +1,731 @@
+# @ttoss/fsl-theme
+
+> Design token system with a strict semantic contract. Two layers (`core` = raw values, `semantic` = stable design meaning); components consume only `semantic.*`. The semantic layer is the public API — type-safe, mode-agnostic, emitted as CSS custom properties with zero runtime cost.
+
+This file is the LLM-facing guide for using the package in an external application. It covers two jobs: **using tokens** (creating components) and **customizing the theme** (overrides). All token paths and per-token semantics are also available via JSDoc on `vars.*` after `import { vars } from '@ttoss/fsl-theme/vars'`.
+
+---
+
+## Entry points
+
+```ts
+import { createTheme, baseTheme, bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+import { ThemeProvider, useColorMode, useResolvedTokens } from '@ttoss/fsl-theme/react';
+import { vars } from '@ttoss/fsl-theme/vars';           // typed CSS var(--tt-*) refs — CSS environments
+import { toCssVarName } from '@ttoss/fsl-theme/css';    // raw --tt-* names — tooling / PostCSS
+```
+
+`vars.*` is a static map: every leaf is a `var(--tt-*)` string. Zero runtime cost. The values behind those CSS vars are injected by `ThemeProvider` — without it, the properties are unset and components render with no token values.
+
+`useTokens()` returns **unresolved** `TokenRef` strings (e.g. `'{core.colors.brand.500}'`) — for introspection only, never for styling. Use `vars.*` for CSS, `useResolvedTokens()` for non-CSS.
+
+---
+
+## Getting started — minimal app
+
+```tsx
+// theme.ts  — create once, import everywhere
+import { createTheme } from '@ttoss/fsl-theme';
+export const theme = createTheme(); // default base + dark alternate included
+
+// main.tsx (or _app.tsx, layout.tsx, etc.)
+import { ThemeProvider } from '@ttoss/fsl-theme/react';
+import { theme } from './theme';
+
+export function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <YourApp />
+    </ThemeProvider>
+  );
+}
+```
+
+`ThemeProvider` injects all `--tt-*` CSS custom properties into `<head>`, listens to `prefers-color-scheme`, and persists the user's choice to `localStorage`. Pass `defaultMode="dark"` to start in dark mode; pass `alternate={null}` to `createTheme` to opt out of dark mode entirely.
+
+**Built-in themes** — extend instead of building from scratch:
+
+```ts
+import { bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+// Use directly as-is:
+<ThemeProvider theme={bruttal}>...</ThemeProvider>
+// Or extend with brand overrides:
+import { createTheme } from '@ttoss/fsl-theme';
+const myTheme = createTheme({ extends: bruttal, overrides: { core: { colors: { brand: { 500: '#FF6B00' } } } } });
+```
+
+---
+
+## Token architecture
+
+```
+ThemeTokens
+├── core      raw primitives (immutable across modes)
+└── semantic  {core.*} references (the public contract; remapped per mode)
+```
+
+Components consume **only** `semantic.*`. Core values never change between light and dark modes — only semantic references remap. Customization touches `core` (values) or `semantic` (references), never component code.
+
+---
+
+## CSS var naming scheme
+
+`vars.*` gives TypeScript autocomplete. For raw CSS or CSS Modules, use the `--tt-*` names directly.
+
+| Token path prefix | CSS var prefix | Example |
+| --- | --- | --- |
+| `semantic.colors.` | `--tt-colors-` | `vars.colors.action.primary.background.default` → `var(--tt-colors-action-primary-background-default)` |
+| `semantic.text.` | `--tt-text-` | `vars.text.body.md.fontSize` → `var(--tt-text-body-md-fontSize)` |
+| `semantic.spacing.` | `--tt-spacing-` | `vars.spacing.inset.control.md` → `var(--tt-spacing-inset-control-md)` |
+| `semantic.sizing.` | `--tt-sizing-` | `vars.sizing.hit.base` → `var(--tt-sizing-hit-base)` |
+| `semantic.radii.` | `--tt-radii-` | `vars.radii.control` → `var(--tt-radii-control)` |
+| `semantic.border.` | `--tt-border-` | `vars.border.outline.control.width` → `var(--tt-border-outline-control-width)` |
+| `semantic.focus.` | `--tt-focus-` | `vars.focus.ring.color` → `var(--tt-focus-ring-color)` |
+| `semantic.elevation.` | `--tt-elevation-` | `vars.elevation.surface.raised` → `var(--tt-elevation-surface-raised)` |
+| `semantic.opacity.` | `--tt-opacity-` | `vars.opacity.disabled` → `var(--tt-opacity-disabled)` |
+| `semantic.overlay.` | `--tt-overlay-` | `vars.overlay.scrim` → `var(--tt-overlay-scrim)` |
+| `semantic.motion.` | `--tt-motion-` | `vars.motion.feedback.duration` → `var(--tt-motion-feedback-duration)` |
+| `semantic.zIndex.layer.` | `--tt-z-index-` | `vars.zIndex.layer.overlay` → `var(--tt-z-index-overlay)` |
+
+The table is the contract — paths are not a pure mechanical transform (`zIndex` → `z-index`; `zIndex.layer.` collapses to `--tt-z-index-`). camelCase leaf properties (`fontSize`, `fontFamily`) preserve case.
+
+---
+
+# JOB 1 — Using tokens to build components
+
+## FSL color axes
+
+Every `vars.colors.*` token is `{ux}.{role}.{dimension}.{state}`. The four axes are defined once here; later sections reference them.
+
+**`ux` — FSL Entity Kind (what the element does):**
+- `action` — button, link-as-CTA, command (mutates state outside the form lifecycle).
+- `input` — text field, checkbox, radio, switch, segmented control (mutates a value the form submits).
+- `navigation` — tab, menu item, breadcrumb, nav link (changes user location in IA).
+- `feedback` — alert, banner, toast, progress (system-initiated communication about an event).
+- `informational` — card, badge, chip, stat, page surface (passive content surface).
+
+**`role` — Evaluation (emphasis / valence):**
+- `primary` — the single most important instance per `{ux}` per view.
+- `secondary` — coexisting alternative to `primary`.
+- `accent` — brand pop / high-emphasis variant.
+- `muted` — subdued / low-priority.
+- `positive` / `caution` / `negative` — outcome valence (success / warning / failure or destructive).
+
+**`dimension`:** `background` · `border` · `text`.
+
+**`state`:** `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed` · `checked` · `current` · `visited` · `expanded` · `indeterminate` · `droptarget`.
+
+Legal `{ux, role}` and `{ux, state}` combinations are enforced by the TypeScript types of `vars` — invalid paths fail at the call site, not at runtime:
+
+| `ux` | valid `role` values |
+| --- | --- |
+| `action` | `primary` · `secondary` · `accent` · `muted` · `negative` |
+| `input` | `primary` · `secondary` · `muted` · `positive` · `caution` · `negative` |
+| `navigation` | `primary` · `secondary` · `accent` · `muted` |
+| `feedback` | `primary` · `muted` · `positive` · `caution` · `negative` (`feedback.primary` carries no valence — it's neutral feedback) |
+| `informational` | `primary` · `secondary` · `accent` · `muted` · `positive` · `caution` · `negative` |
+
+Valid `{ux, state}` combinations: see [Color state legality](#color-state-legality-per-ux) below.
+
+---
+
+## Token grammar by family
+
+| Family | Path shape | Leaf type |
+| --- | --- | --- |
+| **colors** | `vars.colors.{ux}.{role}.{dimension}.{state?}` | CSS color |
+| **spacing** | `vars.spacing.inset.{control,surface}.{sm,md,lg}` | CSS length |
+| | `vars.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}` | CSS length |
+| | `vars.spacing.gutter.{page,section}` | CSS length / `clamp()` |
+| | `vars.spacing.separation.interactive.min` | CSS length |
+| **text** | `vars.text.{display,headline,title,body,label,code}.{lg,md,sm}` | TextStyle (object — see below) |
+| **sizing** | `vars.sizing.hit.{min,base,prominent}` | CSS length |
+| | `vars.sizing.icon.{sm,md,lg}` | CSS length |
+| | `vars.sizing.identity.{sm,md,lg,xl}` | CSS length |
+| | `vars.sizing.measure.reading` | CSS `ch` / `clamp()` |
+| | `vars.sizing.surface.maxWidth` | CSS length |
+| | `vars.sizing.viewport.{height,width}.full` | dvh / dvw |
+| **radii** | `vars.radii.{control,surface,round}` | CSS length |
+| **border** | `vars.border.divider.{width,style}` | object |
+| | `vars.border.outline.{surface,control,selected}.{width,style}` | object |
+| **focus** | `vars.focus.ring.{width,style,color}` | object |
+| **elevation** | `vars.elevation.surface.{flat,raised,overlay,blocking}` | box-shadow |
+| | `vars.elevation.tonal.{raised,overlay,blocking}` (optional) | CSS color |
+| **opacity** | `vars.opacity.{scrim,loading,disabled}` | number in (0,1) |
+| **overlay** | `vars.overlay.scrim` | CSS color with alpha |
+| **motion** | `vars.motion.{feedback,emphasis,decorative}.{duration,easing}` | object |
+| | `vars.motion.transition.{enter,exit}.{duration,easing}` | object |
+| **zIndex** | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer |
+
+## Pick a token in 60 seconds — by CSS property
+
+Find the CSS property you are setting; follow the branch.
+
+**`color` / `background` / `border-color` / `fill` → `vars.colors.{ux}.{role}.{dimension}.{state}`** — axes defined in [FSL color axes](#fsl-color-axes); state legality in [Color state legality](#color-state-legality-per-ux).
+
+**`padding` → `spacing.inset`**
+
+- Interactive control (button, input, toggle) → `vars.spacing.inset.control.{sm|md|lg}`
+- Container (card, panel, dialog, section) → `vars.spacing.inset.surface.{sm|md|lg}`
+- Default step at any level → `md`
+
+**`gap` → `spacing.gap`**
+
+- Vertical sibling flow (form fields, list, stacked sections) → `vars.spacing.gap.stack.{xs|sm|md|lg|xl}`
+- Horizontal sibling flow (icon + label, toolbar, chip row) → `vars.spacing.gap.inline.{xs|sm|md|lg|xl}`
+- Adjacent independently focusable targets → `vars.spacing.separation.interactive.min`
+
+**`padding` on a page or section wrapper → `spacing.gutter`**
+
+- Page-level horizontal gutter → `vars.spacing.gutter.page`
+- Section-level vertical gutter → `vars.spacing.gutter.section`
+
+**`font-*` / `line-height` → `text.{role}.{step}`**
+
+| Element role | Token |
+| --- | --- |
+| Hero / landing emphasis | `vars.text.display.{lg,md,sm}` |
+| Page or section heading | `vars.text.headline.{lg,md,sm}` |
+| Surface heading (card, panel, dialog) | `vars.text.title.{lg,md,sm}` |
+| Reading prose / description | `vars.text.body.{lg,md,sm}` |
+| UI label / button text / badge | `vars.text.label.{lg,md,sm}` |
+| Code / identifiers / monospace | `vars.text.code.{md,sm}` |
+
+`vars.text.*.*` is a **TextStyle object** — each field is its own `var(--tt-text-*)` string. Apply each field individually to the corresponding CSS property:
+
+```tsx
+// Inline styles:
+style={{
+  fontFamily: vars.text.body.md.fontFamily,
+  fontSize: vars.text.body.md.fontSize,
+  fontWeight: vars.text.body.md.fontWeight,
+  lineHeight: vars.text.body.md.lineHeight,
+  letterSpacing: vars.text.body.md.letterSpacing,
+}}
+
+// CSS / CSS Modules:
+// font-family: var(--tt-text-body-md-fontFamily);
+// font-size: var(--tt-text-body-md-fontSize);
+// font-weight: var(--tt-text-body-md-fontWeight);
+// line-height: var(--tt-text-body-md-lineHeight);
+// letter-spacing: var(--tt-text-body-md-letterSpacing);
+```
+
+Available fields: `fontFamily` · `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing` · `fontOpticalSizing?` · `fontVariantNumeric?`
+
+**`width` / `height` / `min-width` / `min-height` → `sizing`**
+
+- Interactive area (hit target) → `vars.sizing.hit.{min|base|prominent}` (apply via `min-width`/`min-height`, not visual size)
+- Icon glyph → `vars.sizing.icon.{sm|md|lg}`
+- Avatar / identity → `vars.sizing.identity.{sm|md|lg|xl}`
+- Reading line length → `vars.sizing.measure.reading` (use as `max-width`)
+- Surface max width → `vars.sizing.surface.maxWidth`
+- Full viewport → `vars.sizing.viewport.{height|width}.full`
+
+**`border-radius` → `radii`**
+
+- Interactive control → `vars.radii.control`
+- Containing surface → `vars.radii.surface`
+- Pill / capsule / circular avatar → `vars.radii.round`
+
+**`border-width` / `border-style` → `border`** (pair with a `colors` token for the line color)
+
+- Separator between content groups → `vars.border.divider`
+- Surface enclosing edge → `vars.border.outline.surface`
+- Control enclosing edge → `vars.border.outline.control`
+- Selected/current state line → `vars.border.outline.selected`
+
+**`outline` (keyboard focus) → `focus`** — see co-occurrence rule §1 below.
+
+- Component has a clear `{ux}` → `vars.colors.{ux}.{role}.border.focused`
+- No clear `{ux}` (focusable card, custom widget) → `vars.focus.ring.{width,style,color}`
+
+**`box-shadow` → `elevation.surface`**
+
+- Flush with page → `vars.elevation.surface.flat`
+- Card / panel → `vars.elevation.surface.raised`
+- Dropdown / popover → `vars.elevation.surface.overlay`
+- Dialog / sheet → `vars.elevation.surface.blocking`
+
+**`z-index` → `zIndex.layer`** — pick by *blocking behaviour and persistence*, not by component name.
+
+- Normal flow → `vars.zIndex.layer.base`
+- Sticky header / nav → `vars.zIndex.layer.sticky`
+- Non-blocking floating surface (dropdown, popover) → `vars.zIndex.layer.overlay`
+- Blocking surface (dialog with scrim) → `vars.zIndex.layer.blocking`
+- Transient non-blocking (toast) → `vars.zIndex.layer.transient`
+
+**`opacity` (whole element) → `opacity`** — see co-occurrence rule §3 below.
+
+- Modal backdrop dimming → `vars.opacity.scrim`
+- Content visible during async work → `vars.opacity.loading`
+- Disabled visual asset (image, avatar) → `vars.opacity.disabled`
+
+**`transition` / `animation` → `motion`**
+
+- Response to user input on a single element → `vars.motion.feedback`
+- Element entering layout → `vars.motion.transition.enter`
+- Element leaving layout → `vars.motion.transition.exit`
+- Must-notice in-place change → `vars.motion.emphasis`
+- Ambient / decorative loop → `vars.motion.decorative`
+
+**Modal backdrop fill → `vars.overlay.scrim`**
+
+## Color state legality (per `ux`)
+
+Not every state is legal in every `ux` context. Illegal combinations are TypeScript errors at the call site. Missing optional states on a sparse theme fall back to `default` (§8).
+
+| State | action | input | navigation | feedback | informational |
+| --- | --- | --- | --- | --- | --- |
+| `default` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `hover` | ✅ | ✅ | ✅ | — | ✅ |
+| `active` | ✅ | ✅ | ✅ | — | ✅ |
+| `focused` | ✅ | ✅ | ✅ | ✅ (focusable wrapper or close btn) | ✅ |
+| `disabled` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `selected` | — | ✅ (set membership) | ✅ | — | ✅ |
+| `pressed` | ✅ (toggle) | ✅ (toggle input) | — | — | — |
+| `expanded` | ✅ (disclosure trigger) | ✅ (combobox) | ✅ (collapsible nav) | — | ✅ (accordion) |
+| `checked` | — | ✅ (two-state control) | — | — | — |
+| `indeterminate` | — | ✅ | — | — | — |
+| `current` | — | — | ✅ (active route) | — | — |
+| `visited` | — | — | ✅ | — | ✅ (link in content) |
+| `droptarget` | — | ✅ (file input) | — | — | ✅ |
+
+State disambiguation rules:
+- **`active` vs `pressed`**: `active` = the brief moment of clicking (transient). `pressed` = persistent toggle engaged ("Bold" button). Never use `active` for toggle state.
+- **`selected` vs `checked`**: `selected` = one-of-many in a set (segment, picker option). `checked` = two-state on/off (checkbox, radio, switch).
+- **`selected` vs `current`**: `selected` = set membership. `current` = the user's actual location in the navigation set.
+- **Validation failure is not a state**: an invalid input renders with the `input.negative.*` role, not with an `invalid` state on `input.primary.*`.
+
+## Co-occurrence rules (cross-family)
+
+These rules cannot be expressed in a single token's JSDoc — they are obligations between families.
+
+**§1 — Every focusable element needs a focus indicator.** Pick one:
+- Component has a clear FSL Entity Kind (`Action`, `Input`, `Navigation`, `Feedback`) → use `vars.colors.{ux}.{role}.border.focused`.
+- Component has no clear `{ux}` (focusable card, custom widget) → use `vars.focus.ring.{width,style,color}`.
+- Input with `negative` or `caution` valence where focus must inherit valence → `vars.colors.input.{negative|caution}.border.focused` overrides the system default.
+
+Never both. Never neither.
+
+**§2 — `colors.background` requires a paired `colors.text`.** Whenever you set a semantic background, set the matching `colors.{ux}.{role}.text.{state}` for the contained text. Mixing a `feedback.positive.background.default` with an unrelated text token breaks the contrast contract.
+
+**§3 — `opacity.disabled` is for visual media only.** Disabled controls and disabled text **must** use `vars.colors.{ux}.{role}.{dimension}.disabled` color tokens (which carry contrast guarantees). `vars.opacity.disabled` is exclusive to images, avatars, illustrations — assets without a color contract.
+
+**§4 — `sizing.hit.*` is enforced via `min-*`, not visual size.** Apply as `min-width` / `min-height`. The CSS layer auto-injects coarse-pointer overrides under `@media (any-pointer: coarse)` — do not write that media query yourself.
+
+**§5 — `tonal` elevation requires its shadow counterpart.** Using `vars.elevation.tonal.raised` is only valid when `vars.elevation.surface.raised` is also applied to the same element. Tonal alone breaks depth perception when the theme switches modes.
+
+**§6 — Density propagates across families.** A `sm` / `md` / `lg` decision must be applied uniformly across `spacing.inset.*`, `spacing.gap.*`, `sizing.icon.*`, and `text.label.*` for the same component. Mixing `spacing.inset.control.sm` with `sizing.icon.lg` produces visually inconsistent components.
+
+**§7 — `motion` auto-suppression.** `prefers-reduced-motion` is handled by the CSS pipeline emitted by `toCssVars` — never re-implement reduced-motion logic in component code.
+
+**§8 — Optional families have fallback rules:**
+- `elevation.tonal` absent → fall back to `elevation.surface` alone.
+- `dataviz` absent → the consumer's app does not opt in to dataviz; do not generate dataviz components.
+- Optional state (e.g. `hover`) absent on a leaf → fall back to `default`.
+
+## Disambiguation — confusable picks
+
+For each common LLM mistake, the wrong pick → the correct pick + the rule that disambiguates:
+
+| User intent | Tempting (wrong) | Correct | Rule |
+| --- | --- | --- | --- |
+| Page background | `core.colors.neutral.0` | `vars.colors.informational.primary.background.default` | Components never consume `core.*`. |
+| Cancel / dismiss button | `vars.colors.action.negative.*` | `vars.colors.action.muted.*` (or `.secondary.*`) | `negative` = *destructive* intent (delete). Low priority is `muted`. |
+| Delete / destroy button | `vars.colors.feedback.negative.*` | `vars.colors.action.negative.*` | Triggers → `action`. Reporting an outcome → `feedback`. |
+| Success toast | `vars.colors.informational.positive.*` | `vars.colors.feedback.positive.*` | System *reports* a result → `feedback`. Passive surface → `informational`. |
+| Warning text inside a card | `vars.colors.feedback.caution.*` | `vars.colors.informational.caution.*` | If it's part of static content (not a system event), it's `informational`. |
+| Form field with validation error | `input.primary.*` + `invalid` state | `vars.colors.input.negative.*` | Validation failure is a *role*, not a state. (FSL Lexicon §5) |
+| Disabled icon button | `opacity: vars.opacity.disabled` | `color: vars.colors.action.{role}.text.disabled` | §3 — controls/text carry contrast; only assets without color contract use `opacity.disabled`. |
+| Active tab indicator | `border.outline.selected` *only* | `border.outline.selected` + `colors.navigation.{role}.border.current` | Width via `border.outline.selected`; color via the `current` state. |
+| Toggle button engaged | `state: active` | `state: pressed` | `active` is transient (mouse down); `pressed` is persistent toggle. |
+| Focus on input in error | `focus.ring.color` | `vars.colors.input.negative.border.focused` | §1 — valence inputs override the system default. |
+
+## Focus ring — implementation patterns
+
+`:focus-visible` cannot be expressed in inline styles. Use one of:
+
+**Option A — CSS class (canonical)**
+
+```css
+/* button.css (or a global stylesheet) */
+/* §1 — action ux: per-context focused border token */
+.btn:focus-visible {
+  outline-width: var(--tt-focus-ring-width);
+  outline-style: var(--tt-focus-ring-style);
+  outline-color: var(--tt-colors-action-primary-border-focused);
+  outline-offset: 2px;
+}
+.btn:hover:not(:disabled) {
+  background: var(--tt-colors-action-primary-background-hover);
+}
+.btn:active:not(:disabled) {
+  background: var(--tt-colors-action-primary-background-active);
+}
+
+/* No clear ux (focusable card, custom widget) — system default ring */
+.focusable-card:focus-visible {
+  outline-width: var(--tt-focus-ring-width);
+  outline-style: var(--tt-focus-ring-style);
+  outline-color: var(--tt-focus-ring-color);
+  outline-offset: 2px;
+}
+```
+
+**Option B — CSS-in-JS / Ark UI / React Aria**
+
+Headless libraries (Ark UI, React Aria) manage `data-focused` / `data-hovered` attributes automatically. Wire them to token vars in your CSS-in-JS framework.
+
+---
+
+## Component pattern — complete example
+
+```tsx
+import { vars } from '@ttoss/fsl-theme/vars';
+import './button.css'; // contains :focus-visible, :hover, :active rules (see above)
+
+// Applies: §1 (focus via CSS), §2 (bg+text pair), §3 (disabled via color token not opacity),
+//          §4 (hit target via min-height), §6 (density uniform across padding/sizing/label)
+function PrimaryButton({
+  children,
+  disabled,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      disabled={disabled}
+      className="btn"
+      style={{
+        // §2 — background + text always paired
+        background: disabled
+          ? vars.colors.action.primary.background.disabled
+          : vars.colors.action.primary.background.default,
+        color: disabled
+          ? vars.colors.action.primary.text.disabled  // §3: color token, not opacity
+          : vars.colors.action.primary.text.default,
+        // §6 — density uniform: inset / sizing / typography all md
+        padding: `0 ${vars.spacing.inset.control.md}`,
+        minHeight: vars.sizing.hit.base,              // §4: min-height enforces hit target
+        // typography — each TextStyle field is its own var() string
+        fontFamily: vars.text.label.md.fontFamily,
+        fontSize: vars.text.label.md.fontSize,
+        fontWeight: vars.text.label.md.fontWeight,
+        lineHeight: vars.text.label.md.lineHeight,
+        letterSpacing: vars.text.label.md.letterSpacing,
+        // surface
+        borderRadius: vars.radii.control,
+        borderWidth: vars.border.outline.control.width,
+        borderStyle: vars.border.outline.control.style,
+        borderColor: disabled
+          ? vars.colors.action.primary.border.disabled
+          : vars.colors.action.primary.border.default,
+        // motion
+        transitionDuration: vars.motion.feedback.duration,
+        transitionTimingFunction: vars.motion.feedback.easing,
+        transitionProperty: 'background, color, border-color',
+        // layout
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: vars.spacing.gap.inline.sm,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+## Pattern: Input with validation error
+
+New vs. Button: validation is a *role swap*, not a state (`input.primary.*` → `input.negative.*`); focus inherits valence (§1 valence override); the validation message text consumes the same negative role.
+
+```tsx
+function TextField({
+  invalid,
+  message,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean; message?: string }) {
+  const role = invalid ? 'negative' : 'primary'; // role swap, not state
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: vars.spacing.gap.stack.xs }}>
+      <input
+        {...props}
+        aria-invalid={invalid || undefined}
+        className={invalid ? 'input input--negative' : 'input'}
+        style={{
+          background: vars.colors.input[role].background.default,
+          color: vars.colors.input[role].text.default,
+          borderColor: vars.colors.input[role].border.default,
+          borderWidth: vars.border.outline.control.width,
+          borderStyle: vars.border.outline.control.style,
+          borderRadius: vars.radii.control,
+          minHeight: vars.sizing.hit.base,
+          padding: `0 ${vars.spacing.inset.control.md}`,
+          fontSize: vars.text.body.md.fontSize,
+          lineHeight: vars.text.body.md.lineHeight,
+        }}
+      />
+      {message && (
+        <span style={{
+          color: vars.colors.input.negative.text.default, // negative role serves both control + message
+          fontSize: vars.text.label.sm.fontSize,
+        }}>
+          {message}
+        </span>
+      )}
+    </div>
+  );
+}
+```
+
+```css
+.input:focus-visible          { outline-color: var(--tt-colors-input-primary-border-focused); }
+.input--negative:focus-visible { outline-color: var(--tt-colors-input-negative-border-focused); /* §1 valence override */ }
+```
+
+## Pattern: Modal dialog (five families coordinated)
+
+New vs. Button: scrim composes `overlay.scrim` (color) with `opacity.scrim` (alpha); blocking surface uses `elevation.surface.blocking` + `zIndex.layer.blocking`; enter/exit motion is `motion.transition.*` (not `motion.feedback`).
+
+```tsx
+import { useResolvedTokens } from '@ttoss/fsl-theme/react';
+
+function Modal({ children }: { children: React.ReactNode }) {
+  // Numeric z-index needed for arithmetic (scrim = blocking - 1)
+  const resolved = useResolvedTokens();
+  const blockingZ = Number(resolved['semantic.zIndex.layer.blocking']);
+
+  return (
+    <>
+      {/* Scrim: dim everything behind */}
+      <div style={{
+        position: 'fixed', inset: 0,
+        background: vars.overlay.scrim,
+        opacity: vars.opacity.scrim,
+        zIndex: blockingZ - 1,
+      }} />
+      {/* Dialog surface: blocking stratum, max depth */}
+      <div role="dialog" aria-modal="true" style={{
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        zIndex: blockingZ,
+        background: vars.colors.informational.primary.background.default,
+        color: vars.colors.informational.primary.text.default,
+        boxShadow: vars.elevation.surface.blocking,
+        borderRadius: vars.radii.surface,
+        padding: vars.spacing.inset.surface.md,
+        maxWidth: vars.sizing.surface.maxWidth,
+        // enter/exit motion — transition.* not feedback.*
+        transitionProperty: 'opacity, transform',
+        transitionDuration: vars.motion.transition.enter.duration,
+        transitionTimingFunction: vars.motion.transition.enter.easing,
+      }}>
+        {children}
+      </div>
+    </>
+  );
+}
+```
+
+---
+
+## Self-audit checklist (run before emitting code)
+
+For every component you generate, verify:
+
+1. **Path validity** — every `vars.colors.*` path exists in the [role matrix](#fsl-color-axes); no `action.positive`, no `feedback.accent`, no `navigation.{positive,caution,negative}`.
+2. **Focus** (§1) — every focusable element has *exactly one* of: per-ux `{ux}.{role}.border.focused`, system `focus.ring.*`, or valence-aware input override. Never both. Never neither.
+3. **Pairing** (§2) — every `colors.{ux}.{role}.background.{state}` is paired with `colors.{ux}.{role}.text.{state}` at the same state.
+4. **Disabled** (§3) — disabled controls and text use `colors.{ux}.{role}.{dimension}.disabled`; `opacity.disabled` appears only on `<img>`, `<Avatar>`, illustrations.
+5. **Hit target** (§4) — interactive elements set `minWidth` or `minHeight` (not `width`/`height`) to `vars.sizing.hit.*`.
+6. **Density** (§6) — the same step (`sm`/`md`/`lg`) is used across `spacing.inset.*`, `spacing.gap.*`, `sizing.icon.*`, and `text.label.*` within the component.
+7. **Validation** — invalid inputs use `input.negative.*` *role*, never `input.primary.*` + a fictitious `invalid` state.
+8. **Stateful CSS** — `:hover`, `:focus-visible`, `:active`, `:disabled` are written in a `.css` file or CSS-in-JS; inline `style` cannot express pseudo-classes.
+9. **No `core.*` consumption** — the component imports `vars` only; `core.*` paths appear only inside `createTheme({ overrides })`.
+10. **Mode-agnostic** — the component consumes `semantic.*` only; no `useColorMode()` branching to swap tokens (the cascade handles it).
+
+---
+
+## Mode switching
+
+```tsx
+import { useColorMode } from '@ttoss/fsl-theme/react';
+
+// Must be a descendant of <ThemeProvider>
+const DarkModeToggle = () => {
+  const { mode, resolvedMode, setMode } = useColorMode();
+  return (
+    <button onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}>
+      {resolvedMode === 'dark' ? 'Switch to light' : 'Switch to dark'}
+    </button>
+  );
+};
+```
+
+`mode` = user intent: `'light' | 'dark' | 'system'`. `resolvedMode` = actual rendered mode: `'light' | 'dark'`. Persisted automatically to `localStorage` (`'tt-theme'` key by default).
+
+---
+
+## Non-CSS environments — React Native, canvas, PDF
+
+`vars.*` produces CSS custom property strings — they resolve only in a browser with `ThemeProvider`. For non-CSS environments, use `useResolvedTokens()`:
+
+```tsx
+import { useResolvedTokens } from '@ttoss/fsl-theme/react';
+
+// Keys are full semantic dot-paths; values are resolved raw CSS values (hex, px, etc.)
+const NativeButton = ({ disabled }: { disabled?: boolean }) => {
+  const resolved = useResolvedTokens();
+  return (
+    <View
+      style={{
+        backgroundColor: disabled
+          ? resolved['semantic.colors.action.primary.background.disabled']
+          : resolved['semantic.colors.action.primary.background.default'],
+        minHeight: resolved['semantic.sizing.hit.base'],
+        paddingHorizontal: resolved['semantic.spacing.inset.control.md'],
+      }}
+    />
+  );
+};
+```
+
+`useResolvedTokens()` automatically applies coarse-pointer hit target overrides — mirrors the `@media (any-pointer: coarse)` block that `toCssVars` injects for CSS consumers.
+
+---
+
+# JOB 2 — Customizing a theme
+
+`createTheme({ overrides })` accepts a `DeepPartial<ThemeTokens>` — TypeScript validates *shape*, not semantic coherence. The intent → override map below specifies the minimal correct set of paths to change for each common design intent, and the invariants to verify after.
+
+## API
+
+```ts
+import { createTheme } from '@ttoss/fsl-theme';
+
+const theme = createTheme({
+  extends?: ThemeBundle,                       // built-in theme to extend
+  baseMode?: 'light' | 'dark',                 // which mode the base represents
+  overrides?: DeepPartial<ThemeTokens>,        // changes to the base
+  alternate?: ModeOverride | null,             // dark alternate (null = single-mode)
+});
+```
+
+- Default: `createTheme()` returns the built-in `baseTheme` + built-in `darkAlternate`.
+- `extends`: inherit from a built-in (`bruttal`, `corporate`, `oca`, `ventures`).
+- `alternate: null`: opt out of dark mode entirely (single-mode theme).
+
+## Intent → override map
+
+### Apply brand colors
+
+**Override path:** `core.colors.brand.{50..900}` — set the full scale.
+
+```ts
+createTheme({
+  overrides: {
+    core: { colors: { brand: { 50: '#…', 100: '#…', /* … */ 900: '#…' } } },
+  },
+});
+```
+
+**Invariants to verify:**
+- `brand.500` is the canonical mid-point and is required. Tune it for AA contrast against `neutral.0` if it is used as a filled background with light text (see `bruttal.ts` for the worked example: `brand.500 = #6D5D4F` ≈ 7.3:1 contrast).
+- All semantic tokens that reference `{core.colors.brand.*}` automatically pick up the new values. No semantic remap needed unless contrast breaks.
+- For dark mode, the built-in `darkAlternate` already remaps semantic references to lighter brand steps — usually no extra work.
+
+**Reference patterns:** `corporate.ts`, `oca.ts`, `ventures.ts` are minimal brand-only overrides.
+
+### Adjust density
+
+**Override paths (all together):**
+- `core.spacing.{1..16}` — base spacing scale steps
+- `core.sizing.hit.fine.{min,base,prominent}` — fine-pointer hit targets
+- `core.sizing.icon.*` — icon ramp
+- `core.font.size.*` (optional) — type scale
+
+**Invariants:**
+- Touch targets (`core.sizing.hit.coarse.*`) must remain ≥ 44px regardless of fine-pointer values (a11y minimum).
+- Density propagates uniformly: if you reduce `core.spacing.4` by 25%, reduce other spacing steps proportionally to preserve the scale ratios.
+- Hit target floors in `clamp()` expressions must remain ergonomic (≥ 32px for fine pointer).
+
+### Flat / no-shadow style
+
+**Override paths:**
+- `semantic.radii.{control,surface}` → `'{core.radii.none}'` (sharp corners)
+- `semantic.elevation.surface.{flat,raised,overlay,blocking}` → all → `'{core.elevation.level.0}'`
+- `alternate.semantic.elevation.surface.*` → all → `'{core.elevation.emphatic.0}'` (preserves flatness in dark mode)
+
+**Reference pattern:** `bruttal.ts` is the canonical implementation — copy its `semantic.radii` + `semantic.elevation.surface` + `alternate.semantic.elevation.surface` blocks together.
+
+**Invariant:** If you flatten elevation in `base`, you must also flatten in `alternate` — otherwise dark mode will render shadows that contradict the visual identity.
+
+### Custom typography
+
+**Override paths (likely all together):**
+- `core.font.family.{sans,mono,serif?}` — font stack
+- `core.font.weight.*` — verify the new typeface supports the weights used
+- `core.font.leading.*` (optional) — adjust if the typeface needs different line heights
+- `core.font.tracking.*` (optional) — letter-spacing per typeface
+
+**Invariants:**
+- A new typeface may not support all referenced weights — verify `regular`, `medium`, `semibold`, `bold` all exist in the chosen font.
+- `core.font.leading.normal` is calibrated for the default `sans`; some typefaces need wider leading to remain legible.
+- Do **not** override `semantic.text.*` styles unless changing the *intent* of a text role. Family swaps live in `core.font.family.sans`; semantic styles inherit automatically.
+
+### Custom dark mode
+
+**Override path:** `alternate.semantic.*` only. **Never** `alternate.core.*` — core is immutable across modes (model invariant §1 / §4).
+
+```ts
+createTheme({
+  overrides: { core: { colors: { brand: { 500: '#…' } } } },
+  alternate: {
+    semantic: {
+      colors: {
+        informational: {
+          primary: { background: { default: '{core.colors.neutral.900}' } },
+        },
+      },
+    },
+  },
+});
+```
+
+**Invariants:**
+- Modes remap **semantic references**, never core values. If a semantic token needs a value that doesn't exist in core, enrich `core` (extending the palette), don't mutate it per mode.
+- Validate every semantic *pairing* (text on background, border on adjacent surface) in both modes — not isolated swatches.
+- Remap neutrals first; remap brand/hue only when contrast or legibility breaks.
+
+### Single-mode theme (no dark)
+
+```ts
+createTheme({ alternate: null });
+```
+
+## What you must NOT do when customizing
+
+- **Never** consume `core.*` directly from a component. Core is theme-definition only.
+- **Never** create parallel semantic vocabulary (e.g. `semantic.colors.brandDark`, `semantic.text.buttonLarge`). If the meaning exists, reuse it; if it truly doesn't, follow governance to add it.
+- **Never** mutate `core.*` per mode. Modes remap semantic references only.
+- **Never** name semantic tokens by appearance (hue, raw style, component, mode). Names express *intent*.
+- **Never** override `semantic.*` to reference a raw value — always reference a `{core.*}` token. Raw values in semantic are a registered exception list (see `model.md`), not a customization path.
+
+---
+
+## Validation in development
+
+In non-production builds, `createTheme` runs `validateRefs` over the merged theme — broken `{core.*}` references throw early. In production builds the validation is stripped for performance.
+
+Cross-token semantic correctness (the rules above) is **not** statically validated today. The rules in this file are the authoritative checklist for an LLM producing component or customization code.
+
+---
+
+## Reference index
+
+- README — full grammar tables, usage examples per import path
+- `dist/Types-*.d.ts` — every token has co-located JSDoc with semantics + anti-pattern notes
+- `src/themes/{bruttal,corporate,oca,ventures}.ts` — worked customization patterns
+- Family specs (full grammar, decision matrices, ADRs): `docs/design/01-design-system/02-design-tokens/02-families/{family}.md` in the ttoss monorepo

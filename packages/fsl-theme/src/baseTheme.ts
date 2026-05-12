@@ -1,0 +1,1857 @@
+/* eslint-disable max-lines */
+import type { ModeOverride, ThemeTokens } from './Types';
+
+/**
+ * **Foundation** — Neutral baseline theme.
+ *
+ * System fonts, gray palette, and balanced proportions. Serves as the
+ * canonical base that all other themes extend via `createTheme`.
+ */
+export const baseTheme: ThemeTokens = {
+  // ==========================================================================
+  // CORE TOKENS — raw primitives and responsive engines
+  // ==========================================================================
+  core: {
+    // -- Colors -------------------------------------------------------------
+    // Core colors are intent-free primitives. Scale positions only.
+    colors: {
+      brand: {
+        50: '#eff6ff',
+        100: '#dbeafe',
+        200: '#bfdbfe',
+        300: '#60a5fa',
+        400: '#2b87f5',
+        500: '#0469e3',
+        600: '#035fca',
+        700: '#034da6',
+        800: '#023d85',
+        900: '#022e63',
+      },
+
+      neutral: {
+        0: '#ffffff',
+        50: '#f8fafc',
+        100: '#f1f5f9',
+        200: '#e2e8f0',
+        300: '#cbd5e1',
+        400: '#94a3b8',
+        500: '#64748b',
+        700: '#334155',
+        900: '#0f172a',
+        1000: '#020617',
+      },
+
+      red: {
+        100: '#fee2e2',
+        300: '#fca5a5',
+        500: '#ef4444',
+        700: '#b91c1c',
+        900: '#7f1d1d',
+      },
+
+      orange: {
+        100: '#ffedd5',
+        300: '#fdba74',
+        500: '#f97316',
+        700: '#c2410c',
+        900: '#7c2d12',
+      },
+
+      green: {
+        100: '#dcfce7',
+        300: '#86efac',
+        500: '#22c55e',
+        700: '#15803d',
+        900: '#14532d',
+      },
+
+      yellow: {
+        100: '#fef9c3',
+        300: '#fde047',
+        500: '#eab308',
+        700: '#a16207',
+        900: '#713f12',
+      },
+
+      teal: {
+        100: '#ccfbf1',
+        300: '#5eead4',
+        500: '#14b8a6',
+        700: '#0f766e',
+        900: '#134e4a',
+      },
+
+      purple: {
+        100: '#f3e8ff',
+        300: '#d8b4fe',
+        500: '#a855f7',
+        700: '#7e22ce',
+        900: '#581c87',
+      },
+
+      pink: {
+        100: '#fce7f3',
+        300: '#f9a8d4',
+        500: '#ec4899',
+        700: '#be185d',
+        900: '#831843',
+      },
+    },
+
+    // -- Elevation ----------------------------------------------------------
+    elevation: {
+      level: {
+        0: 'none',
+        1: '0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04)',
+        2: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
+        3: '0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.08)',
+        4: '0 16px 32px rgba(0,0,0,0.14), 0 8px 16px rgba(0,0,0,0.10)',
+      },
+      // High-opacity recipes — stronger depth contrast for dark or heavily-colored surfaces
+      emphatic: {
+        0: 'none',
+        1: '0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.14)',
+        2: '0 4px 8px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.18)',
+        3: '0 8px 16px rgba(0,0,0,0.28), 0 4px 8px rgba(0,0,0,0.22)',
+        4: '0 16px 32px rgba(0,0,0,0.34), 0 8px 16px rgba(0,0,0,0.28)',
+      },
+    },
+
+    // -- Font Primitives ----------------------------------------------------
+    font: {
+      family: {
+        sans: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
+        serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+        mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      },
+
+      weight: {
+        regular: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+      },
+
+      leading: {
+        tight: 1.15,
+        snug: 1.25,
+        normal: 1.5,
+        relaxed: 1.7,
+      },
+
+      tracking: {
+        tight: '-0.02em',
+        normal: '0em',
+        wide: '0.04em',
+      },
+
+      optical: {
+        auto: 'auto',
+        none: 'none',
+      },
+
+      numeric: {
+        proportional: 'proportional-nums',
+        tabular: 'tabular-nums',
+        lining: 'lining-nums',
+        oldstyle: 'oldstyle-nums',
+        slashedZero: 'slashed-zero',
+        ordinal: 'ordinal',
+        normal: 'normal',
+      },
+
+      // -- Font Size Scale (Responsive Engine) --------------------------------
+      scale: {
+        text: {
+          1: 'clamp(12px, calc(0.6cqi + 10px), 14px)',
+          2: 'clamp(14px, calc(0.7cqi + 11px), 16px)',
+          3: 'clamp(16px, calc(0.8cqi + 12px), 18px)',
+          4: 'clamp(18px, calc(0.9cqi + 13px), 20px)',
+          5: 'clamp(20px, calc(1.0cqi + 14px), 24px)',
+          6: 'clamp(24px, calc(1.2cqi + 16px), 28px)',
+        },
+
+        display: {
+          1: 'clamp(20px, calc(1.2cqi + 16px), 28px)',
+          2: 'clamp(24px, calc(1.4cqi + 18px), 32px)',
+          3: 'clamp(28px, calc(1.6cqi + 20px), 40px)',
+          4: 'clamp(32px, calc(1.8cqi + 22px), 48px)',
+          5: 'clamp(40px, calc(2.2cqi + 26px), 64px)',
+          6: 'clamp(48px, calc(2.6cqi + 30px), 80px)',
+        },
+      },
+    },
+
+    // -- Spacing (Responsive Engine) ----------------------------------------
+    // Tuned for medium-high density (mouse-first). The engine caps at 6px
+    // — above that, button paddings compound with hit floors and produce
+    // visually heavy controls (>48px desktop) that fight modern UI rhythm
+    // (Material 40px, GitHub 32–40px, Bootstrap 38px). Touch density is
+    // restored automatically via `@media (any-pointer: coarse)` overrides.
+    //
+    // CSS-coupled tokens (registered in model.md §8 → "CSS-coupled core
+    // tokens"):
+    //   • `engine.unit` — fluid primitive (`clamp()` + `cqi`); viewport
+    //     fallback emitted by `toCssVars`.
+    //   • steps 1..16 — cascade-preserving aliases that reference
+    //     `--tt-core-spacing-engine-unit` directly so the engine stays a
+    //     single point of override. Replacing `var()` with a token ref
+    //     would inline `clamp(...cqi...)` into every step and inflate the
+    //     `@supports (width: 1cqi)` block. Non-CSS consumers receive the
+    //     unresolved expression — see model.md §8.
+    spacing: {
+      engine: {
+        unit: 'clamp(4px, 0.25cqi + 3px, 6px)',
+      },
+
+      0: '0px',
+      1: 'calc(1 * var(--tt-core-spacing-engine-unit))',
+      2: 'calc(2 * var(--tt-core-spacing-engine-unit))',
+      3: 'calc(3 * var(--tt-core-spacing-engine-unit))',
+      4: 'calc(4 * var(--tt-core-spacing-engine-unit))',
+      6: 'calc(6 * var(--tt-core-spacing-engine-unit))',
+      8: 'calc(8 * var(--tt-core-spacing-engine-unit))',
+      12: 'calc(12 * var(--tt-core-spacing-engine-unit))',
+      16: 'calc(16 * var(--tt-core-spacing-engine-unit))',
+    },
+
+    // -- Sizing (Responsive Engine) -----------------------------------------
+    sizing: {
+      ramp: {
+        ui: {
+          1: 'clamp(12px, 0.6cqi + 10px, 16px)',
+          2: 'clamp(14px, 0.8cqi + 11px, 20px)',
+          3: 'clamp(16px, 1.0cqi + 12px, 24px)',
+          4: 'clamp(20px, 1.2cqi + 14px, 32px)',
+          5: 'clamp(24px, 1.5cqi + 16px, 40px)',
+          6: 'clamp(32px, 1.8cqi + 20px, 56px)',
+          7: 'clamp(40px, 2.2cqi + 24px, 72px)',
+          8: 'clamp(48px, 2.6cqi + 28px, 96px)',
+        },
+        layout: {
+          1: 'clamp(320px, 40cqi, 480px)',
+          2: 'clamp(384px, 50cqi, 640px)',
+          3: 'clamp(480px, 60cqi, 800px)',
+          4: 'clamp(560px, 70cqi, 960px)',
+          5: 'clamp(640px, 80cqi, 1120px)',
+          6: 'clamp(768px, 90cqi, 1280px)',
+        },
+      },
+
+      relative: { em: '1em', rem: '1rem' },
+
+      behavior: {
+        auto: 'auto',
+        full: '100%',
+        fit: 'fit-content',
+        min: 'min-content',
+        max: 'max-content',
+      },
+
+      viewport: {
+        height: {
+          full: '100dvh',
+        },
+        width: {
+          full: '100dvw',
+        },
+      },
+
+      hit: {
+        // Fine: clamp(floor, preferred, max) — floor is the fixed ergonomic
+        // minimum; preferred scales with rem so user font-size preferences
+        // (accessibility) are respected. Caps tuned to medium-high density:
+        //   min  32px → secondary / icon-only / dense list controls
+        //   base 40px → default button (Material 40, GitHub 40, Tailwind 40)
+        //   prominent 48px → hero CTAs and primary form submits
+        // 24px WCAG 2.2 minimum is well exceeded at every step.
+        fine: {
+          min: 'clamp(28px, 1.75rem, 32px)',
+          base: 'clamp(32px, 2rem, 40px)',
+          prominent: 'clamp(40px, 2.5rem, 48px)',
+        },
+        // Coarse: always fixed px — touch ergonomics require predictable,
+        // reliable targets (Apple HIG 44px floor, Material 48dp default).
+        coarse: { min: '32px', base: '48px', prominent: '56px' },
+      },
+    },
+
+    // -- Radii --------------------------------------------------------------
+    radii: {
+      none: '0px',
+      sm: '4px',
+      md: '8px',
+      lg: '12px',
+      xl: '16px',
+      full: '9999px',
+    },
+
+    // -- Borders ------------------------------------------------------------
+    border: {
+      width: {
+        none: '0px',
+        default: '1px',
+        selected: '2px',
+        focused: '2px',
+      },
+      style: {
+        solid: 'solid',
+        dashed: 'dashed',
+        dotted: 'dotted',
+        none: 'none',
+      },
+    },
+
+    // -- Opacity ------------------------------------------------------------
+    opacity: {
+      100: 1.0,
+      75: 0.75,
+      50: 0.5,
+      25: 0.25,
+      0: 0.0,
+    },
+
+    // -- Motion -------------------------------------------------------------
+    motion: {
+      duration: {
+        none: '0ms',
+        xs: '50ms',
+        sm: '100ms',
+        md: '200ms',
+        lg: '300ms',
+        xl: '500ms',
+      },
+      easing: {
+        standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        enter: 'cubic-bezier(0, 0, 0.2, 1)',
+        exit: 'cubic-bezier(0.4, 0, 1, 1)',
+        linear: 'linear',
+      },
+    },
+
+    // -- Z-Index ------------------------------------------------------------
+    zIndex: {
+      level: {
+        0: 0,
+        1: 100,
+        2: 200,
+        3: 300,
+        4: 400,
+      },
+    },
+
+    // -- Breakpoints --------------------------------------------------------
+    breakpoints: {
+      sm: '30rem',
+      md: '48rem',
+      lg: '64rem',
+      xl: '80rem',
+      '2xl': '96rem',
+    },
+  },
+
+  // ==========================================================================
+  // SEMANTIC TOKENS — stable aliases consumed by components
+  //
+  // Semantic tokens reference core tokens only.
+  // No raw values are allowed in this layer.
+  // ==========================================================================
+  semantic: {
+    // -- Colors -------------------------------------------------------------
+    // Grammar: {ux}.{role}.{dimension}.{state?}
+    // Components consume semantic colors only. Core colors are never referenced directly.
+    colors: {
+      // Grammar: {ux}.{role}.{dimension}.{state?}
+      // States are only defined when they produce a VALUE DIFFERENT from the
+      // default state in that dimension. Hover/active/focused/selected/current
+      // that resolve to the same color as default are intentionally omitted —
+      // a token that looks identical to default is semantically invisible.
+      //
+      // Checked pairs enforced by the distinguishability test:
+      //   hover, active, focused, selected, current → must differ from default
+      // Other states (disabled, droptarget, pressed, expanded, checked,
+      //   indeterminate, visited) may match default when semantically justified.
+      action: {
+        primary: {
+          // neutral.1000 (black) background — authoritative, neutral primary action.
+          // Contrast: neutral.0 text on neutral.1000 → ~20:1 ✓ ; neutral.700 hover → ~12:1 ✓
+          background: {
+            default: '{core.colors.neutral.1000}',
+            hover: '{core.colors.neutral.900}',
+            active: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.200}',
+            droptarget: '{core.colors.neutral.100}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+            // focused: omitted — action focus ring is shown via border, not background
+          },
+          border: {
+            default: '{core.colors.neutral.1000}',
+            hover: '{core.colors.neutral.900}',
+            active: '{core.colors.neutral.700}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            // On droptarget background (neutral.100 = light), dark text is required
+            droptarget: '{core.colors.neutral.900}',
+            // hover/active/focused/pressed/expanded: all neutral.0 — omitted
+          },
+        },
+        secondary: {
+          // neutral.100 background, neutral.300 border, neutral.900 text
+          background: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.400}',
+            disabled: '{core.colors.neutral.100}',
+            droptarget: '{core.colors.neutral.50}',
+            pressed: '{core.colors.neutral.400}',
+            expanded: '{core.colors.neutral.200}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.400}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            pressed: '{core.colors.neutral.400}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            // hover/active/focused: all neutral.900 — omitted
+          },
+        },
+        accent: {
+          // brand.500 background — vivid blue that draws attention in the UI.
+          // Contrast: neutral.0 text on brand.500 (#0469e3) → ~5.7:1 ✓ AA
+          // All interactive states darken further → neutral.0 text remains valid.
+          background: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.700}',
+            active: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.200}',
+            droptarget: '{core.colors.brand.50}',
+            pressed: '{core.colors.brand.900}',
+            expanded: '{core.colors.brand.700}',
+          },
+          border: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.700}',
+            active: '{core.colors.brand.900}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+            pressed: '{core.colors.brand.900}',
+            expanded: '{core.colors.brand.700}',
+          },
+          text: {
+            // brand.500 is dark enough — neutral.0 meets ≥ 4.5:1 AA on all states
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            droptarget: '{core.colors.neutral.900}',
+            // hover/active/pressed/expanded: all neutral.0 — omitted
+          },
+        },
+        negative: {
+          // red.500 background, red.500 border, neutral.0 text
+          background: {
+            default: '{core.colors.red.500}',
+            hover: '{core.colors.red.700}',
+            active: '{core.colors.red.900}',
+            disabled: '{core.colors.neutral.200}',
+            droptarget: '{core.colors.red.100}',
+            pressed: '{core.colors.red.900}',
+            expanded: '{core.colors.red.700}',
+          },
+          border: {
+            default: '{core.colors.red.500}',
+            hover: '{core.colors.red.700}',
+            active: '{core.colors.red.900}',
+            focused: '{core.colors.red.700}',
+            disabled: '{core.colors.neutral.200}',
+            pressed: '{core.colors.red.900}',
+            expanded: '{core.colors.red.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            droptarget: '{core.colors.neutral.900}',
+          },
+        },
+        muted: {
+          // neutral.0 background, neutral.200 border, neutral.700 text
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            droptarget: '{core.colors.neutral.50}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.900}',
+            active: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            pressed: '{core.colors.neutral.900}',
+            expanded: '{core.colors.neutral.900}',
+          },
+        },
+      },
+
+      input: {
+        primary: {
+          // neutral.0 background, neutral.300 border, neutral.900 text
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.neutral.50}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+            // focused: omitted — focus shown via border ring, background unchanged
+          },
+          border: {
+            default: '{core.colors.neutral.300}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.500}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.500}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+            // brand.300 (indeterminate bg) is light — use dark text for contrast
+            indeterminate: '{core.colors.neutral.900}',
+            // hover/active/focused/selected: all neutral.900 — omitted
+          },
+        },
+        // Lower-emphasis input field (inline editors, filter pills, optional fields).
+        // Mirrors primary controls but uses a lighter chrome — default border is
+        // neutral.200 (vs primary's neutral.300) so it recedes until interacted with.
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.neutral.50}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.500}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.900}',
+          },
+        },
+        negative: {
+          background: {
+            default: '{core.colors.red.100}',
+            disabled: '{core.colors.neutral.100}',
+            // red.700 (not red.500) so neutral.0 text meets 4.5:1 AA contrast
+            checked: '{core.colors.red.700}',
+            indeterminate: '{core.colors.red.300}',
+          },
+          border: {
+            default: '{core.colors.red.500}',
+            active: '{core.colors.red.700}',
+            focused: '{core.colors.red.700}',
+            disabled: '{core.colors.neutral.200}',
+            indeterminate: '{core.colors.red.300}',
+            pressed: '{core.colors.red.700}',
+            expanded: '{core.colors.red.700}',
+          },
+          text: {
+            default: '{core.colors.red.700}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+          },
+        },
+        positive: {
+          background: {
+            default: '{core.colors.green.100}',
+            disabled: '{core.colors.neutral.100}',
+            // green.700 (not green.500) so neutral.0 text meets 4.5:1 AA contrast
+            checked: '{core.colors.green.700}',
+            indeterminate: '{core.colors.green.300}',
+          },
+          border: {
+            default: '{core.colors.green.500}',
+            active: '{core.colors.green.700}',
+            focused: '{core.colors.green.700}',
+            disabled: '{core.colors.neutral.200}',
+            indeterminate: '{core.colors.green.300}',
+            pressed: '{core.colors.green.700}',
+            expanded: '{core.colors.green.700}',
+          },
+          text: {
+            default: '{core.colors.green.700}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+          },
+        },
+        caution: {
+          background: {
+            default: '{core.colors.yellow.100}',
+            disabled: '{core.colors.neutral.100}',
+            checked: '{core.colors.yellow.500}',
+            indeterminate: '{core.colors.yellow.300}',
+          },
+          border: {
+            default: '{core.colors.yellow.500}',
+            active: '{core.colors.yellow.700}',
+            focused: '{core.colors.yellow.700}',
+            disabled: '{core.colors.neutral.200}',
+            indeterminate: '{core.colors.yellow.300}',
+            pressed: '{core.colors.yellow.700}',
+            expanded: '{core.colors.yellow.700}',
+          },
+          text: {
+            default: '{core.colors.yellow.900}',
+            disabled: '{core.colors.neutral.500}',
+            // yellow.500 is light — dark text required for 4.5:1 AA
+            checked: '{core.colors.neutral.900}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.200}',
+            checked: '{core.colors.neutral.500}',
+            indeterminate: '{core.colors.neutral.300}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.500}',
+            indeterminate: '{core.colors.neutral.300}',
+            pressed: '{core.colors.neutral.500}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+          },
+        },
+      },
+
+      informational: {
+        primary: {
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.brand.50}',
+            visited: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.300}',
+            droptarget: '{core.colors.brand.300}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            visited: '{core.colors.neutral.700}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.50}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.neutral.100}',
+            visited: '{core.colors.neutral.100}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.300}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            // neutral.700 (not neutral.500) to meet 4.5:1 AA on neutral.100 background
+            visited: '{core.colors.neutral.700}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.100}',
+            hover: '{core.colors.neutral.200}',
+            active: '{core.colors.neutral.300}',
+            selected: '{core.colors.neutral.200}',
+            droptarget: '{core.colors.neutral.200}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            selected: '{core.colors.neutral.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.300}',
+            selected: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.700}',
+          },
+        },
+        positive: {
+          background: {
+            default: '{core.colors.green.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.green.300}',
+          },
+          border: {
+            default: '{core.colors.green.500}',
+            active: '{core.colors.green.700}',
+            focused: '{core.colors.green.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.green.700}',
+          },
+          text: {
+            default: '{core.colors.green.900}',
+            disabled: '{core.colors.neutral.500}',
+            visited: '{core.colors.green.700}',
+          },
+        },
+        caution: {
+          background: {
+            default: '{core.colors.yellow.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.yellow.300}',
+          },
+          border: {
+            default: '{core.colors.yellow.500}',
+            active: '{core.colors.yellow.700}',
+            focused: '{core.colors.yellow.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.yellow.700}',
+          },
+          text: {
+            default: '{core.colors.yellow.900}',
+            disabled: '{core.colors.neutral.500}',
+            visited: '{core.colors.yellow.700}',
+          },
+        },
+        negative: {
+          background: {
+            default: '{core.colors.red.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.red.300}',
+          },
+          border: {
+            default: '{core.colors.red.500}',
+            active: '{core.colors.red.700}',
+            focused: '{core.colors.red.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.red.700}',
+          },
+          text: {
+            default: '{core.colors.red.900}',
+            disabled: '{core.colors.neutral.500}',
+            visited: '{core.colors.red.700}',
+          },
+        },
+        accent: {
+          // brand.400 bg — louder than primary (brand.500). Outlined/tinted card accent.
+          // Follows filled pattern for selected, rest stays light.
+          background: {
+            default: '{core.colors.brand.50}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.200}',
+            disabled: '{core.colors.neutral.100}',
+            // selected uses brand.500 (not brand.400) so neutral.0 text meets
+            // AA Normal (≥ 4.5:1). brand.400 on white fails the normal threshold.
+            selected: '{core.colors.brand.500}',
+          },
+          border: {
+            default: '{core.colors.brand.400}',
+            hover: '{core.colors.brand.500}',
+            active: '{core.colors.brand.600}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.600}',
+          },
+          text: {
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            active: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.500}',
+            // selected uses filled bg (brand.500) — neutral.0 meets 4.5:1
+            selected: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.700}',
+          },
+        },
+      },
+
+      feedback: {
+        // Feedback is informational — surfaces show state, not interactions.
+        // Legal states: default | focused (close button or focusable wrapper) | disabled.
+        // hover, active, selected, pressed, expanded are absent: FSL §7.
+        primary: {
+          background: { default: '{core.colors.neutral.50}' },
+          border: {
+            default: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.100}' },
+          border: {
+            default: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        positive: {
+          background: { default: '{core.colors.green.100}' },
+          border: {
+            default: '{core.colors.green.500}',
+            focused: '{core.colors.green.700}',
+          },
+          text: {
+            default: '{core.colors.green.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        caution: {
+          background: { default: '{core.colors.yellow.100}' },
+          border: {
+            default: '{core.colors.yellow.500}',
+            focused: '{core.colors.yellow.700}',
+          },
+          text: {
+            default: '{core.colors.yellow.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        negative: {
+          background: { default: '{core.colors.red.100}' },
+          border: {
+            default: '{core.colors.red.500}',
+            focused: '{core.colors.red.700}',
+          },
+          text: {
+            default: '{core.colors.red.900}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+      },
+
+      navigation: {
+        primary: {
+          // Inline link on light surfaces: transparent bg, brand text underline.
+          // Contrast: brand.700 (#034da6) on neutral.0 (#ffffff) → ~9.5:1 ✓
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.50}',
+            visited: '{core.colors.neutral.0}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.0}',
+            focused: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            active: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.900}',
+            visited: '{core.colors.neutral.500}',
+            expanded: '{core.colors.brand.900}',
+          },
+        },
+        secondary: {
+          // Light nav: neutral.50 background, neutral.200 border, neutral.700 text
+          background: {
+            default: '{core.colors.neutral.50}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.50}',
+            droptarget: '{core.colors.neutral.100}',
+            current: '{core.colors.brand.100}',
+            visited: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.100}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.400}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            visited: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.900}',
+          },
+        },
+        accent: {
+          // Brand accent nav: brand.50 background with brand border — louder than secondary.
+          // Targeted use: highlighted/featured nav items.
+          background: {
+            default: '{core.colors.brand.50}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.200}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            expanded: '{core.colors.brand.100}',
+          },
+          border: {
+            default: '{core.colors.brand.400}',
+            hover: '{core.colors.brand.500}',
+            active: '{core.colors.brand.600}',
+            focused: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+          },
+          text: {
+            default: '{core.colors.brand.700}',
+            hover: '{core.colors.brand.900}',
+            disabled: '{core.colors.neutral.500}',
+            // selected/current use brand.700 bg — neutral.0 meets ≥ 4.5:1
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.500}',
+            expanded: '{core.colors.brand.900}',
+          },
+        },
+        muted: {
+          // Subdued nav: transparent / neutral.100 background, none border, neutral.500 text.
+          // Used for secondary nav items, breadcrumbs, or inactive sidebar links.
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.100}',
+            selected: '{core.colors.neutral.100}',
+            current: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
+          },
+          border: {
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.200}',
+            selected: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.300}',
+            selected: '{core.colors.neutral.900}',
+            current: '{core.colors.brand.700}',
+            visited: '{core.colors.neutral.500}',
+            expanded: '{core.colors.neutral.700}',
+          },
+        },
+      },
+    },
+
+    // -- Elevation ----------------------------------------------------------
+    // Grammar: elevation.surface.{stratum}
+    elevation: {
+      surface: {
+        flat: '{core.elevation.level.0}',
+        raised: '{core.elevation.level.2}',
+        overlay: '{core.elevation.level.3}',
+        blocking: '{core.elevation.level.4}',
+      },
+    },
+
+    // -- Typography ---------------------------------------------------------
+    // Grammar: text.{family}.{step}
+    text: {
+      display: {
+        lg: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.5}',
+          fontWeight: '{core.font.weight.bold}',
+          lineHeight: '{core.font.leading.tight}',
+          letterSpacing: '{core.font.tracking.tight}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.4}',
+          fontWeight: '{core.font.weight.bold}',
+          lineHeight: '{core.font.leading.tight}',
+          letterSpacing: '{core.font.tracking.tight}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.3}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.tight}',
+          letterSpacing: '{core.font.tracking.tight}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      headline: {
+        lg: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.3}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.2}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.display.1}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      title: {
+        lg: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.6}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.5}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.4}',
+          fontWeight: '{core.font.weight.medium}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      body: {
+        lg: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.4}',
+          fontWeight: '{core.font.weight.regular}',
+          lineHeight: '{core.font.leading.normal}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.3}',
+          fontWeight: '{core.font.weight.regular}',
+          lineHeight: '{core.font.leading.normal}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.2}',
+          fontWeight: '{core.font.weight.regular}',
+          lineHeight: '{core.font.leading.normal}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      label: {
+        lg: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.3}',
+          fontWeight: '{core.font.weight.medium}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.2}',
+          fontWeight: '{core.font.weight.medium}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.1}',
+          fontWeight: '{core.font.weight.medium}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.wide}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      code: {
+        md: {
+          fontFamily: '{core.font.family.mono}',
+          fontSize: '{core.font.scale.text.2}',
+          fontWeight: '{core.font.weight.regular}',
+          lineHeight: '{core.font.leading.normal}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontVariantNumeric: '{core.font.numeric.tabular}',
+        },
+        sm: {
+          fontFamily: '{core.font.family.mono}',
+          fontSize: '{core.font.scale.text.1}',
+          fontWeight: '{core.font.weight.regular}',
+          lineHeight: '{core.font.leading.normal}',
+          letterSpacing: '{core.font.tracking.normal}',
+          fontVariantNumeric: '{core.font.numeric.tabular}',
+        },
+      },
+    },
+
+    // -- Spacing ------------------------------------------------------------
+    // Grammar: {pattern}.{context}.{step?}
+    spacing: {
+      inset: {
+        // Mapped to the documented defaults from spacing.md. Medium-high
+        // density is delivered by `core.sizing.hit.fine.*` (40px base)
+        // combined with the spacing engine clamp — not by tightening
+        // inset.control, which previously caused cramped vertical padding
+        // (~4px) when content grew beyond `min-height: hit.base`.
+        control: {
+          sm: '{core.spacing.2}',
+          md: '{core.spacing.3}',
+          lg: '{core.spacing.4}',
+        },
+        // Surfaces breathe more than controls; the invariant
+        // inset.surface.X ≥ inset.control.X is preserved.
+        surface: {
+          sm: '{core.spacing.3}',
+          md: '{core.spacing.4}',
+          lg: '{core.spacing.6}',
+        },
+      },
+
+      gap: {
+        stack: {
+          xs: '{core.spacing.2}',
+          sm: '{core.spacing.3}',
+          md: '{core.spacing.4}',
+          lg: '{core.spacing.6}',
+          xl: '{core.spacing.8}',
+        },
+        inline: {
+          xs: '{core.spacing.1}',
+          sm: '{core.spacing.2}',
+          md: '{core.spacing.3}',
+          lg: '{core.spacing.4}',
+          xl: '{core.spacing.6}',
+        },
+      },
+
+      gutter: {
+        page: 'clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})',
+        section: 'clamp({core.spacing.3}, {core.spacing.4}, {core.spacing.12})',
+      },
+
+      separation: {
+        interactive: {
+          min: 'clamp(8px, {core.spacing.2}, 12px)',
+        },
+      },
+    },
+
+    // -- Sizing -------------------------------------------------------------
+    // Grammar: {family}.{stepOrProperty}
+    sizing: {
+      hit: {
+        min: '{core.sizing.hit.fine.min}',
+        base: '{core.sizing.hit.fine.base}',
+        prominent: '{core.sizing.hit.fine.prominent}',
+      },
+      icon: {
+        sm: '{core.sizing.ramp.ui.2}',
+        md: '{core.sizing.ramp.ui.3}',
+        lg: '{core.sizing.ramp.ui.4}',
+      },
+      identity: {
+        sm: '{core.sizing.ramp.ui.5}',
+        md: '{core.sizing.ramp.ui.6}',
+        lg: '{core.sizing.ramp.ui.7}',
+        xl: '{core.sizing.ramp.ui.8}',
+      },
+      measure: {
+        reading: 'clamp(45ch, 60ch, 75ch)',
+      },
+      surface: {
+        maxWidth: '{core.sizing.ramp.layout.5}',
+      },
+      viewport: {
+        height: {
+          full: '{core.sizing.viewport.height.full}',
+        },
+        width: {
+          full: '{core.sizing.viewport.width.full}',
+        },
+      },
+    },
+
+    // -- Radii --------------------------------------------------------------
+    radii: {
+      control: '{core.radii.md}',
+      surface: '{core.radii.lg}',
+      round: '{core.radii.full}',
+    },
+
+    // -- Borders ------------------------------------------------------------
+    border: {
+      divider: {
+        width: '{core.border.width.default}',
+        style: '{core.border.style.solid}',
+      },
+      outline: {
+        surface: {
+          width: '{core.border.width.default}',
+          style: '{core.border.style.solid}',
+        },
+        control: {
+          width: '{core.border.width.default}',
+          style: '{core.border.style.solid}',
+        },
+        selected: {
+          width: '{core.border.width.selected}',
+          style: '{core.border.style.solid}',
+        },
+      },
+    },
+
+    // -- Focus --------------------------------------------------------------
+    focus: {
+      ring: {
+        width: '{core.border.width.focused}',
+        style: '{core.border.style.solid}',
+        // References the semantic accent focused border so mode overrides
+        // remap focus color automatically (e.g. brand.300 in dark mode).
+        color: '{semantic.colors.action.accent.border.focused}',
+      },
+    },
+
+    // -- Overlay ------------------------------------------------------------
+    overlay: {
+      // Full modal backdrop color. Alpha is sourced from semantic.opacity.scrim
+      // so both tokens stay in sync across themes and modes.
+      // RawValue rationale: rgba() composing a token ref cannot be expressed
+      // as a single TokenRef — see model.md §8 RawValue inventory.
+      scrim: 'rgba(0, 0, 0, {semantic.opacity.scrim})',
+    },
+
+    // -- Opacity ------------------------------------------------------------
+    opacity: {
+      scrim: '{core.opacity.50}',
+      loading: '{core.opacity.50}',
+      disabled: '{core.opacity.50}',
+    },
+
+    // -- Motion -------------------------------------------------------------
+    motion: {
+      feedback: {
+        duration: '{core.motion.duration.sm}',
+        easing: '{core.motion.easing.standard}',
+      },
+      transition: {
+        enter: {
+          duration: '{core.motion.duration.md}',
+          easing: '{core.motion.easing.enter}',
+        },
+        exit: {
+          duration: '{core.motion.duration.sm}',
+          easing: '{core.motion.easing.exit}',
+        },
+      },
+      emphasis: {
+        duration: '{core.motion.duration.lg}',
+        easing: '{core.motion.easing.standard}',
+      },
+      decorative: {
+        duration: '{core.motion.duration.xl}',
+        easing: '{core.motion.easing.linear}',
+      },
+    },
+
+    // -- Z-Index ------------------------------------------------------------
+    zIndex: {
+      layer: {
+        base: '{core.zIndex.level.0}',
+        sticky: '{core.zIndex.level.1}',
+        overlay: '{core.zIndex.level.2}',
+        blocking: '{core.zIndex.level.3}',
+        transient: '{core.zIndex.level.4}',
+      },
+    },
+  },
+} satisfies ThemeTokens;
+
+// ---------------------------------------------------------------------------
+// Shared semantic dark alternate
+//
+// Remaps semantic token references to their dark-mode counterparts.
+// Core tokens are immutable — only the references change.
+// This alternate is shared by all light-first themes since the remapping
+// logic is expressed as token paths, not raw values.
+// ---------------------------------------------------------------------------
+
+export const darkAlternate: ModeOverride = {
+  semantic: {
+    colors: {
+      action: {
+        primary: {
+          // White button on dark surface — inverted authority for dark contexts.
+          // Contrast: neutral.900 text on neutral.0 → ~19:1 ✓
+          background: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            pressed: '{core.colors.neutral.200}',
+            expanded: '{core.colors.neutral.100}',
+            disabled: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.100}',
+            active: '{core.colors.neutral.200}',
+            focused: '{core.colors.brand.300}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.500}',
+            // droptarget bg is now neutral.700 (dark) — neutral.0 required for contrast
+            droptarget: '{core.colors.neutral.0}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
+            disabled: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
+            expanded: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.100}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}', // neutral.300 fails AA with neutral.0 text (1.6:1); neutral.500 gives 5.5:1
+            disabled: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
+            pressed: '{core.colors.neutral.700}', // neutral.300 fails AA; darker = "depressed" feel, white text gives 8.6:1
+            expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.50}',
+            disabled: '{core.colors.neutral.500}',
+            // neutral.900 text on neutral.700 dark bg → ~3:1 — fails WCAG AA
+            hover: '{core.colors.neutral.0}',
+            active: '{core.colors.neutral.0}',
+            pressed: '{core.colors.neutral.0}',
+            expanded: '{core.colors.neutral.0}',
+          },
+        },
+        // negative: red.500 bg/border + neutral.0 text remain valid on dark
+        // pages (vivid destructive colour). Only state-specific overrides.
+        negative: {
+          background: {
+            disabled: '{core.colors.neutral.700}',
+            droptarget: '{core.colors.neutral.700}', // red.100 is near-white on dark
+          },
+          border: {
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            // droptarget bg is now neutral.700 (dark) — neutral.0 required for contrast
+            droptarget: '{core.colors.neutral.0}',
+          },
+        },
+        // accent: brand.500 bg/border + neutral.0 text remain valid on dark
+        // surface. Only remap states that use light-mode fills that fail on dark.
+        accent: {
+          background: {
+            disabled: '{core.colors.neutral.700}', // neutral.200 is near-white on dark
+            droptarget: '{core.colors.brand.900}', // brand.50 is near-white on dark
+          },
+          border: {
+            focused: '{core.colors.brand.300}', // brand.700 is too dark on dark surface
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            droptarget: '{core.colors.neutral.0}', // brand.900 bg needs light text
+          },
+        },
+      },
+      input: {
+        primary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
+            disabled: '{core.colors.neutral.900}',
+            selected: '{core.colors.brand.700}', // brand.50 is near-white on dark
+            droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
+            pressed: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
+            expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
+            // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
+          },
+        },
+        // input.secondary: lower-emphasis field, matches primary dark values since both
+        // render on a dark page. base neutral.0 default fails on dark — full override.
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}',
+            disabled: '{core.colors.neutral.900}',
+            selected: '{core.colors.brand.700}',
+            droptarget: '{core.colors.neutral.700}',
+            pressed: '{core.colors.neutral.500}',
+            expanded: '{core.colors.neutral.500}',
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.500}',
+            checked: '{core.colors.brand.500}',
+            indeterminate: '{core.colors.brand.300}',
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            checked: '{core.colors.neutral.0}',
+          },
+        },
+        negative: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
+        positive: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+            selected: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
+            selected: '{core.colors.neutral.300}',
+          },
+          text: { default: '{core.colors.neutral.300}' },
+        },
+      },
+      informational: {
+        primary: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
+            active: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            droptarget: '{core.colors.neutral.700}', // brand.50 is near-white on dark
+            visited: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
+          },
+          border: { default: '{core.colors.neutral.700}' },
+          text: {
+            default: '{core.colors.neutral.0}',
+            // neutral.700 on neutral.900 dark bg → ~2:1 — fails WCAG AA
+            visited: '{core.colors.neutral.300}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
+            active: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            droptarget: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            visited: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.neutral.700}' },
+          text: {
+            default: '{core.colors.neutral.50}',
+            // neutral.900 on neutral.700 dark bg → ~3:1 — fails WCAG AA
+            active: '{core.colors.neutral.0}',
+            // neutral.700 on neutral.700 → 1:1 — invisible
+            visited: '{core.colors.neutral.300}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}', // neutral.200 is near-white on dark
+            selected: '{core.colors.neutral.300}', // neutral.200 is near-white on dark
+            droptarget: '{core.colors.neutral.300}', // neutral.200 is near-white on dark
+          },
+          border: { default: '{core.colors.neutral.700}' },
+          text: { default: '{core.colors.neutral.300}' },
+        },
+        positive: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        negative: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
+        // Full remap: base brand.50/100/200 backgrounds are near-white and fail on dark pages.
+        accent: {
+          background: {
+            default: '{core.colors.brand.900}',
+            hover: '{core.colors.brand.700}',
+            active: '{core.colors.brand.700}',
+            disabled: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.400}',
+            active: '{core.colors.brand.400}',
+            // brand.100 for focused — must differ from default (brand.300) for state distinguishability
+            focused: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.400}',
+          },
+          text: {
+            // brand.700 on neutral.900 bg → ~1.3:1 — invisible; use brand.300
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.100}',
+            visited: '{core.colors.brand.300}',
+          },
+        },
+      },
+      feedback: {
+        primary: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.500}' },
+          text: { default: '{core.colors.neutral.0}' },
+        },
+        muted: {
+          background: { default: '{core.colors.neutral.700}' },
+          border: { default: '{core.colors.neutral.500}' },
+          text: { default: '{core.colors.neutral.300}' },
+        },
+        positive: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.green.500}' },
+          text: { default: '{core.colors.green.300}' },
+        },
+        caution: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.yellow.500}' },
+          text: { default: '{core.colors.yellow.300}' },
+        },
+        negative: {
+          background: { default: '{core.colors.neutral.900}' },
+          border: { default: '{core.colors.red.500}' },
+          text: { default: '{core.colors.red.300}' },
+        },
+      },
+      navigation: {
+        // Stacked-surface separation in dark mode.
+        // The page background and informational.primary.background.default both
+        // resolve to neutral.900 here. Per the prescribed pattern (see
+        // colors.md → "Stacking informational surfaces"), separation is paid in
+        // elevation + border + theme-side step displacement, never in colour.
+        // navigation.primary applies (3): hover/active/current/expanded shift to
+        // neutral.700 so a nav item reads as a distinct affordance against the
+        // page surface even with no elevation of its own.
+        primary: {
+          // Inline link on dark surfaces: transparent bg, brand.300 text.
+          // Contrast: brand.300 (#60a5fa) on neutral.900 (#0f172a) → ~6.8:1 ✓
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
+            current: '{core.colors.neutral.700}',
+            visited: '{core.colors.neutral.900}',
+            expanded: '{core.colors.neutral.700}',
+          },
+          border: {
+            default: '{core.colors.neutral.900}',
+            focused: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.100}',
+            active: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.500}',
+            current: '{core.colors.brand.100}',
+            visited: '{core.colors.neutral.300}',
+            expanded: '{core.colors.brand.100}',
+          },
+        },
+        secondary: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.900}',
+            current: '{core.colors.brand.900}',
+            visited: '{core.colors.neutral.900}',
+            expanded: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            droptarget: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.brand.500}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.300}',
+            hover: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.brand.300}',
+            current: '{core.colors.brand.300}',
+            visited: '{core.colors.neutral.300}',
+            expanded: '{core.colors.neutral.50}',
+          },
+        },
+        accent: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.brand.700}',
+            current: '{core.colors.brand.700}',
+            expanded: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.brand.500}',
+            hover: '{core.colors.brand.400}',
+            active: '{core.colors.brand.300}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.brand.400}',
+            current: '{core.colors.brand.400}',
+          },
+          text: {
+            default: '{core.colors.brand.300}',
+            hover: '{core.colors.brand.100}',
+            disabled: '{core.colors.neutral.500}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
+            visited: '{core.colors.brand.500}',
+            expanded: '{core.colors.brand.200}',
+          },
+        },
+        muted: {
+          background: {
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.700}',
+            selected: '{core.colors.neutral.700}',
+            current: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+          },
+          border: {
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.500}',
+            focused: '{core.colors.brand.400}',
+            selected: '{core.colors.neutral.300}',
+            current: '{core.colors.brand.500}',
+          },
+          text: {
+            default: '{core.colors.neutral.500}',
+            hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.700}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.brand.300}',
+            visited: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.300}',
+          },
+        },
+      },
+    },
+    elevation: {
+      surface: {
+        flat: '{core.elevation.emphatic.0}',
+        raised: '{core.elevation.emphatic.2}',
+        overlay: '{core.elevation.emphatic.3}',
+        blocking: '{core.elevation.emphatic.4}',
+      },
+    },
+  },
+};

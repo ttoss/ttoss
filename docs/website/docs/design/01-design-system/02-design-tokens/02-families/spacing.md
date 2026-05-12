@@ -29,36 +29,42 @@ They exist to:
 
 ### Core set
 
-- **Primitive**: `core.space.unit`
-- **Steps**: `core.space.0`, `core.space.1`, `core.space.2`, `core.space.3`, `core.space.4`, `core.space.6`, `core.space.8`, `core.space.12`, `core.space.16`
+- **Primitive**: `core.spacing.engine.unit`
+- **Steps**: `core.spacing.0`, `core.spacing.1`, `core.spacing.2`, `core.spacing.3`, `core.spacing.4`, `core.spacing.6`, `core.spacing.8`, `core.spacing.12`, `core.spacing.16`
 
-> Keep the step set small. If you want `core.space.5`, you likely need a semantic mapping, not a new core step.
+> Keep the step set small. If you want `core.spacing.5`, you likely need a semantic mapping, not a new core step.
 
 ### Example
 
 ```js
 const core = {
-  space: {
+  spacing: {
     /**
      * The Responsive Engine
      * Container-first: scales with the inline size of the nearest query container.
      * If no eligible container exists, cqi falls back to the small viewport unit for that axis (sv*).
      */
-    unit: 'clamp(4px, 0.5cqi + 2px, 8px)',
+    engine: {
+      unit: 'clamp(4px, 0.5cqi + 2px, 8px)',
+    },
 
-    /** Core steps (sparse scale) */
+    /**
+     * Core steps reference the emitted CSS variable directly (not a {token.ref}).
+     * This preserves the CSS cascade so themes can override --tt-core-spacing-engine-unit at
+     * runtime (e.g. density mode) without recompiling every step.
+     */
     0: '0px',
-    1: 'calc(1 * {core.space.unit})',
-    2: 'calc(2 * {core.space.unit})',
-    3: 'calc(3 * {core.space.unit})',
-    4: 'calc(4 * {core.space.unit})',
-    6: 'calc(6 * {core.space.unit})',
-    8: 'calc(8 * {core.space.unit})',
-    12: 'calc(12 * {core.space.unit})',
-    16: 'calc(16 * {core.space.unit})',
+    1: 'calc(1 * var(--tt-core-spacing-engine-unit))',
+    2: 'calc(2 * var(--tt-core-spacing-engine-unit))',
+    3: 'calc(3 * var(--tt-core-spacing-engine-unit))',
+    4: 'calc(4 * var(--tt-core-spacing-engine-unit))',
+    6: 'calc(6 * var(--tt-core-spacing-engine-unit))',
+    8: 'calc(8 * var(--tt-core-spacing-engine-unit))',
+    12: 'calc(12 * var(--tt-core-spacing-engine-unit))',
+    16: 'calc(16 * var(--tt-core-spacing-engine-unit))',
 
     /** Tier-2 (optional, not default): container-aware unit (kept for explicitness) */
-    unitCq: 'clamp(4px, 0.6cqi, 8px)',
+    // engine.unitCq: 'clamp(4px, 0.6cqi, 8px)',
   },
 };
 ```
@@ -97,32 +103,33 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 - `inset.control.{sm|md|lg}`
 - `inset.surface.{sm|md|lg}`
 - `gap.stack.{xs|sm|md|lg|xl}`
-- `gap.inline.{xs|sm|md|lg}`
+- `gap.inline.{xs|sm|md|lg|xl}`
 - `gutter.{page|section}`
 - `separation.interactive.min`
 
 ### Semantic Tokens Summary Table
 
-| token                        | use when you are building…                    | contract (must be true)                  | default mapping                                    |
-| :--------------------------- | :-------------------------------------------- | :--------------------------------------- | :------------------------------------------------- |
-| `inset.control.sm`           | compact controls                              | internal padding                         | `core.space.2`                                     |
-| `inset.control.md`           | default controls                              | internal padding                         | `core.space.3`                                     |
-| `inset.control.lg`           | large/prominent controls                      | internal padding                         | `core.space.4`                                     |
-| `inset.surface.sm`           | tight surfaces                                | internal padding                         | `core.space.3`                                     |
-| `inset.surface.md`           | default surfaces                              | internal padding                         | `core.space.4`                                     |
-| `inset.surface.lg`           | spacious surfaces                             | internal padding                         | `core.space.6`                                     |
-| `gap.stack.xs`               | tight vertical rhythm                         | sibling spacing via `gap`                | `core.space.2`                                     |
-| `gap.stack.sm`               | medium vertical rhythm                        | sibling spacing via `gap`                | `core.space.3`                                     |
-| `gap.stack.md`               | default vertical rhythm                       | sibling spacing via `gap`                | `core.space.4`                                     |
-| `gap.stack.lg`               | roomy vertical rhythm                         | sibling spacing via `gap`                | `core.space.6`                                     |
-| `gap.stack.xl`               | section-level rhythm                          | sibling spacing via `gap`                | `core.space.8`                                     |
-| `gap.inline.xs`              | **visual-only** tight grouping (icon + label) | never between interactive targets        | `core.space.1`                                     |
-| `gap.inline.sm`              | inline grouping                               | alias of `gap.stack.xs`                  | `core.space.2`                                     |
-| `gap.inline.md`              | looser inline grouping                        | alias of `gap.stack.sm`                  | `core.space.3`                                     |
-| `gap.inline.lg`              | spacious inline grouping                      | alias of `gap.stack.md`                  | `core.space.4`                                     |
-| `gutter.page`                | page outer padding                            | bounded, structural                      | `clamp(core.space.4, core.space.6, core.space.12)` |
-| `gutter.section`             | section outer padding                         | bounded, structural                      | `clamp(core.space.3, core.space.4, core.space.12)` |
-| `separation.interactive.min` | dense interactive target clusters             | only between click/tap/focusable targets | `clamp(8px, core.space.2, 12px)`                   |
+| token                        | use when you are building…                    | contract (must be true)                  | default mapping                                          |
+| :--------------------------- | :-------------------------------------------- | :--------------------------------------- | :------------------------------------------------------- |
+| `inset.control.sm`           | compact controls                              | internal padding                         | `core.spacing.2`                                         |
+| `inset.control.md`           | default controls                              | internal padding                         | `core.spacing.3`                                         |
+| `inset.control.lg`           | large/prominent controls                      | internal padding                         | `core.spacing.4`                                         |
+| `inset.surface.sm`           | tight surfaces                                | internal padding                         | `core.spacing.3`                                         |
+| `inset.surface.md`           | default surfaces                              | internal padding                         | `core.spacing.4`                                         |
+| `inset.surface.lg`           | spacious surfaces                             | internal padding                         | `core.spacing.6`                                         |
+| `gap.stack.xs`               | tight vertical rhythm                         | sibling spacing via `gap`                | `core.spacing.2`                                         |
+| `gap.stack.sm`               | medium vertical rhythm                        | sibling spacing via `gap`                | `core.spacing.3`                                         |
+| `gap.stack.md`               | default vertical rhythm                       | sibling spacing via `gap`                | `core.spacing.4`                                         |
+| `gap.stack.lg`               | roomy vertical rhythm                         | sibling spacing via `gap`                | `core.spacing.6`                                         |
+| `gap.stack.xl`               | section-level rhythm                          | sibling spacing via `gap`                | `core.spacing.8`                                         |
+| `gap.inline.xs`              | **visual-only** tight grouping (icon + label) | never between interactive targets        | `core.spacing.1`                                         |
+| `gap.inline.sm`              | inline grouping                               | same magnitude as `gap.stack.xs`         | `core.spacing.2`                                         |
+| `gap.inline.md`              | looser inline grouping                        | same magnitude as `gap.stack.sm`         | `core.spacing.3`                                         |
+| `gap.inline.lg`              | spacious inline grouping                      | same magnitude as `gap.stack.md`         | `core.spacing.4`                                         |
+| `gap.inline.xl`              | wide inline grouping                          | same magnitude as `gap.stack.lg`         | `core.spacing.6`                                         |
+| `gutter.page`                | page outer padding                            | bounded, structural                      | `clamp(core.spacing.4, core.spacing.6, core.spacing.12)` |
+| `gutter.section`             | section outer padding                         | bounded, structural                      | `clamp(core.spacing.3, core.spacing.4, core.spacing.12)` |
+| `separation.interactive.min` | dense interactive target clusters             | only between click/tap/focusable targets | `clamp(8px, core.spacing.2, 12px)`                       |
 
 ---
 
@@ -132,41 +139,41 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 const spacing = {
   inset: {
     control: {
-      sm: 'core.space.2',
-      md: 'core.space.3',
-      lg: 'core.space.4',
+      sm: 'core.spacing.2',
+      md: 'core.spacing.3',
+      lg: 'core.spacing.4',
     },
     surface: {
-      sm: 'core.space.3',
-      md: 'core.space.4',
-      lg: 'core.space.6',
+      sm: 'core.spacing.3',
+      md: 'core.spacing.4',
+      lg: 'core.spacing.6',
     },
   },
 
   gap: {
     stack: {
-      xs: 'core.space.2',
-      sm: 'core.space.3',
-      md: 'core.space.4',
-      lg: 'core.space.6',
-      xl: 'core.space.8',
+      xs: 'core.spacing.2',
+      sm: 'core.spacing.3',
+      md: 'core.spacing.4',
+      lg: 'core.spacing.6',
+      xl: 'core.spacing.8',
     },
     inline: {
-      xs: 'core.space.1', // visual-only tight grouping
-      sm: 'gap.stack.xs', // aliases reduce knobs
-      md: 'gap.stack.sm',
-      lg: 'gap.stack.md',
+      xs: 'core.spacing.1', // visual-only tight grouping
+      sm: 'core.spacing.2', // same magnitude as gap.stack.xs — share the core step, not a dependency
+      md: 'core.spacing.3', // same magnitude as gap.stack.sm
+      lg: 'core.spacing.4', // same magnitude as gap.stack.md
     },
   },
 
   gutter: {
-    page: 'clamp({core.space.4}, {core.space.6}, {core.space.12})',
-    section: 'clamp({core.space.3}, {core.space.4}, {core.space.12})',
+    page: 'clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})',
+    section: 'clamp({core.spacing.3}, {core.spacing.4}, {core.spacing.12})',
   },
 
   separation: {
     interactive: {
-      min: 'clamp(8px, {core.space.2}, 12px)',
+      min: 'clamp(8px, {core.spacing.2}, 12px)',
     },
   },
 };
@@ -181,7 +188,7 @@ const spacing = {
 3. **Inset is for padding:** `inset.*` is only for internal padding.
 4. **Gutters are structural:** use `gutter.*` for page/section layout padding.
 5. **Separation is ergonomic:** `separation.interactive.min` is only for interactive targets.
-6. **No responsive logic in components:** responsiveness lives in Core (`core.space.unit`), not in UI code.
+6. **No responsive logic in components:** responsiveness lives in Core (`core.spacing.engine.unit`), not in UI code.
 
 ## Decision Matrix (pick fast)
 
@@ -236,7 +243,7 @@ const rowStyles = {
 
 Themes may tune spacing without renaming semantic tokens.
 
-1. **Tune `core.space.unit`** (global density + responsiveness)
+1. **Tune `core.spacing.engine.unit`** (global density + responsiveness)
    - denser: lower clamp bounds
    - airier: higher clamp bounds
 
@@ -254,7 +261,7 @@ Keep `gutter.*` and `separation.*` conservative.
 
 For highly modular layouts (cards in grids, split panes), you may introduce:
 
-- `core.space.unitCq = clamp(4px, 0.6cqi, 8px)`
+- `core.spacing.engine.unitCq = clamp(4px, 0.6cqi, 8px)`
 
 This is **not default**. Use it only in layout primitives/surfaces explicitly designed for container scaling.
 
@@ -275,7 +282,7 @@ This is **not default**. Use it only in layout primitives/surfaces explicitly de
   - `inset.surface.md < inset.control.md`
   - `inset.surface.lg < inset.control.lg`
 
-- any `gap.stack.*` token resolves to anything other than a `core.space.*` step alias
+- any `gap.stack.*` token resolves to anything other than a `core.spacing.*` step alias
 
 - stack gap order breaks:
   - `gap.stack.xs > gap.stack.sm`
@@ -289,15 +296,15 @@ This is **not default**. Use it only in layout primitives/surfaces explicitly de
 
 - `gutter.section` is not a bounded `clamp(...)` contract
 
-- `gutter.*` introduces direct responsive logic such as `cqi`, `cqmin`, `cqmax`, `vi`, `vw`, `%`, media queries, or breakpoint logic instead of composing from `core.space.*`
+- `gutter.*` introduces direct responsive logic such as `cqi`, `cqmin`, `cqmax`, `vi`, `vw`, `%`, media queries, or breakpoint logic instead of composing from `core.spacing.*`
 
 - `gutter.page` resolves smaller than `gutter.section` at any bound
 
 - `separation.interactive.min` is not a bounded `clamp(...)` contract
 
-- `separation.interactive.min` introduces direct responsive logic such as `cqi`, `cqmin`, `cqmax`, `vi`, `vw`, `%`, media queries, or breakpoint logic instead of composing from `core.space.*`
+- `separation.interactive.min` introduces direct responsive logic such as `cqi`, `cqmin`, `cqmax`, `vi`, `vw`, `%`, media queries, or breakpoint logic instead of composing from `core.spacing.*`
 
-- `separation.interactive.min` has a minimum bound below `5spx`
+- `separation.interactive.min` has a minimum bound below `5px`
 
 - any semantic spacing token other than `gutter.*` or `separation.interactive.min` defines its own raw formula instead of aliasing core spacing steps
 
@@ -323,8 +330,8 @@ This is **not default**. Use it only in layout primitives/surfaces explicitly de
 
 ## Summary
 
-- One responsiveness engine: `core.space.unit`
-- Small core step set: `core.space.{0..16}` (sparse)
+- One responsiveness engine: `core.spacing.engine.unit`
+- Small core step set: `core.spacing.{0..16}` (sparse)
 - Small semantic set: inset / gap / gutter / separation
 - Gap-first, semantic-only consumption
 - Responsive by contract, no breakpoint logic in components
