@@ -1,9 +1,9 @@
-import {
-  Icon as IconComponent,
+import type {
   IconifyIcon,
   IconifyIconHTMLElement,
   IconifyIconProps,
 } from '@iconify-icon/react';
+import { Icon as IconComponent } from '@iconify-icon/react';
 import * as React from 'react';
 
 export type IconType = string | IconifyIcon;
@@ -14,7 +14,16 @@ export type { IconifyIcon };
 
 export const Icon = React.forwardRef<IconifyIconHTMLElement | null, IconProps>(
   (props, ref) => {
-    return <IconComponent ref={ref} data-testid="iconify-icon" {...props} />;
+    const { noobserver = true, ...restProps } = props;
+
+    return (
+      <IconComponent
+        ref={ref}
+        data-testid="iconify-icon"
+        {...(noobserver ? { noobserver: true } : {})}
+        {...restProps}
+      />
+    );
   }
 );
 
