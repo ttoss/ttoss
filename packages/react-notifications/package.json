@@ -2,16 +2,21 @@
   "name": "@ttoss/react-notifications",
   "version": "2.7.18",
   "description": "ttoss notifications module for React apps.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React",
+    "notifications"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-notifications"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -22,13 +27,6 @@
   "scripts": {
     "build": "tsup",
     "test": "jest --projects tests/unit"
-  },
-  "sideEffects": false,
-  "peerDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
@@ -41,10 +39,12 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "React",
-    "notifications"
-  ],
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

@@ -5,37 +5,7 @@ title: deploy
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-import { Algorithm } from '../../../src/components/Algorithm';
 import { Carlin } from '../../../src/components/Carlin';
-import { Examples } from '../../../src/components/Examples';
-import { InnerHTML } from '../../../src/components/InnerHTML';
-import { OptionAliasesInline } from '../../../src/components/OptionAliasesInline';
-import { OptionsSection } from '../../../src/components/OptionsSection';
-
-import { cliOptions } from '../../../.docusaurus/carlin/default/cliOptions';
-import { cloudFormationOutputsComment } from '../../../.docusaurus/carlin/default/cloudFormationOutputsComment';
-import { buildLambdaCodeComment } from '../../../.docusaurus/carlin/default/buildLambdaCodeComment';
-import { defaultTemplatePaths } from '../../../.docusaurus/carlin/default/defaultTemplatePaths';
-import { deployCommandExamples } from '../../../.docusaurus/carlin/default/deployCommandExamples';
-import { deployCommandOptions } from '../../../.docusaurus/carlin/default/deployCommandOptions';
-import { deployComment } from '../../../.docusaurus/carlin/default/deployComment';
-import { destroyComment } from '../../../.docusaurus/carlin/default/destroyComment';
-import { getCloudformationTemplateOptionsComment } from '../../../.docusaurus/carlin/default/getCloudformationTemplateOptionsComment';
-import { optionsParametersComment } from '../../../.docusaurus/carlin/default/optionsParametersComment';
-import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
-import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
-
-export const DefaultTemplatePaths = () => {
-  return (
-    <ol>
-      {defaultTemplatePaths.map((path) => (
-        <li key={path}>
-          <code>{path}</code>,
-        </li>
-      ))}
-    </ol>
-  );
-};
 
 ## Overview
 
@@ -43,19 +13,15 @@ export const DefaultTemplatePaths = () => {
 carlin deploy
 ```
 
-This command deploys the AWS cloud resources. <Carlin /> takes the template path defined by <OptionAliasesInline options={deployCommandOptions} option="template-path" to="/docs/carlin/commands/deploy#options" /> option. If this option has no value, the algorithm will search for these files to be used as template:
+This command deploys AWS cloud resources from a CloudFormation template. <Carlin /> uses `--template-path` when provided. Otherwise, it searches these files in order:
 
-<DefaultTemplatePaths />
+1. `./src/cloudformation.ts`
+2. `./src/cloudformation.js`
+3. `./src/cloudformation.yaml`
+4. `./src/cloudformation.yml`
+5. `./src/cloudformation.json`
 
-and deploy accordingly to the following algorithm:
-
-:::note Algorithm
-
-<Algorithm algorithm={deployComment} />
-
-:::
-
-<InnerHTML html={getCloudformationTemplateOptionsComment} />
+When a TypeScript template exports a function, carlin calls it with the CLI options plus `stackName`, `environment`, `packageName`, and `projectName`.
 
 ### Stack Name
 
@@ -63,11 +29,11 @@ and deploy accordingly to the following algorithm:
 Naming](/docs/carlin/core-concepts/stack-naming) for the full naming algorithm
 and examples.
 
-You can override the automatic name with the <OptionAliasesInline options={deployCommandOptions} option="stack-name" to="/docs/carlin/commands/deploy#options" /> option.
+You can override the automatic name with `--stack-name`.
 
 :::caution
 
-<InnerHTML html={stackNameWarningComment} />
+Changing the stack name targets a different CloudFormation stack. Use explicit stack names carefully, especially for production resources.
 
 ::::
 
@@ -77,7 +43,7 @@ Carlin automatically handles Lambda functions in your CloudFormation templates b
 
 ### Handler Format
 
-Your `Handler` property must follow the format `path/to/file.exportedFunction`. For example, if you have `src/auth/index.ts` with export `validateUser`, set `Handler` to `auth/index.validateUser`. The base directory defaults to `src` but can be configured with <OptionAliasesInline options={deployCommandOptions} option="lambda-entry-points-base-dir" to="/docs/carlin/commands/deploy#options" />.
+Your `Handler` property must follow the format `path/to/file.exportedFunction`. For example, if you have `src/auth/index.ts` with export `validateUser`, set `Handler` to `auth/index.validateUser`. The base directory defaults to `src` and can be changed with `--lambda-entry-points-base-dir`.
 
 ### Automatic S3 Parameters
 
@@ -190,13 +156,11 @@ flowchart TD
 
 ### Format Configuration
 
-<InnerHTML html={buildLambdaCodeComment} />
-
-Configure output format with <OptionAliasesInline options={deployCommandOptions} option="lambda-format" to="/docs/carlin/commands/deploy#options" />. Default is `esm` for modern JavaScript modules.
+Carlin builds Lambda entry points with esbuild, uploads the bundle to S3, and passes the generated S3 object parameters into the CloudFormation stack. Configure output format with `--lambda-format`. Default is `esm`; use `cjs` when a dependency requires CommonJS.
 
 ### Runtime Configuration
 
-You can specify the Node.js runtime version for Lambda functions using <OptionAliasesInline options={deployCommandOptions} option="lambda-runtime" to="/docs/carlin/commands/deploy#options" />. Default is `nodejs24.x`.
+You can specify the Node.js runtime version for Lambda functions using `--lambda-runtime`. Default is `nodejs24.x`.
 
 Supported runtimes:
 
@@ -218,30 +182,28 @@ This option affects:
 
 ## Destroy
 
-To destroy the stack, just pass the option <OptionAliasesInline options={deployCommandOptions} option="destroy" to="/docs/carlin/commands/deploy#options" /> to the deploy command:
+To destroy the stack, pass `--destroy` to the deploy command:
 
 ```
 carlin deploy --destroy
 ```
 
-The destroy algorithm is the following:
-
-:::note Algorithm
-
-<Algorithm algorithm={destroyComment} />
-
-:::
-
 :::danger
 
 This operation is irreversible. You must pay attention because you may destroy resources that contains your App data, like DynamoDB, using this command.
-To overcome this problem, destroy will only delete the resources if termination protetion isn't enabled and if <OptionAliasesInline options={cliOptions} option="environment" to="/docs/carlin/commands/deploy#options" /> isn't defined.
+To reduce accidental deletion, destroy only deletes resources when termination protection is disabled and `--environment` is not defined.
 
 :::
 
 ## Examples
 
-<Examples examples={deployCommandExamples} />
+```bash
+carlin deploy -t src/cloudformation.template1.yml
+carlin deploy -e Production
+carlin deploy --lambda-runtime nodejs20.x
+carlin deploy --lambda-format cjs
+carlin deploy --destroy --stack-name StackToBeDeleted
+```
 
 ### Use Cases
 
@@ -250,16 +212,32 @@ To overcome this problem, destroy will only delete the resources if termination 
 
 ## Outputs
 
-<InnerHTML html={cloudFormationOutputsComment} />
-
 After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/latest-deploy.json`.
 
 ## API
 
 ### Options
 
-<OptionsSection options={deployCommandOptions}>
-  <OptionsSection.Option option="parameters">
-    <InnerHTML html={optionsParametersComment} />
-  </OptionsSection.Option>
-</OptionsSection>
+| Option                           | Description                                                  |
+| -------------------------------- | ------------------------------------------------------------ |
+| `--template-path`, `-t`          | Path to the CloudFormation template.                         |
+| `--stack-name`                   | Explicit CloudFormation stack name.                          |
+| `--parameters`, `-p`             | CloudFormation parameters as an object or parameter array.   |
+| `--destroy`                      | Destroy the selected stack.                                  |
+| `--lambda-format`                | Lambda bundle format: `esm` or `cjs`.                        |
+| `--lambda-runtime`               | Lambda runtime: `nodejs20.x`, `nodejs22.x`, or `nodejs24.x`. |
+| `--lambda-external`              | Modules excluded from the Lambda bundle.                     |
+| `--lambda-entry-points-base-dir` | Base directory for Lambda handler entry points.              |
+| `--skip-deploy`                  | Skip deployment after config resolution.                     |
+
+`--parameters` accepts a simple object:
+
+```json
+{ "DomainName": "api.example.com", "DatabasePort": 5432 }
+```
+
+It also accepts CloudFormation-style parameter entries when you need fields such as `usePreviousValue`:
+
+```json
+[{ "key": "DatabasePassword", "usePreviousValue": true }]
+```

@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-param-reassign */
+
 import 'dotenv/config';
 
-import { AWS_DEFAULT_REGION, NAME } from './config';
-import { EnvironmentVariables, addGroupToOptions, setEnvVar } from './utils';
-import { constantCase, kebabCase } from 'change-case';
-import { deployCommand } from './deploy/command';
-import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
-import { generateEnvCommand } from './generateEnv/generateEnvCommand';
-import { hideBin } from 'yargs/helpers';
+import path from 'node:path';
+
 import { readConfigFileSync } from '@ttoss/read-config-file';
 import AWS from 'aws-sdk';
+import { constantCase, kebabCase } from 'change-case';
 import deepEqual from 'deep-equal';
 import deepMerge from 'deepmerge';
 import findUpSync from 'findup-sync';
-import path from 'path';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
+import { AWS_DEFAULT_REGION, NAME } from './config';
+import { ecsTaskReportCommand } from './deploy/cicd/ecsTaskReportCommand';
+import { deployCommand } from './deploy/command';
+import { generateEnvCommand } from './generateEnv/generateEnvCommand';
+import type { EnvironmentVariables } from './utils';
+import { addGroupToOptions, setEnvVar } from './utils';
 
 const coerceSetEnvVar = (env: EnvironmentVariables) => {
   return (value: any) => {
@@ -83,6 +86,91 @@ const getEnv = () => {
   return constantCase(NAME);
 };
 
+const normalizeConfigOptionValue = ({ value }: { value?: string }) => {
+  if (!value || value === 'undefined') {
+    return undefined;
+  }
+
+  return value;
+};
+
+const getArgValue = ({ args, names }: { args: string[]; names: string[] }) => {
+  for (const [index, arg] of args.entries()) {
+    const equalSignName = names.find((name) => {
+      return arg.startsWith(`${name}=`);
+    });
+
+    if (equalSignName) {
+      return normalizeConfigOptionValue({
+        value: arg.slice(equalSignName.length + 1),
+      });
+    }
+
+    if (names.includes(arg)) {
+      return normalizeConfigOptionValue({ value: args[index + 1] });
+    }
+  }
+
+  return undefined;
+};
+
+export const getConfigFileOptions = ({
+  args = hideBin(process.argv),
+}: { args?: string[] } = {}) => {
+  return {
+    branch:
+      getArgValue({ args, names: ['--branch'] }) || process.env.CARLIN_BRANCH,
+    environment:
+      getArgValue({ args, names: ['--environment', '--env', '-e'] }) ||
+      process.env.CARLIN_ENVIRONMENT ||
+      process.env.ENVIRONMENT,
+    project:
+      getArgValue({ args, names: ['--project'] }) || process.env.CARLIN_PROJECT,
+  };
+};
+
+const getConfigFileNames = () => {
+  return ['ts', 'js', 'yml', 'yaml', 'json'].map((ext) => {
+    return `${NAME}.${ext}`;
+  });
+};
+
+const findConfigFilePaths = () => {
+  const names = getConfigFileNames();
+  const paths: string[] = [];
+  let currentPath = process.cwd();
+  let findUpPath: string | null;
+
+  do {
+    findUpPath = findUpSync(names, { cwd: currentPath });
+    if (findUpPath) {
+      currentPath = path.resolve(findUpPath, '../..');
+      paths.push(findUpPath);
+    }
+  } while (findUpPath);
+
+  return paths;
+};
+
+/**
+ * If `--config` isn't provided, Carlin searches for config files named
+ * `carlin.ts`, `carlin.js`, `carlin.yml`, `carlin.yaml`, or `carlin.json`.
+ * In monorepos, files from parent directories are merged first, so the nearest
+ * config file takes precedence over shared root configuration.
+ */
+const readConfigFiles = () => {
+  const configs = findConfigFilePaths().map((configFilePath) => {
+    return (
+      readConfigFileSync({
+        configFilePath,
+        options: getConfigFileOptions(),
+      }) || {}
+    );
+  });
+
+  return deepMerge.all(configs.reverse());
+};
+
 /**
  * Transformed to method because finalConfig was failing the tests because as
  * function we encapsulate the logic and it is not executed on the import.
@@ -93,83 +181,8 @@ export const cli = () => {
    */
   let finalConfig: any;
 
-  /**
-   * If `--config` isn't provided, the algorithm will search for any of these
-   * files and use it to retrieve the options:
-   *
-   * - `carlin.ts`
-   * - `carlin.js`
-   * - `carlin.yml`
-   * - `carlin.yaml`
-   * - `carlin.json`
-   *
-   * The algorithm also make a find up path to search for other config files
-   * that may exist in parent directories. If find more than one file, they'll
-   * be merged, in such a way that the files nearest from `process.cwd()` will
-   * take the precedence at the merging.
-   *
-   * This is useful if you have a monorepo and have shared and specific
-   * configuration. For instance, you may have a config inside `packages/app/`
-   * folder with the config below:
-   *
-   * ```yaml
-   * stackName: MyMonorepoApp
-   * region: us-east-2
-   * ```
-   *
-   * And on the root of your monorepo:
-   *
-   * ```yaml
-   * awsAccountId: 123456789012
-   * region: us-east-1
-   * ```
-   *
-   * The result options that will be passed to the commands executed on
-   * `packages/app/` will be:
-   *
-   * ```yaml
-   * awsAccountId: 123456789012
-   * stackName: MyMonorepoApp
-   * region: us-east-2
-   * ```
-   *
-   * If you define your config file programmatically, you can use the
-   * your environment variables from a `.env` file if it exists. For example:
-   *
-   * ```ts
-   * export default {
-   *  environment: process.env.ENVIRONMENT,
-   *  region: process.env.REGION,
-   * }
-   * ```
-   */
   const getConfig = () => {
-    const names = ['ts', 'js', 'yml', 'yaml', 'json'].map((ext) => {
-      return `${NAME}.${ext}`;
-    });
-    const paths: string[] = [];
-    let currentPath = process.cwd();
-    let findUpPath: string | null;
-
-    do {
-      findUpPath = findUpSync(names, { cwd: currentPath });
-      if (findUpPath) {
-        currentPath = path.resolve(findUpPath, '../..');
-        paths.push(findUpPath);
-      }
-    } while (findUpPath);
-
-    const configs = paths.map((p) => {
-      return readConfigFileSync({ configFilePath: p }) || {};
-    });
-
-    /**
-     * Using configs.reverser() to get the most far config first. This way the
-     * nearest configs will replace others.
-     */
-    finalConfig = deepMerge.all(configs.reverse());
-
-    return finalConfig;
+    return (finalConfig = readConfigFiles());
   };
 
   /**
@@ -220,7 +233,7 @@ export const cli = () => {
     const { environment, environments } = argv;
 
     if (environment && environments && environments[environment as string]) {
-      Object.entries(environments[environment]).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(environments[environment])) {
         /**
          * The case where argv[key] must not have the environment value is
          * when such value is passed as option via CLI. For instance,
@@ -268,7 +281,7 @@ export const cli = () => {
         if (!isKeyFromCli) {
           argv[key] = value;
         }
-      });
+      }
     }
   };
 
@@ -336,7 +349,10 @@ export const cli = () => {
       .pkgConf(getPkgConfig())
       .config(getConfig())
       .config('config', (configFilePath: string) => {
-        return readConfigFileSync<any>({ configFilePath });
+        return readConfigFileSync<any>({
+          configFilePath,
+          options: getConfigFileOptions(),
+        });
       })
       .command({
         command: 'print-args',

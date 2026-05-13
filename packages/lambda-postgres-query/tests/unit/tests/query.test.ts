@@ -130,3 +130,23 @@ test('should throw error.message', async () => {
 
   await expect(query(text)).rejects.toThrow(errorMessage);
 });
+
+test('should use functionName when provided', async () => {
+  const functionName = 'LambdaPostgresReadQueryFunction';
+
+  lambdaMock.on(InvokeCommand).resolves({
+    Payload: new TextEncoder().encode(
+      JSON.stringify({
+        rows: [{ id: 1 }],
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any,
+  });
+
+  await query({
+    text: 'SELECT * FROM table',
+    functionName,
+  });
+
+  expect(lambdaMock.calls()[0].args[0].input.FunctionName).toBe(functionName);
+});

@@ -79,6 +79,8 @@ const { lintstagedConfig } = require('@ttoss/config');
 module.exports = lintstagedConfig();
 ```
 
+The default config runs ESLint on JS/TS files, Prettier on Markdown/JSON/YAML, and automatically sorts `package.json` keys using [sort-package-json](https://github.com/nicolo-ribaudo/sort-package-json). No additional packages needed.
+
 Finally, configure Husky:
 
 ```shell

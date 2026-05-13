@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+
 import pkg from './package.json';
 
 const dependencies = Object.keys(pkg.dependencies || {});
@@ -18,11 +19,12 @@ const noExternal = dependencies
     return dep !== '@ttoss/config';
   });
 
-// eslint-disable-next-line import/no-default-export
 export default defineConfig({
   bundle: true,
-  entry: ['src/index.ts'],
+  dts: true,
+  entry: ['src/index.ts', 'src/defineConfig.ts'],
   format: 'esm',
   noExternal,
+  target: 'es2024',
   treeshake: true,
 });

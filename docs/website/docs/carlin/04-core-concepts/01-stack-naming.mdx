@@ -2,10 +2,6 @@
 title: Stack Naming
 ---
 
-import { InnerHTML } from '../../../src/components/InnerHTML';
-import { stackNameComment } from '../../../.docusaurus/carlin/default/stackNameComment';
-import { stackNameWarningComment } from '../../../.docusaurus/carlin/default/stackNameWarningComment';
-
 carlin automatically generates CloudFormation stack names based on your project configuration, branch name, or environment. Understanding stack naming is critical because it determines how deployments are tracked and updated.
 
 ## Automatic Stack Naming
@@ -158,7 +154,7 @@ carlin deploy
 
 :::caution
 
-<InnerHTML html={stackNameWarningComment} />
+Changing the automatically generated stack name creates or updates a different CloudFormation stack. Use `--stack-name` only when you intentionally want to target a specific stack.
 
 :::
 
@@ -220,7 +216,7 @@ carlin deploy --stack-name company-vpc --template-path infrastructure/vpc.ts
 
 ## Stack Name Algorithm
 
-<InnerHTML html={stackNameComment} />
+When `--stack-name` is not provided, carlin builds the stack name from the package name and the selected environment or Git branch. The generated value is sanitized for CloudFormation by removing unsupported characters, normalizing non-ASCII text, collapsing repeated hyphens, and prefixing `Stack-` when the name would otherwise start with a number.
 
 ## Troubleshooting
 

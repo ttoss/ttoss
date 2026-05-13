@@ -35,7 +35,6 @@ const config: Config = {
 
   plugins: [
     isDevelopment ? null : 'docusaurus-plugin-llms',
-    './plugins/carlin/index.mjs',
     './plugins/principles-graph/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development

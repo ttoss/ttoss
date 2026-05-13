@@ -2,18 +2,24 @@
   "name": "carlin",
   "version": "1.49.8",
   "description": "",
-  "license": "MIT",
-  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
+  "keywords": [],
   "homepage": "https://ttoss.dev/docs/carlin/",
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/carlin"
   },
-  "bugs": {
-    "url": "https://github.com/ttoss/ttoss/issues"
-  },
+  "license": "MIT",
+  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/defineConfig.ts",
+    "./src/*": "./src/*.ts"
+  },
   "bin": {
     "carlin": "./bin/carlin.js"
   },
@@ -75,9 +81,18 @@
     "tsup": "^8.5.1",
     "typescript": "~6.0.3"
   },
-  "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./config": {
+        "import": "./dist/defineConfig.js",
+        "types": "./dist/defineConfig.d.ts"
+      }
+    },
     "provenance": true
   }
 }

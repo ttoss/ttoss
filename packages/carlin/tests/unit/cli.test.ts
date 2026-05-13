@@ -1,3 +1,16 @@
+import { faker } from '@ttoss/test-utils/faker';
+import AWS from 'aws-sdk';
+import * as deepmerge from 'deepmerge';
+import { getConfigFileOptions } from 'src/cli';
+import { AWS_DEFAULT_REGION } from 'src/config';
+import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
+import { cloudformation } from 'src/deploy/cloudformation.core';
+import {
+  getCurrentBranch,
+  getEnvironment,
+  getEnvVar,
+  getProjectName,
+} from 'src/utils';
 import { optionsFromConfigFiles, parseCli } from 'tests/testUtils';
 
 jest.mock('src/deploy/baseStack/deployBaseStack', () => {
@@ -32,19 +45,6 @@ jest.mock('findup-sync', () => {
       .mockReturnValueOnce(undefined),
   };
 });
-
-import { faker } from '@ttoss/test-utils/faker';
-import AWS from 'aws-sdk';
-import * as deepmerge from 'deepmerge';
-import { AWS_DEFAULT_REGION } from 'src/config';
-import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
-import { cloudformation } from 'src/deploy/cloudformation.core';
-import {
-  getCurrentBranch,
-  getEnvironment,
-  getEnvVar,
-  getProjectName,
-} from 'src/utils';
 
 beforeAll(() => {
   (deepmerge.all as jest.Mock).mockReturnValue(optionsFromConfigFiles);
@@ -182,6 +182,44 @@ describe('validating environment variables', () => {
     const argv = await testUtilsModule.parseCli('print-args', {});
 
     await testExpects({ argv, branch, environment, project });
+  });
+});
+
+describe('getConfigFileOptions', () => {
+  afterEach(() => {
+    delete process.env.CARLIN_BRANCH;
+    delete process.env.CARLIN_ENVIRONMENT;
+    delete process.env.ENVIRONMENT;
+    delete process.env.CARLIN_PROJECT;
+  });
+
+  test('should read config context from CLI args', () => {
+    expect(
+      getConfigFileOptions({
+        args: [
+          '--branch=feature/config',
+          '--environment',
+          'Production',
+          '--project=oneclickads',
+        ],
+      })
+    ).toEqual({
+      branch: 'feature/config',
+      environment: 'Production',
+      project: 'oneclickads',
+    });
+  });
+
+  test('should read config context from environment variables', () => {
+    process.env.CARLIN_BRANCH = 'feature/config';
+    process.env.CARLIN_ENVIRONMENT = 'Staging';
+    process.env.CARLIN_PROJECT = 'oneclickads';
+
+    expect(getConfigFileOptions({ args: [] })).toEqual({
+      branch: 'feature/config',
+      environment: 'Staging',
+      project: 'oneclickads',
+    });
   });
 });
 
