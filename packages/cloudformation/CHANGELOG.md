@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.12.13 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.12.12](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.12.11...@ttoss/cloudformation@0.12.12) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloudformation

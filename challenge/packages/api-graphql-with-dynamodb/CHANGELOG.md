@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.14 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.2.13](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.12...@ttoss-challenge/api-graphql-with-dynamodb@0.2.13) (2026-04-28)
 
 **Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb

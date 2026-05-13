@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.10.11 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.10.10](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-cli@0.10.9...@ttoss/graphql-api-cli@0.10.10) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/graphql-api-cli

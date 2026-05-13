@@ -1,17 +1,28 @@
 {
   "name": "@ttoss/fsl-theme",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "ttoss theme provider for UI.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Ennio Politi Lopes <enniolopes@gmail.com>"
+  "keywords": [
+    "css-variables",
+    "dark-mode",
+    "design-tokens",
+    "dtcg",
+    "react",
+    "ssr",
+    "theming",
+    "ttoss"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/fsl-theme"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Ennio Politi Lopes <enniolopes@gmail.com>"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -31,15 +42,6 @@
     "build:verify": "pnpm run build && tsx scripts/probe-jsdoc-propagation.ts",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
-  "peerDependencies": {
-    "react": ">=18"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "@ttoss/config": "workspace:^",
@@ -50,16 +52,14 @@
     "tsup": "^8.5.1",
     "tsx": "^4.21.0"
   },
-  "keywords": [
-    "css-variables",
-    "dark-mode",
-    "design-tokens",
-    "dtcg",
-    "react",
-    "ssr",
-    "theming",
-    "ttoss"
-  ],
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

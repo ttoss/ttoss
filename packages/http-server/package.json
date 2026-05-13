@@ -1,17 +1,22 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.5.11",
+  "version": "0.5.12",
   "description": "HTTP Server for ttoss environment",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "koa",
+    "server"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/http-server"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -23,7 +28,6 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "dependencies": {
     "@koa/bodyparser": "^6.1.0",
     "@koa/cors": "^5.0.0",
@@ -36,17 +40,13 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.2",
+    "@types/koa-static": "^4.0.4",
     "@types/koa__cors": "^5.0.1",
     "@types/koa__multer": "^2.0.8",
-    "@types/koa-static": "^4.0.4",
     "jest": "^30.3.0",
     "supertest": "^7.2.2",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "koa",
-    "server"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {

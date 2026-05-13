@@ -1,17 +1,22 @@
 {
   "name": "@ttoss/graphql-api",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A library for building GraphQL APIs using ttoss ecosystem.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "api",
+    "graphql"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/graphql-api"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -24,7 +29,6 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "dependencies": {
     "@ttoss/ids": "workspace:^",
     "graphql-compose": "^9.0.11",
@@ -33,19 +37,15 @@
     "graphql-shield": "^7.6.5",
     "npmlog": "^7.0.1"
   },
-  "peerDependencies": {
-    "graphql": "^16.6.0"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "graphql": "^16.11.0",
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "api",
-    "graphql"
-  ],
+  "peerDependencies": {
+    "graphql": "^16.6.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

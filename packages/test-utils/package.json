@@ -1,17 +1,23 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "4.2.10",
+  "version": "4.2.11",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "Jest",
+    "React",
+    "React Testing Library",
+    "Storybook"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/test-utils"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "type": "commonjs",
   "exports": {
     ".": "./src/index.ts",
@@ -38,11 +44,6 @@
     "relay-test-utils": "^20.1.1",
     "resize-observer-polyfill": "^1.5.1"
   },
-  "peerDependencies": {
-    "jest": "^30.0.0",
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
@@ -54,12 +55,11 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "Jest",
-    "React",
-    "React Testing Library",
-    "Storybook"
-  ],
+  "peerDependencies": {
+    "jest": "^30.0.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

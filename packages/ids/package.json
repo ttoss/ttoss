@@ -1,17 +1,22 @@
 {
   "name": "@ttoss/ids",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "A library to handle the different ids used in the ttoss ecosystem applications",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "api",
+    "ids"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/ids"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -23,16 +28,11 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "api",
-    "ids"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {

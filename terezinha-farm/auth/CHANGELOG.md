@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.27 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.4.26](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.25...@terezinha-farm/auth@0.4.26) (2026-04-23)
 
 **Note:** Version bump only for package @terezinha-farm/auth
