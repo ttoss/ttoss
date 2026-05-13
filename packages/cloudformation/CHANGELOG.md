@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.12.13...@ttoss/cloudformation@0.13.0) (2026-05-13)
+
+### Features
+
+- lambda postgres query security ([#996](https://github.com/ttoss/ttoss/issues/996)) ([dff9948](https://github.com/ttoss/ttoss/commit/dff9948e3b9f6d83192b1c26df227dfc7341638d))
+
 ## 0.12.13 (2026-05-13)
 
 ### Bug Fixes
