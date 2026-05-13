@@ -14,26 +14,40 @@ import type {
 } from '../../../src';
 import { Form, FormFieldInput, useForm } from '../../../src';
 
-// react-router-dom v6 requires Request/Response globals which jsdom lacks
-if (typeof globalThis.Request === 'undefined') {
-  globalThis.Request = class Request {
-    url: string;
-    method: string;
-    signal: AbortSignal;
-    constructor(url: string, init?: { method?: string; signal?: AbortSignal }) {
-      this.url = url;
-      this.method = init?.method || 'GET';
-      this.signal = init?.signal || new AbortController().signal;
-    }
-  } as unknown as typeof globalThis.Request;
-}
-if (typeof globalThis.Response === 'undefined') {
-  globalThis.Response = class Response {
-    body = null;
-    status = 200;
-    ok = true;
-  } as unknown as typeof globalThis.Response;
-}
+// react-router-dom v6 requires Request/Response globals which jsdom lacks.
+// Save originals and restore them after all tests to avoid leaking state.
+const originalRequest = globalThis.Request;
+const originalResponse = globalThis.Response;
+
+beforeAll(() => {
+  if (typeof globalThis.Request === 'undefined') {
+    globalThis.Request = class Request {
+      url: string;
+      method: string;
+      signal: AbortSignal;
+      constructor(
+        url: string,
+        init?: { method?: string; signal?: AbortSignal }
+      ) {
+        this.url = url;
+        this.method = init?.method || 'GET';
+        this.signal = init?.signal || new AbortController().signal;
+      }
+    } as unknown as typeof globalThis.Request;
+  }
+  if (typeof globalThis.Response === 'undefined') {
+    globalThis.Response = class Response {
+      body = null;
+      status = 200;
+      ok = true;
+    } as unknown as typeof globalThis.Response;
+  }
+});
+
+afterAll(() => {
+  globalThis.Request = originalRequest;
+  globalThis.Response = originalResponse;
+});
 
 const reactRouterWarnOnUnsavedChanges = {
   useRouterBlocker: useBlocker as unknown as UseRouterBlockerFn,
@@ -285,11 +299,13 @@ describe('warnOnUnsavedChanges', () => {
     if (typeof beforeUnloadHandler === 'function') {
       const event = {
         preventDefault: jest.fn(),
+        returnValue: undefined as unknown,
       } as unknown as BeforeUnloadEvent;
 
       beforeUnloadHandler(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.returnValue).toBe('');
     }
 
     addSpy.mockRestore();

@@ -72,7 +72,6 @@ const UnsavedChangesModal = ({
   return (
     <Modal
       isOpen
-      ariaHideApp={false}
       onRequestClose={onCancel}
       style={{
         content: {
@@ -115,6 +114,7 @@ const BeforeUnloadBlocker = ({ isDirty }: { isDirty: boolean }) => {
 
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
+      e.returnValue = '';
     };
 
     window.addEventListener('beforeunload', handler);
