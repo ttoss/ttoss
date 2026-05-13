@@ -50,6 +50,11 @@ const getConfigByGroup = (group: number) => {
         return `src/components/${component}/index.ts`;
       }),
       format: ['esm'],
+      dts: {
+        compilerOptions: {
+          noCheck: true,
+        },
+      },
     },
     {
       arrayMerge: 'overwrite',

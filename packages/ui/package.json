@@ -2,16 +2,23 @@
   "name": "@ttoss/ui",
   "version": "6.9.17",
   "description": "Primitive layout, typographic, and other components for styling applications.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React",
+    "ThemeUi",
+    "ui",
+    "user interface"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/ui"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -24,7 +31,6 @@
     "dev": "pnpm --filter @docs/storybook run dev",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "dependencies": {
     "@chakra-ui/react": "^3.34.0",
     "@theme-ui/match-media": "^0.17.2",
@@ -33,11 +39,6 @@
     "react-select": "^5.10.2",
     "react-tooltip": "^5.30.0",
     "theme-ui": "^0.17.2"
-  },
-  "peerDependencies": {
-    "@emotion/react": "^11",
-    "@ttoss/react-icons": "workspace:^",
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
@@ -51,12 +52,11 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "React",
-    "ThemeUi",
-    "ui",
-    "user interface"
-  ],
+  "peerDependencies": {
+    "@emotion/react": "^11",
+    "@ttoss/react-icons": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {
