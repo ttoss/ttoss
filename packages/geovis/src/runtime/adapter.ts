@@ -44,16 +44,24 @@ export interface CapabilitySet {
   supportsCustomLayers: boolean;
 }
 
+/**
+ * The set of targets recognised by `applyPatch` at runtime.
+ * `'view'` and `'style'` mutations must be applied via `runtime.update(spec)`,
+ * not via `applyPatch` — they are intentionally excluded here so callers
+ * receive a compile-time error instead of a silent runtime warning.
+ */
+export type SpecPatchTarget = 'layer' | 'source' | 'mapData';
+
 export type SpecPatch =
   | {
-      target: 'layer' | 'source' | 'view' | 'style' | 'mapData';
+      target: SpecPatchTarget;
       op: 'replace';
       path: string;
       value?: unknown;
       rationale?: string;
     }
   | {
-      target: 'layer' | 'source' | 'view' | 'style' | 'mapData';
+      target: SpecPatchTarget;
       op: 'add' | 'remove';
       path?: string;
       value?: unknown;

@@ -228,3 +228,44 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(runtime.spec.mapData?.[0]).toEqual(replacement);
   });
 });
+
+describe('createRuntime — applyPatch unknown target', () => {
+  test('emits console.warn and does not throw when target is unrecognised', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    expect(() => {
+      runtime.applyPatch({
+        target: 'view',
+        op: 'replace',
+        path: 'view.zoom',
+        value: 5,
+      } as unknown as SpecPatch);
+    }).not.toThrow();
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toContain('[GeoVis]');
+    expect(warnSpy.mock.calls[0][0]).toContain('view');
+
+    warnSpy.mockRestore();
+  });
+
+  test('spec is unchanged after an unknown-target patch', () => {
+    const adapter = makeAdapter();
+    const spec = makeSpec();
+    const runtime = createRuntime(adapter, spec);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const before = runtime.spec;
+    runtime.applyPatch({
+      target: 'style',
+      op: 'replace',
+      path: 'style.url',
+      value: 'https://example.com/style.json',
+    } as unknown as SpecPatch);
+
+    expect(runtime.spec).toBe(before);
+    warnSpy.mockRestore();
+  });
+});

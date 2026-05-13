@@ -1,4 +1,5 @@
 import type * as React from 'react';
+import ReactDOM from 'react-dom';
 
 import type { MapHoverInfo } from './contexts';
 import { useGeoVisHover } from './contexts';
@@ -8,7 +9,7 @@ const defaultFormatValue = (value: number | string): string => {
 };
 
 const baseTooltipStyle: React.CSSProperties = {
-  position: 'absolute',
+  position: 'fixed',
   pointerEvents: 'none',
   background: 'rgba(15, 23, 42, 0.92)',
   color: '#f8fafc',
@@ -41,9 +42,9 @@ export interface GeoVisHoverTooltipProps {
 
 /**
  * Renders a floating tooltip over the map whenever the user hovers a feature
- * on a polygon layer that has an `activeLegendId`. Must be rendered inside
- * the same `position: relative` container as `<GeoVisCanvas>` so its absolute
- * positioning anchors to the map area.
+ * on a polygon layer that has an `activeLegendId`. Uses `position: fixed` and
+ * renders via `ReactDOM.createPortal` into `document.body`, so it does not
+ * require a `position: relative` wrapper and is not clipped by overflow.
  *
  * The hover tracking (mousemove/leave wiring, cursor changes, feature-state
  * lookup) lives in `useMapHover`, set up by `<GeoVisProvider>`. This component
@@ -61,6 +62,7 @@ export const GeoVisHoverTooltip = ({
 }: GeoVisHoverTooltipProps) => {
   const hoveredMapFeature = useGeoVisHover();
   if (!hoveredMapFeature) return null;
+  if (typeof document === 'undefined' || !document.body) return null;
 
   const mergedStyle: React.CSSProperties = {
     ...baseTooltipStyle,
@@ -69,7 +71,7 @@ export const GeoVisHoverTooltip = ({
     ...style,
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div className={className} role="tooltip" style={mergedStyle}>
       {render ? (
         render(hoveredMapFeature)
@@ -85,6 +87,7 @@ export const GeoVisHoverTooltip = ({
           </div>
         </>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };

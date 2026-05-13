@@ -51,6 +51,225 @@ const MyMap = () => (
 );
 ```
 
+## Spec reference
+
+### `VisualizationSpec`
+
+Top-level spec object passed to `GeoVisProvider`.
+
+| Field         | Type                      | Required | Description                                                                                                                                |
+| ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                    |
+| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                           |
+| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`. |
+| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                          |
+| `title`       | `string`                  |          | Human-readable title.                                                                                                                      |
+| `description` | `string`                  |          | Human-readable description.                                                                                                                |
+| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                  |
+| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers.                                                      |
+| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                     |
+| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                         |
+| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                      |
+
+### `VisualizationLayer`
+
+Each entry in `spec.layers` describes one rendered layer.
+
+| Field            | Type                 | Required | Description                                                                            |
+| ---------------- | -------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `id`             | `string`             | ✓        | Unique layer identifier.                                                               |
+| `sourceId`       | `string`             | ✓        | References a `DataSource.id` from `spec.sources`.                                      |
+| `geometry`       | `GeoVisGeometryType` | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.    |
+| `sourceLayer`    | `string`             |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.        |
+| `title`          | `string`             |          | Human-readable layer name.                                                             |
+| `visible`        | `boolean`            |          | Whether the layer is rendered. Defaults to `true`.                                     |
+| `minzoom`        | `number`             |          | Minimum zoom level (0–24) at which the layer is visible.                               |
+| `maxzoom`        | `number`             |          | Maximum zoom level (0–24) at which the layer is visible.                               |
+| `paint`          | `LayerPaint`         |          | Per-geometry paint properties. See examples below.                                     |
+| `legends`        | `LegendSpec[]`       |          | Alternative legend definitions exposed as runtime toggles.                             |
+| `activeLegendId` | `string`             |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.      |
+| `mapDataId`      | `string`             |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). |
+
+### Paint properties
+
+The `paint` field accepts different shapes depending on `geometry`. The three most common:
+
+**Polygon (`geometry: 'polygon'`) — `FillPaint`**
+
+```typescript
+paint: {
+  fillColor: '#3b82f6',   // fill-color
+  fillOpacity: 0.6,       // fill-opacity
+  lineColor: '#1d4ed8',   // outline color (fill-outline-color)
+}
+```
+
+**Line (`geometry: 'line'`) — `LinePaint`**
+
+```typescript
+paint: {
+  lineColor: '#ef4444',   // line-color
+  lineWidth: 2,           // line-width (pixels)
+  lineOpacity: 0.8,       // line-opacity
+}
+```
+
+**Point (`geometry: 'point'`) — `CirclePaint`**
+
+```typescript
+paint: {
+  circleColor: '#10b981',       // circle-color
+  circleRadius: 6,              // circle-radius (pixels)
+  circleStrokeColor: '#065f46', // circle-stroke-color
+  circleStrokeWidth: 1,         // circle-stroke-width (pixels)
+}
+```
+
+## Data-driven maps
+
+`mapData` decouples attribute values from geometry: the GeoJSON source holds
+shapes while `mapData` holds per-feature values. The adapter joins them at
+runtime via `setFeatureState`, enabling choropleth coloring and hover tooltips
+without modifying source features.
+
+### Choropleth example
+
+Declare `mapData` in the spec, reference it on the layer with `mapDataId`, and
+connect a legend via `activeLegendId`.
+
+```tsx
+import {
+  GeoVisCanvas,
+  GeoVisHoverTooltip,
+  GeoVisLegend,
+  GeoVisProvider,
+} from '@ttoss/geovis';
+import districtsGeoJSON from './districts.geojson';
+
+const spec = {
+  id: 'population-map',
+  engine: 'maplibre',
+  view: { center: [-46.6, -23.5], zoom: 10 },
+  sources: [{ id: 'districts', type: 'geojson', data: districtsGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'districts', // references sources[].id
+      // joinKey: 'cd_district' — set when features lack a numeric .id
+      data: [
+        { geometryId: 1, value: 87_000 },
+        { geometryId: 2, value: 143_000 },
+        { geometryId: 3, value: 210_000 },
+      ],
+    },
+  ],
+  legends: [
+    {
+      id: 'population-legend',
+      label: 'Population',
+      colorBy: {
+        type: 'quantitative',
+        property: 'value',
+        scale: 'threshold',
+        thresholds: [100_000, 200_000],
+        colors: ['#bfdbfe', '#3b82f6', '#1d4ed8'],
+        defaultColor: '#e2e8f0', // features with no joined value
+      },
+    },
+  ],
+  layers: [
+    {
+      id: 'districts-layer',
+      sourceId: 'districts',
+      geometry: 'polygon',
+      mapDataId: 'population', // drives setFeatureState
+      activeLegendId: 'population-legend', // enables coloring + hover
+    },
+  ],
+};
+
+const PopulationMap = () => (
+  <GeoVisProvider spec={spec}>
+    <div style={{ width: '100%', height: '500px' }}>
+      <GeoVisCanvas viewId="main" style={{ width: '100%', height: '100%' }} />
+    </div>
+    {/* GeoVisHoverTooltip can be placed anywhere in the tree — */}
+    {/* it uses position:fixed and viewport coordinates internally. */}
+    <GeoVisHoverTooltip />
+    <GeoVisLegend legendId="population-legend" />
+  </GeoVisProvider>
+);
+```
+
+### Joining by property instead of feature id
+
+When GeoJSON features do not have a numeric or string `.id`, use `joinKey` to
+match by a feature property instead:
+
+```tsx
+mapData: [
+  {
+    mapDataId: 'population',
+    mapId: 'districts',
+    joinKey: 'cd_district', // matches feature.properties.cd_district
+    data: [
+      { geometryId: 'CAMPO_LIMPO', value: 143_000 },
+      { geometryId: 'BUTANTA',     value: 87_000 },
+    ],
+  },
+],
+```
+
+### Accessing data in React
+
+`useMapData` exposes the joined dataset in React without touching MapLibre:
+
+```tsx
+import { useMapData } from '@ttoss/geovis';
+
+const DataTable = () => {
+  const result = useMapData('population');
+  if (!result) return null;
+  const { rows } = result;
+  return (
+    <ul>
+      {rows.map((row) => (
+        <li key={row.geometryId}>
+          {row.geometryId}: {row.value}
+        </li>
+      ))}
+    </ul>
+  );
+};
+```
+
+Must be called inside `GeoVisProvider`.
+
+### Updating data at runtime
+
+Use `applyPatch` with `target: 'mapData'` to replace the full dataset or upsert
+a single row without re-mounting the spec:
+
+```tsx
+const { applyPatch } = useGeoVis();
+
+// Replace the full dataset — value must be a complete MapData object
+applyPatch({
+  target: 'mapData',
+  op: 'replace',
+  path: 'mapData.population',
+  value: { mapDataId: 'population', mapId: 'states-source', data: newRows }, // MapData
+});
+
+// Upsert a single row — path: 'mapData.<mapDataId>.data.<geometryId>'
+applyPatch({
+  target: 'mapData',
+  op: 'replace',
+  path: 'mapData.population.data.1',
+  value: 210_000,
+});
+```
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:
@@ -69,20 +288,33 @@ if (!result.valid) {
 
 ## Applying Patches
 
-Use `useGeoVis` to access `applyPatch` for efficient paint updates without re-rendering the full spec. A `SpecPatch` has the shape:
+Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec.
+
+**Supported `target` values:**
+
+| Target      | Description                                |
+| ----------- | ------------------------------------------ |
+| `'layer'`   | Add, remove, or update a layer             |
+| `'source'`  | Add, remove, or update a source            |
+| `'mapData'` | Update feature-state data bound to the map |
+
+> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`.
+
+A `SpecPatch` has the shape:
 
 ```ts
-// Replace an existing paint property on a layer:
 type SpecPatch =
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData';
       op: 'replace';
       path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
+      //                "mapData.<mapDataId>"
+      //                "mapData.<mapDataId>.data.<geometryId>"
       value?: unknown; // required for 'replace'
       rationale?: string;
     }
   | {
-      target: 'layer' | 'source' | 'view' | 'style';
+      target: 'layer' | 'source' | 'mapData';
       op: 'add' | 'remove';
       path?: string; // unused for layer/source add and remove ops
       value?: unknown;
@@ -208,7 +440,7 @@ const LayerControls = () => {
             target: 'layer',
             op: 'replace',
             path: 'layer.points-layer.paint.circleStrokeColor',
-            value: undefined,
+            value: undefined, // undefined is treated as a no-op — use op:'remove' to remove a paint property
           })
         }
       >
@@ -230,6 +462,16 @@ Provides a GeoVis runtime context for child components. Resolves the appropriate
 | `spec`     | `VisualizationSpec` | The visualization spec (memoize with `useMemo` to avoid redundant updates). |
 | `children` | `React.ReactNode`   | Child components, typically `GeoVisCanvas`.                                 |
 
+> **Error handling:** if the engine adapter throws during initialization, `GeoVisProvider` re-throws the error. Wrap it with an `<ErrorBoundary>` to catch adapter errors and display a fallback UI instead of a blank screen.
+>
+> ```tsx
+> <ErrorBoundary fallback={<p>Map failed to load.</p>}>
+>   <GeoVisProvider spec={spec}>
+>     <GeoVisCanvas viewId="main" style={{ width: '100%', height: '400px' }} />
+>   </GeoVisProvider>
+> </ErrorBoundary>
+> ```
+
 ### `GeoVisCanvas`
 
 Renders the map inside a `div` container mounted by the active engine. Must be used inside `GeoVisProvider`.
@@ -242,11 +484,74 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 ### `useGeoVis`
 
-Returns the current `GeoVisContextValue`: `{ runtime, spec, applyPatch, policyViolations }`. Must be called inside `GeoVisProvider`.
+Returns the current `GeoVisContextValue`. Must be called inside `GeoVisProvider`.
+
+| Return value       | Type                                | Description                                                                                                    |
+| ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).                                                      |
+| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                  |
+| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                   |
+| `policyViolations` | `PolicyViolation[]`                 | Active policy violations derived from the current spec. Each entry has `reason: string` and `message: string`. |
+| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                   |
+
+`SetViewOptions` fields: `center?: LngLat`, `zoom?: number`, `pitch?: number`, `bearing?: number`, `animate?: boolean` (defaults `true` — smooth flyTo).
+
+```tsx
+const { setView } = useGeoVis();
+
+// Fly to a new center/zoom
+setView({ center: [-46.6, -23.5], zoom: 12 });
+
+// Instant jump (no animation)
+setView({ center: [-43.1, -22.9], zoom: 10, animate: false });
+```
+
+> Before the map has mounted, `setView` has no effect on the rendered map but still updates `spec.view` in the runtime. The camera will not move until a view is mounted.
 
 ### `useGeoVisHover`
 
 Returns the live `MapHoverInfo | null` snapshot for the feature currently hovered on a polygon layer with `activeLegendId`. Lives in a dedicated context so high-frequency hover updates do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+### `useGeoVisClick`
+
+Returns the last clicked feature on the active map as `MapClickInfo | null` (`null` when no feature is selected). Unlike hover state, click state persists until dismissed — it clears to `null` when the user presses `Escape` or clicks outside a tracked layer/feature.
+
+**Tracking:** `useGeoVisClick` only populates when the user clicks a feature on a layer configured with `activeLegendId` **and** the feature has an id (numeric or string). Clicks on untracked layers or features without ids are treated as outside-clicks and clear the selection.
+
+Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+#### `MapClickInfo` fields
+
+| Field       | Type                       | Description                                                                    |
+| ----------- | -------------------------- | ------------------------------------------------------------------------------ |
+| `layerId`   | `string`                   | Layer id that received the click.                                              |
+| `sourceId`  | `string`                   | Source id backing the layer.                                                   |
+| `featureId` | `string \| number`         | Clicked feature's id (typically `geometryId` from `mapData`).                  |
+| `value`     | `number \| string \| null` | `feature-state.value` at click time; same semantics as `MapHoverInfo.value`.   |
+| `lngLat`    | `[number, number]`         | Geographic coordinates `[lng, lat]` of the click. Useful for anchoring popups. |
+| `point`     | `{ x: number; y: number }` | Canvas-relative pixel coordinates of the click.                                |
+
+#### Example — center map on clicked feature
+
+```tsx
+import { useGeoVis, useGeoVisClick } from '@ttoss/geovis';
+import { useEffect } from 'react';
+
+const CenterOnClick = () => {
+  const { setView } = useGeoVis();
+  const click = useGeoVisClick();
+
+  useEffect(() => {
+    if (click) {
+      setView({ center: click.lngLat, zoom: 14 });
+    }
+  }, [click, setView]);
+
+  return null;
+};
+
+// Place <CenterOnClick /> anywhere inside <GeoVisProvider>
+```
 
 ### `useMapData`
 
@@ -266,7 +571,7 @@ Renders a static, non-interactive legend resolved from the active spec. Resoluti
 
 ### `GeoVisHoverTooltip`
 
-Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Must be rendered inside the same `position: relative` container as `<GeoVisCanvas>` so its absolute positioning anchors to the map area. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
+Renders a floating tooltip over the map whenever the user hovers a polygon feature on a layer that has an `activeLegendId`. Uses `position: fixed` and viewport-relative coordinates internally, so it can be placed anywhere in the React tree — no shared container with `<GeoVisCanvas>` required. Internally subscribes to `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency hover updates do not re-render `useGeoVis()` consumers.
 
 | Prop              | Type                                      | Description                                                                                      |
 | ----------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |

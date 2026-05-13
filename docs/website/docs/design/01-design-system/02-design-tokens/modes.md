@@ -1,5 +1,6 @@
 ---
 title: Modes
+sidebar_position: 4
 ---
 
 # Modes

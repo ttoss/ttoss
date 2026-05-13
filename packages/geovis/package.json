@@ -1,7 +1,6 @@
 {
-  "private": true,
   "name": "@ttoss/geovis",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Geovisualization components for React applications.",
   "license": "MIT",
   "author": "ttoss",
@@ -35,7 +34,8 @@
   },
   "peerDependencies": {
     "maplibre-gl": ">=5.0.0",
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",

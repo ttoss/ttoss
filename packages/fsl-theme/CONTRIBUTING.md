@@ -1,0 +1,421 @@
+# Architecture & Contributing Guide
+
+## Architecture — the rule
+
+Components consume only `semantic` tokens. `semantic` values are `{core.path}` references; `core` holds raw primitives. Mode switches remap which `core` value each `semantic` token resolves to — `core` itself is never touched.
+
+```
+ThemeTokens
+├── core     — raw primitives (immutable across modes)
+└── semantic — {core.*} references (the public contract; remapped per mode)
+```
+
+```ts
+action.primary.background.default: '{core.colors.brand.500}'
+```
+
+A `semantic` value holding a raw value (not a `{ref}`) is an audited exception — see [Token Model §8 — RawValue inventory](../../docs/website/docs/design/01-design-system/02-design-tokens/model.md#8-rawvalue-exceptions-are-rare-intentional-and-registered).
+
+---
+
+## File map
+
+```
+src/
+  Types.ts              — type contracts for ThemeTokens, CoreTokens, SemanticTokens, ThemeBundle
+  baseTheme.ts          — concrete default values for both layers + darkAlternate override
+  baseBundle.ts         — assembles baseTheme + darkAlternate into ThemeBundle (internal)
+  createTheme.ts        — public API to build and extend ThemeBundle objects
+  vars.ts               — static typed map of semantic tokens as CSS var() strings (build-time)
+  css.ts                — re-exports token → CSS utilities; getThemeStylesContent()
+  dtcg.ts               — W3C Design Tokens (DTCG) JSON export
+  react.tsx             — ThemeProvider, ThemeHead, ThemeStyles, useColorMode, useTokens
+  runtime.ts            — framework-agnostic mode manager (data attributes + localStorage)
+  themeBootstrap.ts     — read-only mode resolution (no DOM writes — see ADR-002)
+  ssrScript.ts          — inline JS string for SSR flash prevention (see ADR-003)
+  runtime-entry.ts      — sub-path entry for '@ttoss/theme2/runtime'
+
+  roots/
+    helpers.ts          — isTokenRef, extractRefPath, deepMerge, flattenObject, toFlatTokens
+    tokenRegistry.ts    — single source of truth: token path prefix → CSS var prefix + DTCG type
+    toCssVars.ts        — ThemeTokens → flat CSS custom properties record + full CSS string
+    toVars.ts           — ThemeTokens → typed semantic tree with var() leaf values
+    toDTCG.ts           — ThemeTokens → W3C DTCG JSON
+
+  dataviz/              — optional dataviz token extension (separate token family)
+```
+
+---
+
+## Data flow
+
+```
+baseTheme (ThemeTokens)          ← edit here to change default values
+        │
+        ▼
+  createTheme({ overrides, alternate })
+        │
+        ▼
+   ThemeBundle
+   ├── baseMode: 'light' | 'dark'
+   ├── base: ThemeTokens          ← the full token tree
+   └── alternate?: ModeOverride   ← semantic-only remapping for the opposite mode
+        │
+        ├──▶ toCssVars()          → CSS string: --tt-* custom properties
+        │                            injected by ThemeProvider / getThemeStylesContent()
+        │
+        ├──▶ buildVarsMap()       → typed semantic tree with 'var(--tt-*)' leaves
+        │                            consumed at build-time to produce vars.ts
+        │
+        └──▶ toFlatTokens()      → flat record of all tokens resolved to raw values
+                                     used by useResolvedTokens() (React Native, canvas, PDF)
+```
+
+---
+
+## Token references
+
+`{path}` syntax is the only way `semantic` values point at `core`:
+
+```ts
+'{core.colors.brand.500}'; // pure reference
+'clamp({core.spacing.4}, 1cqi, {core.spacing.8})'; // embedded in expression
+```
+
+Helpers in `roots/helpers.ts`: `isTokenRef`, `extractRefPath`, `toFlatTokens` (resolves all refs to raw values; returns both `core.*` and `semantic.*` keys — see ADR-007).
+
+---
+
+## CSS variable naming
+
+`roots/tokenRegistry.ts` is the single source of truth. `toCssVars.ts` and `toDTCG.ts` derive their lookup tables from it. **Adding a new token family ⇒ add an entry, ordered most-specific prefix before least-specific sibling.**
+
+| Path                      | CSS var                    |
+| ------------------------- | -------------------------- |
+| `core.<family>.<sub>`     | `--tt-core-<family>-<sub>` |
+| `semantic.<family>.<sub>` | `--tt-<family>-<sub>`      |
+
+Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`; `core.elevation.emphatic.2` → `--tt-core-elevation-emphatic-2`; `semantic.dataviz.color.sequential.0` → `--tt-dataviz-sequential-0`.
+
+`toCssVars` behavior: `core` → raw value; `semantic` → `{ref}` replaced by `var(--tt-…)`, compound expressions handled inline.
+
+---
+
+## vars.ts — static typed map
+
+`vars` is a typed mirror of `SemanticTokens` where every leaf is a `var(--tt-*)` string. Generated once at build-time from `baseBundle`; never changes at runtime. Var names are stable across themes — only the CSS custom property values change on theme/mode switch.
+
+```ts
+import { vars } from '@ttoss/theme2/vars';
+vars.colors.action.primary.background.default;
+// → 'var(--tt-colors-action-primary-background-default)'
+```
+
+---
+
+## createTheme — internals
+
+`createTheme` calls `buildTheme` (internal): `deepMerge(base, overrides)` + `structuredClone` to break shared references. Result is a `ThemeBundle`. `alternate: null` opts out of the built-in `darkAlternate`. `extends` merges a parent `ThemeBundle` before `overrides` are applied. See README for usage examples.
+
+---
+
+## React integration — internal flow
+
+`ThemeProvider`:
+
+1. Creates a `ThemeRuntime` (mode resolution + localStorage persistence)
+2. Resolves `SemanticTokens` for the current mode (`deepMerge(base.semantic, alternate.semantic)` — see ADR-006)
+3. Calls `toFlatTokens` for the resolved-tokens context
+4. Injects CSS via `getThemeStylesContent` into a `<style>` tag
+5. Writes `data-tt-mode` on `<html>` (via `apply()` — see ADR-002)
+
+User-facing hook contracts: see [README — Hooks](./README.md#hooks).
+
+---
+
+## SSR / flash prevention
+
+User-facing integration: see [README — Next.js (SSR)](./README.md#nextjs-ssr). Internal mechanics: see ADR-002 (single DOM-write owner) and ADR-003 (script delivery).
+
+> Import only from sub-paths defined in `package.json` exports. Reaching into `src/` directly is unsupported.
+
+---
+
+## Naming rules
+
+Each family owns its semantic grammar — see `Types.ts` for the contract and the family doc (e.g. [`colors.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md)) for the full path syntax.
+
+Forbidden in `semantic` names across all families:
+
+- component names (`cardBg`)
+- mode names (`darkSurface`)
+- raw values
+
+---
+
+## Semantic-leaf JSDoc
+
+Every selectable `semantic` leaf carries JSDoc that closes a _selection_ decision the type alone cannot close. The package's discoverability surface for IDE hover and external LLM consumers lives entirely in these comments — there is no parallel manifest.
+
+**Shape (basis form):**
+
+```ts
+/**
+ * <one-line purpose>.
+ * Use when <discriminator the reader is asking>.
+ * Pair with <nearest sibling>; do not use for <its job>.   // omit if no sibling competes
+ */
+```
+
+**Word-choice axes** (each must hold; failing one signals a wrong axis, not a wording fix):
+
+- **Role, not rendering.** What the token _is for_ (`raised surface depth`), never what it _looks like_ (`soft grey shadow`). Renderings change per mode; the role is the invariant.
+- **Discriminator, not symptom.** Cite the question the reader is asking _before_ deciding (`element accepts dropped items`), not what they would observe _after_ (`highlighted drag state`).
+- **Nearest sibling only.** Disambiguate against the _one_ token most likely to be confused, not a list. No competing sibling → omit the line.
+- **Vocabulary borrowed, not invented.** Use the terms the family spec ([`02-families/<family>.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/)) already defines for that family's axes — `{ux}` and `{role}` for colors, `control`/`surface` for borders/radii/spacing, level numbers for elevation, and so on. Cross-family concepts use FSL Lexicon names (Entity Kind, Structural Role, Evaluation). Forbidden filler: `typically`, `recommended`, `general-purpose`, `flexible`, `in most cases`.
+- **One decision per line.** Comma-clause exceptions ("…, except when…") are separate leaves — promote, don't bury.
+
+**Audit before commit.** Could a sibling's JSDoc be swapped onto this leaf without losing accuracy? If yes, re-pick words until only this leaf could carry them.
+
+**Spec disagreement is a stop signal.** If the family spec and the type contradict, surface as an unstated invariant — do not paper over in JSDoc.
+
+---
+
+## Tests
+
+```bash
+# from packages/fsl-theme/
+pnpm run test
+
+# specific file
+pnpm run test --testPathPatterns=toCssVars
+```
+
+Test layout mirrors source: `tests/unit/tests/engine/`, `tests/unit/tests/theme/families/`, etc. `tests/unit/helpers/theme.ts` exports a minimal test theme factory used across all test files.
+
+---
+
+## Token change operations
+
+Every change touches some subset of these axes. Pick the subset by change kind; mode-sensitivity is orthogonal. Run `pnpm run test` after; update `coverageThreshold` in `tests/unit/jest.config.ts` if coverage moves.
+
+| Axis                                                    | Action                                                                                                                                                                                  |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Type contract** (`Types.ts`)                          | Add the property. `optional?` unless every theme must provide it. Use named sub-interfaces for new sub-trees.                                                                           |
+| **JSDoc** (semantic leaf)                               | New semantic leaf → add JSDoc per [Semantic-leaf JSDoc](#semantic-leaf-jsdoc). Renaming a leaf carries its JSDoc forward; restructuring re-evaluates against the _new_ nearest sibling. |
+| **Default values** (`baseTheme.ts`)                     | Add the value. Mode-sensitive entries also go into `darkAlternate.semantic` (core never).                                                                                               |
+| **CSS naming** (`tokenRegistry.ts`)                     | Add only if a new prefix is needed. More-specific prefixes ordered before less-specific siblings.                                                                                       |
+| **Tests** (`tests/unit/tests/theme/families/*.test.ts`) | Family assertions. Add a Warning test for new ramps/groups with ordering or depth invariants.                                                                                           |
+| **Family doc** (`docs/.../02-families/*.md`)            | Table + example. Use `elevation.md` as a structural template for new families.                                                                                                          |
+| **CHANGELOG**                                           | Only on breaking changes. BREAKING entry with before/after token paths.                                                                                                                 |
+
+**Change kinds** (the span over the axes above):
+
+- **Additive within an existing path** (new color step, new spacing step) — Type + Values + Tests + Doc.
+- **New sub-tree or new family** (`core.elevation.emphatic?`, dataviz) — add a CSS-naming entry; mark the sub-tree `optional?` so existing themes still satisfy `ThemeTokens`.
+- **Breaking** (rename, restructure, remove) — all axes + CHANGELOG. Run `grep -r 'old.path'` first to assess blast radius (consumers may reference CSS vars directly). Semantic renames follow the deprecation window in [Governance — Deprecation](../../docs/website/docs/design/01-design-system/02-design-tokens/governance.md#deprecation): keep the old name `optional?` with `/** @deprecated Use newPath instead */`, add the new name as required in the same release, remove the old name only in the next major. Core-path renames change the emitted CSS var name — public breaking, no soft path.
+
+---
+
+## Decisions (ADRs)
+
+Canonical trade-off record. Code references use `@adr ADR-NNN — <one-line reason>` in JSDoc, linking to the heading here.
+
+**Entry gate** — all three required: a reasonable alternative was rejected; the chosen path has a visible cost; a reviewer without context will propose the alternative. One or two → JSDoc on the symbol; when in doubt, prefer JSDoc.
+
+**Style** — titles, `Decision` lines, and re-litigation answers follow [Basis Form](../copilot-instructions.md#writing--basis-form). A re-litigation answer longer than one line signals wrong level — raise the principle.
+
+**Lifecycle** — IDs sequential, never reused; append only; never delete. Superseded entries: keep ID, add `Status: superseded-by:ADR-NNN`.
+
+**Review** — search here before flagging. Matching ADR → closed, reference it; new evidence → propose `superseded-by`. No match: bug → fix directly; trade-off → draft ADR first; neither → JSDoc or leave it.
+
+### ADR format (mandatory, fixed field order)
+
+One line per bullet. No prose unless a single sentence is insufficient. Empty field → `—`.
+
+```
+### ADR-NNN: <Short title>
+
+Status: accepted | superseded-by:ADR-MMM | deprecated  (YYYY-MM-DD)
+Tags: <comma-separated keywords>
+
+Decision: <one sentence — what was chosen>.
+Rejected: <Alt A — one-line reason>; <Alt B — one-line reason>.
+Cost: <the visible price we pay — one line>.
+Anchors: `file.ts`, `docs/.../family.md#section`.
+
+Re-litigation answers:
+- <recurring question> → <one-line answer>.
+```
+
+### Records
+
+_Append new entries below this line. Newest at the bottom._
+
+### ADR-001: Semantic color grammar is a normative FSL projection, not a 1:1 mirror
+
+Status: accepted (2026-05-07)
+Tags: colors, semantic-grammar, fsl-projection, ux-axis
+
+Decision: `semantic.colors.{ux}.{role}.{dimension}.{state}` is a normative FSL §17.1 projection: `ux` maps to 5 names (`action | input | navigation | feedback | informational`), `informational` collapsing `Collection | Overlay | Structure`; `Selection` → `input`; `Disclosure` → `navigation`; contract in `colors.md`.
+Rejected: 1:1 mirror of all 9 Entity Kinds — triples surface today for hypothetical future divergence (violates model.md §6 "no parallel vocabulary"); rename `informational` to `surface` — `surface` is already a Structural Role in the FSL Lexicon, creates cross-dimension name collision.
+Cost: token names ≠ FSL term names by construction; readers crossing from FSL docs to token docs need the projection table once.
+Anchors: `src/Types.ts` → `SemanticColors`, `docs/website/docs/design/01-design-system/02-design-tokens/model.md#semantic-color-grammar--fsl-projection`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md#fsl-entity-kind-mapping`.
+
+Re-litigation answers:
+
+- "`informational` is not in the FSL Lexicon" → correct and intentional. `ux` is a projected axis, not the Entity Kind set.
+- "The collapse loses the original Entity Kind" → Entity Kind lives on the component, not on the token. Tokens carry value, not identity.
+- "What if Overlay needs to diverge from Collection later?" → add `semantic.colors.overlay.*` then; migration is local. Not a reason to triple the surface today.
+- "Use `surface` instead of `informational`" → `surface` is a Structural Role (fsl-lexicon.md §2). Reusing it on the `ux` axis collides across FSL dimensions.
+- "Why does the projection have a different name from FSL?" → because it is a projection. A 1:1 mirror would not be a projection — it would be a duplicate vocabulary.
+
+### ADR-002: `apply()` is the single owner of all DOM writes
+
+Status: accepted (2026-05-07)
+Tags: runtime, dom, ssr
+
+Decision: All DOM writes (`data-tt-theme`, `data-tt-mode`, `style.colorScheme`) flow through `apply()` in `createThemeRuntime`, called on init and on every state transition. `themeBootstrap.ts › resolveTheme` is read-only.
+Rejected: split init writes (in `themeBootstrap`) from update writes (in `apply()`) — two owners, invisible coupling, drift on every new attribute.
+Cost: the SSR template string in `ssrScript.ts` mirrors `apply()` (see ADR-003); a new attribute lands in two places, not one.
+Anchors: `src/runtime.ts` › `apply`, `src/themeBootstrap.ts` › `resolveTheme`, `src/ssrScript.ts`.
+
+Re-litigation answers:
+
+- "Why doesn't `themeBootstrap` apply on init?" → splitting writers caused drift; `apply()` runs on init too.
+- "Adding a new `data-tt-*` attribute — where?" → `apply()` only, then mirror into the `ssrScript.ts` template (ADR-003).
+
+### ADR-003: SSR script is an explicit template string, not a serialized function
+
+Status: accepted (2026-05-07)
+Tags: runtime, ssr, build, coverage
+
+Decision: `getThemeScriptContent` in `ssrScript.ts` returns a hand-written IIFE template string mirroring `resolveTheme + apply()`; `DEFAULT_STORAGE_KEY` exported from `runtime.ts` is shared by both files — never hardcoded.
+Rejected: serialize a TS function via `Function.prototype.toString()` — bundler/transpiler-dependent (minify, sourcemaps, coverage instrumentation); blocked Istanbul coverage on the only interesting runtime path; self-containment was an invisible rule enforced only by a comment.
+Cost: any DOM-write change in `apply()` (ADR-002) must also land in the template string. Co-located comment marks the exact spot.
+Anchors: `src/ssrScript.ts` › `getThemeScriptContent`, `src/runtime.ts` › `apply`, `DEFAULT_STORAGE_KEY`.
+
+Re-litigation answers:
+
+- "Why duplicate `apply()`?" → the script must run before the bundle loads; no module system available inline.
+- "Use `Function.prototype.toString`?" → reverted; bundler-fragile and uncoverable.
+- "Hardcode `'tt-theme'` here?" → no. Import `DEFAULT_STORAGE_KEY`; divergence silently breaks persistence.
+
+### ADR-004: `mediaQuery` is cached once per runtime, never re-queried
+
+Status: accepted (2026-05-07)
+Tags: runtime, color-scheme, testing
+
+Decision: `window.matchMedia('(prefers-color-scheme: dark)')` is cached once per `createThemeRuntime` instance; all reads use `mediaQuery.matches`, listener managed by `syncMediaListener`.
+Rejected: a `getSystemMode()` helper that calls `matchMedia` per read — produces a new throwaway `MediaQueryList` per call; tests using mocks that return distinct objects per call become unreliable.
+Cost: the runtime instance owns the `MediaQueryList` for its lifetime; `destroy()` must remove the listener.
+Anchors: `src/runtime.ts` › `createThemeRuntime`, `syncMediaListener`.
+
+Re-litigation answers:
+
+- "Why not call `matchMedia` each time?" → browsers mutate `.matches` on the existing object before dispatching `change`; re-querying is unnecessary and breaks mocks.
+
+### ADR-005: `onSystemChange` carries no defensive guards
+
+Status: accepted (2026-05-07)
+Tags: runtime, invariants
+
+Decision: The handler unconditionally updates `resolvedMode` and applies state — no `if (destroyed)` or `if (mode !== 'system')` checks.
+Rejected: defensive guards.
+Cost: none — guards are structurally unreachable: `destroy()` is synchronous; `setMode` re-syncs the listener on every mode change.
+Anchors: `src/runtime.ts` › `onSystemChange`, `syncMediaListener`, `destroy`.
+
+Re-litigation answers:
+
+- "Race against `destroy()`?" → JS is single-threaded; the listener is removed before `destroy()` returns.
+- "Stale handler when mode changes?" → `syncMediaListener` runs on every `setMode`; the check would be dead code.
+
+### ADR-006: `resolveSemanticTokens` and `bundleToCssVars` both call `deepMerge` — no shared helper
+
+Status: accepted (2026-05-07)
+Tags: react, css-generation, deepmerge
+
+Decision: Keep the two `deepMerge(base.semantic, alternate.semantic)` call sites separate — they differ in return type (`SemanticTokens` vs `ThemeTokens`) and mode-sensitivity.
+Rejected: extract a shared `resolveSemanticForMode(bundle, mode)` helper — covers only the React path; `bundleToCssVars` still has to composite a full `ThemeTokens`, so the second call survives.
+Cost: the literal expression appears in two files; readers may misread it as duplication.
+Anchors: `src/react.tsx` › `resolveSemanticTokens`, `src/roots/toCssVars.ts` › `bundleToCssVars`.
+
+Re-litigation answers:
+
+- "Extract a shared helper?" → return types differ (`SemanticTokens` vs `ThemeTokens`); one is mode-sensitive, the other is not. The helper would not eliminate the second call.
+
+### ADR-007: `toFlatTokens` returns both `core.*` and `semantic.*` keys; no semantic-only wrapper
+
+Status: accepted (2026-05-07)
+Tags: helpers, api-surface
+
+Decision: `toFlatTokens` flattens and resolves all refs, returning both `core.*` and `semantic.*` keys. Callers needing only semantic keys filter `key.startsWith('semantic.')` at the call site.
+Rejected: a `toFlatSemanticTokens` wrapper.
+Cost: every semantic-only consumer carries a one-line filter.
+Anchors: `src/roots/helpers.ts` › `toFlatTokens`.
+
+Re-litigation answers:
+
+- "Why not a wrapper?" → core keys are required internally for ref resolution; a wrapper over a one-line filter would be a single-use abstraction.
+
+### ADR-008: `baseTheme.ts` is an explicit data declaration — no builders or recipes
+
+Status: accepted (2026-05-08)
+Tags: baseTheme, maintainability, data
+
+Decision: `baseTheme.ts` is a data declaration; no builder, recipe, or generator creates any part of it.
+Rejected: builder helpers (`buildRoleColors`, `interactive`) — force readers to trace callsites to read a single token value; `TokenRef` is `string`, so neither approach catches value-level typos.
+Cost: ~1860 lines; apparent repetition is the explicit contract, not accidental.
+Anchors: `src/baseTheme.ts`.
+
+Re-litigation answers:
+
+- "The file has too many lines / extract the repeated pattern" → it is a data file; line count is not complexity, and explicit repetition is the contract.
+- "A builder eliminates the human error window" → the error window is value-level (`TokenRef` is `string`); shape validation by `ThemeTokens` is identical either way.
+
+### ADR-009: Semantic hit tokens expose fine-pointer default only; coarse delivered via emitter + non-CSS bridges
+
+Status: accepted (2026-05-08)
+Tags: sizing, hit-targets, pointer, css-emitter, non-css-consumers
+
+Decision: `semantic.sizing.hit.*` resolves to the fine-pointer ergonomic default; coarse delivery is an emitter + bridge concern, not a token-value concern.
+Rejected: parallel `semantic.sizing.hit.coarse.*` tokens — components would need pointer-type conditional logic, defeating the ergonomic guarantee.
+Cost: the type contract appears single-valued; coarse delivery via emitter + bridges is invisible to `tsc`.
+Anchors: `src/roots/toCssVars.ts` › `buildCoarseHitVars`, `src/roots/toDTCG.ts` › `buildHitExtension`, `src/react.tsx` › `applyCoarseHitOverrides`.
+
+Re-litigation answers:
+
+- "`semantic.sizing.hit.*` lies about the coarse value" → the type states the ergonomic default; coarse is emitter scope, same axis as ADR-009's Decision.
+- "JS can't read the coarse value" → `toDTCG` `$extensions` and `react.tsx` `applyCoarseHitOverrides` already provide it; parallel tokens would shift the burden to the component.
+- "This is magic coupling" → the coupling is explicit: each delivery path has a named function, JSDoc, and a test.
+
+### ADR-010: `CoreColorRef` is an open template literal, not generated from `baseTheme`
+
+Status: accepted (2026-05-08)
+Tags: types, CoreColorRef, palette, theme-extensibility
+
+Decision: `CoreColorRef` is `TokenRef<'core.colors.${string}'>` — an open template literal, not a union derived from `typeof baseTheme.core.colors`.
+Rejected: generate a closed `CoreColorRef` union from `baseTheme` — creates a Types.ts → baseTheme.ts import cycle (`baseTheme` uses `satisfies ThemeTokens` which imports Types.ts); breaks extensibility (derived themes add families and steps unknown to `baseTheme`); typo-safety gain is zero on top of what the semantic layer already enforces (legal `ux × role × dimension × state` combinations and contrast pairings).
+Cost: a ref like `'{core.colors.brand.999}'` is accepted by `tsc` even if `brand.999` is absent from the theme; caught only at runtime by the resolver.
+Anchors: `src/Types.ts` → `CoreColorRef`, `src/baseTheme.ts`, `docs/.../colors.md#hue-scales`.
+
+Re-litigation answers:
+
+- "Generate a closed union for autocomplete / typo-safety" → cycle + extensibility breakage; runtime resolution already surfaces missing refs.
+- "Use `typeof baseTheme` without touching Types.ts" → consumers calling `createTheme` with a derived theme have no `baseTheme` — the closed union would reject their valid family names and steps.
+
+### ADR-011: `outline.selected` lives inside `border.outline.*`; `focus.ring` stays a separate family
+
+Status: accepted (2026-05-08)
+Tags: borders, outline, selected, focus, shape-grouping
+
+Decision: the selected-state line is `border.outline.selected` (sibling of `outline.surface` and `outline.control`); `focus.ring` remains a top-level `semantic.focus.*` family with a `color` field and an accessibility contract distinct from `border.*`.
+Rejected: keep `border.selected` flat alongside `border.outline.*` — same `SemanticBorderOutline` shape and same CSS mechanism (`outline`) as the rest of `outline.*`, so the flat sibling hides the grouping; collapse `focus.ring` into `outline.focus` — drops the cross-cutting `color: TokenRef<'semantic.${string}'>` field, and `focus.ring` is implemented via CSS `outline` as an accessibility contract that must not layout-shift, not as an "outline-at-rest" variant (borders.md §Focus Implementation).
+Cost: one extra path level for selected-state lines (`border.outline.selected` vs `border.selected`); the canonical set is now four `border.*` entries plus `focus.ring`, breaking strict symmetry with the previous five-entry list.
+Anchors: `src/Types.ts` → `SemanticBorder`, `src/baseTheme.ts` › `semantic.border`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/borders.md#canonical-semantic-set`.
+
+Re-litigation answers:
+
+- "Why not flatten `outline.{surface,control}` to siblings of `selected` instead?" → `outline.*` is a grouping by CSS mechanism and shape; flattening loses the namespace that lets a component iterate `outline.{surface|control|selected}` uniformly.
+- "Unify `focus.ring` under `outline.focus` for one shape" → `focus.ring.color` is part of the contract; `outline.{surface,control,selected}` intentionally have no `color` (color belongs to the color system per borders.md). Unifying either drops `color` from focus or adds it everywhere — both regressions.
+- "Add `outline.selected.color`" → contradicts borders.md "Color expresses what the line means" / "Width and style express how strong the line is"; selected color is supplied by `semantic.colors.{ux}.{role}.border.selected`.
