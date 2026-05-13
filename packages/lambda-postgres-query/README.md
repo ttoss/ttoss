@@ -289,6 +289,31 @@ Each function in `createLambdaPostgresQueryTemplate` can use different `database
 
 Grant each consumer `lambda:InvokeFunction` only for the ARN output it needs, such as `LambdaPostgresReadQueryFunctionArn` for read-only consumers.
 
+ARN outputs are exported with this CloudFormation export name pattern:
+
+- `${AWS::StackName}-${outputArnName}`
+
+The practical reason to export these names is also deletion safety: when another stack imports an ARN export, CloudFormation blocks deleting the producer stack resource until that import is removed.
+
+For example, `LambdaPostgresReadQueryFunctionArn` is exported as `${AWS::StackName}-LambdaPostgresReadQueryFunctionArn`.
+
+In a consumer stack, define a parameter with that export name and import it using `importValueFromParameter`:
+
+```typescript
+import { importValueFromParameter } from '@ttoss/cloudformation';
+
+const resources = {
+  InvokePermission: {
+    Type: 'AWS::Lambda::Permission',
+    Properties: {
+      FunctionName: importValueFromParameter('ReadQueryFunctionArnExportName'),
+      Action: 'lambda:InvokeFunction',
+      Principal: 'apigateway.amazonaws.com',
+    },
+  },
+};
+```
+
 ## API Reference
 
 ### `createLambdaPostgresQueryTemplate(options?)`
@@ -303,8 +328,10 @@ Creates a CloudFormation template for one or more PostgreSQL query Lambdas.
   - `handler` (string, optional): Handler function. Default: `'handler.handler'`
   - `databaseParameters` (object, optional): CloudFormation parameter names used to inject database settings into that Lambda
   - `outputArnName` (string, optional): Output key for the function ARN. Default: `${name}Arn`
+    - The ARN output is exported with `Export.Name = ${AWS::StackName}-${outputArnName}`
 - `memorySize` (number, optional): Lambda memory size in MB. Default: `128`
 - `timeout` (number, optional): Lambda timeout in seconds. Default: `30`
+- `deletionProtection` (boolean, optional): Adds `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain` to each Lambda resource so stack updates/deletes do not remove functions. Default: `false`
 
 #### Returns
 
