@@ -122,12 +122,13 @@ carlin deploy
 
 ## Documentation Structure
 
-- **[Core Concepts](/docs/carlin/core-concepts/stack-naming)** - Stack naming, environments, base stack, templates
+- **[Core Concepts](/docs/carlin/core-concepts/stack-naming)** - Stack naming, environments, configuration, base stack, templates
 - **[Commands](/docs/carlin/commands/deploy)** - Complete command reference
 
 ## Key Features
 
 - **[Automatic Stack Naming](/docs/carlin/core-concepts/stack-naming)** — Generates stack names from `package.json` and branch/environment
+- **[Typed Configuration](/docs/carlin/core-concepts/configuration)** — Connect `.env`, `carlin.ts`, and CloudFormation parameters with validation
 - **[Lambda Code Building](/docs/carlin/commands/deploy#lambda)** — Automatic code bundling with esbuild, S3 upload, and parameter injection
 - **[Static App Deployment](/docs/carlin/commands/deploy-static-app)** — One command deploys to S3 + CloudFront
 - **[Environment Variables](/docs/carlin/commands/generate-env)** — Generate `.env` files from stack outputs
