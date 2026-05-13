@@ -12,6 +12,11 @@ export type IconProps = Omit<IconifyIconProps, 'ref'>;
 
 export type { IconifyIcon };
 
+/**
+ * Renders an Iconify icon and disables observer behavior by default.
+ *
+ * Set `noobserver={false}` only when you need Iconify observer updates enabled.
+ */
 export const Icon = React.forwardRef<IconifyIconHTMLElement | null, IconProps>(
   (props, ref) => {
     const { noobserver = true, ...restProps } = props;
