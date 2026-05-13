@@ -16,6 +16,8 @@ import { Form, FormFieldInput, useForm } from '../../../src';
 
 // react-router-dom v6 requires Request/Response globals which jsdom lacks.
 // Save originals and restore them after all tests to avoid leaking state.
+const hadRequest = 'Request' in globalThis;
+const hadResponse = 'Response' in globalThis;
 const originalRequest = globalThis.Request;
 const originalResponse = globalThis.Response;
 
@@ -45,8 +47,16 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  globalThis.Request = originalRequest;
-  globalThis.Response = originalResponse;
+  if (hadRequest) {
+    globalThis.Request = originalRequest;
+  } else {
+    delete (globalThis as Record<string, unknown>).Request;
+  }
+  if (hadResponse) {
+    globalThis.Response = originalResponse;
+  } else {
+    delete (globalThis as Record<string, unknown>).Response;
+  }
 });
 
 const reactRouterWarnOnUnsavedChanges = {
@@ -299,7 +309,7 @@ describe('warnOnUnsavedChanges', () => {
     if (typeof beforeUnloadHandler === 'function') {
       const event = {
         preventDefault: jest.fn(),
-        returnValue: undefined as unknown,
+        returnValue: '',
       } as unknown as BeforeUnloadEvent;
 
       beforeUnloadHandler(event);
