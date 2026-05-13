@@ -22,10 +22,10 @@
      */
     "types": ["node"],
     /**
-     * `target` to `es2024` because Node.js 24 supports ES2024 features.
-     * https://node.green/#ES2024
+     * `target` to `es2025` to align with TypeScript 6.0 modern defaults and
+     * latest standard library types.
      */
-    "target": "es2024",
+    "target": "es2025",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
