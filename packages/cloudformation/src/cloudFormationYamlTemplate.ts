@@ -1,5 +1,7 @@
-import { CloudFormationTemplate } from './CloudFormationTemplate';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import yaml from 'js-yaml';
+
+import type { CloudFormationTemplate } from './CloudFormationTemplate';
 
 export interface TagAndType {
   tag: string;

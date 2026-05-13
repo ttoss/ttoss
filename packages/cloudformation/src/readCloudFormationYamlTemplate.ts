@@ -1,10 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { CloudFormationTemplate } from './CloudFormationTemplate';
-import {
-  TagAndType,
-  loadCloudFormationTemplate,
-} from './cloudFormationYamlTemplate';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import type { CloudFormationTemplate } from './CloudFormationTemplate';
+import type { TagAndType } from './cloudFormationYamlTemplate';
+import { loadCloudFormationTemplate } from './cloudFormationYamlTemplate';
 
 const getTypes = (): TagAndType[] => {
   return [

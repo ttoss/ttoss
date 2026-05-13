@@ -50,6 +50,11 @@ test('should create lambda query template with one default function', () => {
     },
     LambdaPostgresQueryFunctionArn: {
       Value: { 'Fn::GetAtt': ['LambdaPostgresQueryFunction', 'Arn'] },
+      Export: {
+        Name: {
+          'Fn::Sub': '${AWS::StackName}-LambdaPostgresQueryFunctionArn',
+        },
+      },
     },
   });
 });
@@ -134,12 +139,36 @@ test('should create multiple lambdas with specific credentials', () => {
     },
     LambdaPostgresWriteQueryFunctionArn: {
       Value: { 'Fn::GetAtt': ['LambdaPostgresWriteQueryFunction', 'Arn'] },
+      Export: {
+        Name: {
+          'Fn::Sub': '${AWS::StackName}-LambdaPostgresWriteQueryFunctionArn',
+        },
+      },
     },
     LambdaPostgresReadQueryFunction: {
       Value: { Ref: 'LambdaPostgresReadQueryFunction' },
     },
     LambdaPostgresReadQueryFunctionArn: {
       Value: { 'Fn::GetAtt': ['LambdaPostgresReadQueryFunction', 'Arn'] },
+      Export: {
+        Name: {
+          'Fn::Sub': '${AWS::StackName}-LambdaPostgresReadQueryFunctionArn',
+        },
+      },
+    },
+  });
+});
+
+test('should enable deletion protection for lambda resources', () => {
+  const template = createLambdaPostgresQueryTemplate({
+    deletionProtection: true,
+  });
+
+  expect(template.Resources).toMatchObject({
+    LambdaPostgresQueryFunction: {
+      Type: 'AWS::Lambda::Function',
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
     },
   });
 });

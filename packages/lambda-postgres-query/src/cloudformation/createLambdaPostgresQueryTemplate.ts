@@ -36,6 +36,7 @@ export type CreateLambdaPostgresQueryTemplateOptions = {
   functions?: LambdaDefinition[];
   memorySize?: number;
   timeout?: number;
+  deletionProtection?: boolean;
 };
 
 export const DATABASE_PARAMETERS_DEFAULT: DatabaseParameters = {
@@ -179,16 +180,26 @@ const createLambdaResource = ({
   databaseParameters,
   memorySize,
   timeout,
+  deletionProtection,
 }: {
   functionName: string;
   handler: string;
   databaseParameters: DatabaseParameters;
   memorySize: number;
   timeout: number;
+  deletionProtection: boolean;
 }) => {
+  const resourcePolicies = deletionProtection
+    ? {
+        DeletionPolicy: 'Retain' as const,
+        UpdateReplacePolicy: 'Retain' as const,
+      }
+    : {};
+
   return {
     [functionName]: {
       Type: 'AWS::Lambda::Function',
+      ...resourcePolicies,
       Properties: {
         Code: {
           S3Bucket: { Ref: 'LambdaS3Bucket' },
@@ -237,10 +248,12 @@ const createResources = ({
   functions,
   memorySize,
   timeout,
+  deletionProtection,
 }: {
   functions: NormalizedLambdaDefinition[];
   memorySize: number;
   timeout: number;
+  deletionProtection: boolean;
 }) => {
   return functions.reduce((allResources, lambdaFunction) => {
     const { name, handler, databaseParameters } = lambdaFunction;
@@ -253,6 +266,7 @@ const createResources = ({
         databaseParameters,
         memorySize,
         timeout,
+        deletionProtection,
       }),
       ...createLambdaLogResource({ logicalId: name }),
     };
@@ -276,6 +290,11 @@ const createOutputs = ({
       [outputArnName]: {
         Description: `Lambda function to query PostgreSQL (${name}) ARN.`,
         Value: { 'Fn::GetAtt': [name, 'Arn'] },
+        Export: {
+          Name: {
+            'Fn::Sub': `\${AWS::StackName}-${outputArnName}`,
+          },
+        },
       },
     };
   }, {} as Outputs);
@@ -341,6 +360,7 @@ export const createLambdaPostgresQueryTemplate = ({
   functions,
   memorySize = MEMORY_SIZE_DEFAULT,
   timeout = TIMEOUT_DEFAULT,
+  deletionProtection = false,
 }: CreateLambdaPostgresQueryTemplateOptions = {}): CloudFormationTemplate => {
   const templateFunctions = normalizeFunctions({ functions });
 
@@ -352,6 +372,7 @@ export const createLambdaPostgresQueryTemplate = ({
     functions: templateFunctions,
     memorySize,
     timeout,
+    deletionProtection,
   });
 
   const templateOutputs = createOutputs({
