@@ -83,6 +83,8 @@ carlin deploy --environment staging --parameters '{"InstanceType":"t3.micro"}'
 carlin deploy --environment production --parameters '{"InstanceType":"t3.large"}'
 ```
 
+For larger projects, keep these values in a typed `carlin.ts` file. See [Configuration](/docs/carlin/core-concepts/configuration) for the full flow from environment variables to CloudFormation parameters.
+
 ### 4. Configuration Inheritance
 
 Create environment-specific config files:

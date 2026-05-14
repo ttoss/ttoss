@@ -11,7 +11,7 @@ const lambdaClient = new LambdaClient();
 const textDecoder = new TextDecoder('utf-8');
 
 export type QueryParams = {
-  lambdaPostgresQueryFunction?: string;
+  functionName?: string;
   camelCaseKeys?: boolean;
 } & QueryConfig;
 
@@ -27,7 +27,7 @@ export const query = async <Rows extends QueryResultRow = any>(
 ) => {
   try {
     const {
-      lambdaPostgresQueryFunction = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
+      functionName,
       camelCaseKeys = true,
       ...pgParams
     } = typeof params === 'string'
@@ -37,7 +37,7 @@ export const query = async <Rows extends QueryResultRow = any>(
       : params;
 
     const input: InvokeCommandInput = {
-      FunctionName: lambdaPostgresQueryFunction,
+      FunctionName: functionName || process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
       Payload: JSON.stringify({ ...pgParams }),
     };
 

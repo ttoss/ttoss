@@ -77,14 +77,16 @@ export type PolicyStatement = {
   Sid?: string;
   Effect: 'Allow' | 'Deny';
   Action: string | string[];
-  Resource?: CloudFormationValue<string | string[]>;
+  Resource?: CloudFormationValue<string> | Array<CloudFormationValue<string>>;
   Principal?: CloudFormationValue<string | Record<string, string | string[]>>;
   Condition?: Record<
     string,
     Record<string, CloudFormationValue<string | string[]>>
   >;
   NotAction?: string | string[];
-  NotResource?: CloudFormationValue<string | string[]>;
+  NotResource?:
+    | CloudFormationValue<string>
+    | Array<CloudFormationValue<string>>;
   NotPrincipal?: CloudFormationValue<
     string | Record<string, string | string[]>
   >;

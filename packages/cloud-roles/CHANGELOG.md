@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.56](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.55...@ttoss/cloud-roles@0.8.56) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.55](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.54...@ttoss/cloud-roles@0.8.55) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## 0.8.54 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.8.53](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.52...@ttoss/cloud-roles@0.8.53) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

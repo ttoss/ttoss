@@ -130,3 +130,59 @@ test('should throw error.message', async () => {
 
   await expect(query(text)).rejects.toThrow(errorMessage);
 });
+
+test('should use functionName when provided', async () => {
+  const functionName = 'LambdaPostgresReadQueryFunction';
+
+  lambdaMock.on(InvokeCommand).resolves({
+    Payload: new TextEncoder().encode(
+      JSON.stringify({
+        rows: [{ id: 1 }],
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any,
+  });
+
+  await query({
+    text: 'SELECT * FROM table',
+    functionName,
+  });
+
+  expect(
+    (lambdaMock.calls()[0].args[0].input as { FunctionName: string })
+      .FunctionName
+  ).toBe(functionName);
+});
+
+test('should use LAMBDA_POSTGRES_QUERY_FUNCTION when functionName is not provided', async () => {
+  const envFunctionName = 'LambdaPostgresDefaultQueryFunction';
+  const previousValue = process.env.LAMBDA_POSTGRES_QUERY_FUNCTION;
+
+  process.env.LAMBDA_POSTGRES_QUERY_FUNCTION = envFunctionName;
+
+  lambdaMock.on(InvokeCommand).resolves({
+    Payload: new TextEncoder().encode(
+      JSON.stringify({
+        rows: [{ id: 1 }],
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any,
+  });
+
+  try {
+    await query({
+      text: 'SELECT * FROM table',
+    });
+
+    expect(
+      (lambdaMock.calls()[0].args[0].input as { FunctionName: string })
+        .FunctionName
+    ).toBe(envFunctionName);
+  } finally {
+    if (previousValue === undefined) {
+      delete process.env.LAMBDA_POSTGRES_QUERY_FUNCTION;
+    } else {
+      process.env.LAMBDA_POSTGRES_QUERY_FUNCTION = previousValue;
+    }
+  }
+});

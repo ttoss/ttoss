@@ -1,17 +1,21 @@
 {
   "name": "@ttoss/layouts",
-  "version": "0.11.18",
+  "version": "0.11.19",
   "description": "Layout components for React",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/layouts"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -22,12 +26,6 @@
   "scripts": {
     "build": "tsup",
     "test": "jest --projects tests/unit"
-  },
-  "sideEffects": false,
-  "peerDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
@@ -41,9 +39,11 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "React"
-  ],
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

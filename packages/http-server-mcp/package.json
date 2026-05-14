@@ -1,17 +1,26 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "ai",
+    "koa",
+    "llm",
+    "mcp",
+    "model-context-protocol",
+    "server"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/http-server-mcp"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -23,14 +32,10 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@ttoss/http-server": "workspace:^",
     "zod": "^4.3.6"
-  },
-  "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -39,14 +44,9 @@
     "supertest": "^7.2.2",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "ai",
-    "koa",
-    "llm",
-    "mcp",
-    "model-context-protocol",
-    "server"
-  ],
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

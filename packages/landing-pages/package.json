@@ -1,17 +1,21 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.15.17",
+  "version": "0.15.18",
   "description": "Package for creating landing pages.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React",
+    "landing-pages"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/landing-pages"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -28,11 +32,6 @@
     "@iconify/react": "^4.1.1",
     "react-collapse": "^5.1.1"
   },
-  "peerDependencies": {
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
@@ -44,10 +43,11 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "React",
-    "landing-pages"
-  ],
+  "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

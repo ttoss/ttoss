@@ -1,16 +1,17 @@
 {
   "name": "@ttoss/forms",
-  "version": "0.43.22",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
+  "version": "0.43.23",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/forms"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -25,7 +26,6 @@
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": true,
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^5.2.2",
@@ -33,12 +33,6 @@
     "react-number-format": "^5.4.4",
     "yup": "^1.7.1",
     "zod": "^4.3.6"
-  },
-  "peerDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/react-i18n": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
@@ -56,6 +50,12 @@
     "react-router-dom": "^6.30.1",
     "tsup": "^8.5.1",
     "yup": "^1.7.1"
+  },
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
   },
   "publishConfig": {
     "access": "public",

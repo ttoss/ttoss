@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.0...@ttoss/cloudformation@0.13.1) (2026-05-14)
+
+### Bug Fixes
+
+- accept CloudFormationIntrinsic values in PolicyStatement Resource arrays ([#998](https://github.com/ttoss/ttoss/issues/998)) ([aac1e0f](https://github.com/ttoss/ttoss/commit/aac1e0f7c77eeb014a4439a18a10f9638165692d))
+
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.12.13...@ttoss/cloudformation@0.13.0) (2026-05-13)
+
+### Features
+
+- lambda postgres query security ([#996](https://github.com/ttoss/ttoss/issues/996)) ([dff9948](https://github.com/ttoss/ttoss/commit/dff9948e3b9f6d83192b1c26df227dfc7341638d))
+
+## 0.12.13 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.12.12](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.12.11...@ttoss/cloudformation@0.12.12) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloudformation

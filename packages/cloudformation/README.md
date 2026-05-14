@@ -62,6 +62,42 @@ const template = createApiTemplate({
 });
 ```
 
+When a producing stack exports a value and a consuming stack imports it with
+`Fn::ImportValue`, CloudFormation protects that dependency by blocking deletion
+of the producer export until imports are removed.
+
+Producer stack output example:
+
+```typescript
+const outputs = {
+  LambdaPostgresReadQueryFunctionArn: {
+    Value: { 'Fn::GetAtt': ['LambdaPostgresReadQueryFunction', 'Arn'] },
+    Export: {
+      Name: {
+        'Fn::Sub': '${AWS::StackName}-LambdaPostgresReadQueryFunctionArn',
+      },
+    },
+  },
+};
+```
+
+Consumer stack usage with parameterized export name:
+
+```typescript
+import { importValueFromParameter } from '@ttoss/cloudformation';
+
+const resources = {
+  InvokePermission: {
+    Type: 'AWS::Lambda::Permission',
+    Properties: {
+      FunctionName: importValueFromParameter('ReadQueryFunctionArnExportName'),
+      Action: 'lambda:InvokeFunction',
+      Principal: 'apigateway.amazonaws.com',
+    },
+  },
+};
+```
+
 ## Reading Templates
 
 ### `findAndReadCloudFormationTemplate`

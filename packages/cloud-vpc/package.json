@@ -1,17 +1,22 @@
 {
   "name": "@ttoss/cloud-vpc",
-  "version": "0.1.42",
+  "version": "0.1.45",
   "description": "Deploy a VPC with public and private subnets",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "aws",
+    "cloudformation",
+    "vpc"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/cloud-vpc"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
   "exports": {
     ".": "./src/index.ts"
   },
@@ -32,11 +37,6 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "aws",
-    "cloudformation",
-    "vpc"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {

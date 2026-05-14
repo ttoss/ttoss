@@ -1,17 +1,21 @@
 {
   "name": "@ttoss/read-config-file",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "Read a configuration file",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "config",
+    "read-config-file"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/read-config-file"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -37,10 +41,6 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "config",
-    "read-config-file"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {

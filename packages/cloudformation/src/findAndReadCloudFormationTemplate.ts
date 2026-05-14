@@ -1,8 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+
+import { readConfigFile } from '@ttoss/read-config-file';
+
 import { type CloudFormationTemplate } from './CloudFormationTemplate';
 import { readCloudFormationYamlTemplate } from './readCloudFormationYamlTemplate';
-import { readConfigFile } from '@ttoss/read-config-file';
 
 export const defaultTemplatePaths = ['ts', 'js', 'yaml', 'yml', 'json'].map(
   (extension) => {
