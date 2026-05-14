@@ -234,7 +234,7 @@ DATABASE_PORT=5432
 
 ### Query from a Consumer Lambda
 
-Use the CloudFormation output value to configure the consumer. For example, set `LAMBDA_POSTGRES_QUERY_FUNCTION_NAME` to the `LambdaPostgresReadQueryFunction` output for read traffic:
+Use the CloudFormation output value to configure the consumer. For example, set `LAMBDA_POSTGRES_QUERY_FUNCTION` to the `LambdaPostgresReadQueryFunction` output for read traffic:
 
 ```typescript
 import { query } from '@ttoss/lambda-postgres-query';
@@ -347,7 +347,7 @@ Accepts either a SQL string or an options object extending [`QueryConfig`](https
 
 - `text` (string): SQL query text
 - `values` (array, optional): Query parameter values
-- `functionName` (string, optional): Physical query Lambda name or ARN. Default: `process.env.LAMBDA_POSTGRES_QUERY_FUNCTION_NAME`
+- `functionName` (string, optional): Physical query Lambda name or ARN. Default: `process.env.LAMBDA_POSTGRES_QUERY_FUNCTION`
 - `camelCaseKeys` (boolean, optional): Convert snake_case column names to camelCase. Default: `true`
 
 #### Returns

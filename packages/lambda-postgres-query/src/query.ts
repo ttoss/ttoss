@@ -37,8 +37,7 @@ export const query = async <Rows extends QueryResultRow = any>(
       : params;
 
     const input: InvokeCommandInput = {
-      FunctionName:
-        functionName || process.env.LAMBDA_POSTGRES_QUERY_FUNCTION_NAME,
+      FunctionName: functionName || process.env.LAMBDA_POSTGRES_QUERY_FUNCTION,
       Payload: JSON.stringify({ ...pgParams }),
     };
 
