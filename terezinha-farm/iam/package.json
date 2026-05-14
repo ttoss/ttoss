@@ -1,6 +1,6 @@
 {
   "name": "@terezinha-farm/iam",
-  "version": "0.4.25",
+  "version": "0.4.26",
   "private": true,
   "scripts": {
     "deploy": "carlin deploy"

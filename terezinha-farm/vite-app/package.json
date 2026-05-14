@@ -1,6 +1,6 @@
 {
   "name": "@terezinha-farm/vite-app",
-  "version": "0.17.35",
+  "version": "0.17.36",
   "private": true,
   "type": "module",
   "scripts": {

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.29](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.28...@terezinha-farm/auth@0.4.29) (2026-05-14)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
 ## [0.4.28](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.27...@terezinha-farm/auth@0.4.28) (2026-05-13)
 
 **Note:** Version bump only for package @terezinha-farm/auth

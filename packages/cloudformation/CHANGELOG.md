@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.0...@ttoss/cloudformation@0.13.1) (2026-05-14)
+
+### Bug Fixes
+
+- accept CloudFormationIntrinsic values in PolicyStatement Resource arrays ([#998](https://github.com/ttoss/ttoss/issues/998)) ([aac1e0f](https://github.com/ttoss/ttoss/commit/aac1e0f7c77eeb014a4439a18a10f9638165692d))
+
 # [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.12.13...@ttoss/cloudformation@0.13.0) (2026-05-13)
 
 ### Features
