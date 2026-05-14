@@ -137,3 +137,29 @@ test('should reload updated ts config between sync reads', () => {
     }
   }
 });
+
+test('should load ts config when cwd package is type module', () => {
+  const originalCwd = process.cwd();
+  const { configFilePath, tempDir } = createTempTsConfigFile();
+
+  try {
+    fs.writeFileSync(
+      path.join(tempDir, 'package.json'),
+      JSON.stringify({ type: 'module' }),
+      'utf8'
+    );
+    writeConfigVersion({ configFilePath, value: 'v1' });
+
+    process.chdir(tempDir);
+    const config = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(config.parameters.foo).toBe('v1');
+  } finally {
+    process.chdir(originalCwd);
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
+  }
+});

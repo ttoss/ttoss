@@ -16,7 +16,7 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
   const outfile = path.resolve(
     process.cwd(),
     'out',
-    `${filename}-${entryFileVersion}.js`
+    `${filename}-${entryFileVersion}.cjs`
   );
 
   const result = esbuild.buildSync({
