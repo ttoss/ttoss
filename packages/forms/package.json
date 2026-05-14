@@ -38,13 +38,7 @@
     "@ttoss/components": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0",
-    "react-router-dom": ">=6.9.0"
-  },
-  "peerDependenciesMeta": {
-    "react-router-dom": {
-      "optional": true
-    }
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
