@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -12,7 +13,10 @@ const createTempTsConfigFile = () => {
   const tempDir = fs.mkdtempSync(
     path.join(os.tmpdir(), 'read-config-file-tests-')
   );
-  return path.join(tempDir, `config-${Date.now()}.ts`);
+  return {
+    configFilePath: path.join(tempDir, `config-${randomUUID()}.ts`),
+    tempDir,
+  };
 };
 
 const writeConfigVersion = ({
@@ -89,7 +93,7 @@ test('add options to config function', async () => {
 });
 
 test('should reload updated ts config between async reads', async () => {
-  const configFilePath = createTempTsConfigFile();
+  const { configFilePath, tempDir } = createTempTsConfigFile();
 
   try {
     writeConfigVersion({ configFilePath, value: 'v1' });
@@ -105,12 +109,14 @@ test('should reload updated ts config between async reads', async () => {
     expect(firstConfig.parameters.foo).toBe('v1');
     expect(secondConfig.parameters.foo).toBe('v2');
   } finally {
-    fs.rmSync(path.dirname(configFilePath), { force: true, recursive: true });
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
   }
 });
 
 test('should reload updated ts config between sync reads', () => {
-  const configFilePath = createTempTsConfigFile();
+  const { configFilePath, tempDir } = createTempTsConfigFile();
 
   try {
     writeConfigVersion({ configFilePath, value: 'v1' });
@@ -126,6 +132,8 @@ test('should reload updated ts config between sync reads', () => {
     expect(firstConfig.parameters.foo).toBe('v1');
     expect(secondConfig.parameters.foo).toBe('v2');
   } finally {
-    fs.rmSync(path.dirname(configFilePath), { force: true, recursive: true });
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
   }
 });

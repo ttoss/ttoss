@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -12,16 +11,12 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
 
   const filename = lastEntryPointName?.split('.')[0] as string;
 
-  const entryFileContent = fs.readFileSync(entryPoint, 'utf8');
-  const entryFileHash = crypto
-    .createHash('sha1')
-    .update(entryFileContent)
-    .digest('hex')
-    .slice(0, 8);
+  const entryFileStats = fs.statSync(entryPoint, { bigint: true });
+  const entryFileVersion = `${entryFileStats.mtimeNs}-${entryFileStats.size}`;
   const outfile = path.resolve(
     process.cwd(),
     'out',
-    `${filename}-${entryFileHash}.js`
+    `${filename}-${entryFileVersion}.js`
   );
 
   const result = esbuild.buildSync({
