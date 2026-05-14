@@ -1,6 +1,8 @@
 # @ttoss/read-config-file
 
-This package is a simple utility to read a configuration file in multiple formats:
+Read configuration files in Node.js with async or sync APIs.
+
+Supported formats:
 
 - .json
 - .yaml / .yml
@@ -22,9 +24,29 @@ pnpm add @ttoss/read-config-file
 ```ts
 import { readConfigFile, readConfigFileSync } from '@ttoss/read-config-file';
 
+// Async API
 const config1 = await readConfigFile({ configFilePath: 'path/to/config.json' });
 
+// Sync API
 const config2 = readConfigFileSync({
   configFilePath: 'path/to/config.json',
 });
 ```
+
+## TypeScript Config Files
+
+When reading `.ts` files, this package bundles the entry with esbuild and then
+loads the generated output synchronously. If your config exports a function,
+the `options` object is passed to it.
+
+```ts
+const config = await readConfigFile({
+  configFilePath: 'path/to/config.ts',
+  options: { stage: 'dev' },
+});
+```
+
+## Notes
+
+- `readConfigFile` supports async config functions.
+- `readConfigFileSync` is useful for synchronous CLI bootstrap.

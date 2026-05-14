@@ -1,7 +1,9 @@
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import * as esbuild from 'esbuild';
-import importSync from 'import-sync';
+
+const nodeRequire = createRequire(import.meta.url);
 
 export const loadConfig = <T>(entryPoint: string): T | undefined => {
   const lastEntryPointName = entryPoint.split('/').pop();
@@ -33,7 +35,9 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
   }
 
   try {
-    const config = importSync(outfile);
+    // Ensure the generated config file is reloaded on subsequent calls.
+    delete nodeRequire.cache[outfile];
+    const config = nodeRequire(outfile);
     return (config.default || config.config) as T;
   } catch (error) {
     // eslint-disable-next-line no-console
