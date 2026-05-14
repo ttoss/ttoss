@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -10,7 +12,17 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
 
   const filename = lastEntryPointName?.split('.')[0] as string;
 
-  const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
+  const entryFileContent = fs.readFileSync(entryPoint, 'utf8');
+  const entryFileHash = crypto
+    .createHash('sha1')
+    .update(entryFileContent)
+    .digest('hex')
+    .slice(0, 8);
+  const outfile = path.resolve(
+    process.cwd(),
+    'out',
+    `${filename}-${entryFileHash}.js`
+  );
 
   const result = esbuild.buildSync({
     bundle: true,
@@ -36,8 +48,9 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
 
   try {
     // Ensure the generated config file is reloaded on subsequent calls.
-    delete nodeRequire.cache[outfile];
-    const config = nodeRequire(outfile);
+    const resolvedOutfile = nodeRequire.resolve(outfile);
+    delete nodeRequire.cache[resolvedOutfile];
+    const config = nodeRequire(resolvedOutfile);
     return (config.default || config.config) as T;
   } catch (error) {
     // eslint-disable-next-line no-console

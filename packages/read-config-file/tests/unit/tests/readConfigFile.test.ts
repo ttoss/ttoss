@@ -1,9 +1,32 @@
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import { readConfigFile, readConfigFileSync } from 'src/index';
 
 const getConfigFilePath = (configName: string) => {
   return path.resolve(__dirname, `../../fixtures/${configName}`);
+};
+
+const createTempTsConfigFile = () => {
+  const tempDir = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'read-config-file-tests-')
+  );
+  return path.join(tempDir, `config-${Date.now()}.ts`);
+};
+
+const writeConfigVersion = ({
+  configFilePath,
+  value,
+}: {
+  configFilePath: string;
+  value: string;
+}) => {
+  fs.writeFileSync(
+    configFilePath,
+    `export default { parameters: { foo: '${value}', baz: 'qux' } };`,
+    'utf8'
+  );
 };
 
 test.each([
@@ -63,4 +86,46 @@ test('add options to config function', async () => {
       baz: 'qux2',
     },
   });
+});
+
+test('should reload updated ts config between async reads', async () => {
+  const configFilePath = createTempTsConfigFile();
+
+  try {
+    writeConfigVersion({ configFilePath, value: 'v1' });
+    const firstConfig = await readConfigFile<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    writeConfigVersion({ configFilePath, value: 'v2' });
+    const secondConfig = await readConfigFile<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(firstConfig.parameters.foo).toBe('v1');
+    expect(secondConfig.parameters.foo).toBe('v2');
+  } finally {
+    fs.rmSync(path.dirname(configFilePath), { force: true, recursive: true });
+  }
+});
+
+test('should reload updated ts config between sync reads', () => {
+  const configFilePath = createTempTsConfigFile();
+
+  try {
+    writeConfigVersion({ configFilePath, value: 'v1' });
+    const firstConfig = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    writeConfigVersion({ configFilePath, value: 'v2' });
+    const secondConfig = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(firstConfig.parameters.foo).toBe('v1');
+    expect(secondConfig.parameters.foo).toBe('v2');
+  } finally {
+    fs.rmSync(path.dirname(configFilePath), { force: true, recursive: true });
+  }
 });
