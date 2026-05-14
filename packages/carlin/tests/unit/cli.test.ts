@@ -1,7 +1,8 @@
 import { faker } from '@ttoss/test-utils/faker';
 import AWS from 'aws-sdk';
 import * as deepmerge from 'deepmerge';
-import { getConfigFileOptions } from 'src/cli';
+import dotenv from 'dotenv';
+import { getConfigFileOptions, loadDotEnv } from 'src/cli';
 import { AWS_DEFAULT_REGION } from 'src/config';
 import { deployBaseStack } from 'src/deploy/baseStack/deployBaseStack';
 import { cloudformation } from 'src/deploy/cloudformation.core';
@@ -12,6 +13,12 @@ import {
   getProjectName,
 } from 'src/utils';
 import { optionsFromConfigFiles, parseCli } from 'tests/testUtils';
+
+jest.mock('dotenv', () => {
+  return {
+    config: jest.fn().mockReturnValue({ parsed: {} }),
+  };
+});
 
 jest.mock('src/deploy/baseStack/deployBaseStack', () => {
   return {
@@ -293,6 +300,54 @@ describe('handle merge config correctly', () => {
     });
     expect(argv.environment).toBe('Production');
     expect(argv.optionEnv).toEqual(newOptionEnv);
+  });
+});
+
+describe('dotenv loading', () => {
+  beforeEach(() => {
+    jest.mocked(dotenv.config).mockClear();
+    delete process.env.ENVIRONMENT;
+  });
+
+  afterEach(() => {
+    delete process.env.ENVIRONMENT;
+  });
+
+  test('loads only .env.Production when environment is Production and file exists', () => {
+    process.env.ENVIRONMENT = 'Production';
+    jest.mocked(dotenv.config).mockReturnValueOnce({ parsed: {} });
+
+    loadDotEnv();
+
+    expect(dotenv.config).toHaveBeenCalledTimes(1);
+    expect(dotenv.config).toHaveBeenCalledWith({
+      path: expect.stringContaining('.env.Production'),
+    });
+  });
+
+  test('falls back to base .env when .env.Production does not exist', () => {
+    process.env.ENVIRONMENT = 'Production';
+    jest
+      .mocked(dotenv.config)
+      .mockReturnValueOnce({ error: new Error('not found') })
+      .mockReturnValueOnce({ parsed: {} });
+
+    loadDotEnv();
+
+    expect(dotenv.config).toHaveBeenCalledTimes(2);
+    expect(dotenv.config).toHaveBeenNthCalledWith(1, {
+      path: expect.stringContaining('.env.Production'),
+    });
+    expect(dotenv.config).toHaveBeenNthCalledWith(2);
+  });
+
+  test('loads base .env when no environment is specified', () => {
+    jest.mocked(dotenv.config).mockReturnValueOnce({ parsed: {} });
+
+    loadDotEnv();
+
+    expect(dotenv.config).toHaveBeenCalledTimes(1);
+    expect(dotenv.config).toHaveBeenCalledWith();
   });
 });
 

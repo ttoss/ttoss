@@ -4,7 +4,14 @@
   "description": "Read a configuration file",
   "keywords": [
     "config",
-    "read-config-file"
+    "read-config-file",
+    "configuration",
+    "config-loader",
+    "typescript-config",
+    "yaml",
+    "json",
+    "nodejs",
+    "esbuild"
   ],
   "repository": {
     "type": "git",
@@ -29,7 +36,6 @@
   },
   "dependencies": {
     "esbuild": "^0.28.0",
-    "import-sync": "^2.2.3",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
