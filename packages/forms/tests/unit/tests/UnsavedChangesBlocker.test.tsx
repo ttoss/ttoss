@@ -261,25 +261,6 @@ describe('warnOnUnsavedChanges', () => {
     expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
   });
 
-  test('fails open when the injected router blocker throws', async () => {
-    const user = userEvent.setup({ delay: null });
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-
-    renderWithRouter({
-      useRouterBlocker: () => {
-        throw new Error('router unavailable');
-      },
-    });
-
-    await user.type(screen.getByLabelText('First Name'), 'John');
-    await user.click(screen.getByText(leaveLabel));
-
-    expect(screen.getByText(otherPageLabel)).toBeInTheDocument();
-    expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
-
-    consoleErrorSpy.mockRestore();
-  });
-
   test('registers beforeunload listener when dirty', async () => {
     const user = userEvent.setup({ delay: null });
     const addSpy = jest.spyOn(window, 'addEventListener');

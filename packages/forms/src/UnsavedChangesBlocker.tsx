@@ -127,39 +127,18 @@ const BeforeUnloadBlocker = ({ isDirty }: { isDirty: boolean }) => {
   return null;
 };
 
-/**
- * Error boundary that silently catches errors from RouterBlocker
- * (e.g. when the injected blocker hook requires a router context).
- */
-class RouterBlockerErrorBoundary extends React.Component<{
-  children: React.ReactNode;
-}> {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return null;
-    }
-    return this.props.children;
-  }
-}
-
-const RouterBlockerInner = ({
+const RouterBlocker = ({
   isDirty,
   onBlocked,
-  useBlocker,
+  useRouterBlocker,
 }: {
   isDirty: boolean;
   onBlocked: (
     blocker: { proceed: () => void; reset: () => void } | null
   ) => void;
-  useBlocker: UseRouterBlockerFn;
+  useRouterBlocker: UseRouterBlockerFn;
 }) => {
-  const blocker = useBlocker(isDirty);
+  const blocker = useRouterBlocker(isDirty);
 
   React.useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -170,35 +149,15 @@ const RouterBlockerInner = ({
   return null;
 };
 
-const RouterBlocker = ({
-  isDirty,
-  onBlocked,
-  useRouterBlocker,
-}: {
-  isDirty: boolean;
-  onBlocked: (
-    blocker: { proceed: () => void; reset: () => void } | null
-  ) => void;
-  useRouterBlocker?: UseRouterBlockerFn;
-}) => {
-  if (!useRouterBlocker) {
-    return null;
-  }
-
-  return (
-    <RouterBlockerInner
-      isDirty={isDirty}
-      onBlocked={onBlocked}
-      useBlocker={useRouterBlocker}
-    />
-  );
-};
-
 /**
  * Internal component that blocks navigation when a form has unsaved changes.
  *
- * Uses an injected navigation blocker hook to intercept in-app navigation
- * and `beforeunload` to warn on browser refresh / tab close.
+ * In-app navigation blocking is **router-agnostic**: consumers inject a blocker
+ * hook via `warnOnUnsavedChanges.useRouterBlocker` (e.g. `useBlocker` from
+ * `react-router-dom`). The hook must be safe to call unconditionally in the
+ * current component tree — it is invoked on every render while the form is
+ * mounted. If no hook is provided, only the browser `beforeunload` prompt is
+ * registered.
  */
 export const UnsavedChangesBlocker = ({
   title,
@@ -225,13 +184,13 @@ export const UnsavedChangesBlocker = ({
 
   return (
     <>
-      <RouterBlockerErrorBoundary>
+      {useRouterBlocker && (
         <RouterBlocker
           isDirty={isDirty}
           onBlocked={handleBlocked}
           useRouterBlocker={useRouterBlocker}
         />
-      </RouterBlockerErrorBoundary>
+      )}
       <BeforeUnloadBlocker isDirty={isDirty} />
       {pendingBlocker && (
         <UnsavedChangesModal
