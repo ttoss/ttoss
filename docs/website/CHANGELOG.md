@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.15](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.14...@docs/website@2.7.15) (2026-05-14)
+
+### Bug Fixes
+
+- 999 ([#1000](https://github.com/ttoss/ttoss/issues/1000)) ([800e0ea](https://github.com/ttoss/ttoss/commit/800e0ea903bd831279967853c504d8200d172bd1))
+
 ## [2.7.14](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.13...@docs/website@2.7.14) (2026-05-14)
 
 **Note:** Version bump only for package @docs/website
