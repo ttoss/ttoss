@@ -52,7 +52,7 @@ flowchart TD
     I --> J[Template resources use Ref]
 ```
 
-Carlin loads `.env` automatically, so values from `.env` and CI variables are available through `process.env`. Before loading `carlin.ts`, Carlin resolves the deployment context from `--environment`, `--env`, `-e`, `CARLIN_ENVIRONMENT`, or `ENVIRONMENT` and passes it to `defineConfig` function configs.
+Carlin loads dotenv automatically. When an environment is resolved (`--environment`, `--env`, `-e`, `CARLIN_ENVIRONMENT`, or `ENVIRONMENT`), Carlin first loads `.env.<Environment>` and falls back to `.env` only when that file does not exist. Without a resolved environment, Carlin loads `.env`. CI variables remain available through `process.env`, and the resolved environment is passed to `defineConfig` function configs.
 
 The object returned by `carlin.ts` becomes the CLI config. During `carlin deploy`, `parameters` are converted into CloudFormation stack parameters. Prefer the object form for ordinary values:
 
