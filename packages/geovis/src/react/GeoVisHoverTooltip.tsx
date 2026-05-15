@@ -51,6 +51,14 @@ export interface GeoVisHoverTooltipProps {
  * is a thin presentational layer that consumes the live hover snapshot from
  * the dedicated `GeoVisHoverContext` via `useGeoVisHover()`, so high-frequency
  * hover updates do not re-render `useGeoVis()` consumers.
+ *
+ * @remarks
+ * **Migration from portal-based positioning**: previous versions used
+ * `ReactDOM.createPortal` with `position: fixed`, making the tooltip
+ * independent of the DOM tree. This version uses `position: absolute`
+ * instead — render `<GeoVisHoverTooltip>` inside the same
+ * `position: relative` wrapper as `<GeoVisCanvas>`, otherwise the tooltip
+ * will be clipped by `overflow: hidden` ancestors or mis-positioned.
  */
 export const GeoVisHoverTooltip = ({
   render,
