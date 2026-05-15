@@ -1,3 +1,5 @@
+import { log } from '@ttoss/logger';
+
 import { applyMapDataPatchToSpec } from '../spec/mapDataPatch';
 import type {
   DataSource,
@@ -128,9 +130,10 @@ export const createRuntime = (
       } else if (patch.target === 'mapData') {
         currentSpec = applyMapDataPatchToSpec(currentSpec, patch);
       } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[GeoVis] applyPatch: unknown target "${patch.target as string}" - patch ignored.`
+        log.warn(
+          `[geovis] Runtime: unknown patch target "${
+            (patch as { target: unknown }).target
+          }" — patch was ignored.`
         );
       }
     },
