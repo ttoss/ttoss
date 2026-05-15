@@ -41,6 +41,8 @@ interface BuildHandleMoveParams {
   layerId: string;
   sourceByLayerId: Map<string, string>;
   setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
+  /** Mutable ref updated on every valid mousemove; used by the window-focus recheck. */
+  lastPointRef: React.MutableRefObject<{ x: number; y: number } | null>;
 }
 
 const clearHover = (
@@ -104,6 +106,7 @@ const buildHandleMove = ({
   layerId,
   sourceByLayerId,
   setHover,
+  lastPointRef,
 }: BuildHandleMoveParams) => {
   return (event: MapLayerMouseEvent) => {
     // Prefer the delegated `features` payload (already scoped to `layerId`)
@@ -132,6 +135,9 @@ const buildHandleMove = ({
       id: feature.id,
     }) as { value?: unknown };
 
+    // Keep the last valid cursor position so the window-focus recheck can
+    // query the same point without waiting for a new mousemove event.
+    lastPointRef.current = { x: event.point.x, y: event.point.y };
     map.getCanvas().style.cursor = 'pointer';
     const rect = map.getCanvas().getBoundingClientRect();
     setHover({
@@ -140,6 +146,66 @@ const buildHandleMove = ({
       featureId: feature.id,
       value: coerceFeatureStateValue(state.value),
       point: { x: rect.left + event.point.x, y: rect.top + event.point.y },
+    });
+  };
+};
+
+interface BuildHandleWindowFocusParams {
+  map: MapLibreMap;
+  trackedLayerIds: string[];
+  sourceByLayerId: Map<string, string>;
+  lastPointRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
+}
+
+/**
+ * Builds the handler that rechecks the hover state when the browser window
+ * regains focus (e.g. after alt-tab or switching back to the tab).
+ *
+ * @remarks
+ * Browsers do not synthesise a new `mousemove` event when a window regains
+ * focus, so the tooltip would stay invisible even if the cursor never moved
+ * away from the map. This handler re-runs `queryRenderedFeatures` against the
+ * last known cursor position and restores the hover if a tracked feature is
+ * still under the cursor, making the tooltip reappear without requiring any
+ * physical mouse movement from the user.
+ */
+const buildHandleWindowFocus = ({
+  map,
+  trackedLayerIds,
+  sourceByLayerId,
+  lastPointRef,
+  setHover,
+}: BuildHandleWindowFocusParams) => {
+  return () => {
+    const point = lastPointRef.current;
+    if (!point) return;
+
+    const hits = map.queryRenderedFeatures([point.x, point.y], {
+      layers: trackedLayerIds,
+    });
+    const feature = hits[0];
+    if (!feature || feature.id == null) {
+      clearHover(map, setHover);
+      return;
+    }
+    const resolvedLayerId = feature.layer?.id ?? trackedLayerIds[0];
+    const sourceId = sourceByLayerId.get(resolvedLayerId);
+    if (!sourceId) {
+      clearHover(map, setHover);
+      return;
+    }
+    const state = map.getFeatureState({
+      source: sourceId,
+      id: feature.id,
+    }) as { value?: unknown };
+    map.getCanvas().style.cursor = 'pointer';
+    setHover({
+      layerId: resolvedLayerId,
+      sourceId,
+      featureId: feature.id,
+      value: coerceFeatureStateValue(state.value),
+      point,
     });
   };
 };
@@ -158,6 +224,9 @@ export const useMapHover = ({
   spec,
 }: UseMapHoverParams): MapHoverInfo | null => {
   const [hover, setHover] = React.useState<MapHoverInfo | null>(null);
+  // Tracks the last cursor position reported by a valid mousemove so the
+  // window-focus recheck can query the same point without a new mouse event.
+  const lastPointRef = React.useRef<{ x: number; y: number } | null>(null);
 
   // Identify polygon layers that participate in legend-driven interactions.
   // Stored as a string key so the effect's dependency array stays stable when
@@ -196,6 +265,10 @@ export const useMapHover = ({
     // One `mousemove` handler per layer so each handler can scope its
     // (fallback) `queryRenderedFeatures` call to its own layer and consume
     // `event.features` reliably (delegated payload is per-layer).
+    const trackedLayerIds = tracked.map((t) => {
+      return t.layerId;
+    });
+
     const handlers = tracked.map(({ layerId }) => {
       return {
         layerId,
@@ -204,24 +277,37 @@ export const useMapHover = ({
           layerId,
           sourceByLayerId,
           setHover,
+          lastPointRef,
         }),
       };
     });
 
     const handleLeave = () => {
+      lastPointRef.current = null;
       clearHover(map, setHover);
     };
+
+    const handleWindowFocus = buildHandleWindowFocus({
+      map,
+      trackedLayerIds,
+      sourceByLayerId,
+      lastPointRef,
+      setHover,
+    });
 
     for (const { layerId, handleMove } of handlers) {
       map.on('mousemove', layerId, handleMove);
       map.on('mouseleave', layerId, handleLeave);
     }
+    window.addEventListener('focus', handleWindowFocus);
 
     return () => {
       for (const { layerId, handleMove } of handlers) {
         map.off('mousemove', layerId, handleMove);
         map.off('mouseleave', layerId, handleLeave);
       }
+      window.removeEventListener('focus', handleWindowFocus);
+      lastPointRef.current = null;
       clearHover(map, setHover);
     };
   }, [runtime, trackedKey]);
