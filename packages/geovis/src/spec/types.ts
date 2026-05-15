@@ -279,6 +279,30 @@ export interface BaseMapSpec {
   visible?: boolean;
 }
 
+/**
+ * Declares one visual perspective of a spec in a multi-view layout.
+ * Each view references a subset of `spec.layers` by id.
+ * Layout components (e.g. `GeoVisSplitLayout`) read this field to derive
+ * per-panel specs and manage synchronization automatically.
+ */
+export interface VisualizationView {
+  /** Unique view identifier. Must match the `viewId` prop of `GeoVisCanvas`. */
+  id: string;
+  /** Human-readable label rendered above the canvas by layout components. */
+  label?: string;
+  /**
+   * Layer ids from `spec.layers` that this view displays.
+   *
+   * @remarks
+   * No runtime validation is performed — IDs that do not match any entry in
+   * `spec.layers` are silently ignored, resulting in an empty render for that
+   * view. Ensure every id listed here corresponds to a layer defined in the
+   * top-level `spec.layers` array.
+   */
+  layers: string[];
+}
+
+
 export interface VisualizationSpec {
   id: string;
   title?: string;
