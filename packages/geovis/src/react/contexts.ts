@@ -22,7 +22,18 @@ export interface MapHoverInfo {
    * has no value bound or when the bound value is a non-finite number.
    */
   value: number | string | null;
-  /** Pixel coordinates relative to the map canvas. */
+  /**
+   * Pixel coordinates of the cursor relative to the **map canvas** origin
+   * (top-left corner of the `<canvas>` element). Use these to position overlay
+   * elements that are children of the same `position: relative` container as
+   * `<GeoVisCanvas>`.
+   *
+   * @remarks
+   * Prior to this version, `point` contained viewport-absolute coordinates
+   * (`clientX / clientY`). If you were offsetting UI with the old values,
+   * remove any `getBoundingClientRect()` subtraction — the canvas-relative
+   * coords are already in the correct space for `position: absolute` children.
+   */
   point: { x: number; y: number };
 }
 
