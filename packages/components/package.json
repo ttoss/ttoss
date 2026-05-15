@@ -2,16 +2,21 @@
   "name": "@ttoss/components",
   "version": "2.14.19",
   "description": "React components for ttoss ecosystem.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React",
+    "components"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/components"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "exports": {
     "./Accordion": "./src/components/Accordion/index.ts",
@@ -48,7 +53,6 @@
     "test": "jest --projects tests/unit",
     "update-package-json-exports": "tsx scripts/updatePackageJsonExports.ts"
   },
-  "sideEffects": false,
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@tanstack/react-table": "^8.21.3",
@@ -65,13 +69,6 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1"
   },
-  "peerDependencies": {
-    "@ttoss/react-hooks": "workspace:^",
-    "@ttoss/react-i18n": "workspace:^",
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
@@ -87,10 +84,13 @@
     "tsup": "^8.5.1",
     "tsx": "^4.21.0"
   },
-  "keywords": [
-    "React",
-    "components"
-  ],
+  "peerDependencies": {
+    "@ttoss/react-hooks": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

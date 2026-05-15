@@ -2,12 +2,18 @@
   "name": "@ttoss/react-billing",
   "version": "0.5.11",
   "description": "Billing UI components for React apps.",
-  "author": "Giovane Guimarães",
+  "keywords": [
+    "React",
+    "UI components",
+    "billing"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-billing"
   },
+  "author": "Giovane Guimarães",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -19,14 +25,10 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
   "dependencies": {
     "@ttoss/components": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
@@ -37,11 +39,9 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "keywords": [
-    "React",
-    "UI components",
-    "billing"
-  ],
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {

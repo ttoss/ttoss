@@ -1,16 +1,16 @@
 {
   "name": "@ttoss/i18n-cli",
   "version": "0.8.11",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/i18n-cli"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
+  ],
   "bin": {
     "ttoss-i18n": "./bin/cli.js"
   },

@@ -2,16 +2,17 @@
   "name": "@ttoss/cloudformation",
   "version": "0.13.2",
   "description": "CloudFormation utils.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
+  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/cloudformation"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -36,7 +37,6 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {
