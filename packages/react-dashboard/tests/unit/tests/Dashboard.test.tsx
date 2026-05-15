@@ -58,11 +58,12 @@ describe('Dashboard', () => {
         loading={true}
         templates={[mockTemplate]}
         filters={mockFilters}
+        selectedTemplate={mockTemplate}
       />
     );
 
-    // Should show loading spinner
-    expect(screen.queryByText('Test Card')).not.toBeInTheDocument();
+    expect(screen.getByText('Test Card')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-card-skeleton')).toBeInTheDocument();
   });
 
   test('should render header children', () => {

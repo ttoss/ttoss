@@ -56,7 +56,7 @@ describe('DashboardGrid', () => {
     },
   ];
 
-  test('should render loading spinner when loading is true', () => {
+  test('should render metric skeletons when loading is true', () => {
     render(
       <DashboardProvider
         filters={mockFilters}
@@ -67,8 +67,9 @@ describe('DashboardGrid', () => {
       </DashboardProvider>
     );
 
-    // Spinner should be rendered
-    expect(screen.queryByText('Card 1')).not.toBeInTheDocument();
+    expect(screen.getByText('Card 1')).toBeInTheDocument();
+    expect(screen.getByText('Card 2')).toBeInTheDocument();
+    expect(screen.getAllByTestId('dashboard-card-skeleton')).toHaveLength(2);
   });
 
   test('should render cards when loading is false and template is selected', () => {
