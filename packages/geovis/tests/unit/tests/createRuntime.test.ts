@@ -1,3 +1,4 @@
+import { log } from '@ttoss/logger';
 import type { EngineAdapter } from 'src/runtime/adapter';
 import { createRuntime } from 'src/runtime/createRuntime';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -230,10 +231,10 @@ describe('createRuntime — applyPatch target:mapData', () => {
 });
 
 describe('createRuntime — applyPatch unknown target', () => {
-  test('emits console.warn and does not throw when target is unrecognised', () => {
+  test('emits log.warn and does not throw when target is unrecognised', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpec());
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
 
     expect(() => {
       runtime.applyPatch({
@@ -245,7 +246,7 @@ describe('createRuntime — applyPatch unknown target', () => {
     }).not.toThrow();
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toContain('[GeoVis]');
+    expect(warnSpy.mock.calls[0][0]).toContain('[geovis]');
     expect(warnSpy.mock.calls[0][0]).toContain('view');
 
     warnSpy.mockRestore();
@@ -255,7 +256,7 @@ describe('createRuntime — applyPatch unknown target', () => {
     const adapter = makeAdapter();
     const spec = makeSpec();
     const runtime = createRuntime(adapter, spec);
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
 
     const before = runtime.spec;
     runtime.applyPatch({

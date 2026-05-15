@@ -40,7 +40,12 @@ interface MockMap {
 
 const buildMockMap = (): MockMap => {
   const handlers = new Map<string, MapMouseHandler | MapLeaveHandler>();
-  const canvas = { style: { cursor: '' } };
+  const canvas = {
+    style: { cursor: '' },
+    getBoundingClientRect: jest.fn(() => {
+      return { left: 0, top: 0, width: 800, height: 600 };
+    }),
+  };
   const map: MockMap = {
     on: jest.fn((event: string, layerOrHandler, maybeHandler) => {
       const layerId = typeof layerOrHandler === 'string' ? layerOrHandler : '*';
@@ -181,7 +186,7 @@ describe('useMapHover — window focus recheck', () => {
 
   test('restores tooltip on window focus when cursor is still over a tracked feature', async () => {
     const onReady = jest.fn();
-    const { container } = render(
+    render(
       <GeoVisProvider spec={buildSpec()}>
         <ExposeRuntime onReady={onReady} />
         <GeoVisHoverTooltip />
@@ -199,13 +204,13 @@ describe('useMapHover — window focus recheck', () => {
     triggerMove(mockCurrentMap, 'districts-fill', { x: 50, y: 60 });
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
     // Simulate alt-tab: MapLibre fires mouseleave, clearing the tooltip.
     triggerLeave(mockCurrentMap, 'districts-fill');
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).toBeNull();
     });
 
     // Simulate returning to the window: window.focus fires; the cursor is
@@ -223,7 +228,7 @@ describe('useMapHover — window focus recheck', () => {
     // the last known point via a mousemove before simulating the alt-tab.
     triggerMove(mockCurrentMap, 'districts-fill', { x: 50, y: 60 });
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
     // Now simulate window blur (without mouseleave) then window focus.
@@ -234,14 +239,14 @@ describe('useMapHover — window focus recheck', () => {
     triggerWindowFocus();
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
     expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
   });
 
   test('clears tooltip on window focus when cursor is no longer over a feature', async () => {
     const onReady = jest.fn();
-    const { container } = render(
+    render(
       <GeoVisProvider spec={buildSpec()}>
         <ExposeRuntime onReady={onReady} />
         <GeoVisHoverTooltip />
@@ -259,7 +264,7 @@ describe('useMapHover — window focus recheck', () => {
     triggerMove(mockCurrentMap, 'districts-fill', { x: 10, y: 20 });
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
     // Simulate window regaining focus, but the cursor moved away: no hits.
@@ -267,14 +272,14 @@ describe('useMapHover — window focus recheck', () => {
     triggerWindowFocus();
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).toBeNull();
     });
     expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
 
   test('does nothing on window focus when no previous mousemove was recorded', async () => {
     const onReady = jest.fn();
-    const { container } = render(
+    render(
       <GeoVisProvider spec={buildSpec()}>
         <ExposeRuntime onReady={onReady} />
         <GeoVisHoverTooltip />
@@ -289,7 +294,7 @@ describe('useMapHover — window focus recheck', () => {
     triggerWindowFocus();
 
     // Tooltip stays absent; queryRenderedFeatures not called from focus path.
-    expect(container.querySelector('[role="tooltip"]')).toBeNull();
+    expect(document.body.querySelector('[role="tooltip"]')).toBeNull();
     expect(mockCurrentMap.queryRenderedFeatures).not.toHaveBeenCalled();
   });
 
@@ -359,7 +364,7 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
 
   test('restores tooltip when tab becomes visible and cursor is over a feature', async () => {
     const onReady = jest.fn();
-    const { container } = render(
+    render(
       <GeoVisProvider spec={buildSpec()}>
         <ExposeRuntime onReady={onReady} />
         <GeoVisHoverTooltip />
@@ -377,7 +382,7 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
     triggerMove(mockCurrentMap, 'districts-fill', { x: 30, y: 40 });
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
     // Switch to another tab (visibility hidden). MapLibre may or may not
@@ -392,14 +397,14 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
     triggerVisibilityChange('visible');
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
     expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
   });
 
   test('clears tooltip when tab becomes visible but cursor moved off the feature', async () => {
     const onReady = jest.fn();
-    const { container } = render(
+    render(
       <GeoVisProvider spec={buildSpec()}>
         <ExposeRuntime onReady={onReady} />
         <GeoVisHoverTooltip />
@@ -417,7 +422,7 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
     triggerMove(mockCurrentMap, 'districts-fill', { x: 70, y: 80 });
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
     // Tab becomes visible but cursor is no longer over any feature.
@@ -425,7 +430,7 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
     triggerVisibilityChange('visible');
 
     await waitFor(() => {
-      expect(container.querySelector('[role="tooltip"]')).toBeNull();
+      expect(document.body.querySelector('[role="tooltip"]')).toBeNull();
     });
     expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
