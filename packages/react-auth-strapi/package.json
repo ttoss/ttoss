@@ -2,23 +2,16 @@
   "name": "@ttoss/react-auth-strapi",
   "version": "0.4.28",
   "description": "Authentication components and abstractions for React apps using Strapi.",
-  "keywords": [
-    "React",
-    "UI components",
-    "authentication",
-    "strapi"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-auth-strapi"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -31,6 +24,13 @@
     "build": "tsup",
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@ttoss/react-auth-core": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
@@ -46,12 +46,12 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "@ttoss/react-auth-core": "workspace:^",
-    "@ttoss/react-i18n": "workspace:^",
-    "@ttoss/react-notifications": "workspace:^",
-    "react": ">=16.8.0"
-  },
+  "keywords": [
+    "React",
+    "UI components",
+    "authentication",
+    "strapi"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

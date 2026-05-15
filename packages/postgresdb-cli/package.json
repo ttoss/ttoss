@@ -2,22 +2,16 @@
   "name": "@ttoss/postgresdb-cli",
   "version": "0.2.11",
   "description": "A library to handle PostgreSQL database actions through the command line",
-  "keywords": [
-    "database",
-    "postgres",
-    "postgresql"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/postgresdb-cli"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "bin": {
     "ttoss-postgresdb": "./bin/cli.js"
@@ -29,6 +23,7 @@
   "scripts": {
     "build-config": "tsup-node"
   },
+  "sideEffects": false,
   "dependencies": {
     "commander": "^14.0.3",
     "dotenv": "^17.4.2",
@@ -40,6 +35,11 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
+  "keywords": [
+    "database",
+    "postgres",
+    "postgresql"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true

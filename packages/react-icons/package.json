@@ -2,21 +2,16 @@
   "name": "@ttoss/react-icons",
   "version": "0.7.12",
   "description": "React icons library for @ttoss ecosystem",
-  "keywords": [
-    "Icons",
-    "React"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-icons"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -28,8 +23,12 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
   "dependencies": {
     "@iconify-icon/react": "^2.2.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -40,9 +39,10 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
+  "keywords": [
+    "Icons",
+    "React"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

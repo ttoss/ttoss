@@ -2,16 +2,16 @@
   "name": "@ttoss/monorepo",
   "version": "1.29.11",
   "description": "Monorepo setup for ttoss",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/monorepo"
-  },
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/monorepo"
+  },
   "bin": {
     "ttoss-monorepo": "./bin/monorepo"
   },

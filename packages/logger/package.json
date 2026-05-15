@@ -2,14 +2,12 @@
   "name": "@ttoss/logger",
   "version": "0.8.11",
   "description": "A simple module to configure and send notifications to services like Discord from your applications.",
-  "keywords": [],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/logger"
   },
-  "license": "MIT",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -21,12 +19,14 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
+  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {

@@ -302,7 +302,6 @@ export interface VisualizationView {
   layers: string[];
 }
 
-
 export interface VisualizationSpec {
   id: string;
   title?: string;

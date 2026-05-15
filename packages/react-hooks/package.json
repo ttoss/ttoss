@@ -2,20 +2,16 @@
   "name": "@ttoss/react-hooks",
   "version": "2.3.11",
   "description": "React hooks.",
-  "keywords": [
-    "React",
-    "hooks"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-hooks"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -27,6 +23,9 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -35,9 +34,10 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
+  "keywords": [
+    "React",
+    "hooks"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

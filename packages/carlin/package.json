@@ -2,18 +2,17 @@
   "name": "carlin",
   "version": "1.49.12",
   "description": "",
-  "keywords": [],
+  "license": "MIT",
+  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
   "homepage": "https://ttoss.dev/docs/carlin/",
-  "bugs": {
-    "url": "https://github.com/ttoss/ttoss/issues"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/carlin"
   },
-  "license": "MIT",
-  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -81,6 +80,7 @@
     "tsup": "^8.5.1",
     "typescript": "~6.0.3"
   },
+  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {

@@ -2,21 +2,18 @@
   "name": "@ttoss/config",
   "version": "1.37.11",
   "description": "Default configuration for packages.",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/config"
-  },
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
-  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/config"
+  },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
-  "typings": "dist/index.d.ts",
   "bin": {
     "ttoss-sort-package-json": "./bin/sort-package-json"
   },
@@ -30,6 +27,8 @@
     "build-config": "tsup-node",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
+  "typings": "dist/index.d.ts",
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@babel/plugin-proposal-decorators": "^7.29.0",
@@ -52,6 +51,7 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
+  "keywords": [],
   "publishConfig": {
     "access": "public",
     "provenance": true

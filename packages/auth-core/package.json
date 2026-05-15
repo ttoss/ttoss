@@ -2,23 +2,16 @@
   "name": "@ttoss/auth-core",
   "version": "0.4.11",
   "description": "Core authentication library for ttoss",
-  "keywords": [
-    "auth",
-    "authentication",
-    "core",
-    "ttoss"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/auth-core"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -31,6 +24,7 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
   "dependencies": {
     "aws-jwt-verify": "^4.0.1"
   },
@@ -39,6 +33,12 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
+  "keywords": [
+    "auth",
+    "authentication",
+    "core",
+    "ttoss"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

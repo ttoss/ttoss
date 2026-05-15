@@ -2,22 +2,16 @@
   "name": "@ttoss/graphql-api-server",
   "version": "0.11.14",
   "description": "GraphQL API Server",
-  "keywords": [
-    "api",
-    "graphql",
-    "koa"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/graphql-api-server"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -29,10 +23,15 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
   "dependencies": {
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "graphql-yoga": "^5.10.4"
+  },
+  "peerDependencies": {
+    "@ttoss/graphql-api": "workspace:^",
+    "graphql": "^16.6.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -43,10 +42,11 @@
     "supertest": "^7.2.2",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "@ttoss/graphql-api": "workspace:^",
-    "graphql": "^16.6.0"
-  },
+  "keywords": [
+    "api",
+    "graphql",
+    "koa"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

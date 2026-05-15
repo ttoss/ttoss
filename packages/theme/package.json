@@ -2,18 +2,16 @@
   "name": "@ttoss/theme",
   "version": "2.11.18",
   "description": "Theme for packages.",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/theme"
-  },
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Rayza Oliveira <rayza.ocr@gmail.com>"
   ],
-  "sideEffects": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/theme"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -27,8 +25,12 @@
     "build": "tsup",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": true,
   "dependencies": {
     "deepmerge": "^4.3.1"
+  },
+  "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^"
   },
   "devDependencies": {
     "@iconify/icons-carbon": "^1.2.20",
@@ -41,9 +43,7 @@
     "theme-ui": "^0.17.2",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "@ttoss/react-icons": "workspace:^"
-  },
+  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {

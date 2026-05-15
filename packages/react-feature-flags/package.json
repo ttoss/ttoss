@@ -2,20 +2,16 @@
   "name": "@ttoss/react-feature-flags",
   "version": "0.4.11",
   "description": "React Feature Flags",
-  "keywords": [
-    "feature-flags",
-    "react"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-feature-flags"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -30,6 +26,9 @@
   "dependencies": {
     "react-error-boundary": "^6.1.0"
   },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -38,9 +37,10 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
+  "keywords": [
+    "feature-flags",
+    "react"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

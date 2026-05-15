@@ -2,23 +2,16 @@
   "name": "@ttoss/react-auth-core",
   "version": "0.4.28",
   "description": "Core authentication components and abstractions for React apps.",
-  "keywords": [
-    "React",
-    "UI components",
-    "authentication",
-    "core"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-auth-core"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -32,8 +25,18 @@
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
+  "sideEffects": false,
   "dependencies": {
     "react-error-boundary": "^6.1.0"
+  },
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/forms": "workspace:^",
+    "@ttoss/logger": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-notifications": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
@@ -51,15 +54,12 @@
     "react": "^19.2.4",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/forms": "workspace:^",
-    "@ttoss/logger": "workspace:^",
-    "@ttoss/react-i18n": "workspace:^",
-    "@ttoss/react-notifications": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
-  },
+  "keywords": [
+    "React",
+    "UI components",
+    "authentication",
+    "core"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

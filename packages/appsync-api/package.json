@@ -2,23 +2,16 @@
   "name": "@ttoss/appsync-api",
   "version": "0.24.6",
   "description": "A library for building GraphQL APIs for AWS AppSync.",
-  "keywords": [
-    "api",
-    "appsync",
-    "aws",
-    "graphql"
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/appsync-api"
   },
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
-  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts"
   },
@@ -29,8 +22,13 @@
     "build": "tsup",
     "test": "jest"
   },
+  "sideEffects": false,
   "dependencies": {
     "@ttoss/cloudformation": "workspace:^"
+  },
+  "peerDependencies": {
+    "@ttoss/graphql-api": "workspace:^",
+    "graphql": "^16.6.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -42,10 +40,12 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
-  "peerDependencies": {
-    "@ttoss/graphql-api": "workspace:^",
-    "graphql": "^16.6.0"
-  },
+  "keywords": [
+    "api",
+    "appsync",
+    "aws",
+    "graphql"
+  ],
   "publishConfig": {
     "access": "public",
     "exports": {

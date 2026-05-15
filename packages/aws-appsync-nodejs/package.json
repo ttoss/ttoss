@@ -2,17 +2,16 @@
   "name": "@ttoss/aws-appsync-nodejs",
   "version": "1.9.11",
   "description": "",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/aws-appsync-nodejs"
-  },
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/aws-appsync-nodejs"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
@@ -36,6 +35,7 @@
     "jest": "^30.3.0",
     "tsup": "^8.5.1"
   },
+  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {
