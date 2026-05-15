@@ -299,7 +299,17 @@ export const useMapHover = ({
       map.on('mousemove', layerId, handleMove);
       map.on('mouseleave', layerId, handleLeave);
     }
+    // Tab-switching fires `visibilitychange` (not `window.focus`), so we
+    // reuse the same recheck logic via a thin wrapper that guards on the new
+    // visibility state before delegating.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleWindowFocus();
+      }
+    };
+
     window.addEventListener('focus', handleWindowFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       for (const { layerId, handleMove } of handlers) {
@@ -307,6 +317,7 @@ export const useMapHover = ({
         map.off('mouseleave', layerId, handleLeave);
       }
       window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       lastPointRef.current = null;
       clearHover(map, setHover);
     };

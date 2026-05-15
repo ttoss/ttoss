@@ -169,6 +169,11 @@ const triggerWindowFocus = () => {
   });
 };
 
+/**
+ * ----------------------------------------------------------------------------
+ * Window focus: window.focus (alt-tab)
+ * ---------------------------------------------------------------------------
+ */
 describe('useMapHover — window focus recheck', () => {
   beforeEach(() => {
     mockCurrentMap = buildMockMap();
@@ -314,6 +319,143 @@ describe('useMapHover — window focus recheck', () => {
     expect(
       removeSpy.mock.calls.some(([event]) => {
         return event === 'focus';
+      })
+    ).toBe(true);
+
+    addSpy.mockRestore();
+    removeSpy.mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tab-switching: document.visibilitychange
+// ---------------------------------------------------------------------------
+// When the user switches browser tabs, most browsers fire `document.visibilitychange`
+// (not `window.focus`). The hook must listen to `visibilitychange` and re-run
+// queryRenderedFeatures when the tab becomes visible again.
+// ---------------------------------------------------------------------------
+
+const triggerVisibilityChange = (state: 'visible' | 'hidden') => {
+  Object.defineProperty(document, 'visibilityState', {
+    value: state,
+    writable: true,
+    configurable: true,
+  });
+  act(() => {
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+};
+
+describe('useMapHover — visibilitychange (tab switching)', () => {
+  beforeEach(() => {
+    mockCurrentMap = buildMockMap();
+    // Reset to default visible state before each test.
+    Object.defineProperty(document, 'visibilityState', {
+      value: 'visible',
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  test('restores tooltip when tab becomes visible and cursor is over a feature', async () => {
+    const onReady = jest.fn();
+    const { container } = render(
+      <GeoVisProvider spec={buildSpec()}>
+        <ExposeRuntime onReady={onReady} />
+        <GeoVisHoverTooltip />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    // Prime lastPointRef via a valid mousemove.
+    mockCurrentMap.queryRenderedFeatures.mockReturnValue([
+      { id: 5, layer: { id: 'districts-fill' } },
+    ]);
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 99 });
+    triggerMove(mockCurrentMap, 'districts-fill', { x: 30, y: 40 });
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+    });
+
+    // Switch to another tab (visibility hidden). MapLibre may or may not
+    // fire mouseleave here; we simulate the worst case where it does NOT.
+    triggerVisibilityChange('hidden');
+
+    // Switch back to the tab. The cursor hasn't moved — tooltip must reappear.
+    mockCurrentMap.queryRenderedFeatures.mockReturnValue([
+      { id: 5, layer: { id: 'districts-fill' } },
+    ]);
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 99 });
+    triggerVisibilityChange('visible');
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+    });
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+  });
+
+  test('clears tooltip when tab becomes visible but cursor moved off the feature', async () => {
+    const onReady = jest.fn();
+    const { container } = render(
+      <GeoVisProvider spec={buildSpec()}>
+        <ExposeRuntime onReady={onReady} />
+        <GeoVisHoverTooltip />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    // Prime a valid hover.
+    mockCurrentMap.queryRenderedFeatures.mockReturnValue([
+      { id: 2, layer: { id: 'districts-fill' } },
+    ]);
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 55 });
+    triggerMove(mockCurrentMap, 'districts-fill', { x: 70, y: 80 });
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).not.toBeNull();
+    });
+
+    // Tab becomes visible but cursor is no longer over any feature.
+    mockCurrentMap.queryRenderedFeatures.mockReturnValue([]);
+    triggerVisibilityChange('visible');
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="tooltip"]')).toBeNull();
+    });
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
+  });
+
+  test('removes document visibilitychange listener on effect cleanup', async () => {
+    const onReady = jest.fn();
+    const addSpy = jest.spyOn(document, 'addEventListener');
+    const removeSpy = jest.spyOn(document, 'removeEventListener');
+
+    const { unmount } = render(
+      <GeoVisProvider spec={buildSpec()}>
+        <ExposeRuntime onReady={onReady} />
+        <GeoVisHoverTooltip />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    expect(
+      addSpy.mock.calls.some(([event]) => {
+        return event === 'visibilitychange';
+      })
+    ).toBe(true);
+
+    unmount();
+
+    expect(
+      removeSpy.mock.calls.some(([event]) => {
+        return event === 'visibilitychange';
       })
     ).toBe(true);
 
