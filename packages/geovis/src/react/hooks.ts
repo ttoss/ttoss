@@ -283,7 +283,12 @@ export const useMapHover = ({
     });
 
     const handleLeave = () => {
-      lastPointRef.current = null;
+      // Do NOT clear lastPointRef here. Some browsers (Windows/Linux) fire a
+      // synthetic `mouseleave` when the user alt-tabs or switches windows.
+      // Retaining the last known position lets the window-focus recheck call
+      // `queryRenderedFeatures` on that point and restore the tooltip if the
+      // cursor is genuinely still over a tracked feature. If the cursor has
+      // moved away, `buildHandleWindowFocus` calls `clearHover` regardless.
       clearHover(map, setHover);
     };
 

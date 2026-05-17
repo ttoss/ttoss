@@ -281,9 +281,9 @@ export interface BaseMapSpec {
 
 /**
  * Declares one visual perspective of a spec in a multi-view layout.
- * Each view references a subset of `spec.layers` by id.
- * Layout components (e.g. `GeoVisSplitLayout`) read this field to derive
- * per-panel specs and manage synchronization automatically.
+ * Each view references a subset of `spec.layers` by id and is intended to be
+ * consumed by layout components that derive per-panel specs and manage view
+ * synchronisation automatically.
  */
 export interface VisualizationView {
   /** Unique view identifier. Must match the `viewId` prop of `GeoVisCanvas`. */

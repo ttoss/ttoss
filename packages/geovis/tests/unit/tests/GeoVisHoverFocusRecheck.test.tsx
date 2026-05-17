@@ -7,9 +7,12 @@
  * do NOT synthesise a new `mousemove` event. Without an explicit recheck, the
  * tooltip would remain hidden even if the cursor never left the map canvas.
  *
- * These tests verify that `window.focus` (and the equivalent mouseleave →
- * re-focus path) correctly restores or clears the hover state without any
- * physical mouse movement from the user.
+ * These tests verify three scenarios:
+ * 1. `window.focus` (alt-tab without mouseleave) restores the tooltip.
+ * 2. Browser-synthesised `mouseleave` + `window.focus` (alt-tab that fires
+ *    mouseleave on the way out) also restores the tooltip — `handleLeave`
+ *    retains `lastPointRef` so the focus recheck can re-validate the point.
+ * 3. The tooltip is cleared when the cursor is genuinely off the feature.
  */
 
 import { act, render, waitFor } from '@testing-library/react';
@@ -207,35 +210,22 @@ describe('useMapHover — window focus recheck', () => {
       expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
 
-    // Simulate alt-tab: MapLibre fires mouseleave, clearing the tooltip.
+    // Simulate alt-tab: some browsers fire a synthetic `mouseleave` on the
+    // way out. `handleLeave` clears the tooltip but retains `lastPointRef`
+    // so the focus recheck can validate the point when focus returns.
     triggerLeave(mockCurrentMap, 'districts-fill');
     await waitFor(() => {
       expect(document.body.querySelector('[role="tooltip"]')).toBeNull();
     });
 
-    // Simulate returning to the window: window.focus fires; the cursor is
-    // still over the feature (queryRenderedFeatures returns the same hit).
-    // The hook should restore the tooltip WITHOUT a new mousemove.
+    // Returning to the window: window.focus fires. The cursor is still over
+    // the feature — `queryRenderedFeatures` returns the same hit at the
+    // retained last point. The hook restores the tooltip WITHOUT a new
+    // mousemove.
     mockCurrentMap.queryRenderedFeatures.mockReturnValue([
       { id: 7, layer: { id: 'districts-fill' } },
     ]);
     mockCurrentMap.getFeatureState.mockReturnValue({ value: 42 });
-
-    // NOTE: after mouseleave the lastPointRef is cleared (null), so the
-    // focus handler does nothing. This test verifies that if the user keeps
-    // the mouse physically over the map (no mouseleave fired) and then
-    // alt-tabs and returns, the tooltip comes back. We therefore re-prime
-    // the last known point via a mousemove before simulating the alt-tab.
-    triggerMove(mockCurrentMap, 'districts-fill', { x: 50, y: 60 });
-    await waitFor(() => {
-      expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
-    });
-
-    // Now simulate window blur (without mouseleave) then window focus.
-    // The last known point is still (50, 60) — tooltip must reappear.
-    act(() => {
-      window.dispatchEvent(new Event('blur'));
-    });
     triggerWindowFocus();
 
     await waitFor(() => {
