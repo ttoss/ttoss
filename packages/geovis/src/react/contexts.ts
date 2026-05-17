@@ -5,9 +5,7 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
 /**
- * Snapshot of a feature currently hovered on the map. Coordinates are pixel
- * offsets relative to the map canvas, so consumers can render overlays inside
- * the same `position: relative` container that hosts `<GeoVisCanvas>`.
+ * Snapshot of a feature currently hovered on the map.
  */
 export interface MapHoverInfo {
   /** Layer id under the cursor. */
@@ -23,16 +21,9 @@ export interface MapHoverInfo {
    */
   value: number | string | null;
   /**
-   * Pixel coordinates of the cursor relative to the **map canvas** origin
-   * (top-left corner of the `<canvas>` element). Use these to position overlay
-   * elements that are children of the same `position: relative` container as
-   * `<GeoVisCanvas>`.
-   *
-   * @remarks
-   * Prior to this version, `point` contained viewport-absolute coordinates
-   * (`clientX / clientY`). If you were offsetting UI with the old values,
-   * remove any `getBoundingClientRect()` subtraction — the canvas-relative
-   * coords are already in the correct space for `position: absolute` children.
+   * Viewport-absolute pixel coordinates of the cursor (`clientX / clientY`
+   * equivalent). Use these directly with `position: fixed` elements such as
+   * `<GeoVisHoverTooltip>`, which renders via a portal into `document.body`.
    */
   point: { x: number; y: number };
 }

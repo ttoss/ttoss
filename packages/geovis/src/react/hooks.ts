@@ -178,10 +178,10 @@ const buildHandleWindowFocus = ({
   setHover,
 }: BuildHandleWindowFocusParams) => {
   return () => {
-    const point = lastPointRef.current;
-    if (!point) return;
+    const canvasPoint = lastPointRef.current;
+    if (!canvasPoint) return;
 
-    const hits = map.queryRenderedFeatures([point.x, point.y], {
+    const hits = map.queryRenderedFeatures([canvasPoint.x, canvasPoint.y], {
       layers: trackedLayerIds,
     });
     const feature = hits[0];
@@ -199,13 +199,16 @@ const buildHandleWindowFocus = ({
       source: sourceId,
       id: feature.id,
     }) as { value?: unknown };
+    // Convert the retained canvas-relative point to viewport-absolute so
+    // the snapshot matches the coordinate space produced by buildHandleMove.
+    const rect = map.getCanvas().getBoundingClientRect();
     map.getCanvas().style.cursor = 'pointer';
     setHover({
       layerId: resolvedLayerId,
       sourceId,
       featureId: feature.id,
       value: coerceFeatureStateValue(state.value),
-      point,
+      point: { x: rect.left + canvasPoint.x, y: rect.top + canvasPoint.y },
     });
   };
 };
