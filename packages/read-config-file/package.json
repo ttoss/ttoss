@@ -4,14 +4,14 @@
   "description": "Read a configuration file",
   "keywords": [
     "config",
-    "read-config-file",
-    "configuration",
     "config-loader",
-    "typescript-config",
-    "yaml",
+    "configuration",
+    "esbuild",
     "json",
     "nodejs",
-    "esbuild"
+    "read-config-file",
+    "typescript-config",
+    "yaml"
   ],
   "repository": {
     "type": "git",

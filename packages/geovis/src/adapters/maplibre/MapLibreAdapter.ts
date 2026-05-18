@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 
 import type {
@@ -209,9 +210,10 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
     reapplyLegendDrivenFillPaint(map, viewState.spec);
   } else {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[GeoVis] dispatchPatch: unknown target "${patch.target as string}" — patch ignored.`
+    log.warn(
+      `[geovis] MapLibreAdapter: unknown patch target "${
+        (patch as { target: unknown }).target
+      }" — patch was ignored.`
     );
   }
 };
