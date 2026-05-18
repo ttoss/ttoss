@@ -6,6 +6,10 @@ import { FormProvider } from 'react-hook-form';
 
 import { FormActions } from './FormActions';
 import { FormGroup } from './FormGroup';
+import {
+  UnsavedChangesBlocker,
+  type WarnOnUnsavedChangesOptions,
+} from './UnsavedChangesBlocker';
 
 const FormBase = <
   TFieldValues extends FieldValues,
@@ -16,12 +20,30 @@ const FormBase = <
   children,
   onSubmit,
   sx,
+  warnOnUnsavedChanges,
   ...formMethods
 }: {
   children?: React.ReactNode;
   onSubmit?: (data: TTransformedValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
+  /**
+   * When enabled, warns before losing unsaved changes.
+   *
+   * - `true`: enables the browser's native `beforeunload` prompt on refresh / tab close.
+   * - object: also allows overriding the modal copy and injecting a router-specific
+   *   blocker hook for in-app navigation.
+   *
+   * In-app navigation blocking is router-agnostic and depends on the
+   * provided `useRouterBlocker` hook.
+   * @default false
+   */
+  warnOnUnsavedChanges?: boolean | WarnOnUnsavedChangesOptions;
 } & FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
+  const unsavedChangesOptions =
+    typeof warnOnUnsavedChanges === 'object' && warnOnUnsavedChanges !== null
+      ? warnOnUnsavedChanges
+      : undefined;
+
   return (
     <FormProvider {...formMethods}>
       <Box
@@ -34,6 +56,9 @@ const FormBase = <
       >
         {children}
       </Box>
+      {warnOnUnsavedChanges && (
+        <UnsavedChangesBlocker {...unsavedChangesOptions} />
+      )}
     </FormProvider>
   );
 };

@@ -31,7 +31,8 @@
     "@ttoss/react-notifications": "workspace:^",
     "@ttoss/react-wizard": "workspace:^",
     "@ttoss/theme": "workspace:^",
-    "@ttoss/ui": "workspace:^"
+    "@ttoss/ui": "workspace:^",
+    "react-router-dom": "^6.30.1"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

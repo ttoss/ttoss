@@ -57,6 +57,16 @@
     "defaultMessage": "{percentage}% used",
     "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
   },
+  "+sbAy+": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Discard",
+    "description": "Confirm button label to discard unsaved changes and navigate away"
+  },
+  "5kZhZ/": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Keep editing",
+    "description": "Cancel button label to stay on the page and keep editing the form"
+  },
   "D1C6fR": {
     "module": "@ttoss/forms",
     "defaultMessage": "Field must be at least {min} characters",
@@ -67,10 +77,20 @@
     "defaultMessage": "Field is required",
     "description": "Field is required"
   },
+  "RpseqB": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "You have unsaved changes. If you leave now, they will be discarded.",
+    "description": "Description for the unsaved changes confirmation modal"
+  },
   "ZhaPt0": {
     "module": "@ttoss/forms",
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
+  },
+  "cdSPSA": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Discard changes?",
+    "description": "Title for the unsaved changes confirmation modal"
   },
   "i6IsKy": {
     "module": "@ttoss/forms",

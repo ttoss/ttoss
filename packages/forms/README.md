@@ -205,3 +205,47 @@ import { MultistepForm } from '@ttoss/forms/multistep-form';
 **`header` variants:** `{ variant: 'logo', src, onClose }` or `{ variant: 'titled', title, leftIcon, rightIcon, onLeftIconClick, onRightIconClick }`.
 
 See [Storybook](https://storybook.ttoss.dev/?path=/story/forms-multistepform) for an interactive example.
+
+## Warn on Unsaved Changes
+
+Use the `warnOnUnsavedChanges` prop to block navigation when the form has unsaved changes. When enabled and the form is dirty (`formState.isDirty === true`):
+
+- **Browser refresh / tab close** triggers the native `beforeunload` prompt.
+
+```tsx
+<Form {...formMethods} onSubmit={onSubmit} warnOnUnsavedChanges>
+  <FormFieldInput name="firstName" label="First Name" />
+  <Button type="submit">Save</Button>
+</Form>
+```
+
+You can also customize the modal copy and inject an in-app navigation blocker from your router library:
+
+```tsx
+import { useBlocker } from 'react-router-dom';
+
+<Form
+  {...formMethods}
+  onSubmit={onSubmit}
+  warnOnUnsavedChanges={{
+    useRouterBlocker: useBlocker,
+    title: 'Leave this draft?',
+    description: 'Changes in this form have not been saved yet.',
+    confirmLabel: 'Leave without saving',
+    cancelLabel: 'Continue editing',
+  }}
+>
+  <FormFieldInput name="firstName" label="First Name" />
+  <Button type="submit">Save</Button>
+</Form>;
+```
+
+| State           | `warnOnUnsavedChanges`      | Navigation                  | Result        |
+| --------------- | --------------------------- | --------------------------- | ------------- |
+| Pristine        | `true`                      | Any                         | Allowed       |
+| Dirty           | `false` / omitted           | Any                         | Allowed       |
+| Dirty           | `true`                      | Browser refresh / tab close | Native prompt |
+| Dirty           | object + `useRouterBlocker` | In-app navigation           | Modal shown   |
+| After `reset()` | `true`                      | Any                         | Allowed       |
+
+**Requirements:** no router library is required by `@ttoss/forms`. In-app blocking only depends on the blocker hook you pass through `warnOnUnsavedChanges.useRouterBlocker`; `beforeunload` works without any router integration.
