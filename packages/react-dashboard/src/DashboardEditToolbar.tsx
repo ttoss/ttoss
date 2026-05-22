@@ -90,11 +90,30 @@ export const DashboardEditToolbar = () => {
 
   if (!isEditMode) {
     return (
-      <Flex sx={{ gap: '3', alignItems: 'center' }}>
-        <Button variant="primary" onClick={startEdit} rightIcon="lucide:pencil">
-          Editar
-        </Button>
-      </Flex>
+      <>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: '4',
+            right: '4',
+            zIndex: 1000,
+          }}
+        >
+          <Button
+            variant="primary"
+            onClick={startEdit}
+            rightIcon="lucide:pencil"
+            sx={{
+              borderRadius: 'full',
+              paddingX: '4',
+              paddingY: '3',
+              boxShadow: 'lg',
+            }}
+          >
+            Editar
+          </Button>
+        </Box>
+      </>
     );
   }
 
