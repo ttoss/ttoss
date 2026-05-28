@@ -32,7 +32,7 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.34.0",
+    "@chakra-ui/react": "^3.35.0",
     "@theme-ui/match-media": "^0.17.2",
     "@ttoss/theme": "workspace:^",
     "rc-segmented": "^2.7.0",
