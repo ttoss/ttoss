@@ -5,3 +5,22 @@ packages:
   - 'fixtures/*'
   - 'packages/*'
   - 'terezinha-farm/*'
+minimumReleaseAge: 1440
+blockExoticSubdeps: true
+allowBuilds:
+  '@swc/core': false
+  aws-sdk: false
+  core-js: false
+  cpu-features: false
+  esbuild: false
+  protobufjs: false
+  ssh2: false
+  unrs-resolver: false
+
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - chokidar
+  - detect-port
+  - ua-parser-js
+  - tinyexec
+  - semver

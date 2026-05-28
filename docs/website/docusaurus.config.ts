@@ -33,6 +33,13 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Enable Docusaurus Faster with Rspack bundler.
+  future: {
+    experimental_faster: {
+      rspackBundler: true,
+    },
+  },
+
   plugins: [
     isDevelopment ? null : 'docusaurus-plugin-llms',
     './plugins/principles-graph/index.mjs',

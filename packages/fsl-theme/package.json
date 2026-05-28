@@ -47,7 +47,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.3.0",
-    "react": "^19.2.4",
+    "react": "^19.2.6",
     "ts-morph": "^28.0.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0"
