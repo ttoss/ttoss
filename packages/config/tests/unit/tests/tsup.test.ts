@@ -8,11 +8,11 @@ test('should return default configuration with different entrypoint', () => {
   expect(
     tsupConfig(
       {
-        entryPoints: ['src/index.tsx'],
+        entry: ['src/index.tsx'],
       },
       {
         arrayMerge: 'overwrite',
       }
     )
-  ).toEqual({ ...defaultConfig, entryPoints: ['src/index.tsx'] });
+  ).toEqual({ ...defaultConfig, entry: ['src/index.tsx'] });
 });

@@ -28,7 +28,7 @@
     "i18n"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
@@ -49,7 +49,7 @@
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
     "react": "^19.2.6",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

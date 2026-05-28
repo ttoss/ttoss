@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import deepmerge from 'deepmerge';
 
 const overwriteMerge = (_: any, sourceArray: any) => {
@@ -13,9 +14,7 @@ export const configCreator = <T extends Record<string, any>>(
   ) => {
     return deepmerge<T>(defaultConfig, config, {
       arrayMerge:
-        deepmergeConfig?.arrayMerge === 'overwrite'
-          ? overwriteMerge
-          : undefined,
+        deepmergeConfig?.arrayMerge === 'append' ? undefined : overwriteMerge,
     });
   };
 };

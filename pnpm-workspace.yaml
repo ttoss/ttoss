@@ -19,6 +19,8 @@ allowBuilds:
 
 trustPolicy: no-downgrade
 trustPolicyExclude:
+  # https://github.com/storybookjs/storybook/issues/34957
+  # https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/895
   - chokidar
   - detect-port
   - ua-parser-js

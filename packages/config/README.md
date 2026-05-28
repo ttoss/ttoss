@@ -287,27 +287,27 @@ module.exports = prettierConfig({
 });
 ```
 
-You can also pass a second argument to every configuration to handle array's append or overwrite items.
+You can also pass a second argument to every configuration to control array merge behavior (append or overwrite).
 
 ```js title="babel.config.js"
 const { babelConfig } = require('@ttoss/config');
 
-// Append plugins (default)
-const appendConfig = babelConfig(
-  {
-    plugins: ['@babel/plugin-proposal-class-properties'],
-  },
-  {
-    arrayMerge: 'append',
-  }
-);
-
+// Overwrite plugins (default)
 const overwriteConfig = babelConfig(
   {
     plugins: ['@babel/plugin-proposal-class-properties'],
   },
   {
     arrayMerge: 'overwrite',
+  }
+);
+
+const appendConfig = babelConfig(
+  {
+    plugins: ['@babel/plugin-proposal-class-properties'],
+  },
+  {
+    arrayMerge: 'append',
   }
 );
 ```

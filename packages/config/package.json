@@ -27,7 +27,7 @@
     "tsconfig.test.json"
   ],
   "scripts": {
-    "build-config": "tsup-node",
+    "build-config": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "@types/node": "^24.12.0",
     "esbuild": "^0.28.0",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "publishConfig": {
     "access": "public",

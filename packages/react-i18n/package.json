@@ -26,7 +26,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "dev": "pnpm --filter @docs/storybook run dev",
     "i18n": "ttoss-i18n --pattern 'tests/**/*.test.{ts,tsx}'",
     "pretest": "pnpm run i18n",
@@ -43,7 +43,7 @@
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
     "react": "^19.2.6",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.0",
     "typescript": "~6.0.3"
   },
   "peerDependencies": {

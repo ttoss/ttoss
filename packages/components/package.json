@@ -46,7 +46,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "postbuild": "pnpm run update-package-json-exports",
     "dev": "pnpm -r --filter=@docs/storybook run dev",
     "i18n": "ttoss-i18n",
@@ -81,7 +81,7 @@
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
     "react": "^19.2.6",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.0",
     "tsx": "^4.21.0"
   },
   "peerDependencies": {
