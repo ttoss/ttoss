@@ -1,6 +1,6 @@
 import { Icon } from '@ttoss/react-icons';
 import { Box, Card, CloseButton, Link, Tag, Text } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
@@ -18,9 +18,57 @@ export type NotificationCardProps = {
   caption?: string | React.ReactNode;
   tags?: string[] | React.ReactNode;
   onClose?: () => void;
+  /**
+   * Controls sizing behaviour.
+   * - `'auto'` (default) — adapts to the viewport width.
+   * - `'sm'` — always renders the smallest (mobile) variant.
+   * - `'md'` — always renders the medium variant.
+   * - `'lg'` — always renders the largest (desktop) variant.
+   */
+  size?: 'auto' | 'sm' | 'md' | 'lg';
 };
 
+type SizeStyles = {
+  titleFontSize: string | string[];
+  paddingY: string | string[];
+  paddingX: string | string[];
+  messageFontSize: string | string[];
+};
+
+const fixedSizeStyles: Record<'sm' | 'md' | 'lg', SizeStyles> = {
+  sm: {
+    titleFontSize: 'md',
+    paddingY: '1',
+    paddingX: '2',
+    messageFontSize: 'sm',
+  },
+  md: {
+    titleFontSize: 'xl',
+    paddingY: '2',
+    paddingX: '4',
+    messageFontSize: 'md',
+  },
+  lg: {
+    titleFontSize: 'xl',
+    paddingY: '4',
+    paddingX: '8',
+    messageFontSize: 'md',
+  },
+};
+
+const autoSizeStyles: SizeStyles = {
+  titleFontSize: ['md', 'xl'],
+  paddingY: ['1', '2', '4'],
+  paddingX: ['2', '4', '8'],
+  messageFontSize: ['sm', 'md'],
+};
+
+// eslint-disable-next-line max-lines-per-function, complexity
 export const NotificationCard = (props: NotificationCardProps) => {
+  const sizeStyles =
+    props.size && props.size !== 'auto'
+      ? fixedSizeStyles[props.size]
+      : autoSizeStyles;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sxMap: Record<NotificationType, Record<string, any>> = {
     success: {
@@ -80,9 +128,9 @@ export const NotificationCard = (props: NotificationCardProps) => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            fontSize: ['md', 'xl'],
-            paddingY: ['1', '2', '4'],
-            paddingX: ['2', '4', '8'],
+            fontSize: sizeStyles.titleFontSize,
+            paddingY: sizeStyles.paddingY,
+            paddingX: sizeStyles.paddingX,
           }}
         >
           <Text
@@ -121,8 +169,8 @@ export const NotificationCard = (props: NotificationCardProps) => {
           display: 'flex',
           flexDirection: 'column',
           gap: '2',
-          paddingY: ['1', '2', '4'],
-          paddingX: ['2', '4', '8'],
+          paddingY: sizeStyles.paddingY,
+          paddingX: sizeStyles.paddingX,
         }}
       >
         <Box
@@ -146,7 +194,7 @@ export const NotificationCard = (props: NotificationCardProps) => {
           >
             <Text
               sx={{
-                fontSize: ['sm', 'md'],
+                fontSize: sizeStyles.messageFontSize,
               }}
             >
               {props.message}

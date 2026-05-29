@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { NotificationCard } from '@ttoss/components/NotificationCard';
 import { Flex } from '@ttoss/ui';
 
@@ -92,6 +92,45 @@ export const WithTag: StoryObj = {
     message: 'Your action has been completed and new features are now working.',
     caption: '2d ago',
     tags: ['New', 'Feature', 'Available'],
+  },
+};
+
+export const SizeSm: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Info',
+    message: 'This card always uses the small (mobile) layout.',
+    caption: '1h ago',
+    size: 'sm',
+  },
+};
+
+export const SizeMd: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Info',
+    message: 'This card always uses the medium layout.',
+    caption: '1h ago',
+    size: 'md',
+  },
+};
+
+export const SizeLg: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Info',
+    message: 'This card always uses the large (desktop) layout.',
+    caption: '1h ago',
+    size: 'lg',
+  },
+};
+
+export const SizeSmNoTitle: StoryObj = {
+  args: {
+    type: 'warning',
+    message: 'Small layout without a title.',
+    size: 'sm',
+    onClose: () => {},
   },
 };
 
