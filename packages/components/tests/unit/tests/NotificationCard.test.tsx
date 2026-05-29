@@ -100,7 +100,7 @@ describe('NotificationCard size', () => {
     ).toBe('sm');
   });
 
-  test('renders tags, actions, caption and handles close click', () => {
+  test('renders tags, actions, caption with functional close button', () => {
     const onClose = jest.fn();
 
     render(
@@ -140,7 +140,9 @@ describe('NotificationCard size', () => {
         title="Notification title"
         message="Notification message"
         tags="single-tag"
-        actions={[{}]}
+        actions={[
+          { action: 'invalid_action' as any, label: 'unsupported action' },
+        ]}
       />
     );
 
