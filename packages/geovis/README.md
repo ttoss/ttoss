@@ -75,20 +75,23 @@ Top-level spec object passed to `GeoVisProvider`.
 
 Each entry in `spec.layers` describes one rendered layer.
 
-| Field            | Type                 | Required | Description                                                                            |
-| ---------------- | -------------------- | -------- | -------------------------------------------------------------------------------------- |
-| `id`             | `string`             | ✓        | Unique layer identifier.                                                               |
-| `sourceId`       | `string`             | ✓        | References a `DataSource.id` from `spec.sources`.                                      |
-| `geometry`       | `GeoVisGeometryType` | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.    |
-| `sourceLayer`    | `string`             |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.        |
-| `title`          | `string`             |          | Human-readable layer name.                                                             |
-| `visible`        | `boolean`            |          | Whether the layer is rendered. Defaults to `true`.                                     |
-| `minzoom`        | `number`             |          | Minimum zoom level (0–24) at which the layer is visible.                               |
-| `maxzoom`        | `number`             |          | Maximum zoom level (0–24) at which the layer is visible.                               |
-| `paint`          | `LayerPaint`         |          | Per-geometry paint properties. See examples below.                                     |
-| `legends`        | `LegendSpec[]`       |          | Alternative legend definitions exposed as runtime toggles.                             |
-| `activeLegendId` | `string`             |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.      |
-| `mapDataId`      | `string`             |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). |
+| Field            | Type                                                                                   | Required | Description                                                                                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                          |
+| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                 |
+| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                               |
+| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                   |
+| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                        |
+| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                |
+| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                          |
+| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                          |
+| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                |
+| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                        |
+| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                 |
+| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip).                                                                            |
+| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                      |
+| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                            |
+| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead. |
 
 ### Paint properties
 
@@ -581,6 +584,38 @@ Renders a floating tooltip over the map whenever the user hovers a polygon featu
 | `style`           | `React.CSSProperties`                     | Optional inline style overrides merged on top of the default tooltip style.                      |
 | `offset`          | `{ x: number; y: number }`                | Pixel offset from the cursor. Defaults to `{ x: 12, y: 12 }`.                                    |
 | `emptyValueLabel` | `string`                                  | Label shown when `info.value` is `null` (no `mapData` for the feature). Defaults to `'No data'`. |
+
+### `GeoVisMarker`
+
+Renders a DOM-based click marker anchored to the last clicked feature. It is the
+React-component alternative to the spec-driven `layer.clickAnchor` field.
+
+**When to use `<GeoVisMarker>` vs `layer.clickAnchor`:**
+
+| Approach                          | Best for                                                                                                                                                  |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layer.clickAnchor` (spec-driven) | Sprite icon rendered entirely by MapLibre as a companion symbol layer. Zero React overhead; serialisable in JSON specs.                                   |
+| `<GeoVisMarker>`                  | Custom HTML/React content anchored via a `maplibregl.Marker`. Use when you need arbitrary DOM elements (e.g. a styled callout, rich tooltip, or SVG pin). |
+
+Must be rendered inside `GeoVisProvider`.
+
+| Prop        | Type               | Description                                                                      |
+| ----------- | ------------------ | -------------------------------------------------------------------------------- |
+| `children`  | `React.ReactNode`  | Content rendered inside the marker. Defaults to a built-in SVG pin when omitted. |
+| `className` | `string`           | Optional CSS class for the marker container.                                     |
+| `offset`    | `[number, number]` | Pixel offset `[x, y]` applied to the DOM marker.                                 |
+
+```tsx
+import { GeoVisCanvas, GeoVisMarker, GeoVisProvider } from '@ttoss/geovis';
+
+<GeoVisProvider spec={spec}>
+  <GeoVisCanvas />
+  {/* Marker anchors to the clicked feature automatically */}
+  <GeoVisMarker>
+    <div className="my-pin">📍</div>
+  </GeoVisMarker>
+</GeoVisProvider>;
+```
 
 ### `validateSpec`
 
