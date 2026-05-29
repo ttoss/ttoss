@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow-functions/prefer-arrow-functions, react/prop-types, @typescript-eslint/no-explicit-any, react/display-name, formatjs/no-literal-string-in-jsx */
 import { NotificationCard } from '@ttoss/components/NotificationCard';
-import { render, screen } from '@ttoss/test-utils/react';
+import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
 jest.mock('@ttoss/react-icons', () => ({
   Icon: ({ icon }: { icon: string }) => <span data-testid="icon">{icon}</span>,
@@ -98,5 +98,68 @@ describe('NotificationCard size', () => {
     expect(
       JSON.parse(messageText.getAttribute('data-sx') || '{}').fontSize
     ).toBe('sm');
+  });
+
+  test('renders tags, actions, caption and handles close click', () => {
+    const onClose = jest.fn();
+
+    render(
+      <NotificationCard
+        type="success"
+        title="Notification title"
+        message="Notification message"
+        tags={['tag-1', 'tag-2']}
+        actions={[
+          {
+            action: 'open_url',
+            label: 'Open link',
+            url: 'https://example.com',
+          },
+        ]}
+        caption="Notification caption"
+        onClose={onClose}
+      />
+    );
+
+    expect(screen.getByText('tag-1')).toBeInTheDocument();
+    expect(screen.getByText('tag-2')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open link' })).toHaveAttribute(
+      'href',
+      'https://example.com'
+    );
+    expect(screen.getByText('Notification caption')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'close' }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  test('renders non-array tags and skips unsupported actions', () => {
+    render(
+      <NotificationCard
+        type="info"
+        title="Notification title"
+        message="Notification message"
+        tags="single-tag"
+        actions={[{}]}
+      />
+    );
+
+    expect(screen.getByText('single-tag')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  test('renders close button in body when title is not provided', () => {
+    const onClose = jest.fn();
+
+    render(
+      <NotificationCard
+        type="warning"
+        message="Notification message"
+        onClose={onClose}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'close' }));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
