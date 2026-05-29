@@ -79,3 +79,31 @@ appSyncClient.setConfig({
   },
 });
 ```
+
+## Triggering subscriptions from the backend
+
+Use `appSyncClient.mutate()` to execute a GraphQL mutation that triggers an AppSync subscription. This is the recommended way to push real-time events to connected clients from a backend Lambda or service.
+
+```typescript
+import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
+
+appSyncClient.setConfig({
+  endpoint: process.env.APPSYNC_ENDPOINT!,
+});
+
+await appSyncClient.mutate(
+  /* GraphQL */ `
+    mutation SendMessage($content: String!, $author: String!) {
+      sendMessage(content: $content, author: $author) {
+        content
+        author
+      }
+    }
+  `,
+  { content: 'Hello!', author: 'Alice' }
+);
+```
+
+`mutate` uses the same authentication and transport as `query` — whichever auth mode is configured (`apiKey`, `credentials`, or the default provider) is applied automatically.
+
+> See the `@ttoss/appsync-api` documentation for how to set up a subscription with a NONE data-source resolver on the AppSync side.
