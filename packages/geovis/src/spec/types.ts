@@ -236,6 +236,46 @@ export interface VisualizationLayer {
    * coming from the dataset (joined via `feature.id` or `mapData.joinKey`).
    */
   mapDataId?: string;
+  /**
+   * Paint applied via MapLibre `setFeatureState({ hover: true })` when the
+   * pointer enters a feature. When present, the adapter adds a companion
+   * line layer (`<id>-hover-outline`) driven by feature-state expressions.
+   */
+  hoverPaint?: { lineColor?: string; lineWidth?: number };
+  /**
+   * Paint applied via MapLibre `setFeatureState({ selected: true })` when a
+   * feature is clicked. When present, the adapter adds a companion line layer
+   * (`<id>-selected-outline`) driven by feature-state expressions.
+   */
+  selectedPaint?: { lineColor?: string; lineWidth?: number };
+  /**
+   * Spec-driven click marker. When present, geovis automatically places a
+   * visual indicator on the clicked feature without requiring a `<GeoVisMarker>`
+   * component. Three rendering modes — see field descriptions.
+   */
+  clickAnchor?: {
+    /**
+     * MapLibre sprite icon name. Renders a feature-state-driven companion
+     * `symbol` layer at the polygon label point. Can be combined with `element`
+     * to also place a DOM marker at the exact click `lngLat`.
+     */
+    iconImage?: string;
+    /** Scale factor for the sprite icon. Default: `1`. */
+    iconSize?: number;
+    /**
+     * Custom HTML element used as the DOM marker. When present, a
+     * `maplibregl.Marker` is placed at `click.lngLat`. Takes precedence over
+     * `color`. Not JSON-serializable — suitable for runtime use only.
+     */
+    element?: HTMLElement;
+    /**
+     * Accent colour for the built-in SVG pin. Applied when `element` is absent
+     * and `iconImage` alone is not set. Default: `'#3FB1CE'`.
+     */
+    color?: string;
+    /** Pixel offset `[x, y]` applied to the DOM marker. */
+    offset?: [number, number];
+  };
 }
 
 /**
