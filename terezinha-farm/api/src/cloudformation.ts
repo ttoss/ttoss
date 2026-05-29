@@ -4,6 +4,13 @@ import { schemaComposer } from './schemaComposer';
 
 const template = createApiTemplate({
   schemaComposer,
+  /**
+   * AWS_IAM allows backend Lambda functions to trigger mutations (e.g. to push
+   * real-time events via subscriptions) using IAM credentials instead of a
+   * Cognito token. The Lambda execution role must have `appsync:GraphQL`
+   * permission on this API.
+   */
+  additionalAuthenticationProviders: ['AWS_IAM'],
   customDomain: {
     domainName: 'api.terezinha-farm.ttoss.dev',
     certificateArn:
@@ -27,6 +34,14 @@ const template = createApiTemplate({
         'TerezinhaFarmIam-Production:AppSyncLambdaFunctionIAMRoleArn',
     },
   },
+  /**
+   * NONE data-source resolvers: AppSync passes the mutation arguments directly
+   * through to subscribers without invoking a Lambda. Used for real-time
+   * subscription triggers.
+   */
+  noneDataSourceResolvers: [
+    { typeName: 'Mutation', fieldName: 'publishFarmNotification' },
+  ],
   userPoolConfig: {
     appIdClientRegex: {
       'Fn::ImportValue': 'TerezinhaFarmAuth-Production:AppClientId',
