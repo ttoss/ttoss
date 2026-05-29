@@ -158,3 +158,73 @@ export const template = createApiTemplate({
   },
 });
 ```
+
+### Subscriptions
+
+AppSync subscriptions are triggered by mutations. The recommended pattern to push events from your backend is:
+
+1. **Define the subscription in your schema** — use the `@aws_subscribe` directive to link a subscription field to a mutation. Because this is an AppSync-specific directive, you must add it via raw SDL on the `schemaComposer`:
+
+```typescript
+import { schemaComposer } from '@ttoss/graphql-api';
+
+// Add a NONE-source mutation and a subscription that listens to it
+schemaComposer.addTypeDefs(/* GraphQL */ `
+  type Message {
+    content: String!
+    author: String!
+  }
+
+  extend type Mutation {
+    sendMessage(content: String!, author: String!): Message!
+  }
+
+  extend type Subscription {
+    onMessage: Message @aws_subscribe(mutations: ["sendMessage"])
+  }
+`);
+```
+
+2. **Register the mutation as a NONE data-source resolver** — pass `noneDataSourceResolvers` to `createApiTemplate`. AppSync will handle these mutations with a pass-through resolver (no Lambda invocation) and automatically push the payload to subscribers.
+
+```typescript
+import { createApiTemplate } from '@ttoss/appsync-api';
+import { schemaComposer } from './schemaComposer';
+
+const template = createApiTemplate({
+  schemaComposer,
+  dataSource: {
+    roleArn: importValueFromParameter('AppSyncLambdaDataSourceIAMRoleArn'),
+  },
+  lambdaFunction: {
+    roleArn: importValueFromParameter('AppSyncLambdaFunctionIAMRoleArn'),
+  },
+  noneDataSourceResolvers: [{ typeName: 'Mutation', fieldName: 'sendMessage' }],
+});
+
+export default template;
+```
+
+3. **Trigger the subscription from your backend** — use `appSyncClient.mutate()` from `@ttoss/aws-appsync-nodejs` to call the mutation. AppSync processes it through the NONE data source and pushes the result to all active subscribers.
+
+```typescript
+import { appSyncClient } from '@ttoss/aws-appsync-nodejs';
+
+appSyncClient.setConfig({
+  endpoint: process.env.APPSYNC_ENDPOINT!,
+});
+
+await appSyncClient.mutate(
+  /* GraphQL */ `
+    mutation SendMessage($content: String!, $author: String!) {
+      sendMessage(content: $content, author: $author) {
+        content
+        author
+      }
+    }
+  `,
+  { content: 'Hello!', author: 'Alice' }
+);
+```
+
+> **How it works:** the `@aws_subscribe(mutations: ["sendMessage"])` directive tells AppSync to publish the mutation result to every client subscribed to `onMessage`. The mutation itself uses a NONE data source — AppSync simply forwards `$ctx.args` as the result, so there is no Lambda invocation for the trigger. This is the recommended approach described in the [AWS AppSync documentation](https://docs.aws.amazon.com/appsync/latest/eventapi/publish-http.html) and [AWS community resources](https://stackoverflow.com/questions/57610072/aws-appsync-subscriptions-without-mutations).

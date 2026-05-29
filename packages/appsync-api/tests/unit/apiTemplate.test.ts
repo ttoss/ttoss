@@ -6,6 +6,7 @@ import {
   AppSyncGraphQLApiLogicalId,
   AppSyncGraphQLSchemaLogicalId,
   AppSyncLambdaFunctionLogicalId,
+  AppSyncNoneDataSourceLogicalId,
 } from '../../src/createApiTemplate';
 
 const createApiTemplateInput = {
@@ -362,5 +363,74 @@ describe('custom domain name', () => {
         ],
       },
     });
+  });
+});
+
+describe('noneDataSourceResolvers', () => {
+  test('should not create NONE data source when option is not provided', () => {
+    const template = createApiTemplate(createApiTemplateInput);
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toBeUndefined();
+  });
+
+  test('should not create NONE data source when array is empty', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [],
+    });
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toBeUndefined();
+  });
+
+  test('should create NONE data source and resolvers', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [
+        { typeName: 'Mutation', fieldName: 'sendMessage' },
+      ],
+    });
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toEqual({
+      Type: 'AWS::AppSync::DataSource',
+      Properties: {
+        ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+        Name: AppSyncNoneDataSourceLogicalId,
+        Type: 'NONE',
+      },
+    });
+
+    expect(
+      template.Resources['sendMessageMutationAppSyncResolver']
+    ).toMatchObject({
+      Type: 'AWS::AppSync::Resolver',
+      Properties: {
+        TypeName: 'Mutation',
+        FieldName: 'sendMessage',
+        DataSourceName: {
+          'Fn::GetAtt': [AppSyncNoneDataSourceLogicalId, 'Name'],
+        },
+        RequestMappingTemplate: expect.stringContaining(
+          '$utils.toJson($ctx.args)'
+        ),
+        ResponseMappingTemplate: '$util.toJson($ctx.result)',
+      },
+    });
+  });
+
+  test('should support multiple NONE data source resolvers', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [
+        { typeName: 'Mutation', fieldName: 'sendMessage' },
+        { typeName: 'Mutation', fieldName: 'deleteMessage' },
+      ],
+    });
+
+    expect(
+      template.Resources['sendMessageMutationAppSyncResolver']
+    ).toBeDefined();
+    expect(
+      template.Resources['deleteMessageMutationAppSyncResolver']
+    ).toBeDefined();
   });
 });
