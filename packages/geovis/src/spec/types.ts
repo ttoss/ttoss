@@ -256,21 +256,15 @@ export interface VisualizationLayer {
   clickAnchor?: {
     /**
      * MapLibre sprite icon name. Renders a feature-state-driven companion
-     * `symbol` layer at the polygon label point. Can be combined with `element`
-     * to also place a DOM marker at the exact click `lngLat`.
+     * `symbol` layer at the polygon label point.
      */
     iconImage?: string;
     /** Scale factor for the sprite icon. Default: `1`. */
     iconSize?: number;
     /**
-     * Custom HTML element used as the DOM marker. When present, a
-     * `maplibregl.Marker` is placed at `click.lngLat`. Takes precedence over
-     * `color`. Not JSON-serializable — suitable for runtime use only.
-     */
-    element?: HTMLElement;
-    /**
-     * Accent colour for the built-in SVG pin. Applied when `element` is absent
-     * and `iconImage` alone is not set. Default: `'#3FB1CE'`.
+     * Accent colour for the built-in SVG pin. Applied when `iconImage` is not
+     * set. Default: `'#3FB1CE'`. For a custom HTML/React element, use
+     * `<GeoVisMarker>` instead.
      */
     color?: string;
     /** Pixel offset `[x, y]` applied to the DOM marker. */
