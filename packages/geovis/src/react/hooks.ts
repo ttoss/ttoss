@@ -53,7 +53,10 @@ export const useMapHover = ({
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
-        return layer.geometry === 'polygon' && layer.activeLegendId != null;
+        return (
+          layer.geometry === 'polygon' &&
+          (layer.activeLegendId != null || layer.hoverPaint != null)
+        );
       })
       .map((layer) => {
         return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.hoverPaint ? '1' : '0'}`;
@@ -161,7 +164,11 @@ export const useMapClick = ({
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
-        return layer.activeLegendId != null;
+        return (
+          layer.activeLegendId != null ||
+          layer.selectedPaint != null ||
+          layer.clickAnchor != null
+        );
       })
       .map((layer) => {
         return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.selectedPaint ? '1' : '0'}`;
@@ -283,8 +290,7 @@ const buildMarkerOptions = (
   anchor: ClickAnchorSpec
 ): maplibregl.MarkerOptions => {
   const opts: maplibregl.MarkerOptions = {};
-  if (anchor.element) opts.element = anchor.element;
-  else if (anchor.color) opts.color = anchor.color;
+  if (anchor.color) opts.color = anchor.color;
   if (anchor.offset) opts.offset = anchor.offset;
   return opts;
 };
@@ -303,10 +309,9 @@ export const useClickAnchor = ({
     const anchor = layer?.clickAnchor;
     if (!anchor) return;
 
-    // DOM Marker: created when `element` is present, or when `iconImage` is absent.
+    // DOM Marker: created when `iconImage` is absent.
     // `{ iconImage }` alone → symbol layer only (handled by syncSourcesAndLayers).
-    // `{ iconImage, color }` → symbol layer only (color ignored without element).
-    const hasDomMarker = !!anchor.element || !anchor.iconImage;
+    const hasDomMarker = !anchor.iconImage;
     if (!hasDomMarker) return;
 
     const map = runtime
