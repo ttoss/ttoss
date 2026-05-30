@@ -118,6 +118,7 @@ interface CompanionOutlineSpec {
   stateKey: 'hover' | 'selected';
   lineColor: string;
   lineWidth: number;
+  visible: boolean;
 }
 
 /**
@@ -128,8 +129,16 @@ const upsertCompanionOutline = (
   map: maplibregl.Map,
   outline: CompanionOutlineSpec
 ): void => {
-  const { sourceId, sourceLayer, companionId, stateKey, lineColor, lineWidth } =
-    outline;
+  const {
+    sourceId,
+    sourceLayer,
+    companionId,
+    stateKey,
+    lineColor,
+    lineWidth,
+    visible,
+  } = outline;
+  const visibility = visible ? 'visible' : 'none';
   const widthExpr = [
     'case',
     ['boolean', ['feature-state', stateKey], false],
@@ -141,11 +150,13 @@ const upsertCompanionOutline = (
       id: companionId,
       type: 'line',
       source: sourceId,
+      layout: { visibility },
       paint: { 'line-color': lineColor, 'line-width': widthExpr },
     };
     if (sourceLayer) layerSpec['source-layer'] = sourceLayer;
     map.addLayer(layerSpec as maplibregl.LayerSpecification);
   } else {
+    map.setLayoutProperty(companionId, 'visibility', visibility);
     map.setPaintProperty(companionId, 'line-color', lineColor);
     map.setPaintProperty(companionId, 'line-width', widthExpr);
   }
@@ -157,6 +168,7 @@ const upsertOutlineCompanions = (
   layer: VisualizationSpec['layers'][number],
   sourceLayer: string | undefined
 ): void => {
+  const isVisible = layer.visible !== false;
   const hoverCompanionId = `${layer.id}-hover-outline`;
   if (layer.hoverPaint) {
     upsertCompanionOutline(map, {
@@ -166,6 +178,7 @@ const upsertOutlineCompanions = (
       stateKey: 'hover',
       lineColor: layer.hoverPaint.lineColor ?? '#333333',
       lineWidth: layer.hoverPaint.lineWidth ?? 2,
+      visible: isVisible,
     });
   } else if (map.getLayer(hoverCompanionId)) {
     map.removeLayer(hoverCompanionId);
@@ -180,6 +193,7 @@ const upsertOutlineCompanions = (
       stateKey: 'selected',
       lineColor: layer.selectedPaint.lineColor ?? '#1a1a1a',
       lineWidth: layer.selectedPaint.lineWidth ?? 3,
+      visible: isVisible,
     });
   } else if (map.getLayer(selectedCompanionId)) {
     map.removeLayer(selectedCompanionId);
@@ -196,19 +210,21 @@ const upsertClickAnchorCompanion = (
   if (layer.clickAnchor?.iconImage) {
     const iconImage = layer.clickAnchor.iconImage;
     const iconSize = layer.clickAnchor.iconSize ?? 1;
+    const visibility = layer.visible !== false ? 'visible' : 'none';
     if (!map.getLayer(clickAnchorId)) {
       const anchorLayerSpec: Record<string, unknown> = {
         id: clickAnchorId,
         type: 'symbol',
         source: layer.sourceId,
         filter: ['boolean', ['feature-state', 'selected'], false],
-        layout: { 'icon-image': iconImage, 'icon-size': iconSize },
+        layout: { 'icon-image': iconImage, 'icon-size': iconSize, visibility },
       };
       if (sourceLayer) anchorLayerSpec['source-layer'] = sourceLayer;
       map.addLayer(anchorLayerSpec as maplibregl.LayerSpecification);
     } else {
       map.setLayoutProperty(clickAnchorId, 'icon-image', iconImage);
       map.setLayoutProperty(clickAnchorId, 'icon-size', iconSize);
+      map.setLayoutProperty(clickAnchorId, 'visibility', visibility);
     }
   } else if (map.getLayer(clickAnchorId)) {
     map.removeLayer(clickAnchorId);
