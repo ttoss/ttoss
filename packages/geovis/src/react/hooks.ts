@@ -53,6 +53,9 @@ export const useMapHover = ({
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
+        // Only polygon layers can have hoverPaint and/or activeLegendId, so we can skip non-polygons entirely. This also avoids attaching hover handlers to
+        // non-polygon layers that have active legends (e.g. symbol layers with
+        // `icon-image` driven by an active legend) but do not support hoverPaint.
         return (
           layer.geometry === 'polygon' &&
           (layer.activeLegendId != null || layer.hoverPaint != null)
@@ -165,6 +168,7 @@ export const useMapClick = ({
     return spec.layers
       .filter((layer) => {
         return (
+          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId` or `selectedPaint` to determine whether the layer should be tracked.
           layer.activeLegendId != null ||
           layer.selectedPaint != null ||
           layer.clickAnchor != null

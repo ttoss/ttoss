@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { log } from '@ttoss/logger';
