@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Heading, HelpText, Stack, Text } from '@ttoss/ui';
 import { generateClient } from 'aws-amplify/api';
+import { createClient as createGraphQLSSEClient } from 'graphql-sse';
 import * as React from 'react';
 
 type FarmNotificationEvent = {
@@ -26,6 +27,22 @@ type GraphQLSubscription<TData> = {
 };
 
 const client = generateClient();
+const graphQLEndpoint = import.meta.env.VITE_APPSYNC_GRAPHQL_ENDPOINT;
+const isLocalGraphQLEndpoint = (() => {
+  try {
+    const { hostname, protocol } = new URL(graphQLEndpoint);
+
+    return (
+      protocol.startsWith('http') &&
+      (hostname === 'localhost' || hostname === '127.0.0.1')
+    );
+  } catch {
+    return false;
+  }
+})();
+const localGraphQLSubscriptionClient = isLocalGraphQLEndpoint
+  ? createGraphQLSSEClient({ url: graphQLEndpoint })
+  : null;
 
 const farmNotificationSubscription = /* GraphQL */ `
   subscription FarmNotificationSubscription($farmId: ID!) {
@@ -69,9 +86,22 @@ const uiText = {
   subscribePlaceholder: 'Enter farm ID',
 };
 
-const getErrorMessage = (error: unknown) => {
+const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     return error.message;
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+
+  if (Array.isArray(error)) {
+    return error.map(getErrorMessage).join(', ');
   }
 
   return 'Unexpected error.';
@@ -84,6 +114,40 @@ const FarmNotificationListener = ({ farmId }: { farmId: string }) => {
   >(null);
 
   React.useEffect(() => {
+    if (localGraphQLSubscriptionClient) {
+      const unsubscribe = localGraphQLSubscriptionClient.subscribe(
+        {
+          query: farmNotificationSubscription,
+          variables: { farmId },
+        },
+        {
+          next: (value) => {
+            const message = (value as { data?: FarmNotificationEvent }).data
+              ?.onFarmNotification?.message;
+
+            if (message) {
+              setNotifications((prev) => {
+                return [...prev, message];
+              });
+            }
+          },
+          error: (error) => {
+            setSubscriptionError(getErrorMessage(error));
+
+            // eslint-disable-next-line no-console
+            console.error('FarmNotification subscription error:', error);
+          },
+          complete: (): void => {
+            throw new Error('Function not implemented.');
+          },
+        }
+      );
+
+      return () => {
+        unsubscribe();
+      };
+    }
+
     const subscription = client.graphql({
       query: farmNotificationSubscription,
       variables: { farmId },
