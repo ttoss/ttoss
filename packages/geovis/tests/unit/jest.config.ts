@@ -6,7 +6,7 @@ export default jestUnitConfig({
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/../../src/$1',
-    'maplibre-gl': '<rootDir>/__mocks__/maplibre-gl.ts',
+    '^maplibre-gl$': '<rootDir>/__mocks__/maplibre-gl.ts',
   },
   coverageThreshold: {
     global: {

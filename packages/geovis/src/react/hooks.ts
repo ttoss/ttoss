@@ -179,7 +179,9 @@ export const useMapClick = ({
         );
       })
       .map((layer) => {
-        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.selectedPaint ? '1' : '0'}`;
+        const needsSelectedState =
+          layer.selectedPaint != null || layer.clickAnchor?.iconImage != null;
+        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${needsSelectedState ? '1' : '0'}`;
       })
       .join(TRACKED_RECORD_SEP);
   }, [spec.layers]);
@@ -194,7 +196,7 @@ export const useMapClick = ({
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
     const prevSelectedState: PrevFeatureState = { current: null };
 
-    const handlers = tracked.map(({ layerId }) => {
+    const handlers = tracked.map(({ layerId, hasSelectedPaint }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -203,6 +205,7 @@ export const useMapClick = ({
           sourceByLayerId,
           setClick,
           prevSelectedState,
+          needsSelectedState: hasSelectedPaint,
         }),
       };
     });

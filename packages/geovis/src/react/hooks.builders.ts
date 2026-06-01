@@ -107,6 +107,8 @@ export interface BuildHandleClickParams {
   setClick: React.Dispatch<React.SetStateAction<MapClickInfo | null>>;
   /** Tracks the last feature whose selected state was set so it can be cleared on deselect. */
   prevSelectedState: PrevFeatureState;
+  /** Whether this layer needs `selected` feature-state (has selectedPaint or clickAnchor.iconImage). */
+  needsSelectedState: boolean;
 }
 
 /**
@@ -114,6 +116,11 @@ export interface BuildHandleClickParams {
  * `feature-state` and calls `setClick` with the resulting {@link MapClickInfo}.
  * Extracted at module scope (mirrors `buildHandleMove`) so `useMapClick`
  * stays under the `max-lines-per-function` threshold.
+ *
+ * Only sets `selected: true` feature-state when `needsSelectedState` is true
+ * (layer has `selectedPaint` or `clickAnchor.iconImage`). Layers tracked only
+ * for `activeLegendId` will not receive selected state, avoiding unintended
+ * side effects on consumer expressions that use `feature-state.selected`.
  */
 export const buildHandleClick = ({
   map,
@@ -121,6 +128,7 @@ export const buildHandleClick = ({
   sourceByLayerId,
   setClick,
   prevSelectedState,
+  needsSelectedState,
 }: BuildHandleClickParams) => {
   return (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -138,12 +146,15 @@ export const buildHandleClick = ({
     }
 
     // Swap selected feature-state: clear previous, mark new.
+    // Only set selected state when the layer has visual feedback (selectedPaint or clickAnchor.iconImage).
     clearSelected(map, prevSelectedState);
-    map.setFeatureState(
-      { source: sourceId, id: feature.id },
-      { selected: true }
-    );
-    prevSelectedState.current = { sourceId, id: feature.id };
+    if (needsSelectedState) {
+      map.setFeatureState(
+        { source: sourceId, id: feature.id },
+        { selected: true }
+      );
+      prevSelectedState.current = { sourceId, id: feature.id };
+    }
 
     const state = map.getFeatureState({
       source: sourceId,
