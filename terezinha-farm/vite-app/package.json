@@ -26,6 +26,7 @@
     "@ttoss/theme": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "aws-amplify": "^6.11.0",
+    "graphql-sse": "^2.6.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-relay": "^18.2.0",
