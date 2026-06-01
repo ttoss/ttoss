@@ -1,28 +1,33 @@
-/**
- * FarmNotification subscription example using Relay and AppSync enhanced
- * filtering.
- *
- * AppSync enhanced filtering: the `farmId` variable passed to the subscription
- * is used as a server-side filter. AppSync only delivers events where the
- * `farmId` field in the mutation result matches the subscriber's `farmId`
- * variable. This avoids broadcasting every notification to every connected
- * client.
- *
- * Prerequisites:
- * 1. Run `pnpm relay` (or `pnpm build`) after updating the schema so that the
- *    Relay compiler generates the `__generated__/FarmNotificationSubscription.graphql.ts`
- *    type file.
- * 2. Configure a WebSocket `subscribeFunction` in RelayEnvironment.ts that
- *    connects to the AppSync real-time endpoint.
- */
-import * as React from 'react';
 import { Box, Button, Flex, Heading, HelpText, Stack, Text } from '@ttoss/ui';
-import { graphql, useSubscription } from 'react-relay';
-import type { GraphQLSubscriptionConfig } from 'relay-runtime';
+import { generateClient } from 'aws-amplify/api';
+import * as React from 'react';
 
-import type { FarmNotificationSubscription } from './__generated__/FarmNotificationSubscription.graphql';
+type FarmNotificationEvent = {
+  onFarmNotification?: {
+    farmId: string;
+    message: string;
+  } | null;
+};
 
-const farmNotificationSubscription = graphql`
+type PublishFarmNotificationResult = {
+  publishFarmNotification?: {
+    farmId: string;
+    message: string;
+  } | null;
+};
+
+type GraphQLObserver<TData> = {
+  error?: (error: unknown) => void;
+  next?: (value: { data?: TData }) => void;
+};
+
+type GraphQLSubscription<TData> = {
+  subscribe: (observer: GraphQLObserver<TData>) => { unsubscribe: () => void };
+};
+
+const client = generateClient();
+
+const farmNotificationSubscription = /* GraphQL */ `
   subscription FarmNotificationSubscription($farmId: ID!) {
     onFarmNotification(farmId: $farmId) {
       farmId
@@ -31,56 +36,102 @@ const farmNotificationSubscription = graphql`
   }
 `;
 
+const publishFarmNotificationMutation = /* GraphQL */ `
+  mutation PublishFarmNotification($farmId: ID!, $message: String!) {
+    publishFarmNotification(farmId: $farmId, message: $message) {
+      farmId
+      message
+    }
+  }
+`;
+
+const uiText = {
+  emptyNotifications: 'No notifications received yet…',
+  farmIdCode: 'farmId',
+  heading: 'Farm Notifications (Subscription)',
+  listenerPrefix: 'Listening for notifications for farm ',
+  listenerSuffix: '. AppSync only delivers events whose ',
+  listenerSuffixAfterCode: ' matches this value.',
+  messagePlaceholder: 'Enter notification message',
+  notificationNotPublished: 'Notification was not published.',
+  publishMutationCode: 'publishFarmNotification',
+  publishButton: 'Send test notification',
+  publishMutateCode: 'appSyncClient.mutate()',
+  publishHelpPrefix: 'Trigger uses the same ',
+  publishHelpSuffix: ' mutation that a backend Lambda would call with ',
+  publishHelpSuffixAfterCode: '.',
+  publishingButton: 'Publishing…',
+  stopButton: 'Stop',
+  subscribeButton: 'Subscribe',
+  subscribeHelpPrefix:
+    'Subscribe to real-time notifications for a specific farm, then use the mutation below to publish a test notification to the same ',
+  subscribeHelpSuffix: '. AppSync uses that value as a server-side filter.',
+  subscribePlaceholder: 'Enter farm ID',
+};
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unexpected error.';
+};
+
 const FarmNotificationListener = ({ farmId }: { farmId: string }) => {
   const [notifications, setNotifications] = React.useState<string[]>([]);
+  const [subscriptionError, setSubscriptionError] = React.useState<
+    string | null
+  >(null);
 
-  const config = React.useMemo<
-    GraphQLSubscriptionConfig<FarmNotificationSubscription>
-  >(
-    () => ({
-      subscription: farmNotificationSubscription,
-      /**
-       * `farmId` is passed as a variable to the subscription. AppSync uses
-       * this value as an enhanced filter: only events where the mutation
-       * result's `farmId` matches this value are delivered to this subscriber.
-       */
+  React.useEffect(() => {
+    const subscription = client.graphql({
+      query: farmNotificationSubscription,
       variables: { farmId },
-      onNext: (data) => {
+    }) as GraphQLSubscription<FarmNotificationEvent>;
+
+    const connection = subscription.subscribe({
+      next: ({ data }) => {
         const message = data?.onFarmNotification?.message;
+
         if (message) {
           setNotifications((prev) => {
             return [...prev, message];
           });
         }
       },
-      onError: (error) => {
+      error: (error) => {
+        setSubscriptionError(getErrorMessage(error));
+
         // eslint-disable-next-line no-console
         console.error('FarmNotification subscription error:', error);
       },
-    }),
-    [farmId]
-  );
+    });
 
-  useSubscription(config);
+    return () => {
+      connection.unsubscribe();
+    };
+  }, [farmId]);
 
   return (
     <Box>
       <HelpText>
-        Listening for notifications for farm <strong>{farmId}</strong>. AppSync
-        will only deliver events whose <code>farmId</code> matches this value
-        (enhanced filtering).
+        {uiText.listenerPrefix}
+        <strong>{farmId}</strong>
+        {uiText.listenerSuffix}
+        <code>{uiText.farmIdCode}</code>
+        {uiText.listenerSuffixAfterCode}
       </HelpText>
+      {subscriptionError ? (
+        <Text sx={{ color: 'danger' }}>{subscriptionError}</Text>
+      ) : null}
       {notifications.length === 0 ? (
         <Text sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-          No notifications received yet…
+          {uiText.emptyNotifications}
         </Text>
       ) : (
         <ul>
           {notifications.map((msg, i) => {
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <li key={i}>{msg}</li>
-            );
+            return <li key={i}>{msg}</li>;
           })}
         </ul>
       )}
@@ -88,9 +139,21 @@ const FarmNotificationListener = ({ farmId }: { farmId: string }) => {
   );
 };
 
+/**
+ * Demonstrates AppSync subscription filtering and lets the app trigger the
+ * matching mutation so the active subscriber can receive events immediately.
+ */
 export const FarmNotificationPage = () => {
   const [inputValue, setInputValue] = React.useState('farm-1');
+  const [messageValue, setMessageValue] = React.useState(
+    'Sensor alert from app'
+  );
   const [activeFarmId, setActiveFarmId] = React.useState<string | null>(null);
+  const [publishError, setPublishError] = React.useState<string | null>(null);
+  const [publishSuccess, setPublishSuccess] = React.useState<string | null>(
+    null
+  );
+  const [isPublishing, setIsPublishing] = React.useState(false);
 
   const handleSubscribe = () => {
     setActiveFarmId(inputValue.trim() || null);
@@ -100,41 +163,104 @@ export const FarmNotificationPage = () => {
     setActiveFarmId(null);
   };
 
+  const handlePublish = async () => {
+    if (!activeFarmId || !messageValue.trim()) {
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishError(null);
+    setPublishSuccess(null);
+
+    try {
+      const result = (await client.graphql({
+        query: publishFarmNotificationMutation,
+        variables: {
+          farmId: activeFarmId,
+          message: messageValue.trim(),
+        },
+      })) as { data?: PublishFarmNotificationResult };
+
+      const notification = result.data?.publishFarmNotification;
+
+      if (!notification) {
+        throw new Error(uiText.notificationNotPublished);
+      }
+
+      setPublishSuccess(
+        `Published notification for ${notification.farmId}: ${notification.message}`
+      );
+    } catch (error) {
+      setPublishError(getErrorMessage(error));
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   return (
     <Stack>
-      <Heading variant="h2">Farm Notifications (Subscription)</Heading>
+      <Heading variant="h2">{uiText.heading}</Heading>
       <HelpText>
-        Subscribe to real-time notifications for a specific farm. Enter a farm
-        ID and click &ldquo;Subscribe&rdquo;. AppSync uses the{' '}
-        <code>farmId</code> as a server-side enhanced filter — only events
-        published for that farm are delivered to this client.
+        {uiText.subscribeHelpPrefix}
+        <code>{uiText.farmIdCode}</code>
+        {uiText.subscribeHelpSuffix}
       </HelpText>
 
       <Flex sx={{ gap: 'sm', alignItems: 'center' }}>
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => {
-            return setInputValue(e.target.value);
+          onChange={(event) => {
+            return setInputValue(event.target.value);
           }}
-          placeholder="Enter farm ID"
+          placeholder={uiText.subscribePlaceholder}
           style={{ padding: '8px', fontSize: '14px', flexGrow: 1 }}
         />
         {activeFarmId ? (
-          <Button onClick={handleStop}>Stop</Button>
+          <Button onClick={handleStop}>{uiText.stopButton}</Button>
         ) : (
           <Button onClick={handleSubscribe} disabled={!inputValue.trim()}>
-            Subscribe
+            {uiText.subscribeButton}
           </Button>
         )}
       </Flex>
 
-      {activeFarmId && (
-        <React.Suspense fallback="Connecting…">
-          <FarmNotificationListener farmId={activeFarmId} />
-        </React.Suspense>
-      )}
+      <Flex sx={{ gap: 'sm', alignItems: 'center' }}>
+        <input
+          type="text"
+          value={messageValue}
+          onChange={(event) => {
+            return setMessageValue(event.target.value);
+          }}
+          placeholder={uiText.messagePlaceholder}
+          style={{ padding: '8px', fontSize: '14px', flexGrow: 1 }}
+        />
+        <Button
+          onClick={handlePublish}
+          disabled={!activeFarmId || !messageValue.trim() || isPublishing}
+        >
+          {isPublishing ? uiText.publishingButton : uiText.publishButton}
+        </Button>
+      </Flex>
+
+      <HelpText>
+        {uiText.publishHelpPrefix}
+        <code>{uiText.publishMutationCode}</code>
+        {uiText.publishHelpSuffix}
+        <code>{uiText.publishMutateCode}</code>
+        {uiText.publishHelpSuffixAfterCode}
+      </HelpText>
+
+      {publishError ? (
+        <Text sx={{ color: 'danger' }}>{publishError}</Text>
+      ) : null}
+      {publishSuccess ? (
+        <Text sx={{ color: 'success' }}>{publishSuccess}</Text>
+      ) : null}
+
+      {activeFarmId ? (
+        <FarmNotificationListener key={activeFarmId} farmId={activeFarmId} />
+      ) : null}
     </Stack>
   );
 };
-
