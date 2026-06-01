@@ -1,4 +1,8 @@
-import maplibregl from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  Marker as MapLibreMarker,
+  MarkerOptions as MapLibreMarkerOptions,
+} from 'maplibre-gl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
@@ -63,27 +67,34 @@ export const GeoVisMarker = ({
 
     if (!runtime || !click) return;
 
-    const map = runtime
-      .getAdapter()
-      .getNativeInstance() as maplibregl.Map | null;
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    const markerOptions: maplibregl.MarkerOptions = {};
-    if (children !== undefined && container) {
-      markerOptions.element = container;
-    } else if (element) {
-      markerOptions.element = element;
-    } else if (color) {
-      markerOptions.color = color;
-    }
-    if (offset) markerOptions.offset = offset;
+    let cancelled = false;
+    let marker: MapLibreMarker | null = null;
 
-    const marker = new maplibregl.Marker(markerOptions)
-      .setLngLat(click.lngLat)
-      .addTo(map);
+    (async () => {
+      const { default: maplibregl } = await import('maplibre-gl');
+      if (cancelled) return;
+
+      const markerOptions: MapLibreMarkerOptions = {};
+      if (children !== undefined && container) {
+        markerOptions.element = container;
+      } else if (element) {
+        markerOptions.element = element;
+      } else if (color) {
+        markerOptions.color = color;
+      }
+      if (offset) markerOptions.offset = offset;
+
+      marker = new maplibregl.Marker(markerOptions)
+        .setLngLat(click.lngLat)
+        .addTo(map);
+    })();
 
     return () => {
-      marker.remove();
+      cancelled = true;
+      if (marker) marker.remove();
     };
   }, [runtime, click, color, element, offset, children, container]);
 

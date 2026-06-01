@@ -1,5 +1,9 @@
-import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
-import maplibregl from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  MapMouseEvent,
+  Marker as MapLibreMarker,
+  MarkerOptions as MapLibreMarkerOptions,
+} from 'maplibre-gl';
 import * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
@@ -288,10 +292,8 @@ type ClickAnchorSpec = NonNullable<
   VisualizationSpec['layers'][number]['clickAnchor']
 >;
 
-const buildMarkerOptions = (
-  anchor: ClickAnchorSpec
-): maplibregl.MarkerOptions => {
-  const opts: maplibregl.MarkerOptions = {};
+const buildMarkerOptions = (anchor: ClickAnchorSpec): MapLibreMarkerOptions => {
+  const opts: MapLibreMarkerOptions = {};
   if (anchor.color) opts.color = anchor.color;
   if (anchor.offset) opts.offset = anchor.offset;
   return opts;
@@ -316,17 +318,24 @@ export const useClickAnchor = ({
     const hasDomMarker = !anchor.iconImage;
     if (!hasDomMarker) return;
 
-    const map = runtime
-      .getAdapter()
-      .getNativeInstance() as maplibregl.Map | null;
+    const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    const marker = new maplibregl.Marker(buildMarkerOptions(anchor))
-      .setLngLat(click.lngLat)
-      .addTo(map);
+    let cancelled = false;
+    let marker: MapLibreMarker | null = null;
+
+    (async () => {
+      const { default: maplibregl } = await import('maplibre-gl');
+      if (cancelled) return;
+
+      marker = new maplibregl.Marker(buildMarkerOptions(anchor))
+        .setLngLat(click.lngLat)
+        .addTo(map);
+    })();
 
     return () => {
-      marker.remove();
+      cancelled = true;
+      if (marker) marker.remove();
     };
   }, [runtime, click, spec.layers]);
 };

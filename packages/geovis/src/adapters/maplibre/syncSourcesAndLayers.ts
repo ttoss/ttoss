@@ -261,8 +261,9 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
       }
     }
 
-    upsertOutlineCompanions(map, layer, sourceLayer);
-    upsertClickAnchorCompanion(map, layer, sourceLayer);
+    const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;
+    upsertOutlineCompanions(map, layer, effectiveSourceLayer);
+    upsertClickAnchorCompanion(map, layer, effectiveSourceLayer);
   }
 };
 
