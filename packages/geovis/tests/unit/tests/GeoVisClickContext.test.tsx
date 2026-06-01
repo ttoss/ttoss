@@ -24,6 +24,7 @@ interface MockMap {
   off: jest.Mock;
   queryRenderedFeatures: jest.Mock;
   getFeatureState: jest.Mock;
+  setFeatureState: jest.Mock;
   getCanvas: jest.Mock;
   getLayer: jest.Mock;
   isStyleLoaded: jest.Mock;
@@ -56,6 +57,7 @@ const buildMockMap = (): MockMap => {
     }),
     queryRenderedFeatures: jest.fn(),
     getFeatureState: jest.fn(),
+    setFeatureState: jest.fn(),
     getCanvas: jest.fn(() => {
       return canvas;
     }),

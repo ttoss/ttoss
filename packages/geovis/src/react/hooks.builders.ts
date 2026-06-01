@@ -107,8 +107,6 @@ export interface BuildHandleClickParams {
   setClick: React.Dispatch<React.SetStateAction<MapClickInfo | null>>;
   /** Tracks the last feature whose selected state was set so it can be cleared on deselect. */
   prevSelectedState: PrevFeatureState;
-  /** Layer IDs that have `selectedPaint` declared; drives `setFeatureState({ selected })`. */
-  selectedPaintLayerIds: Set<string>;
 }
 
 /**
@@ -123,7 +121,6 @@ export const buildHandleClick = ({
   sourceByLayerId,
   setClick,
   prevSelectedState,
-  selectedPaintLayerIds,
 }: BuildHandleClickParams) => {
   return (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -142,13 +139,11 @@ export const buildHandleClick = ({
 
     // Swap selected feature-state: clear previous, mark new.
     clearSelected(map, prevSelectedState);
-    if (selectedPaintLayerIds.has(resolvedLayerId)) {
-      map.setFeatureState(
-        { source: sourceId, id: feature.id },
-        { selected: true }
-      );
-      prevSelectedState.current = { sourceId, id: feature.id };
-    }
+    map.setFeatureState(
+      { source: sourceId, id: feature.id },
+      { selected: true }
+    );
+    prevSelectedState.current = { sourceId, id: feature.id };
 
     const state = map.getFeatureState({
       source: sourceId,
@@ -370,7 +365,6 @@ export const buildHoverTracking = (
 export interface DecodedClickTracking {
   tracked: TrackedClickEntry[];
   sourceByLayerId: Map<string, string>;
-  selectedPaintLayerIds: Set<string>;
 }
 
 export const buildClickTracking = (
@@ -382,14 +376,5 @@ export const buildClickTracking = (
       return [t.layerId, t.sourceId] as const;
     })
   );
-  const selectedPaintLayerIds = new Set(
-    tracked
-      .filter((t) => {
-        return t.hasSelectedPaint;
-      })
-      .map((t) => {
-        return t.layerId;
-      })
-  );
-  return { tracked, sourceByLayerId, selectedPaintLayerIds };
+  return { tracked, sourceByLayerId };
 };

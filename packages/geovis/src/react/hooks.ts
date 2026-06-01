@@ -187,8 +187,7 @@ export const useMapClick = ({
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
-    const { tracked, sourceByLayerId, selectedPaintLayerIds } =
-      buildClickTracking(trackedKey);
+    const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
     const prevSelectedState: PrevFeatureState = { current: null };
 
     const handlers = tracked.map(({ layerId }) => {
@@ -200,7 +199,6 @@ export const useMapClick = ({
           sourceByLayerId,
           setClick,
           prevSelectedState,
-          selectedPaintLayerIds,
         }),
       };
     });
