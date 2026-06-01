@@ -404,6 +404,7 @@ const templates: DashboardTemplate[] = [
             },
           ],
           labels: [],
+          // eslint-disable-next-line max-lines
           data: {
             meta: {
               total: 2.15,
@@ -1381,6 +1382,7 @@ const filters: DashboardFilter[] = [
   },
 ];
 
+// eslint-disable-next-line max-lines-per-function
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
 
@@ -1443,6 +1445,7 @@ export const App = () => {
           return t.id === value;
         })
       : undefined;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedTemplate(newSelectedTemplate ?? undefined);
   }, [dashboardFilters, templatesState]);
 
@@ -1496,16 +1499,21 @@ export const App = () => {
 
   return (
     <Stack>
-      <Flex sx={{ gap: 'md', paddingX: 'xl', paddingY: 'sm', borderBottom: '1px solid', borderColor: 'border' }}>
+      <Flex
+        sx={{
+          gap: 'md',
+          paddingX: 'xl',
+          paddingY: 'sm',
+          borderBottom: '1px solid',
+          borderColor: 'border',
+        }}
+      >
         <Link to="/">Dashboard</Link>
         <Link to="/subscriptions">Farm Notifications</Link>
       </Flex>
 
       <Routes>
-        <Route
-          path="/subscriptions"
-          element={<FarmNotificationPage />}
-        />
+        <Route path="/subscriptions" element={<FarmNotificationPage />} />
         <Route
           path="/*"
           element={
