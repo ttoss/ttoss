@@ -599,13 +599,13 @@ React-component alternative to the spec-driven `layer.clickAnchor` field.
 
 Must be rendered inside `GeoVisProvider`.
 
-| Prop        | Type               | Description                                                                                           |
-| ----------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
-| `children`  | `React.ReactNode`  | React content rendered inside the marker container. When provided, `color` and `element` are ignored. |
-| `className` | `string`           | CSS class applied to the marker container element. Only used when `children` is provided.             |
-| `color`     | `string`           | Accent colour for the built-in SVG pin. Used when neither `children` nor `element` is given.          |
-| `element`   | `HTMLElement`      | Pre-existing DOM element passed directly to `maplibregl.Marker`. Ignored when `children` is provided. |
-| `offset`    | `[number, number]` | Pixel offset `[x, y]` applied to the DOM marker.                                                      |
+| Prop        | Type               | Description                                                                                                             |
+| ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `children`  | `React.ReactNode`  | React content rendered inside the marker container. When provided, `color` and `element` are ignored.                   |
+| `className` | `string`           | CSS class applied to a wrapper div inside the marker container (portal content). Only used when `children` is provided. |
+| `color`     | `string`           | Accent colour for the built-in SVG pin. Used when neither `children` nor `element` is given.                            |
+| `element`   | `HTMLElement`      | Pre-existing DOM element passed directly to `maplibregl.Marker`. Ignored when `children` is provided.                   |
+| `offset`    | `[number, number]` | Pixel offset `[x, y]` applied to the DOM marker.                                                                        |
 
 ```tsx
 import { GeoVisCanvas, GeoVisMarker, GeoVisProvider } from '@ttoss/geovis';

@@ -15,5 +15,8 @@ const { TextDecoder, TextEncoder } = require('node:util') as {
 };
 
 if (!globalThis.TextDecoder) {
-  Object.assign(globalThis, { TextDecoder, TextEncoder });
+  globalThis.TextDecoder = TextDecoder;
+}
+if (!globalThis.TextEncoder) {
+  globalThis.TextEncoder = TextEncoder;
 }
