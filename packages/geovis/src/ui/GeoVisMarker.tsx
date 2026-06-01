@@ -58,6 +58,9 @@ export const GeoVisMarker = ({
   });
 
   React.useEffect(() => {
+    // SSR guard — effect should only run in browser environment
+    if (typeof document === 'undefined') return;
+
     if (!runtime || !click) return;
 
     const map = runtime
