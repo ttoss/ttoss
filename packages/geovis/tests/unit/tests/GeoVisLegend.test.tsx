@@ -427,7 +427,7 @@ describe('GeoVisLegend', () => {
       );
 
       // The gradient bar div should contain exactly `breaks.length` tick divs.
-      const ticks = container.querySelectorAll('[aria-hidden="true"]');
+      const ticks = container.querySelectorAll('[data-testid="legend-tick"]');
       // 2 ticks (one per break, no end ticks).
       expect(ticks.length).toBe(2);
     });

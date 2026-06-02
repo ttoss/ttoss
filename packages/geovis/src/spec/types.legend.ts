@@ -101,6 +101,11 @@ export interface LegendSpec {
    * Bibliographic source reference rendered below the legend.
    * Accepts a plain string or any React node (e.g. an anchor element) so that
    * consumers can link directly to the data origin.
+   *
+   * **Serialization note:** JSON-serialized specs (validated with `validateSpec`)
+   * are limited to `string` values — `JSON.stringify` cannot serialize React
+   * elements and will throw or lose data. React nodes are only supported in
+   * programmatic (in-memory) spec objects.
    */
   source?: string | React.ReactNode;
 }

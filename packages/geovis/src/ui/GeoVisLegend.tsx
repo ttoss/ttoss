@@ -190,6 +190,7 @@ const PercentageExtendedLegend = ({
             <div
               key={i}
               aria-hidden="true"
+              data-testid="legend-tick"
               style={{
                 position: 'absolute',
                 left: `${pos}%`,
@@ -207,6 +208,7 @@ const PercentageExtendedLegend = ({
       <div style={{ position: 'relative', height: 18, marginTop: 2 }}>
         {/* Min label (left) */}
         <span
+          aria-label={`Less than ${formatValue(breaks[0])}`}
           style={{
             position: 'absolute',
             left: 0,
