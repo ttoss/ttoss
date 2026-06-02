@@ -559,7 +559,7 @@
         },
         "source": {
           "type": "string",
-          "description": "Bibliographic source reference rendered below the legend."
+          "description": "Bibliographic source reference rendered below the legend. JSON-serialized specs are limited to string values; programmatic spec objects may also use React nodes."
         }
       }
     },

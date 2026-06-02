@@ -382,9 +382,9 @@ describe('GeoVisLegend', () => {
       );
 
       // 50k appears once (as the min label "< 50k").
-      expect(getAllByText(/50k/).length).toBeGreaterThanOrEqual(1);
+      expect(getAllByText(/50k/).length).toBe(1);
       // 100k appears at the break label AND the max label (>= 100k).
-      expect(getAllByText(/100k/).length).toBeGreaterThanOrEqual(1);
+      expect(getAllByText(/100k/).length).toBe(2);
     });
 
     test('returns null when no breaks are available for percentage-extended', () => {

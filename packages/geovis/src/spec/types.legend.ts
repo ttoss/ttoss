@@ -1,5 +1,4 @@
-// eslint-disable-next-line react-namespace-import/no-namespace-import
-import type { ReactNode } from 'react';
+import type * as React from 'react';
 
 /**
  * Categorical color mapping from a discrete feature property.
@@ -103,5 +102,5 @@ export interface LegendSpec {
    * Accepts a plain string or any React node (e.g. an anchor element) so that
    * consumers can link directly to the data origin.
    */
-  source?: string | ReactNode;
+  source?: string | React.ReactNode;
 }

@@ -148,9 +148,8 @@ const PercentageExtendedLegend = ({
   // `resolvePalette` always returns an array, but may have fewer entries than
   // `classCount` when `colorBy.colors` is shorter than the class count.
   // Pad missing entries with the fallback color so the gradient never lacks stops.
-  const rawColors = [fallbackColor, ...palette.slice(1)];
   const colors = Array.from({ length: classCount }, (_, i) => {
-    return rawColors[i] ?? fallbackColor;
+    return palette[i] ?? fallbackColor;
   });
 
   // Each class gets an equal share of the bar width.
@@ -306,14 +305,14 @@ export const GeoVisLegend = ({
     // `colorBy.thresholds` so the legend stays in sync with the adapter.
     // An explicitly provided empty array (`[]`) means the caller intentionally
     // wants the single-bin "All values" rendering, bypassing the thresholds.
-    const src =
+    const breakValues =
       breaks !== undefined
         ? breaks
         : legend?.colorBy.type === 'quantitative'
           ? (legend.colorBy.thresholds ?? [])
           : [];
     const deduped = new Set<number>();
-    for (const value of src) {
+    for (const value of breakValues) {
       if (!Number.isFinite(value)) continue;
       deduped.add(value);
     }
