@@ -1,6 +1,7 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
 import type {
   ColorBy,
+  LegendDisplayType,
   LegendSpec,
   VisualizationLayer,
   VisualizationSpec,
@@ -29,6 +30,9 @@ test('spec types expose legend configuration through the public contract', () =>
     id: 'status-legend',
     label: 'Status',
     colorBy,
+    type: 'percentage-extended' as LegendDisplayType,
+    classCount: 4,
+    source: 'Data: Census Bureau 2020',
   };
 
   const layer: VisualizationLayer = {
@@ -50,5 +54,8 @@ test('spec types expose legend configuration through the public contract', () =>
   };
 
   expect(spec.legends?.[0].id).toBe('status-legend');
+  expect(spec.legends?.[0].type).toBe('percentage-extended');
+  expect(spec.legends?.[0].classCount).toBe(4);
+  expect(spec.legends?.[0].source).toBe('Data: Census Bureau 2020');
   expect(spec.layers[0].activeLegendId).toBe('status-legend');
 });

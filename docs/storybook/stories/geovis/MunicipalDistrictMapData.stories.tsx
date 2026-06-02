@@ -171,6 +171,10 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
         {
           id: 'population',
           label: `Population by district \u2014 ${year}`,
+          type: 'percentage-extended' as const,
+          classCount: populationBreaks.length + 1,
+          source:
+            'Source: SMUL/GEOINFO \u2014 Resident population evolution, S\u00e3o Paulo Municipality',
           colorBy: {
             type: 'quantitative',
             property: 'population',
@@ -242,11 +246,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
             formatValue={fmtPop}
           />
         </div>
-        <GeoVisLegend
-          legendId="population"
-          breaks={populationBreaks}
-          formatValue={fmtPop}
-        />
+        <GeoVisLegend legendId="population" formatValue={fmtPop} />
       </GeoVisProvider>
     </div>
   );

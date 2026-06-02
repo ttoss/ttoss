@@ -316,3 +316,182 @@ describe('GeoVisLegend', () => {
     expect(getByText('>= 300')).toBeTruthy();
   });
 });
+
+describe('GeoVisLegend — percentage-extended type', () => {
+  test('renders percentage-extended bins with percentage and absolute labels', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          type: 'percentage-extended',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [100, 200],
+            colors: ['#dbeafe', '#60a5fa', '#1d4ed8'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend
+          legendId="population"
+          formatValue={(v) => {
+            return `${v}k`;
+          }}
+        />
+      </GeoVisProvider>
+    );
+
+    // 2 thresholds → 3 bins.
+    expect(getAllByRole('listitem')).toHaveLength(3);
+    // First bin: < 50% (max = 200)
+    expect(getByText('< 50% (< 100k)')).toBeTruthy();
+    // Middle bin: 50% – 100%
+    expect(getByText('50% \u2013 100% (100k \u2013 200k)')).toBeTruthy();
+    // Last bin: ≥ 100%
+    expect(getByText('\u2265 100% (\u2265 200k)')).toBeTruthy();
+  });
+
+  test('renders single "All values" bin for percentage-extended when no breaks', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          type: 'percentage-extended',
+          colorBy: {
+            type: 'quantitative',
+            property: 'pop',
+            scale: 'threshold',
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="pop" />
+      </GeoVisProvider>
+    );
+
+    expect(getAllByRole('listitem')).toHaveLength(1);
+    expect(getByText('All values')).toBeTruthy();
+  });
+});
+
+describe('GeoVisLegend — source field', () => {
+  test('renders source text below legend items', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'status',
+          label: 'Status',
+          source: 'Data: Census Bureau 2020',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="status" />
+      </GeoVisProvider>
+    );
+
+    expect(getByText('Data: Census Bureau 2020')).toBeTruthy();
+  });
+
+  test('does not render source element when source is not provided', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'status',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { container } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="status" />
+      </GeoVisProvider>
+    );
+
+    expect(container.querySelector('p')).toBeNull();
+  });
+
+  test('sourceNode prop takes precedence over spec source string', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'status',
+          source: 'Plain text source',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { getByText, queryByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend
+          legendId="status"
+          sourceNode={<a href="https://example.com">Rich source link</a>}
+        />
+      </GeoVisProvider>
+    );
+
+    // sourceNode takes precedence — renders the React node, not the spec string.
+    expect(getByText('Rich source link')).toBeTruthy();
+    expect(queryByText('Plain text source')).toBeNull();
+  });
+});
+
+describe('GeoVisLegend — classCount field', () => {
+  test('classCount is accepted as spec metadata without affecting rendering', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          classCount: 3,
+          colorBy: {
+            type: 'quantitative',
+            property: 'pop',
+            scale: 'threshold',
+            thresholds: [10, 20],
+            colors: ['#dbeafe', '#60a5fa', '#1d4ed8'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="pop" />
+      </GeoVisProvider>
+    );
+
+    // classCount=3 matches thresholds.length+1; rendering follows thresholds.
+    expect(getAllByRole('listitem')).toHaveLength(3);
+  });
+});

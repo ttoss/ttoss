@@ -271,6 +271,54 @@ describe('validateSpec — mapData', () => {
       expect(result.errors.join('\n')).toMatch(/non-finite/);
     }
   });
+
+  test('accepts legends with type, classCount and source fields', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          type: 'percentage-extended',
+          classCount: 5,
+          source: 'SMUL/GEOINFO — Resident population evolution',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [50000, 100000, 150000, 200000],
+            colors: ['#f0f9ff', '#bfdbfe', '#60a5fa', '#3b82f6', '#1d4ed8'],
+          },
+        },
+      ],
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          activeLegendId: 'pop',
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+
+  test('rejects legend type with an unknown value', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          type: 'unknown-type',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+  });
 });
 
 describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, clickAnchor)', () => {

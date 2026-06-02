@@ -73,6 +73,14 @@ export type ColorByTemplate =
   | QuantitativeColorByTemplate;
 
 /**
+ * Controls how legend bin labels are rendered.
+ * - `'default'` (or omitted): raw break values formatted by `formatValue`.
+ * - `'percentage-extended'`: augments each bin label with a percentage of the
+ *   quantitative scale's maximum threshold in addition to the raw break value.
+ */
+export type LegendDisplayType = 'default' | 'percentage-extended';
+
+/**
  * Alternative color/legend configuration exposed by a layer. Consumers MAY
  * present these as toggles; the active one is selected via `activeLegendId`.
  */
@@ -80,4 +88,24 @@ export interface LegendSpec {
   id: string;
   label?: string;
   colorBy: ColorBy;
+  /**
+   * Controls how legend bin labels are rendered.
+   * Defaults to `'default'`.
+   */
+  type?: LegendDisplayType;
+  /**
+   * Number of classes (colour bins) in the legend.
+   * Acts as a hint for consumers to auto-compute thresholds via classification
+   * algorithms (quantile, equal-interval, jenks, etc.).
+   * When `colorBy.thresholds` is already set, `classCount` is informational.
+   */
+  classCount?: number;
+  /**
+   * Bibliographic source reference displayed below the legend items.
+   * Accepts a plain string for JSON-sourced specs.
+   * When building specs in TypeScript, any React-renderable content
+   * (such as an anchor element) is also accepted at runtime via the
+   * `sourceNode` prop on `GeoVisLegend`.
+   */
+  source?: string;
 }

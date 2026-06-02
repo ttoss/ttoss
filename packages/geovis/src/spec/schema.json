@@ -544,6 +544,20 @@
         "label": {
           "type": "string"
         },
+        "type": {
+          "type": "string",
+          "enum": ["default", "percentage-extended"],
+          "description": "Controls how legend bin labels are rendered. 'percentage-extended' augments each bin label with a percentage of the scale's maximum threshold."
+        },
+        "classCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of classes (colour bins). Used as a hint to auto-compute thresholds; informational when colorBy.thresholds is already set."
+        },
+        "source": {
+          "type": "string",
+          "description": "Bibliographic source reference displayed below the legend items."
+        },
         "colorBy": {
           "$ref": "#/$defs/ColorBy"
         }

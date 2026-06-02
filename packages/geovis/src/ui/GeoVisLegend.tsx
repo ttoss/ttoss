@@ -121,6 +121,62 @@ const buildQuantitativeItems = ({
   return items;
 };
 
+const buildPercentageExtendedItems = ({
+  legend,
+  breaks,
+  formatValue,
+}: {
+  legend: LegendSpec;
+  breaks: number[];
+  formatValue: (value: number) => string;
+}): LegendItem[] => {
+  const colorBy = legend.colorBy;
+  if (colorBy.type !== 'quantitative') return [];
+
+  const fallbackColor = resolveQuantitativeFallbackColor(colorBy, breaks);
+  const maxBreak = breaks[breaks.length - 1] ?? 0;
+
+  const toPercent = (v: number): string => {
+    if (!maxBreak) return '0%';
+    return `${Math.round((v / maxBreak) * 100)}%`;
+  };
+
+  if (!breaks.length) {
+    return [
+      {
+        binIndex: 0,
+        label: 'All values',
+        color: fallbackColor,
+      },
+    ];
+  }
+
+  const palette = resolvePalette(colorBy, breaks.length + 1);
+  const items: LegendItem[] = [
+    {
+      binIndex: 0,
+      label: `< ${toPercent(breaks[0])} (< ${formatValue(breaks[0])})`,
+      color: fallbackColor,
+    },
+  ];
+
+  for (let i = 1; i < breaks.length; i += 1) {
+    items.push({
+      binIndex: i,
+      label: `${toPercent(breaks[i - 1])} \u2013 ${toPercent(breaks[i])} (${formatValue(breaks[i - 1])} \u2013 ${formatValue(breaks[i])})`,
+      color: palette[i] ?? fallbackColor,
+    });
+  }
+
+  items.push({
+    binIndex: breaks.length,
+    label: `\u2265 ${toPercent(breaks[breaks.length - 1])} (\u2265 ${formatValue(breaks[breaks.length - 1])})`,
+    color: palette[breaks.length] ?? fallbackColor,
+  });
+
+  return items;
+};
+
 export interface GeoVisLegendProps {
   /** Id of the legend entry to render (resolved from `spec.legends` or `layer.legends`). */
   legendId: string;
@@ -137,6 +193,12 @@ export interface GeoVisLegendProps {
   formatValue?: (value: number) => string;
   /** Optional CSS class for the legend container. */
   className?: string;
+  /**
+   * React node displayed as the source attribution below legend items.
+   * Use this when you need rich HTML content (e.g. an anchor element).
+   * Takes precedence over `LegendSpec.source` when both are provided.
+   */
+  sourceNode?: React.ReactNode;
 }
 
 /**
@@ -153,6 +215,7 @@ export const GeoVisLegend = ({
   breaks,
   formatValue = defaultFormatValue,
   className,
+  sourceNode,
 }: GeoVisLegendProps) => {
   const { spec } = useGeoVis();
 
@@ -186,6 +249,13 @@ export const GeoVisLegend = ({
     if (legend.colorBy.type === 'categorical') {
       return buildCategoricalItems(legend);
     }
+    if (legend.type === 'percentage-extended') {
+      return buildPercentageExtendedItems({
+        legend,
+        breaks: normalizedBreaks,
+        formatValue,
+      });
+    }
     return buildQuantitativeItems({
       legend,
       breaks: normalizedBreaks,
@@ -196,39 +266,52 @@ export const GeoVisLegend = ({
   if (!legend || !items.length) return null;
 
   return (
-    <ul
-      aria-label={legend.label ?? legend.id}
-      className={className}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 4,
-        margin: 0,
-        padding: 0,
-        listStyle: 'none',
-      }}
-    >
-      {items.map((item) => {
-        return (
-          <li
-            key={`${legend.id}-${item.binIndex}`}
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <span
-              aria-hidden="true"
-              style={{
-                backgroundColor: item.color,
-                display: 'inline-block',
-                height: 12,
-                marginRight: 8,
-                width: 12,
-              }}
-            />
-            <span>{item.label}</span>
-          </li>
-        );
-      })}
-    </ul>
+    <div>
+      <ul
+        aria-label={legend.label ?? legend.id}
+        className={className}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: 4,
+          margin: 0,
+          padding: 0,
+          listStyle: 'none',
+        }}
+      >
+        {items.map((item) => {
+          return (
+            <li
+              key={`${legend.id}-${item.binIndex}`}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  backgroundColor: item.color,
+                  display: 'inline-block',
+                  height: 12,
+                  marginRight: 8,
+                  width: 12,
+                }}
+              />
+              <span>{item.label}</span>
+            </li>
+          );
+        })}
+      </ul>
+      {(sourceNode ?? legend.source) != null && (
+        <p
+          style={{
+            color: '#6b7280',
+            fontSize: 11,
+            margin: '6px 0 0',
+          }}
+        >
+          {sourceNode ?? legend.source}
+        </p>
+      )}
+    </div>
   );
 };
