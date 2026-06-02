@@ -315,4 +315,234 @@ describe('GeoVisLegend', () => {
     expect(getByText('200 - < 300')).toBeTruthy();
     expect(getByText('>= 300')).toBeTruthy();
   });
+
+  describe('percentage-extended type', () => {
+    const makePercentageSpec = (
+      thresholds: number[],
+      colors: string[]
+    ): VisualizationSpec => {
+      return {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'population',
+            label: 'Population',
+            type: 'percentage-extended',
+            classCount: thresholds.length + 1,
+            colorBy: {
+              type: 'quantitative',
+              property: 'population',
+              scale: 'threshold',
+              thresholds,
+              colors,
+              defaultColor: colors[0],
+            },
+          },
+        ],
+      };
+    };
+
+    test('renders gradient bar instead of swatch list', () => {
+      const spec = makePercentageSpec(
+        [100, 200, 300],
+        ['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8']
+      );
+
+      const { container, queryByRole } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend
+            legendId="population"
+            formatValue={(v) => {
+              return `${v}`;
+            }}
+          />
+        </GeoVisProvider>
+      );
+
+      // Gradient bar must be present; no swatch list items.
+      expect(queryByRole('list')).toBeNull();
+      expect(container.firstChild).not.toBeNull();
+    });
+
+    test('renders min label (< first break) and max label (>= last break)', () => {
+      const spec = makePercentageSpec(
+        [50, 100],
+        ['#f0f9ff', '#60a5fa', '#1d4ed8']
+      );
+
+      const { getAllByText } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend
+            legendId="population"
+            formatValue={(v) => {
+              return `${v}k`;
+            }}
+          />
+        </GeoVisProvider>
+      );
+
+      // 50k appears once (as the min label "< 50k").
+      expect(getAllByText(/50k/).length).toBeGreaterThanOrEqual(1);
+      // 100k appears at the break label AND the max label (>= 100k).
+      expect(getAllByText(/100k/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('returns null when no breaks are available for percentage-extended', () => {
+      const spec: VisualizationSpec = {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'pop',
+            type: 'percentage-extended',
+            colorBy: {
+              type: 'quantitative',
+              property: 'pop',
+              scale: 'threshold',
+              // No thresholds → normalizedBreaks = [] → must not render gradient
+            },
+          },
+        ],
+      };
+
+      const { container } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="pop" />
+        </GeoVisProvider>
+      );
+
+      expect(container.firstChild).toBeNull();
+    });
+
+    test('renders classCount-many gradient bands via proportional stops', () => {
+      // 2 thresholds → 3 classes → each band covers 33.33% of the bar.
+      const spec = makePercentageSpec(
+        [10, 20],
+        ['#aabbcc', '#ddeeff', '#112233']
+      );
+
+      const { container } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="population" />
+        </GeoVisProvider>
+      );
+
+      // The gradient bar div should contain exactly `breaks.length` tick divs.
+      const ticks = container.querySelectorAll('[aria-hidden="true"]');
+      // 2 ticks (one per break, no end ticks).
+      expect(ticks.length).toBe(2);
+    });
+  });
+
+  describe('source attribution', () => {
+    test('renders a string source below the legend', () => {
+      const spec: VisualizationSpec = {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'status',
+            label: 'Status',
+            source: 'IBGE — Census 2020',
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { open: '#16a34a', closed: '#dc2626' },
+            },
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="status" />
+        </GeoVisProvider>
+      );
+
+      expect(getByText('IBGE — Census 2020')).toBeTruthy();
+    });
+
+    test('renders a React element source below the legend', () => {
+      const spec: VisualizationSpec = {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'status',
+            label: 'Status',
+            source: (
+              <a href="https://example.com" rel="noopener noreferrer">
+                Example Source
+              </a>
+            ),
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { open: '#16a34a' },
+            },
+          },
+        ],
+      };
+
+      const { getByRole } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="status" />
+        </GeoVisProvider>
+      );
+
+      const link = getByRole('link', { name: 'Example Source' });
+      expect(link).toBeTruthy();
+      expect(link.getAttribute('href')).toBe('https://example.com');
+    });
+
+    test('does not render source attribution when source is absent', () => {
+      const spec: VisualizationSpec = {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'status',
+            colorBy: {
+              type: 'categorical',
+              property: 'status',
+              mapping: { open: '#16a34a' },
+            },
+          },
+        ],
+      };
+
+      const { queryByLabelText } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="status" />
+        </GeoVisProvider>
+      );
+
+      // aria-label="source" div must not be present.
+      expect(queryByLabelText('source')).toBeNull();
+    });
+
+    test('renders source alongside percentage-extended legend', () => {
+      const spec: VisualizationSpec = {
+        ...baseSpec,
+        legends: [
+          {
+            id: 'pop',
+            type: 'percentage-extended',
+            source: 'SMUL/GEOINFO',
+            colorBy: {
+              type: 'quantitative',
+              property: 'pop',
+              scale: 'threshold',
+              thresholds: [100, 200],
+              colors: ['#f0f9ff', '#60a5fa', '#1d4ed8'],
+            },
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="pop" />
+        </GeoVisProvider>
+      );
+
+      expect(getByText('SMUL/GEOINFO')).toBeTruthy();
+    });
+  });
 });

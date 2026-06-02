@@ -51,7 +51,7 @@ const AVAILABLE_YEARS = [
 type Year = (typeof AVAILABLE_YEARS)[number];
 
 const fmtPop = (v: number) => {
-  return `${(v / 1_000).toFixed(0)}k inhabitants`;
+  return `${(v / 1_000).toFixed(0)}k`;
 };
 
 /** Raw shape returned by the external API (Portuguese field names). */
@@ -171,6 +171,20 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
         {
           id: 'population',
           label: `Population by district \u2014 ${year}`,
+          type: 'percentage-extended',
+          classCount: populationBreaks.length + 1,
+          source: (
+            <span>
+              SMUL/GEOINFO &mdash; Resident population evolution,{' '}
+              <a
+                href="https://www.prefeitura.sp.gov.br/cidade/secretarias/urbanismo/dados_estatisticos"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                São Paulo Municipality
+              </a>
+            </span>
+          ),
           colorBy: {
             type: 'quantitative',
             property: 'population',
@@ -228,7 +242,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
                   </div>
                   <div>
                     {typeof info.value === 'number'
-                      ? fmtPop(info.value)
+                      ? `${fmtPop(info.value)} inhabitants`
                       : 'No data'}
                   </div>
                 </>
@@ -242,11 +256,7 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
             formatValue={fmtPop}
           />
         </div>
-        <GeoVisLegend
-          legendId="population"
-          breaks={populationBreaks}
-          formatValue={fmtPop}
-        />
+        <GeoVisLegend legendId="population" formatValue={fmtPop} />
       </GeoVisProvider>
     </div>
   );

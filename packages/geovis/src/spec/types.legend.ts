@@ -1,3 +1,6 @@
+// eslint-disable-next-line react-namespace-import/no-namespace-import
+import type { ReactNode } from 'react';
+
 /**
  * Categorical color mapping from a discrete feature property.
  * Explicit color assignment is defined by `mapping`. Other fields such as
@@ -80,4 +83,25 @@ export interface LegendSpec {
   id: string;
   label?: string;
   colorBy: ColorBy;
+  /**
+   * Display type for legend rendering.
+   * - `'percentage-extended'`: renders a continuous gradient bar whose color
+   *   bands are proportional to the threshold ranges, with value labels at each
+   *   break point.  Suitable for sequential quantitative data where the visual
+   *   weight of each class should reflect its range width.
+   * When omitted the default swatch-per-class layout is used.
+   */
+  type?: 'percentage-extended';
+  /**
+   * Number of color classes in the legend.  Acts as a hint to UI components
+   * (e.g. for titles like "5 classes") and can be used by auto-classification
+   * utilities.  When omitted the class count is inferred from `colorBy`.
+   */
+  classCount?: number;
+  /**
+   * Bibliographic source reference rendered below the legend.
+   * Accepts a plain string or any React node (e.g. an anchor element) so that
+   * consumers can link directly to the data origin.
+   */
+  source?: string | ReactNode;
 }

@@ -565,12 +565,74 @@ Must be called inside `GeoVisProvider`.
 
 Renders a static, non-interactive legend resolved from the active spec. Resolution looks up `legendId` in `spec.legends` first, then in each `layer.legends`. Categorical legends emit one swatch per `mapping` entry (or a single fallback swatch when `mapping` is empty, mirroring the adapter's `['literal', fallbackColor]` paint output). Quantitative legends emit one swatch per `breaks[]` bin and use the same fallback chain as the adapter (`defaultColor ?? palette[0] ?? DEFAULT_MISSING_COLOR`). Must be rendered inside `GeoVisProvider`.
 
-| Prop          | Type                        | Description                                                           |
-| ------------- | --------------------------- | --------------------------------------------------------------------- |
-| `legendId`    | `string`                    | Id of the legend entry to render.                                     |
-| `breaks`      | `number[]`                  | Externally computed thresholds for quantitative legends. Optional.    |
-| `formatValue` | `(value: number) => string` | Formatter for quantitative break labels. Defaults to `String(value)`. |
-| `className`   | `string`                    | Optional CSS class for the legend container.                          |
+When the resolved `LegendSpec` has `type: 'percentage-extended'`, a continuous gradient bar with proportional class bands is rendered instead of the default swatch list. A `source` field on `LegendSpec` renders a small bibliographic attribution line below the legend body.
+
+| Prop          | Type                        | Description                                                                                                                        |
+| ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `legendId`    | `string`                    | Id of the legend entry to render.                                                                                                  |
+| `breaks`      | `number[]`                  | Externally computed thresholds for quantitative legends. Optional — falls back to `colorBy.thresholds` from the spec when omitted. |
+| `formatValue` | `(value: number) => string` | Formatter for quantitative break labels. Defaults to `String(value)`.                                                              |
+| `className`   | `string`                    | Optional CSS class for the legend container.                                                                                       |
+
+### `LegendSpec`
+
+Configures a single legend entry in `spec.legends` (or `layer.legends`).
+
+| Field        | Type                    | Required | Description                                                                                                                                                                                   |
+| ------------ | ----------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`         | `string`                | ✓        | Unique legend identifier. Referenced by `layer.activeLegendId`.                                                                                                                               |
+| `label`      | `string`                |          | Human-readable title displayed above the legend.                                                                                                                                              |
+| `colorBy`    | `ColorBy`               | ✓        | Color-mapping configuration (`'categorical'` or `'quantitative'`).                                                                                                                            |
+| `type`       | `'percentage-extended'` |          | Display type. When set to `'percentage-extended'`, `GeoVisLegend` renders a continuous gradient bar whose bands are proportional to the threshold ranges. Omit for the default swatch layout. |
+| `classCount` | `number`                |          | Number of color classes. Acts as a hint to UI components (e.g. for titles like "5 classes") and auto-classification utilities. When omitted, inferred from `colorBy`.                         |
+| `source`     | `string \| ReactNode`   |          | Bibliographic source reference rendered below the legend. Accepts a plain string or any React node (e.g. an anchor element) so consumers can link directly to the data origin.                |
+
+#### Example — percentage-extended choropleth legend
+
+```tsx
+const spec = {
+  legends: [
+    {
+      id: 'population',
+      label: 'Population by district',
+      type: 'percentage-extended',
+      classCount: 6,
+      source: (
+        <a href="https://example.gov/census" rel="noopener noreferrer">
+          Census 2020
+        </a>
+      ),
+      colorBy: {
+        type: 'quantitative',
+        property: 'population',
+        scale: 'threshold',
+        thresholds: [50_000, 100_000, 150_000, 200_000, 250_000],
+        colors: [
+          '#f0f9ff',
+          '#bfdbfe',
+          '#60a5fa',
+          '#3b82f6',
+          '#1d4ed8',
+          '#1e3a8a',
+        ],
+        defaultColor: '#f0f9ff',
+      },
+    },
+  ],
+  // ... sources, layers, mapData
+};
+
+const Map = () => (
+  <GeoVisProvider spec={spec}>
+    <GeoVisCanvas viewId="main" style={{ width: '100%', height: '500px' }} />
+    {/* Renders a gradient bar with proportional bands + bibliographic source */}
+    <GeoVisLegend
+      legendId="population"
+      formatValue={(v) => `${(v / 1_000).toFixed(0)}k`}
+    />
+  </GeoVisProvider>
+);
+```
 
 ### `GeoVisHoverTooltip`
 

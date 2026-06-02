@@ -546,6 +546,20 @@
         },
         "colorBy": {
           "$ref": "#/$defs/ColorBy"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["percentage-extended"],
+          "description": "Display type for legend rendering. 'percentage-extended' renders a continuous gradient bar with proportional class bands and value labels at each break point."
+        },
+        "classCount": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Number of color classes in the legend. Acts as a hint to UI components and auto-classification utilities."
+        },
+        "source": {
+          "type": "string",
+          "description": "Bibliographic source reference rendered below the legend."
         }
       }
     },
