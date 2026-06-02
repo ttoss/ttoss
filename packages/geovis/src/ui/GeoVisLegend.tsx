@@ -134,12 +134,6 @@ const buildPercentageExtendedItems = ({
   if (colorBy.type !== 'quantitative') return [];
 
   const fallbackColor = resolveQuantitativeFallbackColor(colorBy, breaks);
-  const maxBreak = breaks[breaks.length - 1] ?? 0;
-
-  const toPercent = (v: number): string => {
-    if (!maxBreak) return '0%';
-    return `${Math.round((v / maxBreak) * 100)}%`;
-  };
 
   if (!breaks.length) {
     return [
@@ -150,6 +144,17 @@ const buildPercentageExtendedItems = ({
       },
     ];
   }
+
+  const maxBreak = breaks[breaks.length - 1];
+  // maxBreak > 0 is guaranteed here because breaks is non-empty and sorted
+  // ascending with finite values (enforced by normalizedBreaks).
+  const toPercent = (v: number): string => {
+    return `${Math.round((v / maxBreak) * 100)}%`;
+  };
+
+  const fmtRange = (pLo: string, pHi: string, vLo: string, vHi: string) => {
+    return `${pLo} \u2013 ${pHi} (${vLo} \u2013 ${vHi})`;
+  };
 
   const palette = resolvePalette(colorBy, breaks.length + 1);
   const items: LegendItem[] = [
@@ -163,14 +168,20 @@ const buildPercentageExtendedItems = ({
   for (let i = 1; i < breaks.length; i += 1) {
     items.push({
       binIndex: i,
-      label: `${toPercent(breaks[i - 1])} \u2013 ${toPercent(breaks[i])} (${formatValue(breaks[i - 1])} \u2013 ${formatValue(breaks[i])})`,
+      label: fmtRange(
+        toPercent(breaks[i - 1]),
+        toPercent(breaks[i]),
+        formatValue(breaks[i - 1]),
+        formatValue(breaks[i])
+      ),
       color: palette[i] ?? fallbackColor,
     });
   }
 
+  const lastBreak = breaks[breaks.length - 1];
   items.push({
     binIndex: breaks.length,
-    label: `\u2265 ${toPercent(breaks[breaks.length - 1])} (\u2265 ${formatValue(breaks[breaks.length - 1])})`,
+    label: `\u2265 ${toPercent(lastBreak)} (\u2265 ${formatValue(lastBreak)})`,
     color: palette[breaks.length] ?? fallbackColor,
   });
 
