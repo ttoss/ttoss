@@ -154,7 +154,6 @@ describe('GeoVisProvider policyViolations', () => {
   test('is empty when spec has no metadata', async () => {
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -181,7 +180,6 @@ describe('GeoVisProvider policyViolations', () => {
     };
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -205,7 +203,6 @@ describe('GeoVisProvider policyViolations', () => {
     };
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -240,9 +237,9 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
 
     const Consumer = () => {
       const { spec, applyPatch } = useGeoVis();
-      // eslint-disable-next-line react-hooks/immutability
+
       latestSpecRef.current = spec as VisualizationSpec;
-      // eslint-disable-next-line react-hooks/immutability
+
       triggerPatchRef.current = () => {
         applyPatch({
           target: 'layer',
@@ -304,7 +301,6 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     const specCaptureRef = { current: baseSpec as VisualizationSpec };
 
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       specCaptureRef.current = useGeoVis().spec as VisualizationSpec;
       return null;
     };

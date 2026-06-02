@@ -56,9 +56,8 @@
      */
     "strictPropertyInitialization": true,
     /**
-     * Set `ignoreDeprecations` to suppress errors for deprecated options that
-     * are injected by build tools (e.g., tsup injects `baseUrl`).
-     * These deprecations will stop functioning in TypeScript 7.0.
+     * Suppress TypeScript 6.0 deprecation warning for `baseUrl`.
+     * This option will be removed in TypeScript 7.0.
      */
     "ignoreDeprecations": "6.0"
   },

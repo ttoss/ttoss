@@ -13,7 +13,7 @@ import {
   GeoVisContext,
   GeoVisHoverContext,
 } from './contexts';
-import { useMapClick, useMapHover } from './hooks';
+import { useClickAnchor, useMapClick, useMapHover } from './hooks';
 
 // Re-export the contexts and hooks so existing public-API consumers
 // (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
@@ -99,6 +99,7 @@ const ClickProvider = ({
   children: React.ReactNode;
 }) => {
   const clickedMapFeature = useMapClick({ runtime, spec });
+  useClickAnchor({ runtime, spec, click: clickedMapFeature });
   return (
     <GeoVisClickContext.Provider value={clickedMapFeature}>
       {children}

@@ -156,6 +156,9 @@ export const MunicipalDistrictMapData: StoryFn<{ year: Year }> = ({ year }) => {
           geometry: 'polygon',
           mapDataId: 'population',
           activeLegendId: 'population',
+          hoverPaint: { lineColor: '#333333', lineWidth: 2 },
+          selectedPaint: { lineColor: '#1a1a1a', lineWidth: 3 },
+          clickAnchor: { color: '#2171b5' },
         },
         {
           id: 'districts-outline',
