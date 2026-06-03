@@ -85,7 +85,7 @@ export type ColorByTemplate =
  * - `'range'`      – raw break values joined by a configurable separator.
  *   Example: `50k – 100k`.
  * - `'count'`      – compact integer counts with optional SI abbreviation.
- *   Example: `< 50k`, `50k ≤ 100k`, `≥ 250k`.
+ *   Example: `< 50k`, `50k ≤ 100k`, `> 250k`.
  * - `'percentage'` – percentage display for values already in the [0, 1] range.
  *   Example: `0% – 10%`.
  * - `'stdDev'`     – standard deviation labels for diverging schemes.

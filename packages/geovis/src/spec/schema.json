@@ -681,7 +681,8 @@
             "extended": {
               "type": "boolean"
             }
-          }
+          },
+          "description": "Custom formatter (TypeScript-only). The spec object must have a `formatter` property at runtime: (lower: number | null, upper: number | null, index: number) => string. Not serializable to JSON; use this variant only in TypeScript-driven specs passed directly to GeoVisLegend, not in JSON files."
         }
       ]
     },
