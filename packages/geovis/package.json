@@ -39,7 +39,6 @@
     "ajv": "^8.18.0"
   },
   "devDependencies": {
-    "@chakra-ui/react": "^3.34.0",
     "@emotion/react": "^11.14.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -51,7 +50,6 @@
     "tsup": "^8.5.1"
   },
   "peerDependencies": {
-    "@chakra-ui/react": "^3",
     "maplibre-gl": ">=5.0.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"

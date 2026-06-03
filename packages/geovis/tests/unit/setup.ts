@@ -25,7 +25,6 @@ if (!globalThis.TextEncoder) {
 // available in all jsdom environments. Polyfill it with a JSON round-trip
 // implementation when missing.
 if (typeof globalThis.structuredClone === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   globalThis.structuredClone = <T>(val: T): T => {
     return JSON.parse(JSON.stringify(val));
   };

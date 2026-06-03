@@ -1,4 +1,4 @@
-import { Link } from '@chakra-ui/react';
+import { Link } from '@ttoss/ui';
 import * as React from 'react';
 
 import {
@@ -68,7 +68,7 @@ const isSafeUrl = (url: string): boolean => {
 /**
  * Parses a `reference` string and returns an array of React nodes.
  * Inline link syntax: `{link:visible text|https://example.com}` is
- * rendered as a Chakra UI `Link` element. URLs with non-http(s) schemes
+ * rendered as a `@ttoss/ui` Link component. URLs with non-http(s) schemes
  * are rendered as plain text to prevent unsafe navigation.
  */
 const parseReference = (text: string): React.ReactNode[] => {
@@ -85,7 +85,7 @@ const parseReference = (text: string): React.ReactNode[] => {
     const url = match[2];
     if (isSafeUrl(url)) {
       nodes.push(
-        <Link key={key++} href={url} rel="noopener noreferrer" target="_blank">
+        <Link key={key++} href={url} target="_blank">
           {match[1]}
         </Link>
       );
