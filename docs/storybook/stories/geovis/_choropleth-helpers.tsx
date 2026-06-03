@@ -305,7 +305,7 @@ export const ColorSwatchLegend = ({
         color: s.color,
         label:
           i < steps.length - 1
-            ? `${fmt(s.threshold)} \u2013 ${fmt(steps[i + 1].threshold)}`
+            ? `${fmt(s.threshold)} \u2013 < ${fmt(steps[i + 1].threshold)}`
             : `\u2265 ${fmt(s.threshold)}`,
       };
     }),
