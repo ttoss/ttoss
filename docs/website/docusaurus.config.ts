@@ -35,7 +35,7 @@ const config: Config = {
 
   // Enable Docusaurus Faster with Rspack bundler.
   future: {
-    experimental_faster: {
+    faster: {
       rspackBundler: true,
     },
   },
