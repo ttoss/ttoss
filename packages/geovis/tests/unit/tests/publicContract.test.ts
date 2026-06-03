@@ -1,8 +1,9 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
 import type {
   ColorBy,
-  LegendDisplayType,
+  LabelFormatSpec,
   LegendSpec,
+  NormalizationSpec,
   VisualizationLayer,
   VisualizationSpec,
 } from 'src/index';
@@ -26,13 +27,27 @@ test('spec types expose legend configuration through the public contract', () =>
     colors: ['#0b7285', '#f08c00'],
   };
 
+  const labelFormat: LabelFormatSpec = {
+    type: 'count',
+    abbreviate: true,
+    extended: true,
+  };
+
+  const normalization: NormalizationSpec = {
+    type: 'raw',
+    numeratorLabel: 'habitantes',
+  };
+
   const legend: LegendSpec = {
     id: 'status-legend',
-    label: 'Status',
+    title: 'Status',
     colorBy,
-    type: 'percentage-extended' as LegendDisplayType,
+    labelFormat,
+    normalization,
     classCount: 4,
-    source: 'Data: Census Bureau 2020',
+    reference: 'Data: Census Bureau 2020',
+    noDataLabel: 'Sem dados',
+    position: 'bottom-right',
   };
 
   const layer: VisualizationLayer = {
@@ -54,8 +69,10 @@ test('spec types expose legend configuration through the public contract', () =>
   };
 
   expect(spec.legends?.[0].id).toBe('status-legend');
-  expect(spec.legends?.[0].type).toBe('percentage-extended');
+  expect(spec.legends?.[0].title).toBe('Status');
   expect(spec.legends?.[0].classCount).toBe(4);
-  expect(spec.legends?.[0].source).toBe('Data: Census Bureau 2020');
+  expect(spec.legends?.[0].reference).toBe('Data: Census Bureau 2020');
+  expect(spec.legends?.[0].noDataLabel).toBe('Sem dados');
+  expect(spec.legends?.[0].position).toBe('bottom-right');
   expect(spec.layers[0].activeLegendId).toBe('status-legend');
 });

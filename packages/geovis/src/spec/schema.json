@@ -508,6 +508,11 @@
             "type": "number"
           }
         },
+        "classCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of classes (colour bins). Used as a hint to auto-compute thresholds; informational when thresholds is already set."
+        },
         "palette": {
           "type": "string"
         },
@@ -541,27 +546,157 @@
           "type": "string",
           "minLength": 1
         },
-        "label": {
-          "type": "string"
-        },
-        "type": {
+        "title": {
           "type": "string",
-          "enum": ["default", "percentage-extended"],
-          "description": "Controls how legend bin labels are rendered. 'percentage-extended' augments each bin label with a percentage of the scale's maximum threshold."
+          "description": "Short heading rendered above the legend swatches."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Secondary description rendered below the title."
         },
         "classCount": {
           "type": "integer",
           "minimum": 1,
-          "description": "Number of classes (colour bins). Used as a hint to auto-compute thresholds; informational when colorBy.thresholds is already set."
+          "description": "Number of classes (colour bins). Acts as a hint to auto-compute thresholds; informational when colorBy.thresholds is already set."
         },
-        "source": {
+        "labelFormat": {
+          "$ref": "#/$defs/LabelFormatSpec"
+        },
+        "normalization": {
+          "$ref": "#/$defs/NormalizationSpec"
+        },
+        "position": {
           "type": "string",
-          "description": "Bibliographic source reference displayed below the legend items."
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
+          "description": "Corner position for an absolutely-positioned legend overlay."
+        },
+        "noDataLabel": {
+          "type": "string",
+          "description": "Label for the 'no data' swatch. When omitted no entry is shown."
+        },
+        "reference": {
+          "type": "string",
+          "description": "Bibliographic attribution. Supports plain text and {link:text|url} syntax for inline links."
         },
         "colorBy": {
           "$ref": "#/$defs/ColorBy"
         }
       }
+    },
+    "LabelFormatSpec": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "range" },
+            "separator": { "type": "string" },
+            "unit": { "type": "string" },
+            "extended": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "count" },
+            "abbreviate": { "type": "boolean" },
+            "extended": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "percentage" },
+            "decimals": { "type": "integer", "minimum": 0 },
+            "extended": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "stdDev" },
+            "unit": { "type": "string", "enum": ["σ", "sd"] },
+            "extended": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "auto" },
+            "extended": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "NormalizationSpec": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "raw" },
+            "numeratorLabel": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel", "denominatorLabel"],
+          "properties": {
+            "type": { "const": "ratio" },
+            "numeratorLabel": { "type": "string" },
+            "denominatorLabel": { "type": "string" },
+            "denomitorLabel": {
+              "type": "string",
+              "description": "Deprecated alias for denominatorLabel."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel", "denominatorLabel"],
+          "properties": {
+            "type": { "const": "percentage" },
+            "numeratorLabel": { "type": "string" },
+            "denominatorLabel": { "type": "string" },
+            "denomitorLabel": {
+              "type": "string",
+              "description": "Deprecated alias for denominatorLabel."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "numeratorLabel",
+            "denominatorLabel",
+            "rateBase"
+          ],
+          "properties": {
+            "type": { "const": "rate" },
+            "numeratorLabel": { "type": "string" },
+            "denominatorLabel": { "type": "string" },
+            "denomitorLabel": {
+              "type": "string",
+              "description": "Deprecated alias for denominatorLabel."
+            },
+            "rateBase": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      ]
     },
     "Position": {
       "type": "array",

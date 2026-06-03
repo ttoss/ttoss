@@ -272,15 +272,20 @@ describe('validateSpec — mapData', () => {
     }
   });
 
-  test('accepts legends with type, classCount and source fields', () => {
+  test('accepts legends with labelFormat, classCount and reference fields', () => {
     const result = validateSpec({
       ...baseSpec,
       legends: [
         {
           id: 'pop',
-          type: 'percentage-extended',
+          title: 'Population',
+          subtitle: 'Residents per district',
           classCount: 5,
-          source: 'SMUL/GEOINFO — Resident population evolution',
+          labelFormat: { type: 'count', abbreviate: true, extended: true },
+          normalization: { type: 'raw', numeratorLabel: 'inhabitants' },
+          reference: 'SMUL/GEOINFO — Resident population evolution',
+          noDataLabel: 'No data',
+          position: 'bottom-right',
           colorBy: {
             type: 'quantitative',
             property: 'population',
@@ -301,13 +306,13 @@ describe('validateSpec — mapData', () => {
     expect(result.valid).toBe(true);
   });
 
-  test('rejects legend type with an unknown value', () => {
+  test('rejects legend with additional unknown fields', () => {
     const result = validateSpec({
       ...baseSpec,
       legends: [
         {
           id: 'pop',
-          type: 'unknown-type',
+          unknownField: 'should-fail',
           colorBy: {
             type: 'quantitative',
             property: 'population',
