@@ -232,7 +232,7 @@ export const MapOverlayLegend = ({
       return String(v);
     });
   const minLabel = `< ${fmt(steps[0].threshold)}`;
-  const maxLabel = `> ${fmt(steps[steps.length - 1].threshold)}`;
+  const maxLabel = `\u2265 ${fmt(steps[steps.length - 1].threshold)}`;
 
   return (
     <div
