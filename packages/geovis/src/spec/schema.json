@@ -590,10 +590,18 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "range" },
-            "separator": { "type": "string" },
-            "unit": { "type": "string" },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "range"
+            },
+            "separator": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         },
         {
@@ -601,9 +609,15 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "count" },
-            "abbreviate": { "type": "boolean" },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "count"
+            },
+            "abbreviate": {
+              "type": "boolean"
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         },
         {
@@ -611,10 +625,19 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "percentage" },
-            "decimals": { "type": "integer", "minimum": 0 },
-            "denominator": { "type": "number" },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "percentage"
+            },
+            "decimals": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "denominator": {
+              "type": "number"
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         },
         {
@@ -622,9 +645,16 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "stdDev" },
-            "unit": { "type": "string", "enum": ["σ", "sd"] },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "stdDev"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["σ", "sd"]
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         },
         {
@@ -632,8 +662,12 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "auto" },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "auto"
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         },
         {
@@ -641,8 +675,12 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "custom" },
-            "extended": { "type": "boolean" }
+            "type": {
+              "const": "custom"
+            },
+            "extended": {
+              "type": "boolean"
+            }
           }
         }
       ]
@@ -654,25 +692,11 @@
           "additionalProperties": false,
           "required": ["type"],
           "properties": {
-            "type": { "const": "raw" },
-            "numeratorLabel": { "type": "string" }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["type", "numeratorLabel"],
-          "anyOf": [
-            { "required": ["denominatorLabel"] },
-            { "required": ["denomitorLabel"] }
-          ],
-          "properties": {
-            "type": { "const": "ratio" },
-            "numeratorLabel": { "type": "string" },
-            "denominatorLabel": { "type": "string" },
-            "denomitorLabel": {
-              "type": "string",
-              "description": "Deprecated alias for denominatorLabel."
+            "type": {
+              "const": "raw"
+            },
+            "numeratorLabel": {
+              "type": "string"
             }
           }
         },
@@ -681,16 +705,40 @@
           "additionalProperties": false,
           "required": ["type", "numeratorLabel"],
           "anyOf": [
-            { "required": ["denominatorLabel"] },
-            { "required": ["denomitorLabel"] }
+            {
+              "required": ["denominatorLabel"]
+            }
           ],
           "properties": {
-            "type": { "const": "percentage" },
-            "numeratorLabel": { "type": "string" },
-            "denominatorLabel": { "type": "string" },
-            "denomitorLabel": {
-              "type": "string",
-              "description": "Deprecated alias for denominatorLabel."
+            "type": {
+              "const": "ratio"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel"],
+          "anyOf": [
+            {
+              "required": ["denominatorLabel"]
+            }
+          ],
+          "properties": {
+            "type": {
+              "const": "percentage"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
             }
           }
         },
@@ -699,18 +747,24 @@
           "additionalProperties": false,
           "required": ["type", "numeratorLabel", "rateBase"],
           "anyOf": [
-            { "required": ["denominatorLabel"] },
-            { "required": ["denomitorLabel"] }
+            {
+              "required": ["denominatorLabel"]
+            }
           ],
           "properties": {
-            "type": { "const": "rate" },
-            "numeratorLabel": { "type": "string" },
-            "denominatorLabel": { "type": "string" },
-            "denomitorLabel": {
-              "type": "string",
-              "description": "Deprecated alias for denominatorLabel."
+            "type": {
+              "const": "rate"
             },
-            "rateBase": { "type": "number", "exclusiveMinimum": 0 }
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
+            },
+            "rateBase": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
           }
         }
       ]

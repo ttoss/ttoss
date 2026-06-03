@@ -138,22 +138,16 @@ export type NormalizationSpec =
       type: 'ratio';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel` instead. */
-      denomitorLabel?: string;
     }
   | {
       type: 'percentage';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel` instead. */
-      denomitorLabel?: string;
     }
   | {
       type: 'rate';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel` instead. */
-      denomitorLabel?: string;
       /** The population base, e.g. `100000` for "cases per 100k inhabitants". */
       rateBase: number;
     };

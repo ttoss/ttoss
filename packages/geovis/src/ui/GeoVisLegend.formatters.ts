@@ -25,8 +25,7 @@ export const getExtendedSuffix = (
       ? ` ${normalization.numeratorLabel}`
       : '';
   }
-  const denominator =
-    normalization.denominatorLabel ?? normalization.denomitorLabel ?? '';
+  const denominator = normalization.denominatorLabel ?? '';
   if (normalization.type === 'ratio') {
     return ` ${normalization.numeratorLabel}/${denominator}`;
   }
@@ -34,8 +33,8 @@ export const getExtendedSuffix = (
     return ` ${normalization.numeratorLabel}/${denominator}`;
   }
   if (normalization.type === 'rate') {
-    const base = new Intl.NumberFormat('en-US').format(normalization.rateBase);
-    return ` ${normalization.numeratorLabel} per ${base} ${denominator}`;
+    const base = new Intl.NumberFormat('pt-BR').format(normalization.rateBase);
+    return ` ${normalization.numeratorLabel} por ${base} ${denominator}`;
   }
   return '';
 };
