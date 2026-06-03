@@ -2232,11 +2232,11 @@ importers:
         version: 2.1.0(babel-plugin-relay@21.0.0)(vite@6.4.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
     devDependencies:
       '@swc/plugin-formatjs':
-        specifier: ^6.1.0
-        version: 6.5.0
+        specifier: ^9.12.0
+        version: 9.12.1
       '@swc/plugin-relay':
-        specifier: ^9.1.0
-        version: 9.5.0
+        specifier: ^12.12.0
+        version: 12.12.0
       '@terezinha-farm/api':
         specifier: workspace:^
         version: link:../api
@@ -6804,11 +6804,11 @@ packages:
     resolution: {integrity: sha512-YVWNrh3wZWH2oXz7uL+s1WZbFIsnAp9cCl/b+C7ufDJqhsOvbr0un9IOYZ/CxRIRdnHGfhVD199n8baD/kRQew==}
     engines: {node: '>=14'}
 
-  '@swc/plugin-formatjs@6.5.0':
-    resolution: {integrity: sha512-AQSNI06J9WsAkicgWTP0W1DyNekhHpxg1tYLKy5NeUL3sEVZGSqFvAMR8ZCl0SlN30OAcDv6cLklAuI4wkhwRA==}
+  '@swc/plugin-formatjs@9.12.1':
+    resolution: {integrity: sha512-INUggolfXPUvBfu5djT2sbNtEviXGBZT0tMosM1B+XbxsLOXpua/mT0hhh6v2W1E4kDQHDPCka5RUjfbpISuNw==}
 
-  '@swc/plugin-relay@9.5.0':
-    resolution: {integrity: sha512-yTyqt4W27Q3vf0esiKY9WwIVR4Cet06ReCIp1eA7yBtxqnb2Y3XwjI8NrskVIh0VtsrGcHeznv/Ej53zdLV9aA==}
+  '@swc/plugin-relay@12.12.0':
+    resolution: {integrity: sha512-fEotAwhEWrEakYkwclW97U8dFZdB/bPk1KAb3TiTFEh86P75UboDAeNaFDKtVV2xy+XPixEuLee+T2gp3oVxHQ==}
 
   '@swc/types@0.1.26':
     resolution: {integrity: sha512-lyMwd7WGgG79RS7EERZV3T8wMdmPq3xwyg+1nmAM64kIhx5yl+juO2PYIHb7vTiPgPCj8LYjsNV2T5wiQHUEaw==}
@@ -21714,11 +21714,11 @@ snapshots:
       '@swc/html-win32-ia32-msvc': 1.15.40
       '@swc/html-win32-x64-msvc': 1.15.40
 
-  '@swc/plugin-formatjs@6.5.0':
+  '@swc/plugin-formatjs@9.12.1':
     dependencies:
       '@swc/counter': 0.1.3
 
-  '@swc/plugin-relay@9.5.0':
+  '@swc/plugin-relay@12.12.0':
     dependencies:
       '@swc/counter': 0.1.3
 

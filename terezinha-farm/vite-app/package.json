@@ -33,8 +33,8 @@
     "vite-plugin-relay": "^2.1.0"
   },
   "devDependencies": {
-    "@swc/plugin-formatjs": "^6.1.0",
-    "@swc/plugin-relay": "^9.1.0",
+    "@swc/plugin-formatjs": "^9.12.0",
+    "@swc/plugin-relay": "^12.12.0",
     "@terezinha-farm/api": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
